@@ -12,13 +12,14 @@
 #include "../scaler.h"
 #include "../filter.h"
 
-#ifndef USE_OPENCV
-    #error "OpenCV must be enabled for scaler validation. See the CONFIG toggle in the .pro file."
-#endif
-
 static const char ASPECT_TO_TEST[] = "Scaling";
 
 #ifdef VALIDATION_RUN
+
+    #ifndef USE_OPENCV
+        #error "OpenCV must be enabled for scaler validation. See toggle in the .pro file."
+    #endif
+
     int main(void)
     {
         captured_frame_s f;
