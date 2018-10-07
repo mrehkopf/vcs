@@ -23,4 +23,4 @@ Marshaled by the main loop in ```src/main.cpp```, the typical flow of execution 
 
 In the current implementation, Qt's event loop in ```display``` is spun manually, relying on the capture hardware to set the pacing of screen updates for drawing new frames. I use VCS in a virtual machine (KVM; Windows guest, Linux host), so can't say whether notable screen-tearing or jerkiness is introduced by this process under Windows-native operation. It seems to work well enough under a VM. In cases where it doesn't, you may want to look into letting Qt spin its own loop, or implement some other way of syncing screen updates with the refresh rate&mdash;like displaying the frames on a QOpenGLWidget surface that's set to block for vsync.
 
-![A screenshot of VCS](http://tarpeeksihyvaesoft.com/soft/img/vcs2_s.png)
+![A screenshot of VCS](http://tarpeeksihyvaesoft.com/soft/img/vcs2.png)
