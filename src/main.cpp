@@ -119,6 +119,7 @@ static capture_event_e process_next_capture_event(void)
         const capture_event_e e = kc_get_next_capture_event();
     #else
         const capture_event_e e = CEVENT_NEW_FRAME;
+        kc_insert_test_image();
     #endif
 
     switch (e)
@@ -232,7 +233,7 @@ int main(int argc, char *argv[])
             kd_process_ui_events();
 
             #if !USE_RGBEASY_API
-                std::this_thread::sleep_for(std::chrono::milliseconds(16)); // Reduce needless CPU use.
+              //  std::this_thread::sleep_for(std::chrono::milliseconds(16)); // Reduce needless CPU use.
             #endif
         }
     }

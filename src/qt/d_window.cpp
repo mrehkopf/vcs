@@ -27,6 +27,7 @@
 #include "../common.h"
 #include "../scaler.h"
 #include "d_window.h"
+#include "w_opengl.h"
 #include "../main.h"
 
 /// Temp. Stores the number of milliseconds passed for each frame update. This
@@ -38,11 +39,38 @@ int UPDATE_LATENCY_AVG = 0;
 // display effect.
 static QTextDocument OVERLAY;
 
+#ifdef USE_OPENGL
+    static OGLWidget *OGL_SURFACE = nullptr;
+#endif
+
+ #include <QVBoxLayout>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // Initialize OpenGL.
+    #ifdef USE_OPENGL
+        OGL_SURFACE = new OGLWidget(this);
+        OGL_SURFACE->show();
+        OGL_SURFACE->raise();
+
+        QSurfaceFormat format;
+        format.setDepthBufferSize(24);
+        format.setStencilBufferSize(8);
+        format.setVersion(1, 2);
+        format.setSwapInterval(0); // Vsync.
+        format.setSamples(0);
+        format.setProfile(QSurfaceFormat::CoreProfile);
+        QSurfaceFormat::setDefaultFormat(format);
+
+        QVBoxLayout *const mainLayout = new QVBoxLayout(ui->centralwidget);
+        mainLayout->setMargin(0);
+        mainLayout->setSpacing(0);
+
+        mainLayout->addWidget(OGL_SURFACE);
+    #endif
 
     OVERLAY.setDocumentMargin(0);
     OVERLAY.setTextWidth(width());    // Fix HTML align not working.
@@ -161,24 +189,28 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 
 void MainWindow::paintEvent(QPaintEvent *)
 {
-    QPainter painter(this);
     static QLabel *magnifyingGlass = nullptr;
 
-    // Draw the captured and scaled frame to screen.
     const QImage capturedImg = ks_scaler_output_buffer_as_qimage();
-    if (!capturedImg.isNull())
-    {
-        painter.drawImage(0, 0, capturedImg);
-    }
+    // Draw the captured and scaled frame to screen.
+    #if !USE_OPENGL
+        QPainter painter(this);
 
-    // Draw the overlay, if enabled.
-    if (//!kc_no_signal() &&
-        overlayDlg != nullptr &&
-        overlayDlg->is_overlay_enabled())
-    {
-        OVERLAY.setHtml(overlayDlg->overlay_html_string());
-        OVERLAY.drawContents(&painter, this->rect());
-    }
+        if (!capturedImg.isNull())
+        {
+            painter.drawImage(0, 0, capturedImg);
+        }
+
+        /// FIXME: Overlay won't get drawn when using OpenGL.
+        // Draw the overlay, if enabled.
+        if (//!kc_no_signal() &&
+            overlayDlg != nullptr &&
+            overlayDlg->is_overlay_enabled())
+        {
+            OVERLAY.setHtml(overlayDlg->overlay_html_string());
+            OVERLAY.drawContents(&painter, this->rect());
+        }
+    #endif
 
     // If the user pressed the right mouse button inside the main capture window,
     // show a magnifying glass effect which blows up part of the captured image.

@@ -18,7 +18,9 @@
 #define NULL_RGBEASY_FUNCTION(fn_name)      DEBUG_(("Function called: %s.", fn_name))
 #define NULL_RGBEASY_CONSTANT               -1
 #define NULL_RGBEASY_POINTER                void*
-#define ULONG_PTR                           unsigned long*
+#ifndef _WIN32 /// Temp hack.
+    #define ULONG_PTR                           unsigned long*
+#endif
 
 // Functions.
 #define RGBSetErrorFn(...)                  NULL_RGBEASY_FUNCTION("RGBSetErrorFn")

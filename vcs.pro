@@ -1,8 +1,11 @@
-DEFINES += USE_OPENCV # Comment out to disable OpenCV. You'll have no filtering or scaler, but you also don't need to provide the dependencies.
-DEFINES += USE_RGBEASY_API
+# Do a full rebuild if you modify these.
+DEFINES += USE_OPENCV               # Comment out to disable OpenCV. You'll have no filtering or scaler, but you also don't need to provide the dependencies.
+#DEFINES += USE_OPENGL               # Use OpenGL instead of QImage for drawing frames on screen. Not guaranteed to work, as I have limited means to test it.
+DEFINES += USE_RGBEASY_API          # Comment out to disable capture functionality. Useful for testing the program where a capture card isn't present.
 DEFINES += QT_NO_DEBUG_OUTPUT
 DEFINES += VCS_ON_QT
-#DEFINES += VALIDATION_RUN
+#DEFINES += ENFORCE_OPTIONAL_ASSERTS # Enable non-critical asserts. May perform slower, but will e.g. look to guard against buffer overflow in memory access.
+#DEFINES += VALIDATION_RUN          # Run diagnostic tests.
 
 # For now, disable the RGBEASY API for validating, just to simplify things. Once the
 # validatiom system is a bit better fleshed out, this should not be needed.
@@ -68,7 +71,8 @@ SOURCES += \
     src/persistent_settings.cpp \
     src/qt/d_filter_complex_dialog.cpp \
     src/tests/test_scaling.cpp \
-    src/memory.cpp
+    src/memory.cpp \
+    src/qt/w_opengl.cpp
 
 HEADERS += \
     src/common.h \
@@ -98,7 +102,8 @@ HEADERS += \
     src/qt/d_filter_complex_dialog.h \
     src/csv.h \
     src/memory.h \
-    src/memory_interface.h
+    src/memory_interface.h \
+    src/qt/w_opengl.h
 
 FORMS += \
     src/qt/d_control_panel.ui \

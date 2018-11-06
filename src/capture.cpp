@@ -544,6 +544,25 @@ void kc_reset_missed_frames_count(void)
     return;
 }
 
+// Creates a test pattern into the frame buffer.
+//
+void kc_insert_test_image(void)
+{
+    for (uint y = 0; y < FRAME_BUFFER.r.h; y++)
+    {
+        for (uint x = 0; x < FRAME_BUFFER.r.w; x++)
+        {
+            const uint idx = ((x + y * FRAME_BUFFER.r.w) * 4);
+            FRAME_BUFFER.pixels[idx + 0] = x%256;
+            FRAME_BUFFER.pixels[idx + 1] = y%256;
+            FRAME_BUFFER.pixels[idx + 2] = 150;
+            FRAME_BUFFER.pixels[idx + 3] = 255;
+        }
+    }
+
+    return;
+}
+
 captured_frame_s& kc_latest_captured_frame(void)
 {
     return FRAME_BUFFER;

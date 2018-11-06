@@ -18,7 +18,7 @@
 #include <stdexcept>
 
 const char PROGRAM_NAME[] = "\"VCS\" by Tarpeeksi Hyvae Soft";
-const char PROGRAM_VERSION_STRING[] = "1.2";
+const char PROGRAM_VERSION_STRING[] = "1.2.1 (OpenGL)";
 
 const uint MAX_INPUT_CHANNELS = 2;  // For now, we only support up to two input channels.
 const uint MAX_FRAME_SKIP = 4;
@@ -48,8 +48,11 @@ const u32 MAX_NUM_FILTERS = 16;             // How many filters for the pre or p
 
 // For assertions in performance-critical sections; not guaranteed to evaluate
 // to an assertion in release-oriented buids.
-#define k_assert_optional k_assert
-//#define k_assert_optional(...)
+#ifdef ENFORCE_OPTIONAL_ASSERTS
+    #define k_assert_optional k_assert
+#else
+    #define k_assert_optional(...)
+#endif
 
 #define DEBUG_(args)        (printf("[Debug] {%s:%i} ", __FILE__, __LINE__), printf args, printf("\n"), fflush(stdout)) /// Temp hack.
 #define DEBUG(args)         (klog_log_debug args)

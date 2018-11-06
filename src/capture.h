@@ -105,6 +105,8 @@ bool kc_capturer_has_missed_frames(void);
 
 uint kc_missed_input_frames_count(void);
 
+void kc_insert_test_image(void);
+
 void kc_reset_missed_frames_count(void);
 
 void kc_initialize_capturer(void);
