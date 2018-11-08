@@ -4,6 +4,8 @@
  *
  */
 
+#ifdef USE_OPENGL
+
 #ifndef OGL_WIDGET_H
 #define OGL_WIDGET_H
 
@@ -26,5 +28,7 @@ protected:
     void resizeGL(int w, int h);
     void paintGL();
 };
+
+#endif
 
 #endif

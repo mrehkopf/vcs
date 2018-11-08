@@ -10,6 +10,8 @@
  *
  */
 
+#ifdef USE_OPENGL
+
 #include <QCoreApplication>
 #include <QOpenGLWidget>
 #include <QMatrix4x4>
@@ -87,3 +89,4 @@ void OGLWidget::paintGL()
     return;
 }
 
+#endif
