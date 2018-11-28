@@ -81,7 +81,7 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
     // Restore persistent settings.
     {
-        ui->checkBox_enableLogging->setChecked(kpers_value_of("enabled", INI_GROUP_LOG, 1).toBool());
+        ui->checkBox_logEnabled->setChecked(kpers_value_of("enabled", INI_GROUP_LOG, 1).toBool());
         ui->tabWidget->setCurrentIndex(kpers_value_of("tab", INI_GROUP_CONTROL_PANEL, 0).toUInt());
         ui->checkBox_customFiltering->setChecked(kpers_value_of("custom_filtering", INI_GROUP_OUTPUT_FILTERS, 0).toBool());
         ui->checkBox_outputAntiTear->setChecked(kpers_value_of("enabled", INI_GROUP_ANTI_TEAR, 0).toBool());
@@ -97,7 +97,7 @@ ControlPanel::~ControlPanel()
     // Save the current settings.
     kpers_set_value("upscaler", INI_GROUP_OUTPUT_FILTERS, ui->comboBox_outputUpscaleFilter->currentText());
     kpers_set_value("downscaler", INI_GROUP_OUTPUT_FILTERS, ui->comboBox_outputDownscaleFilter->currentText());
-    kpers_set_value("enabled", INI_GROUP_LOG, ui->checkBox_enableLogging->isChecked());
+    kpers_set_value("enabled", INI_GROUP_LOG, ui->checkBox_logEnabled->isChecked());
     kpers_set_value("custom_filtering", INI_GROUP_OUTPUT_FILTERS, ui->checkBox_customFiltering->isChecked());
     kpers_set_value("enabled", INI_GROUP_ANTI_TEAR, ui->checkBox_outputAntiTear->isChecked());
     kpers_set_value("tab", INI_GROUP_CONTROL_PANEL, ui->tabWidget->currentIndex());
@@ -526,7 +526,7 @@ void ControlPanel::fill_hardware_info_table()
     QString s;
 
     // Get the capture card model name.
-    ui->groupBox_captureCard->setTitle("Capture device: " + kc_capture_card_type_string());
+    ui->groupBox_captureDeviceInfo->setTitle("Capture device: " + kc_capture_card_type_string());
 
     const resolution_s &minres = kc_hardware_min_capture_resolution();
     const resolution_s &maxres = kc_hardware_max_capture_resolution();
@@ -586,19 +586,19 @@ void ControlPanel::filter_log_entry(QTreeWidgetItem *const entry)
 
     entry->setHidden(true);
 
-    if (ui->checkBox_info->isChecked() &&
+    if (ui->checkBox_logInfo->isChecked() &&
         entry->text(typeColumn) == "Info")
     {
         entry->setHidden(false);
     }
 
-    if (ui->checkBox_debug->isChecked() &&
+    if (ui->checkBox_logDebug->isChecked() &&
         entry->text(typeColumn) == "Debug")
     {
         entry->setHidden(false);
     }
 
-    if (ui->checkBox_errors->isChecked() &&
+    if (ui->checkBox_logErrors->isChecked() &&
         entry->text(typeColumn) == "N.B.")
     {
         entry->setHidden(false);
@@ -802,7 +802,7 @@ void ControlPanel::on_comboBox_outputDownscaleFilter_currentIndexChanged(const Q
     return;
 }
 
-void ControlPanel::on_checkBox_enableLogging_stateChanged(int arg1)
+void ControlPanel::on_checkBox_logEnabled_stateChanged(int arg1)
 {
     k_assert(arg1 != Qt::PartiallyChecked,
              "Expected a two-state toggle for 'enableLogging'. It appears to have a third state.");
@@ -902,23 +902,6 @@ void ControlPanel::on_comboBox_inputChannel_currentIndexChanged(int index)
 
         NBENE(("Failed to set the input channel to %d. Reverting.", index));
         ui->comboBox_inputChannel->setCurrentIndex(kc_input_channel_idx());
-    }
-
-    return;
-}
-
-void ControlPanel::on_pushButton_clicked()
-{
-    QMessageBox confirm(parentWidget());
-    confirm.setWindowTitle("Clear the VCS log?");
-    confirm.setText("This will remove all entries from the log so far. Proceed?");
-    confirm.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-    confirm.setIcon(QMessageBox::Question);
-    confirm.setDefaultButton(QMessageBox::No);
-
-    if (confirm.exec() == QMessageBox::Yes)
-    {
-        ui->treeWidget_logList->clear();
     }
 
     return;
@@ -1029,21 +1012,21 @@ void ControlPanel::on_checkBox_customFiltering_stateChanged(int arg1)
     return;
 }
 
-void ControlPanel::on_checkBox_info_toggled(bool)
+void ControlPanel::on_checkBox_logInfo_toggled(bool)
 {
     refresh_log_list_filtering();
 
     return;
 }
 
-void ControlPanel::on_checkBox_debug_toggled(bool)
+void ControlPanel::on_checkBox_logDebug_toggled(bool)
 {
     refresh_log_list_filtering();
 
     return;
 }
 
-void ControlPanel::on_checkBox_errors_toggled(bool)
+void ControlPanel::on_checkBox_logErrors_toggled(bool)
 {
     refresh_log_list_filtering();
 

@@ -61,7 +61,7 @@
         <number>6</number>
        </property>
        <item>
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="groupBox_input">
          <property name="title">
           <string>Input</string>
          </property>
@@ -73,7 +73,7 @@
            <number>9</number>
           </property>
           <property name="topMargin">
-           <number>8</number>
+           <number>9</number>
           </property>
           <item>
            <widget class="QFrame" name="frame_inputInfo">
@@ -208,7 +208,7 @@
            <number>9</number>
           </property>
           <property name="topMargin">
-           <number>8</number>
+           <number>9</number>
           </property>
           <property name="rightMargin">
            <number>9</number>
@@ -377,7 +377,7 @@
         <number>6</number>
        </property>
        <item>
-        <widget class="QGroupBox" name="groupBox_2">
+        <widget class="QGroupBox" name="groupBox_output">
          <property name="title">
           <string>Output</string>
          </property>
@@ -386,16 +386,16 @@
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="0">
           <property name="spacing">
-           <number>9</number>
+           <number>6</number>
           </property>
           <property name="leftMargin">
-           <number>11</number>
+           <number>9</number>
           </property>
           <property name="topMargin">
-           <number>8</number>
+           <number>9</number>
           </property>
           <property name="rightMargin">
-           <number>11</number>
+           <number>9</number>
           </property>
           <item>
            <widget class="QFrame" name="frame_outputInfo">
@@ -615,16 +615,16 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox_3">
+        <widget class="QGroupBox" name="groupBox_outputOverrides">
          <property name="title">
           <string>Scaler overrides</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <property name="leftMargin">
-           <number>11</number>
+           <number>9</number>
           </property>
           <property name="rightMargin">
-           <number>11</number>
+           <number>9</number>
           </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_12">
@@ -672,7 +672,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_2">
+               <widget class="QLabel" name="label_baseResSeparator">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -759,7 +759,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_3">
+               <widget class="QLabel" name="label_aspectRatioSeparator">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -974,7 +974,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QCheckBox" name="checkBox_enableLogging">
+          <widget class="QCheckBox" name="checkBox_logEnabled">
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
            </property>
@@ -1025,7 +1025,7 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
-            <widget class="QCheckBox" name="checkBox_info">
+            <widget class="QCheckBox" name="checkBox_logInfo">
              <property name="text">
               <string>Info</string>
              </property>
@@ -1035,7 +1035,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_debug">
+            <widget class="QCheckBox" name="checkBox_logDebug">
              <property name="text">
               <string>Debug</string>
              </property>
@@ -1045,7 +1045,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_errors">
+            <widget class="QCheckBox" name="checkBox_logErrors">
              <property name="text">
               <string>N.B.</string>
              </property>
@@ -1104,13 +1104,6 @@
          </column>
         </widget>
        </item>
-       <item>
-        <widget class="QPushButton" name="pushButton">
-         <property name="text">
-          <string>Clear</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_3">
@@ -1132,7 +1125,7 @@
             <x>0</x>
             <y>0</y>
             <width>624</width>
-            <height>531</height>
+            <height>499</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1170,16 +1163,16 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
               <property name="leftMargin">
-               <number>11</number>
+               <number>9</number>
               </property>
               <property name="topMargin">
                <number>9</number>
               </property>
               <property name="rightMargin">
-               <number>11</number>
+               <number>9</number>
               </property>
               <property name="bottomMargin">
-               <number>13</number>
+               <number>9</number>
               </property>
               <item>
                <widget class="QLabel" name="label_17">
@@ -1196,43 +1189,11 @@ copyright (c) OpenCV team. Find out more in the VCS readme.</string>
                 </property>
                </widget>
               </item>
-              <item>
-               <spacer name="verticalSpacer_8">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>2</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
              </layout>
             </widget>
            </item>
            <item>
-            <spacer name="verticalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Fixed</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>14</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_captureCard">
+            <widget class="QGroupBox" name="groupBox_captureDeviceInfo">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -1247,10 +1208,10 @@ copyright (c) OpenCV team. Find out more in the VCS readme.</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <property name="leftMargin">
-               <number>11</number>
+               <number>9</number>
               </property>
               <property name="rightMargin">
-               <number>11</number>
+               <number>9</number>
               </property>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_14">

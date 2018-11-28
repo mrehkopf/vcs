@@ -75,11 +75,11 @@ public:
     void notify_of_new_mode_settings_source_file(const QString &filename);
 
 private slots:
-    void on_checkBox_info_toggled(bool);
+    void on_checkBox_logInfo_toggled(bool);
 
-    void on_checkBox_debug_toggled(bool);
+    void on_checkBox_logDebug_toggled(bool);
 
-    void on_checkBox_errors_toggled(bool);
+    void on_checkBox_logErrors_toggled(bool);
 
     void parse_input_resolution_button_press(QWidget *button);
 
@@ -93,7 +93,7 @@ private slots:
 
     void on_comboBox_outputDownscaleFilter_currentIndexChanged(const QString &arg1);
 
-    void on_checkBox_enableLogging_stateChanged(int arg1);
+    void on_checkBox_logEnabled_stateChanged(int arg1);
 
     void on_spinBox_outputScale_valueChanged(int);
 
@@ -110,8 +110,6 @@ private slots:
     void on_checkBox_forceOutputScale_stateChanged(int arg1);
 
     void on_comboBox_inputChannel_currentIndexChanged(int index);
-
-    void on_pushButton_clicked();
 
     void on_pushButton_inputAliases_clicked();
 
