@@ -72,7 +72,7 @@ void VideoAndColorDialog::create_menu_bar()
 
     // File...
     {
-        QMenu *fileMenu = new QMenu("File");
+        QMenu *fileMenu = new QMenu("File", this);
 
         fileMenu->addAction("Open...", this, SLOT(load_settings()));
         fileMenu->addSeparator();
@@ -83,7 +83,7 @@ void VideoAndColorDialog::create_menu_bar()
 
     // Help...
     {
-        QMenu *fileMenu = new QMenu("Help");
+        QMenu *fileMenu = new QMenu("Help", this);
 
         fileMenu->addAction("About...");
         fileMenu->actions().at(0)->setEnabled(false); /// FIXME: Add proper help stuff.

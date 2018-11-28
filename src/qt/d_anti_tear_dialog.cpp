@@ -69,7 +69,7 @@ void AntiTearDialog::create_menu_bar(void)
 
     // File...
     {
-        QMenu *fileMenu = new QMenu("File");
+        QMenu *fileMenu = new QMenu("File", this);
 
         fileMenu->addAction("Load settings...", this, SLOT(load_settings()));
         fileMenu->addAction("Restore defaults", this, SLOT(restore_default_settings()));
@@ -81,7 +81,7 @@ void AntiTearDialog::create_menu_bar(void)
 
     // Help...
     {
-        QMenu *fileMenu = new QMenu("Help");
+        QMenu *fileMenu = new QMenu("Help", this);
 
         fileMenu->addAction("About...");
         fileMenu->actions().at(0)->setEnabled(false); /// FIXME: Add proper help stuff.
