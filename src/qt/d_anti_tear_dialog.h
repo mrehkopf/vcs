@@ -9,6 +9,8 @@
 
 #include <QDialog>
 
+class QMenuBar;
+
 namespace Ui {
 class AntiTearDialog;
 }
@@ -36,24 +38,24 @@ private slots:
 
     void on_checkBox_visualizeTear_stateChanged(int);
 
-    void on_pushButton_load_clicked();
-
-    void on_pushButton_save_clicked();
-
-    void on_pushButton_restoreDefaults_clicked();
-
     void on_spinBox_stepSize_valueChanged(int arg1);
 
     void on_spinBox_threshold_valueChanged(int arg1);
 
+    void load_settings(void);
+
+    void save_settings(void);
+
+    void restore_default_settings(void);
+
 private:
     void update_visualization_options();
 
-    void load_params(const QString filename);
-
-    void save_params(const QString filename);
+    void create_menu_bar(void);
 
     Ui::AntiTearDialog *ui;
+
+    QMenuBar *menubar = nullptr;
 };
 
 #endif // D_ANTI_TEAR_DIALOG_H

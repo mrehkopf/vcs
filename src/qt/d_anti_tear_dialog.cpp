@@ -9,6 +9,7 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <QSettings>
+#include <QMenuBar>
 #include <QFile>
 #include "../persistent_settings.h"
 #include "ui_d_anti_tear_dialog.h"
@@ -26,7 +27,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 
     ui->setupUi(this);
 
-    setWindowTitle("\"VCS Anti-Tear\" by Tarpeeksi Hyvae Soft");
+    setWindowTitle("VCS - Anti-Tear");
 
     // Don't show the context help '?' button in the window bar.
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -38,6 +39,8 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
     ui->spinBox_domainSize->setValue(kpers_value_of("window_len", INI_GROUP_ANTI_TEAR, a.windowLen).toInt());
 
     resize(kpers_value_of("anti_tear", INI_GROUP_GEOMETRY, size()).toSize());
+
+    create_menu_bar();
 
     return;
 }
@@ -58,26 +61,43 @@ AntiTearDialog::~AntiTearDialog()
     return;
 }
 
-void AntiTearDialog::on_pushButton_load_clicked()
+void AntiTearDialog::create_menu_bar(void)
 {
-    QString filename = QFileDialog::getOpenFileName(this,
-                                                    "Select the file to load anti-tear parameters from", "",
-                                                    "Anti-tear parameters (*.vcst);;"
-                                                    "All files(*.*)");
-    if (filename.isNull())
+    k_assert((this->menubar == nullptr), "Not allowed to create the video/color dialog menu bar more than once.");
+
+    this->menubar = new QMenuBar(this);
+
+    // File...
     {
-        return;
+        QMenu *fileMenu = new QMenu("File");
+
+        fileMenu->addAction("Load settings...", this, SLOT(load_settings()));
+        fileMenu->addAction("Restore defaults", this, SLOT(restore_default_settings()));
+        fileMenu->addSeparator();
+        fileMenu->addAction("Save settings as...", this, SLOT(save_settings()));
+
+        menubar->addMenu(fileMenu);
     }
 
-    load_params(filename);
+    // Help...
+    {
+        QMenu *fileMenu = new QMenu("Help");
+
+        fileMenu->addAction("About...");
+        fileMenu->actions().at(0)->setEnabled(false); /// FIXME: Add proper help stuff.
+
+        menubar->addMenu(fileMenu);
+    }
+
+    this->layout()->setMenuBar(menubar);
 
     return;
 }
 
-void AntiTearDialog::on_pushButton_save_clicked()
+void AntiTearDialog::save_settings(void)
 {
     QString filename = QFileDialog::getSaveFileName(this,
-                                                    "Select the file to save anti-tear parameters to", "",
+                                                    "Save anti-tearing settings as...", "",
                                                     "Anti-tear parameters (*.vcst);;"
                                                     "All files(*.*)");
     if (filename.isNull())
@@ -89,13 +109,6 @@ void AntiTearDialog::on_pushButton_save_clicked()
         filename.append(".vcst");
     }
 
-    save_params(filename);
-
-    return;
-}
-
-void AntiTearDialog::save_params(const QString filename)
-{
     const QString tempFilename = filename + ".tmp";   // Use a temporary file at first, until we're reasonably sure there were no errors while saving.
     QFile file(tempFilename);
     QTextStream f(&file);
@@ -137,10 +150,6 @@ void AntiTearDialog::save_params(const QString filename)
     }
 
     INFO(("Saved anti-tear params to disk."));
-
-    kd_show_headless_info_message("Data was saved",
-                                  "The anti-tear parameters were successfully saved.");
-
     return;
 
     fail:
@@ -151,8 +160,17 @@ void AntiTearDialog::save_params(const QString filename)
     return;
 }
 
-void AntiTearDialog::load_params(const QString filename)
+void AntiTearDialog::load_settings(void)
 {
+    QString filename = QFileDialog::getOpenFileName(this,
+                                                    "Load anti-tearing settings from...", "",
+                                                    "Anti-tear parameters (*.vcst);;"
+                                                    "All files(*.*)");
+    if (filename.isNull())
+    {
+        return;
+    }
+
     anti_tear_options_s a = {0};
 
     QList<QStringList> dataRows = csv_parse_c(filename).contents();
@@ -191,9 +209,6 @@ void AntiTearDialog::load_params(const QString filename)
     kat_set_buffer_updates_disabled(false);
 
     INFO(("Loaded anti-tear params from disk."));
-    kd_show_headless_info_message("Data was loaded",
-                                  "The anti-tear parameters were successfully loaded.");
-
     return;
 
     fail:
@@ -215,7 +230,7 @@ void AntiTearDialog::update_visualization_options()
     return;
 }
 
-void AntiTearDialog::on_pushButton_restoreDefaults_clicked()
+void AntiTearDialog::restore_default_settings(void)
 {
     const anti_tear_options_s a = kat_default_settings();
 
