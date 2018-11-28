@@ -5,12 +5,7 @@
  * Uses Qt's OpenGL implementation to draw the contents of the VCS frame buffer
  * to screen. I.e. just draws a full-window textured quad.
  *
- * NOTE: Uses deprecated OpenGL, since I can only run the program in a virtual
- * machine with limited GPU support.
- *
  */
-
-#ifdef USE_OPENGL
 
 #include <QCoreApplication>
 #include <QOpenGLWidget>
@@ -69,7 +64,6 @@ void OGLWidget::paintGL()
     }
 
     // Update the OpenGL texture with the current contents of the frame buffer.
-    /// FIXME: Would it be better to use glTexSubImage2D()?
     this->glBindTexture(GL_TEXTURE_2D, FRAMEBUFFER_TEXTURE);
     this->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, r.w, r.h, 0, GL_BGRA, GL_UNSIGNED_BYTE, fb);
 
@@ -89,4 +83,3 @@ void OGLWidget::paintGL()
     return;
 }
 
-#endif

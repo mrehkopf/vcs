@@ -82,6 +82,8 @@ public:
 
     void measure_framerate();
 
+    void signal_new_mode_settings_source_file(const QString &filename);
+
 private slots:
     void toggle_window_border();
 

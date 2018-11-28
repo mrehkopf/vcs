@@ -1641,16 +1641,15 @@ bool kc_save_mode_params(const QString filename)
 
     INFO(("Saved %u set(s) of mode params to disk.", KNOWN_MODES.size()));
 
-    kd_show_headless_info_message("Data was saved",
-                                  "The mode parameters were successfully saved.");
+    kd_signal_new_mode_settings_source_file(filename);
 
     return true;
 
     fail:
     kd_show_headless_error_message("Data was not saved",
                                    "An error was encountered while preparing the mode "
-                                   "parameters for saving. No data was saved. \n\nMore "
-                                   "information about the error may be found in the terminal.");
+                                   "settings for saving. As a result, no data was saved. \n\nMore "
+                                   "information about this error may be found in the terminal.");
     return false;
 }
 
@@ -1671,15 +1670,11 @@ bool kc_load_mode_params(const QString filename, const bool automaticCall)
 
     if (filename.isEmpty())
     {
-        DEBUG(("No mode params file defined, skipping."));
+        DEBUG(("No mode settings file defined, skipping."));
         return true;
     }
 
     QList<QStringList> paramRows = csv_parse_c(filename).contents();
-    if (paramRows.isEmpty())
-    {
-        goto fail;
-    }
 
     // Each mode is saved as a block of rows, starting with a 3-element row defining
     // the mode's resolution, followed by several 2-element rows defining the various
@@ -1742,8 +1737,10 @@ bool kc_load_mode_params(const QString filename, const bool automaticCall)
     std::sort(KNOWN_MODES.begin(), KNOWN_MODES.end(), [](const mode_params_s &a, const mode_params_s &b)
                                                       { return (a.r.w * a.r.h) < (b.r.w * b.r.h); });
 
+    // Update the GUI with information related to the new mode params.
     kc_broadcast_mode_params_to_gui();
     kmain_signal_new_input_mode();  // In case the mode params changed for the current mode, re-initialize it.
+    kd_signal_new_mode_settings_source_file(filename);
 
     INFO(("Loaded %u set(s) of mode params from disk.", KNOWN_MODES.size()));
     if (!automaticCall)

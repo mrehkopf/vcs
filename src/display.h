@@ -9,6 +9,8 @@
 
 #include "types.h"
 
+class QString;
+
 struct log_entry_s;
 struct resolution_s;
 struct mode_alias_s;
@@ -52,6 +54,8 @@ int kd_average_system_latency(void);
 void kd_mark_gui_input_no_signal(const bool state);
 
 void kd_signal_new_known_mode(const resolution_s r);
+
+void kd_signal_new_mode_settings_source_file(const QString &filename);
 
 void kd_signal_new_known_alias(const mode_alias_s a);
 

@@ -380,6 +380,14 @@ void MainWindow::signal_new_known_mode(const resolution_s r)
     return;
 }
 
+void MainWindow::signal_new_mode_settings_source_file(const QString &filename)
+{
+    k_assert(controlPanel != nullptr, "");
+    controlPanel->notify_of_new_mode_settings_source_file(filename);
+
+    return;
+}
+
 // Updates the window title with the capture's current status.
 //
 void MainWindow::update_window_title()

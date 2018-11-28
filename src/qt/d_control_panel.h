@@ -72,6 +72,8 @@ public:
 
     void set_overlay_indicator_checked(const bool checked);
 
+    void notify_of_new_mode_settings_source_file(const QString &filename);
+
 private slots:
     void on_checkBox_info_toggled(bool);
 

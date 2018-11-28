@@ -7,8 +7,8 @@
  *
  */
 
-#include <QSignalMapper>
 #include <QFileDialog>
+#include <QMenuBar>
 #include <QDebug>
 #include "ui_d_video_and_color_dialog.h"
 #include "d_video_and_color_dialog.h"
@@ -37,7 +37,7 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    setWindowTitle("\"VCS Video and Color Adjuster\" by Tarpeeksi Hyvae Soft");
+    setWindowTitle("VCS - Video and Color Adjust");
 
     // Don't show the context help '?' button in the window bar.
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -49,6 +49,8 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
     connect_spinboxes_to_their_sliders(ui->groupBox_colorAdjust);
 
     resize(kpers_value_of("video_and_color", INI_GROUP_GEOMETRY, size()).toSize());
+
+    create_menu_bar();
 
     return;
 }
@@ -62,9 +64,51 @@ VideoAndColorDialog::~VideoAndColorDialog()
     return;
 }
 
+void VideoAndColorDialog::create_menu_bar()
+{
+    k_assert((this->menubar == nullptr), "Not allowed to create the video/color dialog menu bar more than once.");
+
+    this->menubar = new QMenuBar(this);
+
+    // File...
+    {
+        QMenu *fileMenu = new QMenu("File");
+
+        fileMenu->addAction("Open...", this, SLOT(load_settings()));
+        fileMenu->addSeparator();
+        fileMenu->addAction("Save as...", this, SLOT(save_settings()));
+
+        menubar->addMenu(fileMenu);
+    }
+
+    // Help...
+    {
+        QMenu *fileMenu = new QMenu("Help");
+
+        fileMenu->addAction("About...");
+        fileMenu->actions().at(0)->setEnabled(false); /// FIXME: Add proper help stuff.
+
+        menubar->addMenu(fileMenu);
+    }
+
+    this->layout()->setMenuBar(menubar);
+
+    return;
+}
+
+// Call this to notify the dialog of a new capture input signal.
 // Fetch the current ranges and values for all of the dialog's controls.
 //
-void VideoAndColorDialog::update_controls()
+void VideoAndColorDialog::receive_new_input_signal(const input_signal_s &s)
+{
+    ui->label_currentMode->setText(QString("%1 x %2, %3 Hz").arg(s.r.w).arg(s.r.h).arg(s.refreshRate));
+
+    update_controls();
+
+    return;
+}
+
+void VideoAndColorDialog::update_controls(void)
 {
     CONTROLS_LIVE_UPDATE = false;
     update_video_controls();
@@ -76,9 +120,14 @@ void VideoAndColorDialog::update_controls()
 
 void VideoAndColorDialog::set_controls_enabled(const bool state)
 {
-    ui->groupBox_adjustMode->setEnabled(state);
     ui->groupBox_colorAdjust->setEnabled(state);
     ui->groupBox_videoAdjust->setEnabled(state);
+    ui->groupBox_meta->setEnabled(state);
+
+    if (!state)
+    {
+        ui->label_currentMode->setText("n/a");
+    }
 
     return;
 }
@@ -254,6 +303,7 @@ void VideoAndColorDialog::receive_new_mode(const resolution_s r)
 {
     const QString resolutionStr = QString("%1 x %2").arg(r.w).arg(r.h);
 
+#if 0 // Disabled while the UI is being reworked.
     // Make sure this mode doesn't already exist on the list.
     for (int i = 0; i < ui->comboBox_knownModes->count(); i++)
     {
@@ -268,6 +318,7 @@ void VideoAndColorDialog::receive_new_mode(const resolution_s r)
     { block_widget_signals_c b(ui->comboBox_knownModes);
         ui->comboBox_knownModes->addItem(resolutionStr);
     }
+#endif
 
     return;
 }
@@ -276,10 +327,12 @@ void VideoAndColorDialog::receive_new_mode(const resolution_s r)
 //
 void VideoAndColorDialog::clear_known_modes()
 {
+#if 0 // Disabled while the UI is being reworked.
     { block_widget_signals_c b(ui->comboBox_knownModes);
         ui->comboBox_knownModes->clear();
         ui->comboBox_knownModes->addItem("Custom parameters are available for:");   /// Temp hack.
     }
+#endif
 
     return;
 }
@@ -327,7 +380,7 @@ void VideoAndColorDialog::connect_spinboxes_to_their_sliders(QGroupBox *const pa
                         (QSpinBox*)spinbox, &QSpinBox::setValue);
 
                 connect((QSpinBox*)spinbox, spinBoxValueChanged,
-                        this, &VideoAndColorDialog::BroadcastChanges);
+                        this, &VideoAndColorDialog::broadcast_settings_change);
 
                 goto next_spinbox;
             }
@@ -346,7 +399,7 @@ void VideoAndColorDialog::connect_spinboxes_to_their_sliders(QGroupBox *const pa
 
 // Sends all of the dialog's video and color options to the capture card.
 //
-void VideoAndColorDialog::BroadcastChanges()
+void VideoAndColorDialog::broadcast_settings_change()
 {
     const input_video_params_s vp = current_video_params();
     const input_color_params_s cp = current_color_params();
@@ -356,16 +409,43 @@ void VideoAndColorDialog::BroadcastChanges()
         return;
     }
 
+    flag_unsaved_changes();
+
     kc_set_capture_video_params(vp);
     kc_set_capture_color_params(cp);
 
     return;
 }
 
-void VideoAndColorDialog::on_pushButton_saveModes_clicked()
+// Call this to give the user a visual indication that there are unsaved changes
+// in the settings.
+//
+void VideoAndColorDialog::flag_unsaved_changes(void)
+{
+    const QString filenameString = ui->label_settingsFilename->text();
+
+    if (!filenameString.startsWith("*"))
+    {
+        ui->label_settingsFilename->setText("*" + filenameString);
+    }
+
+    return;
+}
+
+// Call this to inform the dialog of a new source file for mode parameters.
+//
+void VideoAndColorDialog::receive_new_mode_settings_filename(const QString &filename)
+{
+    const QString shortName = QFileInfo(filename).fileName();
+
+    ui->label_settingsFilename->setText(shortName); /// TODO: Elide the filename if it's too long to fit into the label.
+    ui->label_settingsFilename->setToolTip(filename);
+}
+
+void VideoAndColorDialog::save_settings(void)
 {
     QString filename = QFileDialog::getSaveFileName(this,
-                                                    "Select the file to save mode parameters to", "",
+                                                    "Save video and color settings as...", "",
                                                     "Mode parameters (*.vcsm);;All files(*.*)");
     if (filename.isNull())
     {
@@ -381,10 +461,10 @@ void VideoAndColorDialog::on_pushButton_saveModes_clicked()
     return;
 }
 
-void VideoAndColorDialog::on_pushButton_loadModes_clicked()
+void VideoAndColorDialog::load_settings(void)
 {
     QString filename = QFileDialog::getOpenFileName(this,
-                                                    "Select the file to load mode parameters from", "",
+                                                    "Load video and color settings from...", "",
                                                     "Mode parameters (*.vcsm);;All files(*.*)");
     if (filename.isNull())
     {
@@ -392,17 +472,6 @@ void VideoAndColorDialog::on_pushButton_loadModes_clicked()
     }
 
     kc_load_mode_params(filename, true);
-
-    return;
-}
-
-/// Temp hack. The knownModes combobox is just a cheap way to show the user which
-/// modes we already know. It's not meant to be otherwise functional.
-void VideoAndColorDialog::on_comboBox_knownModes_currentIndexChanged(int index)
-{
-    ui->comboBox_knownModes->setCurrentIndex(0);
-
-    (void)index;
 
     return;
 }

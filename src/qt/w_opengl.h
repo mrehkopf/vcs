@@ -4,8 +4,6 @@
  *
  */
 
-#ifdef USE_OPENGL
-
 #ifndef OGL_WIDGET_H
 #define OGL_WIDGET_H
 
@@ -14,8 +12,6 @@
 #include <QWidget>
 #include "../types.h"
 
-/// NOTE: Uses deprecated OpenGL, since I can only run the program in a virtual
-/// machine with limited GPU support.
 class OGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_1_2
 {
     Q_OBJECT
@@ -28,7 +24,5 @@ protected:
     void resizeGL(int w, int h);
     void paintGL();
 };
-
-#endif
 
 #endif

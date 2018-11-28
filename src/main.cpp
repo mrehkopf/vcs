@@ -233,7 +233,8 @@ int main(int argc, char *argv[])
             kd_process_ui_events();
 
             #if !USE_RGBEASY_API
-              //  std::this_thread::sleep_for(std::chrono::milliseconds(16)); // Reduce needless CPU use.
+                // Reduce needless CPU use while debugging, etc.
+                std::this_thread::sleep_for(std::chrono::milliseconds(16));
             #endif
         }
     }

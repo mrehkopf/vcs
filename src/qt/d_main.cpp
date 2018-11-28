@@ -80,6 +80,16 @@ void kd_signal_new_known_mode(const resolution_s r)
     return;
 }
 
+void kd_signal_new_mode_settings_source_file(const QString &filename)
+{
+    if (WINDOW != nullptr)
+    {
+        WINDOW->signal_new_mode_settings_source_file(filename);
+    }
+
+    return;
+}
+
 void kd_update_gui_input_signal_info(const input_signal_s &s)
 {
     if (WINDOW != nullptr)

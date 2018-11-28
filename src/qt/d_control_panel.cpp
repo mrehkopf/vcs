@@ -169,6 +169,12 @@ void ControlPanel::notify_of_new_known_mode(const resolution_s r)
     return;
 }
 
+void ControlPanel::notify_of_new_mode_settings_source_file(const QString &filename)
+{
+    k_assert(videocolorDlg != nullptr, "");
+    videocolorDlg->receive_new_mode_settings_filename(filename);
+}
+
 void ControlPanel::fill_input_channel_combobox()
 {
     block_widget_signals_c b(ui->comboBox_inputChannel);
@@ -350,7 +356,7 @@ void ControlPanel::update_input_signal_info(const input_signal_s &s)
     {
         // Let the video/color adjuster dialog know that the input signal changed.
         k_assert(videocolorDlg != nullptr, "");
-        videocolorDlg->update_controls();
+        videocolorDlg->receive_new_input_signal(s);
 
         // Mark the resolution. If either dimenson is 0, we expect it to be an
         // invalid reading that should be ignored.
