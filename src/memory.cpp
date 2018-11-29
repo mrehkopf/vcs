@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <cstring>
+#include <thread>
 #include "memory_interface.h"
 #include "memory.h"
 #include "common.h"
@@ -21,6 +22,11 @@
  * - add dynamic resizing to the memory cache for when it's running short.
  *
  */
+
+// The memory manager isn't prepared for multithreading, so discourage its use in
+// that context. We'll grab the id of whatever thread initializes this, and later
+// bail if any other thread requests operations of the manager.
+static const std::thread::id NATIVE_THREAD_ID = std::this_thread::get_id();
 
 // A single allocation from the memory cache.
 struct mem_allocation_s
@@ -74,6 +80,8 @@ static void initialize_cache(void)
 //
 void* kmem_allocate(const int numBytes, const char *const reason)
 {
+    k_assert(std::this_thread::get_id() == NATIVE_THREAD_ID, "Potential attempt to allocate memory from multiple threads. This isn't supported.");
+
     k_assert(!CACHE_ALLOC_LOCKED, "Memory allocations are locked, can't add new ones.");
     k_assert(!PROGRAM_EXIT_REQUESTED, "No more memory should be allocated after the program has been asked to terminate.");
     k_assert(numBytes > 0, "Can't allocate sub-byte memory blocks.");
@@ -181,6 +189,8 @@ uint kmem_sizeof_allocation(const void *const mem)
 //
 void kmem_release(void **mem)
 {
+    k_assert(std::this_thread::get_id() == NATIVE_THREAD_ID, "Potential attempt to release memory from multiple threads. This isn't supported.");
+
     if (*mem == NULL)
     {
         return;
