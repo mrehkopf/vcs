@@ -85,7 +85,7 @@ void* kmem_allocate(const int numBytes, const char *const reason)
     }
 
     k_assert(NEXT_FREE != NULL, "Didn't have a valid free slot in the memory cache for a new allocation.");
-    u8 *const mem = NEXT_FREE;
+    u8 *mem = NEXT_FREE;
 
     // Find a free spot in the allocation table.
     uint tableIdx = 0;
@@ -116,6 +116,7 @@ void* kmem_allocate(const int numBytes, const char *const reason)
 
     if (useOldEntry)
     {
+        mem = (u8*)ALLOC_TABLE[tableIdx].memory;
         ALLOC_TABLE[tableIdx].isReused = true;
     }
     else
