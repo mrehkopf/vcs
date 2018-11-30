@@ -15,8 +15,8 @@
 #include <QDebug>
 #include <QMenu>
 #include <assert.h>
+#include "d_filter_sets_list_dialog.h"
 #include "d_video_and_color_dialog.h"
-#include "d_filter_complex_dialog.h"
 #include "../persistent_settings.h"
 #include "d_resolution_dialog.h"
 #include "ui_d_control_panel.h"
@@ -45,13 +45,13 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
     ui->setupUi(this);
 
-    setWindowTitle("\"VCS Control Panel\" by Tarpeeksi Hyvae Soft");
+    setWindowTitle("VCS - Control Panel");
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     aliasDlg = new AliasDialog;
     videocolorDlg = new VideoAndColorDialog;
     antitearDlg = new AntiTearDialog;
-    filtercomplexDlg = new FilterComplexDialog;
+    filterSetsDlg = new FilterSetsListDialog;
 
     fill_hardware_info_table();
     update_input_signal_info(kc_input_signal_info());
@@ -107,7 +107,7 @@ ControlPanel::~ControlPanel()
     delete aliasDlg; aliasDlg = nullptr;
     delete videocolorDlg; videocolorDlg = nullptr;
     delete antitearDlg; antitearDlg = nullptr;
-    delete filtercomplexDlg; filtercomplexDlg = nullptr;
+    delete filterSetsDlg; filterSetsDlg = nullptr;
 
     return;
 }
@@ -146,8 +146,8 @@ void ControlPanel::closeEvent(QCloseEvent *event)
         k_assert(antitearDlg != nullptr, "");
         antitearDlg->close();
 
-        k_assert(filtercomplexDlg != nullptr, "");
-        filtercomplexDlg->close();
+        k_assert(filterSetsDlg != nullptr, "");
+        filterSetsDlg->close();
     }
 
     return;
@@ -157,14 +157,6 @@ void ControlPanel::notify_of_new_alias(const mode_alias_s a)
 {
     k_assert(aliasDlg != nullptr, "");
     aliasDlg->receive_new_alias(a);
-
-    return;
-}
-
-void ControlPanel::notify_of_new_known_mode(const resolution_s r)
-{
-    k_assert(videocolorDlg != nullptr, "");
-    videocolorDlg->receive_new_mode(r);
 
     return;
 }
@@ -346,6 +338,14 @@ void ControlPanel::update_output_resolution_info(const resolution_s r)
     return;
 }
 
+void ControlPanel::update_current_filter_set_idx(const int idx)
+{
+    k_assert(filterSetsDlg != nullptr, "");
+    filterSetsDlg->receive_current_filter_set_idx(idx);
+
+    return;
+}
+
 void ControlPanel::update_input_signal_info(const input_signal_s &s)
 {
     if (kc_is_no_signal())
@@ -354,7 +354,6 @@ void ControlPanel::update_input_signal_info(const input_signal_s &s)
     }
     else
     {
-        // Let the video/color adjuster dialog know that the input signal changed.
         k_assert(videocolorDlg != nullptr, "");
         videocolorDlg->receive_new_input_signal(s);
 
@@ -992,10 +991,10 @@ void ControlPanel::on_pushButton_antiTearOptions_clicked()
 
 void ControlPanel::on_pushButton_configureFiltering_clicked()
 {
-    k_assert(filtercomplexDlg != nullptr, "");
-    filtercomplexDlg->show();
-    filtercomplexDlg->activateWindow();
-    filtercomplexDlg->raise();
+    k_assert(filterSetsDlg != nullptr, "");
+    filterSetsDlg->show();
+    filterSetsDlg->activateWindow();
+    filterSetsDlg->raise();
 
     return;
 }
@@ -1008,6 +1007,9 @@ void ControlPanel::on_checkBox_customFiltering_stateChanged(int arg1)
              "Expected a two-state toggle for 'customFiltering'. It appears to have a third state.");
 
     kf_set_filtering_enabled(checked);
+
+    k_assert(filterSetsDlg != nullptr, "");
+    filterSetsDlg->signal_filtering_enabled(checked);
 
     return;
 }

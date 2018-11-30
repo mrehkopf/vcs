@@ -104,10 +104,8 @@ void AntiTearDialog::save_settings(void)
     {
         return;
     }
-    else if (!filename.contains('.'))    // Crude appending of the proper extension if none was given.
-    {
-        filename.append(".vcst");
-    }
+
+    if (QFileInfo(filename).suffix() != "vcst") filename.append(".vcst");
 
     const QString tempFilename = filename + ".tmp";   // Use a temporary file at first, until we're reasonably sure there were no errors while saving.
     QFile file(tempFilename);

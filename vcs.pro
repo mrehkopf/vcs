@@ -59,8 +59,6 @@ SOURCES += \
     src/qt/d_overlay_dialog.cpp \
     src/qt/d_alias_dialog.cpp \
     src/qt/d_anti_tear_dialog.cpp \
-    src/qt/dw_filter_list.cpp \
-    src/qt/dw_filter_complex_list.cpp \
     src/scaler.cpp \
     src/main.cpp \
     src/log.cpp \
@@ -69,10 +67,12 @@ SOURCES += \
     src/capture.cpp \
     src/anti_tear.cpp \
     src/persistent_settings.cpp \
-    src/qt/d_filter_complex_dialog.cpp \
     src/tests/test_scaling.cpp \
     src/memory.cpp \
-    src/qt/w_opengl.cpp
+    src/qt/w_opengl.cpp \
+    src/qt/d_filter_set_dialog.cpp \
+    src/qt/dw_filter_list.cpp \
+    src/qt/d_filter_sets_list_dialog.cpp
 
 HEADERS += \
     src/common.h \
@@ -91,19 +91,19 @@ HEADERS += \
     src/qt/d_alias_dialog.h \
     src/anti_tear.h \
     src/qt/d_anti_tear_dialog.h \
-    src/qt/dw_filter_list.h \
     src/filter.h \
-    src/qt/dw_filter_complex_list.h \
     src/command_line.h \
     src/qt/df_filters.h \
     src/tests/test_scaling.h \
     src/persistent_settings.h \
     src/qt/d_util.h \
-    src/qt/d_filter_complex_dialog.h \
     src/csv.h \
     src/memory.h \
     src/memory_interface.h \
-    src/qt/w_opengl.h
+    src/qt/w_opengl.h \
+    src/qt/d_filter_set_dialog.h \
+    src/qt/dw_filter_list.h \
+    src/qt/d_filter_sets_list_dialog.h
 
 FORMS += \
     src/qt/d_control_panel.ui \
@@ -113,7 +113,8 @@ FORMS += \
     src/qt/d_resolution_dialog.ui \
     src/qt/d_alias_dialog.ui \
     src/qt/d_anti_tear_dialog.ui \
-    src/qt/d_filter_complex_dialog.ui
+    src/qt/d_filter_set_dialog.ui \
+    src/qt/d_filter_sets_list_dialog.ui
 
 # C++. For GCC/Clang/MinGW.
 QMAKE_CXXFLAGS += -g

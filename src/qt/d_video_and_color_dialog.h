@@ -33,8 +33,6 @@ public:
 
     void set_controls_enabled(const bool state);
 
-    void receive_new_mode(const resolution_s r);
-
     void clear_known_modes();
 
     void receive_new_mode_settings_filename(const QString &filename);

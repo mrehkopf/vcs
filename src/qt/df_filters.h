@@ -44,7 +44,7 @@ struct filter_dlg_s
     // Pops up a dialog which presents the user with GUI controls for adjusting
     // the filter's parameters. Once the user closes the dialog, the parameters
     // they selected will be saved in the given byte array.
-    virtual void poll_user_for_params(u8 *const paramData) const = 0;
+    virtual void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const = 0;
 
     const QString& name(void)
     {
@@ -67,9 +67,9 @@ struct filter_dlg_median_s : public filter_dlg_s
         return;
     }
 
-    void poll_user_for_params(u8 *const paramData) const override
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
-        QDialog d(nullptr, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
         d.setWindowTitle(filterName + " Filter");
         d.setMinimumWidth(dlgMinWidth);
 
@@ -108,9 +108,9 @@ struct filter_dlg_blur_s : public filter_dlg_s
         return;
     }
 
-    void poll_user_for_params(u8 *const paramData) const override
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
-        QDialog d(nullptr, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
         d.setWindowTitle(filterName + " Filter");
         d.setMinimumWidth(dlgMinWidth);
 
@@ -159,9 +159,9 @@ struct filter_dlg_denoise_s : public filter_dlg_s
         return;
     }
 
-    void poll_user_for_params(u8 *const paramData) const override
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
-        QDialog d(nullptr, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
         d.setWindowTitle(filterName + " Filter");
         d.setMinimumWidth(dlgMinWidth);
 
@@ -195,9 +195,9 @@ struct filter_dlg_sharpen_s : public filter_dlg_s
         return;
     }
 
-    void poll_user_for_params(u8 *const paramData) const
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const
     {
-        QDialog d(nullptr, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
         d.setWindowTitle(filterName + " Filter");
         d.setMinimumWidth(dlgMinWidth);
 
@@ -231,9 +231,9 @@ struct filter_dlg_unsharpmask_s : public filter_dlg_s
         return;
     }
 
-    void poll_user_for_params(u8 *const paramData) const override
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
-        QDialog d(nullptr, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
         d.setWindowTitle(filterName + " Filter");
         d.setMinimumWidth(dlgMinWidth);
 
@@ -281,9 +281,9 @@ struct filter_dlg_decimate_s : public filter_dlg_s
         return;
     }
 
-    void poll_user_for_params(u8 *const paramData) const override
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
-        QDialog d(nullptr, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
         d.setWindowTitle(filterName + " Filter");
         d.setMinimumWidth(dlgMinWidth);
 
@@ -329,9 +329,9 @@ struct filter_dlg_deltahistogram_s : public filter_dlg_s
         return;
     }
 
-    void poll_user_for_params(u8 *const paramData) const
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const
     {
-        QDialog d(nullptr, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
         d.setWindowTitle(filterName + " Filter");
         d.setMinimumWidth(dlgMinWidth);
 
@@ -364,9 +364,9 @@ struct filter_dlg_uniquecount_s : public filter_dlg_s
         return;
     }
 
-    void poll_user_for_params(u8 *const paramData) const override
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
-        QDialog d(nullptr, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
         d.setWindowTitle(filterName + " Filter");
         d.setMinimumWidth(dlgMinWidth);
 

@@ -297,32 +297,6 @@ input_video_params_s VideoAndColorDialog::current_video_params()
     return pv;
 }
 
-// Add the given video mode (i.e. resolution) to our list of known modes.
-//
-void VideoAndColorDialog::receive_new_mode(const resolution_s r)
-{
-    const QString resolutionStr = QString("%1 x %2").arg(r.w).arg(r.h);
-
-#if 0 // Disabled while the UI is being reworked.
-    // Make sure this mode doesn't already exist on the list.
-    for (int i = 0; i < ui->comboBox_knownModes->count(); i++)
-    {
-        if (ui->comboBox_knownModes->itemText(i) == resolutionStr)
-        {
-            NBENE(("Was asked to add a new known mode to the GUI, but there already "
-                   "existed one of this kind there. Ignoring the request."));
-            return;
-        }
-    }
-
-    { block_widget_signals_c b(ui->comboBox_knownModes);
-        ui->comboBox_knownModes->addItem(resolutionStr);
-    }
-#endif
-
-    return;
-}
-
 // Clear the list of known video modes.
 //
 void VideoAndColorDialog::clear_known_modes()
@@ -451,10 +425,8 @@ void VideoAndColorDialog::save_settings(void)
     {
         return;
     }
-    else if (!filename.contains('.'))    // Crude appending of the proper extension if none was given.
-    {
-        filename.append(".vcsm");
-    }
+
+    if (QFileInfo(filename).suffix() != "vcsm") filename.append(".vcsm");
 
     kc_save_mode_params(filename);
 

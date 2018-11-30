@@ -364,7 +364,7 @@ void MainWindow::force_input_resolution_720x400()
     return;
 }
 
-void MainWindow::signal_new_known_Alias(const mode_alias_s a)
+void MainWindow::signal_new_known_alias(const mode_alias_s a)
 {
     k_assert(controlPanel != nullptr, "");
     controlPanel->notify_of_new_alias(a);
@@ -374,8 +374,8 @@ void MainWindow::signal_new_known_Alias(const mode_alias_s a)
 
 void MainWindow::signal_new_known_mode(const resolution_s r)
 {
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->notify_of_new_known_mode(r);
+    //k_assert(controlPanel != nullptr, "");
+    //controlPanel->notify_of_new_known_mode(r);
 
     return;
 }
@@ -457,6 +457,14 @@ void MainWindow::update_output_framerate(const u32 fps,
 
     k_assert(controlPanel != nullptr, "");
     controlPanel->update_output_framerate(fps, missedFrames);
+
+    return;
+}
+
+void MainWindow::update_current_filter_set_idx(const int idx)
+{
+    k_assert(controlPanel != nullptr, "");
+    controlPanel->update_current_filter_set_idx(idx);
 
     return;
 }

@@ -65,6 +65,8 @@ void kd_clear_known_aliases(void);
 
 void kd_update_gui_input_signal_info(const input_signal_s &s);
 
+void kd_update_gui_filter_set_idx(const int idx);
+
 void kd_show_headless_info_message(const char *const title, const char *const msg);
 
 void kd_show_headless_error_message(const char *const title, const char *const msg);

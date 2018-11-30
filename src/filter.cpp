@@ -47,10 +47,12 @@ static const std::map<QString, std::pair<filter_function_t, filter_dlg_s*>> FILT
                 {"Sharpen",          {filter_func_sharpen,         []{ static filter_dlg_sharpen_s f; return &f;        }()}},
                 {"Median",           {filter_func_median,          []{ static filter_dlg_median_s f; return &f;         }()}}};
 
-// Each filter complex is a collection of one or more filters, which together will
-// be applied to incoming frames if that filter complex is active.
-static std::vector<filter_complex_s> FILTER_COMPLEXES;
-static i32 CUR_FILTER_COMPLEX_IDX = -1;     // Index in the filter complex list of the currently-active complex.
+static std::vector<filter_set_s*> FILTER_SETS;
+
+// The index in the list of filter sets of the set which was most recently used.
+// Generally, this will be the filter set that matches the current input/output
+// resolution.
+static int MOST_RECENT_FILTER_SET_IDX = -1;
 
 // All filters expect 32-bit color, i.e. 4 channels.
 const uint NUM_COLOR_CHAN = (32 / 8);
@@ -69,112 +71,77 @@ QStringList kf_filter_name_list(void)
     return l;
 }
 
-void kf_clear_filters(void)
+static void clear_filter_sets_list(void)
 {
-    FILTER_COMPLEXES.clear();
+    for (auto set: FILTER_SETS)
+    {
+        delete set;
+    }
+
+    FILTER_SETS.clear();
+    MOST_RECENT_FILTER_SET_IDX = -1;
 
     return;
 }
 
-// Returns the filter complex matching the given input and output resolution.
-//
-const filter_complex_s* kf_filter_complex_for_resolutions(const resolution_s &in,
-                                                          const resolution_s &out)
+void kf_clear_filters(void)
 {
-    const filter_complex_s *f = nullptr;
+    clear_filter_sets_list();
 
-    for (size_t i = 0; i < FILTER_COMPLEXES.size(); i++)
-    {
-        if (FILTER_COMPLEXES[i].inRes.w == in.w &&
-            FILTER_COMPLEXES[i].inRes.h == in.h &&
-            FILTER_COMPLEXES[i].outRes.w == out.w &&
-            FILTER_COMPLEXES[i].outRes.h == out.h)
-        {
-            f = &FILTER_COMPLEXES[i];
-
-            break;
-        }
-    }
-
-    k_assert(f != nullptr,
-             "Was unable to return a valid filter complex for the given resolutions.");
-
-    return f;
+    return;
 }
 
-const scaling_filter_s* kf_current_filter_complex_scaler(void)
+void kf_set_filter_set_enabled(const uint idx, const bool isEnabled)
 {
-    if (CUR_FILTER_COMPLEX_IDX < 0 ||
-        CUR_FILTER_COMPLEX_IDX >= (int)FILTER_COMPLEXES.size() ||
-        !FILTERING_ENABLED ||
-        !FILTER_COMPLEXES[CUR_FILTER_COMPLEX_IDX].isEnabled)
-    {
-        return nullptr;
-    }
+    FILTER_SETS.at(idx)->isEnabled = isEnabled;
+    return;
+}
 
-    return FILTER_COMPLEXES[CUR_FILTER_COMPLEX_IDX].scaler;
+const scaling_filter_s* kf_current_filter_set_scaler(void)
+{
+    return ((kf_current_filter_set() == nullptr)? nullptr : kf_current_filter_set()->scaler);
 }
 
 void kf_release_filters(void)
 {
     DEBUG(("Releasing custom filtering."));
 
-    /// Doesn't have anything to do at the moment.
+    clear_filter_sets_list();
 
     return;
 }
 
-const std::vector<filter_complex_s>& kf_filter_complexes(void)
+void kf_add_filter_set(filter_set_s *const newSet)
 {
-    return FILTER_COMPLEXES;
-}
+    FILTER_SETS.push_back(newSet);
 
-// Add or update the given filter complex.
-//
-void kf_update_filter_complex(const filter_complex_s &f)
-{
-    // Find this filter on out list and update it.
-    for (auto &complex: FILTER_COMPLEXES)
-    {
-        if ((complex.inRes.w == f.inRes.w) && (complex.inRes.h == f.inRes.h) &&
-            (complex.outRes.w == f.outRes.w) && (complex.outRes.h == f.outRes.h))
-        {
-            complex = f;
-            goto done;
-        }
-    }
-
-    // If we didn't find the filter on the list, we'll add it there.
-    FILTER_COMPLEXES.push_back(f);
-    kf_activate_filter_complex_for(kc_input_resolution(), ks_output_resolution());
-
-    done:
     return;
 }
 
-// Looks to find whether we know of a filter complex matching the given resolutions;
-// and if we do, set it as the currently-active one.
-//
-void kf_activate_filter_complex_for(const resolution_s &inR, const resolution_s &outR)
+void kf_filter_set_swap_upward(const uint idx)
 {
-    for (size_t i = 0; i < FILTER_COMPLEXES.size(); i++)
-    {
-        const auto &complex = FILTER_COMPLEXES[i];
+    if (idx <= 0) return;
+    std::swap(FILTER_SETS.at(idx), FILTER_SETS.at(idx-1));
+}
 
-        if ((complex.inRes.w == inR.w) && (complex.inRes.h == inR.h) &&
-            (complex.outRes.w == outR.w) && (complex.outRes.h == outR.h))
-        {
-            CUR_FILTER_COMPLEX_IDX = i;
-            goto done;
-        }
-    }
+void kf_filter_set_swap_downward(const uint idx)
+{
+    if (idx >= (FILTER_SETS.size() - 1)) return;
+    std::swap(FILTER_SETS.at(idx), FILTER_SETS.at(idx+1));
+}
 
-    // We couldn't find a filter for this resolution, so mark not to use one.
-    CUR_FILTER_COMPLEX_IDX = -1;
+void kf_remove_filter_set(const uint idx)
+{
+    k_assert((idx <= FILTER_SETS.size()), "Attempting to remove a filter set out of bounds.");
 
-    done:
-    //DEBUG(("Set the current filter complex index to %d.", CUR_FILTER_IDX));
+    FILTER_SETS.erase(FILTER_SETS.begin() + idx);
+
     return;
+}
+
+const std::vector<filter_set_s*>& kf_filter_sets(void)
+{
+    return FILTER_SETS;
 }
 
 // Counts the number of unique frames per second, i.e. frames in which the pixels
@@ -566,30 +533,12 @@ const filter_dlg_s* kf_filter_dialog_for_name(const QString &name)
     return FILTERS.at(name).second;
 }
 
+// Returns a pointer to the filter function that corresponds to the given filter
+// name string.
+//
 filter_function_t kf_filter_function_ptr_for_name(const QString &name)
 {
     return FILTERS.at(name).first;
-}
-
-// Marks the filter complex of the given in/out resolution as enabled/disabled.
-//
-void kf_set_filter_complex_enabled(const bool enabled,
-                                   const resolution_s &inRes, const resolution_s &outRes)
-{
-    for (auto &complex: FILTER_COMPLEXES)
-    {
-        if ((complex.inRes.w == inRes.w) && (complex.inRes.h == inRes.h) &&
-            (complex.outRes.w == outRes.w) && (complex.outRes.h == outRes.h))
-        {
-            complex.isEnabled = enabled;
-
-            return;
-        }
-    }
-
-    NBENE(("Failed to find a filter complex with the given resolutions to enable/disable. Ignoring the request."));
-
-    return;
 }
 
 void kf_set_filtering_enabled(const bool enabled)
@@ -608,22 +557,66 @@ static void apply_filter(const QString &name, FILTER_FUNC_PARAMS)
     return;
 }
 
-void kf_apply_pre_filters(u8 *const pixels, const resolution_s &r)
+uint kf_current_filter_set_idx(void)
 {
-    // If there are no filters to apply, quit.
-    if (!FILTERING_ENABLED ||
-        (CUR_FILTER_COMPLEX_IDX < 0) ||
-        (CUR_FILTER_COMPLEX_IDX >= (int)FILTER_COMPLEXES.size()) ||
-        !FILTER_COMPLEXES[CUR_FILTER_COMPLEX_IDX].isEnabled)
+    return MOST_RECENT_FILTER_SET_IDX;
+}
+
+// Returns a pointer to the filter set which the current input/output resolutions
+// activate.
+const filter_set_s* kf_current_filter_set(void)
+{
+    const resolution_s inputRes = kc_input_resolution();
+    const resolution_s outputRes = ks_output_resolution();
+
+    // Find the first filter set in our list of filter sets that fits the given
+    // input and/or output resolution(s). If non are found, we return null.
+    for (size_t i = 0; i < FILTER_SETS.size(); i++)
     {
-        return;
+        MOST_RECENT_FILTER_SET_IDX = i;
+
+        if (!FILTER_SETS.at(i)->isEnabled) continue;
+
+        if (FILTER_SETS.at(i)->activation & filter_set_s::activation_e::all)
+        {
+            return FILTER_SETS.at(i);
+        }
+        else if ((FILTER_SETS.at(i)->activation & filter_set_s::activation_e::in) &&
+                 (FILTER_SETS.at(i)->activation & filter_set_s::activation_e::out))
+        {
+            if (inputRes.w == FILTER_SETS.at(i)->inRes.w &&
+                inputRes.h == FILTER_SETS.at(i)->inRes.h &&
+                outputRes.w == FILTER_SETS.at(i)->outRes.w &&
+                outputRes.h == FILTER_SETS.at(i)->outRes.h)
+            {
+                return FILTER_SETS.at(i);
+            }
+        }
+        else if (FILTER_SETS.at(i)->activation & filter_set_s::activation_e::in)
+        {
+            if (inputRes.w == FILTER_SETS.at(i)->inRes.w &&
+                inputRes.h == FILTER_SETS.at(i)->inRes.h)
+            {
+                return FILTER_SETS.at(i);
+            }
+        }
     }
 
+    MOST_RECENT_FILTER_SET_IDX = -1;
+    return nullptr;
+}
+
+void kf_apply_pre_filters(u8 *const pixels, const resolution_s &r)
+{
     k_assert(r.bpp == 32,
              "The pre-filterer was given a frame with an unexpected bit depth.");
 
-    const filter_complex_s *const filterComplex = &FILTER_COMPLEXES[CUR_FILTER_COMPLEX_IDX];
-    for (auto &f: filterComplex->preFilters)
+    if (!FILTERING_ENABLED) return;
+
+    const filter_set_s *const filterSet = kf_current_filter_set();
+    if (filterSet == nullptr) return;
+
+    for (auto &f: filterSet->preFilters)
     {
         apply_filter(f.name, pixels, &r, f.data);
     }
@@ -634,20 +627,15 @@ void kf_apply_pre_filters(u8 *const pixels, const resolution_s &r)
 /// TODO. Code duplication - merge this with the function to apply pre-filters.
 void kf_apply_post_filters(u8 *const pixels, const resolution_s &r)
 {
-    // If there are no filters to apply, quit.
-    if (!FILTERING_ENABLED ||
-        (CUR_FILTER_COMPLEX_IDX < 0) ||
-        (CUR_FILTER_COMPLEX_IDX >= (int)FILTER_COMPLEXES.size()) ||
-        !FILTER_COMPLEXES[CUR_FILTER_COMPLEX_IDX].isEnabled)
-    {
-        return;
-    }
-
     k_assert(r.bpp == 32,
              "The post-filterer was given a frame with an unexpected bit depth.");
 
-    const filter_complex_s *const filterComplex = &FILTER_COMPLEXES[CUR_FILTER_COMPLEX_IDX];
-    for (auto &f: filterComplex->postFilters)
+    if (!FILTERING_ENABLED) return;
+
+    const filter_set_s *const filterSet = kf_current_filter_set();
+    if (filterSet == nullptr) return;
+
+    for (auto &f: filterSet->postFilters)
     {
         apply_filter(f.name, pixels, &r, f.data);
     }

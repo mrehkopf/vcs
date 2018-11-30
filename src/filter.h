@@ -29,18 +29,28 @@ struct filter_s
     u8 data[FILTER_DATA_LENGTH];
 };
 
-// A collection of filters (pre/post-scaling) for a particular input/output
-// resolution set.
-struct filter_complex_s
+// A set of filters (pre/post-scaling) for a particular input/output resolution activation.
+struct filter_set_s
 {
-    const scaling_filter_s *scaler;     // The scaler used for up/downscaling.
+    // A user-facing, user-specified string that describes in brief this filter's
+    // purpose or the like.
+    QString description;
+
+    const scaling_filter_s *scaler = nullptr;     // The scaler used for up/downscaling.
 
     std::vector<filter_s> preFilters;   // Filters applied before scaling.
     std::vector<filter_s> postFilters;  // Filters applied after scaling.
 
-    resolution_s inRes, outRes;         // The resolutions for which this filter operates.
+    // Whether this filter set activates for all resolutions, a given input resolution,
+    // or a given combination of input and output resolutions.
+    enum activation_e : uint { none = 0, all = 1, in = 2, out = 4 };
+    uint activation = activation_e::none;
 
-    bool isEnabled;
+    // The resolution(s) in which this filter ser operates, dependent on its
+    // activation type.
+    resolution_s inRes, outRes;
+
+    bool isEnabled = true;
 };
 
 void kf_initialize_filters(void);
@@ -49,30 +59,32 @@ QStringList kf_filter_name_list(void);
 
 void kf_clear_filters(void);
 
-const scaling_filter_s *kf_current_filter_complex_scaler(void);
+void kf_set_filter_set_enabled(const uint idx, const bool isEnabled);
 
-const filter_complex_s* kf_filter_complex_for_resolutions(const resolution_s &in, const resolution_s &out);
+void kf_add_filter_set(filter_set_s *const newSet);
+
+void kf_filter_set_swap_upward(const uint idx);
+
+void kf_filter_set_swap_downward(const uint idx);
+
+void kf_remove_filter_set(const uint idx);
+
+const std::vector<filter_set_s*>& kf_filter_sets(void);
+
+const scaling_filter_s* kf_current_filter_set_scaler(void);
 
 void kf_release_filters(void);
 
-const std::vector<filter_complex_s> &kf_filter_complexes(void);
-
-void kf_set_filter_complex_enabled(const bool enabled,
-                                   const resolution_s &inRes, const resolution_s &outRes);
-
 void kf_set_filtering_enabled(const bool enabled);
+
+const filter_set_s* kf_current_filter_set(void);
+
+uint kf_current_filter_set_idx(void);
 
 void kf_apply_pre_filters(u8 *const pixels, const resolution_s &r);
 
 void kf_apply_post_filters(u8 *const pixels, const resolution_s &r);
 
-void kf_update_filter_complex(const filter_complex_s &f);
-
-void kf_activate_filter_complex_for(const resolution_s &inR, const resolution_s &outR);
-
-// Returns a pointer to the filter function that corresponds to the given filter
-// name string.
-//
 filter_function_t kf_filter_function_ptr_for_name(const QString &name);
 
 const filter_dlg_s *kf_filter_dialog_for_name(const QString &name);

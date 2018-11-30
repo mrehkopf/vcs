@@ -69,7 +69,6 @@ void kmain_signal_new_input_mode(void)
     kc_apply_new_capture_resolution(s.r);
     kd_update_gui_input_signal_info(s);
     ks_set_output_base_resolution(s.r, false);
-    kf_activate_filter_complex_for(s.r, ks_output_resolution());
 
     return;
 }

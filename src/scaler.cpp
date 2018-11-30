@@ -503,9 +503,9 @@ void ks_scale_frame(captured_frame_s &frame)
         {
             const scaling_filter_s *f;
 
-            if (kf_current_filter_complex_scaler() != nullptr)
+            if (kf_current_filter_set_scaler() != nullptr)
             {
-                f = kf_current_filter_complex_scaler();
+                f = kf_current_filter_set_scaler();
             }
             else if (frame.r.w < outputRes.w ||
                      frame.r.h < outputRes.h)
@@ -524,6 +524,8 @@ void ks_scale_frame(captured_frame_s &frame)
     }
 
     LATEST_OUTPUT_SIZE = outputRes;
+
+    kd_update_gui_filter_set_idx(kf_current_filter_set_idx());
 
     frame.processed = true;
 

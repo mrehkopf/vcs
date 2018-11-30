@@ -64,7 +64,7 @@ void kd_signal_new_known_alias(const mode_alias_s a)
 {
     if (WINDOW != nullptr)
     {
-        WINDOW->signal_new_known_Alias(a);
+        WINDOW->signal_new_known_alias(a);
     }
 
     return;
@@ -85,6 +85,16 @@ void kd_signal_new_mode_settings_source_file(const QString &filename)
     if (WINDOW != nullptr)
     {
         WINDOW->signal_new_mode_settings_source_file(filename);
+    }
+
+    return;
+}
+
+void kd_update_gui_filter_set_idx(const int idx)
+{
+    if (WINDOW != nullptr)
+    {
+        WINDOW->update_current_filter_set_idx(idx);
     }
 
     return;
@@ -171,8 +181,6 @@ void kd_update_display_size(void)
     {
         WINDOW->update_window_size();
     }
-
-    kf_activate_filter_complex_for(kc_input_resolution(), ks_output_resolution());
 
     return;
 }

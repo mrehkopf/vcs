@@ -12,7 +12,7 @@
 
 class MainWindow;
 class AliasDialog;
-class FilterComplexDialog;
+class FilterSetsListDialog;
 class AntiTearDialog;
 class QTreeWidgetItem;
 class VideoAndColorDialog;
@@ -62,8 +62,6 @@ public:
 
     QString GetString_DroppingFrames();
 
-    void notify_of_new_known_mode(const resolution_s r);
-
     void clear_known_modes();
 
     void notify_of_new_alias(const mode_alias_s a);
@@ -73,6 +71,8 @@ public:
     void set_overlay_indicator_checked(const bool checked);
 
     void notify_of_new_mode_settings_source_file(const QString &filename);
+
+    void update_current_filter_set_idx(const int idx);
 
 private slots:
     void on_checkBox_logInfo_toggled(bool);
@@ -153,7 +153,7 @@ private:
 
     AliasDialog *aliasDlg = nullptr;
 
-    FilterComplexDialog *filtercomplexDlg = nullptr;
+    FilterSetsListDialog *filterSetsDlg = nullptr;
 
     AntiTearDialog *antitearDlg = nullptr;
 

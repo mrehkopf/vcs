@@ -21,7 +21,7 @@ unsigned int INPUT_CHANNEL_IDX = 1;         // Which input channel on the captur
 unsigned int FRAME_SKIP = 0;                // How many frames the capture card should drop between captures.
 static QString PARAMS_FILE_NAME = "";      // Name of (and path to) the capture parameter file on disk.
 static QString ALIAS_FILE_NAME = "";       // Name of (and path to) the alias file on disk.
-static QString FILTERS_FILE_NAME = "";     // Name of (and path to) the filter complex file on disk.
+static QString FILTERS_FILE_NAME = "";     // Name of (and path to) the filter set file on disk.
 
 bool kcom_parse_command_line(const int argc, char *const argv[])
 {
@@ -48,7 +48,7 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
 
                 break;
             }
-            case 'f':   // Location of the filter complex file.
+            case 'f':   // Location of the filter set file.
             {
                 FILTERS_FILE_NAME = optarg;
 
