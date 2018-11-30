@@ -74,9 +74,9 @@ void VideoAndColorDialog::create_menu_bar()
     {
         QMenu *fileMenu = new QMenu("File", this);
 
-        fileMenu->addAction("Open...", this, SLOT(load_settings()));
+        fileMenu->addAction("Load settings...", this, SLOT(load_settings()));
         fileMenu->addSeparator();
-        fileMenu->addAction("Save as...", this, SLOT(save_settings()));
+        fileMenu->addAction("Save settings as...", this, SLOT(save_settings()));
 
         menubar->addMenu(fileMenu);
     }
