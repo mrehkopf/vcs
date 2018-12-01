@@ -127,6 +127,12 @@ private slots:
 
     void on_checkBox_customFiltering_stateChanged(int arg1);
 
+    void on_checkBox_forceOutputPad_stateChanged(int arg1);
+
+    void on_spinBox_outputPadX_valueChanged(int);
+
+    void on_spinBox_outputPadY_valueChanged(int);
+
 private:
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);

@@ -198,7 +198,24 @@ void MainWindow::paintEvent(QPaintEvent *)
 
         if (!capturedImg.isNull())
         {
-            painter.drawImage(0, 0, capturedImg);
+            int posX = 0;
+            int posY = 0;
+
+            if (ks_is_output_padding_enabled())
+            {
+                const auto sourceRes = ks_output_resolution();
+                const auto targetRes = ks_padded_output_resolution();
+
+                posX = (((int)targetRes.w - (int)sourceRes.w) / 2);
+                posY = (((int)targetRes.h - (int)sourceRes.h) / 2);
+
+                // Clear the window, since we likely have automatic clearing off
+                // and padding may leave areas which aren't painted over by the
+                // captured image.
+                painter.fillRect(0, 0, this->width(), this->height(), QBrush("black"));
+            }
+
+            painter.drawImage(posX, posY, capturedImg);
         }
 
         /// FIXME: Overlay won't get drawn when using OpenGL.
@@ -566,7 +583,7 @@ void MainWindow::show_overlay_dialog()
 
 void MainWindow::update_window_size()
 {
-    const resolution_s r = ks_output_resolution();
+    const resolution_s r = ks_padded_output_resolution();
 
     this->setFixedSize(r.w, r.h);
 

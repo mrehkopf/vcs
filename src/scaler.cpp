@@ -58,6 +58,9 @@ static const u32 OUTPUT_BIT_DEPTH = 32;             // The bit depth we're curre
 static resolution_s BASE_RESOLUTION = {640, 480, 0};// The size of the capture window, before any other scaling.
 static bool FORCE_BASE_RESOLUTION = false;          // If false, the base resolution will track the capture card's output resolution.
 
+static resolution_s PADDED_RESOLUTION = {640, 480, 0};
+static bool FORCE_PADDING = false;
+
 static resolution_s ASPECT_RATIO = {1, 1, 0};
 static bool FORCE_ASPECT_RATIO = false;
 
@@ -79,6 +82,12 @@ resolution_s ks_resolution_to_aspect_ratio(const resolution_s &r)
 resolution_s ks_output_base_resolution(void)
 {
     return BASE_RESOLUTION;
+}
+
+resolution_s ks_padded_output_resolution(void)
+{
+    if (FORCE_PADDING) return PADDED_RESOLUTION;
+    else return ks_output_resolution();
 }
 
 // Returns the resolution at which the scaler will output after performing all the actions
@@ -135,6 +144,11 @@ resolution_s ks_output_resolution(void)
     outRes.bpp = OUTPUT_BIT_DEPTH;
 
     return outRes;
+}
+
+bool ks_is_output_padding_enabled(void)
+{
+    return FORCE_PADDING;
 }
 
 void s_scaler_nearest(SCALER_FUNC_PARAMS)
@@ -536,7 +550,22 @@ void ks_scale_frame(captured_frame_s &frame)
 void ks_set_output_resolution_override_enabled(const bool state)
 {
     FORCE_BASE_RESOLUTION = state;
+    kd_update_display_size();
 
+    return;
+}
+
+void ks_set_output_pad_override_enabled(const bool state)
+{
+    FORCE_PADDING = state;
+    kd_update_display_size();
+
+    return;
+}
+
+void ks_set_output_pad_resolution(const resolution_s &r)
+{
+    PADDED_RESOLUTION = r;
     kd_update_display_size();
 
     return;

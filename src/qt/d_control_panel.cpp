@@ -706,6 +706,7 @@ void ControlPanel::on_checkBox_forceOutputAspect_stateChanged(int arg1)
 
     ui->spinBox_outputAspectX->setEnabled(checked);
     ui->spinBox_outputAspectY->setEnabled(checked);
+    ui->label_outputAspectSeparator->setEnabled(checked);
 
     if (checked)
     {
@@ -730,6 +731,22 @@ void ControlPanel::on_checkBox_forceOutputAspect_stateChanged(int arg1)
     return;
 }
 
+void ControlPanel::on_checkBox_forceOutputPad_stateChanged(int arg1)
+{
+    const bool checked = (arg1 == Qt::Checked)? 1 : 0;
+
+    k_assert(arg1 != Qt::PartiallyChecked,
+             "Expected a two-state toggle for 'outputPad'. It appears to have a third state.");
+
+    ui->spinBox_outputPadX->setEnabled(checked);
+    ui->spinBox_outputPadY->setEnabled(checked);
+    ui->label_outputPadSeparator->setEnabled(checked);
+
+    ks_set_output_pad_override_enabled(checked);
+
+    return;
+}
+
 void ControlPanel::on_checkBox_forceOutputRes_stateChanged(int arg1)
 {
     const bool checked = (arg1 == Qt::Checked)? 1 : 0;
@@ -739,6 +756,7 @@ void ControlPanel::on_checkBox_forceOutputRes_stateChanged(int arg1)
 
     ui->spinBox_outputResX->setEnabled(checked);
     ui->spinBox_outputResY->setEnabled(checked);
+    ui->label_outputBaseResSeparator->setEnabled(checked);
 
     ks_set_output_resolution_override_enabled(checked);
 
@@ -848,6 +866,36 @@ void ControlPanel::on_spinBox_outputAspectY_valueChanged(int)
     }
 
     ks_set_output_aspect_ratio(w, h);
+
+    return;
+}
+
+void ControlPanel::on_spinBox_outputPadX_valueChanged(int)
+{
+    const resolution_s r = {(uint)ui->spinBox_outputPadX->value(),
+                            (uint)ui->spinBox_outputPadY->value(), 0};
+
+    if (!ui->checkBox_forceOutputPad->isChecked())
+    {
+        return;
+    }
+
+    ks_set_output_pad_resolution(r);
+
+    return;
+}
+
+void ControlPanel::on_spinBox_outputPadY_valueChanged(int)
+{
+    const resolution_s r = {(uint)ui->spinBox_outputPadX->value(),
+                            (uint)ui->spinBox_outputPadY->value(), 0};
+
+    if (!ui->checkBox_forceOutputPad->isChecked())
+    {
+        return;
+    }
+
+    ks_set_output_pad_resolution(r);
 
     return;
 }
