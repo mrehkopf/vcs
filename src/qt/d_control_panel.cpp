@@ -68,6 +68,9 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
         ui->spinBox_outputResY->setMinimum(min.h);
         ui->spinBox_outputResX->setMaximum(max.w);
         ui->spinBox_outputResY->setMaximum(max.h);
+        
+        ui->spinBox_outputPadX->setMinimum(MIN_OUTPUT_WIDTH);
+        ui->spinBox_outputPadY->setMinimum(MIN_OUTPUT_HEIGHT);
 
         ui->treeWidget_logList->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
