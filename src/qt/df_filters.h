@@ -52,6 +52,79 @@ struct filter_dlg_s
     }
 };
 
+struct filter_dlg_crop_s : public filter_dlg_s
+{
+    // Note: x, y, width, and height reserve two bytes each.
+    enum data_offset_e { OFFS_X = 0, OFFS_Y = 2, OFFS_WIDTH = 4, OFFS_HEIGHT = 6, OFFS_SCALER = 8 };
+
+    filter_dlg_crop_s() :
+        filter_dlg_s("Crop") {}
+
+    void insert_default_params(u8 *const paramData) const override
+    {
+        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+
+        *(u16*)&(paramData[OFFS_X]) = 0;
+        *(u16*)&(paramData[OFFS_Y]) = 0;
+        *(u16*)&(paramData[OFFS_WIDTH]) = 640;
+        *(u16*)&(paramData[OFFS_HEIGHT]) = 480;
+        paramData[OFFS_SCALER] = 0;
+
+        return;
+    }
+
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
+    {
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        d.setWindowTitle(filterName + " Filter");
+        d.setMinimumWidth(dlgMinWidth);
+
+        QLabel xLabel("X:");
+        QSpinBox xSpin;
+        xSpin.setRange(0, 65535);
+        xSpin.setValue(*(u16*)&(paramData[OFFS_X]));
+
+        QLabel yLabel("Y:");
+        QSpinBox ySpin;
+        ySpin.setRange(0, 65535);
+        ySpin.setValue(*(u16*)&(paramData[OFFS_Y]));
+
+        QLabel widthLabel("Width:");
+        QSpinBox widthSpin;
+        widthSpin.setRange(0, 65535);
+        widthSpin.setValue(*(u16*)&(paramData[OFFS_WIDTH]));
+
+        QLabel heightLabel("Height:");
+        QSpinBox heightSpin;
+        heightSpin.setRange(0, 65535);
+        heightSpin.setValue(*(u16*)&(paramData[OFFS_HEIGHT]));
+
+        QLabel scalerLabel("Scaler:");
+        QComboBox scalerList;
+        scalerList.addItem("Linear");
+        scalerList.addItem("Nearest");
+        scalerList.setCurrentIndex(paramData[OFFS_SCALER]);
+
+        QFormLayout l;
+        l.addRow(&xLabel, &xSpin);
+        l.addRow(&yLabel, &ySpin);
+        l.addRow(&widthLabel, &widthSpin);
+        l.addRow(&heightLabel, &heightSpin);
+        l.addRow(&scalerLabel, &scalerList);
+
+        d.setLayout(&l);
+        d.exec();
+
+        *(u16*)&(paramData[OFFS_X]) = xSpin.value();
+        *(u16*)&(paramData[OFFS_Y]) = ySpin.value();
+        *(u16*)&(paramData[OFFS_WIDTH]) = widthSpin.value();
+        *(u16*)&(paramData[OFFS_HEIGHT]) = heightSpin.value();
+        paramData[OFFS_SCALER] = scalerList.currentIndex();
+
+        return;
+    }
+};
+
 struct filter_dlg_median_s : public filter_dlg_s
 {
     enum data_offset_e { OFF_KERNEL_SIZE = 0 };

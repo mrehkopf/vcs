@@ -32,6 +32,7 @@ static void filter_func_decimate(FILTER_FUNC_PARAMS);
 static void filter_func_denoise(FILTER_FUNC_PARAMS);
 static void filter_func_sharpen(FILTER_FUNC_PARAMS);
 static void filter_func_median(FILTER_FUNC_PARAMS);
+static void filter_func_crop(FILTER_FUNC_PARAMS);
 
 // Establish a list of all the filters which the user can apply. For each filter,
 // assign a pointer to the function which applies that filter to a given array of
@@ -45,7 +46,8 @@ static const std::map<QString, std::pair<filter_function_t, filter_dlg_s*>> FILT
                 {"Decimate",         {filter_func_decimate,        []{ static filter_dlg_decimate_s f; return &f;       }()}},
                 {"Denoise",          {filter_func_denoise,         []{ static filter_dlg_denoise_s f; return &f;        }()}},
                 {"Sharpen",          {filter_func_sharpen,         []{ static filter_dlg_sharpen_s f; return &f;        }()}},
-                {"Median",           {filter_func_median,          []{ static filter_dlg_median_s f; return &f;         }()}}};
+                {"Median",           {filter_func_median,          []{ static filter_dlg_median_s f; return &f;         }()}},
+                {"Crop",             {filter_func_crop,            []{ static filter_dlg_crop_s f; return &f;         }()}}};
 
 static std::vector<filter_set_s*> FILTER_SETS;
 
@@ -470,6 +472,41 @@ static void filter_func_decimate(FILTER_FUNC_PARAMS)
         }
     }
 #endif
+
+    return;
+}
+
+// Takes a region of the frame and scales it up to fill the whole frame.
+//
+static void filter_func_crop(FILTER_FUNC_PARAMS)
+{
+    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
+    if (pixels == nullptr || params == nullptr || r == nullptr)
+    {
+        return;
+    }
+
+    uint x = *(u16*)&(params[filter_dlg_crop_s::OFFS_X]);
+    uint y = *(u16*)&(params[filter_dlg_crop_s::OFFS_Y]);
+    uint w = *(u16*)&(params[filter_dlg_crop_s::OFFS_WIDTH]);
+    uint h = *(u16*)&(params[filter_dlg_crop_s::OFFS_HEIGHT]);
+
+    #ifdef USE_OPENCV
+        cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
+        const auto scaler = (params[filter_dlg_crop_s::OFFS_SCALER] == 0)? cv::INTER_LINEAR
+                                                                         : cv::INTER_NEAREST;
+
+        if (((x + w) > r->w) || ((y + h) > r->h))
+        {
+            /// TODO: Signal a user-facing but non-obtrusive message about the crop
+            /// params being invalid.
+        }
+        else
+        {
+            cv::Mat cropped = output(cv::Rect(x, y, w, h)).clone();
+            cv::resize(cropped, output, output.size(), 0, 0, scaler);
+        }
+    #endif
 
     return;
 }
