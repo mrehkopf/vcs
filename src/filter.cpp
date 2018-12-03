@@ -476,7 +476,8 @@ static void filter_func_decimate(FILTER_FUNC_PARAMS)
     return;
 }
 
-// Takes a region of the frame and scales it up to fill the whole frame.
+// Takes a subregion of the frame and either scales it up to fill the whole frame or
+// fills its surroundings with black.
 //
 static void filter_func_crop(FILTER_FUNC_PARAMS)
 {
@@ -493,8 +494,14 @@ static void filter_func_crop(FILTER_FUNC_PARAMS)
 
     #ifdef USE_OPENCV
         cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
-        const auto scaler = (params[filter_dlg_crop_s::OFFS_SCALER] == 0)? cv::INTER_LINEAR
-                                                                         : cv::INTER_NEAREST;
+        int scaler = -1;
+        switch (params[filter_dlg_crop_s::OFFS_SCALER])
+        {
+            case 0: scaler = cv::INTER_LINEAR; break;
+            case 1: scaler = cv::INTER_NEAREST; break;
+            case 2: scaler = -1 /*Don't scale.*/; break;
+            default: k_assert(0, "Unknown scaler type for the crop filter."); break;
+        }
 
         if (((x + w) > r->w) || ((y + h) > r->h))
         {
@@ -504,7 +511,11 @@ static void filter_func_crop(FILTER_FUNC_PARAMS)
         else
         {
             cv::Mat cropped = output(cv::Rect(x, y, w, h)).clone();
-            cv::resize(cropped, output, output.size(), 0, 0, scaler);
+
+            // If the user doesn't want scaling, just append some black borders around the
+            // cropping. Otherwise, stretch the cropped region to fill the entire frame.
+            if (scaler < 0) cv::copyMakeBorder(cropped, output, y, (r->h - (h + y)), x, (r->w - (w + x)), cv::BORDER_CONSTANT, 0);
+            else cv::resize(cropped, output, output.size(), 0, 0, scaler);
         }
     #endif
 

@@ -103,6 +103,7 @@ struct filter_dlg_crop_s : public filter_dlg_s
         QComboBox scalerList;
         scalerList.addItem("Linear");
         scalerList.addItem("Nearest");
+        scalerList.addItem("(Don't scale)");
         scalerList.setCurrentIndex(paramData[OFFS_SCALER]);
 
         QFormLayout l;
