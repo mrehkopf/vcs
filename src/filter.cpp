@@ -33,6 +33,7 @@ static void filter_func_denoise(FILTER_FUNC_PARAMS);
 static void filter_func_sharpen(FILTER_FUNC_PARAMS);
 static void filter_func_median(FILTER_FUNC_PARAMS);
 static void filter_func_crop(FILTER_FUNC_PARAMS);
+static void filter_func_flip(FILTER_FUNC_PARAMS);
 
 // Establish a list of all the filters which the user can apply. For each filter,
 // assign a pointer to the function which applies that filter to a given array of
@@ -47,7 +48,8 @@ static const std::map<QString, std::pair<filter_function_t, filter_dlg_s*>> FILT
                 {"Denoise",          {filter_func_denoise,         []{ static filter_dlg_denoise_s f; return &f;        }()}},
                 {"Sharpen",          {filter_func_sharpen,         []{ static filter_dlg_sharpen_s f; return &f;        }()}},
                 {"Median",           {filter_func_median,          []{ static filter_dlg_median_s f; return &f;         }()}},
-                {"Crop",             {filter_func_crop,            []{ static filter_dlg_crop_s f; return &f;         }()}}};
+                {"Crop",             {filter_func_crop,            []{ static filter_dlg_crop_s f; return &f;         }()}},
+                {"Flip",             {filter_func_flip,            []{ static filter_dlg_flip_s f; return &f;         }()}}};
 
 static std::vector<filter_set_s*> FILTER_SETS;
 
@@ -517,6 +519,31 @@ static void filter_func_crop(FILTER_FUNC_PARAMS)
             if (scaler < 0) cv::copyMakeBorder(cropped, output, y, (r->h - (h + y)), x, (r->w - (w + x)), cv::BORDER_CONSTANT, 0);
             else cv::resize(cropped, output, output.size(), 0, 0, scaler);
         }
+    #endif
+
+    return;
+}
+
+// Flips the frame horizontally and/or vertically.
+//
+static void filter_func_flip(FILTER_FUNC_PARAMS)
+{
+    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
+    if (pixels == nullptr || params == nullptr || r == nullptr)
+    {
+        return;
+    }
+
+    static heap_bytes_s<u8> scratch(MAX_FRAME_SIZE, "Flip filter scratch buffer");
+
+    // 0 = vertical, 1 = horizontal, -1 = both.
+    const uint axis = ((params[filter_dlg_flip_s::OFFS_AXIS] == 2)? -1 : params[filter_dlg_flip_s::OFFS_AXIS]);
+
+    #ifdef USE_OPENCV
+        cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
+        cv::Mat temp = cv::Mat(r->h, r->w, CV_8UC4, scratch.ptr());
+        cv::flip(output, temp, axis);
+        temp.copyTo(output);
     #endif
 
     return;

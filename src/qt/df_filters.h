@@ -126,6 +126,46 @@ struct filter_dlg_crop_s : public filter_dlg_s
     }
 };
 
+struct filter_dlg_flip_s : public filter_dlg_s
+{
+    // Note: x, y, width, and height reserve two bytes each.
+    enum data_offset_e { OFFS_AXIS = 0 };
+
+    filter_dlg_flip_s() :
+        filter_dlg_s("Flip") {}
+
+    void insert_default_params(u8 *const paramData) const override
+    {
+        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+
+        return;
+    }
+
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
+    {
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        d.setWindowTitle(filterName + " Filter");
+        d.setMinimumWidth(dlgMinWidth);
+
+        QLabel axisLabel("Axis:");
+        QComboBox axisList;
+        axisList.addItem("Vertical");
+        axisList.addItem("Horizontal");
+        axisList.addItem("Both");
+        axisList.setCurrentIndex(paramData[OFFS_AXIS]);
+
+        QFormLayout l;
+        l.addRow(&axisLabel, &axisList);
+
+        d.setLayout(&l);
+        d.exec();
+
+        paramData[OFFS_AXIS] = axisList.currentIndex();
+
+        return;
+    }
+};
+
 struct filter_dlg_median_s : public filter_dlg_s
 {
     enum data_offset_e { OFF_KERNEL_SIZE = 0 };
