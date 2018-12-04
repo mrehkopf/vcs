@@ -128,7 +128,6 @@ struct filter_dlg_crop_s : public filter_dlg_s
 
 struct filter_dlg_flip_s : public filter_dlg_s
 {
-    // Note: x, y, width, and height reserve two bytes each.
     enum data_offset_e { OFFS_AXIS = 0 };
 
     filter_dlg_flip_s() :
@@ -161,6 +160,59 @@ struct filter_dlg_flip_s : public filter_dlg_s
         d.exec();
 
         paramData[OFFS_AXIS] = axisList.currentIndex();
+
+        return;
+    }
+};
+
+struct filter_dlg_rotate_s : public filter_dlg_s
+{
+    // Note: the rotation angle and scale reserve two bytes.
+    enum data_offset_e { OFFS_ROT = 0, OFFS_SCALE = 2 };
+
+    filter_dlg_rotate_s() :
+        filter_dlg_s("Rotate") {}
+
+    void insert_default_params(u8 *const paramData) const override
+    {
+        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+
+        // The scale value gets divided by 100 when used.
+        *(i16*)&(paramData[OFFS_SCALE]) = 100;
+
+        // The rotation value gets divided by 10 when used.
+        *(i16*)&(paramData[OFFS_ROT]) = 0;
+
+        return;
+    }
+
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
+    {
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        d.setWindowTitle(filterName + " Filter");
+        d.setMinimumWidth(dlgMinWidth);
+
+        QLabel rotLabel("Angle:");
+        QDoubleSpinBox rotSpin;
+        rotSpin.setDecimals(1);
+        rotSpin.setRange(-360, 360);
+        rotSpin.setValue(*(i16*)&(paramData[OFFS_ROT]) / 10.0);
+
+        QLabel scaleLabel("Scale:");
+        QDoubleSpinBox scaleSpin;
+        scaleSpin.setDecimals(2);
+        scaleSpin.setRange(0, 20);
+        scaleSpin.setValue((*(i16*)&(paramData[OFFS_SCALE])) / 100.0);
+
+        QFormLayout l;
+        l.addRow(&rotLabel, &rotSpin);
+        l.addRow(&scaleLabel, &scaleSpin);
+
+        d.setLayout(&l);
+        d.exec();
+
+        *(i16*)&(paramData[OFFS_ROT]) = (rotSpin.value() * 10);
+        *(i16*)&(paramData[OFFS_SCALE]) = (scaleSpin.value() * 100);
 
         return;
     }
