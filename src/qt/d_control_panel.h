@@ -40,7 +40,7 @@ public:
 
     void update_output_framerate(const uint fps, const bool hasMissedFrames);
 
-    void update_output_resolution_info(const resolution_s r);
+    void update_output_resolution_info(void);
 
     void set_input_info_as_no_signal();
 

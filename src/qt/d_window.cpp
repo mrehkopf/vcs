@@ -590,7 +590,7 @@ void MainWindow::update_window_size()
     update_window_title();
 
     k_assert(controlPanel != nullptr, "");
-    controlPanel->update_output_resolution_info(r);
+    controlPanel->update_output_resolution_info();
 
     return;
 }

@@ -315,8 +315,13 @@ void ControlPanel::set_output_controls_enabled(const bool state)
     return;
 }
 
-void ControlPanel::update_output_resolution_info(const resolution_s r)
+// Signal to the control panel that it should update itself on the current output
+// resolution.
+//
+void ControlPanel::update_output_resolution_info(void)
 {
+    const resolution_s r = ks_padded_output_resolution();
+
     ui->label_outputResolution->setText(QString("%1 x %2").arg(r.w).arg(r.h));
     if (r.w == MIN_OUTPUT_WIDTH ||
         r.h == MIN_OUTPUT_HEIGHT ||
