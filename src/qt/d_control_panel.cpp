@@ -329,10 +329,14 @@ void ControlPanel::update_output_resolution_info(const resolution_s r)
                     ui->label_outputResolution->text() + " (limited)");
     }
 
-    // If the user isn't forcing an aspect ratio, we can change the values ourselves.
+    // If the user isn't forcing an aspect ratio, we can auto-update the values to
+    // match the current output resolution's ratio.
     if (!ui->checkBox_forceOutputAspect->isChecked())
     {
-        const resolution_s a = ks_resolution_to_aspect_ratio(r);
+        // Note: We use the version of the output resolution that excludes any
+        // padding, since we want the aspect ratio to reflect the size of the
+        // actual captured frame and not that of the padded output.
+        const resolution_s a = ks_resolution_to_aspect_ratio(ks_output_resolution());
 
         ui->spinBox_outputAspectX->setValue(a.w);
         ui->spinBox_outputAspectY->setValue(a.h);
