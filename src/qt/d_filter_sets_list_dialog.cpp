@@ -30,7 +30,7 @@
 
 FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::FilterDialog)
+    ui(new Ui::FilterSetsListDialog)
 {
     ui->setupUi(this);
 

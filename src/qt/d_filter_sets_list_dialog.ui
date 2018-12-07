@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FilterDialog</class>
- <widget class="QDialog" name="FilterDialog">
+ <class>FilterSetsListDialog</class>
+ <widget class="QDialog" name="FilterSetsListDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -185,10 +185,8 @@
     </widget>
    </item>
   </layout>
-  <zorder>groupBox_meta</zorder>
   <zorder>groupBox</zorder>
-  <zorder>treeWidget_setList</zorder>
-  <zorder></zorder>
+  <zorder>groupBox_meta</zorder>
  </widget>
  <resources/>
  <connections/>

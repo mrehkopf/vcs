@@ -17,7 +17,7 @@ struct input_signal_s;
 struct filter_set_s;
 
 namespace Ui {
-class FilterDialog;
+class FilterSetsListDialog;
 }
 
 class FilterSetsListDialog : public QDialog
@@ -59,7 +59,7 @@ private:
 
     void flag_unsaved_changes();
 
-    Ui::FilterDialog *ui;
+    Ui::FilterSetsListDialog *ui;
 
     QMenuBar *menubar = nullptr;
 
