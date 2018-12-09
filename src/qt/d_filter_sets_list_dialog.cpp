@@ -398,16 +398,16 @@ bool FilterSetsListDialog::save_sets_to_file(void)
               << outRes.w << ',' << outRes.h << '\n';
         }
 
-        f << "description," << set->description << '\n';
+        f << "description,{" << set->description << "}\n";
         f << "enabled," << set->isEnabled << '\n';
-        f << "scaler," << set->scaler->name << '\n';
+        f << "scaler,{" << set->scaler->name << "}\n";
 
         // Save the filters.
         auto save_filter_data = [&](std::vector<filter_s> filters, const QString &filterType)
         {
             for (auto &filter: filters)
             {
-                f << filterType << ',' << filter.name << ',' << FILTER_DATA_LENGTH;
+                f << filterType << ",{" << filter.name << "}," << FILTER_DATA_LENGTH;
                 for (uint q = 0; q < FILTER_DATA_LENGTH; q++)
                 {
                     f << ',' << (u8)filter.data[q];
