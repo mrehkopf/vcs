@@ -31,9 +31,11 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
 
     ui->setupUi(this);
 
-    // The filter set data are saved into a CSV that doesn't support string
-    // encasing, so juset flat out disallow commas in filter set descriptions.
-    ui->lineEdit_description->setValidator(new QRegExpValidator(QRegExp("[^,]*"), this));
+    // The CSV parser preserves {} for its own use, so discourage the user from
+    // entering those characters into the description string.
+    /// TODO: When saving data, you should pass it through the CSV parser for
+    /// validation, instead of validating on the spot like this.
+    ui->lineEdit_description->setValidator(new QRegExpValidator(QRegExp("[^{}]*"), this));
 
     if (!allowApply)
     {

@@ -27,7 +27,8 @@ public:
     // Returns the contents of the CSV file as a list of row elements, where each
     // entry in the list corresponds to one row in the file and consists of the
     // individual elements on that row. Note that this requires the element delimiter
-    // to be ',' and that elements joined by quotes will not be combined.
+    // to be ','. To prevent the occurrence of the delimeter from breaking up a
+    // set of elements, encase them in {}.
     //
     QList<QStringList> contents(void)
     {
@@ -51,12 +52,42 @@ public:
         for (auto &row: rows)
         {
             QStringList elements = row.split(',');
-            elements.removeAll(QString(""));    // Remove empty strings.
 
-            if (elements.count() != 0)
+            // Remove empty elements.
+            elements.removeAll(QString(""));
+
+            // Find and combine elements inside nests, i.e. blocks of text encased
+            // in {}.
+            /// TODO: Ideally, you'd account for nests when splitting, rather
+            /// than afterwards like this.
+            /// NOTE: The nesting characters {} must occur at the edges of the
+            /// range of elements they join.
+            for (int i = 0; i < elements.size(); i++)
             {
-                splitRows.push_back(elements);
+                QString elemStr = elements.at(i);
+
+                if (elemStr.at(0) == '{')
+                {
+                    while (elemStr.at(elemStr.length() - 1) != '}')
+                    {
+                        // Put back the delimiter character that would've been removed while splitting.
+                        elemStr += ',';
+
+                        elemStr += elements.at(i + 1);
+                        elements.removeAt(i);
+                    }
+
+                    k_assert((elemStr.at(0) == '{' && elemStr.at(elemStr.length() - 1) == '}'), "Failed to parse a CSV nest.");
+
+                    // Remove the nesting characters {}.
+                    elemStr.remove(0, 1);
+                    elemStr.remove((elemStr.length() - 1), 1);
+                }
+
+                elements[i] = elemStr;
             }
+
+            if (!elements.isEmpty()) splitRows.push_back(elements);
         }
 
         return splitRows;
