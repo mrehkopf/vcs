@@ -7,11 +7,11 @@
  *
  */
 
+#ifndef CSV_PARSE_H
+#define CSV_PARSE_H
+
 #include <QFile>
 #include "common.h"
-
-#ifndef CSV_LIKE_H
-#define CSV_LIKE_H
 
 class csv_parse_c
 {
