@@ -11,7 +11,7 @@
 #include <QSettings>
 #include <QMenuBar>
 #include <QFile>
-#include "../../persistent_settings/persistent_settings.h"
+#include "../../common/persistent_settings.h"
 #include "ui_d_anti_tear_dialog.h"
 #include "d_anti_tear_dialog.h"
 #include "../../filter/anti_tear.h"

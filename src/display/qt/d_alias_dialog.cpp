@@ -9,7 +9,7 @@
 #include <QSettings>
 #include <QDebug>
 #include <QLabel>
-#include "../../persistent_settings/persistent_settings.h"
+#include "../../common/persistent_settings.h"
 #include "ui_d_alias_dialog.h"
 #include "d_alias_dialog.h"
 #include "../../capture/capture.h"

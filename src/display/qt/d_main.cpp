@@ -12,7 +12,7 @@
 #include "../../capture/capture.h"
 #include "../../common/common.h"
 #include "../../filter/filter.h"
-#include "../../log/log.h"
+#include "../../common/log.h"
 #include "d_window.h"
 
 // Qt wants a QApplication object around for the GUI to function.

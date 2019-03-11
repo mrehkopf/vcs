@@ -8,7 +8,7 @@
 #define COMMON_H
 
 #include "../display/display.h"
-#include "../log/log.h"
+#include "../common/log.h"
 #include "../common/types.h"
 
 #ifdef NDEBUG

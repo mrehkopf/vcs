@@ -17,7 +17,7 @@
 #include <assert.h>
 #include "d_filter_sets_list_dialog.h"
 #include "d_video_and_color_dialog.h"
-#include "../../persistent_settings/persistent_settings.h"
+#include "../../common/persistent_settings.h"
 #include "d_resolution_dialog.h"
 #include "ui_d_control_panel.h"
 #include "d_anti_tear_dialog.h"
@@ -28,7 +28,7 @@
 #include "../../filter/filter.h"
 #include "../../common/common.h"
 #include "../../main.h"
-#include "../../log/log.h"
+#include "../../common/log.h"
 #include "../display.h"
 #include "d_window.h"
 #include "d_util.h"

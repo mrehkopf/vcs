@@ -13,7 +13,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QMenu>
-#include "../../persistent_settings/persistent_settings.h"
+#include "../../common/persistent_settings.h"
 #include "../../capture/capture.h"
 #include "../display.h"
 #include "d_overlay_dialog.h"

@@ -13,7 +13,7 @@
 #include "../filter/anti_tear.h"
 #include "../capture/capture.h"
 #include "../display/display.h"
-#include "../memory/memory.h"
+#include "../common/memory.h"
 #include "../common/common.h"
 #include "../filter/filter.h"
 #include "scaler.h"

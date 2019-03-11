@@ -12,7 +12,7 @@
 #include <QDebug>
 #include "ui_d_video_and_color_dialog.h"
 #include "d_video_and_color_dialog.h"
-#include "../../persistent_settings/persistent_settings.h"
+#include "../../common/persistent_settings.h"
 #include "../../capture/capture.h"
 #include "../display.h"
 #include "../../main.h"

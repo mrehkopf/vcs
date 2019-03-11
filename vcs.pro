@@ -69,14 +69,14 @@ SOURCES += \
     src/display/qt/d_anti_tear_dialog.cpp \
     src/scaler/scaler.cpp \
     src/main.cpp \
-    src/log/log.cpp \
+    src/common/log.cpp \
     src/filter/filter.cpp \
     src/common/command_line.cpp \
     src/capture/capture.cpp \
     src/filter/anti_tear.cpp \
-    src/persistent_settings/persistent_settings.cpp \
+    src/common/persistent_settings.cpp \
     src/tests/test_scaling.cpp \
-    src/memory/memory.cpp \
+    src/common/memory.cpp \
     src/display/qt/w_opengl.cpp \
     src/display/qt/d_filter_set_dialog.cpp \
     src/display/qt/dw_filter_list.cpp \
@@ -103,11 +103,11 @@ HEADERS += \
     src/common/command_line.h \
     src/display/qt/df_filters.h \
     src/tests/test_scaling.h \
-    src/persistent_settings/persistent_settings.h \
+    src/common/persistent_settings.h \
     src/display/qt/d_util.h \
     src/common/csv.h \
-    src/memory/memory.h \
-    src/memory/memory_interface.h \
+    src/common/memory.h \
+    src/common/memory_interface.h \
     src/display/qt/w_opengl.h \
     src/display/qt/d_filter_set_dialog.h \
     src/display/qt/dw_filter_list.h \

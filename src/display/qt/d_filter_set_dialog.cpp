@@ -10,12 +10,12 @@
 #include <QPushButton>
 #include <map>
 #include "../../display/qt/d_filter_set_dialog.h"
-#include "../../persistent_settings/persistent_settings.h"
+#include "../../common/persistent_settings.h"
 #include "../../display/qt/df_filters.h"
 #include "../../display/qt/d_util.h"
 #include "../../common/common.h"
 #include "../../scaler/scaler.h"
-#include "../../memory/memory.h"
+#include "../../common/memory.h"
 #include "ui_d_filter_set_dialog.h"
 
 // Takes in the filter set for which we'll set the parameters.

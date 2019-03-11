@@ -12,7 +12,7 @@
 #include <atomic>
 #include "../display/display.h"
 #include "../scaler/scaler.h"
-#include "../memory/memory.h"
+#include "../common/memory.h"
 #include "../common/common.h"
 #include "../common/types.h"
 
