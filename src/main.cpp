@@ -223,9 +223,9 @@ int main(int argc, char *argv[])
                                        "open, run VCS again from the command line.");
     }
 
+    INFO(("Entering the main loop."));
     try
     {
-        DEBUG(("Entering the main loop."));
         while (!PROGRAM_EXIT_REQUESTED)
         {
             process_next_capture_event();

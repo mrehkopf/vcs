@@ -1,26 +1,76 @@
 # VCS
-A personal project to improve on Datapath's default capture software, VCS has come to include a host of features useful in capturing footage of old '90s games, in particular; although capture for other purposes may likewise benefit from the features of VCS. Find out more in the readme file included with the binary distribution of VCS, available from [Tarpeeksi Hyvae Soft's website](http://tarpeeksihyvaesoft.com/soft)
+A third-party capture tool for Datapath's VisionRGB range of capture cards. Greatly improves the hardware's suitability for dynamic VGA capture (e.g. of retro PCs) compared to Datapath's own capture software. Is free and open-source.
 
-This repo contains the full source code to VCS; compilable on Windows and Linux (with Qt). Note that the repo tracks my local one with low granularity only.
+You can get a binary distribution of the VCS code on [Tarpeeksi Hyvae Soft's website](http://tarpeeksihyvaesoft.com/soft/).
 
-### Building
-To build on Linux, do ```qmake && make```, or load the .pro file in Qt Creator. Note that by default, capture functionality will be disabled on Linux, unless you change it in the .pro file. I'm not aware that Datapath's capture API works in Linux, nor do I have compatible hardware to test with, hence this affair.
+### Features
+- Anti-tearing, to reduce screen-tearing in analog capture
+- On-the-fly filtering: blur, crop, flip, decimate, rotate, sharpen...
+- Multiple scalers: nearest, linear, area, cubic, and Lanczos
+- Temporal image denoising, to smooth out analog capture noise
+- Output padding, to maintain a constant output resolution
+- Count of unique frames per second &ndash; an FPS display for DOS games!
+- Assign different capture and display settings for different input resolutions
+- Optimized for virtual machines, by minimizing reliance on GPU features
+- Works on Windows XP to Windows 10
 
-Building on Windows should be much the same, except the build will by default have capture functionality enabled.
+### Hardware support
+VCS is compatible with the following Datapath capture cards:
+- VisionRGB-PRO1
+- VisionRGB-PRO2
+- VisionRGB-E1
+- VisionRGB-E2
+- VisionRGB-E1S
+- VisionRGB-E2S
+- VisionRGB-X2
 
-I use GCC and MinGW, respectively, to build VCS. These toolsets will likely give you the easiest time when compiling VCS yourself. Qt-wise, version 5.5 should suffice.
+The VisionAV range of cards should also work, albeit without their audio capture functionality.
 
-##### OpenCV
-VCS uses the OpenCV library for certain functionality. For proper operation, you'll need to have OpenCV present&mdash;see the .pro file on how to include it. The binary distribution of VCS (see link, above) includes pre-built .dlls for MinGW.
+In general, if you know that your card supports Datapath's RGBEasy API, it should be able to function with VCS.
 
-##### Datapath RGBEASY API
-VCS interfaces with Datapath's RGBEASY API to interact with the capture hardware, and so needs access to the RGBEASY library. If you've installed the drivers for your compatible Datapath capture card, you should have this library on your computer. See the VCS .pro file on how to include it.
+# How to use VCS
+_Coming_
 
-### Code flow
-VCS consists of four main parts: ```capture```, ```filter```, ```scaler```, and ```display```. The code for these can be found in the likewise-named .cpp files (the source for ```display``` resides under ```src/qt/```).
+# Building
+**On Linux:** Do `qmake && make` at the repo's root, or open [vcs.pro](vcs.pro) in Qt Creator. **Note:** By default, VCS's capture functionality is disabled on Linux, unless you edit [vcs.pro](vcs.pro) to remove `DEFINES -= USE_RGBEASY_API` from the Linux-specific build options. I don't have a Linux-compatible capture card, so I'm not able to test capturing with VCS natively in Linux, which is why this functionality is disabled by default.
 
-Marshaled by the main loop in ```src/main.cpp```, the typical flow of execution in the program is as follows. The capture hardware will be polled by ```capture``` for any new capture events. Once ```capture``` receives a new frame of data from the hardware, it will direct it into ```filter``` for any pre-scaling filtering, like denoising, blurring, etc. From there, the frame passes on to ```scaler```, which re-sizes it to the size of the display. The frame continues again through ```filter``` for any post-scaling filtering; and finally, the frame is handed to ```display``` for displaying it on screen. In the meantime, any user&ndash;GUI interaction is also handled by ```display```.
+**On Windows:** The build process should be much the same as described for Linux, above; except that capture functionality will be enabled, by default.
 
-In the current implementation, Qt's event loop in ```display``` is spun manually, relying on the capture hardware to set the pacing of screen updates for drawing new frames. I use VCS in a virtual machine (KVM; Windows guest, Linux host), so can't say whether notable screen-tearing or jerkiness is introduced by this process under Windows-native operation. It seems to work well enough under a VM. In cases where it doesn't, you may want to look into letting Qt spin its own loop, or implement some other way of syncing screen updates with the refresh rate&mdash;like displaying the frames on a QOpenGLWidget surface that's set to block for vsync.
+While developing VCS, I've been compiling it with GCC 5.4 on Linux and MinGW 5.3 on Windows, and my Qt has been version 5.5 on Linux and 5.7 on Windows. If you're building VCS, sticking with these tools should guarantee the least number of compatibility issues.
 
-![A screenshot of VCS](http://tarpeeksihyvaesoft.com/soft/img/vcs_a.png)
+### Dependencies
+**Qt.** VCS uses [Qt](https://www.qt.io/) for its GUI and certain other functionality. Qt of version 5.5 or newer should satisfy VCS's requirements.
+- Non-GUI code in VCS interacts with the Qt GUI through a wrapper ([src/qt/d_main.cpp](src/qt/d_main.cpp)). In theory, if you wanted to use a GUI framework other than Qt, you could do so by editing the wrapper, and implementing responses to its functions in your other framework. However, there is also some Qt bleed into non-GUI areas, e.g. as use of the QString class across much of the codebase.
+
+**OpenCV.** VCS makes use of the [OpenCV](https://opencv.org/) library for image filtering and scaling. The binary distribution of VCS for Windows includes DLLs for OpenCV 3.2.0 that are compatible with MinGW 5.3.
+- The dependency on OpenCV can be broken by undefining `USE_OPENCV` in [vcs.pro](vcs.pro). If undefined, most forms of image filtering and scaling will be unavailable.
+
+**RGBEasy.** VCS uses Datapath's RGBEasy API to interface with the capture hardware. The drivers for your Datapath capture card should include and have installed the required libraries.
+- The dependency on RGBEasy can be broken by undefining `USE_RGBEASY_API` in [vcs.pro](vcs.pro). If undefined, VCS will not attempt to interact with the capture hardware in any way.
+
+# Code organization
+**Modules.** The following table lists the four main modules of VCS:
+
+| Module  | Source                             | Responsibility                        |
+| ------- | ---------------------------------- | ------------------------------------- |
+| Capture | [src/capture.cpp](src/capture.cpp) | Interaction with the capture hardware |
+| Scaler  | [src/scaler.cpp](src/scaler.cpp)   | Image scaling                         |
+| Filter  | [src/filter.cpp](src/filter.cpp)   | Image filtering                       |
+| Display | [src/qt/*](src/qt/)                | Graphical user interface              |
+
+**Main loop and program flow.** VCS has been written in a procedural style. As such, you can easily identify &ndash; and follow &ndash; the program's main loop, which is located in `main()` in [src/main.cpp](src/main.cpp).
+
+- The main loop first asks the `Capture` module to poll for any new capture events, like a new captured frame.
+- Once a new frame has been received, it is directed into the `Filter` module for any pre-scaling filtering.
+- The filtered frame will then be passed to the `Scaler` module, where it's scaled to match the user-specified output size.
+- The scaled frame will be fed into the `Filter` module again for any post-scaling filtering.
+- Finally, the frame is sent to the `Display` module for displaying on screen.
+
+**Qt's event loop.** The loop in which Qt processes GUI-related events is spun manually (by `update_gui_state()` in [src/qt/d_window.cpp](src/qt/d_window.cpp)) each time a new frame has been received from the capture hardware. This is done to match the rate of screen updates on the output to that of the input capture source.
+
+In theory, spinning the Qt event loop by hand could create some issues. On the one hand, I've not yet seen any; but on the other hand, I use VCS through a virtual machine, and may simply be oblivious to issues that arise when run natively but not via a VM. If you do encounter issues like screen tearing or laggy GUI operation, and know that they're not present in the captured frames themselves, you may want to look into alternate ways to spin Qt's event loop. One way is to draw the frames onto a QOpenGLWidget surface you've set to block for v-sync.
+
+# Authors and credits
+The primary author of VCS is the one-man Tarpeeksi Hyvae Soft (see on [GitHub](https://github.com/leikareipa) and the [Web](http://www.tarpeeksihyvaesoft.com)).
+
+VCS uses [Qt](https://www.qt.io/) for its UI, [OpenCV](https://opencv.org/) for image filtering, and [Datapath](https://www.datapath.co.uk/)'s RGBEasy API for interfacing with the capture hardware.
