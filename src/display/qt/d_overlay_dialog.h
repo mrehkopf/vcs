@@ -11,7 +11,6 @@
 
 class QMenu;
 class MainWindow;
-class QSignalMapper;
 
 namespace Ui {
 class OverlayDialog;
@@ -39,8 +38,8 @@ private slots:
     void on_groupBox_overlay_toggled(bool);
 
 private:
-    void add_menu_item(QMenu *const menu, QSignalMapper *const sm, const QString &menuText,
-                     const QString &outText);
+    void add_menu_item(QMenu *const menu, const QString &menuText,
+                       const QString &outText);
 
     void make_button_menus();
 

@@ -7,7 +7,6 @@
  *
  */
 
-#include <QSignalMapper>
 #include <QCloseEvent>
 #include <QMessageBox>
 #include <QFileDialog>
@@ -430,8 +429,6 @@ void ControlPanel::clear_known_modes()
 //
 void ControlPanel::connect_input_resolution_buttons()
 {
-    QSignalMapper *sm = new QSignalMapper(this);
-
     for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)
     {
         QWidget *const w = ui->frame_inputForceButtons->layout()->itemAt(i)->widget();
@@ -448,11 +445,9 @@ void ControlPanel::connect_input_resolution_buttons()
             ((QPushButton*)w)->setText(kpers_value_of(QString("butt_%1").arg(i), INI_GROUP_FORCE_INPUT_BUTTONS).toString());
         }
 
-        connect(w, SIGNAL(clicked()), sm, SLOT(map()));
-        sm->setMapping(w, w);
+        connect((QPushButton*)w, &QPushButton::clicked,
+                           this, [this,w]{this->parse_input_resolution_button_press(w);});
     }
-
-    connect(sm, SIGNAL(mapped(QWidget*)), this, SLOT(parse_input_resolution_button_press(QWidget*)));
 
     return;
 }

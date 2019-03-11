@@ -8,7 +8,6 @@
  */
 
 #include <QPlainTextEdit>
-#include <QSignalMapper>
 #include <QFileDialog>
 #include <QDateTime>
 #include <QDebug>
@@ -93,14 +92,13 @@ void OverlayDialog::insert_text_into_overlay(const QString &t)
 // is triggered, the string in outText is emitted into the overlay.
 //
 void OverlayDialog::add_menu_item(QMenu *const menu,
-                                  QSignalMapper *const sMapper,
                                   const QString &menuText,
                                   const QString &outText)
 {
     QAction *const action = menu->addAction(menuText);
 
-    connect(action, SIGNAL(triggered()), sMapper, SLOT(map()));
-    sMapper->setMapping(action, outText);
+    connect(action, &QAction::triggered,
+              this, [this,outText]{this->insert_text_into_overlay(outText);});
 
     return;
 }
@@ -110,46 +108,41 @@ void OverlayDialog::add_menu_item(QMenu *const menu,
 //
 void OverlayDialog::make_button_menus()
 {
-    QSignalMapper *sm = new QSignalMapper(this);
-
     QMenu *resolution = new QMenu(this);
-    add_menu_item(resolution, sm, "Input", "|inRes|");
-    add_menu_item(resolution, sm, "Output", "|outRes|");
+    add_menu_item(resolution, "Input", "|inRes|");
+    add_menu_item(resolution, "Output", "|outRes|");
     ui->pushButton_resolution->setMenu(resolution);
 
     QMenu *latency = new QMenu(this);
-    add_menu_item(latency, sm, "Peak (ms)", "|msLatP|");
-    add_menu_item(latency, sm, "Average (ms)", "|msLatA|");
+    add_menu_item(latency, "Peak (ms)", "|msLatP|");
+    add_menu_item(latency, "Average (ms)", "|msLatA|");
     latency->addSeparator();
-    add_menu_item(latency, sm, "Dropping frames?", "|strLat|");
+    add_menu_item(latency, "Dropping frames?", "|strLat|");
     ui->pushButton_latency->setMenu(latency);
 
     QMenu *system = new QMenu(this);
-    add_menu_item(system, sm, "Time", "|sysTime|");
-    add_menu_item(system, sm, "Date", "|sysDate|");
+    add_menu_item(system, "Time", "|sysTime|");
+    add_menu_item(system, "Date", "|sysDate|");
     ui->pushButton_system->setMenu(system);
 
     QMenu *refresh = new QMenu(this);
-    add_menu_item(refresh, sm, "Input (Hz)", "|inHz|");
-    add_menu_item(refresh, sm, "Output (FPS)", "|outFPS|");
+    add_menu_item(refresh, "Input (Hz)", "|inHz|");
+    add_menu_item(refresh, "Output (FPS)", "|outFPS|");
     ui->pushButton_refresh->setMenu(refresh);
 
     QMenu *formatting = new QMenu(this);
-    add_menu_item(formatting, sm, "Bullet", "&bull;");
-    add_menu_item(formatting, sm, "Line break", "<br>\n");
-    add_menu_item(formatting, sm, "Force space", "&nbsp;");
+    add_menu_item(formatting, "Bullet", "&bull;");
+    add_menu_item(formatting, "Line break", "<br>\n");
+    add_menu_item(formatting, "Force space", "&nbsp;");
     formatting->addSeparator();
-    add_menu_item(formatting, sm, "Bold", "<b></b>");
-    add_menu_item(formatting, sm, "Italic", "<i></i>");
-    add_menu_item(formatting, sm, "Underline", "<u></u>");
+    add_menu_item(formatting, "Bold", "<b></b>");
+    add_menu_item(formatting, "Italic", "<i></i>");
+    add_menu_item(formatting, "Underline", "<u></u>");
     formatting->addSeparator();
-    add_menu_item(formatting, sm, "Align right", "<div align=\"right\">Right</div>");
+    add_menu_item(formatting, "Align right", "<div align=\"right\">Right</div>");
     formatting->addSeparator();
     formatting->addAction("Image...", this, SLOT(add_image_to_overlay()));
     ui->pushButton_htmlFormat->setMenu(formatting);
-
-    // When a menu item is triggered, the given slot will be called.
-    connect(sm, SIGNAL(mapped(QString)), this, SLOT(insert_text_into_overlay(QString)));
 
     return;
 }
