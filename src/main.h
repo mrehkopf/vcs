@@ -7,7 +7,7 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
-#include "display.h"
+#include "display/display.h"
 
 void kmain_change_capture_input_resolution(const resolution_s r);
 

@@ -56,73 +56,73 @@ OBJECTS_DIR = generated_files
 MOC_DIR = generated_files
 UI_DIR = generated_files
 
-INCLUDEPATH += $$PWD/src/qt
+INCLUDEPATH += $$PWD/src/display/qt/
 
 SOURCES += \
-    src/qt/d_window.cpp \
-    src/qt/d_resolution_dialog.cpp \
-    src/qt/d_main.cpp \
-    src/qt/d_control_panel.cpp \
-    src/qt/d_video_and_color_dialog.cpp \
-    src/qt/d_overlay_dialog.cpp \
-    src/qt/d_alias_dialog.cpp \
-    src/qt/d_anti_tear_dialog.cpp \
-    src/scaler.cpp \
+    src/display/qt/d_window.cpp \
+    src/display/qt/d_resolution_dialog.cpp \
+    src/display/qt/d_main.cpp \
+    src/display/qt/d_control_panel.cpp \
+    src/display/qt/d_video_and_color_dialog.cpp \
+    src/display/qt/d_overlay_dialog.cpp \
+    src/display/qt/d_alias_dialog.cpp \
+    src/display/qt/d_anti_tear_dialog.cpp \
+    src/scaler/scaler.cpp \
     src/main.cpp \
-    src/log.cpp \
-    src/filter.cpp \
-    src/command_line.cpp \
-    src/capture.cpp \
-    src/anti_tear.cpp \
-    src/persistent_settings.cpp \
+    src/log/log.cpp \
+    src/filter/filter.cpp \
+    src/common/command_line.cpp \
+    src/capture/capture.cpp \
+    src/filter/anti_tear.cpp \
+    src/persistent_settings/persistent_settings.cpp \
     src/tests/test_scaling.cpp \
-    src/memory.cpp \
-    src/qt/w_opengl.cpp \
-    src/qt/d_filter_set_dialog.cpp \
-    src/qt/dw_filter_list.cpp \
-    src/qt/d_filter_sets_list_dialog.cpp
+    src/memory/memory.cpp \
+    src/display/qt/w_opengl.cpp \
+    src/display/qt/d_filter_set_dialog.cpp \
+    src/display/qt/dw_filter_list.cpp \
+    src/display/qt/d_filter_sets_list_dialog.cpp
 
 HEADERS += \
-    src/common.h \
-    src/null_rgbeasy.h \
-    src/types.h \
-    src/qt/d_window.h \
-    src/qt/d_resolution_dialog.h \
-    src/scaler.h \
-    src/capture.h \
-    src/display.h \
+    src/common/common.h \
+    src/capture/null_rgbeasy.h \
+    src/common/types.h \
+    src/display/qt/d_window.h \
+    src/display/qt/d_resolution_dialog.h \
+    src/scaler/scaler.h \
+    src/capture/capture.h \
+    src/display/display.h \
     src/main.h \
-    src/qt/d_control_panel.h \
-    src/log.h \
-    src/qt/d_video_and_color_dialog.h \
-    src/qt/d_overlay_dialog.h \
-    src/qt/d_alias_dialog.h \
-    src/anti_tear.h \
-    src/qt/d_anti_tear_dialog.h \
-    src/filter.h \
-    src/command_line.h \
-    src/qt/df_filters.h \
+    src/display/qt/d_control_panel.h \
+    src/log/log.h \
+    src/display/qt/d_video_and_color_dialog.h \
+    src/display/qt/d_overlay_dialog.h \
+    src/display/qt/d_alias_dialog.h \
+    src/filter/anti_tear.h \
+    src/display/qt/d_anti_tear_dialog.h \
+    src/filter/filter.h \
+    src/common/command_line.h \
+    src/display/qt/df_filters.h \
     src/tests/test_scaling.h \
-    src/persistent_settings.h \
-    src/qt/d_util.h \
-    src/csv.h \
-    src/memory.h \
-    src/memory_interface.h \
-    src/qt/w_opengl.h \
-    src/qt/d_filter_set_dialog.h \
-    src/qt/dw_filter_list.h \
-    src/qt/d_filter_sets_list_dialog.h
+    src/persistent_settings/persistent_settings.h \
+    src/display/qt/d_util.h \
+    src/common/csv.h \
+    src/memory/memory.h \
+    src/memory/memory_interface.h \
+    src/display/qt/w_opengl.h \
+    src/display/qt/d_filter_set_dialog.h \
+    src/display/qt/dw_filter_list.h \
+    src/display/qt/d_filter_sets_list_dialog.h
 
 FORMS += \
-    src/qt/d_control_panel.ui \
-    src/qt/d_window.ui \
-    src/qt/d_video_and_color_dialog.ui \
-    src/qt/d_overlay_dialog.ui \
-    src/qt/d_resolution_dialog.ui \
-    src/qt/d_alias_dialog.ui \
-    src/qt/d_anti_tear_dialog.ui \
-    src/qt/d_filter_set_dialog.ui \
-    src/qt/d_filter_sets_list_dialog.ui
+    src/display/qt/d_control_panel.ui \
+    src/display/qt/d_window.ui \
+    src/display/qt/d_video_and_color_dialog.ui \
+    src/display/qt/d_overlay_dialog.ui \
+    src/display/qt/d_resolution_dialog.ui \
+    src/display/qt/d_alias_dialog.ui \
+    src/display/qt/d_anti_tear_dialog.ui \
+    src/display/qt/d_filter_set_dialog.ui \
+    src/display/qt/d_filter_sets_list_dialog.ui
 
 # C++. For GCC/Clang/MinGW.
 QMAKE_CXXFLAGS += -g

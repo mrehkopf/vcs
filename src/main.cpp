@@ -7,15 +7,15 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
-#include "command_line.h"
-#include "qt/d_window.h"
-#include "anti_tear.h"
-#include "capture.h"
-#include "display.h"
+#include "common/command_line.h"
+#include "display/qt/d_window.h"
+#include "filter/anti_tear.h"
+#include "capture/capture.h"
+#include "display/display.h"
 #include "memory.h"
-#include "scaler.h"
-#include "common.h"
-#include "filter.h"
+#include "scaler/scaler.h"
+#include "common/common.h"
+#include "filter/filter.h"
 #include "main.h"
 
 // Set to !0 when we want to exit the program.

@@ -7,10 +7,10 @@
  */
 
 #include "test_scaling.h"
-#include "../capture.h"
-#include "../common.h"
-#include "../scaler.h"
-#include "../filter.h"
+#include "../capture/capture.h"
+#include "../scaler/scaler.h"
+#include "../filter/filter.h"
+#include "../common/common.h"
 
 static const char ASPECT_TO_TEST[] = "Scaling";
 

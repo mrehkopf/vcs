@@ -53,10 +53,10 @@ While developing VCS, I've been compiling it with GCC 5.4 on Linux and MinGW 5.3
 
 | Module  | Source                             | Responsibility                        |
 | ------- | ---------------------------------- | ------------------------------------- |
-| Capture | [src/capture.cpp](src/capture.cpp) | Interaction with the capture hardware |
-| Scaler  | [src/scaler.cpp](src/scaler.cpp)   | Image scaling                         |
-| Filter  | [src/filter.cpp](src/filter.cpp)   | Image filtering                       |
-| Display | [src/qt/*](src/qt/)                | Graphical user interface              |
+| Capture | [src/capture/](src/capture/)       | Interaction with the capture hardware |
+| Scaler  | [src/scaler/](src/scaler/)         | Image scaling                         |
+| Filter  | [src/filter/](src/filter/)         | Image filtering                       |
+| Display | [src/display/qt/](src/display/qt/) | Graphical user interface              |
 
 **Main loop and program flow.** VCS has been written in a procedural style. As such, you can easily identify &ndash; and follow &ndash; the program's main loop, which is located in `main()` in [src/main.cpp](src/main.cpp).
 
