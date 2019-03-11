@@ -1,21 +1,29 @@
-# Do a full rebuild if you modify these.
-DEFINES += USE_OPENCV               # Comment out to disable OpenCV. You'll have no filtering or scaler, but you also don't need to provide the dependencies.
-#DEFINES += USE_OPENGL               # Use OpenGL instead of QImage for drawing frames on screen. Not guaranteed to work, as I have limited means to test it.
-DEFINES += USE_RGBEASY_API          # Comment out to disable capture functionality. Useful for testing the program where a capture card isn't present.
-DEFINES += QT_NO_DEBUG_OUTPUT
-DEFINES += VCS_ON_QT
-#DEFINES += ENFORCE_OPTIONAL_ASSERTS # Enable non-critical asserts. May perform slower, but will e.g. look to guard against buffer overflow in memory access.
-#DEFINES += VALIDATION_RUN          # Run diagnostic tests.
+# Comment out to disable OpenCV. You'll have no filtering or scaler, but you also don't need to provide the dependencies.
+DEFINES += USE_OPENCV
 
-# For now, disable the RGBEASY API for validating, just to simplify things. Once the
-# validatiom system is a bit better fleshed out, this should not be needed.
+# Use OpenGL instead of QImage for drawing frames on screen. Not guaranteed to work, as I have limited means to test it.
+#DEFINES += USE_OPENGL
+
+# Comment out to disable capture functionality. Useful for testing the program where a capture card isn't present.
+DEFINES += USE_RGBEASY_API
+
+# Enable non-critical asserts. May perform slower, but will e.g. look to guard against buffer overflow in memory access.
+#DEFINES += ENFORCE_OPTIONAL_ASSERTS
+
+# Run diagnostic tests.
+#DEFINES += VALIDATION_RUN
+
+# For now, disable the RGBEASY API while doing a validation run, to simplify things.
+# Once the validatiom system is a bit better fleshed out, this should not be needed.
 contains(DEFINES, VALIDATION_RUN) {
     DEFINES -= USE_RGBEASY_API
 }
 
 # Specific configurations for the current platform.
 linux {
-    DEFINES -= USE_RGBEASY_API  # By default, the RGBEASY API isn't available on Linux (not with my capture card, anyway).
+    # I can't test capture functionality under Linux (my card doesn't support it),
+    # so I'll have to disable it, by default.
+    DEFINES -= USE_RGBEASY_API
 
     # OpenCV.
     contains(DEFINES, USE_OPENCV) {
@@ -37,7 +45,7 @@ win32 {
     }
 }
 
-QT       += core gui
+QT += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = vcs
