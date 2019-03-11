@@ -54,8 +54,8 @@ While developing VCS, I've been compiling it with GCC 5.4 on Linux and MinGW 5.3
 | Module  | Source                             | Responsibility                        |
 | ------- | ---------------------------------- | ------------------------------------- |
 | Capture | [src/capture/](src/capture/)       | Interaction with the capture hardware |
-| Scaler  | [src/scaler/](src/scaler/)         | Image scaling                         |
-| Filter  | [src/filter/](src/filter/)         | Image filtering                       |
+| Scaler  | [src/scaler/](src/scaler/)         | Frame scaling                         |
+| Filter  | [src/filter/](src/filter/)         | Frame filtering                       |
 | Display | [src/display/qt/](src/display/qt/) | Graphical user interface              |
 
 **Main loop and program flow.** VCS has been written in a procedural style. As such, you can easily identify &ndash; and follow &ndash; the program's main loop, which is located in `main()` in [src/main.cpp](src/main.cpp).
@@ -69,6 +69,11 @@ While developing VCS, I've been compiling it with GCC 5.4 on Linux and MinGW 5.3
 **Qt's event loop.** The loop in which Qt processes GUI-related events is spun manually (by `update_gui_state()` in [src/display/qt/d_window.cpp](src/display/qt/d_window.cpp)) each time a new frame has been received from the capture hardware. This is done to match the rate of screen updates on the output to that of the input capture source.
 
 In theory, spinning the Qt event loop by hand could create some issues. On the one hand, I've not yet seen any; but on the other hand, I use VCS through a virtual machine, and may simply be oblivious to issues that arise when run natively but not via a VM. If you do encounter issues like screen tearing or laggy GUI operation, and know that they're not present in the captured frames themselves, you may want to look into alternate ways to spin Qt's event loop. One way is to draw the frames onto a QOpenGLWidget surface you've set to block for v-sync.
+
+# A word about VCS's GUI
+I run my capture card, the VisionRGB-PRO2, through a virtual machine, since it doesn't support the Linux I'm on, natively. I find that a Windows XP guest works best, performance-wise, so I use that.
+
+This means that the styling of the VCS GUI is tweaked for Windows XP, and as a result looks somewhat old-fashioned and disjoint on newer versions of Windows. I'm aware of this, but unfortunately, it can't be helped in the current circumstance.
 
 # Authors and credits
 The primary author of VCS is the one-man Tarpeeksi Hyvae Soft (see on [GitHub](https://github.com/leikareipa) and the [Web](http://www.tarpeeksihyvaesoft.com)).
