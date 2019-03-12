@@ -111,8 +111,28 @@ _Coming_
 ## Anti-tearing
 _Coming_
 
-## Keyboard and mouse shortcuts
-_Coming_
+## Mouse and keyboard shortcuts
+You can make use of the following mouse and keyboard shortcuts:
+```
+Double-click
+VCS's output window     Toggle window border on/off.
+
+Middle-click
+output window           Open the overlay editor.
+
+Left-press and drag
+output window           Move the window (same as dragging by its title bar).
+
+Right-press
+output window           Magnify this portion of the output window.
+
+Mouse wheel
+output window           Scale the output window up/down.
+
+F1                      Force capture's input resolution to 640 x 400.
+
+F2                      Force capture's input resolution to 720 x 400.
+```
 
 ## Command-line
 Optionally, you can pass one or more of following command-line arguments to VCS:
