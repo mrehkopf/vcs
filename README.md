@@ -109,47 +109,77 @@ The `About` tab provides information about VCS, like its current version. It als
 _Coming_
 
 ## Anti-tearing
-_Coming_
+Under some circumstances, like when capturing DOS games, you may find that the captured frames contain tearing artefacts. This is most likely caused by the capture hardware having sampled an incompletely drawn frame from the source signal &ndash; for instance, due to the source not syncing its rendering to its refresh rate. A tear, then, results as the visible edge between the incompletely drawn new frame, and the still partially visible previous frame.
+
+VCS comes with some facilities for reducing tearing artefacts. You can enable anti-tearing from the control panel's `Output` tab, by marking the `Anti-tear` check-box.
+
+![](images/screenshots/v1.2.6/control-panel-output.png)
+
+Anti-tearing in VCS works by accumulating the incoming frame data from the capture hardware into an off-screen frame buffer, and displaying the buffer's contents in the output window only once all of the frame's data has been accumulated.
+
+Noise inherent in analog capture causes some uncertainty, however, about which parts of an incoming frame are the new data to be accumulated, and which parts differ from the previous frame only due to irrelevant noise.
+
+The accuracy with which the anti-tearing system can tell apart noise from legit changes between frames has a strong impact on the extent to which the system can remove tears. Currently, the system attempts this by sliding a horizontal sampling window along two adjacent frames' pixels, and comparing the sums of the pixel values within that window. If the sums differ by more than a given threshold, the entire row of pixels is condered new and accumulated into the frame buffer.
+
+You can view and adjust the relevant parameters of this operation by clicking the `Settings...` button next to the `Anti-tear` check-box on the control panel's `Output` tab. Depending on what you're capturing, you may find that the default values work well enough; but in other cases, you may have better results by trying different values.
+
+![](images/screenshots/v1.2.6/anti-tear-dialog.png)
+
+**Range offsets.** Set the vertical range inside which the anti-tearing accumulates frame data. Static content, like a game's UI bars at the top or bottom of the screen, can completely throw off the system, and need to be excluded from consideration. The anti-tearing will ignore the first _up_ pixel rows and the last _down_ pixel rows in each frame. You can enable `Visualization` to see the values of _up_ and _down_ as corresponding vertical lines in the output window, allowing you to more easily align them with the content.
+
+**Visualization.** Draw certain anti-tearing-related markers in the output window.
+
+**Threshold.** Set the maximum amount by which pixel color values are allowed to change between two frames without being considered new data. The less noise there is in the capture, the lower you can set this value; and vice versa.
+
+**Domain width.** Set the size of the sampling window. A lower value reduces CPU usage, but may be less able to detect subtle tearing.
+
+**Step size.** Set the number of pixels by which to slide the sampling window at a time. A higher value reduces CPU usage, but may be less able to detect tearing.
+
+**Matches req'd.** Set how many times on a row of pixels the sums of the sampling window need to exceed the threshold for that row of pixels to be considered new data.
+
+**Update direction.** _n/a_
+
+In general, anti-tearing is an experimental feature in VCS. It works quite well in many cases, but can fail in others, and may be a performance hog unless you have a fast CPU.
 
 ## Mouse and keyboard shortcuts
 You can make use of the following mouse and keyboard shortcuts:
 ```
 Double-click
-VCS's output window     Toggle window border on/off.
+VCS's output window .... Toggle window border on/off.
 
 Middle-click
-output window           Open the overlay editor.
+output window .......... Open the overlay editor.
 
 Left-press and drag
-output window           Move the window (same as dragging by its title bar).
+output window .......... Move the window (same as dragging by its title bar).
 
 Right-press
-output window           Magnify this portion of the output window.
+output window .......... Magnify this portion of the output window.
 
 Mouse wheel
-output window           Scale the output window up/down.
+output window .......... Scale the output window up/down.
 
-F1                      Force capture's input resolution to 640 x 400.
+F1 ..................... Force capture's input resolution to 640 x 400.
 
-F2                      Force capture's input resolution to 720 x 400.
+F2 ..................... Force capture's input resolution to 720 x 400.
 ```
 
 ## Command-line
 Optionally, you can pass one or more of following command-line arguments to VCS:
 ```
--m <path + filename>    Load capture parameters from the given file on start-
-                        up. Capture parameter files typically have the .vcsm
-                        suffix.
+-m <path + filename> ... Load capture parameters from the given file on start-
+                         up. Capture parameter files typically have the .vcsm
+                         suffix.
 
--f <path + filename>    Load custom filter sets from the given file on start-
-                        up. Filter set files typically have the .vcsf suffix.
+-f <path + filename> ... Load custom filter sets from the given file on start-
+                         up. Filter set files typically have the .vcsf suffix.
 
--a <path + filename>    Load alias resolutions from the given file on start-
-                        up. Alias resolution files typically have the .vcsa
-                        suffix.
+-a <path + filename> ... Load alias resolutions from the given file on start-
+                         up. Alias resolution files typically have the .vcsa
+                         suffix.
 
--i <input channel>      Start capture on the given input channel (1...n). By
-                        default, channel #1 will be used.
+-i <input channel> ..... Start capture on the given input channel (1...n). By
+                         default, channel #1 will be used.
 ```
 
 For instance, if you had capture parameters stored in the file `params.vcsm`, and you wanted capture to start on input channel #2 when you run VCS, you might launch VCS like so:
