@@ -10,7 +10,7 @@
 #include "d_resolution_dialog.h"
 #include "../display.h"
 #include "../../capture/capture.h"
-#include "../../common/common.h"
+#include "../../common/globals.h"
 
 static resolution_s *RESOLUTION;
 

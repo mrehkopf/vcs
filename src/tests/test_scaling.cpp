@@ -10,7 +10,7 @@
 #include "../capture/capture.h"
 #include "../scaler/scaler.h"
 #include "../filter/filter.h"
-#include "../common/common.h"
+#include "../common/globals.h"
 
 static const char ASPECT_TO_TEST[] = "Scaling";
 

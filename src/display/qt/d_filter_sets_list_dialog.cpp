@@ -21,7 +21,7 @@
 #include "../../common/command_line.h"
 #include "../../display/qt/d_util.h"
 #include "../../capture/capture.h"
-#include "../../common/common.h"
+#include "../../common/globals.h"
 #include "../../filter/filter.h"
 #include "../../scaler/scaler.h"
 #include "../../common/csv.h"

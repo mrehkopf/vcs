@@ -13,7 +13,7 @@
 #include "../../common/persistent_settings.h"
 #include "../../display/qt/df_filters.h"
 #include "../../display/qt/d_util.h"
-#include "../../common/common.h"
+#include "../../common/globals.h"
 #include "../../scaler/scaler.h"
 #include "../../common/memory.h"
 #include "ui_d_filter_set_dialog.h"

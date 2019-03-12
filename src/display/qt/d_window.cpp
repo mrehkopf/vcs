@@ -24,7 +24,7 @@
 #include "d_control_panel.h"
 #include "ui_d_window.h"
 #include "../../capture/capture.h"
-#include "../../common/common.h"
+#include "../../common/globals.h"
 #include "../../scaler/scaler.h"
 #include "d_window.h"
 #include "w_opengl.h"

@@ -7,7 +7,7 @@
 #ifndef HEAP_MEM_H
 #define HEAP_MEM_H
 
-#include "../common/common.h"
+#include "../common/globals.h"
 #include "../common/memory.h"
 #include "../common/types.h"
 

@@ -12,7 +12,7 @@
 #include <mutex>
 #include "../common/command_line.h"
 #include "../display/display.h"
-#include "../common/common.h"
+#include "../common/globals.h"
 #include "../main.h"
 #include "../common/csv.h"
 #include "capture.h"

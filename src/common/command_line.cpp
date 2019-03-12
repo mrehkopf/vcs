@@ -7,7 +7,7 @@
 #include <QString>
 #include <string>
 #include <unistd.h>
-#include "../common/common.h"
+#include "../common/globals.h"
 #include "../main.h"
 
 /*

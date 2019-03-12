@@ -25,7 +25,7 @@
 #include "../../filter/anti_tear.h"
 #include "../../capture/capture.h"
 #include "../../filter/filter.h"
-#include "../../common/common.h"
+#include "../../common/globals.h"
 #include "../../main.h"
 #include "../../common/log.h"
 #include "../display.h"

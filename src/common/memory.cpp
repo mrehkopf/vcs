@@ -14,7 +14,7 @@
 #include <thread>
 #include "memory_interface.h"
 #include "memory.h"
-#include "../common/common.h"
+#include "../common/globals.h"
 
 /*
  * TODOS:

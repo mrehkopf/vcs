@@ -11,7 +11,7 @@
 #include <QOpenGLWidget>
 #include <QMatrix4x4>
 #include "../../scaler/scaler.h"
-#include "../../common/common.h"
+#include "../../common/globals.h"
 #include "w_opengl.h"
 
 GLuint FRAMEBUFFER_TEXTURE;

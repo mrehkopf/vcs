@@ -13,7 +13,7 @@
 #ifndef NULL_RGBEASY_H
 #define NULL_RGBEASY_H
 
-#include "../common/common.h"
+#include "../common/globals.h"
 
 #define NULL_RGBEASY_FUNCTION(fn_name)      DEBUG_(("Function called: %s.", fn_name))
 #define NULL_RGBEASY_CONSTANT               -1

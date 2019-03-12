@@ -8,7 +8,7 @@
 #define FILTER_H_
 
 #include "../display/display.h"
-#include "../common/common.h"
+#include "../common/globals.h"
 
 struct scaling_filter_s;
 struct filter_dlg_s;

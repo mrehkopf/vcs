@@ -7,7 +7,7 @@
 #ifndef ANTI_TEAR_H
 #define ANTI_TEAR_H
 
-#include "../common/common.h"
+#include "../common/globals.h"
 
 struct captured_frame_s;
 struct resolution_s;

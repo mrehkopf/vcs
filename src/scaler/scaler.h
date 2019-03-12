@@ -7,7 +7,7 @@
 #ifndef SCALER_H
 #define SCALER_H
 
-#include "../common/common.h"
+#include "../common/globals.h"
 
 class QImage;
 

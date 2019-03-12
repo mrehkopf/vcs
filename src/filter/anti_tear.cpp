@@ -10,7 +10,7 @@
 
 #include "../display/display.h"
 #include "../capture/capture.h"
-#include "../common/common.h"
+#include "../common/globals.h"
 #include "../common/memory.h"
 #include "../common/csv.h"
 #include "anti_tear.h"

@@ -83,7 +83,7 @@ SOURCES += \
     src/display/qt/d_filter_sets_list_dialog.cpp
 
 HEADERS += \
-    src/common/common.h \
+    src/common/globals.h \
     src/capture/null_rgbeasy.h \
     src/common/types.h \
     src/display/qt/d_window.h \

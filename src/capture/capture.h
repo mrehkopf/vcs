@@ -13,7 +13,7 @@
 #include "../display/display.h"
 #include "../scaler/scaler.h"
 #include "../common/memory.h"
-#include "../common/common.h"
+#include "../common/globals.h"
 #include "../common/types.h"
 
 #if USE_RGBEASY_API

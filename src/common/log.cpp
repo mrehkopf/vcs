@@ -11,7 +11,7 @@
 #include <deque>
 #include <stdarg.h>
 #include "../display/display.h"
-#include "../common/common.h"
+#include "../common/globals.h"
 #include "log.h"
 
 // Set to false to ignore any log events submitted.

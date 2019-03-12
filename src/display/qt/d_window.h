@@ -9,7 +9,7 @@
 
 #include <QMainWindow>
 #include "../display.h"
-#include "../../common/common.h"
+#include "../../common/globals.h"
 
 class OverlayDialog;
 class ControlPanel;

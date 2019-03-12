@@ -16,7 +16,7 @@
 #include "d_anti_tear_dialog.h"
 #include "../../filter/anti_tear.h"
 #include "../display.h"
-#include "../../common/common.h"
+#include "../../common/globals.h"
 #include "../../common/csv.h"
 
 AntiTearDialog::AntiTearDialog(QWidget *parent) :

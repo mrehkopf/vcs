@@ -13,7 +13,7 @@
 #include "../display/qt/df_filters.h"
 #include "../display/display.h"
 #include "../capture/capture.h"
-#include "../common/common.h"
+#include "../common/globals.h"
 #include "filter.h"
 
 #ifdef USE_OPENCV

@@ -14,7 +14,7 @@
 #include "display/display.h"
 #include "memory.h"
 #include "scaler/scaler.h"
-#include "common/common.h"
+#include "common/globals.h"
 #include "filter/filter.h"
 #include "main.h"
 

@@ -14,7 +14,7 @@
 #include "../capture/capture.h"
 #include "../display/display.h"
 #include "../common/memory.h"
-#include "../common/common.h"
+#include "../common/globals.h"
 #include "../filter/filter.h"
 #include "scaler.h"
 

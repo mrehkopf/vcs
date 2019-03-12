@@ -11,7 +11,7 @@
 #define CSV_PARSE_H
 
 #include <QFile>
-#include "common.h"
+#include "globals.h"
 
 class csv_parse_c
 {
