@@ -111,11 +111,31 @@ _Coming_
 ## Anti-tearing
 _Coming_
 
-## Command line
-_Coming_
-
 ## Keyboard and mouse shortcuts
 _Coming_
+
+## Command-line
+Optionally, you can pass one or more of following command-line arguments to VCS:
+```
+-m <path + filename>    Load capture parameters from the given file on start-
+                        up. Capture parameter files typically have the .vcsm
+                        suffix.
+
+-f <path + filename>    Load custom filter sets from the given file on start-
+                        up. Filter set files typically have the .vcsf suffix.
+
+-a <path + filename>    Load alias resolutions from the given file on start-
+                        up. Alias resolution files typically have the .vcsa
+                        suffix.
+
+-i <input channel>      Start capture on the given input channel (1...n). By
+                        default, channel #1 will be used.
+```
+
+For instance, if you had capture parameters stored in the file `params.vcsm`, and you wanted capture to start on input channel #2 when you run VCS, you might launch VCS like so:
+```
+vcs.exe -m "params.vcsm" -i 2
+```
 
 # Building
 **On Linux:** Do `qmake && make` at the repo's root, or open [vcs.pro](vcs.pro) in Qt Creator. **Note:** By default, VCS's capture functionality is disabled on Linux, unless you edit [vcs.pro](vcs.pro) to remove `DEFINES -= USE_RGBEASY_API` from the Linux-specific build options. I don't have a Linux-compatible capture card, so I'm not able to test capturing with VCS natively in Linux, which is why this functionality is disabled by default.
