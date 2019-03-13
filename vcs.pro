@@ -93,7 +93,7 @@ HEADERS += \
     src/display/display.h \
     src/main.h \
     src/display/qt/d_control_panel.h \
-    src/log/log.h \
+    src/common/log.h \
     src/display/qt/d_video_and_color_dialog.h \
     src/display/qt/d_overlay_dialog.h \
     src/display/qt/d_alias_dialog.h \

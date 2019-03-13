@@ -1,18 +1,21 @@
 # VCS
 A third-party capture tool for Datapath's VisionRGB range of capture cards. Greatly improves the hardware's suitability for dynamic VGA capture (e.g. of retro PCs) compared to Datapath's own capture software. Is free and open-source.
 
-You can get a binary distribution of the VCS code on [Tarpeeksi Hyvae Soft's website](http://tarpeeksihyvaesoft.com/soft/).
+VCS interfaces with compatible capture hardware to display the capture output in a window on your desktop. Additionally, you can apply filters, scalers, anti-tearing, and various other adjustments to the output before it's displayed. A more complete list of VCS's features is given, below.
+
+You can find a binary distribution of VCS on [Tarpeeksi Hyvae Soft's website](http://tarpeeksihyvaesoft.com/soft/).
 
 ### Features
-- Anti-tearing, to reduce screen-tearing in analog capture
+- Anti-tearing to reduce screen-tearing in analog capture
 - On-the-fly filtering: blur, crop, flip, decimate, rotate, sharpen...
 - Multiple scalers: nearest, linear, area, cubic, and Lanczos
-- Temporal image denoising, to smooth out analog capture noise
-- Output padding, to maintain a constant output resolution
-- Count of unique frames per second &ndash; an FPS counter for DOS games!
 - Per-resolution capture and display settings
-- Optimized for virtual machines, by minimizing reliance on GPU features
-- Works on Windows XP to Windows 10
+- Temporal image denoising to remove analog capture noise
+- Padded output to maintain a constant output resolution
+- Custom overlays with HTML formatting
+- Count of unique frames per second &ndash; an FPS counter for DOS games!
+- Optimized for virtual machines by minimizing reliance on GPU features
+- Works on Windows XP to Windows 10 and compiles for Linux
 
 ### Hardware support
 VCS is compatible with at least the following Datapath capture cards:
@@ -31,10 +34,54 @@ In general, if you know that your card supports Datapath's RGBEasy API, it shoul
 # How to use VCS
 _Coming_
 
+## Setting up
+Assuming you've installed the drivers for your capture hardware, and unpacked the binary distribution of VCS (linked to, above) into a folder, getting VCS going is simply a matter of running its `vcs.exe` executable.
+
+When you run the executable, three windows open: a console window, in which notifications about VCS's status will apear during operation; the [output window](#the-output-window), in which captured frames will be displayed; and the [control panel](#the-control-panel), from which you can control aspects of VCS's operation.
+
+- Note: You can launch `vcs.exe` with certain command-line parameters to automate tasks like loading up settings files. A list of the available command-line parameters is given in the [Command-line](#command-line) subsection.
+
+One of the first things you'll probably want to do after getting VCS up and running is to adjust the video parameters, like phase, image positioning, color balance, and so on, to get the output from the capture hardware to look as it should. You can get all that done through VCS, and the sections below will tell you how. (If you're in a hurry, you can [jump straight to the part that shows you where to adjust the video settings](#input-tab).)
+
+## The output window
+The central feature of VCS is the output window, where the captured frame data is displayed in real-time as it arrives from the capture hardware.
+
+The output window has been kept free of unnecessary clutter &ndash; there are no visible controls, only a couple of bits of convenient information in the window's title bar. This allows you to concentrate fully on the capture output.
+
+![](images/screenshots/v1.2.6/output-window.png)
+
+### Hidden functionality
+
+To tell you a secret, there _is_ some hidden functionality to the output window, despite it having no visible controls per se.
+
+#### Magnifying glass
+If you press and hold the right mouse button over the output window, a portion of the output image under the cursor will be magnified.
+
+The magnifying glass can be useful if, for instance, you're adjusting the capture's video parameters, like phase, and want to inspect the output for any smaller artefacts remaining.
+
+![](images/screenshots/v1.2.6/output-window-nonmagnified-small.png)
+![](images/screenshots/v1.2.6/output-window-magnified-small.png)
+
+#### Borderless mode
+You can double-click inside the output window to toggle the window's border on and off. This is useful if you want a 'full-screen' experience, or if for some other reason you don't like seeing the window border.
+
+When the border is toggled off, the window is automatically snapped to the top left corner of the screen.
+
+While borderless, you can drag the window by grabbing anywhere on it with the left mouse button.
+
+![](images/screenshots/v1.2.6/output-window-small.png)
+![](images/screenshots/v1.2.6/output-window-borderless-small.png)
+
+#### Scaling with the mouse wheel
+You can hover the cursor over the output window and scroll the mouse wheel up or down to scale the window's size.
+
+#### Quick access to the overlay editor
+You can click inside the capture window with the middle mouse button to open the overlay editor.
+
 ## The control panel
 The control panel is the heart of VCS. With it, you can control the various aspects of how the capture hardware conducts its operation, how VCS displays the captured frames, and so on.
 
-The controls and information in the control panel are divided thematically into four tabs: `Input`, `Output`, `Log`, and `About`. Below, you'll find descriptions of each tab and the functionality it provides.
+The controls and information in the control panel are divided thematically into four tabs: `Input`, `Output`, `Log`, and `About`. Below, you'll find descriptions of each tab and the functionality they provide.
 
 ### Input tab
 ![](images/screenshots/v1.2.6/control-panel-input.png)
@@ -49,7 +96,7 @@ If your capture hardware has multiple input channels, you can switch between the
 
 **Alias resolutions.** Define alias resolutions. An alias resolution is a resolution that you want to force the capture hardware into when it proposes another resolution. For instance, if you know that the capture source's resolution is 512 x 384, but the capture hardware detects it as 511 x 304, you can assign 511 x 304 as an alias of 512 x 384. After that, every time the capture hardware sets its input resolution to 511 x 304, VCS will tell it to use 512 x 384, instead.
 
-**Adjust video & color.** Adjust various capture parameters, like color balance, phase, horizontal position, etc. Note that you can change the input color depth from the control panel's `Ouput` tab.
+**Adjust video & color.** Adjust various capture parameters, like color balance, phase, horizontal position, etc. These are hardware-level settings that will be enforced by the capture card. Note that the input color depth is set via the control panel's `Output` tab, described in the [Output tab](#output-tab) subsection.
 
 **Force input resolution.** Manually tell the capture hardware to adopt a particular input resolution. If the capture source's resolution doesn't match the capture hardware's input resolution, the captured frames will likely not display correctly in VCS. If you click on a button while holding down the control key, you can change the resolution assigned to that button. The `Other...` button lets you specify an arbitrary resolution.
 
@@ -75,7 +122,7 @@ per second. The pipeline consists of the following stages: a frame being receive
 
 ![](images/screenshots/v1.2.6/overlay-dialog.png)
 
-**Anti-tear.** Enable automatic removal of image tears from captured frames. Tearing can result, for instance, when the capture source is displaying a non-v-synced application: capturing DOS games often results in torn frames, as does capturing games in general whose FPS is less than or more than the refresh rate. The anti-tearing will not work in all cases &ndash; for instance, when the capture source's application is redrawing its screen at a rate higher than the refresh rate, e.g. at more than 60 FPS. You can find more information about anti-tearing in the `Anti-tearing` subsection of this document.
+**Anti-tear.** Enable automatic removal of image tears from captured frames. Tearing can result, for instance, when the capture source is displaying a non-v-synced application: capturing DOS games often results in torn frames, as does capturing games in general whose FPS is less than or more than the refresh rate. The anti-tearing will not work in all cases &ndash; for instance, when the capture source's application is redrawing its screen at a rate higher than the refresh rate, e.g. at more than 60 FPS. You can find more information about anti-tearing in the [Anti-tearing](#anti-tearing) subsection.
 
 ![](images/screenshots/v1.2.6/anti-tear-dialog.png)
 
@@ -91,7 +138,7 @@ per second. The pipeline consists of the following stages: a frame being receive
 
 **Downscaler.** Set the type of scaling to be used when the output resolution is smaller than the input resolution. Any relevant custom filtering (see below) will override this setting.
 
-**Custom filtering.** Create sets of image filters to be applied to incoming frames. You can find more information about custom filtering in the `Custom filters` subsection of this document.
+**Custom filtering.** Create sets of image filters to be applied to incoming frames. You can find more information about custom filtering in the [Custom filters](#custom-filters) subsection.
 
 ### Log tab
 ![](images/screenshots/v1.2.6/control-panel-log.png)
@@ -145,41 +192,41 @@ In general, anti-tearing is an experimental feature in VCS. It works quite well 
 You can make use of the following mouse and keyboard shortcuts:
 ```
 Double-click
-VCS's output window .... Toggle window border on/off.
+VCS's output window ..... Toggle window border on/off.
 
 Middle-click
-output window .......... Open the overlay editor.
+output window ........... Open the overlay editor.
 
 Left-press and drag
-output window .......... Move the window (same as dragging by its title bar).
+output window ........... Move the window (same as dragging by its title bar).
 
 Right-press
-output window .......... Magnify this portion of the output window.
+output window ........... Magnify this portion of the output window.
 
 Mouse wheel
-output window .......... Scale the output window up/down.
+output window ........... Scale the output window up/down.
 
-F1 ..................... Force capture's input resolution to 640 x 400.
+F1 ...................... Force the capture's input resolution to 640 x 400.
 
-F2 ..................... Force capture's input resolution to 720 x 400.
+F2 ...................... Force the capture's input resolution to 720 x 400.
 ```
 
 ## Command-line
 Optionally, you can pass one or more of following command-line arguments to VCS:
 ```
--m <path + filename> ... Load capture parameters from the given file on start-
-                         up. Capture parameter files typically have the .vcsm
-                         suffix.
+-m <path + filename> .... Load capture parameters from the given file on start-
+                          up. Capture parameter files typically have the .vcsm
+                          suffix.
 
--f <path + filename> ... Load custom filter sets from the given file on start-
-                         up. Filter set files typically have the .vcsf suffix.
+-f <path + filename> .... Load custom filter sets from the given file on start-
+                          up. Filter set files typically have the .vcsf suffix.
 
--a <path + filename> ... Load alias resolutions from the given file on start-
-                         up. Alias resolution files typically have the .vcsa
-                         suffix.
+-a <path + filename> .... Load alias resolutions from the given file on start-
+                          up. Alias resolution files typically have the .vcsa
+                          suffix.
 
--i <input channel> ..... Start capture on the given input channel (1...n). By
-                         default, channel #1 will be used.
+-i <input channel> ...... Start capture on the given input channel (1...n). By
+                          default, channel #1 will be used.
 ```
 
 For instance, if you had capture parameters stored in the file `params.vcsm`, and you wanted capture to start on input channel #2 when you run VCS, you might launch VCS like so:
@@ -195,7 +242,7 @@ vcs.exe -m "params.vcsm" -i 2
 While developing VCS, I've been compiling it with GCC 5.4 on Linux and MinGW 5.3 on Windows, and my Qt has been version 5.5 on Linux and 5.7 on Windows. If you're building VCS, sticking with these tools should guarantee the least number of compatibility issues.
 
 ### Dependencies
-**Qt.** VCS uses [Qt](https://www.qt.io/) for its GUI and certain other functionality. Qt of version 5.5 or newer should satisfy VCS's requirements.
+**Qt.** VCS uses [Qt](https://www.qt.io/) for its GUI and certain other functionality. Qt of version 5.5 or newer should satisfy VCS's requirements. The binary distribution of VCS for Windows includes the required DLLs.
 - Non-GUI code in VCS interacts with the Qt GUI through a wrapper ([src/display/qt/d_main.cpp](src/display/qt/d_main.cpp)). In theory, if you wanted to use a GUI framework other than Qt, you could do so by editing the wrapper, and implementing responses to its functions in your other framework. However, there is also some Qt bleed into non-GUI areas, e.g. as use of the QString class across much of the codebase.
 
 **OpenCV.** VCS makes use of the [OpenCV](https://opencv.org/) library for image filtering and scaling. The binary distribution of VCS for Windows includes DLLs for OpenCV 3.2.0 that are compatible with MinGW 5.3.
