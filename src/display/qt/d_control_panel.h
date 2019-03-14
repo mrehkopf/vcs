@@ -74,6 +74,8 @@ public:
 
     void update_current_filter_set_idx(const int idx);
 
+    void open_video_adjust_dialog();
+
 private slots:
     void on_checkBox_logInfo_toggled(bool);
 

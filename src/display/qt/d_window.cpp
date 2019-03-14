@@ -106,9 +106,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete ui; ui = nullptr;
-    delete controlPanel; controlPanel = nullptr;
-    delete overlayDlg; overlayDlg = nullptr;
+    delete ui;
+    ui = nullptr;
+
+    delete controlPanel;
+    controlPanel = nullptr;
+
+    delete overlayDlg;
+    overlayDlg = nullptr;
 
     return;
 }
@@ -346,15 +351,17 @@ void MainWindow::measure_framerate()
 
 void MainWindow::set_keyboard_shortcuts()
 {
-    QShortcut *shortcutInputRes640x400 = new QShortcut(QKeySequence(Qt::Key_F1), this);
-    shortcutInputRes640x400->setContext(Qt::ApplicationShortcut);
-    connect(shortcutInputRes640x400, &QShortcut::activated,
-            []{kmain_change_capture_input_resolution({640, 400, 0});});
+    QShortcut *f1 = new QShortcut(QKeySequence(Qt::Key_F1), this);
+    f1->setContext(Qt::ApplicationShortcut);
+    connect(f1, &QShortcut::activated, []{kmain_change_capture_input_resolution({640, 400, 0});});
 
-    QShortcut *shortcutInputRes720x400 = new QShortcut(QKeySequence(Qt::Key_F2), this);
-    shortcutInputRes720x400->setContext(Qt::ApplicationShortcut);
-    connect(shortcutInputRes720x400, &QShortcut::activated,
-            []{kmain_change_capture_input_resolution({720, 400, 0});});
+    QShortcut *f2 = new QShortcut(QKeySequence(Qt::Key_F2), this);
+    f2->setContext(Qt::ApplicationShortcut);
+    connect(f2, &QShortcut::activated, []{kmain_change_capture_input_resolution({720, 400, 0});});
+
+    QShortcut *ctrlV = new QShortcut(QKeySequence("ctrl+v"), this);
+    ctrlV->setContext(Qt::ApplicationShortcut);
+    connect(ctrlV, &QShortcut::activated, [this]{this->controlPanel->open_video_adjust_dialog();});
 
     return;
 }

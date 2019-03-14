@@ -937,12 +937,19 @@ void ControlPanel::on_spinBox_outputResY_valueChanged(int)
     return;
 }
 
-void ControlPanel::on_pushButton_inputAdjustVideoColor_clicked()
+void ControlPanel::open_video_adjust_dialog(void)
 {
     k_assert(videocolorDlg != nullptr, "");
     videocolorDlg->show();
     videocolorDlg->activateWindow();
     videocolorDlg->raise();
+
+    return;
+}
+
+void ControlPanel::on_pushButton_inputAdjustVideoColor_clicked()
+{
+    this->open_video_adjust_dialog();
 
     return;
 }
