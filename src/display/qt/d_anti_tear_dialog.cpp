@@ -72,9 +72,10 @@ void AntiTearDialog::create_menu_bar(void)
         QMenu *fileMenu = new QMenu("File", this);
 
         fileMenu->addAction("Load settings...", this, SLOT(load_settings()));
-        fileMenu->addAction("Restore defaults", this, SLOT(restore_default_settings()));
         fileMenu->addSeparator();
         fileMenu->addAction("Save settings as...", this, SLOT(save_settings()));
+        fileMenu->addSeparator();
+        fileMenu->addAction("Restore defaults", this, SLOT(restore_default_settings()));
 
         menubar->addMenu(fileMenu);
     }
