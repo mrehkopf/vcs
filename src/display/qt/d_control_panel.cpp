@@ -947,6 +947,16 @@ void ControlPanel::open_video_adjust_dialog(void)
     return;
 }
 
+void ControlPanel::open_antitear_dialog(void)
+{
+    k_assert(antitearDlg != nullptr, "");
+    antitearDlg->show();
+    antitearDlg->activateWindow();
+    antitearDlg->raise();
+
+    return;
+}
+
 void ControlPanel::on_pushButton_inputAdjustVideoColor_clicked()
 {
     this->open_video_adjust_dialog();
@@ -1043,10 +1053,7 @@ void ControlPanel::on_checkBox_outputAntiTear_stateChanged(int arg1)
 
 void ControlPanel::on_pushButton_antiTearOptions_clicked()
 {
-    k_assert(antitearDlg != nullptr, "");
-    antitearDlg->show();
-    antitearDlg->activateWindow();
-    antitearDlg->raise();
+    this->open_antitear_dialog();
 
     return;
 }

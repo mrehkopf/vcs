@@ -363,6 +363,10 @@ void MainWindow::set_keyboard_shortcuts()
     ctrlV->setContext(Qt::ApplicationShortcut);
     connect(ctrlV, &QShortcut::activated, [this]{this->controlPanel->open_video_adjust_dialog();});
 
+    QShortcut *ctrlA = new QShortcut(QKeySequence("ctrl+a"), this);
+    ctrlA->setContext(Qt::ApplicationShortcut);
+    connect(ctrlA, &QShortcut::activated, [this]{this->controlPanel->open_antitear_dialog();});
+
     return;
 }
 

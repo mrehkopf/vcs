@@ -76,6 +76,8 @@ public:
 
     void open_video_adjust_dialog();
 
+    void open_antitear_dialog();
+
 private slots:
     void on_checkBox_logInfo_toggled(bool);
 
