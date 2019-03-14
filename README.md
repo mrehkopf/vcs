@@ -155,6 +155,9 @@ The `About` tab provides information about VCS, like its current version. It als
 ## Custom filters
 _Coming_
 
+## Alias resolutions
+_Coming_
+
 ## Anti-tearing
 Under some circumstances, like when capturing DOS games, you may find that the captured frames contain tearing artefacts. This is most likely caused by the capture hardware having sampled an incompletely drawn frame from the source signal &ndash; for instance, due to the source not syncing its rendering to its refresh rate. A tear, then, results as the visible edge between the incompletely drawn new frame, and the still partially visible previous frame.
 
