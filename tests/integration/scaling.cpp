@@ -1,34 +1,37 @@
 /*
- * 2018 Tarpeeksi Hyvae Soft /
+ * 2018, 2019 Tarpeeksi Hyvae Soft /
  * VCS
  *
- * An automated test to validate scaler functionality.
+ * An integration test to validate scaler functionality. Kind of a
+ * kludge until a more refined testing system is in place.
+ * 
+ * Will print out "Successfully validated" or "Failed to validate",
+ * depending on whether the test succeeded, and exit with either
+ * EXIT_SUCCESS or EXIT_FAILURE likewise.
  *
  */
 
-#include "test_scaling.h"
-#include "../capture/capture.h"
-#include "../scaler/scaler.h"
-#include "../filter/filter.h"
-#include "../common/globals.h"
+#include "scaling.h"
+#include "src/capture/capture.h"
+#include "src/scaler/scaler.h"
+#include "src/filter/filter.h"
+#include "src/common/globals.h"
 
 static const char ASPECT_TO_TEST[] = "Scaling";
 
-#ifdef VALIDATION_RUN
+#ifndef USE_OPENCV
+    #error "OpenCV must be enabled for scaler validation. See toggle in the .pro file."
+#endif
 
-    #ifndef USE_OPENCV
-        #error "OpenCV must be enabled for scaler validation. See toggle in the .pro file."
-    #endif
+int ktest_integration_scaling(void)
+{
+    captured_frame_s f;
 
-    int main(void)
+    try
     {
-        captured_frame_s f;
-
-        try
-        {
         k_assert(((kc_hardware_max_capture_resolution().w <= MAX_OUTPUT_WIDTH) &&
-                  (kc_hardware_max_capture_resolution().h <= MAX_OUTPUT_HEIGHT)),
-                 "The maximum input size should not be larger than the maximum output size.");
+                    (kc_hardware_max_capture_resolution().h <= MAX_OUTPUT_HEIGHT)),
+                    "The maximum input size should not be larger than the maximum output size.");
 
         k_assert((ks_max_output_bit_depth() >= 32), "Support for 32-bit output depth is required for this test.");
 
@@ -50,8 +53,8 @@ static const char ASPECT_TO_TEST[] = "Scaling";
             ks_set_downscaling_filter(NULL);
             ks_set_upscaling_filter("_^-_______________________");
             k_assert((ks_upscaling_filter_name() == upName) &&
-                     (ks_downscaling_filter_name() == downName),
-                     "Detected possibly invalid scaler assignment.");
+                        (ks_downscaling_filter_name() == downName),
+                        "Detected possibly invalid scaler assignment.");
 
             // Test invalid frame scaling. The scaler should reject processing these.
             INFO(("SCALING: testing invalid resolutions..."));
@@ -75,10 +78,10 @@ static const char ASPECT_TO_TEST[] = "Scaling";
             // Test invalid frame scaling. The scaler should accept these.
             INFO(("SCALING: testing valid resolutions..."));
             for (uint y: {kc_hardware_min_capture_resolution().h + ((kc_hardware_max_capture_resolution().h - kc_hardware_min_capture_resolution().h) / 2),
-                          kc_hardware_min_capture_resolution().h + ((kc_hardware_max_capture_resolution().h - kc_hardware_min_capture_resolution().h) / 4)})
+                            kc_hardware_min_capture_resolution().h + ((kc_hardware_max_capture_resolution().h - kc_hardware_min_capture_resolution().h) / 4)})
             {
                 for (uint x: {kc_hardware_min_capture_resolution().w + ((kc_hardware_max_capture_resolution().w - kc_hardware_min_capture_resolution().w) / 2),
-                              kc_hardware_min_capture_resolution().w + ((kc_hardware_max_capture_resolution().w - kc_hardware_min_capture_resolution().w) / 4)})
+                                kc_hardware_min_capture_resolution().w + ((kc_hardware_max_capture_resolution().w - kc_hardware_min_capture_resolution().w) / 4)})
                 {
                     for (uint bpp: {16, 32})
                     {
@@ -164,15 +167,19 @@ static const char ASPECT_TO_TEST[] = "Scaling";
         kc_release_capturer();
         kf_release_filters();
         kmem_deallocate_memory_cache();
-        }
-        catch (std::exception &e)
-        {
-            fprintf(stderr, "Failed to validate '%s'. Encountered the following error: '%s'.\n", ASPECT_TO_TEST, e.what());
-            return EXIT_FAILURE;
-        }
-
-        printf("Successfully validated: '%s'.\n", ASPECT_TO_TEST);
-        INFO(("Bye."));
-        return EXIT_SUCCESS;
     }
-#endif
+    catch (std::exception &e)
+    {
+        fprintf(stderr, "Failed to validate '%s'. Encountered the following error: '%s'.\n", ASPECT_TO_TEST, e.what());
+        return EXIT_FAILURE;
+    }
+
+    printf("Successfully validated: '%s'.\n", ASPECT_TO_TEST);
+    INFO(("Bye."));
+    return EXIT_SUCCESS;
+}
+
+int main(void)
+{
+    return ktest_integration_scaling();
+}

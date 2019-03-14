@@ -1,0 +1,4 @@
+qmake -o generated_files/Makefile "DEFINES+=VALIDATION_RUN" ../../vcs.pro -after "SOURCES+=tests/integration/scaling.cpp" "TARGET=vcs_test_integration_scaling"\
+&& cd generated_files\
+&& make -B\
+&& ./vcs_test_integration_scaling
