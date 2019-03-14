@@ -101,6 +101,12 @@
              </property>
              <item row="0" column="0" colspan="2">
               <widget class="QComboBox" name="comboBox_inputChannel">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>33</height>
+                </size>
+               </property>
                <item>
                 <property name="text">
                  <string>Channel #1</string>
@@ -149,6 +155,12 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>33</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Alias resolutions...</string>
                </property>
@@ -156,6 +168,12 @@
              </item>
              <item row="7" column="0" colspan="2">
               <widget class="QPushButton" name="pushButton_inputAdjustVideoColor">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>33</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Adjust video &amp;&amp; color...</string>
                </property>
