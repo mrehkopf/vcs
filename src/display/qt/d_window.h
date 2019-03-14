@@ -89,10 +89,6 @@ public:
 private slots:
     void toggle_window_border();
 
-    void force_input_resolution_640x400();
-
-    void force_input_resolution_720x400();
-
 private:
     void paintEvent(QPaintEvent *);
     void closeEvent(QCloseEvent *);

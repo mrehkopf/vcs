@@ -348,35 +348,13 @@ void MainWindow::set_keyboard_shortcuts()
 {
     QShortcut *shortcutInputRes640x400 = new QShortcut(QKeySequence(Qt::Key_F1), this);
     shortcutInputRes640x400->setContext(Qt::ApplicationShortcut);
-    connect(shortcutInputRes640x400, SIGNAL(activated()),
-            this, SLOT(force_input_resolution_640x400()));
+    connect(shortcutInputRes640x400, &QShortcut::activated,
+            []{kmain_change_capture_input_resolution({640, 400, 0});});
 
     QShortcut *shortcutInputRes720x400 = new QShortcut(QKeySequence(Qt::Key_F2), this);
     shortcutInputRes720x400->setContext(Qt::ApplicationShortcut);
-    connect(shortcutInputRes720x400, SIGNAL(activated()),
-            this, SLOT(force_input_resolution_720x400()));
-
-    return;
-}
-
-void MainWindow::force_input_resolution_640x400()
-{
-    const resolution_s r = {640, 400, 0};
-    DEBUG(("Received a keyboard shortcut request to set the input resolution to %u x %u.",
-           r.w, r.h));
-
-    kmain_change_capture_input_resolution(r);
-
-    return;
-}
-
-void MainWindow::force_input_resolution_720x400()
-{
-    const resolution_s r = {720, 400, 0};
-    DEBUG(("Received a keyboard shortcut request to set the input resolution to %u x %u.",
-           r.w, r.h));
-
-    kmain_change_capture_input_resolution(r);
+    connect(shortcutInputRes720x400, &QShortcut::activated,
+            []{kmain_change_capture_input_resolution({720, 400, 0});});
 
     return;
 }
