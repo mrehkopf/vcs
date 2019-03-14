@@ -1,9 +1,6 @@
 # Comment out to disable OpenCV. You'll have no filtering or scaler, but you also don't need to provide the dependencies.
 DEFINES += USE_OPENCV
 
-# Use OpenGL instead of QImage for drawing frames on screen. Not guaranteed to work, as I have limited means to test it.
-#DEFINES += USE_OPENGL
-
 # Comment out to disable capture functionality. Useful for testing the program where a capture card isn't present.
 DEFINES += USE_RGBEASY_API
 
@@ -73,7 +70,6 @@ SOURCES += \
     src/filter/anti_tear.cpp \
     src/common/persistent_settings.cpp \
     src/common/memory.cpp \
-    src/display/qt/w_opengl.cpp \
     src/display/qt/d_filter_set_dialog.cpp \
     src/display/qt/dw_filter_list.cpp \
     src/display/qt/d_filter_sets_list_dialog.cpp
@@ -103,7 +99,6 @@ HEADERS += \
     src/common/csv.h \
     src/common/memory.h \
     src/common/memory_interface.h \
-    src/display/qt/w_opengl.h \
     src/display/qt/d_filter_set_dialog.h \
     src/display/qt/dw_filter_list.h \
     src/display/qt/d_filter_sets_list_dialog.h
