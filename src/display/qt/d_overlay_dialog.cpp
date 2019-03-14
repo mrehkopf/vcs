@@ -20,13 +20,6 @@
 #include "d_window.h"
 #include "d_util.h"
 
-/*
- * TODOS:
- *
- * - on linux (qt 5.5), tosses out a bunch of qfont errors if overlay is enabled.
- *
- */
-
 // The overlay's current, html-formatted string.
 static QString OVERLAY_STRING;
 
@@ -195,7 +188,7 @@ void OverlayDialog::set_overlay_enabled(const bool state)
 
 bool OverlayDialog::is_overlay_enabled()
 {
-    return (!kc_is_no_signal() && ui->groupBox_overlay->isChecked());
+    return (!kc_no_signal() && ui->groupBox_overlay->isChecked());
 }
 
 void OverlayDialog::on_groupBox_overlay_toggled(bool)

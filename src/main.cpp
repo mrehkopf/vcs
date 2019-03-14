@@ -82,7 +82,7 @@ void kmain_change_capture_input_resolution(const resolution_s r)
     const resolution_s min = kc_hardware_min_capture_resolution();
     const resolution_s max = kc_hardware_max_capture_resolution();
 
-    if (kc_is_no_signal())
+    if (kc_no_signal())
     {
         DEBUG(("Was asked to change the input resolution while the capture card was not receiving a signal. Ignoring the request."));
         goto done;

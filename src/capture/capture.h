@@ -173,7 +173,7 @@ void kc_mark_frame_buffer_as_processed(void);
 
 bool kc_should_skip_next_frame(void);
 
-bool kc_is_no_signal(void);
+bool kc_no_signal(void);
 
 bool kc_is_invalid_signal(void);
 

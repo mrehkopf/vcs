@@ -38,7 +38,6 @@ int UPDATE_LATENCY_AVG = 0;
 // display effect.
 static QTextDocument OVERLAY;
 
- #include <QVBoxLayout>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -168,12 +167,10 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 void MainWindow::paintEvent(QPaintEvent *)
 {
     static QLabel *magnifyingGlass = nullptr;
-
     const QImage capturedImg = ks_scaler_output_buffer_as_qimage();
-
-    // Draw the captured and scaled frame onto the window.
     QPainter painter(this);
 
+    // Draw the frame.
     if (!capturedImg.isNull())
     {
         int posX = 0;
@@ -187,7 +184,7 @@ void MainWindow::paintEvent(QPaintEvent *)
             posX = (((int)targetRes.w - (int)sourceRes.w) / 2);
             posY = (((int)targetRes.h - (int)sourceRes.h) / 2);
 
-            // Clear the window, since we likely have automatic clearing off
+            // Clear the window, since we likely have automatic clearing off,
             // and padding may leave areas which aren't painted over by the
             // captured image.
             painter.fillRect(0, 0, this->width(), this->height(), QBrush("black"));
@@ -197,7 +194,7 @@ void MainWindow::paintEvent(QPaintEvent *)
     }
 
     // Draw the overlay, if enabled.
-    if (//!kc_no_signal() &&
+    if (!kc_no_signal() &&
         overlayDlg != nullptr &&
         overlayDlg->is_overlay_enabled())
     {
@@ -207,7 +204,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 
     // If the user pressed the right mouse button inside the main capture window,
     // show a magnifying glass effect which blows up part of the captured image.
-    if (!kc_is_no_signal() &&
+    if (!kc_no_signal() &&
         this->isActiveWindow() &&
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
         (QGuiApplication::mouseButtons() & Qt::RightButton))
@@ -375,7 +372,7 @@ void MainWindow::update_window_title()
 {
     QString scale, latency, inRes;
 
-    if (kc_is_no_signal())
+    if (kc_no_signal())
     {
         latency = " - No signal";
     }

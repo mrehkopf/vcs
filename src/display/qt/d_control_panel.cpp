@@ -240,7 +240,7 @@ void ControlPanel::fill_output_scaling_filter_comboboxes()
 void ControlPanel::update_output_framerate(const uint fps,
                                            const bool hasMissedFrames)
 {
-    if (kc_is_no_signal())
+    if (kc_no_signal())
     {
         DEBUG(("Was asked to update GUI output info while there was no signal."));
     }
@@ -359,7 +359,7 @@ void ControlPanel::update_current_filter_set_idx(const int idx)
 
 void ControlPanel::update_input_signal_info(const input_signal_s &s)
 {
-    if (kc_is_no_signal())
+    if (kc_no_signal())
     {
         DEBUG(("Was asked to update GUI input info while there was no signal."));
     }

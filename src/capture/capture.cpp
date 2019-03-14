@@ -1195,7 +1195,7 @@ bool kc_is_invalid_signal(void)
     return SIGNAL_IS_INVALID;
 }
 
-bool kc_is_no_signal(void)
+bool kc_no_signal(void)
 {
     return !RECEIVING_A_SIGNAL;
 }
@@ -1801,7 +1801,7 @@ input_video_params_s kc_capture_video_params_min_values(void)
 
 void kc_set_capture_color_params(const input_color_params_s c)
 {
-    if (kc_is_no_signal())
+    if (kc_no_signal())
     {
         DEBUG(("Was asked to set capture color params while there was no signal. "
                "Ignoring the request."));
@@ -1851,7 +1851,7 @@ void kc_set_capture_color_params(const input_color_params_s c)
 
 void kc_set_capture_video_params(const input_video_params_s v)
 {
-    if (kc_is_no_signal())
+    if (kc_no_signal())
     {
         DEBUG(("Was asked to set capture video params while there was no signal. "
                "Ignoring the request."));
