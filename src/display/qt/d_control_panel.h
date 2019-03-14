@@ -78,6 +78,8 @@ public:
 
     void open_antitear_dialog();
 
+    void open_filter_sets_dialog();
+
 private slots:
     void on_checkBox_logInfo_toggled(bool);
 

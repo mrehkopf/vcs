@@ -957,6 +957,16 @@ void ControlPanel::open_antitear_dialog(void)
     return;
 }
 
+void ControlPanel::open_filter_sets_dialog(void)
+{
+    k_assert(filterSetsDlg != nullptr, "");
+    filterSetsDlg->show();
+    filterSetsDlg->activateWindow();
+    filterSetsDlg->raise();
+
+    return;
+}
+
 void ControlPanel::on_pushButton_inputAdjustVideoColor_clicked()
 {
     this->open_video_adjust_dialog();
@@ -1060,10 +1070,7 @@ void ControlPanel::on_pushButton_antiTearOptions_clicked()
 
 void ControlPanel::on_pushButton_configureFiltering_clicked()
 {
-    k_assert(filterSetsDlg != nullptr, "");
-    filterSetsDlg->show();
-    filterSetsDlg->activateWindow();
-    filterSetsDlg->raise();
+    this->open_filter_sets_dialog();
 
     return;
 }

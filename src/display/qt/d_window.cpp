@@ -367,6 +367,10 @@ void MainWindow::set_keyboard_shortcuts()
     ctrlA->setContext(Qt::ApplicationShortcut);
     connect(ctrlA, &QShortcut::activated, [this]{this->controlPanel->open_antitear_dialog();});
 
+    QShortcut *ctrlF = new QShortcut(QKeySequence("ctrl+f"), this);
+    ctrlF->setContext(Qt::ApplicationShortcut);
+    connect(ctrlF, &QShortcut::activated, [this]{this->controlPanel->open_filter_sets_dialog();});
+
     return;
 }
 
