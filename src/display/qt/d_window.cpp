@@ -565,16 +565,16 @@ void MainWindow::toggle_window_border()
 {
     if (!window_has_border()) // Show the border.
     {
-        this->setWindowFlags(windowFlags() & ~Qt::FramelessWindowHint);
+        this->setWindowFlags(windowFlags() & ~(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint));
         this->show();
 
         update_window_size();
     }
-    else                    // Hide the border.
+    else // Hide the border.
     {
         this->move(0, 0);
 
-        this->setWindowFlags(this->windowFlags() | Qt::FramelessWindowHint);
+        this->setWindowFlags(this->windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         this->show();
 
         update_window_size();
