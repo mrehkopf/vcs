@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     OVERLAY.setDocumentMargin(0);
-    OVERLAY.setTextWidth(width());    // Fix HTML align not working.
+    OVERLAY.setTextWidth(width());    // Fixes HTML align not working.
 
     controlPanel = new ControlPanel(this);
     overlayDlg = new OverlayDialog(this);
