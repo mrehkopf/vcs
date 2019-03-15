@@ -830,10 +830,12 @@ void ControlPanel::on_comboBox_renderer_currentIndexChanged(const QString &arg1)
 {
     if (arg1 == "Software")
     {
+        INFO(("Renderer: software."));
         MAIN_WIN->set_opengl_enabled(false);
     }
     else if (arg1 == "OpenGL")
     {
+        INFO(("Renderer: OpenGL."));
         MAIN_WIN->set_opengl_enabled(true);
     }
     else
