@@ -86,7 +86,7 @@ public:
 
     void update_current_filter_set_idx(const int idx);
 
-    void toggle_opengl_surface();
+    void set_opengl_enabled(const bool enabled);
 
     void refresh();
 

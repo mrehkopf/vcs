@@ -826,6 +826,24 @@ void ControlPanel::on_comboBox_outputDownscaleFilter_currentIndexChanged(const Q
     return;
 }
 
+void ControlPanel::on_comboBox_renderer_currentIndexChanged(const QString &arg1)
+{
+    if (arg1 == "Software")
+    {
+        MAIN_WIN->set_opengl_enabled(false);
+    }
+    else if (arg1 == "OpenGL")
+    {
+        MAIN_WIN->set_opengl_enabled(true);
+    }
+    else
+    {
+        k_assert(0, "Unknown renderer type.");
+    }
+
+    return;
+}
+
 void ControlPanel::on_checkBox_logEnabled_stateChanged(int arg1)
 {
     k_assert(arg1 != Qt::PartiallyChecked,

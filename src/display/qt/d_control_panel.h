@@ -139,6 +139,8 @@ private slots:
 
     void on_spinBox_outputPadY_valueChanged(int);
 
+    void on_comboBox_renderer_currentIndexChanged(const QString &arg1);
+
 private:
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);

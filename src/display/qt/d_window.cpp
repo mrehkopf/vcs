@@ -49,6 +49,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QVBoxLayout *const mainLayout = new QVBoxLayout(ui->centralwidget);
+    mainLayout->setMargin(0);
+    mainLayout->setSpacing(0);
+
     OVERLAY.setDocumentMargin(0);
     OVERLAY.setTextWidth(width());    // Fixes HTML align not working.
 
@@ -103,11 +107,12 @@ void MainWindow::refresh(void)
     return;
 }
 
-// Toggles the OpenGL render surface on/off.
-void MainWindow::toggle_opengl_surface(void)
+void MainWindow::set_opengl_enabled(const bool enabled)
 {
-    if (OGL_SURFACE == nullptr)
+    if (enabled)
     {
+        k_assert((OGL_SURFACE == nullptr), "Can't doubly enable OpenGL.");
+
         OGL_SURFACE = new OGLWidget(this);
         OGL_SURFACE->show();
         OGL_SURFACE->raise();
@@ -118,17 +123,15 @@ void MainWindow::toggle_opengl_surface(void)
         format.setVersion(1, 2);
         format.setSwapInterval(0); // Vsync.
         format.setSamples(0);
-        format.setProfile(QSurfaceFormat::CoreProfile);
+        format.setProfile(QSurfaceFormat::CompatibilityProfile);
+        format.setRenderableType(QSurfaceFormat::OpenGL);
         QSurfaceFormat::setDefaultFormat(format);
 
-        QVBoxLayout *const mainLayout = new QVBoxLayout(ui->centralwidget);
-        mainLayout->setMargin(0);
-        mainLayout->setSpacing(0);
-
-        mainLayout->addWidget(OGL_SURFACE);
+        ui->centralwidget->layout()->addWidget(OGL_SURFACE);
     }
     else
     {
+        ui->centralwidget->layout()->removeWidget(OGL_SURFACE);
         delete OGL_SURFACE;
         OGL_SURFACE = nullptr;
     }
@@ -212,6 +215,9 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 
 void MainWindow::paintEvent(QPaintEvent *)
 {
+    // If OpenGL is enabled, its own paintGL() should be getting called instead of paintEvent().
+    if (OGL_SURFACE != nullptr) return;
+
     static QLabel *magnifyingGlass = nullptr;
     const QImage capturedImg = ks_scaler_output_buffer_as_qimage();
 

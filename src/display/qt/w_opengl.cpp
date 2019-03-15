@@ -32,7 +32,7 @@ void OGLWidget::initializeGL()
     this->glDisable(GL_DEPTH_TEST);
     this->glEnable(GL_TEXTURE_2D);
 
-    // Initialize the texture into which we'll stream the renderer's frame buffer.
+    // Initialize the texture into which we'll stream the captured frames.
     this->glGenTextures(1, &FRAMEBUFFER_TEXTURE);
     this->glBindTexture(GL_TEXTURE_2D, FRAMEBUFFER_TEXTURE);
     this->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
