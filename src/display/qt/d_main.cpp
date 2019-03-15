@@ -204,7 +204,7 @@ void kd_update_display(void)
     }
     else
     {
-        WINDOW->repaint();
+        WINDOW->refresh();
 
         WINDOW->measure_framerate();
     }

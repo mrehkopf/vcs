@@ -12,6 +12,7 @@
 #include <QElapsedTimer>
 #include <QTextDocument>
 #include <QElapsedTimer>
+#include <QVBoxLayout>
 #include <QTreeWidget>
 #include <QMessageBox>
 #include <QMouseEvent>
@@ -27,6 +28,7 @@
 #include "../../common/globals.h"
 #include "../../scaler/scaler.h"
 #include "d_window.h"
+#include "w_opengl.h"
 #include "../../main.h"
 
 /// Temp. Stores the number of milliseconds passed for each frame update. This
@@ -37,6 +39,9 @@ int UPDATE_LATENCY_AVG = 0;
 // A text document object drawn over the capture window to get an on-screen
 // display effect.
 static QTextDocument OVERLAY;
+
+// For an optional OpenGL render surface.
+static OGLWidget *OGL_SURFACE = nullptr;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -86,6 +91,47 @@ MainWindow::~MainWindow()
 
     delete overlayDlg;
     overlayDlg = nullptr;
+
+    return;
+}
+
+void MainWindow::refresh(void)
+{
+    if (OGL_SURFACE != nullptr) OGL_SURFACE->repaint();
+    else this->repaint();
+
+    return;
+}
+
+// Toggles the OpenGL render surface on/off.
+void MainWindow::toggle_opengl_surface(void)
+{
+    if (OGL_SURFACE == nullptr)
+    {
+        OGL_SURFACE = new OGLWidget(this);
+        OGL_SURFACE->show();
+        OGL_SURFACE->raise();
+
+        QSurfaceFormat format;
+        format.setDepthBufferSize(24);
+        format.setStencilBufferSize(8);
+        format.setVersion(1, 2);
+        format.setSwapInterval(0); // Vsync.
+        format.setSamples(0);
+        format.setProfile(QSurfaceFormat::CoreProfile);
+        QSurfaceFormat::setDefaultFormat(format);
+
+        QVBoxLayout *const mainLayout = new QVBoxLayout(ui->centralwidget);
+        mainLayout->setMargin(0);
+        mainLayout->setSpacing(0);
+
+        mainLayout->addWidget(OGL_SURFACE);
+    }
+    else
+    {
+        delete OGL_SURFACE;
+        OGL_SURFACE = nullptr;
+    }
 
     return;
 }
@@ -168,6 +214,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 {
     static QLabel *magnifyingGlass = nullptr;
     const QImage capturedImg = ks_scaler_output_buffer_as_qimage();
+
     QPainter painter(this);
 
     // Draw the frame.

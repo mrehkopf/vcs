@@ -7,6 +7,9 @@ DEFINES += USE_RGBEASY_API
 # Enable non-critical asserts. May perform slower, but will e.g. look to guard against buffer overflow in memory access.
 #DEFINES += ENFORCE_OPTIONAL_ASSERTS
 
+# Use OpenGL instead of Qt's software rasterizer to draw the capture output on screen. Not guaranteed to work, as I have limited means to test it.
+DEFINES += USE_OPENGL
+
 # For now, disable the RGBEASY API while doing a validation run, to simplify things.
 # Once the validatiom system is a bit better fleshed out, this should not be needed.
 contains(DEFINES, VALIDATION_RUN) {
@@ -72,7 +75,8 @@ SOURCES += \
     src/common/memory.cpp \
     src/display/qt/d_filter_set_dialog.cpp \
     src/display/qt/dw_filter_list.cpp \
-    src/display/qt/d_filter_sets_list_dialog.cpp
+    src/display/qt/d_filter_sets_list_dialog.cpp \
+    src/display/qt/w_opengl.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -101,7 +105,8 @@ HEADERS += \
     src/common/memory_interface.h \
     src/display/qt/d_filter_set_dialog.h \
     src/display/qt/dw_filter_list.h \
-    src/display/qt/d_filter_sets_list_dialog.h
+    src/display/qt/d_filter_sets_list_dialog.h \
+    src/display/qt/w_opengl.h
 
 FORMS += \
     src/display/qt/d_control_panel.ui \

@@ -86,6 +86,10 @@ public:
 
     void update_current_filter_set_idx(const int idx);
 
+    void toggle_opengl_surface();
+
+    void refresh();
+
 private slots:
     void toggle_window_border();
 
