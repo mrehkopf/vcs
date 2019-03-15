@@ -14,6 +14,7 @@
 #define INI_GROUP_OUTPUT_FILTERS        "OUTPUT_FILTERS"
 #define INI_GROUP_CONTROL_PANEL         "CONTROL_PANEL"
 #define INI_GROUP_ANTI_TEAR             "ANTI_TEAR"
+#define INI_GROUP_RENDERER              "RENDERER"
 #define INI_GROUP_GEOMETRY              "DIALOG_GEOMETRY"
 #define INI_GROUP_OVERLAY               "OVERLAY"
 #define INI_GROUP_LOG                   "LOG"

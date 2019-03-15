@@ -88,6 +88,19 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
         ui->checkBox_customFiltering->setChecked(kpers_value_of("custom_filtering", INI_GROUP_OUTPUT_FILTERS, 0).toBool());
         ui->checkBox_outputAntiTear->setChecked(kpers_value_of("enabled", INI_GROUP_ANTI_TEAR, 0).toBool());
 
+        // Renderer.
+        {
+            const QString rendererName = kpers_value_of("name", INI_GROUP_RENDERER, "Software").toString();
+            int idx = ui->comboBox_renderer->findText(rendererName, Qt::MatchExactly);
+            if (idx < 0)
+            {
+                NBENE(("Failed to find a renderer called '%s'. Defaulting to the first renderer on the list.",
+                       rendererName.toStdString().c_str()));
+                idx = 0;
+            }
+            ui->comboBox_renderer->setCurrentIndex(idx);
+        }
+
         resize(kpers_value_of("control_panel", INI_GROUP_GEOMETRY, size()).toSize());
     }
 
@@ -97,6 +110,7 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 ControlPanel::~ControlPanel()
 {
     // Save the current settings.
+    kpers_set_value("name", INI_GROUP_RENDERER, ui->comboBox_renderer->currentText());
     kpers_set_value("upscaler", INI_GROUP_OUTPUT_FILTERS, ui->comboBox_outputUpscaleFilter->currentText());
     kpers_set_value("downscaler", INI_GROUP_OUTPUT_FILTERS, ui->comboBox_outputDownscaleFilter->currentText());
     kpers_set_value("enabled", INI_GROUP_LOG, ui->checkBox_logEnabled->isChecked());
@@ -105,11 +119,20 @@ ControlPanel::~ControlPanel()
     kpers_set_value("tab", INI_GROUP_CONTROL_PANEL, ui->tabWidget->currentIndex());
     kpers_set_value("control_panel", INI_GROUP_GEOMETRY, size());
 
-    delete ui; ui = nullptr;
-    delete aliasDlg; aliasDlg = nullptr;
-    delete videocolorDlg; videocolorDlg = nullptr;
-    delete antitearDlg; antitearDlg = nullptr;
-    delete filterSetsDlg; filterSetsDlg = nullptr;
+    delete ui;
+    ui = nullptr;
+
+    delete aliasDlg;
+    aliasDlg = nullptr;
+
+    delete videocolorDlg;
+    videocolorDlg = nullptr;
+
+    delete antitearDlg;
+    antitearDlg = nullptr;
+
+    delete filterSetsDlg;
+    filterSetsDlg = nullptr;
 
     return;
 }
