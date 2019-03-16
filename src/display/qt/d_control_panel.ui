@@ -44,7 +44,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="documentMode">
       <bool>true</bool>
@@ -52,7 +52,7 @@
      <property name="movable">
       <bool>false</bool>
      </property>
-     <widget class="QWidget" name="tab_5">
+     <widget class="QWidget" name="tab_input">
       <attribute name="title">
        <string>Input</string>
       </attribute>
@@ -467,7 +467,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_6">
+     <widget class="QWidget" name="tab_output">
       <attribute name="title">
        <string>Output</string>
       </attribute>
@@ -1185,7 +1185,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="tab_log">
       <attribute name="title">
        <string>Log</string>
       </attribute>
@@ -1312,7 +1312,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="tab_about">
       <attribute name="title">
        <string>About</string>
       </attribute>
