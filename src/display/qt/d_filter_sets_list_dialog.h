@@ -52,7 +52,7 @@ private slots:
 
     bool save_sets_to_file();
 
-    void clear_sets();
+    void on_pushButton_add_clicked();
 
 private:
     void create_menu_bar();

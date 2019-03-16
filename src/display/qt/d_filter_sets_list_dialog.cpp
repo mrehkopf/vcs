@@ -97,13 +97,12 @@ void FilterSetsListDialog::create_menu_bar()
         menubar->addMenu(fileMenu);
     }
 
-    // Data...
+    // Help...
     {
-        QMenu *fileMenu = new QMenu("Data", this);
+        QMenu *fileMenu = new QMenu("Help", this);
 
-        fileMenu->addAction("Add new set...", this, SLOT(add_new_set()));
-        fileMenu->addSeparator();
-        fileMenu->addAction("Clear all", this, SLOT(clear_sets()));
+        fileMenu->addAction("About...");
+        fileMenu->actions().at(0)->setEnabled(false); /// TODO: Add the actual help.
 
         menubar->addMenu(fileMenu);
     }
@@ -490,20 +489,6 @@ void FilterSetsListDialog::repopulate_filter_sets_list(const int newIdx)
     return;
 }
 
-#include <QMessageBox>
-void FilterSetsListDialog::clear_sets()
-{
-    if (QMessageBox::question(this, "Clear the filter sets?",
-                              "Really clear all of the filter sets from the list? This can't be undone.") == QMessageBox::Yes)
-    {
-        kf_clear_filters();
-        repopulate_filter_sets_list();
-        flag_unsaved_changes();
-    }
-
-    return;
-}
-
 void FilterSetsListDialog::add_new_set()
 {
     filter_set_s *newSet = new filter_set_s;
@@ -564,6 +549,13 @@ void FilterSetsListDialog::on_pushButton_remove_clicked()
     repopulate_filter_sets_list();
 
     flag_unsaved_changes();
+
+    return;
+}
+
+void FilterSetsListDialog::on_pushButton_add_clicked()
+{
+    add_new_set();
 
     return;
 }
