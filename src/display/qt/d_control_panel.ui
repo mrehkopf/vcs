@@ -551,7 +551,7 @@
              <item row="2" column="0">
               <widget class="QLabel" name="label_18">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Latency&lt;/span&gt;&lt;br/&gt;&lt;br/&gt;Expresses the overall time currently taken by VCS to receive, scale, and display captured frames.&lt;/p&gt;&lt;p&gt;&amp;quot;No problem&amp;quot; = The latency is low enough that captured frames are not being dropped.&lt;br/&gt;&lt;br/&gt;&amp;quot;Dropping frames&amp;quot; = The latency is too high for all captured frames to be displayed. Some of them are being dropped.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string/>
                </property>
                <property name="text">
                 <string>Latency:</string>
@@ -571,7 +571,7 @@
              <item row="3" column="0">
               <widget class="QLabel" name="label_16">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame rate&lt;/span&gt;&lt;br/&gt;&lt;br/&gt;The number of frames per second being output by VCS.&lt;br/&gt;&lt;br/&gt;This number depends on the input signal's refresh rate, the capabilities of the capture device, and the time taken by VCS to process each frame.&lt;br/&gt;&lt;br/&gt;If the Latency field indicates &amp;quot;Fine&amp;quot; but the frame rate is lower than the input signal's refresh rate, it is likely that the capture device is not fast enough to keep up.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string/>
                </property>
                <property name="text">
                 <string>Frame rate:</string>
