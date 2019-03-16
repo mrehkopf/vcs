@@ -1331,7 +1331,7 @@
             <x>0</x>
             <y>0</y>
             <width>624</width>
-            <height>499</height>
+            <height>516</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1383,8 +1383,9 @@
               <item>
                <widget class="QLabel" name="label_17">
                 <property name="text">
-                 <string>A capture utility for certain Datapath capture cards.
-Copyright (c) 2017, 2018 Tarpeeksi Hyvae Soft.
+                 <string>A third-party capture utility for certain Datapath capture cards.
+Copyright (c) 2017-2019 Tarpeeksi Hyvae Soft.
+Not associated with or endorsed by Datapath.
 
 This software interfaces with the Qt framework, copyright (c) The Qt Company;
 the RGBEASY API, copyright (c) Datapath Ltd; and the OpenCV library,
