@@ -35,7 +35,7 @@ win32 {
     contains(DEFINES, USE_OPENCV) {
         INCLUDEPATH += "C:/Program Files (x86)/OpenCV/3.2.0/include"
         LIBS += -L"C:/Program Files (x86)/OpenCV/3.2.0/bin/mingw"
-        LIBS += -lopencv_core320 -lopencv_imgproc320 -lopencv_videoio320
+        LIBS += -lopencv_world320
     }
 }
 
