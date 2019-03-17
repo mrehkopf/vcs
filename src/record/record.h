@@ -12,7 +12,7 @@ namespace cv
     class Mat;
 }
 
-void krecord_initialize_recording(void);
+void krecord_initialize_recording(const char *const filename, const uint width, const uint height, const int frameRate);
 
 bool krecord_is_recording(void);
 

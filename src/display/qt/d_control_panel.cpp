@@ -1194,7 +1194,7 @@ bool ControlPanel::is_mouse_wheel_scaling_allowed()
 
 void ControlPanel::on_pushButton_testRecord_clicked()
 {
-    krecord_initialize_recording();
+    krecord_initialize_recording("test4.mp4", 60, 640, 480);
 
     return;
 }

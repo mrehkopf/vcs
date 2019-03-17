@@ -35,7 +35,10 @@ static void cleanup_all(void)
     kat_release_anti_tear();
     kf_release_filters();
 
-    kmem_deallocate_memory_cache(); // Call this last.
+    if (krecord_is_recording()) krecord_finalize_recording();
+
+    // Call this last.
+    kmem_deallocate_memory_cache();
 
     INFO(("Cleanup is done."));
     INFO(("Ready for exit."));
@@ -193,9 +196,9 @@ static capture_event_e process_next_capture_event(void)
 
         if (e == CEVENT_NEW_FRAME)
         {
-            kc_mark_frame_buffer_as_processed();
-
             if (krecord_is_recording()) krecord_record_new_frame();
+
+            kc_mark_frame_buffer_as_processed();
         }
     }
 
