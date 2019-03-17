@@ -548,13 +548,17 @@ void kc_reset_missed_frames_count(void)
 //
 void kc_insert_test_image(void)
 {
+    // For making the test pattern move with successive calls.
+    static uint offset = 0;
+    offset++;
+
     for (uint y = 0; y < FRAME_BUFFER.r.h; y++)
     {
         for (uint x = 0; x < FRAME_BUFFER.r.w; x++)
         {
             const uint idx = ((x + y * FRAME_BUFFER.r.w) * 4);
-            FRAME_BUFFER.pixels[idx + 0] = x%256;
-            FRAME_BUFFER.pixels[idx + 1] = y%256;
+            FRAME_BUFFER.pixels[idx + 0] = (offset+x)%256;
+            FRAME_BUFFER.pixels[idx + 1] = (offset+y)%256;
             FRAME_BUFFER.pixels[idx + 2] = 150;
             FRAME_BUFFER.pixels[idx + 3] = 255;
         }
