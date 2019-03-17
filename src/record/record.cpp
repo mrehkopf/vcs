@@ -8,10 +8,12 @@
 
 #include "../common/globals.h"
 #include "../scaler/scaler.h"
+#include "../common/memory.h"
 #include "record.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/core/core.hpp>
+    #include <opencv2/imgproc/imgproc.hpp>
 
     // For VideoWriter.
     #if CV_MAJOR_VERSION > 2
@@ -34,7 +36,7 @@ void krecord_initialize_recording(void)
         #define encoder(a,b,c,d) CV_FOURCC((a), (b), (c), (d))
     #endif
 
-    videoWriter.open("test.avi", encoder('M','J','P','G'), 60, cv::Size(640,480));
+    videoWriter.open("test.avi", encoder('M','J','P','G'), 60, cv::Size(640, 480));
 
     #undef encoder
 
@@ -50,6 +52,8 @@ bool krecord_is_recording(void)
 
 void krecord_record_new_frame(void)
 {
+    static heap_bytes_s<u8> tmp(MAX_FRAME_SIZE, "Video recording conversion buffer.");
+
     k_assert(videoWriter.isOpened(),
              "Attempted to record a video frame before video recording had been initialized.");
 
@@ -58,7 +62,12 @@ void krecord_record_new_frame(void)
     const u8 *const frameData = ks_scaler_output_as_raw_ptr();
     if (frameData == nullptr) return;
 
-    videoWriter << cv::Mat(r.h, r.w, CV_8UC4, (u8*)frameData);
+    // Convert the frame into a format compatible with the video codec.
+    cv::Mat originalFrame(r.h, r.w, CV_8UC4, (u8*)frameData);
+    cv::Mat convertedFrame(r.h, r.w, CV_8UC4, tmp.ptr());
+    cv::cvtColor(originalFrame, convertedFrame, CV_BGRA2BGR);
+
+    videoWriter << convertedFrame;
 
     return;
 }
