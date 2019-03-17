@@ -4,13 +4,14 @@
  * 
  * For recording capture output into a video file.
  *
- * Uses OpenCV, FFMPEG, and OpenH264 to produce a MP4/H.264 video.
+ * Uses OpenCV and x264 to produce a H.264 video.
  *
  */
 
 #include <QFileInfo>
 #include "../common/globals.h"
 #include "../scaler/scaler.h"
+#include "../display/display.h"
 #include "../common/memory.h"
 #include "record.h"
 
@@ -30,6 +31,7 @@ struct params_s
     int frameRate;
 } recordingParams;
 
+// Prepare the OpenCV video writer for recording frames into a video.
 void krecord_initialize_recording(const char *const filename,
                                   const uint width, const uint height,
                                   const int frameRate)
@@ -41,12 +43,24 @@ void krecord_initialize_recording(const char *const filename,
     recordingParams.resolution = {width, height, 0};
     recordingParams.frameRate = frameRate;
 
-    // Only the MP4 container is supported, so force it if need be.
-    if (QFileInfo(filename).suffix() != "mp4") recordingParams.filename += ".mp4";
+    #if _WIN32
+        // Encoder: x264vfw. Container: AVI.
+        if (QFileInfo(filename).suffix() != "avi") recordingParams.filename += ".avi";
+        videoWriter.open(filename, cv::VideoWriter::fourcc('X','2','6','4'), frameRate, cv::Size(width, height));
+    #elif __linux__
+        // Encoder: x264. Container: MP4.
+        if (QFileInfo(filename).suffix() != "mp4") recordingParams.filename += ".mp4";
+        videoWriter.open(filename, cv::VideoWriter::fourcc('a','v','c','1'), frameRate, cv::Size(width, height));
+    #else
+        #error "Unknown platform."
+    #endif
 
-    videoWriter.open(filename, 0x21, frameRate, cv::Size(width, height));
-
-    k_assert(videoWriter.isOpened(), "Failed to initialize the recording.");
+    if (!videoWriter.isOpened())
+    {
+        kd_show_headless_error_message("VCS: Recording could not be started",
+                                       "An error was encountred while attempting to start recording.\n\n"
+                                       "More information may be found in the console window.");
+    }
 
     return;
 }
@@ -56,6 +70,7 @@ bool krecord_is_recording(void)
     return videoWriter.isOpened();
 }
 
+// Encode VCS's most recent output frame into the video.
 void krecord_record_new_frame(void)
 {
     static heap_bytes_s<u8> scratchBuffer(MAX_FRAME_SIZE, "Video recording conversion buffer.");
@@ -71,12 +86,18 @@ void krecord_record_new_frame(void)
     k_assert((resolution.w == recordingParams.resolution.w &&
               resolution.h == recordingParams.resolution.h), "Incompatible frame for recording: mismatched resolution.");
 
-    // Convert the frame into a format compatible with the video codec.
-    cv::Mat originalFrame(resolution.h, resolution.w, CV_8UC4, (u8*)frameData);
-    cv::Mat convertedFrame(resolution.h, resolution.w, CV_8UC4, scratchBuffer.ptr());
-    cv::cvtColor(originalFrame, convertedFrame, CV_BGRA2BGR);
+    #if _WIN32
+        videoWriter << cv::Mat(resolution.h, resolution.w, CV_8UC4, (u8*)frameData);
+    #elif __linux__
+        // Convert the frame into a format compatible with the video codec.
+        cv::Mat originalFrame(resolution.h, resolution.w, CV_8UC4, (u8*)frameData);
+        cv::Mat convertedFrame(resolution.h, resolution.w, CV_8UC4, scratchBuffer.ptr());
+        cv::cvtColor(originalFrame, convertedFrame, CV_BGRA2BGR);
 
-    videoWriter << convertedFrame;
+        videoWriter << convertedFrame;
+    #else
+        #error "Unknown platform."
+    #endif
 
     return;
 }
