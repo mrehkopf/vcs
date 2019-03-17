@@ -141,6 +141,10 @@ private slots:
 
     void on_comboBox_renderer_currentIndexChanged(const QString &arg1);
 
+    void on_pushButton_testRecord_clicked();
+
+    void on_pushButton_testRecordStop_clicked();
+
 private:
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);

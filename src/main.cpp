@@ -12,6 +12,7 @@
 #include "filter/anti_tear.h"
 #include "capture/capture.h"
 #include "display/display.h"
+#include "record/record.h"
 #include "memory.h"
 #include "scaler/scaler.h"
 #include "common/globals.h"
@@ -193,6 +194,8 @@ static capture_event_e process_next_capture_event(void)
         if (e == CEVENT_NEW_FRAME)
         {
             kc_mark_frame_buffer_as_processed();
+
+            if (krecord_is_recording()) krecord_record_new_frame();
         }
     }
 

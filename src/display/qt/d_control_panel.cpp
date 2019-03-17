@@ -24,6 +24,7 @@
 #include "d_alias_dialog.h"
 #include "../../filter/anti_tear.h"
 #include "../../capture/capture.h"
+#include "../../record/record.h"
 #include "../../filter/filter.h"
 #include "../../common/globals.h"
 #include "../../main.h"
@@ -1189,4 +1190,18 @@ QString ControlPanel::GetString_OutputLatency()
 bool ControlPanel::is_mouse_wheel_scaling_allowed()
 {
     return ui->checkBox_outputAllowMouseWheelScale->isChecked();
+}
+
+void ControlPanel::on_pushButton_testRecord_clicked()
+{
+    krecord_initialize_recording();
+
+    return;
+}
+
+void ControlPanel::on_pushButton_testRecordStop_clicked()
+{
+    krecord_finalize_recording();
+
+    return;
 }

@@ -21,7 +21,7 @@ linux {
 
     # OpenCV.
     contains(DEFINES, USE_OPENCV) {
-        LIBS += -lopencv_core -lopencv_imgproc
+        LIBS += -lopencv_core -lopencv_imgproc -lopencv_highgui
     }
 }
 win32 {
@@ -35,7 +35,7 @@ win32 {
     contains(DEFINES, USE_OPENCV) {
         INCLUDEPATH += "C:/Program Files (x86)/OpenCV/3.2.0/include"
         LIBS += -L"C:/Program Files (x86)/OpenCV/3.2.0/bin/mingw"
-        LIBS += -lopencv_core320 -lopencv_imgproc320
+        LIBS += -lopencv_core320 -lopencv_imgproc320 -lopencv_videoio320
     }
 }
 
@@ -73,7 +73,8 @@ SOURCES += \
     src/display/qt/d_filter_set_dialog.cpp \
     src/display/qt/dw_filter_list.cpp \
     src/display/qt/d_filter_sets_list_dialog.cpp \
-    src/display/qt/w_opengl.cpp
+    src/display/qt/w_opengl.cpp \
+    src/record/record.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -103,7 +104,8 @@ HEADERS += \
     src/display/qt/d_filter_set_dialog.h \
     src/display/qt/dw_filter_list.h \
     src/display/qt/d_filter_sets_list_dialog.h \
-    src/display/qt/w_opengl.h
+    src/display/qt/w_opengl.h \
+    src/record/record.h
 
 FORMS += \
     src/display/qt/d_control_panel.ui \
