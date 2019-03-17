@@ -30,15 +30,10 @@ void krecord_initialize_recording(void)
     k_assert(!videoWriter.isOpened(),
              "Attempting to intialize a recording that has already been initialized.");
 
-    #if CV_MAJOR_VERSION > 2
-        #define encoder(a,b,c,d) cv::VideoWriter::fourcc((a), (b), (c), (d))
-    #else
-        #define encoder(a,b,c,d) CV_FOURCC((a), (b), (c), (d))
-    #endif
+    // OpenCV documentation: "FFMPEG backend with MP4 container natively uses other values as fourcc code".
+    const auto h264Encoder = 0x21;
 
-    videoWriter.open("test.avi", encoder('M','J','P','G'), 60, cv::Size(640, 480));
-
-    #undef encoder
+    videoWriter.open("test.mp4", h264Encoder, 60, cv::Size(640, 480));
 
     k_assert(videoWriter.isOpened(), "Failed to initialize the recording.");
 
