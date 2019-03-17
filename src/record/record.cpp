@@ -17,13 +17,7 @@
 #ifdef USE_OPENCV
     #include <opencv2/core/core.hpp>
     #include <opencv2/imgproc/imgproc.hpp>
-
-    // For VideoWriter.
-    #if CV_MAJOR_VERSION > 2
-        #include <opencv2/videoio/videoio.hpp>
-    #else
-        #include <opencv2/highgui/highgui.hpp>
-    #endif
+    #include <opencv2/videoio/videoio.hpp>
 #endif
 
 static cv::VideoWriter videoWriter;

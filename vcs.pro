@@ -19,9 +19,9 @@ linux {
     # so I'll have to disable it, by default.
     DEFINES -= USE_RGBEASY_API
 
-    # OpenCV.
+    # OpenCV 3.2.0.
     contains(DEFINES, USE_OPENCV) {
-        LIBS += -lopencv_core -lopencv_imgproc -lopencv_highgui
+        LIBS += -L/usr/local/lib -lopencv_world
     }
 }
 win32 {
@@ -31,7 +31,7 @@ win32 {
         LIBS += "C:/Program Files (x86)/Vision RGB-PRO/SDK/RGBEASY/LIB/RGBEASY.lib"
     }
 
-    # OpenCV.
+    # OpenCV 3.2.0.
     contains(DEFINES, USE_OPENCV) {
         INCLUDEPATH += "C:/Program Files (x86)/OpenCV/3.2.0/include"
         LIBS += -L"C:/Program Files (x86)/OpenCV/3.2.0/bin/mingw"
