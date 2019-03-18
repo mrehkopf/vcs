@@ -1210,6 +1210,38 @@ bool ControlPanel::is_mouse_wheel_scaling_allowed()
     return (!krecord_is_recording() && ui->checkBox_outputAllowMouseWheelScale->isChecked());
 }
 
+void ControlPanel::update_recording_metainfo(void)
+{
+    if (krecord_is_recording())
+    {
+        const uint fileBytesize = QFileInfo(krecord_video_filename().c_str()).size();
+        ui->label_recordingMetaFileSize->setEnabled(true);
+        ui->label_recordingMetaFileSize->setText(QString("%1 MB").arg(fileBytesize / (1024*1024)));
+
+        const uint totalDuration = ((1000.0/krecord_playback_framerate()) * krecord_num_frames_recorded())/1000;
+        const uint seconds = totalDuration % 60;
+        const uint minutes = totalDuration / 60;
+        const uint hours = minutes / 60;
+        ui->label_recordingMetaDuration->setEnabled(true);
+        ui->label_recordingMetaDuration->setText(QString("%1:%2:%3").arg(QString::number(hours).rightJustified(2, '0'))
+                                                                    .arg(QString::number(minutes).rightJustified(2, '0'))
+                                                                    .arg(QString::number(seconds).rightJustified(2, '0')));
+    }
+    else
+    {
+        ui->label_recordingMetaDuration->setText("n/a");
+        ui->label_recordingMetaDuration->setEnabled(false);
+
+        ui->label_recordingMetaFileSize->setText("n/a");
+        ui->label_recordingMetaFileSize->setEnabled(false);
+
+        ui->label_recordingMetaFramerate->setText("n/a");
+        ui->label_recordingMetaFramerate->setEnabled(false);
+    }
+
+    return;
+}
+
 void ControlPanel::on_pushButton_recordingStart_clicked()
 {
     const resolution_s videoResolution = ks_output_resolution();

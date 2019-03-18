@@ -175,6 +175,15 @@ void kd_update_gui_output_framerate_info(const u32 fps,
     return;
 }
 
+void kd_update_gui_recording_metainfo(void)
+{
+    k_assert(WINDOW != nullptr,
+             "Expected the display to have been acquired before accessing it for events processing. ");
+    WINDOW->update_recording_metainfo();
+
+    return;
+}
+
 void kd_update_display_size(void)
 {
     if (WINDOW != nullptr)

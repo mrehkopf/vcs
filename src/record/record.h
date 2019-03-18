@@ -11,6 +11,12 @@ bool krecord_start_recording(const char *const filename, const uint width, const
 
 resolution_s krecord_video_resolution(void);
 
+uint krecord_num_frames_recorded(void);
+
+uint krecord_playback_framerate(void);
+
+std::string krecord_video_filename(void);
+
 bool krecord_is_recording(void);
 
 void krecord_record_new_frame(void);

@@ -37,6 +37,8 @@ void kd_acquire_display(void);
 
 void kd_update_display_size(void);
 
+void kd_update_gui_recording_metainfo(void);
+
 void kd_release_display(void);
 
 void kd_process_ui_events(void);

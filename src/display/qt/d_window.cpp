@@ -514,6 +514,14 @@ void MainWindow::update_input_signal_info(const input_signal_s &s)
     return;
 }
 
+void MainWindow::update_recording_metainfo(void)
+{
+    k_assert(controlPanel != nullptr, "");
+    controlPanel->update_recording_metainfo();
+
+    return;
+}
+
 void MainWindow::update_gui_state()
 {
     // Manually spin the event loop.

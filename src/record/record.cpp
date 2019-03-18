@@ -107,22 +107,6 @@ struct frame_buffer_s
 
 struct recording_s
 {
-    // The file into which the video is saved.
-    std::string filename;
-
-    // The video's resolution.
-    resolution_s resolution;
-
-    // The video's playback framerate.
-    uint frameRate;
-
-    // Number of frames recorded in this video. Excludes frames that were
-    // duplicated by the recorder to prevent time compression.
-    uint numFrames;
-
-    // Milliseconds passed since the recording was initialized.
-    QElapsedTimer recordingTimer;
-
     // Accumulate the captured frames in two back buffers. When one buffer
     // fills up, we'll flip the buffers and encode the filled-up one's frames
     // into the video file.
@@ -135,6 +119,24 @@ struct recording_s
 
     // We'll run the recording's video encoding in a separate thread.
     QFuture<void> encoderThread;
+
+    // Metainfo.
+    struct info_s
+    {
+        // The file into which the video is saved.
+        std::string filename;
+
+        // The video's resolution.
+        resolution_s resolution;
+
+        uint playbackFrameRate;
+
+        // Number of frames recorded in this video.
+        uint numFrames;
+
+        // Milliseconds passed since the recording was started.
+        QElapsedTimer recordingTimer;
+    } meta;
 } RECORDING;
 
 // Prepare the OpenCV video writer for recording frames into a video.
@@ -147,11 +149,11 @@ bool krecord_start_recording(const char *const filename,
     k_assert(!VIDEO_WRITER.isOpened(),
              "Attempting to intialize a recording that has already been initialized.");
 
-    RECORDING.filename = filename;
-    RECORDING.resolution = {width, height, 24};
-    RECORDING.frameRate = frameRate;
-    RECORDING.numFrames = 0;
-    RECORDING.recordingTimer.start();
+    RECORDING.meta.filename = filename;
+    RECORDING.meta.resolution = {width, height, 24};
+    RECORDING.meta.playbackFrameRate = frameRate;
+    RECORDING.meta.numFrames = 0;
+    RECORDING.meta.recordingTimer.start();
     RECORDING.backBuffers[0].initialize(width, height, frameRate);
     RECORDING.backBuffers[1].initialize(width, height, frameRate);
     RECORDING.activeFrameBuffer = &RECORDING.backBuffers[0];
@@ -159,14 +161,19 @@ bool krecord_start_recording(const char *const filename,
     #if _WIN32
         // Encoder: x264vfw. Container: AVI.
         if (QFileInfo(filename).suffix() != "avi") recordingParams.filename += ".avi";
-        videoWriter.open(filename, cv::VideoWriter::fourcc('X','2','6','4'), frameRate, cv::Size(width, height));
+        const auto encoder = cv::VideoWriter::fourcc('X','2','6','4');
     #elif __linux__
         // Encoder: x264. Container: MP4.
-        if (QFileInfo(filename).suffix() != "mp4") RECORDING.filename += ".mp4";
-        VIDEO_WRITER.open(filename, cv::VideoWriter::fourcc('a','v','c','1'), frameRate, cv::Size(width, height));
+        if (QFileInfo(filename).suffix() != "mp4") RECORDING.meta.filename += ".mp4";
+        const auto encoder = cv::VideoWriter::fourcc('a','v','c','1');
     #else
         #error "Unknown platform."
     #endif
+
+    VIDEO_WRITER.open(RECORDING.meta.filename,
+                      encoder,
+                      RECORDING.meta.playbackFrameRate,
+                      cv::Size(RECORDING.meta.resolution.w, RECORDING.meta.resolution.h));
 
     if (!VIDEO_WRITER.isOpened())
     {
@@ -176,6 +183,8 @@ bool krecord_start_recording(const char *const filename,
         return false;
     }
 
+    kd_update_gui_recording_metainfo();
+
     return true;
 }
 
@@ -184,11 +193,26 @@ bool krecord_is_recording(void)
     return VIDEO_WRITER.isOpened();
 }
 
+uint krecord_playback_framerate(void)
+{
+    return RECORDING.meta.playbackFrameRate;
+}
+
+std::string krecord_video_filename(void)
+{
+    return RECORDING.meta.filename;
+}
+
+uint krecord_num_frames_recorded(void)
+{
+    return RECORDING.meta.numFrames;
+}
+
 resolution_s krecord_video_resolution(void)
 {
     k_assert(krecord_is_recording(), "Querying video resolution while recording is inactive.");
 
-    return RECORDING.resolution;
+    return RECORDING.meta.resolution;
 }
 
 void encode_frame_buffer(frame_buffer_s *const frameBuffer)
@@ -217,14 +241,14 @@ void krecord_record_new_frame(void)
     const u8 *const frameData = ks_scaler_output_as_raw_ptr();
     if (frameData == nullptr) return;
 
-    k_assert((resolution.w == RECORDING.resolution.w &&
-              resolution.h == RECORDING.resolution.h), "Incompatible frame for recording: mismatched resolution.");
+    k_assert((resolution.w == RECORDING.meta.resolution.w &&
+              resolution.h == RECORDING.meta.resolution.h), "Incompatible frame for recording: mismatched resolution.");
 
     // Convert the frame to BRG, and save it into the frame buffer.
     cv::Mat originalFrame(resolution.h, resolution.w, CV_8UC4, (u8*)frameData);
     cv::Mat frame = cv::Mat(resolution.h, resolution.w, CV_8UC3, RECORDING.activeFrameBuffer->next_slot());
     cv::cvtColor(originalFrame, frame, CV_BGRA2BGR);
-    RECORDING.numFrames++;
+    RECORDING.meta.numFrames++;
 
    // DEBUG(("Frame rate: %.4f", (double)RECORDING.numFrames / (RECORDING.recordingTimer.elapsed() / 1000)));
 
@@ -232,6 +256,8 @@ void krecord_record_new_frame(void)
     // its contents into the video file.
     if (RECORDING.activeFrameBuffer->is_full())
     {
+        kd_update_gui_recording_metainfo();
+
         // Run the encoding in a separate thread.
         const auto frameBuffer = RECORDING.activeFrameBuffer;
         RECORDING.encoderThread.waitForFinished();
@@ -247,6 +273,8 @@ void krecord_record_new_frame(void)
 void krecord_stop_recording(void)
 {
     VIDEO_WRITER.release();
+
+    kd_update_gui_recording_metainfo();
 
     return;
 }

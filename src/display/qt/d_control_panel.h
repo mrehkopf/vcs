@@ -80,6 +80,8 @@ public:
 
     void open_filter_sets_dialog();
 
+    void update_recording_metainfo();
+
 private slots:
     void on_checkBox_logInfo_toggled(bool);
 

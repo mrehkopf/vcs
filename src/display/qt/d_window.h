@@ -92,6 +92,8 @@ public:
 
     void refresh();
 
+    void update_recording_metainfo();
+
 private slots:
     void toggle_window_border();
 
