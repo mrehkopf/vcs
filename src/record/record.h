@@ -7,12 +7,7 @@
 #ifndef RECORD_H
 #define RECORD_H
 
-namespace cv
-{
-    class Mat;
-}
-
-void krecord_initialize_recording(const char *const filename, const uint width, const uint height, const int frameRate);
+void krecord_initialize_recording(const char *const filename, const uint width, const uint height, const uint frameRate);
 
 bool krecord_is_recording(void);
 
