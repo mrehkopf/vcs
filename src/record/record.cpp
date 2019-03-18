@@ -220,7 +220,6 @@ void krecord_record_new_frame(void)
     cv::Mat frame = cv::Mat(resolution.h, resolution.w, CV_8UC3, RECORDING.activeFrameBuffer->next_slot());
     cv::cvtColor(originalFrame, frame, CV_BGRA2BGR);
     RECORDING.numFrames++;
-    DEBUG(("Frame rate: %.4f", (double)RECORDING.numFrames / (RECORDING.recordingTimer.elapsed() / 1000)));
 
     // Once we've accumulated enough frames to fill the frame buffer, encode
     // its contents into the video file.

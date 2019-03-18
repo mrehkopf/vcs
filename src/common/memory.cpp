@@ -41,7 +41,7 @@ struct mem_allocation_s
 static int TOTAL_BYTES_ALLOCATED = 0;
 static int TOTAL_BYTES_RELEASED = 0;
 
-static uint MEMORY_CACHE_SIZE = 768/*MB*/ * 1024 * 1024;   // In bytes.
+static uint MEMORY_CACHE_SIZE = 1536/*MB*/ * 1024 * 1024;   // In bytes.
 static u8 *MEMORY_CACHE = NULL;
 static u8 *NEXT_FREE = NULL;    // A pointer to the next free byte in the memory cache (allocations from the cache are made sequentially).
 
