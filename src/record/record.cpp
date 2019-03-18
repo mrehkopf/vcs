@@ -272,6 +272,7 @@ void krecord_record_new_frame(void)
 
 void krecord_stop_recording(void)
 {
+    RECORDING.encoderThread.waitForFinished();
     VIDEO_WRITER.release();
 
     kd_update_gui_recording_metainfo();
