@@ -80,6 +80,24 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
         ks_set_output_aspect_ratio(r.w, r.h);
 
         ui->groupBox_aboutVCS->setTitle("VCS v" + QString("%1").arg(PROGRAM_VERSION_STRING));
+
+        // Container for video recording.
+        {
+            QString containerName;
+            #if _WIN32
+                containerName = "AVI"
+            #elif __linux__
+                containerName = "MP4";
+            #else
+                #error "Unknown platform."
+            #endif
+
+            int idx = ui->comboBox_recordingContainer->findText(containerName, Qt::MatchExactly);
+            k_assert((idx >= 0), "Failed to find a required container element in the GUI.");
+            ui->comboBox_recordingContainer->setCurrentIndex(idx);
+
+            ui->lineEdit_recordingFilename->setText(ui->lineEdit_recordingFilename->text().append(containerName.toLower()));
+        }
     }
 
     // Restore persistent settings.
@@ -1192,16 +1210,48 @@ bool ControlPanel::is_mouse_wheel_scaling_allowed()
     return ui->checkBox_outputAllowMouseWheelScale->isChecked();
 }
 
-void ControlPanel::on_pushButton_testRecord_clicked()
+void ControlPanel::on_pushButton_recordingStart_clicked()
 {
-    krecord_initialize_recording("test.mp4", 640, 480, 60);
+    const resolution_s currentOutpuRes = ks_output_resolution();
+
+    if (krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
+                                currentOutpuRes.w, currentOutpuRes.h,
+                                ui->spinBox_recordingFramerate->value()))
+    {
+        ui->pushButton_recordingStart->setEnabled(false);
+        ui->pushButton_recordingStop->setEnabled(true);
+        ui->frame_recordingSettings->setEnabled(false);
+
+        MAIN_WIN->update_window_title();
+    }
 
     return;
 }
 
-void ControlPanel::on_pushButton_testRecordStop_clicked()
+void ControlPanel::on_pushButton_recordingStop_clicked()
 {
-    krecord_finalize_recording();
+    krecord_stop_recording();
+
+    ui->pushButton_recordingStart->setEnabled(true);
+    ui->pushButton_recordingStop->setEnabled(false);
+    ui->frame_recordingSettings->setEnabled(true);
+
+    MAIN_WIN->update_window_title();
+
+    return;
+}
+
+void ControlPanel::on_pushButton_recordingSelectFilename_clicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this,
+                                                    "Select the file to record the video into", "",
+                                                    "All files(*.*)");
+    if (filename.isNull())
+    {
+        return;
+    }
+
+    ui->lineEdit_recordingFilename->setText(filename);
 
     return;
 }

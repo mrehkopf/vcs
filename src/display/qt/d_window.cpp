@@ -26,6 +26,7 @@
 #include "ui_d_window.h"
 #include "../../capture/capture.h"
 #include "../../common/globals.h"
+#include "../../record/record.h"
 #include "../../scaler/scaler.h"
 #include "d_window.h"
 #include "w_opengl.h"
@@ -423,7 +424,7 @@ void MainWindow::signal_new_mode_settings_source_file(const QString &filename)
 //
 void MainWindow::update_window_title()
 {
-    QString scale, latency, inRes;
+    QString scale, latency, inRes, recording;
 
     if (kc_no_signal())
     {
@@ -455,10 +456,15 @@ void MainWindow::update_window_title()
             latency = " (dropping frames)";
         }
 
+        if (krecord_is_recording())
+        {
+            recording = "[Rec.] ";
+        }
+
         inRes = " - " + controlPanel->GetString_InputResolution();
     }
 
-    setWindowTitle(QString(PROGRAM_NAME) + inRes + scale + latency);
+    setWindowTitle(recording + QString(PROGRAM_NAME) + inRes + scale + latency);
 
     return;
 }

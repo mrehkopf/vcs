@@ -54,6 +54,8 @@ public:
 
     void update_window_size();
 
+    void update_window_title();
+
     QString GetString_OutputResolution();
 
     QString GetString_InputResolution();
@@ -101,8 +103,6 @@ private:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseDoubleClickEvent(QMouseEvent * event);
-
-    void update_window_title();
 
     void set_keyboard_shortcuts();
 

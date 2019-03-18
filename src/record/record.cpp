@@ -4,7 +4,8 @@
  * 
  * For recording capture output into a video file.
  *
- * Uses OpenCV and x264 to produce a H.264 video.
+ * Uses OpenCV's wrapper for x264 to produce a H.264 video. Expects the user to
+ * have an x264 encoder available on their system.
  *
  */
 
@@ -141,10 +142,11 @@ struct params_s
 } RECORDING;
 
 // Prepare the OpenCV video writer for recording frames into a video.
+// Returns true if successful, false otherwise.
 //
-void krecord_initialize_recording(const char *const filename,
-                                  const uint width, const uint height,
-                                  const uint frameRate)
+bool krecord_start_recording(const char *const filename,
+                             const uint width, const uint height,
+                             const uint frameRate)
 {
     k_assert(!VIDEO_WRITER.isOpened(),
              "Attempting to intialize a recording that has already been initialized.");
@@ -175,9 +177,10 @@ void krecord_initialize_recording(const char *const filename,
         kd_show_headless_error_message("VCS: Recording could not be started",
                                        "An error was encountred while attempting to start recording.\n\n"
                                        "More information may be found in the console window.");
+        return false;
     }
 
-    return;
+    return true;
 }
 
 bool krecord_is_recording(void)
@@ -221,6 +224,8 @@ void krecord_record_new_frame(void)
     cv::cvtColor(originalFrame, frame, CV_BGRA2BGR);
     RECORDING.numFrames++;
 
+   // DEBUG(("Frame rate: %.4f", (double)RECORDING.numFrames / (RECORDING.recordingTimer.elapsed() / 1000)));
+
     // Once we've accumulated enough frames to fill the frame buffer, encode
     // its contents into the video file.
     if (RECORDING.activeFrameBuffer->is_full())
@@ -237,7 +242,7 @@ void krecord_record_new_frame(void)
     return;
 }
 
-void krecord_finalize_recording(void)
+void krecord_stop_recording(void)
 {
     VIDEO_WRITER.release();
 

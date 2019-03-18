@@ -141,9 +141,11 @@ private slots:
 
     void on_comboBox_renderer_currentIndexChanged(const QString &arg1);
 
-    void on_pushButton_testRecord_clicked();
+    void on_pushButton_recordingStart_clicked();
 
-    void on_pushButton_testRecordStop_clicked();
+    void on_pushButton_recordingStop_clicked();
+
+    void on_pushButton_recordingSelectFilename_clicked();
 
 private:
     void closeEvent(QCloseEvent *event);
