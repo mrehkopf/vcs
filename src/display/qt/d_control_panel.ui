@@ -1151,7 +1151,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>0</height>
+                <height>33</height>
                </size>
               </property>
               <property name="text">
@@ -1170,7 +1170,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>0</height>
+                <height>33</height>
                </size>
               </property>
               <property name="text">
@@ -1193,7 +1193,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
-          <string>Record</string>
+          <string>Record output into video</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_11">
           <item>
@@ -1342,7 +1342,7 @@
             <property name="sizeHint" stdset="0">
              <size>
               <width>17</width>
-              <height>67</height>
+              <height>50</height>
              </size>
             </property>
            </spacer>
@@ -1402,7 +1402,7 @@
           <item>
            <widget class="QLabel" name="label_15">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note:&lt;/span&gt; The current output resolution will be used as the video's resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note:&lt;/span&gt; The current output resolution will be used as the video's resolution. All frames will be scaled to match it.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="scaledContents">
              <bool>false</bool>

@@ -151,18 +151,18 @@ void* kmem_allocate(const int numBytes, const char *const reason)
 
 static uint alloc_table_index_of_pointer(const void *const mem)
 {
-    uint tableIDx = 0;
-    while (ALLOC_TABLE[tableIDx].memory != mem)
+    uint tableIdx = 0;
+    while (ALLOC_TABLE[tableIdx].memory != mem)
     {
-        tableIDx++;
-        if (tableIDx >= NUM_ALLOC_TABLE_ELEMENTS)
+        tableIdx++;
+        if (tableIdx >= NUM_ALLOC_TABLE_ELEMENTS)
         {
             k_assert(0, "Couldn't find the requested allocation in the allocation table.");
             goto bail;
         }
     }
 
-    return tableIDx;
+    return tableIdx;
 
     bail:
     throw std::runtime_error("Unexpected code path in the memory manager.");    // We should never reach this, but will if asserts are disabled.

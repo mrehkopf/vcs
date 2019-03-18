@@ -196,7 +196,10 @@ static capture_event_e process_next_capture_event(void)
 
         if (e == CEVENT_NEW_FRAME)
         {
-            if (krecord_is_recording()) krecord_record_new_frame();
+            if (krecord_is_recording())
+            {
+                krecord_record_new_frame();
+            }
 
             kc_mark_frame_buffer_as_processed();
         }

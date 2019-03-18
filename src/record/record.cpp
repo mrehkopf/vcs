@@ -43,13 +43,6 @@ struct frame_buffer_s
     // How many frames in total the buffer has memory capacity for.
     uint maxNumFrames = 0;
 
-    ~frame_buffer_s()
-    {
-        if (!this->memoryPool.is_null()) this->memoryPool.release_memory();
-
-        return;
-    }
-
     // Allocates the frame buffer for the given number of frames of the given
     // resolution. The frames' pixels are expected to have three 8-bit color
     // channels, each - e.g. RGB.
@@ -112,8 +105,7 @@ struct frame_buffer_s
     }
 };
 
-// The parameters of the current recording.
-struct params_s
+struct recording_s
 {
     // The file into which the video is saved.
     std::string filename;
@@ -131,6 +123,9 @@ struct params_s
     // Milliseconds passed since the recording was initialized.
     QElapsedTimer recordingTimer;
 
+    // Accumulate the captured frames in two back buffers. When one buffer
+    // fills up, we'll flip the buffers and encode the filled-up one's frames
+    // into the video file.
     frame_buffer_s *activeFrameBuffer;
     frame_buffer_s backBuffers[2];
     void flip_frame_buffer(void)
@@ -138,6 +133,7 @@ struct params_s
         activeFrameBuffer = (activeFrameBuffer == &backBuffers[0])? &backBuffers[1] : &backBuffers[0];
     }
 
+    // We'll run the recording's video encoding in a separate thread.
     QFuture<void> encoderThread;
 } RECORDING;
 
@@ -152,7 +148,7 @@ bool krecord_start_recording(const char *const filename,
              "Attempting to intialize a recording that has already been initialized.");
 
     RECORDING.filename = filename;
-    RECORDING.resolution = {width, height, 0};
+    RECORDING.resolution = {width, height, 24};
     RECORDING.frameRate = frameRate;
     RECORDING.numFrames = 0;
     RECORDING.recordingTimer.start();
@@ -188,6 +184,13 @@ bool krecord_is_recording(void)
     return VIDEO_WRITER.isOpened();
 }
 
+resolution_s krecord_video_resolution(void)
+{
+    k_assert(krecord_is_recording(), "Querying video resolution while recording is inactive.");
+
+    return RECORDING.resolution;
+}
+
 void encode_frame_buffer(frame_buffer_s *const frameBuffer)
 {
     for (uint i = 0; i < frameBuffer->frame_count(); i++)
@@ -214,7 +217,6 @@ void krecord_record_new_frame(void)
     const u8 *const frameData = ks_scaler_output_as_raw_ptr();
     if (frameData == nullptr) return;
 
-    /// TODO: Force output padding when recording, so all frames have the same resolution.
     k_assert((resolution.w == RECORDING.resolution.w &&
               resolution.h == RECORDING.resolution.h), "Incompatible frame for recording: mismatched resolution.");
 

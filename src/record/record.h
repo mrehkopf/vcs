@@ -9,6 +9,8 @@
 
 bool krecord_start_recording(const char *const filename, const uint width, const uint height, const uint frameRate);
 
+resolution_s krecord_video_resolution(void);
+
 bool krecord_is_recording(void);
 
 void krecord_record_new_frame(void);

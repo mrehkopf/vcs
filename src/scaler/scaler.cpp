@@ -16,6 +16,7 @@
 #include "../common/memory.h"
 #include "../common/globals.h"
 #include "../filter/filter.h"
+#include "../record/record.h"
 #include "scaler.h"
 
 #ifdef USE_OPENCV
@@ -95,6 +96,14 @@ resolution_s ks_padded_output_resolution(void)
 //
 resolution_s ks_output_resolution(void)
 {
+    // While recording video, the output resolution is required to stay locked
+    // to the video resolution.
+    if (krecord_is_recording())
+    {
+        const auto r = krecord_video_resolution();
+        return {r.w, r.h, OUTPUT_BIT_DEPTH};
+    }
+
     real aspect;
     resolution_s inRes = kc_input_signal_info().r;
     resolution_s outRes = inRes;

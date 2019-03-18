@@ -1207,20 +1207,22 @@ QString ControlPanel::GetString_OutputLatency()
 
 bool ControlPanel::is_mouse_wheel_scaling_allowed()
 {
-    return ui->checkBox_outputAllowMouseWheelScale->isChecked();
+    return (!krecord_is_recording() && ui->checkBox_outputAllowMouseWheelScale->isChecked());
 }
 
 void ControlPanel::on_pushButton_recordingStart_clicked()
 {
-    const resolution_s currentOutpuRes = ks_output_resolution();
+    const resolution_s videoResolution = ks_output_resolution();
 
     if (krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
-                                currentOutpuRes.w, currentOutpuRes.h,
+                                videoResolution.w, videoResolution.h,
                                 ui->spinBox_recordingFramerate->value()))
     {
         ui->pushButton_recordingStart->setEnabled(false);
         ui->pushButton_recordingStop->setEnabled(true);
         ui->frame_recordingSettings->setEnabled(false);
+
+        ui->groupBox_outputOverrides->setEnabled(false);
 
         MAIN_WIN->update_window_title();
     }
@@ -1235,6 +1237,8 @@ void ControlPanel::on_pushButton_recordingStop_clicked()
     ui->pushButton_recordingStart->setEnabled(true);
     ui->pushButton_recordingStop->setEnabled(false);
     ui->frame_recordingSettings->setEnabled(true);
+
+    ui->groupBox_outputOverrides->setEnabled(true);
 
     MAIN_WIN->update_window_title();
 
