@@ -199,6 +199,13 @@ bool krecord_start_recording(const char *const filename,
     k_assert(!VIDEO_WRITER.isOpened(),
              "Attempting to intialize a recording that has already been initialized.");
 
+    if (!filename || !strlen(filename))
+    {
+        kd_show_headless_error_message("VCS can't start recording",
+                                       "The output file is unnamed.");
+        return false;
+    }
+
     RECORDING.meta.filename = filename;
     RECORDING.meta.resolution = {width, height, 24};
     RECORDING.meta.playbackFrameRate = frameRate;
@@ -229,7 +236,7 @@ bool krecord_start_recording(const char *const filename,
 
     if (!VIDEO_WRITER.isOpened())
     {
-        kd_show_headless_error_message("VCS: Recording could not be started",
+        kd_show_headless_error_message("VCS can't start recording",
                                        "An error was encountred while attempting to start recording.\n\n"
                                        "More information may be found in the console window.");
         return false;
