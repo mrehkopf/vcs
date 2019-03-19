@@ -1242,7 +1242,10 @@
               <number>0</number>
              </property>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_33" stretch="9,1">
+              <layout class="QHBoxLayout" name="horizontalLayout_33" stretch="9,0">
+               <property name="spacing">
+                <number>0</number>
+               </property>
                <item>
                 <widget class="QLineEdit" name="lineEdit_recordingFilename">
                  <property name="sizePolicy">
@@ -1281,7 +1284,7 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_29">
+              <layout class="QHBoxLayout" name="horizontalLayout_30">
                <item>
                 <widget class="QLabel" name="label_7">
                  <property name="sizePolicy">
@@ -1291,23 +1294,94 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Container:</string>
+                  <string>Codec &amp; container:</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_recordingContainer">
-                 <property name="enabled">
-                  <bool>false</bool>
+                <layout class="QHBoxLayout" name="horizontalLayout_29">
+                 <property name="spacing">
+                  <number>0</number>
                  </property>
                  <item>
+                  <widget class="QComboBox" name="comboBox_recordingEncoding">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>x264</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>x264vfw</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="comboBox_recordingContainer">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>AVI</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>MP4</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_40">
+               <item>
+                <widget class="QLabel" name="label_22">
+                 <property name="text">
+                  <string>Profile:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="comboBox">
+                 <item>
                   <property name="text">
-                   <string>AVI</string>
+                   <string>High 4:4:4</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>MP4</string>
+                   <string>High</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Main</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Baseline</string>
                   </property>
                  </item>
                 </widget>
@@ -1315,30 +1389,107 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_30">
+              <layout class="QHBoxLayout" name="horizontalLayout_41">
                <item>
-                <widget class="QLabel" name="label_8">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
+                <widget class="QLabel" name="label_15">
                  <property name="text">
-                  <string>Encoding:</string>
+                  <string>Pixel format:</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="comboBox_recordingEncoding">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
+                <widget class="QComboBox" name="comboBox_3">
                  <item>
                   <property name="text">
-                   <string>H.264</string>
+                   <string>RGB</string>
                   </property>
                  </item>
+                 <item>
+                  <property name="text">
+                   <string>YUV 4:2:0</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_38">
+               <item>
+                <widget class="QLabel" name="label_24">
+                 <property name="text">
+                  <string>Preset:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="comboBox_2">
+                 <item>
+                  <property name="text">
+                   <string>Ultrafast</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Superfast</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Veryfast</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Faster</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Fast</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Medium</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Slow</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Slower</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Veryslow</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_39">
+               <item>
+                <widget class="QLabel" name="label_23">
+                 <property name="text">
+                  <string>CRF:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="spinBox">
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>50</number>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -1377,6 +1528,19 @@
            </widget>
           </item>
           <item>
+           <spacer name="verticalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
            <spacer name="verticalSpacer_5">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -1384,10 +1548,17 @@
             <property name="sizeHint" stdset="0">
              <size>
               <width>20</width>
-              <height>9000</height>
+              <height>40</height>
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_31" stretch="3,2">
@@ -1428,31 +1599,11 @@
                </size>
               </property>
               <property name="text">
-               <string>Stop</string>
+               <string>Stop &amp;&amp; Save</string>
               </property>
              </widget>
             </item>
            </layout>
-          </item>
-          <item>
-           <widget class="Line" name="line">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_15">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note:&lt;/span&gt; The current output resolution will be used as the video's resolution. All frames will be scaled to match it while recording.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="scaledContents">
-             <bool>false</bool>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-           </widget>
           </item>
          </layout>
         </widget>
@@ -1466,7 +1617,7 @@
           </sizepolicy>
          </property>
          <property name="title">
-          <string>Meta</string>
+          <string>Video</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
@@ -1480,7 +1631,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Frame rate:</string>
+               <string>Input frame rate:</string>
               </property>
              </widget>
             </item>
@@ -1507,7 +1658,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>File size:</string>
+               <string>Size on disk:</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -1774,7 +1925,7 @@ Copyright (c) 2017-2019 Tarpeeksi Hyvae Soft.
 Not associated with or endorsed by Datapath.
 
 This software interfaces with the Qt framework, copyright (c) The Qt Company;
-the RGBEASY API, copyright (c) Datapath Ltd; and the OpenCV library,
+the RGBEasy API, copyright (c) Datapath Ltd; and the OpenCV library,
 copyright (c) OpenCV team. Find out more in the VCS readme.</string>
                 </property>
                 <property name="alignment">

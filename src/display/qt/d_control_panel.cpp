@@ -98,6 +98,22 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
             ui->lineEdit_recordingFilename->setText(ui->lineEdit_recordingFilename->text().append(containerName.toLower()));
         }
+
+        // Encoder for video recording.
+        {
+            QString encoderName;
+            #if _WIN32
+                encoderName = "x264vfw"
+            #elif __linux__
+                encoderName = "x264";
+            #else
+                #error "Unknown platform."
+            #endif
+
+            int idx = ui->comboBox_recordingEncoding->findText(encoderName, Qt::MatchExactly);
+            k_assert((idx >= 0), "Failed to find a required container element in the GUI.");
+            ui->comboBox_recordingEncoding->setCurrentIndex(idx);
+        }
     }
 
     // Restore persistent settings.
@@ -1282,8 +1298,8 @@ void ControlPanel::on_pushButton_recordingStop_clicked()
 
 void ControlPanel::on_pushButton_recordingSelectFilename_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,
-                                                    "Select the file to record the video into", "",
+    QString filename = QFileDialog::getSaveFileName(this,
+                                                    "Select a file to record the video into", "",
                                                     "All files(*.*)");
     if (filename.isNull())
     {
