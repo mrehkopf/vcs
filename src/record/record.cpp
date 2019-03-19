@@ -211,11 +211,22 @@ bool krecord_start_recording(const char *const filename,
     RECORDING.meta.playbackFrameRate = frameRate;
     RECORDING.meta.numFrames = 0;
     RECORDING.meta.recordingTimer.start();
-    RECORDING.backBuffers[0].initialize(width, height, frameRate);
-    RECORDING.backBuffers[1].initialize(width, height, frameRate);
-    RECORDING.activeFrameBuffer = &RECORDING.backBuffers[0];
-
     FRAMERATE_ESTIMATE.initialize(0);
+
+    // Allocate memory.
+    try
+    {
+        RECORDING.backBuffers[0].initialize(width, height, frameRate);
+        RECORDING.backBuffers[1].initialize(width, height, frameRate);
+    }
+    catch(...)
+    {
+        kd_show_headless_error_message("VCS can't start recording",
+                                       "Failed to allocate memory for video frame buffers. "
+                                       "The video's resolution or frame rate may be too high.");
+        return false;
+    }
+    RECORDING.activeFrameBuffer = &RECORDING.backBuffers[0];
 
     #if _WIN32
         // Encoder: x264vfw. Container: AVI.
