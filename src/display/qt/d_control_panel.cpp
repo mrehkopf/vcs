@@ -1218,7 +1218,10 @@ void ControlPanel::update_recording_metainfo(void)
         ui->label_recordingMetaFileSize->setEnabled(true);
         ui->label_recordingMetaFileSize->setText(QString("%1 MB").arg(fileBytesize / (1024*1024)));
 
-        const uint totalDuration = ((1000.0/krecord_playback_framerate()) * krecord_num_frames_recorded())/1000;
+        ui->label_recordingMetaFramerate->setEnabled(true);
+        ui->label_recordingMetaFramerate->setText(QString::number(krecord_recording_framerate(), 'f', 2));
+
+        const uint totalDuration = (((1000.0/krecord_playback_framerate()) * krecord_num_frames_recorded()) / 1000);
         const uint seconds = totalDuration % 60;
         const uint minutes = totalDuration / 60;
         const uint hours = minutes / 60;

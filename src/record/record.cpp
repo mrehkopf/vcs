@@ -28,6 +28,45 @@
 
 static cv::VideoWriter VIDEO_WRITER;
 
+static QElapsedTimer fpsCountTimer;
+uint fpsCount = 0;
+double fps = 0;
+
+// Used to keep track of the recording's frame rate. Counts the number
+// of frames captured between two points in time, and derives from that
+// and the amount of time elapsed an estimate of the frame rate.
+static struct framerate_estimator_s
+{
+    uint prevFrameCount = 0;
+    double fps = 0;
+    QElapsedTimer timer;
+
+    void initialize(const uint frameCount)
+    {
+        this->fps = 0;
+        this->prevFrameCount = frameCount;
+        this->timer.start();
+
+        return;
+    }
+
+    void update(const uint frameCount)
+    {
+        const uint frames = (frameCount - this->prevFrameCount);
+
+        this->fps = (frames / (this->timer.restart() / 1000.0));
+        this->prevFrameCount = frameCount;
+
+        return;
+    }
+
+    double framerate(void)
+    {
+        return this->fps;
+    }
+
+} FRAMERATE_ESTIMATE;
+
 // Incoming frames will first be accumulated into a frame buffer; and when the buffer
 // is full, encoded into the video file.
 // NOTE: The frame buffer expcts frames to be of 24-bit color depth (e.g. BGR).
@@ -39,6 +78,9 @@ struct frame_buffer_s
 
     // How many frames the frame buffer is currently storing.
     uint numFrames = 0;
+
+    // A timestamp of roughly when the corresponding frame was captured.
+    std::vector<qint64> frameTimestamps;
 
     // How many frames in total the buffer has memory capacity for.
     uint maxNumFrames = 0;
@@ -54,6 +96,7 @@ struct frame_buffer_s
         this->maxNumFrames = frameCapacity;
         this->numFrames = 0;
         this->frameResolution = {width, height, 0};
+        this->frameTimestamps.resize(frameCapacity);
 
         return;
     }
@@ -80,13 +123,20 @@ struct frame_buffer_s
         return this->numFrames;
     }
 
+    const std::vector<qint64>& frame_timestamps(void) const
+    {
+        return frameTimestamps;
+    }
+
     // Returns a pointer to an unused area of the frame buffer that has the
     // capacity to hold the pixels of a single frame.
-    u8* next_slot(void)
+    u8* next_slot(const qint64 timestamp)
     {
         k_assert((this->numFrames < this->maxNumFrames), "Overflowing the video recording frame buffer.");
 
         const uint offset = ((this->frameResolution.w * this->frameResolution.h * 3) * this->numFrames);
+
+        this->frameTimestamps.at(this->numFrames) = timestamp;
         this->numFrames++;
 
         return (memoryPool.ptr() + offset);
@@ -105,7 +155,7 @@ struct frame_buffer_s
     }
 };
 
-struct recording_s
+static struct recording_s
 {
     // Accumulate the captured frames in two back buffers. When one buffer
     // fills up, we'll flip the buffers and encode the filled-up one's frames
@@ -158,6 +208,8 @@ bool krecord_start_recording(const char *const filename,
     RECORDING.backBuffers[1].initialize(width, height, frameRate);
     RECORDING.activeFrameBuffer = &RECORDING.backBuffers[0];
 
+    FRAMERATE_ESTIMATE.initialize(0);
+
     #if _WIN32
         // Encoder: x264vfw. Container: AVI.
         if (QFileInfo(filename).suffix() != "avi") recordingParams.filename += ".avi";
@@ -198,6 +250,11 @@ uint krecord_playback_framerate(void)
     return RECORDING.meta.playbackFrameRate;
 }
 
+double krecord_recording_framerate(void)
+{
+    return FRAMERATE_ESTIMATE.framerate();
+}
+
 std::string krecord_video_filename(void)
 {
     return RECORDING.meta.filename;
@@ -206,6 +263,11 @@ std::string krecord_video_filename(void)
 uint krecord_num_frames_recorded(void)
 {
     return RECORDING.meta.numFrames;
+}
+
+qint64 krecord_recording_time(void)
+{
+    return RECORDING.meta.recordingTimer.elapsed();
 }
 
 resolution_s krecord_video_resolution(void)
@@ -217,9 +279,27 @@ resolution_s krecord_video_resolution(void)
 
 void encode_frame_buffer(frame_buffer_s *const frameBuffer)
 {
-    for (uint i = 0; i < frameBuffer->frame_count(); i++)
+    const auto &frameTimestamps = frameBuffer->frame_timestamps();
+
+    // Nanoseconds between each frame at the recording's playback rate.
+    const qint64 stampDelta = ((1000.0 / RECORDING.meta.playbackFrameRate) * 1000000);
+
+    // Add frames at even intervals as per the recording's playback rate.
+    qint64 stamp = (RECORDING.meta.numFrames * stampDelta);
+    uint i = 0;
+    while (stamp <= frameTimestamps[frameBuffer->frame_count()-1])
     {
-        VIDEO_WRITER << cv::Mat(frameBuffer->resolution().h, frameBuffer->resolution().w, CV_8UC3, frameBuffer->frame(i));
+        for (; i < frameBuffer->frame_count(); i++)
+        {
+            if (frameTimestamps[i] >= stamp)
+            {
+                VIDEO_WRITER << cv::Mat(frameBuffer->resolution().h, frameBuffer->resolution().w, CV_8UC3, frameBuffer->frame(i));
+                RECORDING.meta.numFrames++;
+                break;
+            }
+        }
+
+        stamp += stampDelta;
     }
 
     frameBuffer->reset();
@@ -231,8 +311,6 @@ void encode_frame_buffer(frame_buffer_s *const frameBuffer)
 //
 void krecord_record_new_frame(void)
 {
-    static heap_bytes_s<u8> scratchBuffer(MAX_FRAME_SIZE, "Video recording conversion buffer.");
-
     k_assert(VIDEO_WRITER.isOpened(),
              "Attempted to record a video frame before video recording had been initialized.");
 
@@ -246,21 +324,20 @@ void krecord_record_new_frame(void)
 
     // Convert the frame to BRG, and save it into the frame buffer.
     cv::Mat originalFrame(resolution.h, resolution.w, CV_8UC4, (u8*)frameData);
-    cv::Mat frame = cv::Mat(resolution.h, resolution.w, CV_8UC3, RECORDING.activeFrameBuffer->next_slot());
+    cv::Mat frame = cv::Mat(resolution.h, resolution.w, CV_8UC3, RECORDING.activeFrameBuffer->next_slot(RECORDING.meta.recordingTimer.nsecsElapsed()));
     cv::cvtColor(originalFrame, frame, CV_BGRA2BGR);
-    RECORDING.meta.numFrames++;
-
-   // DEBUG(("Frame rate: %.4f", (double)RECORDING.numFrames / (RECORDING.recordingTimer.elapsed() / 1000)));
 
     // Once we've accumulated enough frames to fill the frame buffer, encode
     // its contents into the video file.
     if (RECORDING.activeFrameBuffer->is_full())
     {
+        RECORDING.encoderThread.waitForFinished();
+
+        FRAMERATE_ESTIMATE.update(RECORDING.meta.numFrames);
         kd_update_gui_recording_metainfo();
 
         // Run the encoding in a separate thread.
         const auto frameBuffer = RECORDING.activeFrameBuffer;
-        RECORDING.encoderThread.waitForFinished();
         RECORDING.encoderThread = QtConcurrent::run([=]{encode_frame_buffer(frameBuffer);});
 
         // Meanwhile, switch to the other frame buffer, and keep accumulating new frames.

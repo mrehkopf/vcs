@@ -15,6 +15,10 @@ uint krecord_num_frames_recorded(void);
 
 uint krecord_playback_framerate(void);
 
+qint64 krecord_recording_time(void);
+
+double krecord_recording_framerate(void);
+
 std::string krecord_video_filename(void);
 
 bool krecord_is_recording(void);
