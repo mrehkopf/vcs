@@ -28,10 +28,6 @@
 
 static cv::VideoWriter VIDEO_WRITER;
 
-static QElapsedTimer fpsCountTimer;
-uint fpsCount = 0;
-double fps = 0;
-
 // Used to keep track of the recording's frame rate. Counts the number
 // of frames captured between two points in time, and derives from that
 // and the amount of time elapsed an estimate of the frame rate.
@@ -54,8 +50,9 @@ static struct framerate_estimator_s
     {
         const uint frames = (frameCount - this->prevFrameCount);
 
-        this->fps = (frames / (this->timer.restart() / 1000.0));
+        this->fps = (frames / (this->timer.nsecsElapsed() / 1000000000.0));
         this->prevFrameCount = frameCount;
+        this->timer.restart();
 
         return;
     }
@@ -80,7 +77,7 @@ struct frame_buffer_s
     uint numFrames = 0;
 
     // A timestamp of roughly when the corresponding frame was captured.
-    std::vector<qint64> frameTimestamps;
+    std::vector<i64> frameTimestamps;
 
     // How many frames in total the buffer has memory capacity for.
     uint maxNumFrames = 0;
@@ -123,14 +120,14 @@ struct frame_buffer_s
         return this->numFrames;
     }
 
-    const std::vector<qint64>& frame_timestamps(void) const
+    const std::vector<i64>& frame_timestamps(void) const
     {
         return frameTimestamps;
     }
 
     // Returns a pointer to an unused area of the frame buffer that has the
     // capacity to hold the pixels of a single frame.
-    u8* next_slot(const qint64 timestamp)
+    u8* next_slot(const i64 timestamp)
     {
         k_assert((this->numFrames < this->maxNumFrames), "Overflowing the video recording frame buffer.");
 
@@ -283,7 +280,7 @@ uint krecord_num_frames_recorded(void)
     return RECORDING.meta.numFrames;
 }
 
-qint64 krecord_recording_time(void)
+i64 krecord_recording_time(void)
 {
     return RECORDING.meta.recordingTimer.elapsed();
 }
@@ -300,10 +297,10 @@ void encode_frame_buffer(frame_buffer_s *const frameBuffer)
     const auto &frameTimestamps = frameBuffer->frame_timestamps();
 
     // Nanoseconds between each frame at the recording's playback rate.
-    const qint64 stampDelta = ((1000.0 / RECORDING.meta.playbackFrameRate) * 1000000);
+    const i64 stampDelta = ((1000.0 / RECORDING.meta.playbackFrameRate) * 1000000);
 
     // Add frames at even intervals as per the recording's playback rate.
-    qint64 stamp = (RECORDING.meta.numFrames * stampDelta);
+    i64 stamp = (RECORDING.meta.numFrames * stampDelta);
     uint i = 0;
     while (stamp <= frameTimestamps[frameBuffer->frame_count()-1])
     {

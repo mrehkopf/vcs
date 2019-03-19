@@ -1272,7 +1272,7 @@ void ControlPanel::on_pushButton_recordingStart_clicked()
         ui->pushButton_recordingStart->setEnabled(false);
         ui->pushButton_recordingStop->setEnabled(true);
         ui->frame_recordingSettings->setEnabled(false);
-
+        ui->frame_recordingFile->setEnabled(false);
         ui->groupBox_outputOverrides->setEnabled(false);
 
         MAIN_WIN->update_window_title();
@@ -1288,7 +1288,7 @@ void ControlPanel::on_pushButton_recordingStop_clicked()
     ui->pushButton_recordingStart->setEnabled(true);
     ui->pushButton_recordingStop->setEnabled(false);
     ui->frame_recordingSettings->setEnabled(true);
-
+    ui->frame_recordingFile->setEnabled(true);
     ui->groupBox_outputOverrides->setEnabled(true);
 
     MAIN_WIN->update_window_title();
