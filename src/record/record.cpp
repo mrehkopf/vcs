@@ -28,6 +28,9 @@
 
 static cv::VideoWriter VIDEO_WRITER;
 
+// The maximum number of frames that can fit into a frame buffer.
+static const uint FRAME_BUFFER_CAPACITY = 60;
+
 // Used to keep track of the recording's frame rate. Counts the number
 // of frames captured between two points in time, and derives from that
 // and the amount of time elapsed an estimate of the frame rate.
@@ -213,14 +216,14 @@ bool krecord_start_recording(const char *const filename,
     // Allocate memory.
     try
     {
-        RECORDING.backBuffers[0].initialize(width, height, frameRate);
-        RECORDING.backBuffers[1].initialize(width, height, frameRate);
+        RECORDING.backBuffers[0].initialize(width, height, FRAME_BUFFER_CAPACITY);
+        RECORDING.backBuffers[1].initialize(width, height, FRAME_BUFFER_CAPACITY);
     }
     catch(...)
     {
         kd_show_headless_error_message("VCS can't start recording",
                                        "Failed to allocate memory for video frame buffers. "
-                                       "The video's resolution or frame rate may be too high.");
+                                       "The video's resolution may be too high.");
         return false;
     }
     RECORDING.activeFrameBuffer = &RECORDING.backBuffers[0];
