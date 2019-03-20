@@ -205,6 +205,8 @@ bool krecord_start_recording(const char *const filename,
                              const uint frameRate,
                              const bool linearFrameInsertion)
 {
+    DEBUG(("Starting recording into file '%s'...", filename));
+
     k_assert(!VIDEO_WRITER.isOpened(),
              "Attempting to intialize a recording that has already been initialized.");
 
@@ -388,6 +390,8 @@ void krecord_record_new_frame(void)
 
 void krecord_stop_recording(void)
 {
+    DEBUG(("Stopping recording into file '%s'...", RECORDING.meta.filename.c_str()));
+
     RECORDING.encoderThread.waitForFinished();
     VIDEO_WRITER.release();
 

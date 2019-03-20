@@ -1371,6 +1371,10 @@ void ControlPanel::on_pushButton_recordingStart_clicked()
         return;
     }
 
+    // Remove the existing file, if any. Without this, the file size reported
+    // in VCS's GUI during recording may be inaccurate.
+    QFile(ui->lineEdit_recordingFilename->text()).remove();
+
     const resolution_s videoResolution = ks_output_resolution();
 
     if (krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
