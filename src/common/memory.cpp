@@ -62,7 +62,7 @@ static void initialize_cache(void)
     static_assert(std::is_same<decltype(MEMORY_CACHE), u8*>::value && (sizeof(u8) == 1), "Expected the memory cache to be u8*.");
     MEMORY_CACHE = (u8*)calloc(MEMORY_CACHE_SIZE, 1); // Expect to use calloc(), for a cleared-out block.
     NEXT_FREE = MEMORY_CACHE;
-    k_assert(MEMORY_CACHE != NULL, "The memory manager failed to initialize.");
+    k_assert(MEMORY_CACHE != NULL, "The memory manager failed to allocate enough memory for its operation.");
 
     // Use the beginning of the memory cache for the allocation table.
     k_assert((ALLOC_TABLE == NULL), "Expected a null allocation table.");

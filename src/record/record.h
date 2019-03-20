@@ -9,7 +9,7 @@
 
 #include "../common/types.h"
 
-bool krecord_start_recording(const char *const filename, const uint width, const uint height, const uint frameRate);
+bool krecord_start_recording(const char *const filename, const uint width, const uint height, const uint frameRate, const bool linearFrameInsertion = true);
 
 resolution_s krecord_video_resolution(void);
 

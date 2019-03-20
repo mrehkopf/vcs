@@ -171,6 +171,8 @@ private:
 
     void reset_capture_bit_depth_combobox();
 
+    bool apply_x264_registry_settings();
+
     VideoAndColorDialog *videocolorDlg = nullptr;
 
     AliasDialog *aliasDlg = nullptr;

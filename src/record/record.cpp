@@ -170,6 +170,14 @@ static struct recording_s
     // We'll run the recording's video encoding in a separate thread.
     QFuture<void> encoderThread;
 
+    // If true, frames will be inserted into the video in linear time, not as
+    // they come in. For instance, if the input FPS is 55 and the video's playback
+    // rate is set to 60, linear insertion tries to ensure that frames are duplicated
+    // and/or dropped to ensure roughly 60 FPS output into the video. Without linear
+    // insertion, the frames would be output at 55 FPS, and playing the video at its
+    // rate of 60 FPS would result in temporal skew.
+    bool linearFrameInsertion = true;
+
     // Metainfo.
     struct info_s
     {
@@ -194,7 +202,8 @@ static struct recording_s
 //
 bool krecord_start_recording(const char *const filename,
                              const uint width, const uint height,
-                             const uint frameRate)
+                             const uint frameRate,
+                             const bool linearFrameInsertion)
 {
     k_assert(!VIDEO_WRITER.isOpened(),
              "Attempting to intialize a recording that has already been initialized.");
@@ -209,6 +218,7 @@ bool krecord_start_recording(const char *const filename,
     RECORDING.meta.filename = filename;
     RECORDING.meta.resolution = {width, height, 24};
     RECORDING.meta.playbackFrameRate = frameRate;
+    RECORDING.linearFrameInsertion = linearFrameInsertion;
     RECORDING.meta.numFrames = 0;
     RECORDING.meta.recordingTimer.start();
     FRAMERATE_ESTIMATE.initialize(0);
@@ -230,7 +240,7 @@ bool krecord_start_recording(const char *const filename,
 
     #if _WIN32
         // Encoder: x264vfw. Container: AVI.
-        if (QFileInfo(filename).suffix() != "avi") recordingParams.filename += ".avi";
+        if (QFileInfo(filename).suffix() != "avi") RECORDING.meta.filename += ".avi";
         const auto encoder = cv::VideoWriter::fourcc('X','2','6','4');
     #elif __linux__
         // Encoder: x264. Container: MP4.
@@ -297,27 +307,38 @@ resolution_s krecord_video_resolution(void)
 
 void encode_frame_buffer(frame_buffer_s *const frameBuffer)
 {
-    const auto &frameTimestamps = frameBuffer->frame_timestamps();
-
-    // Nanoseconds between each frame at the recording's playback rate.
-    const i64 stampDelta = ((1000.0 / RECORDING.meta.playbackFrameRate) * 1000000);
-
-    // Add frames at even intervals as per the recording's playback rate.
-    i64 stamp = (RECORDING.meta.numFrames * stampDelta);
-    uint i = 0;
-    while (stamp <= frameTimestamps[frameBuffer->frame_count()-1])
+    if (RECORDING.linearFrameInsertion)
     {
-        for (; i < frameBuffer->frame_count(); i++)
-        {
-            if (frameTimestamps[i] >= stamp)
-            {
-                VIDEO_WRITER << cv::Mat(frameBuffer->resolution().h, frameBuffer->resolution().w, CV_8UC3, frameBuffer->frame(i));
-                RECORDING.meta.numFrames++;
-                break;
-            }
-        }
+        const auto &frameTimestamps = frameBuffer->frame_timestamps();
 
-        stamp += stampDelta;
+        // Nanoseconds between each frame at the recording's playback rate.
+        const i64 stampDelta = ((1000.0 / RECORDING.meta.playbackFrameRate) * 1000000);
+
+        // Add frames at even intervals as per the recording's playback rate.
+        i64 stamp = (RECORDING.meta.numFrames * stampDelta);
+        uint i = 0;
+        while (stamp <= frameTimestamps[frameBuffer->frame_count()-1])
+        {
+            for (; i < frameBuffer->frame_count(); i++)
+            {
+                if (frameTimestamps[i] >= stamp)
+                {
+                    VIDEO_WRITER << cv::Mat(frameBuffer->resolution().h, frameBuffer->resolution().w, CV_8UC3, frameBuffer->frame(i));
+                    RECORDING.meta.numFrames++;
+                    break;
+                }
+            }
+
+            stamp += stampDelta;
+        }
+    }
+    else
+    {
+        for (uint i = 0; i < frameBuffer->frame_count(); i++)
+        {
+            VIDEO_WRITER << cv::Mat(frameBuffer->resolution().h, frameBuffer->resolution().w, CV_8UC3, frameBuffer->frame(i));
+            RECORDING.meta.numFrames++;
+        }
     }
 
     frameBuffer->reset();

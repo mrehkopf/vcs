@@ -1,4 +1,5 @@
 bin/
 .vscode/
+misc/
 generated_files/
 *.pro.user

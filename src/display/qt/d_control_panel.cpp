@@ -33,6 +33,10 @@
 #include "d_window.h"
 #include "d_util.h"
 
+#if _WIN32
+    #include <windows.h>
+#endif
+
 static MainWindow *MAIN_WIN = nullptr;
 
 ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
@@ -81,38 +85,46 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
         ui->groupBox_aboutVCS->setTitle("VCS v" + QString("%1").arg(PROGRAM_VERSION_STRING));
 
-        // Container for video recording.
+        // The 'Recording' tab.
         {
-            QString containerName;
+            // Disable certain recording features, depending on what functionality is
+            // available on the system.
             #if _WIN32
-                containerName = "AVI"
+                /// At the moment, no changes are needed for Windows.
             #elif __linux__
-                containerName = "MP4";
+                ui->groupBox_recordingCodecSettings->setEnabled(false);
             #else
                 #error "Unknown platform."
             #endif
 
-            int idx = ui->comboBox_recordingContainer->findText(containerName, Qt::MatchExactly);
-            k_assert((idx >= 0), "Failed to find a required container element in the GUI.");
-            ui->comboBox_recordingContainer->setCurrentIndex(idx);
+            // Video container.
+            {
+                QString containerName;
+                #if _WIN32
+                    containerName = "AVI";
+                #elif __linux__
+                    containerName = "MP4";
+                #else
+                    #error "Unknown platform."
+                #endif
 
-            ui->lineEdit_recordingFilename->setText(ui->lineEdit_recordingFilename->text().append(containerName.toLower()));
-        }
+                ui->comboBox_recordingContainer->addItem(containerName);
+                ui->lineEdit_recordingFilename->setText(ui->lineEdit_recordingFilename->text().append(containerName.toLower()));
+            }
 
-        // Encoder for video recording.
-        {
-            QString encoderName;
-            #if _WIN32
-                encoderName = "x264vfw"
-            #elif __linux__
-                encoderName = "x264";
-            #else
-                #error "Unknown platform."
-            #endif
+            // Encoder for video recording.
+            {
+                QString encoderName;
+                #if _WIN32
+                    encoderName = "x264vfw";
+                #elif __linux__
+                    encoderName = "x264";
+                #else
+                    #error "Unknown platform."
+                #endif
 
-            int idx = ui->comboBox_recordingEncoding->findText(encoderName, Qt::MatchExactly);
-            k_assert((idx >= 0), "Failed to find a required container element in the GUI.");
-            ui->comboBox_recordingEncoding->setCurrentIndex(idx);
+                ui->comboBox_recordingEncoding->addItem(encoderName);
+            }
         }
     }
 
@@ -1261,13 +1273,110 @@ void ControlPanel::update_recording_metainfo(void)
     return;
 }
 
+// Applies the x264 codec settings from VCS's GUI into the Windows registry, from
+// where the codec can pick them up when it starts. On Linux, no settings need be
+// written.
+//
+bool ControlPanel::apply_x264_registry_settings(void)
+{
+#if _WIN32
+    const auto open_x264_registry = []()->HKEY
+    {
+        HKEY key;
+
+        if (RegOpenKeyExA(HKEY_CURRENT_USER,
+                          "Software\\GNU\\x264",
+                          0,
+                          (KEY_QUERY_VALUE | KEY_SET_VALUE),
+                          &key) != ERROR_SUCCESS)
+        {
+            return nullptr;
+        }
+
+        return key;
+    };
+
+    const auto close_x264_registry = [](HKEY regKey)->bool
+    {
+        return bool(RegCloseKey(regKey) == ERROR_SUCCESS);
+    };
+
+    const auto set_x264_registry_value = [](const HKEY key,
+                                            const char *const valueName,
+                                            const int value)->bool
+    {
+        return (RegSetValueExA(key, valueName, 0, REG_DWORD, (const BYTE*)&value, sizeof(value)) == ERROR_SUCCESS);
+    };
+
+    const auto set_x264_registry_string = [](const HKEY key,
+                                             const char *const stringName,
+                                             const char *const string)->bool
+    {
+        return (RegSetValueExA(key, stringName, 0, REG_SZ, (const BYTE*)string, (strlen(string) + 1)) == ERROR_SUCCESS);
+    };
+
+    const HKEY reg = open_x264_registry();
+    if (reg == nullptr)
+    {
+        kd_show_headless_error_message("VCS can't start recording",
+                                       "Failed to detect an installation of the x264vfw codec.");
+        return false;
+    }
+
+    const uint colorSpace = [=]
+    {
+        const QString pixelFormat = ui->comboBox_recordingEncoderPixelFormat->currentText();
+        if (pixelFormat == "YUV 4:2:0") return 0;
+        else if (pixelFormat == "RGB") return 4;
+        else k_assert(0, "Unrecognized x264 pixel format name.");
+
+        return 0;
+    }();
+
+    const QString profileString = [=]
+    {
+        const QString profile = ui->comboBox_recordingEncoderProfile->currentText();
+        if (profile == "High 4:4:4" || colorSpace == 4) return "high444";
+        else if (profile == "High") return "high";
+        else if (profile == "Main") return "main";
+        else if (profile == "Baseline") return "baseline";
+        else k_assert(0, "Unrecognized x264 profile name.");
+
+        return "unknown";
+    }();
+
+    const QString presetString = ui->comboBox_recordingEncoderPreset->currentText().toLower();
+
+    const QString commandLineString = ui->lineEdit_recordingEncoderArguments->text();
+
+    if (!set_x264_registry_string(reg, "profile", profileString.toStdString().c_str()) ||
+        !set_x264_registry_string(reg, "preset", presetString.toStdString().c_str()) ||
+        !set_x264_registry_string(reg, "extra_cmdline", commandLineString.toStdString().c_str()) ||
+        !set_x264_registry_value(reg, "colorspace", colorSpace) ||
+        !set_x264_registry_value(reg, "ratefactor", (ui->spinBox_recordingEncoderCRF->value() * 10)))
+    {
+        return false;
+    }
+
+    close_x264_registry(reg);
+#endif
+
+    return true;
+}
+
 void ControlPanel::on_pushButton_recordingStart_clicked()
 {
+    if (!apply_x264_registry_settings())
+    {
+        return;
+    }
+
     const resolution_s videoResolution = ks_output_resolution();
 
     if (krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
                                 videoResolution.w, videoResolution.h,
-                                ui->spinBox_recordingFramerate->value()))
+                                ui->spinBox_recordingFramerate->value(),
+                                ui->checkBox_recordingLinearFrameInsertion->isChecked()))
     {
         ui->pushButton_recordingStart->setEnabled(false);
         ui->pushButton_recordingStop->setEnabled(true);
