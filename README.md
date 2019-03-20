@@ -121,6 +121,7 @@ per second. The pipeline consists of the following stages: a frame being receive
 **Renderer.** Set the type of rendering VCS uses to draw captured frames onto the [output window](#the-output-window). The _software_ renderer should be the most compatible option. The _OpenGL_ renderer may offer e.g. compatibility with adaptive synchronization technologies.
 - The _OpenGL_ renderer may not work in Windows XP.
 - The [magnifying glass](#magnifying-glass) feature is not available when using the _OpenGL_ renderer.
+- Padded output (see below) is not available when using the _OpenGL_ renderer.
 - The overlay (see below) is not available when using the _OpenGL_ renderer.
 
 **Overlay.** Create a message to be overlaid on VCS's output window during capture. You can enter custom text, choose from several variables that update in real-time, and style the message with HTML. The overlay will only be shown while a signal is being received from the capture hardware.
@@ -138,6 +139,7 @@ per second. The pipeline consists of the following stages: a frame being receive
 **Relative scale.** Scale the output frames as a percentage of the input resolution.
 
 **Padded output.** Pad the output frames to the given resolution. Padding is performed after all other forms of scaling (described above). Padding will never scale the frame itself: for instance, if the input frame is 640 x 480, and you pad it to 1280 x 960, the output will be a 1280 x 960 image with black bars around the perimeter and the original 640 x 480 frame in the middle.
+- Padded output is not available when using the OpenGL renderer.
 
 **Upscaler.** Set the type of scaling to be used when the output resolution is larger than the input resolution. Any relevant custom filtering (see below) will override this setting.
 

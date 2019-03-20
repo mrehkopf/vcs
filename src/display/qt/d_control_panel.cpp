@@ -1319,7 +1319,7 @@ bool ControlPanel::apply_x264_registry_settings(void)
     if (reg == nullptr)
     {
         kd_show_headless_error_message("VCS can't start recording",
-                                       "Failed to detect an installation of the x264vfw codec.");
+                                       "Failed to detect an installation of the 32-bit x264vfw video codec.");
         return false;
     }
 
