@@ -219,15 +219,17 @@ output window ........... Scale the output window up/down.
 F1 ...................... Force the capture's input resolution to 640 x 400.
 
 F2 ...................... Force the capture's input resolution to 720 x 400.
-```
 
-Additionally, the following keyboard shortcuts are available since VCS 1.2.7:
-```
 Ctrl+A .................. Open the anti-tear dialog.
 
 Ctrl+F .................. Open the filter sets dialog.
 
 Ctrl+V .................. Open the video settings dialog.
+```
+
+Additionally, the following keyboard shortcuts are available since VCS 1.3.1:
+```
+F11 ..................... Toggle full-screen mode on/off.
 ```
 
 ## Command-line

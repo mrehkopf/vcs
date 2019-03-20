@@ -381,6 +381,22 @@ void MainWindow::set_keyboard_shortcuts()
     f2->setContext(Qt::ApplicationShortcut);
     connect(f2, &QShortcut::activated, []{kmain_change_capture_input_resolution({720, 400, 0});});
 
+    /// NOTE: Qt's full-screen mode might not work correctly under Linux, depending
+    /// on the distro etc.
+    QShortcut *f11 = new QShortcut(QKeySequence(Qt::Key_F11), this);
+    f11->setContext(Qt::ApplicationShortcut);
+    connect(f11, &QShortcut::activated, [this]
+    {
+        if (this->isFullScreen())
+        {
+            this->showNormal();
+        }
+        else
+        {
+            this->showFullScreen();
+        }
+    });
+
     QShortcut *ctrlV = new QShortcut(QKeySequence("ctrl+v"), this);
     ctrlV->setContext(Qt::ApplicationShortcut);
     connect(ctrlV, &QShortcut::activated, [this]{this->controlPanel->open_video_adjust_dialog();});
