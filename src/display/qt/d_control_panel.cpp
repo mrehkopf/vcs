@@ -90,7 +90,7 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
             // Disable certain recording features, depending on what functionality is
             // available on the system.
             #if _WIN32
-                /// At the moment, no changes are needed for Windows.
+                /// At the moment, no changes are needed on Windows.
             #elif __linux__
                 ui->frame_recordingCodecSettings->setEnabled(false);
             #else
@@ -135,6 +135,29 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
         ui->checkBox_customFiltering->setChecked(kpers_value_of("custom_filtering", INI_GROUP_OUTPUT_FILTERS, 0).toBool());
         ui->checkBox_outputAntiTear->setChecked(kpers_value_of("enabled", INI_GROUP_ANTI_TEAR, 0).toBool());
 
+        // Recording.
+        ui->spinBox_recordingFramerate->setValue(kpers_value_of("frame_rate", INI_GROUP_RECORDING, 60).toUInt());
+        ui->checkBox_recordingLinearFrameInsertion->setChecked(kpers_value_of("linear_sampling", INI_GROUP_RECORDING, true).toBool());
+        #if _WIN32
+            ui->comboBox_recordingEncoderProfile->setCurrentIndex(
+                        ui->comboBox_recordingEncoderProfile->findText(
+                            kpers_value_of("profile", INI_GROUP_RECORDING, "High 4:4:4").toString(), Qt::MatchExactly));
+
+            ui->comboBox_recordingEncoderPixelFormat->setCurrentIndex(
+                        ui->comboBox_recordingEncoderPixelFormat->findText(
+                            kpers_value_of("pixel_format", INI_GROUP_RECORDING, "RGB").toString(), Qt::MatchExactly));
+
+            ui->comboBox_recordingEncoderPreset->setCurrentIndex(
+                        ui->comboBox_recordingEncoderPreset->findText(
+                            kpers_value_of("preset", INI_GROUP_RECORDING, "Superfast").toString(), Qt::MatchExactly));
+
+            ui->spinBox_recordingEncoderCRF->setValue(kpers_value_of("crf", INI_GROUP_RECORDING, 1).toUInt());
+
+            ui->checkBox_recordingEncoderZeroLatency->setChecked(kpers_value_of("zero_latency", INI_GROUP_RECORDING, true).toBool());
+
+            ui->lineEdit_recordingEncoderArguments->setText(kpers_value_of("command_line", INI_GROUP_RECORDING, "").toString());
+        #endif
+
         // Renderer.
         {
             const QString rendererName = kpers_value_of("name", INI_GROUP_RENDERER, "Software").toString();
@@ -157,14 +180,29 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 ControlPanel::~ControlPanel()
 {
     // Save the current settings.
-    kpers_set_value("name", INI_GROUP_RENDERER, ui->comboBox_renderer->currentText());
-    kpers_set_value("upscaler", INI_GROUP_OUTPUT_FILTERS, ui->comboBox_outputUpscaleFilter->currentText());
-    kpers_set_value("downscaler", INI_GROUP_OUTPUT_FILTERS, ui->comboBox_outputDownscaleFilter->currentText());
-    kpers_set_value("enabled", INI_GROUP_LOG, ui->checkBox_logEnabled->isChecked());
-    kpers_set_value("custom_filtering", INI_GROUP_OUTPUT_FILTERS, ui->checkBox_customFiltering->isChecked());
-    kpers_set_value("enabled", INI_GROUP_ANTI_TEAR, ui->checkBox_outputAntiTear->isChecked());
-    kpers_set_value("tab", INI_GROUP_CONTROL_PANEL, ui->tabWidget->currentIndex());
-    kpers_set_value("control_panel", INI_GROUP_GEOMETRY, size());
+    {
+        kpers_set_value("name", INI_GROUP_RENDERER, ui->comboBox_renderer->currentText());
+        kpers_set_value("upscaler", INI_GROUP_OUTPUT_FILTERS, ui->comboBox_outputUpscaleFilter->currentText());
+        kpers_set_value("downscaler", INI_GROUP_OUTPUT_FILTERS, ui->comboBox_outputDownscaleFilter->currentText());
+        kpers_set_value("enabled", INI_GROUP_LOG, ui->checkBox_logEnabled->isChecked());
+        kpers_set_value("custom_filtering", INI_GROUP_OUTPUT_FILTERS, ui->checkBox_customFiltering->isChecked());
+        kpers_set_value("enabled", INI_GROUP_ANTI_TEAR, ui->checkBox_outputAntiTear->isChecked());
+        kpers_set_value("tab", INI_GROUP_CONTROL_PANEL, ui->tabWidget->currentIndex());
+        kpers_set_value("control_panel", INI_GROUP_GEOMETRY, size());
+
+        // Recording.
+        kpers_set_value("frame_rate", INI_GROUP_RECORDING, ui->spinBox_recordingFramerate->value());
+        kpers_set_value("linear_sampling", INI_GROUP_RECORDING, ui->checkBox_recordingLinearFrameInsertion->isChecked());
+        #if _WIN32
+            // Encoder settings.
+            kpers_set_value("profile", INI_GROUP_RECORDING, ui->comboBox_recordingEncoderProfile->currentText());
+            kpers_set_value("pixel_format", INI_GROUP_RECORDING, ui->comboBox_recordingEncoderPixelFormat->currentText());
+            kpers_set_value("preset", INI_GROUP_RECORDING, ui->comboBox_recordingEncoderPreset->currentText());
+            kpers_set_value("crf", INI_GROUP_RECORDING, ui->spinBox_recordingEncoderCRF->value());
+            kpers_set_value("zero_latency", INI_GROUP_RECORDING, ui->checkBox_recordingEncoderZeroLatency->isChecked());
+            kpers_set_value("command_line", INI_GROUP_RECORDING, ui->lineEdit_recordingEncoderArguments->text());
+        #endif
+    }
 
     delete ui;
     ui = nullptr;

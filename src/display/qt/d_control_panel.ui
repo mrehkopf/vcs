@@ -44,7 +44,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <property name="documentMode">
       <bool>true</bool>
@@ -2073,8 +2073,8 @@
                <widget class="QLabel" name="label_17">
                 <property name="text">
                  <string>A third-party capture utility for certain Datapath capture cards.
+Neither associated with nor endorsed by Datapath.
 Copyright (c) 2017-2019 Tarpeeksi Hyvae Soft.
-Not associated with or endorsed by Datapath.
 
 This software interfaces with the Qt framework, copyright (c) The Qt Company;
 the RGBEasy API, copyright (c) Datapath Ltd; and the OpenCV library,
