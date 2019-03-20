@@ -24,9 +24,9 @@
     #include <opencv2/core/core.hpp>
     #include <opencv2/imgproc/imgproc.hpp>
     #include <opencv2/videoio/videoio.hpp>
-#endif
 
-static cv::VideoWriter VIDEO_WRITER;
+    static cv::VideoWriter VIDEO_WRITER;
+#endif
 
 // The maximum number of frames that can fit into a frame buffer.
 static const uint FRAME_BUFFER_CAPACITY = 60;
@@ -205,6 +205,18 @@ bool krecord_start_recording(const char *const filename,
                              const uint frameRate,
                              const bool linearFrameInsertion)
 {
+#ifndef USE_OPENCV
+    kd_show_headless_info_message("VCS can't start recording",
+                                  "OpenCV is needed for recording, but has been disabled on this build of VCS.");
+
+    (void)filename;
+    (void)width;
+    (void)height;
+    (void)frameRate;
+    (void)linearFrameInsertion;
+
+    return false;
+#else
     DEBUG(("Starting recording into file '%s'...", filename));
 
     k_assert(!VIDEO_WRITER.isOpened(),
@@ -268,11 +280,14 @@ bool krecord_start_recording(const char *const filename,
     kd_update_gui_recording_metainfo();
 
     return true;
+#endif
 }
 
 bool krecord_is_recording(void)
 {
+#ifdef USE_OPENCV
     return VIDEO_WRITER.isOpened();
+#endif
 }
 
 uint krecord_playback_framerate(void)
@@ -309,6 +324,7 @@ resolution_s krecord_video_resolution(void)
 
 void encode_frame_buffer(frame_buffer_s *const frameBuffer)
 {
+#ifdef USE_OPENCV
     if (RECORDING.linearFrameInsertion)
     {
         const auto &frameTimestamps = frameBuffer->frame_timestamps();
@@ -346,12 +362,14 @@ void encode_frame_buffer(frame_buffer_s *const frameBuffer)
     frameBuffer->reset();
 
     return;
+#endif
 }
 
 // Encode VCS's most recent output frame into the video.
 //
 void krecord_record_new_frame(void)
 {
+#ifdef USE_OPENCV
     k_assert(VIDEO_WRITER.isOpened(),
              "Attempted to record a video frame before video recording had been initialized.");
 
@@ -386,10 +404,12 @@ void krecord_record_new_frame(void)
     }
 
     return;
+#endif
 }
 
 void krecord_stop_recording(void)
 {
+#ifdef USE_OPENCV
     DEBUG(("Stopping recording into file '%s'...", RECORDING.meta.filename.c_str()));
 
     RECORDING.encoderThread.waitForFinished();
@@ -398,4 +418,5 @@ void krecord_stop_recording(void)
     kd_update_gui_recording_metainfo();
 
     return;
+#endif
 }
