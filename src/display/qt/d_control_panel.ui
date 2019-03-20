@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>660</width>
-    <height>389</height>
+    <width>607</width>
+    <height>346</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -104,7 +104,7 @@
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>33</height>
+                 <height>0</height>
                 </size>
                </property>
                <item>
@@ -268,7 +268,7 @@
                <property name="minimumSize">
                 <size>
                  <width>0</width>
-                 <height>33</height>
+                 <height>0</height>
                 </size>
                </property>
                <property name="text">
@@ -1175,7 +1175,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>33</height>
+                <height>0</height>
                </size>
               </property>
               <property name="text">
@@ -1194,7 +1194,7 @@
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>33</height>
+                <height>0</height>
                </size>
               </property>
               <property name="text">
@@ -1248,28 +1248,18 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QLineEdit" name="lineEdit_recordingFilename">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>vcs.</string>
-               </property>
-               <property name="placeholderText">
-                <string>Output file</string>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QPushButton" name="pushButton_recordingSelectFilename">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>34</height>
+                </size>
                </property>
                <property name="maximumSize">
                 <size>
@@ -1282,11 +1272,33 @@
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QLineEdit" name="lineEdit_recordingFilename">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>34</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>vcs.</string>
+               </property>
+               <property name="placeholderText">
+                <string>Output file</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_32" stretch="5,4">
+           <layout class="QHBoxLayout" name="horizontalLayout_44" stretch="5,4">
             <item>
              <widget class="QGroupBox" name="groupBox_recordingSettings">
               <property name="title">
@@ -1295,6 +1307,9 @@
               <layout class="QVBoxLayout" name="verticalLayout_13">
                <property name="topMargin">
                 <number>9</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
                </property>
                <property name="bottomMargin">
                 <number>0</number>
@@ -1312,8 +1327,8 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>295</width>
-                    <height>295</height>
+                    <width>274</width>
+                    <height>293</height>
                    </rect>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1324,10 +1339,10 @@
                     <number>0</number>
                    </property>
                    <property name="rightMargin">
-                    <number>5</number>
+                    <number>9</number>
                    </property>
                    <property name="bottomMargin">
-                    <number>0</number>
+                    <number>9</number>
                    </property>
                    <item>
                     <widget class="QFrame" name="frame_recordingSettings">
@@ -1367,6 +1382,12 @@
                         </item>
                         <item>
                          <widget class="QSpinBox" name="spinBox_recordingFramerate">
+                          <property name="frame">
+                           <bool>true</bool>
+                          </property>
+                          <property name="buttonSymbols">
+                           <enum>QAbstractSpinBox::NoButtons</enum>
+                          </property>
                           <property name="minimum">
                            <number>1</number>
                           </property>
@@ -1385,7 +1406,7 @@
                         <item>
                          <widget class="QLabel" name="label_26">
                           <property name="text">
-                           <string>Linear frame insert:</string>
+                           <string>Linear sampling:</string>
                           </property>
                          </widget>
                         </item>
@@ -1459,22 +1480,19 @@
                        </layout>
                       </item>
                       <item>
-                       <widget class="QGroupBox" name="groupBox_recordingCodecSettings">
-                        <property name="title">
-                         <string>Video codec options</string>
-                        </property>
+                       <widget class="QFrame" name="frame_recordingCodecSettings">
                         <layout class="QVBoxLayout" name="verticalLayout_10">
                          <property name="leftMargin">
-                          <number>9</number>
+                          <number>0</number>
                          </property>
                          <property name="topMargin">
-                          <number>9</number>
+                          <number>0</number>
                          </property>
                          <property name="rightMargin">
-                          <number>9</number>
+                          <number>0</number>
                          </property>
                          <property name="bottomMargin">
-                          <number>9</number>
+                          <number>0</number>
                          </property>
                          <item>
                           <layout class="QHBoxLayout" name="horizontalLayout_40">
@@ -1610,11 +1628,35 @@
                            </item>
                            <item>
                             <widget class="QSpinBox" name="spinBox_recordingEncoderCRF">
+                             <property name="frame">
+                              <bool>true</bool>
+                             </property>
+                             <property name="buttonSymbols">
+                              <enum>QAbstractSpinBox::NoButtons</enum>
+                             </property>
                              <property name="minimum">
                               <number>1</number>
                              </property>
                              <property name="maximum">
                               <number>50</number>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_30">
+                           <item>
+                            <widget class="QLabel" name="label_27">
+                             <property name="text">
+                              <string>Zero latency:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QCheckBox" name="checkBox_recordingEncoderZeroLatency">
+                             <property name="text">
+                              <string>Enabled</string>
                              </property>
                             </widget>
                            </item>
@@ -1651,9 +1693,30 @@
                  </sizepolicy>
                 </property>
                 <property name="title">
-                 <string>Video information</string>
+                 <string>Information</string>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_7">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_32">
+                   <item>
+                    <widget class="QLabel" name="label_8">
+                     <property name="text">
+                      <string>Resolution:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_recordingMetaResolution">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
+                     <property name="text">
+                      <string>n/a</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_35">
                    <item>
@@ -1746,7 +1809,7 @@
                    <property name="sizeHint" stdset="0">
                     <size>
                      <width>20</width>
-                     <height>40</height>
+                     <height>9000</height>
                     </size>
                    </property>
                   </spacer>
@@ -1755,14 +1818,14 @@
                </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_31" stretch="0,2">
+               <layout class="QHBoxLayout" name="horizontalLayout_31" stretch="1,1">
                 <property name="spacing">
                  <number>6</number>
                 </property>
                 <item>
                  <widget class="QPushButton" name="pushButton_recordingStart">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
@@ -1770,11 +1833,11 @@
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
-                    <height>33</height>
+                    <height>50</height>
                    </size>
                   </property>
                   <property name="text">
-                   <string>Start recording</string>
+                   <string>Record</string>
                   </property>
                  </widget>
                 </item>
@@ -1784,7 +1847,7 @@
                    <bool>false</bool>
                   </property>
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
@@ -1792,11 +1855,11 @@
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
-                    <height>33</height>
+                    <height>50</height>
                    </size>
                   </property>
                   <property name="text">
-                   <string>Save video</string>
+                   <string>Save</string>
                   </property>
                  </widget>
                 </item>
@@ -1805,23 +1868,6 @@
              </layout>
             </item>
            </layout>
-          </item>
-          <item>
-           <widget class="Line" name="line">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note:&lt;/span&gt; All frames in the video will be scaled/stretched to VCS's current output size.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-           </widget>
           </item>
          </layout>
         </widget>
@@ -1973,7 +2019,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>624</width>
+            <width>574</width>
             <height>516</height>
            </rect>
           </property>

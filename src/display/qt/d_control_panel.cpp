@@ -92,7 +92,7 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
             #if _WIN32
                 /// At the moment, no changes are needed for Windows.
             #elif __linux__
-                ui->groupBox_recordingCodecSettings->setEnabled(false);
+                ui->frame_recordingCodecSettings->setEnabled(false);
             #else
                 #error "Unknown platform."
             #endif
@@ -1249,6 +1249,12 @@ void ControlPanel::update_recording_metainfo(void)
         ui->label_recordingMetaFramerate->setEnabled(true);
         ui->label_recordingMetaFramerate->setText(QString::number(krecord_recording_framerate(), 'f', 2));
 
+        const resolution_s resolution = krecord_video_resolution();
+        ui->label_recordingMetaResolution->setEnabled(true);
+        ui->label_recordingMetaResolution->setText(QString("%1 x %2 @ %3").arg(resolution.w)
+                                                                          .arg(resolution.h)
+                                                                          .arg(krecord_playback_framerate()));
+
         const uint totalDuration = (((1000.0/krecord_playback_framerate()) * krecord_num_frames_recorded()) / 1000);
         const uint seconds = totalDuration % 60;
         const uint minutes = totalDuration / 60;
@@ -1260,6 +1266,9 @@ void ControlPanel::update_recording_metainfo(void)
     }
     else
     {
+        ui->label_recordingMetaResolution->setText("n/a");
+        ui->label_recordingMetaResolution->setEnabled(false);
+
         ui->label_recordingMetaDuration->setText("n/a");
         ui->label_recordingMetaDuration->setEnabled(false);
 
@@ -1319,7 +1328,9 @@ bool ControlPanel::apply_x264_registry_settings(void)
     if (reg == nullptr)
     {
         kd_show_headless_error_message("VCS can't start recording",
-                                       "Failed to detect an installation of the 32-bit x264vfw video codec.");
+                                       "Can't access the 32-bit x264vfw video codec's registry information.\n\n"
+                                       "If you've already installed the codec and are still getting this message, "
+                                       "run its configurator once, and try again.");
         return false;
     }
 
@@ -1351,8 +1362,10 @@ bool ControlPanel::apply_x264_registry_settings(void)
 
     if (!set_x264_registry_string(reg, "profile", profileString.toStdString().c_str()) ||
         !set_x264_registry_string(reg, "preset", presetString.toStdString().c_str()) ||
+
         !set_x264_registry_string(reg, "extra_cmdline", commandLineString.toStdString().c_str()) ||
         !set_x264_registry_value(reg, "colorspace", colorSpace) ||
+        !set_x264_registry_value(reg, "zerolatency", ui->checkBox_recordingEncoderZeroLatency->isChecked()) ||
         !set_x264_registry_value(reg, "ratefactor", (ui->spinBox_recordingEncoderCRF->value() * 10)))
     {
         return false;
