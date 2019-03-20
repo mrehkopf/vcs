@@ -474,7 +474,7 @@ void MainWindow::update_window_title()
 
         if (krecord_is_recording())
         {
-            recording = "[Rec.] ";
+            recording = "[REC] ";
         }
 
         inRes = " - " + controlPanel->GetString_InputResolution();

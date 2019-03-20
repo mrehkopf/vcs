@@ -217,8 +217,6 @@ bool krecord_start_recording(const char *const filename,
 
     return false;
 #else
-    DEBUG(("Starting recording into file '%s'...", filename));
-
     k_assert(!VIDEO_WRITER.isOpened(),
              "Attempting to intialize a recording that has already been initialized.");
 
@@ -263,6 +261,8 @@ bool krecord_start_recording(const char *const filename,
     #else
         #error "Unknown platform."
     #endif
+
+    DEBUG(("Starting recording into file '%s'...", RECORDING.meta.filename));
 
     VIDEO_WRITER.open(RECORDING.meta.filename,
                       encoder,
