@@ -66,15 +66,15 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
     // Adjust sundry GUI controls to their proper values.
     {
-        const resolution_s min = kc_hardware_min_capture_resolution();
-        const resolution_s max = kc_hardware_max_capture_resolution();
-        ui->spinBox_outputResX->setMinimum(min.w);
-        ui->spinBox_outputResY->setMinimum(min.h);
-        ui->spinBox_outputResX->setMaximum(max.w);
-        ui->spinBox_outputResY->setMaximum(max.h);
+        ui->spinBox_outputResX->setMinimum(MIN_OUTPUT_WIDTH);
+        ui->spinBox_outputResY->setMinimum(MIN_OUTPUT_HEIGHT);
+        ui->spinBox_outputResX->setMaximum(MAX_OUTPUT_WIDTH);
+        ui->spinBox_outputResY->setMaximum(MAX_OUTPUT_HEIGHT);
 
         ui->spinBox_outputPadX->setMinimum(MIN_OUTPUT_WIDTH);
         ui->spinBox_outputPadY->setMinimum(MIN_OUTPUT_HEIGHT);
+        ui->spinBox_outputPadX->setMaximum(MAX_OUTPUT_WIDTH);
+        ui->spinBox_outputPadY->setMaximum(MAX_OUTPUT_HEIGHT);
 
         ui->treeWidget_logList->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
@@ -430,16 +430,6 @@ void ControlPanel::update_output_resolution_info(void)
     const resolution_s r = ks_padded_output_resolution();
 
     ui->label_outputResolution->setText(QString("%1 x %2").arg(r.w).arg(r.h));
-    if (r.w == MIN_OUTPUT_WIDTH ||
-        r.h == MIN_OUTPUT_HEIGHT ||
-        r.w == MAX_OUTPUT_WIDTH ||
-        r.h == MAX_OUTPUT_HEIGHT)
-    {
-        // Assume the resolution matches the limits because it was forced as such,
-        // due to being too large/small otherwise.
-        ui->label_outputResolution->setText(
-                    ui->label_outputResolution->text() + " (limited)");
-    }
 
     // If the user isn't forcing an aspect ratio, we can auto-update the values to
     // match the current output resolution's ratio.
