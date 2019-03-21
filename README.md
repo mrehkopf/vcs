@@ -6,16 +6,15 @@ VCS interfaces with compatible capture hardware to display the capture output in
 You can find a binary distribution of VCS on [Tarpeeksi Hyvae Soft's website](http://tarpeeksihyvaesoft.com/soft/).
 
 ### Features
-- Anti-tearing to reduce screen-tearing in analog capture
-- On-the-fly filtering: blur, crop, flip, decimate, rotate, sharpen...
-- Multiple scalers: nearest, linear, area, cubic, and Lanczos
-- Per-resolution capture and display settings
-- Temporal image denoising to remove analog capture noise
-- Padded output to maintain a constant output resolution
+- On-the-fly frame filtering: blur, crop, flip, decimate, rotate, sharpen...
+- Several frame scalers: nearest, linear, area, cubic, and Lanczos
+- Video recording with H.264 encoding
+- Temporal image denoising
+- Anti-tearing
 - Custom overlays with HTML formatting
-- Count of unique frames per second &ndash; an FPS counter for DOS games!
-- Optimized for virtual machines by minimizing reliance on GPU features
-- Works on Windows XP to Windows 10 and compiles for Linux
+- Minimal reliance on GPU features &ndash; ideal for virtual machines
+- Unique frame count &ndash; an FPS counter for DOS games!
+- Supports Windows XP to Windows 10, compiles on Linux
 
 ### Hardware support
 VCS is compatible with at least the following Datapath capture cards:
@@ -84,11 +83,11 @@ The control panel is the heart of VCS. With it, you can control the various aspe
 The controls and information in the control panel are divided thematically into four tabs: `Input`, `Output`, `Log`, and `About`. Below, you'll find descriptions of each tab and the functionality they provide.
 
 ### Input tab
-![](images/screenshots/v1.3.1/control-panel-input.png)
-
 The `Input` tab lets you view and control the parameters related to the capture hardware's current input channel.
 
 If your capture hardware has multiple input channels, you can switch between them using the drop-down selector at the top of the `Input` tab. (The screenshot was taken with capture disabled, so the selector is showing no text; but normally you'd see it displaying "Channel #1" or the like.)
+
+![](images/screenshots/v1.3.1/control-panel-input.png)
 
 **Signal.** The type of input signal currently being received by the capture hardware.
 
@@ -105,9 +104,9 @@ If your capture hardware has multiple input channels, you can switch between the
 **Force input resolution.** Tell the capture hardware to adopt a particular input resolution. If the capture source's resolution doesn't match the capture hardware's input resolution, the captured frames will likely not display correctly in VCS. If you click on a button while holding down the control key, you can change the resolution assigned to that button. The `Other...` button lets you specify an arbitrary resolution.
 
 ### Output tab
-![](images/screenshots/v1.3.1/control-panel-output.png)
-
 The `Output` tab lets you view and control the parameters related to VCS's output of captured frames.
+
+![](images/screenshots/v1.3.1/control-panel-output.png)
 
 **Resolution.** The current output resolution. This will be the size of the output window.
 
@@ -147,10 +146,34 @@ per second. The pipeline consists of the following stages: a frame being receive
 
 **Custom filtering.** Create sets of image filters to be applied to incoming frames. You can find more information about custom filtering in the [Custom filters](#custom-filters) subsection.
 
-### Log tab
-![](images/screenshots/v1.3.1/control-panel-log.png)
+### Record tab
+On the record tab, you can choose to have VCS record captured frames &ndash; as they are displayed on its [output window](#the-output-window) &ndash; into a video.
 
+**Note:** The recorder records  only video, not audio.
+
+![](images/screenshots/v1.3.1/control-panel-record.png)
+
+The built-in recording functionality in VCS outputs videos in the H.264 format using the x264 codec, which is capable of producing a very good (virtually lossless) image quality at reasonable file sizes.
+
+Before being able to record video with VCS, you need to install the [x264vfw](https://sourceforge.net/projects/x264vfw/files/x264vfw/44_2851bm_44825/) codec, and run its configurator at least once, so that its settings are added into the Windows registry for VCS to find.
+
+**Options.** The various recording options allow you to customize aspects of the output video
+- `Frame rate` The video's nominal playback rate. Typically, you will want to match this to the capture source's refresh rate, so that e.g. a 60 Hz capture signal is recorded with a frame rate of 60.
+- `Linear sampling` Whether VCS is allowed to duplicate and/or skip frames to match the captured frame rate with the video's nominal playback rate. If linear sampling is disabled, captured frames will be inserted into the video as they are received, and are never duplicated or skipped by the video recorder. Disabling linear sampling may result in smoother-looking playback when the capture frame rate is stable; but enabling it will help prevent time compression if the input frame rate is uneven. If you are planning to append the video with an audio track you recorded at the same time, you will most likely want to enable linear sampling when recording the video, or it may not be able to keep in sync with the audio.
+- `Video container` The file format in which the video is saved. On Windows, the AVI format is used.
+- `Video codec` The encoder with which to create the video. On Windows, the 32-bit version of x264vfw is used.
+- _Options specific to H.264 encoding._ Settings like `Profile`, `Pixel format`, and `Preset` are available to you for customizing the encoding process. Further descriptions of what these settings do can be found in sources specific to H.264. In brief, if you want the best image quality, you can set `Profile` to "High 4:4:4", `Pixel format` to "RGB", and `CRF` to 1. To maintain high image quality but reduce the file size, you can set `Preset` to "Veryfast" or "Faster" instead of "Superfast" or "Ultrafast", and increase `CRF` from 1 to 10&ndash;15.
+
+**Information.** As the recording runs, you will receive real-time information about its status, here.
+- `Resolution` The video's resolution and nominal playback rate.
+- `Input FPS` An estimate of the number of frames being inserted per every second of video.
+- `Size on disk` How many megabytes the video file is taking up, at present.
+- `Duration` The video's duration, so far; in hours, minutes, and seconds.
+
+### Log tab
 The `Log` tab displays the various internal mssages generated by VCS during its operation.
+
+![](images/screenshots/v1.3.1/control-panel-log.png)
 
 You can selectively show or hide messages based on their category: _info_ messages are general notifications of events; _debug_ messages contain information that's non-essential to the user but of possible interest to the developer; and _N.B._ (nota bene) messages are errors, warnings, and other such messages of importance. You can also disable logging altogether.
 
@@ -280,6 +303,7 @@ While developing VCS, I've been compiling it with GCC 5.4 on Linux and MinGW 5.3
 | Capture | [src/capture/](src/capture/)       | Interaction with the capture hardware |
 | Scaler  | [src/scaler/](src/scaler/)         | Frame scaling                         |
 | Filter  | [src/filter/](src/filter/)         | Frame filtering                       |
+| Record  | [src/record/](src/record/)         | Record capture output into video      |
 | Display | [src/display/qt/](src/display/qt/) | Graphical user interface              |
 
 **Main loop and program flow.** VCS has been written in a procedural style. As such, you can easily identify &ndash; and follow &ndash; the program's main loop, which is located in `main()` in [src/main.cpp](src/main.cpp).
