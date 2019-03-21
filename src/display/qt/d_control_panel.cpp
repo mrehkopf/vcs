@@ -153,7 +153,7 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
             ui->spinBox_recordingEncoderCRF->setValue(kpers_value_of("crf", INI_GROUP_RECORDING, 1).toUInt());
 
-            ui->checkBox_recordingEncoderZeroLatency->setChecked(kpers_value_of("zero_latency", INI_GROUP_RECORDING, true).toBool());
+            ui->checkBox_recordingEncoderZeroLatency->setChecked(kpers_value_of("zero_latency", INI_GROUP_RECORDING, false).toBool());
 
             ui->lineEdit_recordingEncoderArguments->setText(kpers_value_of("command_line", INI_GROUP_RECORDING, "").toString());
         #endif
