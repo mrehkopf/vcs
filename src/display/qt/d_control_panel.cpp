@@ -71,11 +71,6 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
         ui->spinBox_outputResX->setMaximum(MAX_OUTPUT_WIDTH);
         ui->spinBox_outputResY->setMaximum(MAX_OUTPUT_HEIGHT);
 
-        ui->spinBox_outputPadX->setMinimum(MIN_OUTPUT_WIDTH);
-        ui->spinBox_outputPadY->setMinimum(MIN_OUTPUT_HEIGHT);
-        ui->spinBox_outputPadX->setMaximum(MAX_OUTPUT_WIDTH);
-        ui->spinBox_outputPadY->setMaximum(MAX_OUTPUT_HEIGHT);
-
         ui->treeWidget_logList->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
         resolution_s r;
@@ -427,7 +422,7 @@ void ControlPanel::set_output_controls_enabled(const bool state)
 //
 void ControlPanel::update_output_resolution_info(void)
 {
-    const resolution_s r = ks_padded_output_resolution();
+    const resolution_s r = ks_output_resolution();
 
     ui->label_outputResolution->setText(QString("%1 x %2").arg(r.w).arg(r.h));
 
@@ -836,22 +831,6 @@ void ControlPanel::on_checkBox_forceOutputAspect_stateChanged(int arg1)
     return;
 }
 
-void ControlPanel::on_checkBox_forceOutputPad_stateChanged(int arg1)
-{
-    const bool checked = (arg1 == Qt::Checked)? 1 : 0;
-
-    k_assert(arg1 != Qt::PartiallyChecked,
-             "Expected a two-state toggle for 'outputPad'. It appears to have a third state.");
-
-    ui->spinBox_outputPadX->setEnabled(checked);
-    ui->spinBox_outputPadY->setEnabled(checked);
-    ui->label_outputPadSeparator->setEnabled(checked);
-
-    ks_set_output_pad_override_enabled(checked);
-
-    return;
-}
-
 void ControlPanel::on_checkBox_forceOutputRes_stateChanged(int arg1)
 {
     const bool checked = (arg1 == Qt::Checked)? 1 : 0;
@@ -991,36 +970,6 @@ void ControlPanel::on_spinBox_outputAspectY_valueChanged(int)
     }
 
     ks_set_output_aspect_ratio(w, h);
-
-    return;
-}
-
-void ControlPanel::on_spinBox_outputPadX_valueChanged(int)
-{
-    const resolution_s r = {(uint)ui->spinBox_outputPadX->value(),
-                            (uint)ui->spinBox_outputPadY->value(), 0};
-
-    if (!ui->checkBox_forceOutputPad->isChecked())
-    {
-        return;
-    }
-
-    ks_set_output_pad_resolution(r);
-
-    return;
-}
-
-void ControlPanel::on_spinBox_outputPadY_valueChanged(int)
-{
-    const resolution_s r = {(uint)ui->spinBox_outputPadX->value(),
-                            (uint)ui->spinBox_outputPadY->value(), 0};
-
-    if (!ui->checkBox_forceOutputPad->isChecked())
-    {
-        return;
-    }
-
-    ks_set_output_pad_resolution(r);
 
     return;
 }
@@ -1461,6 +1410,13 @@ void ControlPanel::on_pushButton_recordingSelectFilename_clicked()
     }
 
     ui->lineEdit_recordingFilename->setText(filename);
+
+    return;
+}
+
+void ControlPanel::on_checkBox_maintainOriginalAspectWhenScaling_stateChanged(int arg1)
+{
+    ks_set_output_pad_override_enabled((arg1 == Qt::Checked));
 
     return;
 }

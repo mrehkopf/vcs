@@ -135,12 +135,6 @@ private slots:
 
     void on_checkBox_customFiltering_stateChanged(int arg1);
 
-    void on_checkBox_forceOutputPad_stateChanged(int arg1);
-
-    void on_spinBox_outputPadX_valueChanged(int);
-
-    void on_spinBox_outputPadY_valueChanged(int);
-
     void on_comboBox_renderer_currentIndexChanged(const QString &arg1);
 
     void on_pushButton_recordingStart_clicked();
@@ -148,6 +142,8 @@ private slots:
     void on_pushButton_recordingStop_clicked();
 
     void on_pushButton_recordingSelectFilename_clicked();
+
+    void on_checkBox_maintainOriginalAspectWhenScaling_stateChanged(int arg1);
 
 private:
     void closeEvent(QCloseEvent *event);

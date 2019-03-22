@@ -29,8 +29,6 @@ void s_scaler_linear(SCALER_FUNC_PARAMS);
 void s_scaler_area(SCALER_FUNC_PARAMS);
 void s_scaler_cubic(SCALER_FUNC_PARAMS);
 void s_scaler_lanczos(SCALER_FUNC_PARAMS);
-void s_scaler_gaussian_linear(SCALER_FUNC_PARAMS);
-void s_scaler_gaussian_area(SCALER_FUNC_PARAMS);
 
 static const scaling_filter_s *UPSCALE_FILTER = nullptr;
 static const scaling_filter_s *DOWNSCALE_FILTER = nullptr;
@@ -59,7 +57,6 @@ static const u32 OUTPUT_BIT_DEPTH = 32;             // The bit depth we're curre
 static resolution_s BASE_RESOLUTION = {640, 480, 0};// The size of the capture window, before any other scaling.
 static bool FORCE_BASE_RESOLUTION = false;          // If false, the base resolution will track the capture card's output resolution.
 
-static resolution_s PADDED_RESOLUTION = {640, 480, 0};
 static bool FORCE_PADDING = false;
 
 static resolution_s ASPECT_RATIO = {1, 1, 0};
@@ -83,12 +80,6 @@ resolution_s ks_resolution_to_aspect_ratio(const resolution_s &r)
 resolution_s ks_output_base_resolution(void)
 {
     return BASE_RESOLUTION;
-}
-
-resolution_s ks_padded_output_resolution(void)
-{
-    if (FORCE_PADDING) return PADDED_RESOLUTION;
-    else return ks_output_resolution();
 }
 
 // Returns the resolution at which the scaler will output after performing all the actions
@@ -160,6 +151,47 @@ bool ks_is_output_padding_enabled(void)
     return FORCE_PADDING;
 }
 
+// Returns a resolution corresponding to sourceRes scaled up to targetRes but
+// maintaining sourceRes's aspect ratio.
+//
+static resolution_s padded_resolution(const resolution_s &sourceRes, const resolution_s &targetRes)
+{
+    const real aspectRatio = (sourceRes.w / (real)sourceRes.h);
+    uint w = targetRes.h * aspectRatio;
+    uint h = targetRes.h;
+    if (w > targetRes.w)
+    {
+        const real aspectRatio = (sourceRes.h / (real)sourceRes.w);
+        w = targetRes.w;
+        h = targetRes.w * aspectRatio;
+    }
+
+    return {w, h, OUTPUT_BIT_DEPTH};
+}
+
+// Returns border padding sizes for cv::copyMakeBorder()
+//
+static cv::Vec4i border_padding(const resolution_s &paddedRes, const resolution_s &targetRes)
+{
+    cv::Vec4i p;
+
+    p[0] = ((targetRes.h - paddedRes.h) / 2);     // Top.
+    p[1] = ((targetRes.h - paddedRes.h + 1) / 2); // Bottom.
+    p[2] = ((targetRes.w - paddedRes.w) / 2);     // Left.
+    p[3] = ((targetRes.w - paddedRes.w + 1) / 2); // Right.
+
+    return p;
+}
+
+// Copies src into dsts and adds a border of the given size.
+//
+void copy_with_border(const cv::Mat &src, cv::Mat &dst, const cv::Vec4i &borderSides)
+{
+    cv::copyMakeBorder(src, dst, borderSides[0], borderSides[1], borderSides[2], borderSides[3], cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
+
+    return;
+}
+
 void s_scaler_nearest(SCALER_FUNC_PARAMS)
 {
     k_assert((sourceRes.bpp == 32) && (targetRes.bpp == 32),
@@ -172,7 +204,19 @@ void s_scaler_nearest(SCALER_FUNC_PARAMS)
     #if USE_OPENCV
         cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
         cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, OUTPUT_BUFFER.ptr());
-        cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_NEAREST);
+
+        if (ks_is_output_padding_enabled())
+        {
+            const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
+            cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
+
+            cv::resize(scratch, tmp, tmp.size(), 0, 0, cv::INTER_NEAREST);
+            copy_with_border(tmp, output, border_padding(paddedRes, targetRes));
+        }
+        else
+        {
+            cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_NEAREST);
+        }
     #else
         /// TODO. Implement a non-OpenCV nearest scaler so there's a basic fallback.
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented.");
@@ -193,7 +237,19 @@ void s_scaler_linear(SCALER_FUNC_PARAMS)
     #if USE_OPENCV
         cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
         cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, OUTPUT_BUFFER.ptr());
-        cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_LINEAR);
+
+        if (ks_is_output_padding_enabled())
+        {
+            const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
+            cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
+
+            cv::resize(scratch, tmp, tmp.size(), 0, 0, cv::INTER_LINEAR);
+            copy_with_border(tmp, output, border_padding(paddedRes, targetRes));
+        }
+        else
+        {
+            cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_LINEAR);
+        }
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented.");
     #endif
@@ -213,7 +269,19 @@ void s_scaler_area(SCALER_FUNC_PARAMS)
     #if USE_OPENCV
         cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
         cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, OUTPUT_BUFFER.ptr());
-        cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_AREA);
+
+        if (ks_is_output_padding_enabled())
+        {
+            const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
+            cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
+
+            cv::resize(scratch, tmp, tmp.size(), 0, 0, cv::INTER_AREA);
+            copy_with_border(tmp, output, border_padding(paddedRes, targetRes));
+        }
+        else
+        {
+            cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_AREA);
+        }
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented.");
     #endif
@@ -233,7 +301,19 @@ void s_scaler_cubic(SCALER_FUNC_PARAMS)
     #if USE_OPENCV
         cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
         cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, OUTPUT_BUFFER.ptr());
-        cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_CUBIC);
+
+        if (ks_is_output_padding_enabled())
+        {
+            const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
+            cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
+
+            cv::resize(scratch, tmp, tmp.size(), 0, 0, cv::INTER_CUBIC);
+            copy_with_border(tmp, output, border_padding(paddedRes, targetRes));
+        }
+        else
+        {
+            cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_CUBIC);
+        }
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented.");
     #endif
@@ -253,61 +333,21 @@ void s_scaler_lanczos(SCALER_FUNC_PARAMS)
     #if USE_OPENCV
         cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
         cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, OUTPUT_BUFFER.ptr());
-        cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_LANCZOS4);
+
+        if (ks_is_output_padding_enabled())
+        {
+            const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
+            cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
+
+            cv::resize(scratch, tmp, tmp.size(), 0, 0, cv::INTER_LANCZOS4);
+            copy_with_border(tmp, output, border_padding(paddedRes, targetRes));
+        }
+        else
+        {
+            cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_LANCZOS4);
+        }
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented.");
-    #endif
-
-    return;
-}
-
-void s_scaler_gaussian_linear(SCALER_FUNC_PARAMS)
-{
-    k_assert((sourceRes.bpp == 32) && (targetRes.bpp == 32),
-             "This filter requires 32-bit source and target color.")
-    if (pixelData == nullptr)
-    {
-        return;
-    }
-
-    #if USE_OPENCV
-        cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
-        cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, OUTPUT_BUFFER.ptr());
-        cv::Mat tmp = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, TMP_BUFFER.ptr());
-        cv::resize(scratch, tmp, tmp.size(), 0, 0, cv::INTER_LINEAR);
-
-        // Unsharp mask.
-        cv::GaussianBlur(tmp, output, cv::Size(0, 0), 0.52);
-        cv::addWeighted(tmp, 1.5, output, -0.5, 0, output);
-    #else
-        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented.");
-    #endif
-
-    return;
-}
-
-void s_scaler_gaussian_area(SCALER_FUNC_PARAMS)
-{
-    k_assert((sourceRes.bpp == 32) && (targetRes.bpp == 32),
-             "This filter requires 32-bit source and target color.")
-    if (pixelData == nullptr)
-    {
-        return;
-    }
-
-    #if USE_OPENCV
-        cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
-        cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, OUTPUT_BUFFER.ptr());
-        cv::Mat tmp = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, TMP_BUFFER.ptr());
-
-        cv::resize(scratch, tmp, tmp.size(), 0, 0, cv::INTER_AREA);
-
-        // Unsharp mask.
-        cv::GaussianBlur(tmp, output, cv::Size(0, 0), 0.48);
-        cv::addWeighted(tmp, 1.5, output, -0.5, 0, output);
-    #else
-        k_assert(0,
-                 "Attempted to use a scaling filter that hasn't been implemented.");
     #endif
 
     return;
@@ -567,14 +607,6 @@ void ks_set_output_resolution_override_enabled(const bool state)
 void ks_set_output_pad_override_enabled(const bool state)
 {
     FORCE_PADDING = state;
-    kd_update_display_size();
-
-    return;
-}
-
-void ks_set_output_pad_resolution(const resolution_s &r)
-{
-    PADDED_RESOLUTION = r;
     kd_update_display_size();
 
     return;

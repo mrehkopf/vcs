@@ -38,8 +38,6 @@ resolution_s ks_output_resolution(void);
 
 bool ks_is_output_padding_enabled(void);
 
-resolution_s ks_padded_output_resolution(void);
-
 uint ks_max_output_bit_depth(void);
 
 void ks_initialize_scaler(void);
@@ -59,8 +57,6 @@ void ks_set_output_scale_override_enabled(const bool state);
 void ks_set_output_base_resolution(const resolution_s &r, const bool originatesFromUser);
 
 void ks_set_output_resolution_override_enabled(const bool state);
-
-void ks_set_output_pad_resolution(const resolution_s &r);
 
 void ks_set_output_pad_override_enabled(const bool state);
 
