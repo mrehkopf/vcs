@@ -262,7 +262,7 @@ bool krecord_start_recording(const char *const filename,
         #error "Unknown platform."
     #endif
 
-    DEBUG(("Starting recording into file '%s'...", RECORDING.meta.filename));
+    DEBUG(("Starting recording into file '%s'...", RECORDING.meta.filename.c_str()));
 
     VIDEO_WRITER.open(RECORDING.meta.filename,
                       encoder,
