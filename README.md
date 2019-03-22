@@ -139,14 +139,13 @@ per second. The pipeline consists of the following stages: a frame being receive
 
 ![](images/screenshots/v1.2.6/anti-tear-dialog.png)
 
-**Base resolution.** Set a custom output resolution, i.e. the resolution to which all input frames will be scaled prior to display.
+**Output size.** Set a custom output resolution, i.e. the resolution to which all captured frames will be scaled prior to being displayed in the [output window](#the-output-window).
 
-**Aspect ratio.** Set a custom aspect ratio for the output frames.
+**Relative scale.** Scale captured frames by a percentage relative to the resolution set in the `Output size` field.
 
-**Relative scale.** Scale the output frames as a percentage of the input resolution.
+**Maintain aspect ratio when scaling.** When scaling captured frames, pad the resulting image with black borders if necessary to conserve the frame's aspect ratio. If disabled, frames will be stretched to fit the output size.
 
-**Padded output.** Pad the output frames to the given resolution. Padding is performed after all other forms of scaling (described above). Padding will never scale the frame itself: for instance, if the input frame is 640 x 480, and you pad it to 1280 x 960, the output will be a 1280 x 960 image with black bars around the perimeter and the original 640 x 480 frame in the middle.
-- Padded output is not available when using the OpenGL renderer.
+**Mouse wheel scales output window.** Set whether scrolling the mouse wheel over the [output window](#the-output-window) scales the size of the window up or down. This works by modifying the `Relative scale` value, which in turns affects the size of the output window.
 
 **Upscaler.** Set the type of scaling to be used when the output resolution is larger than the input resolution. Any relevant custom filtering (see below) will override this setting.
 
@@ -169,14 +168,18 @@ The built-in recording functionality in VCS outputs videos in the H.264 format u
 
 Before being able to record video with VCS, you need to install the [x264vfw](https://sourceforge.net/projects/x264vfw/files/x264vfw/44_2851bm_44825/) codec, and run its configurator at least once, so that its settings are added into the Windows registry for VCS to find.
 
-**Options.** The various recording options allow you to customize aspects of the output video
-- `Frame rate` The video's nominal playback rate. Typically, you will want to match this to the capture source's refresh rate, so that e.g. a 60 Hz capture signal is recorded with a frame rate of 60.
-- `Linear sampling` Whether VCS is allowed to duplicate and/or skip frames to match the captured frame rate with the video's nominal playback rate. If linear sampling is disabled, captured frames will be inserted into the video as they are received, and are never duplicated or skipped by the video recorder. Disabling linear sampling may result in smoother-looking playback when the capture frame rate is stable; but enabling it will help prevent time compression if the input frame rate is uneven. If you are planning to append the video with an audio track you recorded at the same time, you will most likely want to enable linear sampling when recording the video, or it may not be able to keep in sync with the audio.
-- `Video container` The file format in which the video is saved. On Windows, the AVI format is used.
-- `Video codec` The encoder with which to create the video. On Windows, the 32-bit version of x264vfw is used.
-- _Options specific to H.264 encoding._ Settings like `Profile`, `Pixel format`, and `Preset` are available to you for customizing the encoding process. Further descriptions of what these settings do can be found in sources specific to H.264. In brief, if you want the best image quality, you can set `Profile` to "High 4:4:4", `Pixel format` to "RGB", and `CRF` to 1. To maintain high image quality but reduce the file size, you can set `Preset` to "Veryfast" or "Faster" instead of "Superfast" or "Ultrafast", and increase `CRF` from 1 to 10&ndash;15.
+**Frame rate.** The video's nominal playback rate. Typically, you will want to match this to the capture source's refresh rate, so that e.g. a 60 Hz capture signal is recorded with a frame rate of 60.
 
-**Information.** As the recording runs, you will receive real-time information about its status, here.
+**Linear sampling.** Whether VCS is allowed to duplicate and/or skip frames to match the captured frame rate with the video's nominal playback rate. If linear sampling is disabled, captured frames will be inserted into the video as they are received, and are never duplicated or skipped by the video recorder. Disabling linear sampling may result in smoother-looking playback when the capture frame rate is stable; but enabling it will help prevent time compression if the input frame rate is uneven. If you are planning to append the video with an audio track you recorded at the same time, you will most likely want to enable linear sampling when recording the video, or it may not be able to keep in sync with the audio.
+- While the capture hardware is reporting 'no signal', no frames will be inserted into the video, regardless of whether linear sampling is enabled.
+
+**Video container.** The file format in which the video is saved. On Windows, the AVI format is used.
+
+**Video codec.** The encoder with which to create the video. On Windows, the 32-bit version of x264vfw is used.
+
+**Options specific to H.264 encoding.** Settings like `Profile`, `Pixel format`, and `Preset` are available to you for customizing the encoding process. Further descriptions of what these settings do can be found in sources specific to H.264. In brief, if you want the best image quality, you can set `Profile` to "High 4:4:4", `Pixel format` to "RGB", and `CRF` to 1. To maintain high image quality but reduce the file size, you can set `Preset` to "Veryfast" or "Faster" instead of "Superfast" or "Ultrafast", and increase `CRF` from 1 to 10&ndash;15.
+
+**Video.** As the recording runs, you will receive real-time information about its status, here.
 - `Resolution` The video's resolution and nominal playback rate.
 - `Input FPS` An estimate of the number of frames being inserted per every second of video.
 - `Size on disk` How many megabytes the video file is taking up, at present.
