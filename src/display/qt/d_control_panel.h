@@ -91,8 +91,6 @@ private slots:
 
     void parse_input_resolution_button_press(QWidget *button);
 
-    void on_checkBox_forceOutputAspect_stateChanged(int arg1);
-
     void on_comboBox_frameSkip_currentIndexChanged(const QString &arg1);
 
     void on_checkBox_forceOutputRes_stateChanged(int arg1);
@@ -104,10 +102,6 @@ private slots:
     void on_checkBox_logEnabled_stateChanged(int arg1);
 
     void on_spinBox_outputScale_valueChanged(int);
-
-    void on_spinBox_outputAspectX_valueChanged(int);
-
-    void on_spinBox_outputAspectY_valueChanged(int);
 
     void on_spinBox_outputResX_valueChanged(int);
 

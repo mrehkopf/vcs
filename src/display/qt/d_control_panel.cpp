@@ -73,11 +73,6 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
         ui->treeWidget_logList->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-        resolution_s r;
-        r.w = ui->spinBox_outputAspectX->value();
-        r.h = ui->spinBox_outputAspectY->value();
-        ks_set_output_aspect_ratio(r.w, r.h);
-
         ui->groupBox_aboutVCS->setTitle("VCS v" + QString("%1").arg(PROGRAM_VERSION_STRING));
 
         // The 'Recording' tab.
@@ -425,19 +420,6 @@ void ControlPanel::update_output_resolution_info(void)
     const resolution_s r = ks_output_resolution();
 
     ui->label_outputResolution->setText(QString("%1 x %2").arg(r.w).arg(r.h));
-
-    // If the user isn't forcing an aspect ratio, we can auto-update the values to
-    // match the current output resolution's ratio.
-    if (!ui->checkBox_forceOutputAspect->isChecked())
-    {
-        // Note: We use the version of the output resolution that excludes any
-        // padding, since we want the aspect ratio to reflect the size of the
-        // actual captured frame and not that of the padded output.
-        const resolution_s a = ks_resolution_to_aspect_ratio(ks_output_resolution());
-
-        ui->spinBox_outputAspectX->setValue(a.w);
-        ui->spinBox_outputAspectY->setValue(a.h);
-    }
 
     return;
 }
@@ -797,40 +779,6 @@ void ControlPanel::on_checkBox_forceOutputScale_stateChanged(int arg1)
     return;
 }
 
-void ControlPanel::on_checkBox_forceOutputAspect_stateChanged(int arg1)
-{
-    const bool checked = (arg1 == Qt::Checked)? 1 : 0;
-
-    k_assert(arg1 != Qt::PartiallyChecked,
-             "Expected a two-state toggle for 'forceOutputAspect'. It appears to have a third state.");
-
-    ui->spinBox_outputAspectX->setEnabled(checked);
-    ui->spinBox_outputAspectY->setEnabled(checked);
-    ui->label_outputAspectSeparator->setEnabled(checked);
-
-    if (checked)
-    {
-        const int w = ui->spinBox_outputAspectX->value();
-        const int h = ui->spinBox_outputAspectY->value();
-
-        ks_set_output_aspect_ratio(w, h);
-    }
-    else
-    {
-        const resolution_s a = ks_resolution_to_aspect_ratio({(uint)ui->spinBox_outputResX->value(),
-                                                              (uint)ui->spinBox_outputResY->value(), 0});
-
-        ui->spinBox_outputAspectX->setValue(a.w);
-        ui->spinBox_outputAspectY->setValue(a.h);
-
-        ks_set_output_aspect_ratio(a.w, a.h);
-    }
-
-    ks_set_output_aspect_ratio_override_enabled(checked);
-
-    return;
-}
-
 void ControlPanel::on_checkBox_forceOutputRes_stateChanged(int arg1)
 {
     const bool checked = (arg1 == Qt::Checked)? 1 : 0;
@@ -940,36 +888,6 @@ void ControlPanel::on_spinBox_outputScale_valueChanged(int)
     real scale = ui->spinBox_outputScale->value() / 100.0;
 
     ks_set_output_scaling(scale);
-
-    return;
-}
-
-void ControlPanel::on_spinBox_outputAspectX_valueChanged(int)
-{
-    const u32 w = ui->spinBox_outputAspectX->value();
-    const u32 h = ui->spinBox_outputAspectY->value();
-
-    if (!ui->checkBox_forceOutputAspect->isChecked())
-    {
-        return;
-    }
-
-    ks_set_output_aspect_ratio(w, h);
-
-    return;
-}
-
-void ControlPanel::on_spinBox_outputAspectY_valueChanged(int)
-{
-    const u32 w = ui->spinBox_outputAspectX->value();
-    const u32 h = ui->spinBox_outputAspectY->value();
-
-    if (!ui->checkBox_forceOutputAspect->isChecked())
-    {
-        return;
-    }
-
-    ks_set_output_aspect_ratio(w, h);
 
     return;
 }
