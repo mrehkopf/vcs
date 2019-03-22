@@ -49,8 +49,7 @@ The output window has been kept free of unnecessary clutter &ndash; there are no
 
 ![](images/screenshots/v1.2.6/output-window.png)
 
-### Hidden functionality
-
+### Hidden functionality in the output window
 To tell you a secret, there _is_ some hidden functionality to the output window, despite it having no visible controls per se.
 
 #### Magnifying glass
@@ -62,7 +61,9 @@ The magnifying glass can be useful if, for instance, you're adjusting the captur
 ![](images/screenshots/v1.2.6/output-window-magnified-small.png)
 
 #### Borderless mode
-You can double-click inside the output window to toggle the window's border on and off. This is useful if you want a 'full-screen' experience, or if for some other reason you don't like seeing the window border.
+You can double-click inside the output window to toggle the output window's border on and off.
+
+By scaling the output size (via the control panel's [output tab](#output-tab)) to match the size of your display, you can emulate a fullscreen mode, where the borderless output window fills the entire display.
 
 When the border is toggled off, the window is automatically snapped to the top left corner of the screen.
 
@@ -71,8 +72,15 @@ While borderless, you can drag the window by grabbing anywhere on it with the le
 ![](images/screenshots/v1.2.6/output-window-small.png)
 ![](images/screenshots/v1.2.6/output-window-borderless-small.png)
 
+#### Fullscreen mode
+Although you can emulate a fullscreen mode by toggling the output window's border off and scaling the window to fit the display, as described above, there is also a 'true' fullscreen mode available. You can toggle it on and off with the F11 shortcut key.
+
+The fullscreen mode may be of most benefit when using the OpenGL renderer (toggleable on the control panel's [output tab](#output-tab)), as it may allow your display driver to use adaptive sync &ndash; if available on your system &ndash; to match your display's refresh rate with that of the capture source.
+
 #### Scaling with the mouse wheel
-You can hover the cursor over the output window and scroll the mouse wheel up or down to scale the window's size.
+By scrolling the mouse wheel over the output window, you can scale the size of the window up and down. This is a shortcut for the `Relative scale` option in the control panel's [output tab](#output-tab).
+
+Mouse wheel scaling is not available while recording video, or when it has been specifically disabled via the control panel's [output tab](#output-tab).
 
 #### Quick access to the overlay editor
 You can click inside the capture window with the middle mouse button to open the overlay editor.
@@ -147,9 +155,13 @@ per second. The pipeline consists of the following stages: a frame being receive
 **Custom filtering.** Create sets of image filters to be applied to incoming frames. You can find more information about custom filtering in the [Custom filters](#custom-filters) subsection.
 
 ### Record tab
-On the record tab, you can choose to have VCS record captured frames &ndash; as they are displayed on its [output window](#the-output-window) &ndash; into a video.
+On the `Record` tab, you can tell VCS record captured frames &ndash; as they are displayed on its [output window](#the-output-window) &ndash; into a video.
 
-**Note:** The recorder records  only video, not audio.
+**Note!**
+- The recorder will record video only. Audio will not be recorded.
+- The resolution of the video will be that of the current output size, settable via the control panel's [output tab](#output-tab).
+- The output size cannot be changed while recording video. All frames will be scaled &ndash; with padding as needed to maintain their aspect ratios &ndash; to fit the video's resolution.
+- The overlay will not be recorded.
 
 ![](images/screenshots/v1.3.1/control-panel-record.png)
 
@@ -243,16 +255,13 @@ F1 ...................... Force the capture's input resolution to 640 x 400.
 
 F2 ...................... Force the capture's input resolution to 720 x 400.
 
+F11 ..................... Toggle fullscreen mode on/off.
+
 Ctrl+A .................. Open the anti-tear dialog.
 
 Ctrl+F .................. Open the filter sets dialog.
 
 Ctrl+V .................. Open the video settings dialog.
-```
-
-Additionally, the following keyboard shortcuts are available since VCS 1.3.1:
-```
-F11 ..................... Toggle full-screen mode on/off.
 ```
 
 ## Command-line
