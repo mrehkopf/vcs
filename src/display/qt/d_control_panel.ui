@@ -44,7 +44,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="documentMode">
       <bool>true</bool>
@@ -885,7 +885,7 @@
           <item>
            <widget class="QCheckBox" name="checkBox_outputAllowMouseWheelScale">
             <property name="text">
-             <string>Mouse wheel scales capture window</string>
+             <string>Mouse wheel scales output window</string>
             </property>
             <property name="checked">
              <bool>true</bool>
