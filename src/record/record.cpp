@@ -220,6 +220,14 @@ bool krecord_start_recording(const char *const filename,
     k_assert(!VIDEO_WRITER.isOpened(),
              "Attempting to intialize a recording that has already been initialized.");
 
+    if ((width % 2 != 0) || (height % 2 != 0))
+    {
+        kd_show_headless_error_message("VCS can't start recording",
+                                       "Video width and height must be divisible by two.\n\n"
+                                       "You can fix this by adjusting the output size on the control panel's Output tab.");
+        return false;
+    }
+
     if (!filename || !strlen(filename))
     {
         kd_show_headless_error_message("VCS can't start recording",
