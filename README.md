@@ -114,7 +114,7 @@ If your capture hardware has multiple input channels, you can switch between the
 ### Output tab
 The `Output` tab lets you view and control the parameters related to VCS's output of captured frames.
 
-![](images/screenshots/v1.3.1/control-panel-output.png)
+![](images/screenshots/v1.3.2/control-panel-output.png)
 
 **Resolution.** The current output resolution. This will be the size of the output window.
 
@@ -163,7 +163,7 @@ On the `Record` tab, you can tell VCS record captured frames &ndash; as they are
 - The output size cannot be changed while recording video. All frames will be scaled &ndash; with padding as needed to maintain their aspect ratios &ndash; to fit the video's resolution.
 - The overlay will not be recorded.
 
-![](images/screenshots/v1.3.1/control-panel-record.png)
+![](images/screenshots/v1.3.2/control-panel-record.png)
 
 The built-in recording functionality in VCS outputs videos in the H.264 format using the x264 codec, which is capable of producing a very good (virtually lossless) image quality at reasonable file sizes.
 
@@ -205,7 +205,7 @@ Under some circumstances, like when capturing DOS games, you may find that the c
 
 VCS comes with some facilities for reducing tearing artefacts. You can enable anti-tearing from the control panel's `Output` tab, by marking the `Anti-tear` check-box.
 
-![](images/screenshots/v1.3.1/control-panel-output.png)
+![](images/screenshots/v1.3.2/control-panel-output.png)
 
 Anti-tearing in VCS works by accumulating the incoming frame data from the capture hardware into an off-screen frame buffer, and displaying the buffer's contents in the output window only once all of the frame's data has been accumulated.
 
