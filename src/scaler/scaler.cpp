@@ -57,7 +57,7 @@ static const u32 OUTPUT_BIT_DEPTH = 32;             // The bit depth we're curre
 static resolution_s BASE_RESOLUTION = {640, 480, 0};// The size of the capture window, before any other scaling.
 static bool FORCE_BASE_RESOLUTION = false;          // If false, the base resolution will track the capture card's output resolution.
 
-static bool FORCE_PADDING = false;
+static bool FORCE_PADDING = true;
 
 static resolution_s ASPECT_RATIO = {1, 1, 0};
 static bool FORCE_ASPECT_RATIO = false;
