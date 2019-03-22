@@ -1312,6 +1312,7 @@ void ControlPanel::on_pushButton_recordingStop_clicked()
     ui->frame_recordingFile->setEnabled(true);
     ui->groupBox_outputOverrides->setEnabled(true);
 
+    MAIN_WIN->update_window_size();
     MAIN_WIN->update_window_title();
 
     return;
