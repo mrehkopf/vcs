@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>641</width>
+    <width>674</width>
     <height>356</height>
    </rect>
   </property>
@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="4,3">
+    <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="4">
      <property name="spacing">
       <number>7</number>
      </property>
@@ -30,45 +30,6 @@
        </item>
        <item>
         <widget class="QLineEdit" name="lineEdit_description"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <property name="spacing">
-        <number>6</number>
-       </property>
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Scaler:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="comboBox_scaler">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <item>
-          <property name="text">
-           <string>Nearest</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Linear</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Area</string>
-          </property>
-         </item>
-        </widget>
        </item>
       </layout>
      </item>
@@ -105,7 +66,7 @@
        <item>
         <widget class="QRadioButton" name="radioButton_activeIn">
          <property name="text">
-          <string>In:</string>
+          <string>When input:</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -180,7 +141,7 @@
           <bool>true</bool>
          </property>
          <property name="text">
-          <string>Out:</string>
+          <string>and output:</string>
          </property>
         </widget>
        </item>
@@ -262,6 +223,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_5">
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QLabel" name="label_8">
          <property name="text">
@@ -381,6 +345,45 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Scaler:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox_scaler">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string>Nearest</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Linear</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Area</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButton_help">
        <property name="enabled">
         <bool>false</bool>
@@ -389,19 +392,6 @@
         <string>Help</string>
        </property>
       </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_apply">
