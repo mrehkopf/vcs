@@ -1257,8 +1257,8 @@ bool ControlPanel::apply_x264_registry_settings(void)
 
     if (!set_x264_registry_string(reg, "profile", profileString.toStdString().c_str()) ||
         !set_x264_registry_string(reg, "preset", presetString.toStdString().c_str()) ||
-
         !set_x264_registry_string(reg, "extra_cmdline", commandLineString.toStdString().c_str()) ||
+        !set_x264_registry_value(reg, "output_mode", 0) || // Always output via the VFW interface.
         !set_x264_registry_value(reg, "colorspace", colorSpace) ||
         !set_x264_registry_value(reg, "zerolatency", ui->checkBox_recordingEncoderZeroLatency->isChecked()) ||
         !set_x264_registry_value(reg, "ratefactor", (ui->spinBox_recordingEncoderCRF->value() * 10)))
