@@ -59,10 +59,6 @@ resolution_s ks_resolution_to_aspect(const resolution_s &r);
 
 void ks_set_aspect_mode(const aspect_mode_e mode);
 
-void ks_set_output_aspect_ratio(const u32 w, const u32 h);
-
-void ks_set_output_aspect_ratio_override_enabled(const bool state);
-
 void ks_set_output_scale_override_enabled(const bool state);
 
 void ks_set_output_base_resolution(const resolution_s &r, const bool originatesFromUser);
@@ -98,7 +94,5 @@ void ks_set_upscaling_filter(const QString &name);
 const scaling_filter_s* ks_scaler_for_name_string(const QString &name);
 
 resolution_s ks_scaler_output_resolution(void);
-
-resolution_s ks_scaler_output_aspect_ratio(void);
 
 #endif

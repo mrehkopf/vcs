@@ -61,9 +61,6 @@ static bool FORCE_BASE_RESOLUTION = false;          // If false, the base resolu
 
 static bool FORCE_PADDING = true;
 
-static resolution_s ASPECT_RATIO = {1, 1, 0};
-static bool FORCE_ASPECT_RATIO = false;
-
 // The multiplier by which to up/downscale the base output resolution.
 static real OUTPUT_SCALING = 1;
 static bool FORCE_SCALING = false;
@@ -104,7 +101,6 @@ resolution_s ks_output_resolution(void)
         return {r.w, r.h, OUTPUT_BIT_DEPTH};
     }
 
-    real aspect;
     resolution_s inRes = kc_input_signal_info().r;
     resolution_s outRes = inRes;
 
@@ -112,14 +108,6 @@ resolution_s ks_output_resolution(void)
     if (FORCE_BASE_RESOLUTION)
     {
         outRes = BASE_RESOLUTION;
-    }
-
-    // Aspect ratio.
-    if (FORCE_ASPECT_RATIO)
-    {
-        aspect = ((outRes.w / (real)outRes.h) /(ASPECT_RATIO.w /(real)ASPECT_RATIO.h));
-
-        outRes.h = round((real)outRes.h * aspect);
     }
 
     // Magnification.
@@ -684,25 +672,6 @@ void ks_set_output_scale_override_enabled(const bool state)
     return;
 }
 
-void ks_set_output_aspect_ratio_override_enabled(const bool state)
-{
-    FORCE_ASPECT_RATIO = state;
-
-    kd_update_display_size();
-
-    return;
-}
-
-void ks_set_output_aspect_ratio(const u32 w, const u32 h)
-{
-    ASPECT_RATIO.w = w;
-    ASPECT_RATIO.h = h;
-
-    kd_update_display_size();
-
-    return;
-}
-
 void ks_indicate_no_signal(void)
 {
     ks_clear_scaler_output_buffer();
@@ -826,11 +795,6 @@ void ks_set_downscaling_filter(const QString &name)
            DOWNSCALE_FILTER->name.toLatin1().constData()));
 
     return;
-}
-
-resolution_s ks_scaler_output_aspect_ratio(void)
-{
-    return ASPECT_RATIO;
 }
 
 #ifdef VALIDATION_RUN
