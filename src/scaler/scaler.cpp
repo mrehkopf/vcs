@@ -160,6 +160,7 @@ bool ks_is_output_padding_enabled(void)
     return FORCE_PADDING;
 }
 
+#if USE_OPENCV
 // Returns a resolution corresponding to sourceRes scaled up to targetRes but
 // maintaining sourceRes's aspect ratio according to the scaler's current aspect
 // mode.
@@ -223,6 +224,7 @@ void copy_with_border(const cv::Mat &src, cv::Mat &dst, const cv::Vec4i &borderS
 
     return;
 }
+#endif
 
 void s_scaler_nearest(SCALER_FUNC_PARAMS)
 {
@@ -251,7 +253,7 @@ void s_scaler_nearest(SCALER_FUNC_PARAMS)
         }
     #else
         /// TODO. Implement a non-OpenCV nearest scaler so there's a basic fallback.
-        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented.");
+        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
 
     return;
@@ -283,7 +285,7 @@ void s_scaler_linear(SCALER_FUNC_PARAMS)
             cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_LINEAR);
         }
     #else
-        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented.");
+        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
 
     return;
@@ -315,7 +317,7 @@ void s_scaler_area(SCALER_FUNC_PARAMS)
             cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_AREA);
         }
     #else
-        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented.");
+        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
 
     return;
@@ -347,7 +349,7 @@ void s_scaler_cubic(SCALER_FUNC_PARAMS)
             cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_CUBIC);
         }
     #else
-        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented.");
+        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
 
     return;
@@ -379,7 +381,7 @@ void s_scaler_lanczos(SCALER_FUNC_PARAMS)
             cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_LANCZOS4);
         }
     #else
-        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented.");
+        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
 
     return;
