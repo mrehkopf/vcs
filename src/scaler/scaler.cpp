@@ -212,6 +212,43 @@ void copy_with_border(const cv::Mat &src, cv::Mat &dst, const cv::Vec4i &borderS
 
     return;
 }
+
+// Scales the given pixel data using OpenCV.
+//
+void opencv_scale(u8 *const pixelData,
+                  u8 *const outputBuffer,
+                  const resolution_s &sourceRes,
+                  const resolution_s &targetRes,
+                  const cv::InterpolationFlags interpolator)
+{
+    cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
+    cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, outputBuffer);
+
+    if (ks_is_output_padding_enabled())
+    {
+        const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
+        cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
+
+        if ((paddedRes.h == targetRes.h) &&
+            (paddedRes.w == targetRes.w))
+        {
+            // No padding is needed, so we can resize directly into the output buffer.
+            cv::resize(scratch, output, output.size(), 0, 0, interpolator);
+        }
+        else
+        {
+            cv::resize(scratch, tmp, tmp.size(), 0, 0, interpolator);
+            copy_with_border(tmp, output, border_padding(paddedRes, targetRes));
+        }
+    }
+    else
+    {
+        cv::resize(scratch, output, output.size(), 0, 0, interpolator);
+    }
+
+    return;
+}
+
 #endif
 
 void s_scaler_nearest(SCALER_FUNC_PARAMS)
@@ -224,21 +261,7 @@ void s_scaler_nearest(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
-        cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, OUTPUT_BUFFER.ptr());
-
-        if (ks_is_output_padding_enabled())
-        {
-            const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
-            cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
-
-            cv::resize(scratch, tmp, tmp.size(), 0, 0, cv::INTER_NEAREST);
-            copy_with_border(tmp, output, border_padding(paddedRes, targetRes));
-        }
-        else
-        {
-            cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_NEAREST);
-        }
+        opencv_scale(pixelData, OUTPUT_BUFFER.ptr(), sourceRes, targetRes, cv::INTER_NEAREST);
     #else
         /// TODO. Implement a non-OpenCV nearest scaler so there's a basic fallback.
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
@@ -257,21 +280,7 @@ void s_scaler_linear(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
-        cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, OUTPUT_BUFFER.ptr());
-
-        if (ks_is_output_padding_enabled())
-        {
-            const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
-            cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
-
-            cv::resize(scratch, tmp, tmp.size(), 0, 0, cv::INTER_LINEAR);
-            copy_with_border(tmp, output, border_padding(paddedRes, targetRes));
-        }
-        else
-        {
-            cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_LINEAR);
-        }
+        opencv_scale(pixelData, OUTPUT_BUFFER.ptr(), sourceRes, targetRes, cv::INTER_LINEAR);
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
@@ -289,21 +298,7 @@ void s_scaler_area(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
-        cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, OUTPUT_BUFFER.ptr());
-
-        if (ks_is_output_padding_enabled())
-        {
-            const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
-            cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
-
-            cv::resize(scratch, tmp, tmp.size(), 0, 0, cv::INTER_AREA);
-            copy_with_border(tmp, output, border_padding(paddedRes, targetRes));
-        }
-        else
-        {
-            cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_AREA);
-        }
+        opencv_scale(pixelData, OUTPUT_BUFFER.ptr(), sourceRes, targetRes, cv::INTER_AREA);
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
@@ -321,21 +316,7 @@ void s_scaler_cubic(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
-        cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, OUTPUT_BUFFER.ptr());
-
-        if (ks_is_output_padding_enabled())
-        {
-            const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
-            cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
-
-            cv::resize(scratch, tmp, tmp.size(), 0, 0, cv::INTER_CUBIC);
-            copy_with_border(tmp, output, border_padding(paddedRes, targetRes));
-        }
-        else
-        {
-            cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_CUBIC);
-        }
+        opencv_scale(pixelData, OUTPUT_BUFFER.ptr(), sourceRes, targetRes, cv::INTER_CUBIC);
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
@@ -353,21 +334,7 @@ void s_scaler_lanczos(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
-        cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, OUTPUT_BUFFER.ptr());
-
-        if (ks_is_output_padding_enabled())
-        {
-            const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
-            cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
-
-            cv::resize(scratch, tmp, tmp.size(), 0, 0, cv::INTER_LANCZOS4);
-            copy_with_border(tmp, output, border_padding(paddedRes, targetRes));
-        }
-        else
-        {
-            cv::resize(scratch, output, output.size(), 0, 0, cv::INTER_LANCZOS4);
-        }
+        opencv_scale(pixelData, OUTPUT_BUFFER.ptr(), sourceRes, targetRes, cv::INTER_LANCZOS4);
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
