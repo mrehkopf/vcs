@@ -388,7 +388,6 @@ void ControlPanel::set_input_info_as_receiving_signal()
 void ControlPanel::set_input_controls_enabled(const bool state)
 {
     ui->frame_inputForceButtons->setEnabled(state);
-    ui->pushButton_inputAliases->setEnabled(state);
     ui->pushButton_inputAdjustVideoColor->setEnabled(state);
     ui->comboBox_frameSkip->setEnabled(state);
     ui->comboBox_bitDepth->setEnabled(state);

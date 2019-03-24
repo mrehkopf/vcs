@@ -225,7 +225,11 @@ u32 kc_output_bit_depth(void);
 
 void kc_broadcast_aliases_to_gui(void);
 
+void kc_update_alias_resolutions(const std::vector<mode_alias_s> &aliases);
+
 bool kc_load_aliases(const QString filename, const bool automaticCall);
+
+bool kc_save_aliases(const QString filename);
 
 bool kc_save_mode_params(const QString filename);
 

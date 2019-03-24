@@ -1509,6 +1509,78 @@ void kc_broadcast_aliases_to_gui(void)
     return;
 }
 
+void kc_update_alias_resolutions(const std::vector<mode_alias_s> &aliases)
+{
+    ALIASES = aliases;
+
+    if (!kc_no_signal())
+    {
+        // If one of the aliases matches the current input resolution, change the
+        // resolution accordingly.
+        const resolution_s currentRes = kc_input_resolution();
+        for (const auto &alias: ALIASES)
+        {
+            if (alias.from.w == currentRes.w &&
+                alias.from.h == currentRes.h)
+            {
+                kmain_change_capture_input_resolution(alias.to);
+                break;
+            }
+        }
+    }
+
+    return;
+}
+
+bool kc_save_aliases(const QString filename)
+{
+    const QString tempFilename = filename + ".tmp";  // Use a temporary file at first, until we're reasonably sure there were no errors while saving.
+    QFile file(tempFilename);
+    QTextStream f(&file);
+
+    // Write the aliases into the file.
+    {
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            NBENE(("Unable to open the alias file for saving."));
+            goto fail;
+        }
+
+        for (const auto &a: ALIASES)
+        {
+            f << a.from.w << ',' << a.from.h << ',' << a.to.w << ',' << a.to.h << ",\n";
+        }
+
+        file.close();
+    }
+
+    // Replace the existing save file with our new data.
+    if (QFile(filename).exists())
+    {
+        if (!QFile(filename).remove())
+        {
+            NBENE(("Failed to remove old mode params file."));
+            goto fail;
+        }
+    }
+    if (!QFile(tempFilename).rename(filename))
+    {
+        NBENE(("Failed to write mode params to file."));
+        goto fail;
+    }
+
+    INFO(("Saved %u aliases to disk.", ALIASES.size()));
+
+    return true;
+
+    fail:
+    kd_show_headless_error_message("Data was not saved",
+                                   "An error was encountered while preparing the alias "
+                                   "resolutions for saving. As a result, no data was saved. \n\nMore "
+                                   "information about this error may be found in the terminal.");
+    return false;
+}
+
 // Loads alias definitions from the given file. Will expect automaticCall to be
 // set to false if this function was called directly by a request by the user
 // through the GUI to load the aliases (as opposed to being called automatically
@@ -1541,7 +1613,7 @@ bool kc_load_aliases(const QString filename, const bool automaticCall)
         aliasesFromDisk.push_back(a);
     }
 
-    ALIASES = aliasesFromDisk;
+    kc_update_alias_resolutions(aliasesFromDisk);
 
     // Sort the parameters so they display more nicely in the GUI.
     std::sort(ALIASES.begin(), ALIASES.end(), [](const mode_alias_s &a, const mode_alias_s &b)
@@ -1553,9 +1625,6 @@ bool kc_load_aliases(const QString filename, const bool automaticCall)
 
     if (!automaticCall)
     {
-        kd_show_headless_info_message("Data was loaded",
-                                      "The aliases were successfully loaded.");
-
         // Signal a new input mode to force the program to re-evaluate the mode
         // parameters, in case one of the newly-loaded aliases applies to the
         // current mode.

@@ -63,7 +63,7 @@ AntiTearDialog::~AntiTearDialog()
 
 void AntiTearDialog::create_menu_bar(void)
 {
-    k_assert((this->menubar == nullptr), "Not allowed to create the video/color dialog menu bar more than once.");
+    k_assert((this->menubar == nullptr), "Not allowed to create the anti-tear dialog menu bar more than once.");
 
     this->menubar = new QMenuBar(this);
 

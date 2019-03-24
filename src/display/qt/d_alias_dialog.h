@@ -9,6 +9,8 @@
 
 #include <QDialog>
 
+class QMenuBar;
+class QTreeWidgetItem;
 struct mode_alias_s;
 
 namespace Ui {
@@ -28,10 +30,28 @@ public:
     void receive_new_alias(const mode_alias_s a);
 
 private slots:
-    void on_pushButton_load_clicked();
+    void load_aliases();
+
+    void save_aliases();
+
+    void on_pushButton_removeAlias_clicked();
+
+    void on_pushButton_addAlias_clicked();
 
 private:
     Ui::AliasDialog *ui;
+
+    void create_menu_bar();
+
+    void broadcast_aliases();
+
+    QWidget* create_resolution_widget(QTreeWidgetItem *parentItem, const uint column, const uint width, const uint height);
+
+    void adjust_tree_widget_column_size();
+
+    void resizeEvent(QResizeEvent *);
+
+    QMenuBar *menubar = nullptr;
 };
 
-#endif // D_ALIAS_DIALOG_H
+#endif
