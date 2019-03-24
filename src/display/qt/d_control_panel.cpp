@@ -1338,3 +1338,27 @@ void ControlPanel::on_checkBox_maintainOriginalAspectWhenScaling_stateChanged(in
 
     return;
 }
+
+void ControlPanel::on_comboBox_outputAspectMode_currentIndexChanged(const QString &arg1)
+{
+    INFO(("Setting aspect mode to '%s'...", arg1.toStdString().c_str()));
+
+    if (arg1 == "Native")
+    {
+        ks_set_aspect_mode(aspect_mode_e::native);
+    }
+    else if (arg1 == "Traditional 4:3")
+    {
+        ks_set_aspect_mode(aspect_mode_e::traditional_4_3);
+    }
+    else if (arg1 == "Always 4:3")
+    {
+        ks_set_aspect_mode(aspect_mode_e::always_4_3);
+    }
+    else
+    {
+        k_assert(0, "Unknown aspect mode.");
+    }
+
+    return;
+}

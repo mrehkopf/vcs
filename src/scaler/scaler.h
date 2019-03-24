@@ -26,6 +26,15 @@ enum scaling_filter_id_e
     SCALEFILT_CUBIC
 };
 
+// When padding to maintain a frame's aspect ratio is enabled, the aspect mode
+// determines what that ratio is.
+enum class aspect_mode_e
+{
+    native,         // Frame width / height.
+    traditional_4_3,  // Frame width / height; except for some resolutions like 720 x 400, where 4 / 3.
+    always_4_3           // 4 / 3.
+};
+
 struct scaling_filter_s
 {
     QString name;   // The public name of the filter. Shown in the GUI etc.
@@ -46,7 +55,9 @@ void ks_release_scaler(void);
 
 void ks_scale_frame(captured_frame_s &frame);
 
-resolution_s ks_resolution_to_aspect_ratio(const resolution_s &r);
+resolution_s ks_resolution_to_aspect(const resolution_s &r);
+
+void ks_set_aspect_mode(const aspect_mode_e mode);
 
 void ks_set_output_aspect_ratio(const u32 w, const u32 h);
 

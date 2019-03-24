@@ -50,6 +50,8 @@ static heap_bytes_s<u8> OUTPUT_BUFFER;
 static heap_bytes_s<u8> COLORCONV_BUFFER;
 static heap_bytes_s<u8> TMP_BUFFER;
 
+static aspect_mode_e ASPECT_MODE = aspect_mode_e::native;
+
 static resolution_s LATEST_OUTPUT_SIZE = {0};       // The size of the image currently in the scaler's output buffer.
 
 static const u32 OUTPUT_BIT_DEPTH = 32;             // The bit depth we're currently scaling to.
@@ -66,7 +68,14 @@ static bool FORCE_ASPECT_RATIO = false;
 static real OUTPUT_SCALING = 1;
 static bool FORCE_SCALING = false;
 
-resolution_s ks_resolution_to_aspect_ratio(const resolution_s &r)
+void ks_set_aspect_mode(const aspect_mode_e mode)
+{
+    ASPECT_MODE = mode;
+
+    return;
+}
+
+resolution_s ks_resolution_to_aspect(const resolution_s &r)
 {
     resolution_s a;
     const int gcd = std::__gcd(r.w, r.h);
@@ -152,18 +161,41 @@ bool ks_is_output_padding_enabled(void)
 }
 
 // Returns a resolution corresponding to sourceRes scaled up to targetRes but
-// maintaining sourceRes's aspect ratio.
+// maintaining sourceRes's aspect ratio according to the scaler's current aspect
+// mode.
 //
 static resolution_s padded_resolution(const resolution_s &sourceRes, const resolution_s &targetRes)
 {
-    const real aspectRatio = (sourceRes.w / (real)sourceRes.h);
-    uint w = targetRes.h * aspectRatio;
+    const resolution_s aspect = [sourceRes]()->resolution_s
+    {
+        switch (ASPECT_MODE)
+        {
+            case aspect_mode_e::native: return ks_resolution_to_aspect(sourceRes);
+            case aspect_mode_e::always_4_3: return {4, 3, 0};
+            case aspect_mode_e::traditional_4_3:
+            {
+                if ((sourceRes.w == 720 && sourceRes.h == 400) ||
+                    (sourceRes.w == 640 && sourceRes.h == 400) ||
+                    (sourceRes.w == 320 && sourceRes.h == 200))
+                {
+                    return {4, 3, 0};
+                }
+                else
+                {
+                    return ks_resolution_to_aspect(sourceRes);
+                }
+            }
+            default: k_assert(0, "Unknown aspect mode."); return ks_resolution_to_aspect(sourceRes);
+        }
+    }();
+    const real aspectRatio = (aspect.w / (real)aspect.h);
+    uint w = std::round(targetRes.h * aspectRatio);
     uint h = targetRes.h;
     if (w > targetRes.w)
     {
-        const real aspectRatio = (sourceRes.h / (real)sourceRes.w);
+        const real aspectRatio = (aspect.h / (real)aspect.w);
         w = targetRes.w;
-        h = targetRes.w * aspectRatio;
+        h = std::round(targetRes.w * aspectRatio);
     }
 
     return {w, h, OUTPUT_BIT_DEPTH};
@@ -549,7 +581,8 @@ void ks_scale_frame(captured_frame_s &frame)
         kf_apply_pre_filters(pixelData, frame.r);
 
         // If no need to scale, just copy the data over.
-        if (frame.r.w == outputRes.w &&
+        if (ASPECT_MODE == aspect_mode_e::native &&
+            frame.r.w == outputRes.w &&
             frame.r.h == outputRes.h)
         {
             memcpy(OUTPUT_BUFFER.ptr(), pixelData, OUTPUT_BUFFER.up_to(frame.r.w * frame.r.h * (OUTPUT_BIT_DEPTH / 8)));

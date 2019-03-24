@@ -44,7 +44,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="documentMode">
       <bool>true</bool>
@@ -737,9 +737,6 @@
           <string>Scaler overrides</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
-          <property name="topMargin">
-           <number>9</number>
-          </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_12">
             <item>
@@ -873,14 +870,37 @@
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="checkBox_maintainOriginalAspectWhenScaling">
-            <property name="text">
-             <string>Maintain aspect ratio when scaling</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QCheckBox" name="checkBox_maintainOriginalAspectWhenScaling">
+              <property name="text">
+               <string>Keep aspect ratio:</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_outputAspectMode">
+              <item>
+               <property name="text">
+                <string>Native</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Traditional 4:3</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Always 4:3</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QCheckBox" name="checkBox_outputAllowMouseWheelScale">
