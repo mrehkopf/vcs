@@ -1342,7 +1342,7 @@ void ControlPanel::on_checkBox_maintainOriginalAspectWhenScaling_stateChanged(in
 
 void ControlPanel::on_comboBox_outputAspectMode_currentIndexChanged(const QString &arg1)
 {
-    INFO(("Setting aspect mode to '%s'...", arg1.toStdString().c_str()));
+    INFO(("Setting aspect mode to '%s'.", arg1.toStdString().c_str()));
 
     if (arg1 == "Native")
     {

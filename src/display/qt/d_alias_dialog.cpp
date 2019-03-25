@@ -238,7 +238,11 @@ void AliasDialog::save_aliases()
 
 void AliasDialog::on_pushButton_removeAlias_clicked()
 {
-    delete ui->treeWidget_knownAliases->currentItem();
+    const auto selectedItems = ui->treeWidget_knownAliases->selectedItems();
+    for (auto item: selectedItems)
+    {
+        delete item;
+    }
 
     this->broadcast_aliases();
 
