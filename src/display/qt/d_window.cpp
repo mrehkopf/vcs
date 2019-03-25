@@ -239,8 +239,8 @@ void MainWindow::paintEvent(QPaintEvent *)
         OVERLAY.drawContents(&painter, this->rect());
     }
 
-    // If the user pressed the right mouse button inside the main capture window,
-    // show a magnifying glass effect which blows up part of the captured image.
+    // Show a magnifying glass effect which blows up part of the captured image,
+    // if the user pressed the right mouse button inside the main capture window.
     if (!kc_no_signal() &&
         this->isActiveWindow() &&
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
@@ -252,44 +252,44 @@ void MainWindow::paintEvent(QPaintEvent *)
             magnifyingGlass->setStyleSheet("background-color: rgba(0, 0, 0, 255);"
                                            "border-color: blue;"
                                            "border-style: solid;"
-                                           "border-width: 2px;"
-                                           "border-radius: 1px;");
+                                           "border-width: 3px;"
+                                           "border-radius: 0px;");
         }
 
-        const QSize subRegionSize = QSize(40, 30);
+        const QSize magnifiedRegionSize = QSize(40, 30);
         const QSize glassSize = QSize(280, 210);
         const QPoint cursorPos = this->mapFromGlobal(QCursor::pos());
-        QPoint adjPos = QPoint((cursorPos.x() - (subRegionSize.width() / 2)),
-                               (cursorPos.y() - (subRegionSize.height() / 2)));
+        QPoint regionTopLeft = QPoint((cursorPos.x() - (magnifiedRegionSize.width() / 2)),
+                                      (cursorPos.y() - (magnifiedRegionSize.height() / 2)));
 
         // Don't let the magnification overflow the image buffer.
-        if (adjPos.x() < 0)
+        if (regionTopLeft.x() < 0)
         {
-            adjPos.setX(0);
+            regionTopLeft.setX(0);
         }
-        else if (adjPos.x() > (capturedImg.width() - subRegionSize.width()))
+        else if (regionTopLeft.x() > (capturedImg.width() - magnifiedRegionSize.width()))
         {
-            adjPos.setX(capturedImg.width() - subRegionSize.width());
+            regionTopLeft.setX(capturedImg.width() - magnifiedRegionSize.width());
         }
-        if (adjPos.y() < 0)
+        if (regionTopLeft.y() < 0)
         {
-            adjPos.setY(0);
+            regionTopLeft.setY(0);
         }
-        else if (adjPos.y() > (capturedImg.height() - subRegionSize.height()))
+        else if (regionTopLeft.y() > (capturedImg.height() - magnifiedRegionSize.height()))
         {
-            adjPos.setY(capturedImg.height() - subRegionSize.height());
+            regionTopLeft.setY(capturedImg.height() - magnifiedRegionSize.height());
         }
 
-        // Get a small subregion of the capture image to magnify.
-        const u32 startIdx = (adjPos.x() + adjPos.y() * capturedImg.width()) * (capturedImg.depth() / 8);
-        QImage magn(capturedImg.bits() + startIdx, subRegionSize.width(), subRegionSize.height(),
+        // Grab the magnified region's pixel data.
+        const u32 startIdx = (regionTopLeft.x() + regionTopLeft.y() * capturedImg.width()) * (capturedImg.depth() / 8);
+        QImage magn(capturedImg.bits() + startIdx, magnifiedRegionSize.width(), magnifiedRegionSize.height(),
                     capturedImg.bytesPerLine(), capturedImg.format());
 
         magnifyingGlass->resize(glassSize);
         magnifyingGlass->setPixmap(QPixmap::fromImage(magn.scaled(glassSize.width(), glassSize.height(),
                                                                   Qt::IgnoreAspectRatio, Qt::FastTransformation)));
-        magnifyingGlass->move(cursorPos.x() - (glassSize.width() / 2),
-                              cursorPos.y() - (glassSize.height() / 2));
+        magnifyingGlass->move(std::min((this->width() - glassSize.width()), std::max(0, cursorPos.x() - (glassSize.width() / 2))),
+                              std::max(0, std::min((this->height() - glassSize.height()), cursorPos.y() - (glassSize.height() / 2))));
         magnifyingGlass->show();
     }
     else
