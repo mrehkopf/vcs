@@ -327,13 +327,30 @@ While developing VCS, I've been compiling it with GCC 5.4 on Linux and MinGW 5.3
 
 **Qt's event loop.** The loop in which Qt processes GUI-related events is spun manually (by `update_gui_state()` in [src/display/qt/d_window.cpp](src/display/qt/d_window.cpp)) each time a new frame has been received from the capture hardware. This is done to match the rate of screen updates on the output to that of the input capture source.
 
-In theory, spinning the Qt event loop by hand could create some issues. On the one hand, I've not yet seen any; but on the other hand, I use VCS through a virtual machine, and may simply be oblivious to issues that arise when run natively but not via a VM. If you do encounter issues like screen tearing or laggy GUI operation, and know that they're not present in the captured frames themselves, you may want to look into alternate ways to spin Qt's event loop. One way is to draw the frames onto a QOpenGLWidget surface you've set to block for v-sync.
-
 # Project status
 VCS is currently in post-1.0, having come out of beta in 2018. Development is sporadic.
 
 ### System requirements
-You are encouraged to have a fast CPU, since most of VCS's operations are performed on the CPU. The GPU is of less importance, and even fairly old ones will likely work. At least 2 GB of RAM is required, but at least 4 GB is recommended.
+You are encouraged to have a fast CPU, since most of VCS's operations are performed on the CPU. The GPU is of less importance, and even fairly old ones will likely work. VCS uses roughly 1 GB of RAM, and so your system should have at least that much free &ndash; preferably twice as much or more.
+
+**Performance.** On my Intel Xeon E3-1230 v3, VCS performs more than adequately. The table below shows that an input of 640 x 480 can be scaled to 1920 x 1440 at about 300&ndash;400 frames per second, depending on the interpolation used.
+
+| 640 x 480    | Nearest | Linear | Area | Cubic | Lanczos |
+| ------------ | ------- | ------ | ---- | ----- | ------- |
+| 2x upscaled  | 1100    | 480    | 480  | 280   | 100     |
+| 3x upscaled  | 460     | 340    | 340  | 180   | 50      |
+
+Drawing frames onto the [output window](#the-output-window) using software rendering is likewise sufficiently fast, as shown in the following table. An input of 640 x 480 can be upscaled by 2x and drawn on screen at roughly 340 frames per second when using nearest-neighbor interpolation.
+| 640 x 480       | 1x / Nearest | 2x / Nearest | 3x / Nearest |
+| --------------- | ------------ | ------------ | ------------ |
+| With display    | 1360         | 340          | 150          |
+| Without display | 1910         | 1100         | 510
+
+Padding (i.e. aspect ratio correction) can incur a performance penalty with some of the scalers. The following table shows the frame rates associated with scaling a 640 x 480 input into 1920 x 1080 with and without padding to 4:3.
+| 480p to 1080p | Nearest | Linear | Area | Cubic | Lanczos |
+| ------------- | ------- | ------ | ---- | ----- | ------- |
+| Padded / 4:3  | 390     | 270    | 270  | 200   | 80      |
+| No padding    | 820     | 370    | 370  | 210   | 70      |
 
 ### A word about VCS's GUI
 I run my capture card, the VisionRGB-PRO2, through a virtual machine, since the Linux I'm on isn't natively supported by the card. In the VM, performance-wise, I find that a Windows XP guest works best, so I use that.
