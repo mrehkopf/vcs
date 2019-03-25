@@ -104,7 +104,8 @@ private:
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
-    void mouseDoubleClickEvent(QMouseEvent * event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
+    void changeEvent(QEvent *event);
 
     void set_keyboard_shortcuts();
 

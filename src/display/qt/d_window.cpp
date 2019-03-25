@@ -164,6 +164,23 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
     return;
 }
 
+void MainWindow::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::WindowStateChange)
+    {
+        // Hide the window's cursor when in full-screen mode, and restore it when not.
+        /// TODO: Ideally, this would only get set when we enter full-screen
+        /// mode and back, not every time the window's state changes.
+        if (this->windowState() & Qt::WindowFullScreen)
+        {
+            this->setCursor(QCursor(Qt::BlankCursor));
+        }
+        else this->unsetCursor();
+    }
+
+    QWidget::changeEvent(event);
+}
+
 static QPoint PREV_MOUSE_POS; /// Temp. Used to track mouse movement delta across frames.
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
