@@ -336,19 +336,21 @@ You are encouraged to have a fast CPU, since most of VCS's operations are perfor
 **Performance.** On my Intel Xeon E3-1230 v3, VCS performs more than adequately. The table below shows that an input of 640 x 480 can be scaled to 1920 x 1440 at about 300&ndash;400 frames per second, depending on the interpolation used.
 
 | 640 x 480    | Nearest | Linear | Area | Cubic | Lanczos |
-| ------------ | ------- | ------ | ---- | ----- | ------- |
+|:------------ |:-------:|:------:|:----:|:-----:|:-------:|
 | 2x upscaled  | 1100    | 480    | 480  | 280   | 100     |
 | 3x upscaled  | 460     | 340    | 340  | 180   | 50      |
 
 Drawing frames onto the [output window](#the-output-window) using software rendering is likewise sufficiently fast, as shown in the following table. An input of 640 x 480 can be upscaled by 2x and drawn on screen at roughly 340 frames per second when using nearest-neighbor interpolation.
-| 640 x 480       | 1x / Nearest | 2x / Nearest | 3x / Nearest |
-| --------------- | ------------ | ------------ | ------------ |
-| With display    | 1360         | 340          | 150          |
-| Without display | 1910         | 1100         | 510
+
+| 640 x 480       | 1x<br>Nearest | 2x<br>Nearest | 3x<br>Nearest |
+|:--------------- |:-------------:|:-------------:|:-------------:|
+| With display    | 1360          | 340           | 150           |
+| Without display | 1910          | 1100          | 510           |
 
 Padding (i.e. aspect ratio correction) can incur a performance penalty with some of the scalers. The following table shows the frame rates associated with scaling a 640 x 480 input into 1920 x 1080 with and without padding to 4:3.
+
 | 480p to 1080p | Nearest | Linear | Area | Cubic | Lanczos |
-| ------------- | ------- | ------ | ---- | ----- | ------- |
+|:------------- |:-------:|:------:|:----:|:-----:|:-------:|
 | Padded / 4:3  | 390     | 270    | 270  | 200   | 80      |
 | No padding    | 820     | 370    | 370  | 210   | 70      |
 
