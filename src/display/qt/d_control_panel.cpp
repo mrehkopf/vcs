@@ -1130,7 +1130,9 @@ QString ControlPanel::GetString_OutputLatency()
 
 bool ControlPanel::is_mouse_wheel_scaling_allowed()
 {
-    return (!krecord_is_recording() && ui->checkBox_outputAllowMouseWheelScale->isChecked());
+    return (!kd_is_fullscreen() && // In my virtual machine, at least, wheel scaling while in full-screen messes up the full-screen mode.
+            !krecord_is_recording() &&
+            ui->checkBox_outputAllowMouseWheelScale->isChecked());
 }
 
 void ControlPanel::update_recording_metainfo(void)

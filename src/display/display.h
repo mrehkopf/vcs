@@ -53,6 +53,8 @@ int kd_peak_system_latency(void);
 
 int kd_average_system_latency(void);
 
+bool kd_is_fullscreen(void);
+
 void kd_mark_gui_input_no_signal(const bool state);
 
 void kd_signal_new_known_mode(const resolution_s r);

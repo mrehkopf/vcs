@@ -204,6 +204,13 @@ int kd_average_system_latency(void)
     return UPDATE_LATENCY_AVG;
 }
 
+bool kd_is_fullscreen(void)
+{
+    k_assert(WINDOW != nullptr, "Tried to query the display before it had been initialized.");
+
+    return WINDOW->isFullScreen();
+}
+
 void kd_update_display(void)
 {
     if (WINDOW == nullptr)
