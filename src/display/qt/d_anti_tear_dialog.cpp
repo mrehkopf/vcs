@@ -32,13 +32,13 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
     // Don't show the context help '?' button in the window bar.
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    ui->spinBox_rangeUp->setValue(kpers_value_of("range_up", INI_GROUP_ANTI_TEAR, a.rangeUp).toInt());
-    ui->spinBox_rangeDown->setValue(kpers_value_of("range_down", INI_GROUP_ANTI_TEAR, a.rangeDown).toInt());
-    ui->spinBox_threshold->setValue(kpers_value_of("threshold", INI_GROUP_ANTI_TEAR, a.threshold).toInt());
-    ui->spinBox_matchedReqd->setValue(kpers_value_of("matches_reqd", INI_GROUP_ANTI_TEAR, a.matchesReqd).toInt());
-    ui->spinBox_domainSize->setValue(kpers_value_of("window_len", INI_GROUP_ANTI_TEAR, a.windowLen).toInt());
+    ui->spinBox_rangeUp->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "range_up", a.rangeUp).toInt());
+    ui->spinBox_rangeDown->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "range_down", a.rangeDown).toInt());
+    ui->spinBox_threshold->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "threshold", a.threshold).toInt());
+    ui->spinBox_matchedReqd->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "matches_reqd", a.matchesReqd).toInt());
+    ui->spinBox_domainSize->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "window_len", a.windowLen).toInt());
 
-    resize(kpers_value_of("anti_tear", INI_GROUP_GEOMETRY, size()).toSize());
+    resize(kpers_value_of(INI_GROUP_GEOMETRY, "anti_tear", size()).toSize());
 
     create_menu_bar();
 
@@ -47,14 +47,14 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 
 AntiTearDialog::~AntiTearDialog()
 {
-    kpers_set_value("anti_tear", INI_GROUP_GEOMETRY, ui->spinBox_rangeUp->value());
+    kpers_set_value(INI_GROUP_GEOMETRY, "anti_tear", ui->spinBox_rangeUp->value());
 
-    kpers_set_value("range_up", INI_GROUP_ANTI_TEAR, ui->spinBox_rangeUp->value());
-    kpers_set_value("range_down", INI_GROUP_ANTI_TEAR, ui->spinBox_rangeDown->value());
-    kpers_set_value("threshold", INI_GROUP_ANTI_TEAR, ui->spinBox_threshold->value());
-    kpers_set_value("window_len", INI_GROUP_ANTI_TEAR, ui->spinBox_domainSize->value());
-    kpers_set_value("matches_reqd", INI_GROUP_ANTI_TEAR, ui->spinBox_matchedReqd->value());
-    kpers_set_value("direction", INI_GROUP_ANTI_TEAR, 0);
+    kpers_set_value(INI_GROUP_ANTI_TEAR, "range_up", ui->spinBox_rangeUp->value());
+    kpers_set_value(INI_GROUP_ANTI_TEAR, "range_down", ui->spinBox_rangeDown->value());
+    kpers_set_value(INI_GROUP_ANTI_TEAR, "threshold", ui->spinBox_threshold->value());
+    kpers_set_value(INI_GROUP_ANTI_TEAR, "window_len", ui->spinBox_domainSize->value());
+    kpers_set_value(INI_GROUP_ANTI_TEAR, "matches_reqd", ui->spinBox_matchedReqd->value());
+    kpers_set_value(INI_GROUP_ANTI_TEAR, "direction", 0);
 
     delete ui;
 

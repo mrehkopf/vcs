@@ -41,7 +41,7 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
 
     load_sets_from_file(kcom_filters_file_name());
 
-    resize(kpers_value_of("filtering", INI_GROUP_GEOMETRY, size()).toSize());
+    resize(kpers_value_of(INI_GROUP_GEOMETRY, "filtering", size()).toSize());
 
     create_menu_bar();
 
@@ -50,7 +50,7 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
 
 FilterSetsListDialog::~FilterSetsListDialog()
 {
-    kpers_set_value("filtering", INI_GROUP_GEOMETRY, size());
+    kpers_set_value(INI_GROUP_GEOMETRY, "filtering", size());
 
     delete ui; ui = nullptr;
 

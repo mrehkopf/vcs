@@ -20,10 +20,10 @@
 #define INI_GROUP_OVERLAY               "OVERLAY"
 #define INI_GROUP_LOG                   "LOG"
 
-QVariant kpers_value_of(const QString &name, const QString &group, const QVariant &defaultValue = QVariant());
+QVariant kpers_value_of(const QString &group, const QString &name, const QVariant &defaultValue = QVariant());
 
-void kpers_set_value(const QString &name, const QString &group, const QVariant &value);
+void kpers_set_value(const QString &group, const QString &name, const QVariant &value);
 
-bool kpers_contains(const QString &name, const QString &group);
+bool kpers_contains(const QString &group, const QString &name);
 
 #endif

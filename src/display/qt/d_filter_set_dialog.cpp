@@ -146,14 +146,14 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
         }
     }
 
-    resize(kpers_value_of("filter_set", INI_GROUP_GEOMETRY, size()).toSize());
+    resize(kpers_value_of(INI_GROUP_GEOMETRY, "filter_set", size()).toSize());
 
     return;
 }
 
 FilterSetDialog::~FilterSetDialog()
 {
-    kpers_set_value("filter_set", INI_GROUP_GEOMETRY, size());
+    kpers_set_value(INI_GROUP_GEOMETRY, "filter_set", size());
 
     delete ui;
 

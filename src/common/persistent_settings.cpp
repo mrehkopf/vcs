@@ -23,26 +23,26 @@ void kpers_initialize(void)
 // Concatenates the given name and group into a key usable with QSettings's value()
 // and setValue().
 //
-static QString as_key(const QString &name, const QString &group)
+static QString as_key(const QString &group, const QString &name)
 {
     return QString("%1/%2").arg(group.toUpper()).arg(name.toUpper());
 }
 
-QVariant kpers_value_of(const QString &name, const QString &group, const QVariant &defaultValue)
+QVariant kpers_value_of(const QString &group, const QString &name, const QVariant &defaultValue)
 {
-    const QVariant v = SETTINGS_FILE.value(as_key(name, group), defaultValue);
+    const QVariant v = SETTINGS_FILE.value(as_key(group, name), defaultValue);
 
     return v;
 }
 
-bool kpers_contains(const QString &name, const QString &group)
+bool kpers_contains(const QString &group, const QString &name)
 {
-    return SETTINGS_FILE.contains(as_key(name, group));
+    return SETTINGS_FILE.contains(as_key(group, name));
 }
 
-void kpers_set_value(const QString &name, const QString &group, const QVariant &value)
+void kpers_set_value(const QString &group, const QString &name, const QVariant &value)
 {
-    SETTINGS_FILE.setValue(as_key(name, group), value);
+    SETTINGS_FILE.setValue(as_key(group, name), value);
 
     return;
 }

@@ -43,10 +43,10 @@ OverlayDialog::OverlayDialog(MainWindow *const mainWin, QWidget *parent) :
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     // Load a previous overlay from disk, if any.
-    ui->plainTextEdit->setPlainText(kpers_value_of("content", INI_GROUP_OVERLAY, "").toString());
-    ui->groupBox_overlay->setChecked(kpers_value_of("enabled", INI_GROUP_OVERLAY, 0).toBool());
+    ui->plainTextEdit->setPlainText(kpers_value_of(INI_GROUP_OVERLAY, "content", "").toString());
+    ui->groupBox_overlay->setChecked(kpers_value_of(INI_GROUP_OVERLAY, "enabled", 0).toBool());
 
-    resize(kpers_value_of("overlay", INI_GROUP_GEOMETRY, size()).toSize());
+    resize(kpers_value_of(INI_GROUP_GEOMETRY, "overlay", size()).toSize());
 
     return;
 }
@@ -54,9 +54,9 @@ OverlayDialog::OverlayDialog(MainWindow *const mainWin, QWidget *parent) :
 OverlayDialog::~OverlayDialog()
 {
     // Save the current settings.
-    kpers_set_value("content", INI_GROUP_OVERLAY, ui->plainTextEdit->toPlainText());
-    kpers_set_value("enabled", INI_GROUP_OVERLAY, ui->groupBox_overlay->isChecked());
-    kpers_set_value("overlay", INI_GROUP_GEOMETRY, size());
+    kpers_set_value(INI_GROUP_OVERLAY, "content", ui->plainTextEdit->toPlainText());
+    kpers_set_value(INI_GROUP_OVERLAY, "enabled", ui->groupBox_overlay->isChecked());
+    kpers_set_value(INI_GROUP_GEOMETRY, "overlay", size());
 
     delete ui; ui = nullptr;
 

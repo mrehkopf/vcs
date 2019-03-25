@@ -39,14 +39,14 @@ AliasDialog::AliasDialog(QWidget *parent) :
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    this->resize(kpers_value_of("aliases", INI_GROUP_GEOMETRY, size()).toSize());
+    this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "aliases", size()).toSize());
 
     return;
 }
 
 AliasDialog::~AliasDialog()
 {
-    kpers_set_value("aliases", INI_GROUP_GEOMETRY, size());
+    kpers_set_value(INI_GROUP_GEOMETRY, "aliases", size());
 
     delete ui;
     ui = nullptr;

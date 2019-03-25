@@ -48,7 +48,7 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
     connect_spinboxes_to_their_sliders(ui->groupBox_videoAdjust);
     connect_spinboxes_to_their_sliders(ui->groupBox_colorAdjust);
 
-    resize(kpers_value_of("video_and_color", INI_GROUP_GEOMETRY, size()).toSize());
+    resize(kpers_value_of(INI_GROUP_GEOMETRY, "video_and_color", size()).toSize());
 
     create_menu_bar();
 
@@ -57,7 +57,7 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
 
 VideoAndColorDialog::~VideoAndColorDialog()
 {
-    kpers_set_value("video_and_color", INI_GROUP_GEOMETRY, size());
+    kpers_set_value(INI_GROUP_GEOMETRY, "video_and_color", size());
 
     delete ui; ui = nullptr;
 
