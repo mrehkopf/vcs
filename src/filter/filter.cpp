@@ -36,6 +36,11 @@ static void filter_func_crop(FILTER_FUNC_PARAMS);
 static void filter_func_flip(FILTER_FUNC_PARAMS);
 static void filter_func_rotate(FILTER_FUNC_PARAMS);
 
+// Invoke this macro at the start of each filter_func_*() function, to verify
+// that the parameters passed are valid to operate on.
+#define VALIDATE_FILTER_INPUT  k_assert(r->bpp == 32, "This filter expects 32-bit source color.");\
+                               if (pixels == nullptr || params == nullptr || r == nullptr) return;
+
 // Establish a list of all the filters which the user can apply. For each filter,
 // assign a pointer to the function which applies that filter to a given array of
 // pixels, and a point to a user-facing GUI dialog with which the user can adjust
@@ -156,11 +161,7 @@ const std::vector<filter_set_s*>& kf_filter_sets(void)
 //
 static void filter_func_uniquecount(FILTER_FUNC_PARAMS)
 {
-    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
-    if (pixels == nullptr || params == nullptr || r == nullptr)
-    {
-        return;
-    }
+    VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
     static heap_bytes_s<u8> prevPixels(MAX_FRAME_SIZE, "Unique count filter buffer");
@@ -210,11 +211,7 @@ static void filter_func_uniquecount(FILTER_FUNC_PARAMS)
 //
 static void filter_func_denoise(FILTER_FUNC_PARAMS)
 {
-    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
-    if (pixels == nullptr || params == nullptr || r == nullptr)
-    {
-        return;
-    }
+    VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
     const u8 type = filter_dlg_denoise_s::FILTER_TYPE_TEMPORAL;
@@ -282,11 +279,7 @@ static void filter_func_denoise(FILTER_FUNC_PARAMS)
 //
 static void filter_func_deltahistogram(FILTER_FUNC_PARAMS)
 {
-    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
-    if (pixels == nullptr || params == nullptr || r == nullptr)
-    {
-        return;
-    }
+    VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
     static heap_bytes_s<u8> prevFramePixels(MAX_FRAME_SIZE, "Delta histogram buffer");
@@ -375,11 +368,7 @@ static void filter_func_deltahistogram(FILTER_FUNC_PARAMS)
 
 static void filter_func_unsharpmask(FILTER_FUNC_PARAMS)
 {
-    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
-    if (pixels == nullptr || params == nullptr || r == nullptr)
-    {
-        return;
-    }
+    VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
     static heap_bytes_s<u8> TMP_BUF(MAX_FRAME_SIZE, "Unsharp mask buffer");
@@ -397,11 +386,7 @@ static void filter_func_unsharpmask(FILTER_FUNC_PARAMS)
 
 static void filter_func_sharpen(FILTER_FUNC_PARAMS)
 {
-    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
-    if (pixels == nullptr || params == nullptr || r == nullptr)
-    {
-        return;
-    }
+    VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
     float kernel[] = { 0, -1,  0,
@@ -420,11 +405,7 @@ static void filter_func_sharpen(FILTER_FUNC_PARAMS)
 //
 static void filter_func_decimate(FILTER_FUNC_PARAMS)
 {
-    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
-    if (pixels == nullptr || params == nullptr || r == nullptr)
-    {
-        return;
-    }
+    VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
     const u8 factor = params[filter_dlg_decimate_s::OFFS_FACTOR];
@@ -485,11 +466,7 @@ static void filter_func_decimate(FILTER_FUNC_PARAMS)
 //
 static void filter_func_crop(FILTER_FUNC_PARAMS)
 {
-    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
-    if (pixels == nullptr || params == nullptr || r == nullptr)
-    {
-        return;
-    }
+    VALIDATE_FILTER_INPUT
 
     uint x = *(u16*)&(params[filter_dlg_crop_s::OFFS_X]);
     uint y = *(u16*)&(params[filter_dlg_crop_s::OFFS_Y]);
@@ -530,11 +507,7 @@ static void filter_func_crop(FILTER_FUNC_PARAMS)
 //
 static void filter_func_flip(FILTER_FUNC_PARAMS)
 {
-    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
-    if (pixels == nullptr || params == nullptr || r == nullptr)
-    {
-        return;
-    }
+    VALIDATE_FILTER_INPUT
 
     static heap_bytes_s<u8> scratch(MAX_FRAME_SIZE, "Flip filter scratch buffer");
 
@@ -554,11 +527,7 @@ static void filter_func_flip(FILTER_FUNC_PARAMS)
 
 static void filter_func_rotate(FILTER_FUNC_PARAMS)
 {
-    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
-    if (pixels == nullptr || params == nullptr || r == nullptr)
-    {
-        return;
-    }
+    VALIDATE_FILTER_INPUT
 
     static heap_bytes_s<u8> scratch(MAX_FRAME_SIZE, "Rotate filter scratch buffer");
 
@@ -579,11 +548,7 @@ static void filter_func_rotate(FILTER_FUNC_PARAMS)
 
 static void filter_func_median(FILTER_FUNC_PARAMS)
 {
-    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
-    if (pixels == nullptr || params == nullptr || r == nullptr)
-    {
-        return;
-    }
+    VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
     const u8 kernelS = params[filter_dlg_median_s::OFF_KERNEL_SIZE];
@@ -597,11 +562,7 @@ static void filter_func_median(FILTER_FUNC_PARAMS)
 
 static void filter_func_blur(FILTER_FUNC_PARAMS)
 {
-    k_assert(r->bpp == 32, "This filter expects 32-bit source color.");
-    if (pixels == nullptr || params == nullptr || r == nullptr)
-    {
-        return;
-    }
+    VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
     const real kernelS = (params[filter_dlg_blur_s::OFF_KERNEL_SIZE] / 10.0);
