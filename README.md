@@ -142,7 +142,10 @@ per second. The pipeline consists of the following stages: a frame being receive
 
 **Relative scale.** Scale captured frames by a percentage relative to the resolution set in the `Output size` field.
 
-**Maintain aspect ratio when scaling.** When scaling captured frames, pad the resulting image with black borders if necessary to conserve the frame's aspect ratio. If disabled, frames will be stretched to fit the output size.
+**Keep aspect ratio.** When displaying captured frames, conserve a desired aspect ratio. If disabled, frames will be stretched to fully fit the size of the [output window](#the-output-window). The following aspect ratio modes are available:
+- `Native` Conserve each frame's original aspect ratio. A frame of 720 x 400 will be displayed with an aspect ratio of 9:5, and a frame of 640 x 480 with 4:3.
+- `Traditional 4:3` Certain older, non-4:3 resolutions &ndash; like 720 x 400, 640 x 400, and 320 x 200 &ndash; were sometimes intended to be displayed in a 4:3 aspect. This mode sets a 4:3 aspect ratio for those resolutions, and otherwise acts like the `Native` mode.
+- `Always 4:3` All frames will be displayed in a 4:3 aspect.
 
 **Mouse wheel scales output window.** Set whether scrolling the mouse wheel over the [output window](#the-output-window) scales the size of the window up or down. This works by modifying the `Relative scale` value, which in turns affects the size of the output window.
 
