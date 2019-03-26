@@ -327,6 +327,105 @@ While developing VCS, I've been compiling it with GCC 5.4 on Linux and MinGW 5.3
 
 **Qt's event loop.** The loop in which Qt processes GUI-related events is spun manually (by `update_gui_state()` in [src/display/qt/d_window.cpp](src/display/qt/d_window.cpp)) each time a new frame has been received from the capture hardware. This is done to match the rate of screen updates on the output to that of the input capture source.
 
+## How-to
+
+**Adding a frame filter.** Frame filters allow captured frames' pixel data to be modified in particular ways before being displayed on screen. A filter might, for instance, apply blur, cropping, or rotation to each frame. Adding a new filter to VCS is fairly easy, and the process is described below.
+
+A filter consists of a `filter function`, and a `filter dialog`. The filter function applies the filter to the frame's pixel data, and the filter dialog is a GUI element that lets the user specify values for any parameters the filter might take &ndash; like radius for a blur filter.
+
+The filter function is to be defined in [src/filter/filter.cpp](src/filter/filter.cpp). There, you will also find all of VCS's other filters. Looking at that source file, you can see the following pattern:
+```
+// Pre-declare the filter function.
+static void filter_func_NAME(FILTER_FUNC_PARAMS);
+
+// Add the filter to VCS's list of known filters.
+static const std::map ... FILTERS =
+    ...
+    {"DISPLAY_NAME", {filter_func_NAME, []{ static filter_dlg_NAME_s f; return &f;}()}},
+    ...
+
+// Define the filter function.
+static void filter_func_NAME(FILTER_FUNC_PARAMS)
+{
+    VALIDATE_FILTER_INPUT
+
+    // Perform the filtering.
+    ...
+}
+```
+
+The filter function's parameter list macro `FILTER_FUNC_PARAMS` expands to
+```
+u8 *const pixels, const resolution_s *const r, const u8 *const params
+```
+where `pixels` is a one-dimensional array of 32-bit color values (8 bits each for BGRA), `params` is an array providing the filter's parameter values, and `r` is the frame's resolution, giving the size of the `pixels` array.
+
+The following simple filter function uses OpenCV to set each pixel in the frame to a light blue color. (Note that you should encase any code that uses OpenCV in a `#if USE_OPENCV` directive.)
+```
+static void filter_func_blue(FILTER_FUNC_PARAMS)
+{
+    VALIDATE_FILTER_INPUT
+
+    #if USE_OPENCV
+        cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
+        output = cv::Scalar(255, 150, 0, 255);
+    #endif
+}
+```
+
+You can have a look at the existing filter functions in [src/filter/filter.cpp](src/filter/filter.cpp) to get a feel for how the filter function can be operated.
+
+The filter dialog is to be defined in [src/display/qt/df_filters.h](src/display/qt/df_filters.h), where you can also find the dialogs of VCS's other filters. Each dialog is defined as a separate struct inheriting from the dialog base `filter_dlc_s`. A filter can have no more or less than one dialog.
+
+The following is a minimal filter dialog:
+
+```
+struct filter_dlg_NAME_s : public filter_dlg_s
+{
+    filter_dlg_NAME_s() :
+        filter_dlg_s("DISPLAY_NAME") {}
+
+    // Offsets in the paramData array of the various parameters' values.
+    enum data_offset_e { OFFS_X = 0 };
+
+    // Initialize paramData to its default values for this filter.
+    void insert_default_params(u8 *const paramData) const override
+    {
+        memset(paramData, 0, FILTER_DATA_LENGTH);
+        paramData[OFFS_X] = 15;
+    }
+
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
+    {
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        d.setWindowTitle(filterName + " Filter");
+        d.setMinimumWidth(dlgMinWidth);
+
+        // Add the dialog's widgets. We'll let the user specify
+        // a value in the range 0..255 for a parameter called X.
+        {
+            QLabel xLabel("X:");
+
+            QSpinBox xSpin;
+            xSpin.setRange(0, 255);
+            xSpin.setValue(paramData[OFFS_X]);
+
+            QFormLayout layout;
+            layout.addRow(&xLabel, &xSpin);
+            d.setLayout(&layout);
+        }
+
+        // Display the dialog (blocking).
+        d.exec();
+
+        // Update paramData with values provided by the user.
+        paramData[OFFS_X] = xSpin.value();
+    }
+}
+```
+
+When the user asks for access to the filter's parameters, VCS will call `poll_user_for_params()`. The function constructs and displays a dialog containing GUI elements with which the user can modify the filter's parameters. Once the user has finished doing so, the function saves the parameter values into the `paramData` byte array, which will later be sent to the filter function as its `params` array.
+
 # Project status
 VCS is currently in post-1.0, having come out of beta in 2018. Development is sporadic.
 
