@@ -67,7 +67,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Active set:</string>
+           <string>Currently active set:</string>
           </property>
          </widget>
         </item>
@@ -146,16 +146,16 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QPushButton" name="pushButton_remove">
+         <widget class="QPushButton" name="pushButton_up">
           <property name="text">
-           <string>Remove</string>
+           <string>Up</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_add">
+         <widget class="QPushButton" name="pushButton_down">
           <property name="text">
-           <string>Add...</string>
+           <string>Down</string>
           </property>
          </widget>
         </item>
@@ -173,16 +173,16 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_up">
+         <widget class="QPushButton" name="pushButton_remove">
           <property name="text">
-           <string>Up</string>
+           <string>Remove</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_down">
+         <widget class="QPushButton" name="pushButton_add">
           <property name="text">
-           <string>Down</string>
+           <string>Add...</string>
           </property>
          </widget>
         </item>
