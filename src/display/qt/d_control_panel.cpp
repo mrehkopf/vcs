@@ -159,7 +159,7 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
             ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
             ui->checkBox_outputAllowMouseWheelScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "mouse_wheel_scaling", true).toBool());
             ui->comboBox_renderer->setCurrentIndex(
-                        combobox_idx_of_string(ui->comboBox_renderer, kpers_value_of(INI_GROUP_RENDERER, "name", "Software").toString()));
+                        combobox_idx_of_string(ui->comboBox_renderer, kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString()));
 
             // // Control panel's 'Record' tab.
             ui->spinBox_recordingFramerate->setValue(kpers_value_of(INI_GROUP_RECORDING, "frame_rate", 60).toUInt());
@@ -196,7 +196,6 @@ ControlPanel::~ControlPanel()
 {
     // Save the current settings.
     {
-        kpers_set_value(INI_GROUP_RENDERER, "name", ui->comboBox_renderer->currentText());
         kpers_set_value(INI_GROUP_LOG, "enabled", ui->checkBox_logEnabled->isChecked());
         kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", ui->checkBox_outputAntiTear->isChecked());
         kpers_set_value(INI_GROUP_CONTROL_PANEL, "tab", ui->tabWidget->currentIndex());
@@ -213,6 +212,7 @@ ControlPanel::~ControlPanel()
         kpers_set_value(INI_GROUP_OUTPUT, "force_relative_scale", ui->checkBox_forceOutputScale->isChecked());
         kpers_set_value(INI_GROUP_OUTPUT, "relative_scale", ui->spinBox_outputScale->value());
         kpers_set_value(INI_GROUP_OUTPUT, "mouse_wheel_scaling", ui->checkBox_outputAllowMouseWheelScale->isChecked());
+        kpers_set_value(INI_GROUP_OUTPUT, "renderer", ui->comboBox_renderer->currentText());
 
         // Recording.
         kpers_set_value(INI_GROUP_RECORDING, "frame_rate", ui->spinBox_recordingFramerate->value());
