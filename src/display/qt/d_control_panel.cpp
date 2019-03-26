@@ -1151,8 +1151,29 @@ void ControlPanel::update_recording_metainfo(void)
     if (krecord_is_recording())
     {
         const uint fileBytesize = QFileInfo(krecord_video_filename().c_str()).size();
-        ui->label_recordingMetaFileSize->setEnabled(true);
-        ui->label_recordingMetaFileSize->setText(QString("%1 MB").arg(fileBytesize / (1024*1024)));
+        {
+            double size = fileBytesize;
+            QString suffix = "byte(s)";
+
+            if (size > 1024*1024*1024)
+            {
+                size /= 1024*1024*1024;
+                suffix = "GB";
+            }
+            else if (size > 1024*1024)
+            {
+                size /= 1024*1024;
+                suffix = "MB";
+            }
+            else if (size > 1024)
+            {
+                size /= 1024;
+                suffix = "KB";
+            }
+
+            ui->label_recordingMetaFileSize->setEnabled(true);
+            ui->label_recordingMetaFileSize->setText(QString("%1 %2").arg(QString::number(size, 'f', 2)).arg(suffix));
+        }
 
         ui->label_recordingMetaFramerate->setEnabled(true);
         ui->label_recordingMetaFramerate->setText(QString::number(krecord_recording_framerate(), 'f', 2));
