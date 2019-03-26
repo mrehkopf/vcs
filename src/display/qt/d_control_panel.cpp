@@ -514,9 +514,9 @@ void ControlPanel::connect_input_resolution_buttons()
         ((QPushButton*)w)->setProperty("butt_id", i);
 
         // Load in any custom resolutions the user may have set earlier.
-        if (kpers_contains(INI_GROUP_FORCE_INPUT_BUTTONS, QString("butt_%1").arg(i)))
+        if (kpers_contains(INI_GROUP_INPUT, QString("force_res_%1").arg(i)))
         {
-            ((QPushButton*)w)->setText(kpers_value_of(INI_GROUP_FORCE_INPUT_BUTTONS, QString("butt_%1").arg(i)).toString());
+            ((QPushButton*)w)->setText(kpers_value_of(INI_GROUP_INPUT, QString("force_res_%1").arg(i)).toString());
         }
 
         connect((QPushButton*)w, &QPushButton::clicked,
@@ -580,8 +580,8 @@ void ControlPanel::parse_input_resolution_button_press(QWidget *button)
             ((QPushButton*)button)->setText(resolutionStr);
 
             // Save the new resolution into the ini.
-            kpers_set_value(INI_GROUP_FORCE_INPUT_BUTTONS,
-                            QString("butt_%1").arg(((QPushButton*)button)->property("butt_id").toUInt()),
+            kpers_set_value(INI_GROUP_INPUT,
+                            QString("force_res_%1").arg(((QPushButton*)button)->property("butt_id").toUInt()),
                             resolutionStr);
 
             DEBUG(("Assigned a new resolution (%u x %u) for an input force button.",
