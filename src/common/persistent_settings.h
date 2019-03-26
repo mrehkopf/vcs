@@ -11,7 +11,7 @@
 
 // Group names for the settings ini file.
 #define INI_GROUP_FORCE_INPUT_BUTTONS   "INPUT_RES_BUTTONS"
-#define INI_GROUP_OUTPUT_FILTERS        "OUTPUT_FILTERS"
+#define INI_GROUP_OUTPUT                "OUTPUT"
 #define INI_GROUP_CONTROL_PANEL         "CONTROL_PANEL"
 #define INI_GROUP_ANTI_TEAR             "ANTI_TEAR"
 #define INI_GROUP_RENDERER              "RENDERER"

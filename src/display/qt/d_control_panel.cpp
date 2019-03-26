@@ -122,7 +122,7 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
     {
         ui->checkBox_logEnabled->setChecked(kpers_value_of(INI_GROUP_LOG, "enabled", 1).toBool());
         ui->tabWidget->setCurrentIndex(kpers_value_of(INI_GROUP_CONTROL_PANEL, "tab", 0).toUInt());
-        ui->checkBox_customFiltering->setChecked(kpers_value_of(INI_GROUP_OUTPUT_FILTERS, "custom_filtering", 0).toBool());
+        ui->checkBox_customFiltering->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", 0).toBool());
         ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", 0).toBool());
 
         // Recording.
@@ -172,10 +172,10 @@ ControlPanel::~ControlPanel()
     // Save the current settings.
     {
         kpers_set_value(INI_GROUP_RENDERER, "name", ui->comboBox_renderer->currentText());
-        kpers_set_value(INI_GROUP_OUTPUT_FILTERS, "upscaler", ui->comboBox_outputUpscaleFilter->currentText());
-        kpers_set_value(INI_GROUP_OUTPUT_FILTERS, "downscaler", ui->comboBox_outputDownscaleFilter->currentText());
+        kpers_set_value(INI_GROUP_OUTPUT, "upscaler", ui->comboBox_outputUpscaleFilter->currentText());
+        kpers_set_value(INI_GROUP_OUTPUT, "downscaler", ui->comboBox_outputDownscaleFilter->currentText());
         kpers_set_value(INI_GROUP_LOG, "enabled", ui->checkBox_logEnabled->isChecked());
-        kpers_set_value(INI_GROUP_OUTPUT_FILTERS, "custom_filtering", ui->checkBox_customFiltering->isChecked());
+        kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", ui->checkBox_customFiltering->isChecked());
         kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", ui->checkBox_outputAntiTear->isChecked());
         kpers_set_value(INI_GROUP_CONTROL_PANEL, "tab", ui->tabWidget->currentIndex());
         kpers_set_value(INI_GROUP_GEOMETRY, "control_panel", size());
@@ -293,8 +293,8 @@ void ControlPanel::fill_input_channel_combobox()
 //
 void ControlPanel::fill_output_scaling_filter_comboboxes()
 {
-    QString defaultUpscaleFilt = kpers_value_of(INI_GROUP_OUTPUT_FILTERS, "upscaler", "Linear").toString();
-    QString defaultDownscaleFilt = kpers_value_of(INI_GROUP_OUTPUT_FILTERS, "downscaler", "Linear").toString();
+    QString defaultUpscaleFilt = kpers_value_of(INI_GROUP_OUTPUT, "upscaler", "Linear").toString();
+    QString defaultDownscaleFilt = kpers_value_of(INI_GROUP_OUTPUT, "downscaler", "Linear").toString();
 
     const QStringList filters = ks_list_of_scaling_filter_names();
     k_assert(!filters.isEmpty(),
