@@ -137,7 +137,7 @@ private slots:
 
     void on_pushButton_recordingSelectFilename_clicked();
 
-    void on_checkBox_maintainOriginalAspectWhenScaling_stateChanged(int arg1);
+    void on_checkBox_outputKeepAspectRatio_stateChanged(int arg1);
 
     void on_comboBox_outputAspectMode_currentIndexChanged(const QString &arg1);
 

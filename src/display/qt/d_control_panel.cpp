@@ -120,33 +120,60 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
     // Restore persistent settings.
     {
+        const auto combobox_idx_of_string = [](const QComboBox *const box, const QString &string)
+        {
+            int idx = box->findText(string, Qt::MatchExactly);
+            if (idx == -1)
+            {
+                NBENE(("Unable to find a combo-box item called '%s'. Defaulting to the box's first entry.",
+                       string.toStdString().c_str()));
+
+                idx = 0;
+            }
+
+            return idx;
+        };
+
         ui->checkBox_logEnabled->setChecked(kpers_value_of(INI_GROUP_LOG, "enabled", 1).toBool());
         ui->tabWidget->setCurrentIndex(kpers_value_of(INI_GROUP_CONTROL_PANEL, "tab", 0).toUInt());
-        ui->checkBox_customFiltering->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", 0).toBool());
         ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", 0).toBool());
 
+        // Control panel's output tab.
+        ui->checkBox_customFiltering->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", 0).toBool());
+        ui->checkBox_outputKeepAspectRatio->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "keep_aspect", true).toBool());
+        ui->comboBox_outputAspectMode->setCurrentIndex(
+                    combobox_idx_of_string(ui->comboBox_outputAspectMode, kpers_value_of(INI_GROUP_OUTPUT, "aspect_mode", "Native").toString()));
+        ui->checkBox_forceOutputRes->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_output_size", false).toBool());
+        ui->spinBox_outputResX->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().width());
+        ui->spinBox_outputResY->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().height());
+        ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_relative_scale", false).toBool());
+        ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
+        ui->checkBox_outputAllowMouseWheelScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "mouse_wheel_scaling", true).toBool());
+
         // Recording.
-        ui->spinBox_recordingFramerate->setValue(kpers_value_of(INI_GROUP_RECORDING, "frame_rate", 60).toUInt());
-        ui->checkBox_recordingLinearFrameInsertion->setChecked(kpers_value_of(INI_GROUP_RECORDING, "linear_sampling", true).toBool());
-        #if _WIN32
-            ui->comboBox_recordingEncoderProfile->setCurrentIndex(
-                        ui->comboBox_recordingEncoderProfile->findText(
-                            kpers_value_of(INI_GROUP_RECORDING, "profile", "High 4:4:4").toString(), Qt::MatchExactly));
-
-            ui->comboBox_recordingEncoderPixelFormat->setCurrentIndex(
-                        ui->comboBox_recordingEncoderPixelFormat->findText(
-                            kpers_value_of(INI_GROUP_RECORDING, "pixel_format", "RGB").toString(), Qt::MatchExactly));
-
-            ui->comboBox_recordingEncoderPreset->setCurrentIndex(
-                        ui->comboBox_recordingEncoderPreset->findText(
-                            kpers_value_of(INI_GROUP_RECORDING, "preset", "Superfast").toString(), Qt::MatchExactly));
-
-            ui->spinBox_recordingEncoderCRF->setValue(kpers_value_of(INI_GROUP_RECORDING, "crf", 1).toUInt());
-
-            ui->checkBox_recordingEncoderZeroLatency->setChecked(kpers_value_of(INI_GROUP_RECORDING, "zero_latency", false).toBool());
-
-            ui->lineEdit_recordingEncoderArguments->setText(kpers_value_of(INI_GROUP_RECORDING, "command_line", "").toString());
-        #endif
+        {
+            ui->spinBox_recordingFramerate->setValue(kpers_value_of(INI_GROUP_RECORDING, "frame_rate", 60).toUInt());
+            ui->checkBox_recordingLinearFrameInsertion->setChecked(kpers_value_of(INI_GROUP_RECORDING, "linear_sampling", true).toBool());
+            #if _WIN32
+                ui->comboBox_recordingEncoderProfile->setCurrentIndex(
+                            ui->comboBox_recordingEncoderProfile->findText(
+                                kpers_value_of(INI_GROUP_RECORDING, "profile", "High 4:4:4").toString(), Qt::MatchExactly));
+    
+                ui->comboBox_recordingEncoderPixelFormat->setCurrentIndex(
+                            ui->comboBox_recordingEncoderPixelFormat->findText(
+                                kpers_value_of(INI_GROUP_RECORDING, "pixel_format", "RGB").toString(), Qt::MatchExactly));
+    
+                ui->comboBox_recordingEncoderPreset->setCurrentIndex(
+                            ui->comboBox_recordingEncoderPreset->findText(
+                                kpers_value_of(INI_GROUP_RECORDING, "preset", "Superfast").toString(), Qt::MatchExactly));
+    
+                ui->spinBox_recordingEncoderCRF->setValue(kpers_value_of(INI_GROUP_RECORDING, "crf", 1).toUInt());
+    
+                ui->checkBox_recordingEncoderZeroLatency->setChecked(kpers_value_of(INI_GROUP_RECORDING, "zero_latency", false).toBool());
+    
+                ui->lineEdit_recordingEncoderArguments->setText(kpers_value_of(INI_GROUP_RECORDING, "command_line", "").toString());
+            #endif
+        }
 
         // Renderer.
         {
@@ -172,13 +199,22 @@ ControlPanel::~ControlPanel()
     // Save the current settings.
     {
         kpers_set_value(INI_GROUP_RENDERER, "name", ui->comboBox_renderer->currentText());
-        kpers_set_value(INI_GROUP_OUTPUT, "upscaler", ui->comboBox_outputUpscaleFilter->currentText());
-        kpers_set_value(INI_GROUP_OUTPUT, "downscaler", ui->comboBox_outputDownscaleFilter->currentText());
         kpers_set_value(INI_GROUP_LOG, "enabled", ui->checkBox_logEnabled->isChecked());
-        kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", ui->checkBox_customFiltering->isChecked());
         kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", ui->checkBox_outputAntiTear->isChecked());
         kpers_set_value(INI_GROUP_CONTROL_PANEL, "tab", ui->tabWidget->currentIndex());
         kpers_set_value(INI_GROUP_GEOMETRY, "control_panel", size());
+
+        // Control panel's output tab.
+        kpers_set_value(INI_GROUP_OUTPUT, "upscaler", ui->comboBox_outputUpscaleFilter->currentText());
+        kpers_set_value(INI_GROUP_OUTPUT, "downscaler", ui->comboBox_outputDownscaleFilter->currentText());
+        kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", ui->checkBox_customFiltering->isChecked());
+        kpers_set_value(INI_GROUP_OUTPUT, "keep_aspect", ui->checkBox_outputKeepAspectRatio->isChecked());
+        kpers_set_value(INI_GROUP_OUTPUT, "aspect_mode", ui->comboBox_outputAspectMode->currentText());
+        kpers_set_value(INI_GROUP_OUTPUT, "force_output_size", ui->checkBox_forceOutputRes->isChecked());
+        kpers_set_value(INI_GROUP_OUTPUT, "output_size", QSize(ui->spinBox_outputResX->value(), ui->spinBox_outputResY->value()));
+        kpers_set_value(INI_GROUP_OUTPUT, "force_relative_scale", ui->checkBox_forceOutputScale->isChecked());
+        kpers_set_value(INI_GROUP_OUTPUT, "relative_scale", ui->spinBox_outputScale->value());
+        kpers_set_value(INI_GROUP_OUTPUT, "mouse_wheel_scaling", ui->checkBox_outputAllowMouseWheelScale->isChecked());
 
         // Recording.
         kpers_set_value(INI_GROUP_RECORDING, "frame_rate", ui->spinBox_recordingFramerate->value());
@@ -1335,9 +1371,10 @@ void ControlPanel::on_pushButton_recordingSelectFilename_clicked()
     return;
 }
 
-void ControlPanel::on_checkBox_maintainOriginalAspectWhenScaling_stateChanged(int arg1)
+void ControlPanel::on_checkBox_outputKeepAspectRatio_stateChanged(int arg1)
 {
     ks_set_output_pad_override_enabled((arg1 == Qt::Checked));
+    ui->comboBox_outputAspectMode->setEnabled((arg1 == Qt::Checked));
 
     return;
 }

@@ -872,7 +872,7 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
-             <widget class="QCheckBox" name="checkBox_maintainOriginalAspectWhenScaling">
+             <widget class="QCheckBox" name="checkBox_outputKeepAspectRatio">
               <property name="text">
                <string>Keep aspect ratio:</string>
               </property>
