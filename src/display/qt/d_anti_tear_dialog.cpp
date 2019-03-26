@@ -38,7 +38,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
     ui->spinBox_matchedReqd->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "matches_reqd", a.matchesReqd).toInt());
     ui->spinBox_domainSize->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "window_len", a.windowLen).toInt());
 
-    resize(kpers_value_of(INI_GROUP_GEOMETRY, "anti_tear", size()).toSize());
+    resize(kpers_value_of(INI_GROUP_GEOMETRY, "anti_tear", this->size()).toSize());
 
     create_menu_bar();
 
@@ -47,8 +47,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 
 AntiTearDialog::~AntiTearDialog()
 {
-    kpers_set_value(INI_GROUP_GEOMETRY, "anti_tear", ui->spinBox_rangeUp->value());
-
+    kpers_set_value(INI_GROUP_GEOMETRY, "anti_tear", this->size());
     kpers_set_value(INI_GROUP_ANTI_TEAR, "range_up", ui->spinBox_rangeUp->value());
     kpers_set_value(INI_GROUP_ANTI_TEAR, "range_down", ui->spinBox_rangeDown->value());
     kpers_set_value(INI_GROUP_ANTI_TEAR, "threshold", ui->spinBox_threshold->value());
