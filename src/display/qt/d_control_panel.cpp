@@ -75,13 +75,16 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
         ui->groupBox_aboutVCS->setTitle("VCS v" + QString("%1").arg(PROGRAM_VERSION_STRING));
 
-        // The 'Recording' tab.
+        // Disable certain features on the control panel's 'Recording' tab,
+        // depending on what functionality should be made available on the
+        // system.
         {
-            // Disable certain recording features, depending on what functionality is
-            // available on the system.
+            // Encoder settings.
             #if _WIN32
                 /// At the moment, no changes are needed on Windows.
             #elif __linux__
+                // The x264 settings are hardcoded into OpenCV's libraries
+                // on Linux, so they can't be altered via the VCS GUI.
                 ui->frame_recordingCodecSettings->setEnabled(false);
             #else
                 #error "Unknown platform."
@@ -116,79 +119,74 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
                 ui->comboBox_recordingEncoding->addItem(encoderName);
             }
         }
-    }
 
-    // Restore persistent settings.
-    {
-        const auto combobox_idx_of_string = [](const QComboBox *const box, const QString &string)
+        // Restore persistent settings.
         {
-            int idx = box->findText(string, Qt::MatchExactly);
-            if (idx == -1)
+            const auto combobox_idx_of_string = [](const QComboBox *const box, const QString &string)
             {
-                NBENE(("Unable to find a combo-box item called '%s'. Defaulting to the box's first entry.",
-                       string.toStdString().c_str()));
+                int idx = box->findText(string, Qt::MatchExactly);
+                if (idx == -1)
+                {
+                    NBENE(("Unable to find a combo-box item called '%s'. Defaulting to the box's first entry.",
+                           string.toStdString().c_str()));
 
-                idx = 0;
-            }
+                    idx = 0;
+                }
 
-            return idx;
-        };
+                return idx;
+            };
 
-        ui->checkBox_logEnabled->setChecked(kpers_value_of(INI_GROUP_LOG, "enabled", 1).toBool());
-        ui->tabWidget->setCurrentIndex(kpers_value_of(INI_GROUP_CONTROL_PANEL, "tab", 0).toUInt());
-        ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", 0).toBool());
+            // Control panel.
+            this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "control_panel", size()).toSize());
+            ui->tabWidget->setCurrentIndex(kpers_value_of(INI_GROUP_CONTROL_PANEL, "tab", 0).toUInt());
 
-        // Control panel's output tab.
-        ui->checkBox_customFiltering->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", 0).toBool());
-        ui->checkBox_outputKeepAspectRatio->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "keep_aspect", true).toBool());
-        ui->comboBox_outputAspectMode->setCurrentIndex(
-                    combobox_idx_of_string(ui->comboBox_outputAspectMode, kpers_value_of(INI_GROUP_OUTPUT, "aspect_mode", "Native").toString()));
-        ui->checkBox_forceOutputRes->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_output_size", false).toBool());
-        ui->spinBox_outputResX->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().width());
-        ui->spinBox_outputResY->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().height());
-        ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_relative_scale", false).toBool());
-        ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
-        ui->checkBox_outputAllowMouseWheelScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "mouse_wheel_scaling", true).toBool());
+            // Control panel's 'Log' tab.
+            ui->checkBox_logEnabled->setChecked(kpers_value_of(INI_GROUP_LOG, "enabled", 1).toBool());
 
-        // Recording.
-        {
+            // Control panel's 'Output' tab.
+            ui->comboBox_outputUpscaleFilter->setCurrentIndex(
+                        combobox_idx_of_string(ui->comboBox_outputUpscaleFilter, kpers_value_of(INI_GROUP_OUTPUT, "upscaler", "Linear").toString()));
+            ui->comboBox_outputDownscaleFilter->setCurrentIndex(
+                        combobox_idx_of_string(ui->comboBox_outputDownscaleFilter, kpers_value_of(INI_GROUP_OUTPUT, "downscaler", "Linear").toString()));
+            ui->checkBox_customFiltering->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", 0).toBool());
+            ui->checkBox_outputKeepAspectRatio->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "keep_aspect", true).toBool());
+            ui->comboBox_outputAspectMode->setCurrentIndex(
+                        combobox_idx_of_string(ui->comboBox_outputAspectMode, kpers_value_of(INI_GROUP_OUTPUT, "aspect_mode", "Native").toString()));
+            ui->checkBox_forceOutputRes->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_output_size", false).toBool());
+            ui->spinBox_outputResX->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().width());
+            ui->spinBox_outputResY->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().height());
+            ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_relative_scale", false).toBool());
+            ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
+            ui->checkBox_outputAllowMouseWheelScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "mouse_wheel_scaling", true).toBool());
+            ui->comboBox_renderer->setCurrentIndex(
+                        combobox_idx_of_string(ui->comboBox_renderer, kpers_value_of(INI_GROUP_RENDERER, "name", "Software").toString()));
+
+            // // Control panel's 'Record' tab.
             ui->spinBox_recordingFramerate->setValue(kpers_value_of(INI_GROUP_RECORDING, "frame_rate", 60).toUInt());
             ui->checkBox_recordingLinearFrameInsertion->setChecked(kpers_value_of(INI_GROUP_RECORDING, "linear_sampling", true).toBool());
             #if _WIN32
                 ui->comboBox_recordingEncoderProfile->setCurrentIndex(
                             ui->comboBox_recordingEncoderProfile->findText(
                                 kpers_value_of(INI_GROUP_RECORDING, "profile", "High 4:4:4").toString(), Qt::MatchExactly));
-    
+
                 ui->comboBox_recordingEncoderPixelFormat->setCurrentIndex(
                             ui->comboBox_recordingEncoderPixelFormat->findText(
                                 kpers_value_of(INI_GROUP_RECORDING, "pixel_format", "RGB").toString(), Qt::MatchExactly));
-    
+
                 ui->comboBox_recordingEncoderPreset->setCurrentIndex(
                             ui->comboBox_recordingEncoderPreset->findText(
                                 kpers_value_of(INI_GROUP_RECORDING, "preset", "Superfast").toString(), Qt::MatchExactly));
-    
+
                 ui->spinBox_recordingEncoderCRF->setValue(kpers_value_of(INI_GROUP_RECORDING, "crf", 1).toUInt());
-    
+
                 ui->checkBox_recordingEncoderZeroLatency->setChecked(kpers_value_of(INI_GROUP_RECORDING, "zero_latency", false).toBool());
-    
+
                 ui->lineEdit_recordingEncoderArguments->setText(kpers_value_of(INI_GROUP_RECORDING, "command_line", "").toString());
             #endif
-        }
 
-        // Renderer.
-        {
-            const QString rendererName = kpers_value_of(INI_GROUP_RENDERER, "name", "Software").toString();
-            int idx = ui->comboBox_renderer->findText(rendererName, Qt::MatchExactly);
-            if (idx < 0)
-            {
-                NBENE(("Failed to find a renderer called '%s'. Defaulting to the first renderer on the list.",
-                       rendererName.toStdString().c_str()));
-                idx = 0;
-            }
-            ui->comboBox_renderer->setCurrentIndex(idx);
+            // Miscellaneous.
+            ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", 0).toBool());
         }
-
-        resize(kpers_value_of(INI_GROUP_GEOMETRY, "control_panel", size()).toSize());
     }
 
     return;
@@ -329,9 +327,6 @@ void ControlPanel::fill_input_channel_combobox()
 //
 void ControlPanel::fill_output_scaling_filter_comboboxes()
 {
-    QString defaultUpscaleFilt = kpers_value_of(INI_GROUP_OUTPUT, "upscaler", "Linear").toString();
-    QString defaultDownscaleFilt = kpers_value_of(INI_GROUP_OUTPUT, "downscaler", "Linear").toString();
-
     const QStringList filters = ks_list_of_scaling_filter_names();
     k_assert(!filters.isEmpty(),
              "Expected to receive a list of scaling filters, but got an empty list.");
@@ -347,26 +342,6 @@ void ControlPanel::fill_output_scaling_filter_comboboxes()
         ui->comboBox_outputUpscaleFilter->addItem(filters[i]);
         ui->comboBox_outputDownscaleFilter->addItem(filters[i]);
     }
-
-    auto confirm_index_is_valid = [](int &idx, const char *const scalerType)
-                                  {
-                                      if (idx == -1)
-                                      {
-                                          NBENE(("Unable to change the default %s filter: filter not found. "
-                                                 "Defaulting to the first available filter.", scalerType));
-                                          idx = 0;
-                                      }
-                                  };
-
-    int idx = ui->comboBox_outputUpscaleFilter->findText(defaultUpscaleFilt, Qt::MatchExactly);
-    confirm_index_is_valid(idx, "upscaling");
-    ui->comboBox_outputUpscaleFilter->setCurrentIndex(idx);
-    ks_set_upscaling_filter(ui->comboBox_outputUpscaleFilter->itemText(idx));
-
-    idx = ui->comboBox_outputDownscaleFilter->findText(defaultDownscaleFilt, Qt::MatchExactly);
-    confirm_index_is_valid(idx, "downscaling");
-    ui->comboBox_outputDownscaleFilter->setCurrentIndex(idx);
-    ks_set_downscaling_filter(ui->comboBox_outputDownscaleFilter->itemText(idx));
 
     return;
 }
