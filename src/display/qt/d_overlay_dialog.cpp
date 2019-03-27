@@ -34,6 +34,8 @@ OverlayDialog::OverlayDialog(MainWindow *const mainWin, QWidget *parent) :
     k_assert(MAIN_WIN != nullptr,
              "Expected a valid main window pointer in the overlay dialog, but got null.");
 
+    OVERLAY_DOC.setDefaultFont(QGuiApplication::font());
+
     ui->setupUi(this);
 
     make_button_menus();
