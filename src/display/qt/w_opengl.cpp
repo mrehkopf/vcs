@@ -80,6 +80,8 @@ void OGLWidget::paintGL()
         const u8 *const fb = ks_scaler_output_as_raw_ptr();
         if (fb != nullptr)
         {
+            this->glDisable(GL_BLEND);
+
             this->glBindTexture(GL_TEXTURE_2D, FRAMEBUFFER_TEXTURE);
             this->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, r.w, r.h, 0, GL_BGRA, GL_UNSIGNED_BYTE, fb);
 
@@ -99,6 +101,8 @@ void OGLWidget::paintGL()
     const QImage image = OVERLAY_AS_QIMAGE_F();
     if (!image.isNull())
     {
+        this->glEnable(GL_BLEND);
+
         this->glBindTexture(GL_TEXTURE_2D, OVERLAY_TEXTURE);
         this->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width(), image.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, image.constBits());
 
