@@ -415,6 +415,10 @@ void MainWindow::set_keyboard_shortcuts()
     ctrlF->setContext(Qt::ApplicationShortcut);
     connect(ctrlF, &QShortcut::activated, [this]{this->controlPanel->open_filter_sets_dialog();});
 
+    QShortcut *ctrlO = new QShortcut(QKeySequence("ctrl+o"), this);
+    ctrlO->setContext(Qt::ApplicationShortcut);
+    connect(ctrlO, &QShortcut::activated, [this]{this->controlPanel->toggle_overlay();});
+
     return;
 }
 

@@ -82,6 +82,8 @@ public:
 
     void update_recording_metainfo();
 
+    void toggle_overlay();
+
 private slots:
     void on_checkBox_logInfo_toggled(bool);
 
@@ -117,7 +119,7 @@ private slots:
 
     void on_pushButton_editOverlay_clicked();
 
-    void on_checkBox_overlay_stateChanged(int arg1);
+    void on_checkBox_outputOverlayEnabled_stateChanged(int arg1);
 
     void on_comboBox_bitDepth_currentIndexChanged(const QString &arg1);
 

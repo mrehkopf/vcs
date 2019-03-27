@@ -44,7 +44,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="documentMode">
       <bool>true</bool>
@@ -649,7 +649,7 @@
               </widget>
              </item>
              <item row="11" column="0">
-              <widget class="QCheckBox" name="checkBox_overlay">
+              <widget class="QCheckBox" name="checkBox_outputOverlayEnabled">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                  <horstretch>0</horstretch>

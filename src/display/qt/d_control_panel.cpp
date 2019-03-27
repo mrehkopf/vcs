@@ -736,9 +736,9 @@ void ControlPanel::adjust_output_scaling(const int dir)
 
 void ControlPanel::set_overlay_indicator_checked(const bool checked)
 {
-    block_widget_signals_c b(ui->checkBox_overlay);
+    block_widget_signals_c b(ui->checkBox_outputOverlayEnabled);
 
-    ui->checkBox_overlay->setChecked(checked);
+    ui->checkBox_outputOverlayEnabled->setChecked(checked);
 
     return;
 }
@@ -953,6 +953,13 @@ void ControlPanel::open_antitear_dialog(void)
     return;
 }
 
+void ControlPanel::toggle_overlay(void)
+{
+    ui->checkBox_outputOverlayEnabled->toggle();
+
+    return;
+}
+
 void ControlPanel::open_filter_sets_dialog(void)
 {
     k_assert(filterSetsDlg != nullptr, "");
@@ -1002,7 +1009,7 @@ void ControlPanel::on_pushButton_editOverlay_clicked()
     return;
 }
 
-void ControlPanel::on_checkBox_overlay_stateChanged(int arg1)
+void ControlPanel::on_checkBox_outputOverlayEnabled_stateChanged(int arg1)
 {
     const bool checked = (arg1 == Qt::Checked)? 1 : 0;
 
