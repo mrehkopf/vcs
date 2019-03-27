@@ -1178,11 +1178,13 @@ void ControlPanel::update_recording_metainfo(void)
         ui->label_recordingMetaFramerate->setEnabled(true);
         ui->label_recordingMetaFramerate->setText(QString::number(krecord_recording_framerate(), 'f', 2));
 
+        ui->label_recordingMetaTargetFramerate->setEnabled(true);
+        ui->label_recordingMetaTargetFramerate->setText(QString::number(krecord_playback_framerate()));
+
         const resolution_s resolution = krecord_video_resolution();
         ui->label_recordingMetaResolution->setEnabled(true);
-        ui->label_recordingMetaResolution->setText(QString("%1 x %2 @ %3").arg(resolution.w)
-                                                                          .arg(resolution.h)
-                                                                          .arg(krecord_playback_framerate()));
+        ui->label_recordingMetaResolution->setText(QString("%1 x %2").arg(resolution.w)
+                                                                     .arg(resolution.h));
 
         const uint totalDuration = (((1000.0/krecord_playback_framerate()) * krecord_num_frames_recorded()) / 1000);
         const uint seconds = totalDuration % 60;
