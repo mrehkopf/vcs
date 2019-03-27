@@ -6,15 +6,15 @@ VCS interfaces with compatible capture hardware to display the capture output in
 You can find a binary distribution of VCS on [Tarpeeksi Hyvae Soft's website](http://tarpeeksihyvaesoft.com/soft/).
 
 ### Features
-- On-the-fly frame filtering: blur, crop, flip, decimate, rotate, sharpen...
+- On-the-fly frame filtering: blur, crop, flip, decimate, rotate, sharpen, ...
 - Several frame scalers: nearest, linear, area, cubic, and Lanczos
-- Video recording with H.264 encoding
-- Temporal image denoising
 - Anti-tearing
-- Custom overlays with HTML formatting
+- Temporal image denoising
+- Video recording with H.264 encoding
+- Custom overlays with HTML and CSS formatting
 - Minimal reliance on GPU features &ndash; ideal for virtual machines
 - Unique frame count &ndash; an FPS counter for DOS games!
-- Supports Windows XP to Windows 10, compiles on Linux
+- Supports Windows XP to Windows 10, and compiles on Linux
 
 ### Hardware support
 VCS is compatible with at least the following Datapath capture cards:
@@ -129,7 +129,7 @@ per second. The pipeline consists of the following stages: a frame being receive
 - The _OpenGL_ renderer may not work in Windows XP.
 - The [magnifying glass](#magnifying-glass) is not available when using the _OpenGL_ renderer.
 
-**Overlay.** Create a message to be overlaid on VCS's output window during capture. You can enter custom text, choose from several variables that update in real-time, and style the message with HTML. The overlay will only be shown while a signal is being received from the capture hardware.
+**Overlay.** Create a message to be overlaid on the [output window](#the-output-window) during capture. You can enter custom text or images, choose from several variables that update in real-time, and apply styling with HTML and CSS. Note that the overlay will only be shown while a signal is being received from the capture hardware.
 
 ![](images/screenshots/v1.2.6/overlay-dialog.png)
 
