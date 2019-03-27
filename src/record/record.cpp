@@ -72,7 +72,7 @@ static struct framerate_estimator_s
 // NOTE: The frame buffer expcts frames to be of 24-bit color depth (e.g. BGR).
 struct frame_buffer_s
 {
-    heap_bytes_s<u8> memoryPool;
+    u8* memoryPool = nullptr;
 
     resolution_s frameResolution;
 
@@ -85,13 +85,20 @@ struct frame_buffer_s
     // How many frames in total the buffer has memory capacity for.
     uint maxNumFrames = 0;
 
+    ~frame_buffer_s(void)
+    {
+        delete[] memoryPool;
+
+        return;
+    }
+
     // Allocates the frame buffer for the given number of frames of the given
     // resolution. The frames' pixels are expected to have three 8-bit color
     // channels, each - e.g. RGB.
     void initialize(const uint width, const uint height, const uint frameCapacity)
     {
-        if (!this->memoryPool.is_null()) this->memoryPool.release_memory();
-        this->memoryPool.alloc((width * height * 3 * frameCapacity), "Video recording frame buffer.");
+        delete[] memoryPool;
+        memoryPool = new u8[width * height * 3 * frameCapacity];
 
         this->maxNumFrames = frameCapacity;
         this->numFrames = 0;
@@ -139,7 +146,7 @@ struct frame_buffer_s
         this->frameTimestamps.at(this->numFrames) = timestamp;
         this->numFrames++;
 
-        return (memoryPool.ptr() + offset);
+        return (memoryPool + offset);
     }
 
     // Index into the frame buffer on a per-frame basis. Note that this index
@@ -151,7 +158,7 @@ struct frame_buffer_s
         k_assert((frameIdx < this->numFrames), "Attempting to access an uninitialized frame.");
 
         const uint offset = ((this->frameResolution.w * this->frameResolution.h * 3) * frameIdx);
-        return (memoryPool.ptr() + offset);
+        return (memoryPool + offset);
     }
 };
 
@@ -270,7 +277,7 @@ bool krecord_start_recording(const char *const filename,
         #error "Unknown platform."
     #endif
 
-    DEBUG(("Starting recording into file '%s'...", RECORDING.meta.filename.c_str()));
+    DEBUG(("Starting recording into file '%s'.", RECORDING.meta.filename.c_str()));
 
     VIDEO_WRITER.open(RECORDING.meta.filename,
                       encoder,
@@ -418,7 +425,7 @@ void krecord_record_new_frame(void)
 void krecord_stop_recording(void)
 {
 #ifdef USE_OPENCV
-    DEBUG(("Stopping recording into file '%s'...", RECORDING.meta.filename.c_str()));
+    DEBUG(("Stopping recording into file '%s'.", RECORDING.meta.filename.c_str()));
 
     RECORDING.encoderThread.waitForFinished();
     VIDEO_WRITER.release();
