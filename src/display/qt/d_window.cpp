@@ -46,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // Set up a layout for the central widget now, so we can add the OpenGL
+    // render surface to it when OpenGL is enabled.
     QVBoxLayout *const mainLayout = new QVBoxLayout(ui->centralwidget);
     mainLayout->setMargin(0);
     mainLayout->setSpacing(0);
@@ -107,7 +109,7 @@ void MainWindow::set_opengl_enabled(const bool enabled)
     {
         k_assert((OGL_SURFACE == nullptr), "Can't doubly enable OpenGL.");
 
-        OGL_SURFACE = new OGLWidget(this);
+        OGL_SURFACE = new OGLWidget(std::bind(&MainWindow::overlay_image, this), this);
         OGL_SURFACE->show();
         OGL_SURFACE->raise();
 
@@ -224,6 +226,20 @@ void MainWindow::wheelEvent(QWheelEvent *event)
     return;
 }
 
+// Returns the current overlay as a QImage, or a null QImage if the overlay
+// should not be shown at this time.
+//
+QImage MainWindow::overlay_image(void)
+{
+    if (!kc_no_signal() &&
+        overlayDlg != nullptr &&
+        overlayDlg->is_overlay_enabled())
+    {
+        return overlayDlg->overlay_as_qimage();
+    }
+    else return QImage();
+}
+
 void MainWindow::paintEvent(QPaintEvent *)
 {
     // If OpenGL is enabled, its own paintGL() should be getting called instead of paintEvent().
@@ -240,15 +256,13 @@ void MainWindow::paintEvent(QPaintEvent *)
     }
 
     // Draw the overlay.
-    if (!kc_no_signal() &&
-        overlayDlg != nullptr &&
-        overlayDlg->is_overlay_enabled())
+    const QImage overlayImg = overlay_image();
+    if (!overlayImg.isNull())
     {
-        painter.drawImage(0, 0, overlayDlg->overlay_as_qimage());
+        painter.drawImage(0, 0, overlayImg);
     }
 
-    // Show a magnifying glass effect which blows up part of the captured image,
-    // if the user pressed the right mouse button inside the main capture window.
+    // Show a magnifying glass effect which blows up part of the captured image.
     static QLabel *magnifyingGlass = nullptr;
     if (!kc_no_signal() &&
         this->isActiveWindow() &&

@@ -10,14 +10,24 @@
 #include <QCoreApplication>
 #include <QOpenGLWidget>
 #include <QMatrix4x4>
-#include "../../scaler/scaler.h"
+#include "../../capture/capture.h"
 #include "../../common/globals.h"
+#include "../../scaler/scaler.h"
 #include "w_opengl.h"
 
+// The texture into which we'll stream the captured frames.
 GLuint FRAMEBUFFER_TEXTURE;
 
-OGLWidget::OGLWidget(QWidget *parent) : QOpenGLWidget(parent)
+// The texture in which we'll display the current output overlay, if any.
+GLuint OVERLAY_TEXTURE;
+
+// A function that returns the current overlay as a QImage.
+std::function<QImage()> OVERLAY_AS_QIMAGE_F;
+
+OGLWidget::OGLWidget(std::function<QImage()> overlay_as_qimage, QWidget *parent) : QOpenGLWidget(parent)
 {
+    OVERLAY_AS_QIMAGE_F = overlay_as_qimage;
+
     return;
 }
 
@@ -32,11 +42,19 @@ void OGLWidget::initializeGL()
     this->glDisable(GL_DEPTH_TEST);
     this->glEnable(GL_TEXTURE_2D);
 
-    // Initialize the texture into which we'll stream the captured frames.
     this->glGenTextures(1, &FRAMEBUFFER_TEXTURE);
     this->glBindTexture(GL_TEXTURE_2D, FRAMEBUFFER_TEXTURE);
     this->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     this->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    this->glGenTextures(1, &OVERLAY_TEXTURE);
+    this->glBindTexture(GL_TEXTURE_2D, OVERLAY_TEXTURE);
+    this->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    this->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    // For alpha-blending the overlay image.
+    this->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    this->glEnable(GL_BLEND);
 
     k_assert(!this->glGetError(), "OpenGL initialization failed.");
 
@@ -56,28 +74,44 @@ void OGLWidget::resizeGL(int w, int h)
 
 void OGLWidget::paintGL()
 {
-    // Get the current output frame.
-    const resolution_s r = ks_output_resolution();
-    const u8 *const fb = ks_scaler_output_as_raw_ptr();
-    if (fb == nullptr)
+    // Draw the output frame.
     {
-        return;
+        const resolution_s r = ks_output_resolution();
+        const u8 *const fb = ks_scaler_output_as_raw_ptr();
+        if (fb != nullptr)
+        {
+            this->glBindTexture(GL_TEXTURE_2D, FRAMEBUFFER_TEXTURE);
+            this->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, r.w, r.h, 0, GL_BGRA, GL_UNSIGNED_BYTE, fb);
+
+            glBegin(GL_TRIANGLES);
+                glTexCoord2i(0, 0); glVertex2i(0,             0);
+                glTexCoord2i(0, 1); glVertex2i(0,             this->height());
+                glTexCoord2i(1, 1); glVertex2i(this->width(), this->height());
+
+                glTexCoord2i(1, 1); glVertex2i(this->width(), this->height());
+                glTexCoord2i(1, 0); glVertex2i(this->width(), 0);
+                glTexCoord2i(0, 0); glVertex2i(0,             0);
+            glEnd();
+        }
     }
 
-    // Update the OpenGL texture with the current contents of the frame buffer.
-    this->glBindTexture(GL_TEXTURE_2D, FRAMEBUFFER_TEXTURE);
-    this->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, r.w, r.h, 0, GL_BGRA, GL_UNSIGNED_BYTE, fb);
+    // Draw the overlay, if any.
+    const QImage image = OVERLAY_AS_QIMAGE_F();
+    if (!image.isNull())
+    {
+        this->glBindTexture(GL_TEXTURE_2D, OVERLAY_TEXTURE);
+        this->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width(), image.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, image.constBits());
 
-    // Draw the output frame on screen using a textured quad.
-    glBegin(GL_TRIANGLES);
-        glTexCoord2i(0, 0); glVertex2i(0,             0);
-        glTexCoord2i(0, 1); glVertex2i(0,             this->height());
-        glTexCoord2i(1, 1); glVertex2i(this->width(), this->height());
+        glBegin(GL_TRIANGLES);
+            glTexCoord2i(0, 0); glVertex2i(0,             0);
+            glTexCoord2i(0, 1); glVertex2i(0,             this->height());
+            glTexCoord2i(1, 1); glVertex2i(this->width(), this->height());
 
-        glTexCoord2i(1, 1); glVertex2i(this->width(), this->height());
-        glTexCoord2i(1, 0); glVertex2i(this->width(), 0);
-        glTexCoord2i(0, 0); glVertex2i(0,             0);
-    glEnd();
+            glTexCoord2i(1, 1); glVertex2i(this->width(), this->height());
+            glTexCoord2i(1, 0); glVertex2i(this->width(), 0);
+            glTexCoord2i(0, 0); glVertex2i(0,             0);
+        glEnd();
+    }
 
     this->glFlush();
 

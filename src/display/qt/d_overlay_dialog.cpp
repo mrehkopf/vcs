@@ -71,6 +71,8 @@ OverlayDialog::~OverlayDialog()
 //
 QImage OverlayDialog::overlay_as_qimage(void)
 {
+    if (!is_overlay_enabled()) return QImage();
+
     const resolution_s r = ks_output_resolution();
     QImage image = QImage(r.w, r.h, QImage::Format_ARGB32_Premultiplied);
     image.fill(QColor(0, 0, 0, 0));

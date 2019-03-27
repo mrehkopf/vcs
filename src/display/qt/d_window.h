@@ -92,6 +92,8 @@ public:
 
     void refresh();
 
+    QImage overlay_image();
+
     void update_recording_metainfo();
 
 private slots:
