@@ -34,9 +34,6 @@ OverlayDialog::OverlayDialog(MainWindow *const mainWin, QWidget *parent) :
     k_assert(MAIN_WIN != nullptr,
              "Expected a valid main window pointer in the overlay dialog, but got null.");
 
-    OVERLAY_DOC.setDocumentMargin(0);
-    OVERLAY_DOC.setTextWidth(width());    // Fixes HTML align not working.
-
     ui->setupUi(this);
 
     make_button_menus();
@@ -79,6 +76,8 @@ QImage OverlayDialog::overlay_as_qimage(void)
 
     QPainter painter(&image);
     OVERLAY_DOC.setHtml(parsed_overlay_string());
+    OVERLAY_DOC.setDocumentMargin(0);
+    OVERLAY_DOC.setTextWidth(MAIN_WIN->width()); // Fixes HTML align not working.
     OVERLAY_DOC.drawContents(&painter, image.rect());
 
     return image;
