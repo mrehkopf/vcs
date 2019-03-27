@@ -604,8 +604,6 @@ void kc_initialize_capturer(void)
             PROGRAM_EXIT_REQUESTED = 1;
             goto done;
         }
-
-        CURRENT_SIGNAL_INFO = query_capture_signal_info();
     }
 
     // Load previously-saved settings, if any.
@@ -748,6 +746,10 @@ bool kc_start_capture(void)
     else
     {
         CAPTURE_IS_ACTIVE = true;
+
+        update_internal_mode_params();
+
+        CURRENT_SIGNAL_INFO = query_capture_signal_info();
     }
 
     success:
