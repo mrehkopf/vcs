@@ -128,7 +128,6 @@ per second. The pipeline consists of the following stages: a frame being receive
 **Renderer.** Set the type of rendering VCS uses to draw captured frames onto the [output window](#the-output-window). The _software_ renderer should be the most compatible option. The _OpenGL_ renderer may offer e.g. compatibility with adaptive synchronization technologies.
 - The _OpenGL_ renderer may not work in Windows XP.
 - The [magnifying glass](#magnifying-glass) is not available when using the _OpenGL_ renderer.
-- The overlay (see below) is not available when using the _OpenGL_ renderer.
 
 **Overlay.** Create a message to be overlaid on VCS's output window during capture. You can enter custom text, choose from several variables that update in real-time, and style the message with HTML. The overlay will only be shown while a signal is being received from the capture hardware.
 
@@ -262,11 +261,13 @@ F2 ...................... Force the capture's input resolution to 720 x 400.
 
 F11 ..................... Toggle fullscreen mode on/off.
 
-Ctrl+A .................. Open the anti-tear dialog.
+Ctrl + A ................ Open the anti-tear dialog.
 
-Ctrl+F .................. Open the filter sets dialog.
+Ctrl + F ................ Open the filter sets dialog.
 
-Ctrl+V .................. Open the video settings dialog.
+Ctrl + V ................ Open the video settings dialog.
+
+Ctrl + O ................ Toggle the output overlay on/off.
 ```
 
 ## Command-line
