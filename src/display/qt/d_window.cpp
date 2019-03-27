@@ -18,6 +18,7 @@
 #include <QMouseEvent>
 #include <QShortcut>
 #include <QPainter>
+#include <QScreen>
 #include <QImage>
 #include <QLabel>
 #include "d_resolution_dialog.h"
@@ -71,7 +72,8 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
     // Locate the control panel in a convenient position on the screen.
-    controlPanel->move(this->width() + (this->frameSize() - this->size()).width(), 0);
+    controlPanel->move(std::min(QGuiApplication::primaryScreen()->availableSize().width() - controlPanel->width(),
+                                this->width() + (this->frameSize() - this->size()).width()), 0);
     controlPanel->show();
 
     this->move(0, 0);

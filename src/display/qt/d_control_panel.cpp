@@ -1215,6 +1215,9 @@ void ControlPanel::update_recording_metainfo(void)
 
         ui->label_recordingMetaFramerate->setText("n/a");
         ui->label_recordingMetaFramerate->setEnabled(false);
+
+        ui->label_recordingMetaTargetFramerate->setText("n/a");
+        ui->label_recordingMetaTargetFramerate->setEnabled(false);
     }
 
     return;
