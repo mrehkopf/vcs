@@ -26,7 +26,7 @@ public:
 
     bool is_overlay_enabled();
 
-    QString overlay_html_string();
+    QImage overlay_as_qimage();
 
     void set_overlay_enabled(const bool state);
 
@@ -43,7 +43,7 @@ private:
 
     void make_button_menus();
 
-    void finalize_overlay_string();
+    QString parsed_overlay_string();
 
     Ui::OverlayDialog *ui;
 };

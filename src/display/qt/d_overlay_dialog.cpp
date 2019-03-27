@@ -10,6 +10,7 @@
 #include <QPlainTextEdit>
 #include <QFileDialog>
 #include <QDateTime>
+#include <QPainter>
 #include <QDebug>
 #include <QMenu>
 #include "../../common/persistent_settings.h"
@@ -20,10 +21,10 @@
 #include "d_window.h"
 #include "d_util.h"
 
-// The overlay's current, html-formatted string.
-static QString OVERLAY_STRING;
-
 static MainWindow *MAIN_WIN = nullptr;
+
+// Used to render the overlay's HTML into an image.
+static QTextDocument OVERLAY_DOC;
 
 OverlayDialog::OverlayDialog(MainWindow *const mainWin, QWidget *parent) :
     QDialog(parent),
@@ -32,6 +33,9 @@ OverlayDialog::OverlayDialog(MainWindow *const mainWin, QWidget *parent) :
     MAIN_WIN = mainWin;
     k_assert(MAIN_WIN != nullptr,
              "Expected a valid main window pointer in the overlay dialog, but got null.");
+
+    OVERLAY_DOC.setDocumentMargin(0);
+    OVERLAY_DOC.setTextWidth(width());    // Fixes HTML align not working.
 
     ui->setupUi(this);
 
@@ -63,14 +67,19 @@ OverlayDialog::~OverlayDialog()
     return;
 }
 
-// To get a displayable (parsed) overlay string, call this function and use the string
-// it returns.
+// Renders the overlay into a QImage, and returns the image.
 //
-QString OverlayDialog::overlay_html_string()
+QImage OverlayDialog::overlay_as_qimage(void)
 {
-    finalize_overlay_string();
+    const resolution_s r = ks_output_resolution();
+    QImage image = QImage(r.w, r.h, QImage::Format_ARGB32_Premultiplied);
+    image.fill(QColor(0, 0, 0, 0));
 
-    return OVERLAY_STRING;
+    QPainter painter(&image);
+    OVERLAY_DOC.setHtml(parsed_overlay_string());
+    OVERLAY_DOC.drawContents(&painter, image.rect());
+
+    return image;
 }
 
 void OverlayDialog::insert_text_into_overlay(const QString &t)
@@ -141,8 +150,9 @@ void OverlayDialog::make_button_menus()
 }
 
 // Parses the overlay string to replace certain tags with their corresponding data.
+// Returns the modified version.
 //
-void OverlayDialog::finalize_overlay_string()
+QString OverlayDialog::parsed_overlay_string()
 {
     QString o = ui->plainTextEdit->toPlainText();
 
@@ -156,10 +166,7 @@ void OverlayDialog::finalize_overlay_string()
     o.replace("|sysTime|", QDateTime::currentDateTime().time().toString());
     o.replace("|sysDate|", QDateTime::currentDateTime().date().toString());
 
-    OVERLAY_STRING = "<font style=\"font-size: x-large; color: white; background-color: black;\">" +
-                     o + "</font>";
-
-    return;
+    return "<font style=\"font-size: x-large; color: white; background-color: black;\">" + o + "</font>";
 }
 
 void OverlayDialog::add_image_to_overlay()

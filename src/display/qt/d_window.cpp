@@ -37,10 +37,6 @@
 int UPDATE_LATENCY_PEAK = 0;
 int UPDATE_LATENCY_AVG = 0;
 
-// A text document object drawn over the capture window to get an on-screen
-// display effect.
-static QTextDocument OVERLAY;
-
 // For an optional OpenGL render surface.
 static OGLWidget *OGL_SURFACE = nullptr;
 
@@ -53,9 +49,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QVBoxLayout *const mainLayout = new QVBoxLayout(ui->centralwidget);
     mainLayout->setMargin(0);
     mainLayout->setSpacing(0);
-
-    OVERLAY.setDocumentMargin(0);
-    OVERLAY.setTextWidth(width());    // Fixes HTML align not working.
 
     controlPanel = new ControlPanel(this);
     overlayDlg = new OverlayDialog(this);
@@ -236,28 +229,27 @@ void MainWindow::paintEvent(QPaintEvent *)
     // If OpenGL is enabled, its own paintGL() should be getting called instead of paintEvent().
     if (OGL_SURFACE != nullptr) return;
 
-    static QLabel *magnifyingGlass = nullptr;
-    const QImage capturedImg = ks_scaler_output_buffer_as_qimage();
+    const QImage frameImage = ks_scaler_output_buffer_as_qimage();
 
     QPainter painter(this);
 
     // Draw the frame.
-    if (!capturedImg.isNull())
+    if (!frameImage.isNull())
     {
-        painter.drawImage(0, 0, capturedImg);
+        painter.drawImage(0, 0, frameImage);
     }
 
-    // Draw the overlay, if enabled.
+    // Draw the overlay.
     if (!kc_no_signal() &&
         overlayDlg != nullptr &&
         overlayDlg->is_overlay_enabled())
     {
-        OVERLAY.setHtml(overlayDlg->overlay_html_string());
-        OVERLAY.drawContents(&painter, this->rect());
+        painter.drawImage(0, 0, overlayDlg->overlay_as_qimage());
     }
 
     // Show a magnifying glass effect which blows up part of the captured image,
     // if the user pressed the right mouse button inside the main capture window.
+    static QLabel *magnifyingGlass = nullptr;
     if (!kc_no_signal() &&
         this->isActiveWindow() &&
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
@@ -284,23 +276,23 @@ void MainWindow::paintEvent(QPaintEvent *)
         {
             regionTopLeft.setX(0);
         }
-        else if (regionTopLeft.x() > (capturedImg.width() - magnifiedRegionSize.width()))
+        else if (regionTopLeft.x() > (frameImage.width() - magnifiedRegionSize.width()))
         {
-            regionTopLeft.setX(capturedImg.width() - magnifiedRegionSize.width());
+            regionTopLeft.setX(frameImage.width() - magnifiedRegionSize.width());
         }
         if (regionTopLeft.y() < 0)
         {
             regionTopLeft.setY(0);
         }
-        else if (regionTopLeft.y() > (capturedImg.height() - magnifiedRegionSize.height()))
+        else if (regionTopLeft.y() > (frameImage.height() - magnifiedRegionSize.height()))
         {
-            regionTopLeft.setY(capturedImg.height() - magnifiedRegionSize.height());
+            regionTopLeft.setY(frameImage.height() - magnifiedRegionSize.height());
         }
 
         // Grab the magnified region's pixel data.
-        const u32 startIdx = (regionTopLeft.x() + regionTopLeft.y() * capturedImg.width()) * (capturedImg.depth() / 8);
-        QImage magn(capturedImg.bits() + startIdx, magnifiedRegionSize.width(), magnifiedRegionSize.height(),
-                    capturedImg.bytesPerLine(), capturedImg.format());
+        const u32 startIdx = (regionTopLeft.x() + regionTopLeft.y() * frameImage.width()) * (frameImage.depth() / 8);
+        QImage magn(frameImage.bits() + startIdx, magnifiedRegionSize.width(), magnifiedRegionSize.height(),
+                    frameImage.bytesPerLine(), frameImage.format());
 
         magnifyingGlass->resize(glassSize);
         magnifyingGlass->setPixmap(QPixmap::fromImage(magn.scaled(glassSize.width(), glassSize.height(),
