@@ -308,15 +308,15 @@ static void filter_func_deltahistogram(FILTER_FUNC_PARAMS)
 
     // For each RGB channel, count into bins how many times a particular delta
     // between pixels in the previous frame and this one occurred.
-    u32 bl[numBins] = {0};
-    u32 gr[numBins] = {0};
-    u32 re[numBins] = {0};
-    for (u32 i = 0; i < (r->w * r->h); i++)
+    uint bl[numBins] = {0};
+    uint gr[numBins] = {0};
+    uint re[numBins] = {0};
+    for (uint i = 0; i < (r->w * r->h); i++)
     {
-        const u32 idx = i * NUM_COLOR_CHAN;
-        const u32 deltaBlue = (pixels[idx + 0] - prevFramePixels[idx + 0]) + 255;
-        const u32 deltaGreen = (pixels[idx + 1] - prevFramePixels[idx + 1]) + 255;
-        const u32 deltaRed = (pixels[idx + 2] - prevFramePixels[idx + 2]) + 255;
+        const uint idx = i * NUM_COLOR_CHAN;
+        const uint deltaBlue = (pixels[idx + 0] - prevFramePixels[idx + 0]) + 255;
+        const uint deltaGreen = (pixels[idx + 1] - prevFramePixels[idx + 1]) + 255;
+        const uint deltaRed = (pixels[idx + 2] - prevFramePixels[idx + 2]) + 255;
 
         k_assert(deltaBlue < numBins, "");
         k_assert(deltaGreen < numBins, "");
@@ -327,55 +327,28 @@ static void filter_func_deltahistogram(FILTER_FUNC_PARAMS)
         re[deltaRed]++;
     }
 
-    // Draw the bins into the frame as a graph.
-    const uint maxval = r->w * r->h;
-    for (u32 i = 0; i < numBins; i++)
+    // Draw the bins into the frame as a line graph.
+    cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
+    for (uint i = 1; i < numBins; i++)
     {
+        const uint maxval = r->w * r->h;
         real xskip = (r->w / (real)numBins);
-        u32 x = xskip * i;
 
-        if (x >= r->w)
-        {
-            x = (r->w - 1);
-        }
-        if ((x + xskip) > r->w)
-        {
-            xskip = r->w - x;
-        }
+        uint x2 = xskip * i;
+        uint x1 = x2-xskip;
 
-        const u32 yb = r->h - ((r->h / 256.0) * ((256.0 / maxval) * bl[i]));
-        const u32 yg = r->h - ((r->h / 256.0) * ((256.0 / maxval) * gr[i]));
-        const u32 yr = r->h - ((r->h / 256.0) * ((256.0 / maxval) * re[i]));
+        const uint y1b = r->h - ((r->h / 256.0) * ((256.0 / maxval) * bl[i-1]));
+        const uint y2b = r->h - ((r->h / 256.0) * ((256.0 / maxval) * bl[i]));
 
-        for (u32 y = yb; y < r->h; y++)
-        {
-            for (u32 xs = x; xs < (x + xskip); xs++)
-            {
-                pixels[(xs + y * r->w) * NUM_COLOR_CHAN + 0] = 255;
-                pixels[(xs + y * r->w) * NUM_COLOR_CHAN + 1] = 0;
-                pixels[(xs + y * r->w) * NUM_COLOR_CHAN + 2] = 0;
-            }
-        }
+        const uint y1g = r->h - ((r->h / 256.0) * ((256.0 / maxval) * gr[i-1]));
+        const uint y2g = r->h - ((r->h / 256.0) * ((256.0 / maxval) * gr[i]));
 
-        for (u32 y = yg; y < r->h; y++)
-        {
-            for (u32 xs = x; xs < (x + xskip); xs++)
-            {
-                pixels[(xs + y * r->w) * NUM_COLOR_CHAN + 0] = 0;
-                pixels[(xs + y * r->w) * NUM_COLOR_CHAN + 1] = 255;
-                pixels[(xs + y * r->w) * NUM_COLOR_CHAN + 2] = 0;
-            }
-        }
+        const uint y1r = r->h - ((r->h / 256.0) * ((256.0 / maxval) * re[i-1]));
+        const uint y2r = r->h - ((r->h / 256.0) * ((256.0 / maxval) * re[i]));
 
-        for (u32 y = yr; y < r->h; y++)
-        {
-            for (u32 xs = x; xs < (x + xskip); xs++)
-            {
-                pixels[(xs + y * r->w) * NUM_COLOR_CHAN + 0] = 0;
-                pixels[(xs + y * r->w) * NUM_COLOR_CHAN + 1] = 0;
-                pixels[(xs + y * r->w) * NUM_COLOR_CHAN + 2] = 255;
-            }
-        }
+        cv::line(output, cv::Point(x1, y1b), cv::Point(x2, y2b), cv::Scalar(255, 0, 0), 2, CV_AA);
+        cv::line(output, cv::Point(x1, y1g), cv::Point(x2, y2g), cv::Scalar(0, 255, 0), 2, CV_AA);
+        cv::line(output, cv::Point(x1, y1r), cv::Point(x2, y2r), cv::Scalar(0, 0, 255), 2, CV_AA);
     }
 
     memcpy(prevFramePixels.ptr(), pixels, prevFramePixels.up_to(r->w * r->h * (r->bpp / 8)));
