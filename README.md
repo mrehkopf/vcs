@@ -255,10 +255,6 @@ output window ........... Magnify this portion of the output window.
 Mouse wheel
 output window ........... Scale the output window up/down.
 
-F1 ...................... Force the capture's input resolution to 640 x 400.
-
-F2 ...................... Force the capture's input resolution to 720 x 400.
-
 F11 ..................... Toggle fullscreen mode on/off.
 
 Ctrl + A ................ Open the anti-tear dialog.
@@ -268,6 +264,9 @@ Ctrl + F ................ Open the filter sets dialog.
 Ctrl + V ................ Open the video settings dialog.
 
 Ctrl + O ................ Toggle the output overlay on/off.
+
+Shift + 1 to 9 .......... Shortcuts for the input resolution buttons on the
+                          control panel's Input tab.
 ```
 
 ## Command-line
