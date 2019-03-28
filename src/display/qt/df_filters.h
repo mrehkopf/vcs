@@ -517,7 +517,7 @@ struct filter_dlg_deltahistogram_s : public filter_dlg_s
 
 struct filter_dlg_uniquecount_s : public filter_dlg_s
 {
-    enum data_offset_e { OFFS_THRESHOLD = 0 };
+    enum data_offset_e { OFFS_THRESHOLD = 0, OFFS_CORNER = 1 };
 
     filter_dlg_uniquecount_s() :
         filter_dlg_s("Unique Count") {}
@@ -526,6 +526,7 @@ struct filter_dlg_uniquecount_s : public filter_dlg_s
     {
         memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
         paramData[OFFS_THRESHOLD] = 20;
+        paramData[OFFS_CORNER] = 0;
 
         return;
     }
@@ -542,13 +543,24 @@ struct filter_dlg_uniquecount_s : public filter_dlg_s
         thresholdSpin.setRange(0, 255);
         thresholdSpin.setValue(paramData[OFFS_THRESHOLD]);
 
+        // In which corner to show the counter.
+        QLabel cornerLabel("Corner:");
+        QComboBox cornerList;
+        cornerList.addItem("Top left");
+        cornerList.addItem("Top right");
+        cornerList.addItem("Bottom right");
+        cornerList.addItem("Bottom left");
+        cornerList.setCurrentIndex(paramData[OFFS_CORNER]);
+
         QFormLayout l;
+        l.addRow(&cornerLabel, &cornerList);
         l.addRow(&thresholdLabel, &thresholdSpin);
 
         d.setLayout(&l);
         d.exec();       // Blocking execute until the user closes the dialog.
 
         paramData[OFFS_THRESHOLD] = thresholdSpin.value();
+        paramData[OFFS_CORNER] = cornerList.currentIndex();
 
         return;
     }

@@ -165,14 +165,14 @@ static void filter_func_uniquecount(FILTER_FUNC_PARAMS)
 
 #ifdef USE_OPENCV
     static heap_bytes_s<u8> prevPixels(MAX_FRAME_SIZE, "Unique count filter buffer");
+
     const u8 threshold = params[filter_dlg_uniquecount_s::OFFS_THRESHOLD];
+    const u8 corner = params[filter_dlg_uniquecount_s::OFFS_CORNER];
+
     static u32 uniqueFrames = 0;
     static u32 uniquePerSecond = 0;
-    static QElapsedTimer tim;
-    if (!tim.isValid())
-    {
-        tim.start();
-    }
+    static QElapsedTimer timer;
+    if (!timer.isValid()) timer.start();
 
     for (u32 i = 0; i < (r->w * r->h); i++)
     {
@@ -191,17 +191,37 @@ static void filter_func_uniquecount(FILTER_FUNC_PARAMS)
     memcpy(prevPixels.ptr(), pixels, prevPixels.up_to(r->w * r->h * (r->bpp / 8)));
 
     // Once per second.
-    if (tim.elapsed() > 1000)
+    if (timer.elapsed() > 1000)
     {
-        uniquePerSecond = round(uniqueFrames / (tim.elapsed() / 1000.0));
+        uniquePerSecond = round(uniqueFrames / (timer.elapsed() / 1000.0));
         uniqueFrames = 0;
-        tim.restart();
+        timer.restart();
     }
 
-    std::string str = std::to_string(uniquePerSecond);
-    cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
-    cv::putText(output, str, cv::Point(0, 24),
-                cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 230, 255), 2);
+    // Draw the counter into the frame.
+    {
+        std::string counterString = std::to_string(uniquePerSecond);
+
+        const auto cornerPos = [corner, r, counterString]()->cv::Point
+        {
+            switch (corner)
+            {
+                // Top right.
+                case 1: return cv::Point(r->w - (counterString.length() * 24), 24);
+
+                // Bottom right.
+                case 2: return cv::Point(r->w - (counterString.length() * 24), r->h - 12);
+
+                // Bottom left.
+                case 3: return cv::Point(0, r->h - 12);
+
+                default: return cv::Point(0, 24);
+            }
+        }();
+
+        cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
+        cv::putText(output, counterString, cornerPos, cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 230, 255), 2);
+    }
 #endif
 
     return;
@@ -358,8 +378,6 @@ static void filter_func_deltahistogram(FILTER_FUNC_PARAMS)
         }
     }
 
-    // Temp buf #1 will now contain the original frame data we received, before
-    // we made changes to it.
     memcpy(prevFramePixels.ptr(), pixels, prevFramePixels.up_to(r->w * r->h * (r->bpp / 8)));
 #endif
 
