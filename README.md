@@ -75,7 +75,9 @@ While borderless, you can drag the window by grabbing anywhere on it with the le
 #### Fullscreen mode
 Although you can emulate a fullscreen mode by toggling the output window's border off and scaling the window to fit the display, as described above, there is also a 'true' fullscreen mode available. You can toggle it on and off with the F11 shortcut key.
 
-The fullscreen mode may be of most benefit when using the OpenGL renderer (toggleable on the control panel's [output tab](#output-tab)), as it may allow your display driver to use adaptive sync &ndash; if available on your system &ndash; to match your display's refresh rate with that of the capture source.
+The fullscreen mode may be of most benefit in tandem with the OpenGL renderer (toggleable on the control panel's [output tab](#output-tab)), as this combination may allow your display driver to take advantage of adaptive sync, if available on your system.
+
+For the fullscreen mode to work best, you may first want to set the output size &ndash; via the control panel's [output tab](#output-tab) &ndash; to match the resolution of your screen. VCS's aspect ratio correction, for instance, may not work properly, otherwise.
 
 #### Scaling with the mouse wheel
 By scrolling the mouse wheel over the output window, you can scale the size of the window up and down. This is a shortcut for the `Relative scale` option in the control panel's [output tab](#output-tab).
