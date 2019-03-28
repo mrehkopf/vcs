@@ -510,6 +510,27 @@ void ControlPanel::clear_known_modes()
     return;
 }
 
+// Simulate the given input button being clicked.
+//
+void ControlPanel::activate_input_res_button(const uint buttonIdx)
+{
+    for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)
+    {
+        QWidget *const w = ui->frame_inputForceButtons->layout()->itemAt(i)->widget();
+
+        /// A bit kludgy, but...
+        if (w->objectName().endsWith(QString::number(buttonIdx)))
+        {
+            parse_input_resolution_button_press(w);
+            return;
+        }
+    }
+
+    NBENE(("Failed to find input resolution button #%u.", buttonIdx));
+
+    return;
+}
+
 // Sets up the buttons for forcing output resolution.
 //
 void ControlPanel::connect_input_resolution_buttons()
@@ -518,8 +539,7 @@ void ControlPanel::connect_input_resolution_buttons()
     {
         QWidget *const w = ui->frame_inputForceButtons->layout()->itemAt(i)->widget();
 
-        k_assert(w->objectName().contains("pushButton"),
-                 "Expected all widgets in this layout to be pushbuttons.");
+        k_assert(w->objectName().contains("pushButton"), "Expected all widgets in this layout to be pushbuttons.");
 
         // Store the unique id of this button, so we can later identify it.
         ((QPushButton*)w)->setProperty("butt_id", i);

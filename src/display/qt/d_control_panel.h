@@ -84,6 +84,8 @@ public:
 
     void toggle_overlay();
 
+    void activate_input_res_button(const uint buttonIdx);
+
 private slots:
     void on_checkBox_logInfo_toggled(bool);
 

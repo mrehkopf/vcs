@@ -381,13 +381,13 @@ void MainWindow::measure_framerate()
 
 void MainWindow::set_keyboard_shortcuts()
 {
-    QShortcut *f1 = new QShortcut(QKeySequence(Qt::Key_F1), this);
-    f1->setContext(Qt::ApplicationShortcut);
-    connect(f1, &QShortcut::activated, []{kmain_change_capture_input_resolution({640, 400, 0});});
-
-    QShortcut *f2 = new QShortcut(QKeySequence(Qt::Key_F2), this);
-    f2->setContext(Qt::ApplicationShortcut);
-    connect(f2, &QShortcut::activated, []{kmain_change_capture_input_resolution({720, 400, 0});});
+    // Assign shift + number key 1-9 to the input resolution force buttons.
+    for (uint i = 1; i <= 9; i++)
+    {
+        QShortcut *s = new QShortcut(QKeySequence(QString("shift+%1").arg(QString::number(i))), this);
+        s->setContext(Qt::ApplicationShortcut);
+        connect(s, &QShortcut::activated, [this, i]{this->controlPanel->activate_input_res_button(i);});
+    }
 
     /// NOTE: Qt's full-screen mode might not work correctly under Linux, depending
     /// on the distro etc.
