@@ -11,6 +11,7 @@
 #include <thread>
 #include <mutex>
 #include "../common/command_line.h"
+#include "../common/propagate.h"
 #include "../display/display.h"
 #include "../common/globals.h"
 #include "../main.h"
@@ -623,7 +624,7 @@ void kc_initialize_capturer(void)
         }
     }
 
-    kmain_signal_new_input_mode();
+    kpropagate_new_input_video_mode();
 
     done:
     return;
@@ -680,7 +681,6 @@ bool stop_capture(void)
     RGBSetNoSignalFn(CAPTURE_HANDLE, NULL, 0);
     RGBSetErrorFn(CAPTURE_HANDLE, NULL, 0);
 
-    success:
     return true;
 
     fail:
@@ -746,13 +746,10 @@ bool kc_start_capture(void)
     else
     {
         CAPTURE_IS_ACTIVE = true;
-
-        update_internal_mode_params();
-
         CURRENT_SIGNAL_INFO = query_capture_signal_info();
+        update_internal_mode_params();
     }
 
-    success:
     return true;
 
     fail:
@@ -1061,7 +1058,6 @@ bool kc_force_capture_input_resolution(const resolution_s r)
 
     SKIP_NEXT_NUM_FRAMES += 2;  // Avoid garbage on screen while the mode changes.
 
-    success:
     return true;
 
     fail:
@@ -1490,7 +1486,6 @@ bool kc_initialize_capture_card(void)
               MAX_INPUT_RES.h <= MAX_OUTPUT_HEIGHT),
              "The capture device is not compatible with this version of VCS.");
 
-    success:
     return true;
 
     fail:
@@ -1630,7 +1625,7 @@ bool kc_load_aliases(const QString filename, const bool automaticCall)
         // Signal a new input mode to force the program to re-evaluate the mode
         // parameters, in case one of the newly-loaded aliases applies to the
         // current mode.
-        kmain_signal_new_input_mode();
+        kpropagate_new_input_video_mode();
     }
 
     return true;
@@ -1814,7 +1809,7 @@ bool kc_load_mode_params(const QString filename, const bool automaticCall)
 
     // Update the GUI with information related to the new mode params.
     kc_broadcast_mode_params_to_gui();
-    kmain_signal_new_input_mode();  // In case the mode params changed for the current mode, re-initialize it.
+    kpropagate_new_input_video_mode();  // In case the mode params changed for the current mode, re-initialize it.
     kd_signal_new_mode_settings_source_file(filename);
 
     INFO(("Loaded %u set(s) of mode params from disk.", KNOWN_MODES.size()));

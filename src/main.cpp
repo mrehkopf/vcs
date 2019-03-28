@@ -12,6 +12,7 @@
 #include "filter/anti_tear.h"
 #include "capture/capture.h"
 #include "display/display.h"
+#include "common/propagate.h"
 #include "record/record.h"
 #include "memory.h"
 #include "scaler/scaler.h"
@@ -63,20 +64,6 @@ static bool initialize_all(void)
     return !PROGRAM_EXIT_REQUESTED;
 }
 
-// Updates all necessary units with information about the current (new) capture
-// input mode.
-//
-void kmain_signal_new_input_mode(void)
-{
-    const input_signal_s &s = kc_input_signal_info();
-
-    kc_apply_new_capture_resolution(s.r);
-    kd_update_gui_input_signal_info(s);
-    ks_set_output_base_resolution(s.r, false);
-
-    return;
-}
-
 // Try to have the capture card force the given input resolution.
 //
 void kmain_change_capture_input_resolution(const resolution_s r)
@@ -108,7 +95,7 @@ void kmain_change_capture_input_resolution(const resolution_s r)
         goto done;
     }
 
-    kmain_signal_new_input_mode();
+    kpropagate_new_input_video_mode();
 
     done:
     return;
@@ -129,43 +116,27 @@ static capture_event_e process_next_capture_event(void)
     {
         case CEVENT_UNRECOVERABLE_ERROR:
         {
-            NBENE(("The capture card reports an unrecoverable error. Shutting down the program."));
-
-            PROGRAM_EXIT_REQUESTED = true;
-
+            kpropagate_unrecoverable_error();
             break;
         }
         case CEVENT_NEW_FRAME:
         {
-            ks_scale_frame(kc_latest_captured_frame());
-
+            kpropagate_new_captured_frame();
             break;
         }
         case CEVENT_NEW_VIDEO_MODE:
         {
-            if (kc_input_signal_info().wokeUp)
-            {
-                kd_mark_gui_input_no_signal(false);
-            }
-
-            kmain_signal_new_input_mode();
-
+            kpropagate_new_input_video_mode();
             break;
         }
         case CEVENT_NO_SIGNAL:
         {
-            kd_mark_gui_input_no_signal(true);
-
-            ks_indicate_no_signal();
-
+            kpropagate_lost_input_signal();
             break;
         }
         case CEVENT_INVALID_SIGNAL:
         {
-            kd_mark_gui_input_no_signal(true);
-
-            ks_indicate_invalid_signal();
-
+            kpropagate_invalid_input_signal();
             break;
         }
         case CEVENT_SLEEP:
@@ -185,23 +156,6 @@ static capture_event_e process_next_capture_event(void)
         default:
         {
             k_assert(0, "Unrecognized capture event.");
-        }
-    }
-
-    if ((e != CEVENT_SLEEP) &&
-        (e != CEVENT_NONE) &&
-        (e != CEVENT_UNRECOVERABLE_ERROR))
-    {
-        kd_update_display();
-
-        if (e == CEVENT_NEW_FRAME)
-        {
-            if (krecord_is_recording())
-            {
-                krecord_record_new_frame();
-            }
-
-            kc_mark_frame_buffer_as_processed();
         }
     }
 
