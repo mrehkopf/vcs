@@ -30,6 +30,8 @@ public:
 
     void set_overlay_enabled(const bool state);
 
+    void set_overlay_max_width(const uint width);
+
 private slots:
     void insert_text_into_overlay(const QString &t);
 

@@ -642,6 +642,7 @@ void MainWindow::update_window_size()
     const resolution_s r = ks_output_resolution();
 
     this->setFixedSize(r.w, r.h);
+    overlayDlg->set_overlay_max_width(r.w);
 
     update_window_title();
 
