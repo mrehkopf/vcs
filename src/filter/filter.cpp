@@ -612,6 +612,84 @@ static void apply_filter(const QString &name, FILTER_FUNC_PARAMS)
     return;
 }
 
+// Find by how many pixels the given image is out of alignment with the
+// edges of the capture screen vertically and horizontally, by counting how
+// many vertical/horizontal columns/rows at the edges of the image contain
+// nothing but black pixels. This is an estimate and not necessarily accurate -
+// depending on the image, it may be grossly inaccurate. The vector returned
+// contains as two components the image's alignment offset on the vertical
+// and horizontal axes.
+//
+// This will not work if the image is fully contained within the capture screen -
+// at least one edge of the image is expected to fall outside of the screen.
+std::vector<int> kf_find_capture_alignment(u8 *const pixels, const resolution_s &r)
+{
+    k_assert((r.bpp == 32), "Expected 32-bit pixel data for finding image alignment.");
+
+    // The level above which we consider a pixel's color value to be not part
+    // of the black background.
+    const int threshold = 50;
+
+    const auto find_horizontal = [r, pixels, threshold](int x, int limit, int direction)->uint
+    {
+        uint steps = 0;
+        while (x != limit)
+        {
+            for (uint y = 0; y < r.h; y++)
+            {
+                // If any pixel on this vertical column is above the threshold,
+                // consider the column to be part of the image rather than of
+                // the background.
+                const uint idx = ((x + y * r.w) * 4);
+                if (pixels[idx + 0] > threshold ||
+                    pixels[idx + 1] > threshold ||
+                    pixels[idx + 2] > threshold)
+                {
+                    goto done;
+                }
+            }
+
+            steps++;
+            x += direction;
+        }
+
+        done:
+        return steps;
+    };
+
+    const auto find_vertical = [r, pixels, threshold](int y, int limit, int direction)->uint
+    {
+        uint steps = 0;
+        while (y != limit)
+        {
+            for (uint x = 0; x < r.w; x++)
+            {
+                const uint idx = ((x + y * r.w) * 4);
+                if (pixels[idx + 0] > threshold ||
+                    pixels[idx + 1] > threshold ||
+                    pixels[idx + 2] > threshold)
+                {
+                    goto done;
+                }
+            }
+
+            steps++;
+            y += direction;
+        }
+
+        done:
+        return steps;
+    };
+
+    int left = find_horizontal(0, r.w-1, +1);
+    int right = find_horizontal(r.w-1, 0, -1);
+    int top = find_vertical(0, r.h-1, +1);
+    int bottom = find_vertical(r.h-1, 0, -1);
+
+    return {(left? left : -right),
+            (top? top : -bottom)};
+}
+
 uint kf_current_filter_set_idx(void)
 {
     return MOST_RECENT_FILTER_SET_IDX;

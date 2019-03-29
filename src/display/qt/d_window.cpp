@@ -38,6 +38,11 @@
 int UPDATE_LATENCY_PEAK = 0;
 int UPDATE_LATENCY_AVG = 0;
 
+// Set to true to have the capture's horizontal and vertical positions be
+// adjusted next frame to align the captured image with the edges of the
+// screen.
+bool ALIGN_CAPTURE = false;
+
 // For an optional OpenGL render surface.
 static OGLWidget *OGL_SURFACE = nullptr;
 
@@ -405,6 +410,10 @@ void MainWindow::set_keyboard_shortcuts()
         }
     });
 
+    QShortcut *f5 = new QShortcut(QKeySequence(Qt::Key_F5), this);
+    f5->setContext(Qt::ApplicationShortcut);
+    connect(f5, &QShortcut::activated, []{ALIGN_CAPTURE = true;});
+
     QShortcut *ctrlV = new QShortcut(QKeySequence("ctrl+v"), this);
     ctrlV->setContext(Qt::ApplicationShortcut);
     connect(ctrlV, &QShortcut::activated, [this]{this->controlPanel->open_video_adjust_dialog();});
@@ -530,6 +539,14 @@ void MainWindow::update_current_filter_set_idx(const int idx)
 {
     k_assert(controlPanel != nullptr, "");
     controlPanel->update_current_filter_set_idx(idx);
+
+    return;
+}
+
+void MainWindow::update_video_params(void)
+{
+    k_assert(controlPanel != nullptr, "");
+    controlPanel->update_video_params();
 
     return;
 }

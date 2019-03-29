@@ -442,6 +442,14 @@ void ControlPanel::update_current_filter_set_idx(const int idx)
     return;
 }
 
+void ControlPanel::update_video_params(void)
+{
+    k_assert(videocolorDlg != nullptr, "");
+    videocolorDlg->update_controls();
+
+    return;
+}
+
 void ControlPanel::update_input_signal_info(const input_signal_s &s)
 {
     if (kc_no_signal())

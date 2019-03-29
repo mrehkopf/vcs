@@ -630,6 +630,62 @@ void kc_initialize_capturer(void)
     return;
 }
 
+bool kc_adjust_capture_vertical_offset(const int delta)
+{
+    if (!delta) return true;
+
+    const long newPos = (CURRENT_VIDEO_PARAMS.verPos + delta);
+    if (newPos < 2 || newPos > MAX_VIDEO_PARAMS.verPos)
+    {
+        // ^ Testing for < 2 instead of < MIN_VIDEO_PARAMS.verPos, since on my
+        // VisionRGB-PRO2, MIN_VIDEO_PARAMS.verPos gives a value less than 2,
+        // but any such values corrupt the capture.
+        return false;
+    }
+
+    const unsigned long err = RGBSetVerPosition(CAPTURE_HANDLE, newPos);
+    if (err != RGBERROR_NO_ERROR)
+    {
+        NBENE(("A call to RGBSetVerPosition() returned with an unexpected error "
+               "(0x%x).", err));
+
+        return false;
+    }
+
+    update_internal_mode_params();
+    kd_update_gui_video_params();
+
+    return true;
+}
+
+bool kc_adjust_capture_horizontal_offset(const int delta)
+{
+    if (!delta) return true;
+
+    const long newPos = (CURRENT_VIDEO_PARAMS.horPos + delta);
+    if (newPos < 2 || newPos > MAX_VIDEO_PARAMS.horPos)
+    {
+        // ^ Testing for < 2 instead of < MIN_VIDEO_PARAMS.verPos, since on my
+        // VisionRGB-PRO2, MIN_VIDEO_PARAMS.verPos gives a value less than 2,
+        // but any such values corrupt the capture.
+        return false;
+    }
+
+    const unsigned long err = RGBSetHorPosition(CAPTURE_HANDLE, newPos);
+    if (err != RGBERROR_NO_ERROR)
+    {
+        NBENE(("A call to RGBSetHorPosition() returned with an unexpected error "
+               "(0x%x).", err));
+
+        return false;
+    }
+
+    update_internal_mode_params();
+    kd_update_gui_video_params();
+
+    return true;
+}
+
 static bool shutdown_capture(void)
 {
     if ((RGBCloseInput(CAPTURE_HANDLE) != RGBERROR_NO_ERROR) &&

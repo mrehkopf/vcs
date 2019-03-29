@@ -115,6 +115,10 @@ void kc_release_capturer(void);
 
 bool kc_is_direct_dma_enabled(void);
 
+bool kc_adjust_capture_vertical_offset(const int delta);
+
+bool kc_adjust_capture_horizontal_offset(const int delta);
+
 u32 kc_hardware_min_frame_drop(void);
 
 u32 kc_hardware_max_frame_drop(void);

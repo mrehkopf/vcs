@@ -115,6 +115,8 @@ void VideoAndColorDialog::update_controls(void)
     update_color_controls();
     CONTROLS_LIVE_UPDATE = true;
 
+    flag_unsaved_changes();
+
     return;
 }
 

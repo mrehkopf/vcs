@@ -37,6 +37,8 @@ public:
 
     void receive_new_mode_settings_filename(const QString &filename);
 
+    void update_controls();
+
 private slots:
     void save_settings(void);
 
@@ -52,8 +54,6 @@ private:
     void connect_spinboxes_to_their_sliders(QGroupBox *const parent);
 
     void create_menu_bar();
-
-    void update_controls();
 
     void update_video_controls();
 

@@ -96,6 +96,8 @@ public:
 
     void update_recording_metainfo();
 
+    void update_video_params();
+
 private slots:
     void toggle_window_border();
 

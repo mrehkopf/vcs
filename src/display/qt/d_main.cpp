@@ -100,6 +100,16 @@ void kd_update_gui_filter_set_idx(const int idx)
     return;
 }
 
+void kd_update_gui_video_params(void)
+{
+    if (WINDOW != nullptr)
+    {
+        WINDOW->update_video_params();
+    }
+
+    return;
+}
+
 void kd_update_gui_input_signal_info(const input_signal_s &s)
 {
     if (WINDOW != nullptr)

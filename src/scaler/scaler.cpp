@@ -14,6 +14,7 @@
 #include "../capture/capture.h"
 #include "../display/display.h"
 #include "../common/memory.h"
+#include "../common/propagate.h"
 #include "../common/globals.h"
 #include "../filter/filter.h"
 #include "../record/record.h"
@@ -523,6 +524,18 @@ void ks_scale_frame(captured_frame_s &frame)
         s_convert_frame_to_bgra(frame);
 
         pixelData = COLORCONV_BUFFER.ptr();
+    }
+
+    // While we have access to the color-converted original frame, and if we've
+    // been asked to do so, find out whether the frame is out of alignment with
+    // the screen; and if it is, adjust the capture properties to align it.
+    if (ALIGN_CAPTURE)
+    {
+        const auto alignment = kf_find_capture_alignment(pixelData, frame.r);
+
+        kpropagate_capture_alignment_adjust(alignment[0], alignment[1]);
+
+        ALIGN_CAPTURE = false;
     }
 
     // Perform anti-tearing on the (color-converted) frame. If the user has turned

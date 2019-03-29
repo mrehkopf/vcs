@@ -60,6 +60,8 @@ const u32 FILTER_DATA_LENGTH = 16;          // How many bytes are allocated for 
 
 extern unsigned int FRAME_SKIP;
 
+extern bool ALIGN_CAPTURE;
+
 extern i32 PROGRAM_EXIT_REQUESTED;
 
 extern unsigned int INPUT_CHANNEL_IDX;

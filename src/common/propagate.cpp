@@ -17,7 +17,7 @@
 #include "../record/record.h"
 
 // A new input video mode (e.g. resolution) has been set.
-void kpropagate_new_input_video_mode()
+void kpropagate_new_input_video_mode(void)
 {
     const input_signal_s &s = kc_input_signal_info();
 
@@ -37,8 +37,19 @@ void kpropagate_new_input_video_mode()
     return;
 }
 
+// Call to ask the capture's horizontal and/or vertical positioning to be
+// adjusted by the given amount.
+void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int verticalDelta)
+{
+    kc_adjust_capture_horizontal_offset(horizontalDelta);
+
+    kc_adjust_capture_vertical_offset(verticalDelta);
+
+    return;
+}
+
 // The capture hardware received an invalid input signal.
-void kpropagate_invalid_input_signal()
+void kpropagate_invalid_input_signal(void)
 {
     kd_mark_gui_input_no_signal(true);
 
@@ -50,7 +61,7 @@ void kpropagate_invalid_input_signal()
 }
 
 // The capture hardware lost its input signal.
-void kpropagate_lost_input_signal()
+void kpropagate_lost_input_signal(void)
 {
     kd_mark_gui_input_no_signal(true);
 
@@ -62,7 +73,7 @@ void kpropagate_lost_input_signal()
 }
 
 // The capture hardware started receiving an input signal.
-void kpropagate_gained_input_signal()
+void kpropagate_gained_input_signal(void)
 {
     kd_mark_gui_input_no_signal(false);
 
@@ -70,7 +81,7 @@ void kpropagate_gained_input_signal()
 }
 
 // The capture hardware has sent us a new captured frame.
-void kpropagate_new_captured_frame()
+void kpropagate_new_captured_frame(void)
 {
     ks_scale_frame(kc_latest_captured_frame());
 
@@ -87,7 +98,7 @@ void kpropagate_new_captured_frame()
 }
 
 // The capture hardware has met with an unrecoverable error.
-void kpropagate_unrecoverable_error()
+void kpropagate_unrecoverable_error(void)
 {
     NBENE(("VCS has met with an unrecoverable error. Shutting the program down."));
 
