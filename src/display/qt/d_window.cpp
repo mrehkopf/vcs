@@ -386,10 +386,10 @@ void MainWindow::measure_framerate()
 
 void MainWindow::set_keyboard_shortcuts()
 {
-    // Assign shift + number key 1-9 to the input resolution force buttons.
+    // Assign ctrl + number key 1-9 to the input resolution force buttons.
     for (uint i = 1; i <= 9; i++)
     {
-        QShortcut *s = new QShortcut(QKeySequence(QString("shift+%1").arg(QString::number(i))), this);
+        QShortcut *s = new QShortcut(QKeySequence(QString("ctrl+%1").arg(QString::number(i))), this);
         s->setContext(Qt::ApplicationShortcut);
         connect(s, &QShortcut::activated, [this, i]{this->controlPanel->activate_input_res_button(i);});
     }

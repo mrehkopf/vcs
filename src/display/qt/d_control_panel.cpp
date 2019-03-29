@@ -606,9 +606,9 @@ void ControlPanel::parse_input_resolution_button_press(QWidget *button)
         res.h = sl.at(1).toUInt();
     }
 
-    // If ctrl is pressed while clicking the button, let the user specify a new
+    // If alt is pressed while clicking the button, let the user specify a new
     // resolution for the button.
-    if (QGuiApplication::keyboardModifiers() & Qt::ControlModifier)
+    if (QGuiApplication::keyboardModifiers() & Qt::AltModifier)
     {
         // Pop up a dialog asking the user for the new resolution.
         if (ResolutionDialog("Assign an input resolution",
