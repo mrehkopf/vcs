@@ -391,8 +391,6 @@ resolution_s query_hardware_input_resolution(void)
         FRAME_BUFFER.r.h = abs(frameInfo->biHeight);
         FRAME_BUFFER.r.bpp = frameInfo->biBitCount;
 
-        //FRAME_BUFFER.pixels = (u8*)frameData;
-
         // Copy the frame's data into our local buffer so we can work on it.
         memcpy(FRAME_BUFFER.pixels.ptr(), (u8*)frameData,
                FRAME_BUFFER.pixels.up_to(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8)));
@@ -442,9 +440,6 @@ resolution_s query_hardware_input_resolution(void)
             goto done;
         }
 
-        //DEBUG(("The capture card reports 'invalid signal' %u %u.",
-        //       horClock, verClock));
-
         // Let the card apply its own no signal handler as well, just in case.
         RGBInvalidSignal(captureHandle, horClock, verClock);
 
@@ -459,8 +454,6 @@ resolution_s query_hardware_input_resolution(void)
     void RGBCBKAPI kc_rgbeasy_callback_no_signal(HWND, HRGB, ULONG_PTR captureHandle)
     {
         std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        //DEBUG(("The capture card reports 'no signal'."));
 
         // Let the card apply its own no signal handler as well, just in case.
         RGBNoSignal(captureHandle);

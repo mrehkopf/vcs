@@ -394,6 +394,20 @@ void MainWindow::set_keyboard_shortcuts()
         connect(s, &QShortcut::activated, [this, i]{this->controlPanel->activate_input_res_button(i);});
     }
 
+    // Assign alt + arrow keys to move the capture input alignment horizontally and vertically.
+    QShortcut *altLeft = new QShortcut(QKeySequence("alt+left"), this);
+    altLeft->setContext(Qt::ApplicationShortcut);
+    connect(altLeft, &QShortcut::activated, []{kc_adjust_capture_horizontal_offset(1);});
+    QShortcut *altRight = new QShortcut(QKeySequence("alt+right"), this);
+    altRight->setContext(Qt::ApplicationShortcut);
+    connect(altRight, &QShortcut::activated, []{kc_adjust_capture_horizontal_offset(-1);});
+    QShortcut *altUp = new QShortcut(QKeySequence("alt+up"), this);
+    altUp->setContext(Qt::ApplicationShortcut);
+    connect(altUp, &QShortcut::activated, []{kc_adjust_capture_vertical_offset(1);});
+    QShortcut *altDown = new QShortcut(QKeySequence("alt+down"), this);
+    altDown->setContext(Qt::ApplicationShortcut);
+    connect(altDown, &QShortcut::activated, []{kc_adjust_capture_vertical_offset(-1);});
+
     /// NOTE: Qt's full-screen mode might not work correctly under Linux, depending
     /// on the distro etc.
     QShortcut *f11 = new QShortcut(QKeySequence(Qt::Key_F11), this);
