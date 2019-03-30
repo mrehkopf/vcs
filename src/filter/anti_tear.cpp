@@ -595,7 +595,7 @@ u8* kat_anti_tear(u8 *const pixels, const resolution_s &r)
 
 void kat_initialize_anti_tear(void)
 {
-    const resolution_s &maxres = kc_hardware_max_capture_resolution();
+    const resolution_s &maxres = kc_hardware().meta.maximum_capture_resolution();
 
     INFO(("Initializing the anti-tear engine for %u x %u max.", maxres.w, maxres.h));
 

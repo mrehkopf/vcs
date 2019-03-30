@@ -27,8 +27,8 @@ ResolutionDialog::ResolutionDialog(const QString title, resolution_s *const r, Q
 
     setWindowTitle(title);
 
-    const resolution_s &minres = kc_hardware_min_capture_resolution();
-    const resolution_s &maxres = kc_hardware_max_capture_resolution();
+    const resolution_s &minres = kc_hardware().meta.minimum_capture_resolution();
+    const resolution_s &maxres = kc_hardware().meta.maximum_capture_resolution();
 
     ui->spinBox_x->setMinimum(minres.w);
     ui->spinBox_x->setMaximum(maxres.w);

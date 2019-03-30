@@ -19,16 +19,16 @@
 // A new input video mode (e.g. resolution) has been set.
 void kpropagate_new_input_video_mode(void)
 {
-    const input_signal_s &s = kc_input_signal_info();
+    const input_signal_s s = kc_hardware().status.signal();
 
     if (s.wokeUp)
     {
         kpropagate_gained_input_signal();
     }
 
-    kc_apply_new_capture_resolution(s.r);
+    kc_apply_new_capture_resolution();
 
-    kd_update_gui_input_signal_info(s);
+    kd_update_gui_input_signal_info();
 
     ks_set_output_base_resolution(s.r, false);
 

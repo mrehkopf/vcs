@@ -58,7 +58,6 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
     filterSetsDlg = new FilterSetsListDialog;
 
     fill_hardware_info_table();
-    update_input_signal_info(kc_input_signal_info());
     connect_input_resolution_buttons();
     fill_output_scaling_filter_comboboxes();
     fill_input_channel_combobox();
@@ -307,7 +306,7 @@ void ControlPanel::fill_input_channel_combobox()
 
     ui->comboBox_inputChannel->clear();
 
-    for (uint i = 0; i < kc_hardware_num_capture_inputs(); i++)
+    for (int i = 0; i < kc_hardware().meta.num_capture_inputs(); i++)
     {
         ui->comboBox_inputChannel->addItem(QString("Channel #%1").arg((i + 1)));
     }
@@ -450,7 +449,7 @@ void ControlPanel::update_video_params(void)
     return;
 }
 
-void ControlPanel::update_input_signal_info(const input_signal_s &s)
+void ControlPanel::update_input_signal_info(void)
 {
     if (kc_no_signal())
     {
@@ -458,6 +457,8 @@ void ControlPanel::update_input_signal_info(const input_signal_s &s)
     }
     else
     {
+        const input_signal_s s = kc_hardware().status.signal();
+
         k_assert(videocolorDlg != nullptr, "");
         videocolorDlg->receive_new_input_signal(s);
 
@@ -646,10 +647,10 @@ void ControlPanel::fill_hardware_info_table()
     QString s;
 
     // Get the capture card model name.
-    ui->groupBox_captureDeviceInfo->setTitle("Capture device: " + kc_capture_card_type_string());
+    ui->groupBox_captureDeviceInfo->setTitle("Capture device: " + QString::fromStdString(kc_hardware().meta.model_name()));
 
-    const resolution_s &minres = kc_hardware_min_capture_resolution();
-    const resolution_s &maxres = kc_hardware_max_capture_resolution();
+    const resolution_s &minres = kc_hardware().meta.minimum_capture_resolution();
+    const resolution_s &maxres = kc_hardware().meta.maximum_capture_resolution();
 
     // Get the minimum and maximum resolutions;
     s = QString("%1 x %2").arg(minres.w).arg(minres.h);
@@ -658,22 +659,22 @@ void ControlPanel::fill_hardware_info_table()
     ui->label_inputMaxResolutionString->setText(s);
 
     // Number of input channels.
-    s = QString::number(kc_hardware_num_capture_inputs());
+    s = QString::number(kc_hardware().meta.num_capture_inputs());
     ui->label_inputChannelsString->setText(s);
 
     // Firmware and driver versions.
-    ui->label_firmwareString->setText(kc_hardware_firmware_version_string());
-    ui->label_driverString->setText(kc_hardware_driver_version_string());
+    ui->label_firmwareString->setText(QString::fromStdString(kc_hardware().meta.firmware_version()));
+    ui->label_driverString->setText(QString::fromStdString(kc_hardware().meta.driver_version()));
 
     // Support matrix for various features.
-    ui->label_supportsDirectDMAString->setText(kc_hardware_is_direct_dma_supported()? "Yes" : "No");
-    ui->label_supportsDeinterlaceString->setText(kc_hardware_is_deinterlace_supported()? "Yes" : "No");
-    ui->label_supportsYUVString->setText(kc_hardware_is_yuv_supported()? "Yes" : "No");
-    ui->label_supportsVGACaptureString->setText(kc_hardware_is_vga_capture_supported()? "Yes" : "No");
-    ui->label_supportsDVICaptureString->setText(kc_hardware_is_dvi_capture_supported()? "Yes" : "No");
-    ui->label_supportsCompositeCaptureString->setText(kc_hardware_is_composite_capture_supported()? "Yes" : "No");
-    ui->label_supportsComponentCaptureString->setText(kc_hardware_is_component_capture_supported()? "Yes" : "No");
-    ui->label_supportsSVideoCaptureString->setText(kc_hardware_is_svideo_capture_supported()? "Yes" : "No");
+    ui->label_supportsDirectDMAString->setText(kc_hardware().supports.dma()? "Yes" : "No");
+    ui->label_supportsDeinterlaceString->setText(kc_hardware().supports.deinterlace()? "Yes" : "No");
+    ui->label_supportsYUVString->setText(kc_hardware().supports.yuv()? "Yes" : "No");
+    ui->label_supportsVGACaptureString->setText(kc_hardware().supports.vga()? "Yes" : "No");
+    ui->label_supportsDVICaptureString->setText(kc_hardware().supports.dvi()? "Yes" : "No");
+    ui->label_supportsCompositeCaptureString->setText(kc_hardware().supports.composite_capture()? "Yes" : "No");
+    ui->label_supportsComponentCaptureString->setText(kc_hardware().supports.component_capture()? "Yes" : "No");
+    ui->label_supportsSVideoCaptureString->setText(kc_hardware().supports.svideo()? "Yes" : "No");
 
     return;
 }
@@ -834,7 +835,7 @@ void ControlPanel::on_checkBox_forceOutputRes_stateChanged(int arg1)
     if (!checked)
     {
         resolution_s outr;
-        const resolution_s r = kc_input_signal_info().r;
+        const resolution_s r = kc_hardware().status.capture_resolution();
 
         ks_set_output_base_resolution(r, true);
 
@@ -1149,14 +1150,14 @@ QString ControlPanel::GetString_OutputResolution()
 
 QString ControlPanel::GetString_InputResolution()
 {
-    const resolution_s r = kc_input_resolution();
+    const resolution_s r = kc_hardware().status.capture_resolution();
 
     return QString("%1 x %2").arg(r.w).arg(r.h);
 }
 
 QString ControlPanel::GetString_InputRefreshRate()
 {
-    return QString("%1 Hz").arg(kc_input_signal_info().refreshRate);
+    return QString("%1 Hz").arg(kc_hardware().status.signal().refreshRate);
 }
 
 QString ControlPanel::GetString_OutputFrameRate()

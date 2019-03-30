@@ -138,7 +138,7 @@ void VideoAndColorDialog::update_color_controls()
 {
     // Current values.
     {
-        const input_color_params_s p = kc_capture_color_params();
+        const input_color_settings_s p = kc_hardware().status.color_settings();
 
         ui->spinBox_colorBright->setValue(p.bright);
         ui->horizontalScrollBar_colorBright->setValue(p.bright);
@@ -167,8 +167,8 @@ void VideoAndColorDialog::update_color_controls()
 
     // Current valid ranges.
     {
-        const input_color_params_s min = kc_capture_color_params_min_values();
-        const input_color_params_s max = kc_capture_color_params_max_values();
+        const input_color_settings_s min = kc_hardware().meta.minimum_color_settings();
+        const input_color_settings_s max = kc_hardware().meta.maximum_color_settings();
 
         ui->spinBox_colorBright->setMinimum(min.bright);
         ui->spinBox_colorBright->setMaximum(max.bright);
@@ -218,7 +218,7 @@ void VideoAndColorDialog::update_video_controls()
 {
     // Current values.
     {
-        const input_video_params_s p = kc_capture_video_params();
+        const input_video_settings_s p = kc_hardware().status.video_settings();
 
         ui->spinBox_videoBlackLevel->setValue(p.blackLevel);
         ui->horizontalScrollBar_videoBlackLevel->setValue(p.blackLevel);
@@ -238,8 +238,8 @@ void VideoAndColorDialog::update_video_controls()
 
     // Current valid ranges.
     {
-        const input_video_params_s min = kc_capture_video_params_min_values();
-        const input_video_params_s max = kc_capture_video_params_max_values();
+        const input_video_settings_s min = kc_hardware().meta.minimum_video_settings();
+        const input_video_settings_s max = kc_hardware().meta.maximum_video_settings();
 
         ui->spinBox_videoBlackLevel->setMinimum(min.blackLevel);
         ui->spinBox_videoBlackLevel->setMaximum(max.blackLevel);
@@ -270,9 +270,9 @@ void VideoAndColorDialog::update_video_controls()
     return;
 }
 
-input_color_params_s VideoAndColorDialog::current_color_params()
+input_color_settings_s VideoAndColorDialog::current_color_params()
 {
-    input_color_params_s pc;
+    input_color_settings_s pc;
 
     pc.bright = ui->spinBox_colorBright->value();
     pc.contr = ui->spinBox_colorContr->value();
@@ -286,9 +286,9 @@ input_color_params_s VideoAndColorDialog::current_color_params()
     return pc;
 }
 
-input_video_params_s VideoAndColorDialog::current_video_params()
+input_video_settings_s VideoAndColorDialog::current_video_params()
 {
-    input_video_params_s pv;
+    input_video_settings_s pv;
 
     pv.blackLevel = ui->spinBox_videoBlackLevel->value();
     pv.horPos = ui->spinBox_videoHorPos->value();
@@ -377,8 +377,8 @@ void VideoAndColorDialog::connect_spinboxes_to_their_sliders(QGroupBox *const pa
 //
 void VideoAndColorDialog::broadcast_settings_change()
 {
-    const input_video_params_s vp = current_video_params();
-    const input_color_params_s cp = current_color_params();
+    const input_video_settings_s vp = current_video_params();
+    const input_color_settings_s cp = current_color_params();
 
     if (!CONTROLS_LIVE_UPDATE)
     {

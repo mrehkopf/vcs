@@ -60,7 +60,7 @@ struct input_signal_s
     bool wokeUp;        // Set to true if there was a 'no signal' before this.
 };
 
-struct input_video_params_s
+struct input_video_settings_s
 {
     unsigned long horScale;
     long horPos;
@@ -69,7 +69,7 @@ struct input_video_params_s
     long blackLevel;
 };
 
-struct input_color_params_s
+struct input_color_settings_s
 {
     long bright;
     long contr;
@@ -89,8 +89,8 @@ struct input_color_params_s
 struct mode_params_s
 {
     resolution_s r;
-    input_color_params_s color;
-    input_video_params_s video;
+    input_color_settings_s color;
+    input_video_settings_s video;
 };
 
 struct mode_alias_s
@@ -99,9 +99,60 @@ struct mode_alias_s
     resolution_s to;
 };
 
+// Information about the capture hardware. These functions generally poll the
+// hardware directly, using the RGBEasy API.
+//
+// NOTE: These functions will be exposed to the entire program, so they should
+// not provide any means (e.g. calls to RGBSet*()) to alter the state of the
+// capture hardware - e.g. to start or stop capture, change the settings, etc.
+struct capture_hardware_s
+{
+    struct features_supported_s
+    {
+        bool component_capture(void) const;
+        bool composite_capture(void) const;
+        bool deinterlace(void) const;
+        bool dma(void) const;
+        bool dvi(void) const;
+        bool svideo(void) const;
+        bool vga(void) const;
+        bool yuv(void) const;
+    } supports;
+
+    struct metainfo_s
+    {
+        input_color_settings_s default_color_settings(void) const;
+        input_color_settings_s minimum_color_settings(void) const;
+        input_color_settings_s maximum_color_settings(void) const;
+        input_video_settings_s default_video_settings(void) const;
+        input_video_settings_s minimum_video_settings(void) const;
+        input_video_settings_s maximum_video_settings(void) const;
+        resolution_s minimum_capture_resolution(void) const;
+        resolution_s maximum_capture_resolution(void) const;
+        std::string firmware_version(void) const;
+        std::string driver_version(void) const;
+        std::string model_name(void) const;
+        int minimum_frame_drop(void) const;
+        int maximum_frame_drop(void) const;
+        int num_capture_inputs(void) const;
+        bool is_dma_enabled(void) const;
+    } meta;
+
+    struct status_s
+    {
+        input_color_settings_s color_settings(void) const;
+        input_video_settings_s video_settings(void) const;
+        resolution_s capture_resolution(void) const;
+        input_signal_s signal(void) const;
+        int frame_rate(void) const;
+    } status;
+};
+
+const capture_hardware_s& kc_hardware(void);
+
 captured_frame_s &kc_latest_captured_frame(void);
 
-bool kc_capturer_has_missed_frames(void);
+bool kc_has_capturer_missed_frames(void);
 
 uint kc_missed_input_frames_count(void);
 
@@ -113,37 +164,13 @@ void kc_initialize_capturer(void);
 
 void kc_release_capturer(void);
 
-bool kc_is_direct_dma_enabled(void);
-
 bool kc_adjust_capture_vertical_offset(const int delta);
 
 bool kc_adjust_capture_horizontal_offset(const int delta);
 
-u32 kc_hardware_min_frame_drop(void);
-
-u32 kc_hardware_max_frame_drop(void);
-
 bool kc_start_capture(void);
 
 u32 kc_input_channel_idx(void);
-
-bool kc_hardware_is_yuv_supported(void);
-
-bool kc_hardware_is_deinterlace_supported(void);
-
-bool kc_hardware_is_direct_dma_supported(void);
-
-bool kc_hardware_is_svideo_capture_supported(void);
-
-bool kc_hardware_is_dvi_capture_supported(void);
-
-bool kc_hardware_is_component_capture_supported(void);
-
-bool kc_hardware_is_composite_capture_supported(void);
-
-bool kc_hardware_is_vga_capture_supported(void);
-
-QString kc_capture_card_type_string(void);
 
 bool kc_pause_capture(void);
 
@@ -151,15 +178,7 @@ bool kc_resume_capture(void);
 
 bool kc_is_capture_active(void);
 
-u32 kc_hardware_num_capture_inputs(void);
-
-const resolution_s &kc_hardware_max_capture_resolution(void);
-
-const resolution_s &kc_hardware_min_capture_resolution(void);
-
 bool kc_load_aliases_(const QString filename, const bool automatic);
-
-resolution_s kc_input_resolution(void);
 
 bool kc_force_capture_input_resolution(const resolution_s r);
 
@@ -169,7 +188,7 @@ mode_params_s kc_mode_params_for_resolution(const resolution_s r);
 
 bool kc_apply_mode_parameters(const resolution_s r);
 
-void kc_apply_new_capture_resolution(resolution_s r);
+void kc_apply_new_capture_resolution(void);
 
 bool kc_is_aliased_resolution(void);
 
@@ -185,35 +204,11 @@ capture_event_e kc_get_next_capture_event(void);
 
 bool kc_set_capture_frame_dropping(const u32 drop);
 
-void kc_set_capture_video_params(const input_video_params_s p);
+void kc_set_capture_video_params(const input_video_settings_s p);
 
-void kc_set_capture_color_params(const input_color_params_s c);
-
-input_video_params_s kc_capture_video_params(void);
-
-input_video_params_s kc_capture_video_params_min_values(void);
-
-input_video_params_s kc_capture_video_params_default_values(void);
-
-input_video_params_s kc_capture_video_params_max_values(void);
-
-input_color_params_s kc_capture_color_params(void);
-
-input_color_params_s kc_capture_color_params_default_values(void);
-
-input_color_params_s kc_capture_color_params_min_values(void);
-
-input_color_params_s kc_capture_color_params_max_values(void);
+void kc_set_capture_color_params(const input_color_settings_s c);
 
 u32 kc_capture_frame_rate(void);
-
-const input_signal_s &kc_input_signal_info(void);
-
-QString kc_capture_input_signal_type_string(void);
-
-QString kc_hardware_firmware_version_string(void);
-
-QString kc_hardware_driver_version_string(void);
 
 bool kc_set_capture_input_channel(const u32 channel);
 

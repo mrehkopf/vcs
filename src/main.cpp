@@ -70,8 +70,8 @@ void kmain_change_capture_input_resolution(const resolution_s r)
 {
     std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
 
-    const resolution_s min = kc_hardware_min_capture_resolution();
-    const resolution_s max = kc_hardware_max_capture_resolution();
+    const resolution_s min = kc_hardware().meta.minimum_capture_resolution();
+    const resolution_s max = kc_hardware().meta.maximum_capture_resolution();
 
     if (kc_no_signal())
     {
@@ -184,6 +184,10 @@ int main(int argc, char *argv[])
                                        "\n\nMore information will have been printed into "
                                        "the console. If a console window was not already "
                                        "open, run VCS again from the command line.");
+    }
+    else
+    {
+        kpropagate_new_input_video_mode();
     }
 
     INFO(("Entering the main loop."));

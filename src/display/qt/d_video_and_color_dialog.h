@@ -11,8 +11,8 @@
 
 struct resolution_s;
 struct input_signal_s;
-struct input_video_params_s;
-struct input_color_params_s;
+struct input_video_settings_s;
+struct input_color_settings_s;
 
 class QGroupBox;
 class QMenuBar;
@@ -47,9 +47,9 @@ private slots:
     void broadcast_settings_change();
 
 private:
-    input_video_params_s current_video_params();
+    input_video_settings_s current_video_params();
 
-    input_color_params_s current_color_params();
+    input_color_settings_s current_color_params();
 
     void connect_spinboxes_to_their_sliders(QGroupBox *const parent);
 

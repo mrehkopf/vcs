@@ -167,7 +167,7 @@ QString OverlayDialog::parsed_overlay_string()
 
     o.replace("|inRes|", MAIN_WIN->GetString_InputResolution());
     o.replace("|outRes|", MAIN_WIN->GetString_OutputResolution());
-    o.replace("|inHz|", QString("%1").arg(kc_input_signal_info().refreshRate));
+    o.replace("|inHz|", QString("%1").arg(kc_hardware().status.signal().refreshRate));
     o.replace("|outFPS|", MAIN_WIN->GetString_OutputFrameRate());
     o.replace("|strLat|", (MAIN_WIN->GetString_DroppingFrames() == "Dropping frames")? "Dropping frames" : "");
     o.replace("|msLatP|", QString("%1").arg(kd_peak_system_latency()));

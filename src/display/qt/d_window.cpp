@@ -367,7 +367,7 @@ void MainWindow::measure_framerate()
         UPDATE_LATENCY_AVG = avgProcessTime / numFramesDrawn;
         UPDATE_LATENCY_PEAK = peakProcessTime;
 
-        kd_update_gui_output_framerate_info(fps, kc_capturer_has_missed_frames());
+        kd_update_gui_output_framerate_info(fps, kc_has_capturer_missed_frames());
         kc_reset_missed_frames_count();
 
         numFramesDrawn = 0;
@@ -487,7 +487,7 @@ void MainWindow::update_window_title()
     }
     else
     {
-        const resolution_s rin = kc_input_resolution();
+        const resolution_s rin = kc_hardware().status.capture_resolution();
         const resolution_s rout = ks_output_resolution();
         const int size = round((rout.h / (real)rin.h) * 100);
 
@@ -502,7 +502,7 @@ void MainWindow::update_window_title()
             scale = QString(" scaled to ~%1%").arg(size);
         }
 
-        if (kc_capturer_has_missed_frames())
+        if (kc_has_capturer_missed_frames())
         {
             latency = " (dropping frames)";
         }
@@ -565,10 +565,10 @@ void MainWindow::update_video_params(void)
     return;
 }
 
-void MainWindow::update_input_signal_info(const input_signal_s &s)
+void MainWindow::update_input_signal_info(void)
 {
     k_assert(controlPanel != nullptr, "");
-    controlPanel->update_input_signal_info(s);
+    controlPanel->update_input_signal_info();
 
     return;
 }

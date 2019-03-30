@@ -699,7 +699,7 @@ uint kf_current_filter_set_idx(void)
 // activate.
 const filter_set_s* kf_current_filter_set(void)
 {
-    const resolution_s inputRes = kc_input_resolution();
+    const resolution_s inputRes = kc_hardware().status.capture_resolution();
     const resolution_s outputRes = ks_output_resolution();
 
     // Find the first filter set in our list of filter sets that fits the given

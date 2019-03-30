@@ -102,7 +102,7 @@ resolution_s ks_output_resolution(void)
         return {r.w, r.h, OUTPUT_BIT_DEPTH};
     }
 
-    resolution_s inRes = kc_input_signal_info().r;
+    resolution_s inRes = kc_hardware().status.capture_resolution();
     resolution_s outRes = inRes;
 
     // Base resolution.
@@ -457,6 +457,9 @@ void ks_scale_frame(captured_frame_s &frame)
     u8 *pixelData = frame.pixels.ptr();
     resolution_s outputRes = ks_output_resolution();
 
+    const resolution_s minres = kc_hardware().meta.minimum_capture_resolution();
+    const resolution_s maxres = kc_hardware().meta.maximum_capture_resolution();
+
     // Verify that we have a workable frame.
     {
         if (kc_should_skip_next_frame())
@@ -494,18 +497,18 @@ void ks_scale_frame(captured_frame_s &frame)
                    frame.r.bpp, MAX_OUTPUT_BPP));
             goto done;
         }
-        else if (frame.r.w < kc_hardware_min_capture_resolution().w ||
-                 frame.r.h < kc_hardware_min_capture_resolution().h)
+        else if (frame.r.w < minres.w ||
+                 frame.r.h < minres.h)
         {
             NBENE(("Was asked to scale a frame with an input size (%u x %u) smaller than the minimum allowed (%u x %u). Ignoring it.",
-                   frame.r.w, frame.r.h, kc_hardware_min_capture_resolution().w, kc_hardware_min_capture_resolution().h));
+                   frame.r.w, frame.r.h, minres.w, minres.h));
             goto done;
         }
-        else if (frame.r.w > kc_hardware_max_capture_resolution().w ||
-                 frame.r.h > kc_hardware_max_capture_resolution().h)
+        else if (frame.r.w > maxres.w ||
+                 frame.r.h > maxres.h)
         {
             NBENE(("Was asked to scale a frame with an input size (%u x %u) larger than the maximum allowed (%u x %u). Ignoring it.",
-                   frame.r.w, frame.r.h, kc_hardware_max_capture_resolution().w, kc_hardware_max_capture_resolution().h));
+                   frame.r.w, frame.r.h, maxres.w, maxres.h));
             goto done;
         }
         else if (OUTPUT_BUFFER.is_null())

@@ -36,7 +36,7 @@ public:
 
     void add_gui_log_entry(const log_entry_s &e);
 
-    void update_input_signal_info(const input_signal_s &s);
+    void update_input_signal_info(void);
 
     void update_output_framerate(const uint fps, const bool hasMissedFrames);
 

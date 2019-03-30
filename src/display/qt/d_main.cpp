@@ -110,11 +110,11 @@ void kd_update_gui_video_params(void)
     return;
 }
 
-void kd_update_gui_input_signal_info(const input_signal_s &s)
+void kd_update_gui_input_signal_info(void)
 {
     if (WINDOW != nullptr)
     {
-        WINDOW->update_input_signal_info(s);
+        WINDOW->update_input_signal_info();
     }
 
     return;
