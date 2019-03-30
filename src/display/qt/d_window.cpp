@@ -366,7 +366,7 @@ void MainWindow::measure_framerate()
         UPDATE_LATENCY_AVG = avgProcessTime / numFramesDrawn;
         UPDATE_LATENCY_PEAK = peakProcessTime;
 
-        kd_update_gui_output_framerate_info(fps, kc_has_capturer_missed_frames());
+        kd_update_gui_output_framerate_info(fps, kc_are_frames_being_missed());
         kc_reset_missed_frames_count();
 
         numFramesDrawn = 0;
@@ -390,7 +390,7 @@ void MainWindow::set_keyboard_shortcuts()
     {
         QShortcut *s = new QShortcut(QKeySequence(QString("ctrl+%1").arg(QString::number(i))), this);
         s->setContext(Qt::ApplicationShortcut);
-        connect(s, &QShortcut::activated, [this, i]{this->controlPanel->activate_input_res_button(i);});
+        connect(s, &QShortcut::activated, [this, i]{this->controlPanel->activate_capture_res_button(i);});
     }
 
     // Assign alt + arrow keys to move the capture input alignment horizontally and vertically.
@@ -501,7 +501,7 @@ void MainWindow::update_window_title()
             scale = QString(" scaled to ~%1%").arg(size);
         }
 
-        if (kc_has_capturer_missed_frames())
+        if (kc_are_frames_being_missed())
         {
             latency = " (dropping frames)";
         }
@@ -519,20 +519,20 @@ void MainWindow::update_window_title()
     return;
 }
 
-void MainWindow::set_input_info_as_no_signal()
+void MainWindow::set_capture_info_as_no_signal()
 {
     update_window_title();
 
     k_assert(controlPanel != nullptr, "");
-    controlPanel->set_input_info_as_no_signal();
+    controlPanel->set_capture_info_as_no_signal();
 
     return;
 }
 
-void MainWindow::set_input_info_as_receiving_signal()
+void MainWindow::set_capture_info_as_receiving_signal()
 {
     k_assert(controlPanel != nullptr, "");
-    controlPanel->set_input_info_as_receiving_signal();
+    controlPanel->set_capture_info_as_receiving_signal();
 
     return;
 }
@@ -564,10 +564,10 @@ void MainWindow::update_video_params(void)
     return;
 }
 
-void MainWindow::update_input_signal_info(void)
+void MainWindow::update_capture_signal_info(void)
 {
     k_assert(controlPanel != nullptr, "");
-    controlPanel->update_input_signal_info();
+    controlPanel->update_capture_signal_info();
 
     return;
 }

@@ -41,14 +41,14 @@ static u32 CAPTURE_COLOR_DEPTH = 32;
 static std::atomic<unsigned int> CNT_FRAMES_PROCESSED(0);
 static std::atomic<unsigned int> CNT_FRAMES_CAPTURED(0);
 
-// The number of frames the capture card has sent which VCS was too busy to
+// The number of frames the capture hardware has sent which VCS was too busy to
 // receive and had to skip. Call kc_reset_missed_frames_count() to reset it.
 static std::atomic<unsigned int> CNT_FRAMES_SKIPPED(0);
 
-// Whether the capture card is receiving a signal from its input.
+// Whether the capture hardware is receiving a signal from its input.
 static std::atomic<bool> RECEIVING_A_SIGNAL(true);
 
-// Will be set to true by the capture card callback if the card experiences an
+// Will be set to true by the capture hardware callback if the card experiences an
 // unrecoverable error.
 static bool UNRECOVERABLE_CAPTURE_ERROR = false;
 
@@ -59,17 +59,17 @@ static std::atomic<bool> SIGNAL_IS_INVALID(false);
 // events processor has acknowledged the loss of signal.
 static bool SIGNAL_WAS_LOST = false;
 
-// Set to true if the capture card reports the current signal as invalid. Will be
+// Set to true if the capture hardware reports the current signal as invalid. Will be
 // automatically set back to false once the events processor has acknowledged the
 // invalidity of the signal.
 static bool SIGNAL_BECAME_INVALID = false;
 
-// Frames sent by the capture card will be stored here. Note that only one frame
-// will fit at a time - if the capture card sends in a new frame before the
+// Frames sent by the capture hardware will be stored here. Note that only one frame
+// will fit at a time - if the capture hardware sends in a new frame before the
 // previous one has been processed, the new frame will be ignored.
 static captured_frame_s FRAME_BUFFER;
 
-// Set to true if the capture card's input mode changes.
+// Set to true if the capture hardware's input mode changes.
 static bool RECEIVED_NEW_VIDEO_MODE = false;
 
 // The maximum image depth that the capturer can handle.
@@ -88,11 +88,54 @@ static bool CAPTURE_IS_ACTIVE = false;
 static bool INPUT_CHANNEL_IS_INVALID = 0;
 
 // Aliases are resolutions that stand in for others; i.e. if 640 x 480 is an alias
-// for 1024 x 768, VCS will ask the capture card to switch to 640 x 480 every time
+// for 1024 x 768, VCS will ask the capture hardware to switch to 640 x 480 every time
 // the card sets 1024 x 768.
 static std::vector<mode_alias_s> ALIASES;
 
+// Functions dealing with user-immutable aspects of the capture hardware. These
+// will be made available for the entire codebase to use.
 static capture_hardware_s CAPTURE_HARDWARE;
+
+// Functions to do with managing the operation of the capture hardware. These
+// will remain private to this unit.
+static struct capture_interface_s
+{
+    bool initialize_hardware(void);
+    bool release_hardware(void);
+    bool start_capture(void);
+    bool stop_capture(void);
+    bool pause_capture(void);
+    bool resume_capture(void);
+    bool set_capture_resolution(const resolution_s &r);
+} CAPTURE_INTERFACE;
+
+// Callback functions for the RGBEasy API, through which the API communicates
+// with VCS.
+static struct api_callbacks_s
+{
+#if !USE_RGBEASY_API
+    void frame_captured(void){}
+    void video_mode_changed(void){}
+    void invalid_signal(void){}
+    void no_signal(void){}
+    void error(void){}
+#else
+    // Called by the capture hardware when a new frame has been captured. The
+    // captured RGBA data is in frameData.
+    void RGBCBKAPI frame_captured(HWND, HRGB, LPBITMAPINFOHEADER frameInfo, void *frameData, ULONG_PTR);
+
+    // Called by the capture hardware when the input video mode changes.
+    void RGBCBKAPI video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO info, ULONG_PTR);
+
+    // Called by the capture hardware when it's given a signal it can't handle.
+    void RGBCBKAPI invalid_signal(HWND, HRGB, unsigned long horClock, unsigned long verClock, ULONG_PTR captureHandle);
+
+    // Called by the capture hardware when no input signal is present.
+    void RGBCBKAPI no_signal(HWND, HRGB, ULONG_PTR captureHandle);
+
+    void RGBCBKAPI error(HWND, HRGB, unsigned long error, ULONG_PTR, unsigned long*);
+#endif
+} API_CALLBACKS;
 
 // Returns true if the given RGBEase API call return value indicates an error.
 bool apicall_succeeds(long callReturnValue)
@@ -140,146 +183,15 @@ void update_known_mode_params(const resolution_s r,
     return;
 }
 
-namespace rgbeasy_callbacks_n
-{
-#if !USE_RGBEASY_API
-    void frame_captured(void){}
-    void video_mode_changed(void){}
-    void invalid_signal(void){}
-    void no_signal(void){}
-    void error(void){}
-#else
-    // Called by the capture card when a new frame has been captured. The
-    // captured RGBA data is in frameData.
-    //
-    void RGBCBKAPI frame_captured(HWND, HRGB, LPBITMAPINFOHEADER frameInfo, void *frameData, ULONG_PTR)
-    {
-        if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
-        {
-            //ERRORI(("The capture card sent in a frame before VCS had finished processing "
-            //        "the previous one. Skipping this new one. (Captured: %u, processed: %u.)",
-            //        CNT_FRAMES_CAPTURED.load(), CNT_FRAMES_PROCESSED.load()));
-            CNT_FRAMES_SKIPPED++;
-            return;
-        }
-
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        // Ignore new callback events if the user has signaled to quit the program.
-        if (PROGRAM_EXIT_REQUESTED)
-        {
-            goto done;
-        }
-
-        // This could happen e.g. if direct DMA transfer is enabled.
-        if (frameData == nullptr ||
-            frameInfo == nullptr)
-        {
-            goto done;
-        }
-
-        if (FRAME_BUFFER.pixels.is_null())
-        {
-            //ERRORI(("The capture card sent in a frame but the frame buffer was uninitialized. "
-            //        "Ignoring the frame."));
-            goto done;
-        }
-
-        if (frameInfo->biBitCount > MAX_BIT_DEPTH)
-        {
-            //ERRORI(("The capture card sent in a frame that had an illegal bit depth (%u). "
-            //        "The maximum allowed bit depth is %u.", frameInfo->biBitCount, MAX_BIT_DEPTH));
-            goto done;
-        }
-
-        FRAME_BUFFER.r.w = frameInfo->biWidth;
-        FRAME_BUFFER.r.h = abs(frameInfo->biHeight);
-        FRAME_BUFFER.r.bpp = frameInfo->biBitCount;
-
-        // Copy the frame's data into our local buffer so we can work on it.
-        memcpy(FRAME_BUFFER.pixels.ptr(), (u8*)frameData,
-               FRAME_BUFFER.pixels.up_to(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8)));
-
-        done:
-        CNT_FRAMES_CAPTURED++;
-        return;
-    }
-
-    // Called by the capture card when the input video mode changes.
-    //
-    void RGBCBKAPI video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO info, ULONG_PTR)
-    {
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        // Ignore new callback events if the user has signaled to quit the program.
-        if (PROGRAM_EXIT_REQUESTED)
-        {
-            goto done;
-        }
-
-        SIGNAL_WOKE_UP = !RECEIVING_A_SIGNAL;
-        RECEIVED_NEW_VIDEO_MODE = true;
-        SIGNAL_IS_INVALID = false;
-
-        done:
-        return;
-    }
-
-    // Called by the capture card when it's given a signal it can't handle.
-    //
-    void RGBCBKAPI invalid_signal(HWND, HRGB, unsigned long horClock, unsigned long verClock, ULONG_PTR captureHandle)
-    {
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        // Ignore new callback events if the user has signaled to quit the program.
-        if (PROGRAM_EXIT_REQUESTED)
-        {
-            goto done;
-        }
-
-        // Let the card apply its own no signal handler as well, just in case.
-        RGBInvalidSignal(captureHandle, horClock, verClock);
-
-        SIGNAL_IS_INVALID = true;
-
-        done:
-        return;
-    }
-
-    // Called by the capture card when no input signal is present.
-    //
-    void RGBCBKAPI no_signal(HWND, HRGB, ULONG_PTR captureHandle)
-    {
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        // Let the card apply its own no signal handler as well, just in case.
-        RGBNoSignal(captureHandle);
-
-        SIGNAL_WAS_LOST = true;
-
-        return;
-    }
-
-    void RGBCBKAPI error(HWND, HRGB, unsigned long error, ULONG_PTR, unsigned long*)
-    {
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        UNRECOVERABLE_CAPTURE_ERROR = true;
-
-        return;
-    }
-#endif
-}
-
-// Returns true if the capture card has been offering frames while the previous
+// Returns true if the capture hardware has been offering frames while the previous
 // frame was still being processed for display.
 //
-bool kc_has_capturer_missed_frames(void)
+bool kc_are_frames_being_missed(void)
 {
     return bool(CNT_FRAMES_SKIPPED > 0);
 }
 
-uint kc_missed_input_frames_count(void)
+uint kc_num_missed_frames(void)
 {
     return CNT_FRAMES_SKIPPED;
 }
@@ -319,9 +231,9 @@ captured_frame_s& kc_latest_captured_frame(void)
     return FRAME_BUFFER;
 }
 
-void kc_initialize_capturer(void)
+void kc_initialize_capture(void)
 {
-    INFO(("Initializing the capturer."));
+    INFO(("Initializing capture."));
 
     FRAME_BUFFER.pixels.alloc(MAX_FRAME_SIZE);
 
@@ -332,10 +244,10 @@ void kc_initialize_capturer(void)
         goto done;
     #endif
 
-    // Open an input on the capture card, and have it start sending in frames.
+    // Open an input on the capture hardware, and have it start sending in frames.
     {
-        if (!kc_initialize_capture_card() ||
-            !kc_start_capture())
+        if (!CAPTURE_INTERFACE.initialize_hardware() ||
+            !CAPTURE_INTERFACE.start_capture())
         {
             NBENE(("Failed to initialize capture."));
 
@@ -362,7 +274,7 @@ void kc_initialize_capturer(void)
     }
 
     done:
-    kpropagate_new_input_video_mode();
+    kpropagate_news_of_new_capture_video_mode();
     return;
 }
 
@@ -407,57 +319,7 @@ bool kc_adjust_capture_horizontal_offset(const int delta)
     return true;
 }
 
-static bool shutdown_capture(void)
-{
-    if (!RGBEASY_IS_LOADED) return true;
-
-    if (!apicall_succeeds(RGBCloseInput(CAPTURE_HANDLE)) ||
-        !apicall_succeeds(RGBFree(RGBAPI_HANDLE)))
-    {
-        return false;
-    }
-
-    RGBEASY_IS_LOADED = false;
-    return true;
-}
-
-bool stop_capture(void)
-{
-    INFO(("Stopping capture on input channel %d.", (INPUT_CHANNEL_IDX + 1)));
-
-    if (CAPTURE_IS_ACTIVE)
-    {
-        if (!apicall_succeeds(RGBStopCapture(CAPTURE_HANDLE)))
-        {
-            NBENE(("Failed to stop capture on input channel %d.", (INPUT_CHANNEL_IDX + 1)));
-            goto fail;
-        }
-
-        CAPTURE_IS_ACTIVE = false;
-    }
-    else
-    {
-        CAPTURE_IS_ACTIVE = false;
-
-#ifdef USE_RGBEASY_API
-        DEBUG(("Was asked to stop the capture even though it hadn't been started. Ignoring this request."));
-#endif
-    }
-
-    INFO(("Restoring default callback handlers."));
-    RGBSetFrameCapturedFn(CAPTURE_HANDLE, NULL, 0);
-    RGBSetModeChangedFn(CAPTURE_HANDLE, NULL, 0);
-    RGBSetInvalidSignalFn(CAPTURE_HANDLE, NULL, 0);
-    RGBSetNoSignalFn(CAPTURE_HANDLE, NULL, 0);
-    RGBSetErrorFn(CAPTURE_HANDLE, NULL, 0);
-
-    return true;
-
-    fail:
-    return false;
-}
-
-void kc_release_capturer(void)
+void kc_release_capture(void)
 {
     INFO(("Releasing the capturer."));
 
@@ -469,14 +331,14 @@ void kc_release_capturer(void)
         return;
     }
 
-    if (stop_capture() &&
-        shutdown_capture())
+    if (CAPTURE_INTERFACE.stop_capture() &&
+        CAPTURE_INTERFACE.release_hardware())
     {
-        INFO(("The capture card has been released."));
+        INFO(("The capture hardware has been released."));
     }
     else
     {
-        NBENE(("Failed to release the capture card."));
+        NBENE(("Failed to release the capture hardware."));
     }
 
     FRAME_BUFFER.pixels.release_memory();
@@ -484,41 +346,9 @@ void kc_release_capturer(void)
     return;
 }
 
-u32 kc_input_channel_idx(void)
+uint kc_current_capture_input_channel_idx(void)
 {
-    return (u32)INPUT_CHANNEL_IDX;
-}
-
-bool kc_start_capture(void)
-{
-    INFO(("Starting capture on input channel %d.", (INPUT_CHANNEL_IDX + 1)));
-
-    if (RGBStartCapture(CAPTURE_HANDLE) != RGBERROR_NO_ERROR)
-    {
-        NBENE(("Failed to start capture on input channel %u.", (INPUT_CHANNEL_IDX + 1)));
-        goto fail;
-    }
-    else
-    {
-        CAPTURE_IS_ACTIVE = true;
-    }
-
-    return true;
-
-    fail:
-    return false;
-}
-
-bool kc_pause_capture(void)
-{
-    INFO(("Pausing the capture."));
-    return apicall_succeeds(RGBPauseCapture(CAPTURE_HANDLE));
-}
-
-bool kc_resume_capture(void)
-{
-    INFO(("Resuming the capture."));
-    return apicall_succeeds(RGBResumeCapture(CAPTURE_HANDLE));
+    return INPUT_CHANNEL_IDX;
 }
 
 bool kc_is_capture_active(void)
@@ -526,54 +356,12 @@ bool kc_is_capture_active(void)
     return CAPTURE_IS_ACTIVE;
 }
 
-bool kc_force_capture_input_resolution(const resolution_s r)
+bool kc_force_capture_resolution(const resolution_s r)
 {
-    unsigned long wd = 0, hd = 0;
-
-    const auto currentInputRes = kc_hardware().status.capture_resolution();
-    if (r.w == currentInputRes.w &&
-        r.h == currentInputRes.h)
-    {
-        DEBUG(("Was asked to force a capture resolution that had already been set. Ignoring the request."));
-        goto fail;
-    }
-
-    // Test whether the capture card can handle the given resolution.
-    if (!apicall_succeeds(RGBTestCaptureWidth(CAPTURE_HANDLE, r.w)))
-    {
-        NBENE(("Failed to force the new input resolution (%u x %u). The capture card says the width "
-               "is illegal.", r.w, r.h));
-        goto fail;
-    }
-
-    // Set the new resolution.
-    if (!apicall_succeeds(RGBSetCaptureWidth(CAPTURE_HANDLE, (unsigned long)r.w)) ||
-        !apicall_succeeds(RGBSetCaptureHeight(CAPTURE_HANDLE, (unsigned long)r.h)) ||
-        !apicall_succeeds(RGBSetOutputSize(CAPTURE_HANDLE, (unsigned long)r.w, (unsigned long)r.h)))
-    {
-        NBENE(("The capture card could not properly initialize the new input resolution (%u x %u).",
-                r.w, r.h));
-        goto fail;
-    }
-
-    /// Temp hack.
-    RGBGetOutputSize(CAPTURE_HANDLE, &wd, &hd);
-    if (wd != r.w ||
-        hd != r.h)
-    {
-        NBENE(("The capture card failed to set the desired resolution."));
-        goto fail;
-    }
-
-    SKIP_NEXT_NUM_FRAMES += 2;  // Avoid garbage on screen while the mode changes.
-
-    return true;
-
-    fail:
-    return false;
+    return CAPTURE_INTERFACE.set_capture_resolution(r);
 }
 
-int kc_alias_resolution_index(const resolution_s r)
+int kc_index_of_alias_resolution(const resolution_s r)
 {
     for (size_t i = 0; i < ALIASES.size(); i++)
     {
@@ -642,14 +430,14 @@ bool kc_is_aliased_resolution(void)
 resolution_s aliased(const resolution_s &r)
 {
     resolution_s newRes = r;
-    const int aliasIdx = kc_alias_resolution_index(r);
+    const int aliasIdx = kc_index_of_alias_resolution(r);
 
     if (aliasIdx >= 0)
     {
         newRes = ALIASES[aliasIdx].to;
 
         // Try to switch to the alias resolution.
-        if (!kc_force_capture_input_resolution(r))
+        if (!kc_force_capture_resolution(r))
         {
             NBENE(("Failed to apply an alias."));
 
@@ -867,58 +655,6 @@ bool kc_set_output_bit_depth(const u32 bpp)
     return false;
 }
 
-bool kc_initialize_capture_card(void)
-{
-    INFO(("Initializing the capture card."));
-
-    if (INPUT_CHANNEL_IDX >= MAX_INPUT_CHANNELS)
-    {
-        NBENE(("The requested input channel %u is out of bounds.", INPUT_CHANNEL_IDX));
-
-        INPUT_CHANNEL_IS_INVALID = true;
-
-        goto fail;
-    }
-
-    if (!apicall_succeeds(RGBLoad(&RGBAPI_HANDLE)))
-    {
-        goto fail;
-    }
-    else
-    {
-        RGBEASY_IS_LOADED = true;
-    }
-
-    if (!apicall_succeeds(RGBOpenInput(INPUT_CHANNEL_IDX, &CAPTURE_HANDLE)) ||
-        !apicall_succeeds(RGBSetFrameDropping(CAPTURE_HANDLE, FRAME_SKIP)) ||
-        !apicall_succeeds(RGBSetDMADirect(CAPTURE_HANDLE, FALSE)) ||
-        !apicall_succeeds(RGBSetPixelFormat(CAPTURE_HANDLE, CAPTURE_PIXEL_FORMAT)) ||
-        !apicall_succeeds(RGBUseOutputBuffers(CAPTURE_HANDLE, FALSE)) ||
-        !apicall_succeeds(RGBSetFrameCapturedFn(CAPTURE_HANDLE, rgbeasy_callbacks_n::frame_captured, 0)) ||
-        !apicall_succeeds(RGBSetModeChangedFn(CAPTURE_HANDLE, rgbeasy_callbacks_n::video_mode_changed, 0)) ||
-        !apicall_succeeds(RGBSetInvalidSignalFn(CAPTURE_HANDLE, rgbeasy_callbacks_n::invalid_signal, (ULONG_PTR)&CAPTURE_HANDLE)) ||
-        !apicall_succeeds(RGBSetErrorFn(CAPTURE_HANDLE, rgbeasy_callbacks_n::error, (ULONG_PTR)&CAPTURE_HANDLE)) ||
-        !apicall_succeeds(RGBSetNoSignalFn(CAPTURE_HANDLE, rgbeasy_callbacks_n::no_signal, (ULONG_PTR)&CAPTURE_HANDLE)))
-    {
-        NBENE(("Failed to initialize the capture card."));
-        goto fail;
-    }
-
-    /// Temp hack. We've only allocated enough room in the input frame buffer to
-    /// hold at most the maximum output size.
-    {
-        const resolution_s maxCaptureRes = kc_hardware().meta.maximum_capture_resolution();
-        k_assert((maxCaptureRes.w <= MAX_OUTPUT_WIDTH &&
-                  maxCaptureRes.h <= MAX_OUTPUT_HEIGHT),
-                 "The capture device is not compatible with this version of VCS.");
-    }
-
-    return true;
-
-    fail:
-    return false;
-}
-
 // Lets the gui know which aliases we've got loaded.
 void kc_broadcast_aliases_to_gui(void)
 {
@@ -947,7 +683,7 @@ void kc_update_alias_resolutions(const std::vector<mode_alias_s> &aliases)
             if (alias.from.w == currentRes.w &&
                 alias.from.h == currentRes.h)
             {
-                kpropagate_forced_input_resolution(alias.to);
+                kpropagate_forced_capture_resolution(alias.to);
                 break;
             }
         }
@@ -1052,7 +788,7 @@ bool kc_load_aliases(const QString filename, const bool automaticCall)
         // Signal a new input mode to force the program to re-evaluate the mode
         // parameters, in case one of the newly-loaded aliases applies to the
         // current mode.
-        kpropagate_new_input_video_mode();
+        kpropagate_news_of_new_capture_video_mode();
     }
 
     return true;
@@ -1236,7 +972,7 @@ bool kc_load_mode_params(const QString filename, const bool automaticCall)
 
     // Update the GUI with information related to the new mode params.
     kc_broadcast_mode_params_to_gui();
-    kpropagate_new_input_video_mode();  // In case the mode params changed for the current mode, re-initialize it.
+    kpropagate_news_of_new_capture_video_mode();  // In case the mode params changed for the current mode, re-initialize it.
     kd_signal_new_mode_settings_source_file(filename);
 
     INFO(("Loaded %u set(s) of mode params from disk.", KNOWN_MODES.size()));
@@ -1616,7 +1352,7 @@ resolution_s capture_hardware_s::status_s::capture_resolution() const
     if (!apicall_succeeds(RGBGetCaptureWidth(CAPTURE_HANDLE, &r.w)) ||
         !apicall_succeeds(RGBGetCaptureHeight(CAPTURE_HANDLE, &r.h)))
     {
-        k_assert(0, "The capture card failed to report its input resolution.");
+        k_assert(0, "The capture hardware failed to report its input resolution.");
     }
 #else
     r.w = 640;
@@ -1663,7 +1399,7 @@ input_video_settings_s capture_hardware_s::status_s::video_settings() const
     return p;
 }
 
-input_signal_s capture_hardware_s::status_s::signal() const
+capture_signal_s capture_hardware_s::status_s::signal() const
 {
     if (kc_no_signal())
     {
@@ -1671,7 +1407,7 @@ input_signal_s capture_hardware_s::status_s::signal() const
         return {0};
     }
 
-    input_signal_s s = {0};
+    capture_signal_s s = {0};
 
 #if !USE_RGBEASY_API
     s.r.w = 640;
@@ -1708,3 +1444,296 @@ int capture_hardware_s::status_s::frame_rate() const
     if (!apicall_succeeds(RGBGetFrameRate(CAPTURE_HANDLE, &rate))) return -1;
     return rate;
 }
+
+bool capture_interface_s::initialize_hardware()
+{
+    INFO(("Initializing the capture hardware."));
+
+    if (INPUT_CHANNEL_IDX >= MAX_INPUT_CHANNELS)
+    {
+        NBENE(("The requested input channel %u is out of bounds.", INPUT_CHANNEL_IDX));
+        INPUT_CHANNEL_IS_INVALID = true;
+        goto fail;
+    }
+
+    if (!apicall_succeeds(RGBLoad(&RGBAPI_HANDLE)))
+    {
+        goto fail;
+    }
+    else RGBEASY_IS_LOADED = true;
+
+    if (!apicall_succeeds(RGBOpenInput(INPUT_CHANNEL_IDX, &CAPTURE_HANDLE)) ||
+        !apicall_succeeds(RGBSetFrameDropping(CAPTURE_HANDLE, FRAME_SKIP)) ||
+        !apicall_succeeds(RGBSetDMADirect(CAPTURE_HANDLE, FALSE)) ||
+        !apicall_succeeds(RGBSetPixelFormat(CAPTURE_HANDLE, CAPTURE_PIXEL_FORMAT)) ||
+        !apicall_succeeds(RGBUseOutputBuffers(CAPTURE_HANDLE, FALSE)) ||
+        !apicall_succeeds(RGBSetFrameCapturedFn(CAPTURE_HANDLE, API_CALLBACKS.frame_captured, 0)) ||
+        !apicall_succeeds(RGBSetModeChangedFn(CAPTURE_HANDLE, API_CALLBACKS.video_mode_changed, 0)) ||
+        !apicall_succeeds(RGBSetInvalidSignalFn(CAPTURE_HANDLE, API_CALLBACKS.invalid_signal, (ULONG_PTR)&CAPTURE_HANDLE)) ||
+        !apicall_succeeds(RGBSetErrorFn(CAPTURE_HANDLE, API_CALLBACKS.error, (ULONG_PTR)&CAPTURE_HANDLE)) ||
+        !apicall_succeeds(RGBSetNoSignalFn(CAPTURE_HANDLE, API_CALLBACKS.no_signal, (ULONG_PTR)&CAPTURE_HANDLE)))
+    {
+        NBENE(("Failed to initialize the capture hardware."));
+        goto fail;
+    }
+
+    /// Temp hack. We've only allocated enough room in the input frame buffer to
+    /// hold at most the maximum output size.
+    {
+        const resolution_s maxCaptureRes = CAPTURE_HARDWARE.meta.maximum_capture_resolution();
+        k_assert((maxCaptureRes.w <= MAX_OUTPUT_WIDTH &&
+                  maxCaptureRes.h <= MAX_OUTPUT_HEIGHT),
+                 "The capture hardware is not compatible with this version of VCS.");
+    }
+
+    return true;
+
+fail:
+    return false;
+}
+
+bool capture_interface_s::release_hardware()
+{
+    if (!RGBEASY_IS_LOADED) return true;
+
+    if (!apicall_succeeds(RGBCloseInput(CAPTURE_HANDLE)) ||
+            !apicall_succeeds(RGBFree(CAPTURE_HANDLE)))
+    {
+        return false;
+    }
+
+    RGBEASY_IS_LOADED = false;
+    return true;
+}
+
+bool capture_interface_s::start_capture()
+{
+    INFO(("Starting capture on input channel %d.", (INPUT_CHANNEL_IDX + 1)));
+
+    if (RGBStartCapture(CAPTURE_HANDLE) != RGBERROR_NO_ERROR)
+    {
+        NBENE(("Failed to start capture on input channel %u.", (INPUT_CHANNEL_IDX + 1)));
+        goto fail;
+    }
+    else
+    {
+        CAPTURE_IS_ACTIVE = true;
+    }
+
+    return true;
+
+fail:
+    return false;
+}
+
+bool capture_interface_s::stop_capture()
+{
+    INFO(("Stopping capture on input channel %d.", (INPUT_CHANNEL_IDX + 1)));
+
+    if (CAPTURE_IS_ACTIVE)
+    {
+        if (!apicall_succeeds(RGBStopCapture(CAPTURE_HANDLE)))
+        {
+            NBENE(("Failed to stop capture on input channel %d.", (INPUT_CHANNEL_IDX + 1)));
+            goto fail;
+        }
+
+        CAPTURE_IS_ACTIVE = false;
+    }
+    else
+    {
+        CAPTURE_IS_ACTIVE = false;
+
+        DEBUG(("Was asked to stop the capture even though it hadn't been started. Ignoring this request."));
+    }
+
+    INFO(("Restoring default callback handlers."));
+    RGBSetFrameCapturedFn(CAPTURE_HANDLE, NULL, 0);
+    RGBSetModeChangedFn(CAPTURE_HANDLE, NULL, 0);
+    RGBSetInvalidSignalFn(CAPTURE_HANDLE, NULL, 0);
+    RGBSetNoSignalFn(CAPTURE_HANDLE, NULL, 0);
+    RGBSetErrorFn(CAPTURE_HANDLE, NULL, 0);
+
+    return true;
+
+fail:
+    return false;
+}
+
+bool capture_interface_s::pause_capture()
+{
+    INFO(("Pausing the capture."));
+    return apicall_succeeds(RGBPauseCapture(CAPTURE_HANDLE));
+}
+
+bool capture_interface_s::resume_capture()
+{
+    INFO(("Resuming the capture."));
+    return apicall_succeeds(RGBResumeCapture(CAPTURE_HANDLE));
+}
+
+bool capture_interface_s::set_capture_resolution(const resolution_s &r)
+{
+    if (!CAPTURE_IS_ACTIVE)
+    {
+        INFO(("Was asked to set the capture resolution while capture was inactive. Ignoring this request."));
+        return false;
+    }
+
+    unsigned long wd = 0, hd = 0;
+
+    const auto currentInputRes = kc_hardware().status.capture_resolution();
+    if (r.w == currentInputRes.w &&
+        r.h == currentInputRes.h)
+    {
+        DEBUG(("Was asked to force a capture resolution that had already been set. Ignoring the request."));
+        goto fail;
+    }
+
+    // Test whether the capture hardware can handle the given resolution.
+    if (!apicall_succeeds(RGBTestCaptureWidth(CAPTURE_HANDLE, r.w)))
+    {
+        NBENE(("Failed to force the new input resolution (%u x %u). The capture hardware says the width "
+               "is illegal.", r.w, r.h));
+        goto fail;
+    }
+
+    // Set the new resolution.
+    if (!apicall_succeeds(RGBSetCaptureWidth(CAPTURE_HANDLE, (unsigned long)r.w)) ||
+        !apicall_succeeds(RGBSetCaptureHeight(CAPTURE_HANDLE, (unsigned long)r.h)) ||
+        !apicall_succeeds(RGBSetOutputSize(CAPTURE_HANDLE, (unsigned long)r.w, (unsigned long)r.h)))
+    {
+        NBENE(("The capture hardware could not properly initialize the new input resolution (%u x %u).",
+                r.w, r.h));
+        goto fail;
+    }
+
+    /// Temp hack.
+    RGBGetOutputSize(CAPTURE_HANDLE, &wd, &hd);
+    if (wd != r.w ||
+        hd != r.h)
+    {
+        NBENE(("The capture hardware failed to set the desired resolution."));
+        goto fail;
+    }
+
+    SKIP_NEXT_NUM_FRAMES += 2;  // Avoid garbage on screen while the mode changes.
+
+    return true;
+
+    fail:
+    return false;
+}
+
+#if USE_RGBEASY_API
+    void RGBCBKAPI api_callbacks_s::frame_captured(HWND, void *, LPBITMAPINFOHEADER frameInfo, void *frameData, unsigned long *)
+    {
+        if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
+        {
+            //ERRORI(("The capture hardware sent in a frame before VCS had finished processing "
+            //        "the previous one. Skipping this new one. (Captured: %u, processed: %u.)",
+            //        CNT_FRAMES_CAPTURED.load(), CNT_FRAMES_PROCESSED.load()));
+            CNT_FRAMES_SKIPPED++;
+            return;
+        }
+
+        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
+
+        // Ignore new callback events if the user has signaled to quit the program.
+        if (PROGRAM_EXIT_REQUESTED)
+        {
+            goto done;
+        }
+
+        // This could happen e.g. if direct DMA transfer is enabled.
+        if (frameData == nullptr ||
+                frameInfo == nullptr)
+        {
+            goto done;
+        }
+
+        if (FRAME_BUFFER.pixels.is_null())
+        {
+            //ERRORI(("The capture hardware sent in a frame but the frame buffer was uninitialized. "
+            //        "Ignoring the frame."));
+            goto done;
+        }
+
+        if (frameInfo->biBitCount > MAX_BIT_DEPTH)
+        {
+            //ERRORI(("The capture hardware sent in a frame that had an illegal bit depth (%u). "
+            //        "The maximum allowed bit depth is %u.", frameInfo->biBitCount, MAX_BIT_DEPTH));
+            goto done;
+        }
+
+        FRAME_BUFFER.r.w = frameInfo->biWidth;
+        FRAME_BUFFER.r.h = abs(frameInfo->biHeight);
+        FRAME_BUFFER.r.bpp = frameInfo->biBitCount;
+
+        // Copy the frame's data into our local buffer so we can work on it.
+        memcpy(FRAME_BUFFER.pixels.ptr(), (u8*)frameData,
+               FRAME_BUFFER.pixels.up_to(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8)));
+
+    done:
+        CNT_FRAMES_CAPTURED++;
+        return;
+    }
+
+    void RGBCBKAPI api_callbacks_s::video_mode_changed(HWND, void *, PRGBMODECHANGEDINFO info, unsigned long *)
+    {
+        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
+
+        // Ignore new callback events if the user has signaled to quit the program.
+        if (PROGRAM_EXIT_REQUESTED)
+        {
+            goto done;
+        }
+
+        SIGNAL_WOKE_UP = !RECEIVING_A_SIGNAL;
+        RECEIVED_NEW_VIDEO_MODE = true;
+        SIGNAL_IS_INVALID = false;
+
+    done:
+        return;
+    }
+
+    void RGBCBKAPI api_callbacks_s::invalid_signal(HWND, void *, unsigned long horClock, unsigned long verClock, unsigned long *captureHandle)
+    {
+        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
+
+        // Ignore new callback events if the user has signaled to quit the program.
+        if (PROGRAM_EXIT_REQUESTED)
+        {
+            goto done;
+        }
+
+        // Let the card apply its own no signal handler as well, just in case.
+        RGBInvalidSignal(captureHandle, horClock, verClock);
+
+        SIGNAL_IS_INVALID = true;
+
+    done:
+        return;
+    }
+
+    void RGBCBKAPI api_callbacks_s::no_signal(HWND, void *, unsigned long *captureHandle)
+    {
+        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
+
+        // Let the card apply its own no signal handler as well, just in case.
+        RGBNoSignal(captureHandle);
+
+        SIGNAL_WAS_LOST = true;
+
+        return;
+    }
+
+    void RGBCBKAPI api_callbacks_s::error(HWND, void *, unsigned long error, unsigned long *, unsigned long *)
+    {
+        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
+
+        UNRECOVERABLE_CAPTURE_ERROR = true;
+
+        return;
+    }
+#endif

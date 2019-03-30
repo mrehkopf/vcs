@@ -110,28 +110,25 @@ void kd_update_gui_video_params(void)
     return;
 }
 
-void kd_update_gui_input_signal_info(void)
+void kd_update_gui_capture_signal_info(void)
 {
     if (WINDOW != nullptr)
     {
-        WINDOW->update_input_signal_info();
+        WINDOW->update_capture_signal_info();
     }
 
     return;
 }
 
-void kd_mark_gui_input_no_signal(const bool state)
+void kd_notify_gui_of_capture_signal_change(const bool receivingSignal)
 {
     if (WINDOW != nullptr)
     {
-        if (state == true)
+        if (receivingSignal)
         {
-            WINDOW->set_input_info_as_no_signal();
+            WINDOW->set_capture_info_as_no_signal();
         }
-        else
-        {
-            WINDOW->set_input_info_as_receiving_signal();
-        }
+        else WINDOW->set_capture_info_as_receiving_signal();
     }
 
     return;

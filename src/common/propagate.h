@@ -3,20 +3,20 @@
 
 struct resolution_s;
 
-void kpropagate_new_input_video_mode(void);
+void kpropagate_news_of_new_capture_video_mode(void);
 
-void kpropagate_invalid_input_signal(void);
+void kpropagate_news_of_invalid_capture_signal(void);
 
-void kpropagate_lost_input_signal(void);
+void kpropagate_news_of_lost_capture_signal(void);
 
-void kpropagate_gained_input_signal(void);
+void kpropagate_news_of_gained_capture_signal(void);
 
-void kpropagate_new_captured_frame(void);
+void kpropagate_news_of_new_captured_frame(void);
 
 void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int verticalDelta);
 
-void kpropagate_unrecoverable_error(void);
+void kpropagate_news_of_unrecoverable_error(void);
 
-void kpropagate_forced_input_resolution(const resolution_s &r);
+void kpropagate_forced_capture_resolution(const resolution_s &r);
 
 #endif

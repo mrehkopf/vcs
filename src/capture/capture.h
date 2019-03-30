@@ -51,7 +51,7 @@ struct captured_frame_s
     }
 };
 
-struct input_signal_s
+struct capture_signal_s
 {
     resolution_s r;
     int refreshRate;
@@ -143,7 +143,7 @@ struct capture_hardware_s
         input_color_settings_s color_settings(void) const;
         input_video_settings_s video_settings(void) const;
         resolution_s capture_resolution(void) const;
-        input_signal_s signal(void) const;
+        capture_signal_s signal(void) const;
         int frame_rate(void) const;
     } status;
 };
@@ -152,25 +152,23 @@ const capture_hardware_s& kc_hardware(void);
 
 captured_frame_s &kc_latest_captured_frame(void);
 
-bool kc_has_capturer_missed_frames(void);
+bool kc_are_frames_being_missed(void);
 
-uint kc_missed_input_frames_count(void);
+uint kc_num_missed_frames(void);
 
 void kc_insert_test_image(void);
 
 void kc_reset_missed_frames_count(void);
 
-void kc_initialize_capturer(void);
+void kc_initialize_capture(void);
 
-void kc_release_capturer(void);
+void kc_release_capture(void);
 
 bool kc_adjust_capture_vertical_offset(const int delta);
 
 bool kc_adjust_capture_horizontal_offset(const int delta);
 
-bool kc_start_capture(void);
-
-u32 kc_input_channel_idx(void);
+uint kc_current_capture_input_channel_idx(void);
 
 bool kc_pause_capture(void);
 
@@ -180,9 +178,9 @@ bool kc_is_capture_active(void);
 
 bool kc_load_aliases_(const QString filename, const bool automatic);
 
-bool kc_force_capture_input_resolution(const resolution_s r);
+bool kc_force_capture_resolution(const resolution_s r);
 
-int kc_alias_resolution_index(const resolution_s r);
+int kc_index_of_alias_resolution(const resolution_s r);
 
 mode_params_s kc_mode_params_for_resolution(const resolution_s r);
 
@@ -211,8 +209,6 @@ void kc_set_capture_color_params(const input_color_settings_s c);
 u32 kc_capture_frame_rate(void);
 
 bool kc_set_capture_input_channel(const u32 channel);
-
-bool kc_initialize_capture_card(void);
 
 bool kc_set_output_bit_depth(const u32 bpp);
 

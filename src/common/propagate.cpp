@@ -20,18 +20,18 @@
 extern std::mutex INPUT_OUTPUT_MUTEX;
 
 // A new input video mode (e.g. resolution) has been set.
-void kpropagate_new_input_video_mode(void)
+void kpropagate_news_of_new_capture_video_mode(void)
 {
-    const input_signal_s s = kc_hardware().status.signal();
+    const capture_signal_s s = kc_hardware().status.signal();
 
     if (s.wokeUp)
     {
-        kpropagate_gained_input_signal();
+        kpropagate_news_of_gained_capture_signal();
     }
 
     kc_apply_new_capture_resolution();
 
-    kd_update_gui_input_signal_info();
+    kd_update_gui_capture_signal_info();
 
     ks_set_output_base_resolution(s.r, false);
 
@@ -52,9 +52,9 @@ void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int ve
 }
 
 // The capture hardware received an invalid input signal.
-void kpropagate_invalid_input_signal(void)
+void kpropagate_news_of_invalid_capture_signal(void)
 {
-    kd_mark_gui_input_no_signal(true);
+    kd_notify_gui_of_capture_signal_change(true);
 
     ks_indicate_invalid_signal();
 
@@ -64,9 +64,9 @@ void kpropagate_invalid_input_signal(void)
 }
 
 // The capture hardware lost its input signal.
-void kpropagate_lost_input_signal(void)
+void kpropagate_news_of_lost_capture_signal(void)
 {
-    kd_mark_gui_input_no_signal(true);
+    kd_notify_gui_of_capture_signal_change(true);
 
     ks_indicate_no_signal();
 
@@ -76,15 +76,15 @@ void kpropagate_lost_input_signal(void)
 }
 
 // The capture hardware started receiving an input signal.
-void kpropagate_gained_input_signal(void)
+void kpropagate_news_of_gained_capture_signal(void)
 {
-    kd_mark_gui_input_no_signal(false);
+    kd_notify_gui_of_capture_signal_change(false);
 
     return;
 }
 
 // The capture hardware has sent us a new captured frame.
-void kpropagate_new_captured_frame(void)
+void kpropagate_news_of_new_captured_frame(void)
 {
     ks_scale_frame(kc_latest_captured_frame());
 
@@ -101,7 +101,7 @@ void kpropagate_new_captured_frame(void)
 }
 
 // The capture hardware has met with an unrecoverable error.
-void kpropagate_unrecoverable_error(void)
+void kpropagate_news_of_unrecoverable_error(void)
 {
     NBENE(("VCS has met with an unrecoverable error. Shutting the program down."));
 
@@ -110,7 +110,7 @@ void kpropagate_unrecoverable_error(void)
     return;
 }
 
-void kpropagate_forced_input_resolution(const resolution_s &r)
+void kpropagate_forced_capture_resolution(const resolution_s &r)
 {
     std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
 
@@ -133,13 +133,13 @@ void kpropagate_forced_input_resolution(const resolution_s &r)
         goto done;
     }
 
-    if (!kc_force_capture_input_resolution(r))
+    if (!kc_force_capture_resolution(r))
     {
         NBENE(("Failed to set the new input resolution (%u x %u).", r.w, r.h));
         goto done;
     }
 
-    kpropagate_new_input_video_mode();
+    kpropagate_news_of_new_capture_video_mode();
 
     done:
 

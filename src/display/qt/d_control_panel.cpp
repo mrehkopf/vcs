@@ -58,9 +58,9 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
     filterSetsDlg = new FilterSetsListDialog;
 
     fill_hardware_info_table();
-    connect_input_resolution_buttons();
+    connect_capture_resolution_buttons();
     fill_output_scaling_filter_comboboxes();
-    fill_input_channel_combobox();
+    fill_capture_channel_combobox();
     reset_capture_bit_depth_combobox();
 
     // Adjust sundry GUI controls to their proper values.
@@ -300,7 +300,7 @@ void ControlPanel::notify_of_new_mode_settings_source_file(const QString &filena
     videocolorDlg->receive_new_mode_settings_filename(filename);
 }
 
-void ControlPanel::fill_input_channel_combobox()
+void ControlPanel::fill_capture_channel_combobox()
 {
     block_widget_signals_c b(ui->comboBox_inputChannel);
 
@@ -361,7 +361,7 @@ void ControlPanel::update_output_framerate(const uint fps,
     return;
 }
 
-void ControlPanel::set_input_info_as_no_signal()
+void ControlPanel::set_capture_info_as_no_signal()
 {
     ui->label_captInputResolution->setText("n/a");
     ui->label_outputInputResolution->setText("n/a");
@@ -375,7 +375,7 @@ void ControlPanel::set_input_info_as_no_signal()
         ui->label_captInputSignal->setText("No signal");
     }
 
-    set_input_controls_enabled(false);
+    set_capture_controls_enabled(false);
     set_output_controls_enabled(false);
 
     k_assert(videocolorDlg != nullptr, "");
@@ -384,9 +384,9 @@ void ControlPanel::set_input_info_as_no_signal()
     return;
 }
 
-void ControlPanel::set_input_info_as_receiving_signal()
+void ControlPanel::set_capture_info_as_receiving_signal()
 {
-    set_input_controls_enabled(true);
+    set_capture_controls_enabled(true);
     set_output_controls_enabled(true);
 
     k_assert(videocolorDlg != nullptr, "");
@@ -395,7 +395,7 @@ void ControlPanel::set_input_info_as_receiving_signal()
     return;
 }
 
-void ControlPanel::set_input_controls_enabled(const bool state)
+void ControlPanel::set_capture_controls_enabled(const bool state)
 {
     ui->frame_inputForceButtons->setEnabled(state);
     ui->pushButton_inputAdjustVideoColor->setEnabled(state);
@@ -449,7 +449,7 @@ void ControlPanel::update_video_params(void)
     return;
 }
 
-void ControlPanel::update_input_signal_info(void)
+void ControlPanel::update_capture_signal_info(void)
 {
     if (kc_no_signal())
     {
@@ -457,10 +457,10 @@ void ControlPanel::update_input_signal_info(void)
     }
     else
     {
-        const input_signal_s s = kc_hardware().status.signal();
+        const capture_signal_s s = kc_hardware().status.signal();
 
         k_assert(videocolorDlg != nullptr, "");
-        videocolorDlg->receive_new_input_signal(s);
+        videocolorDlg->notify_of_new_capture_signal();
 
         // Mark the resolution. If either dimenson is 0, we expect it to be an
         // invalid reading that should be ignored.
@@ -521,7 +521,7 @@ void ControlPanel::clear_known_modes()
 
 // Simulate the given input button being clicked.
 //
-void ControlPanel::activate_input_res_button(const uint buttonIdx)
+void ControlPanel::activate_capture_res_button(const uint buttonIdx)
 {
     for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)
     {
@@ -530,7 +530,7 @@ void ControlPanel::activate_input_res_button(const uint buttonIdx)
         /// A bit kludgy, but...
         if (w->objectName().endsWith(QString::number(buttonIdx)))
         {
-            parse_input_resolution_button_press(w);
+            parse_capture_resolution_button_press(w);
             return;
         }
     }
@@ -542,7 +542,7 @@ void ControlPanel::activate_input_res_button(const uint buttonIdx)
 
 // Sets up the buttons for forcing output resolution.
 //
-void ControlPanel::connect_input_resolution_buttons()
+void ControlPanel::connect_capture_resolution_buttons()
 {
     for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)
     {
@@ -560,7 +560,7 @@ void ControlPanel::connect_input_resolution_buttons()
         }
 
         connect((QPushButton*)w, &QPushButton::clicked,
-                           this, [this,w]{this->parse_input_resolution_button_press(w);});
+                           this, [this,w]{this->parse_capture_resolution_button_press(w);});
     }
 
     return;
@@ -569,7 +569,7 @@ void ControlPanel::connect_input_resolution_buttons()
 // Gets called when a button for forcing the input resolution is pressed in the GUI.
 // Will then decide which input resolution to force based on which button was pressed.
 //
-void ControlPanel::parse_input_resolution_button_press(QWidget *button)
+void ControlPanel::parse_capture_resolution_button_press(QWidget *button)
 {
     QStringList sl;
     resolution_s res = {0, 0};
@@ -633,7 +633,7 @@ void ControlPanel::parse_input_resolution_button_press(QWidget *button)
 
     assign_resolution:
     DEBUG(("Received a request via the GUI to set the input resolution to %u x %u.", res.w, res.h));
-    kpropagate_forced_input_resolution(res);
+    kpropagate_forced_capture_resolution(res);
 
     done:
     return;
@@ -1014,7 +1014,7 @@ void ControlPanel::on_comboBox_inputChannel_currentIndexChanged(int index)
         block_widget_signals_c b(ui->comboBox_inputChannel);
 
         NBENE(("Failed to set the input channel to %d. Reverting.", index));
-        ui->comboBox_inputChannel->setCurrentIndex(kc_input_channel_idx());
+        ui->comboBox_inputChannel->setCurrentIndex(kc_current_capture_input_channel_idx());
     }
 
     return;

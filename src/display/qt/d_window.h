@@ -15,7 +15,7 @@ class OverlayDialog;
 class ControlPanel;
 class PerfDialog;
 
-struct input_signal_s;
+struct capture_signal_s;
 struct mode_alias_s;
 
 namespace Ui {
@@ -44,13 +44,13 @@ public:
 
     void add_gui_log_entry(const log_entry_s e);
 
-    void update_input_signal_info(void);
+    void update_capture_signal_info(void);
 
     void update_output_framerate(const u32 fps, const bool missedFrames);
 
-    void set_input_info_as_no_signal();
+    void set_capture_info_as_no_signal();
 
-    void set_input_info_as_receiving_signal();
+    void set_capture_info_as_receiving_signal();
 
     void update_window_size();
 

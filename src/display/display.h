@@ -14,7 +14,7 @@ class QString;
 struct log_entry_s;
 struct resolution_s;
 struct mode_alias_s;
-struct input_signal_s;
+struct capture_signal_s;
 
 struct resolution_s
 {
@@ -57,7 +57,7 @@ void kd_update_gui_video_params(void);
 
 bool kd_is_fullscreen(void);
 
-void kd_mark_gui_input_no_signal(const bool state);
+void kd_notify_gui_of_capture_signal_change(const bool receivingSignal);
 
 void kd_signal_new_known_mode(const resolution_s r);
 
@@ -69,7 +69,7 @@ void kd_clear_known_modes(void);
 
 void kd_clear_known_aliases(void);
 
-void kd_update_gui_input_signal_info(void);
+void kd_update_gui_capture_signal_info(void);
 
 void kd_update_gui_filter_set_idx(const int idx);
 

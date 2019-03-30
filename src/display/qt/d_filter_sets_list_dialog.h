@@ -13,7 +13,7 @@
 class QTreeWidgetItem;
 class QListWidgetItem;
 class QMenuBar;
-struct input_signal_s;
+struct capture_signal_s;
 struct filter_set_s;
 
 namespace Ui {

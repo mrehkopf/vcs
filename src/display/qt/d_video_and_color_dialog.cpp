@@ -98,8 +98,10 @@ void VideoAndColorDialog::create_menu_bar()
 // Call this to notify the dialog of a new capture input signal.
 // Fetch the current ranges and values for all of the dialog's controls.
 //
-void VideoAndColorDialog::receive_new_input_signal(const input_signal_s &s)
+void VideoAndColorDialog::notify_of_new_capture_signal(void)
 {
+    const capture_signal_s s = kc_hardware().status.signal();
+
     ui->label_currentMode->setText(QString("%1 x %2, %3 Hz").arg(s.r.w).arg(s.r.h).arg(s.refreshRate));
 
     update_controls();

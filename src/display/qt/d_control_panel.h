@@ -20,7 +20,7 @@ class VideoAndColorDialog;
 struct log_entry_s;
 struct resolution_s;
 struct mode_alias_s;
-struct input_signal_s;
+struct capture_signal_s;
 
 namespace Ui {
 class ControlPanel;
@@ -36,15 +36,15 @@ public:
 
     void add_gui_log_entry(const log_entry_s &e);
 
-    void update_input_signal_info(void);
+    void update_capture_signal_info(void);
 
     void update_output_framerate(const uint fps, const bool hasMissedFrames);
 
     void update_output_resolution_info(void);
 
-    void set_input_info_as_no_signal();
+    void set_capture_info_as_no_signal();
 
-    void set_input_info_as_receiving_signal();
+    void set_capture_info_as_receiving_signal();
 
     void adjust_output_scaling(const int dir);
 
@@ -84,7 +84,7 @@ public:
 
     void toggle_overlay();
 
-    void activate_input_res_button(const uint buttonIdx);
+    void activate_capture_res_button(const uint buttonIdx);
 
     void update_video_params();
 
@@ -95,7 +95,7 @@ private slots:
 
     void on_checkBox_logErrors_toggled(bool);
 
-    void parse_input_resolution_button_press(QWidget *button);
+    void parse_capture_resolution_button_press(QWidget *button);
 
     void on_comboBox_frameSkip_currentIndexChanged(const QString &arg1);
 
@@ -153,15 +153,15 @@ private:
 
     void refresh_log_list_filtering();
 
-    void connect_input_resolution_buttons();
+    void connect_capture_resolution_buttons();
 
     void fill_hardware_info_table();
 
     void fill_output_scaling_filter_comboboxes();
 
-    void fill_input_channel_combobox();
+    void fill_capture_channel_combobox();
 
-    void set_input_controls_enabled(const bool state);
+    void set_capture_controls_enabled(const bool state);
 
     void set_output_controls_enabled(const bool state);
 

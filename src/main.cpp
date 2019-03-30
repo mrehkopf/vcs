@@ -31,7 +31,7 @@ static void cleanup_all(void)
 
     kd_release_display();
     ks_release_scaler();
-    kc_release_capturer();
+    kc_release_capture();
     kat_release_anti_tear();
     kf_release_filters();
 
@@ -48,7 +48,7 @@ static void cleanup_all(void)
 static bool initialize_all(void)
 {
     if (!PROGRAM_EXIT_REQUESTED) ks_initialize_scaler();
-    if (!PROGRAM_EXIT_REQUESTED) kc_initialize_capturer();
+    if (!PROGRAM_EXIT_REQUESTED) kc_initialize_capture();
     if (!PROGRAM_EXIT_REQUESTED) kat_initialize_anti_tear();
     if (!PROGRAM_EXIT_REQUESTED) kf_initialize_filters();
 
@@ -78,27 +78,27 @@ static capture_event_e process_next_capture_event(void)
     {
         case CEVENT_UNRECOVERABLE_ERROR:
         {
-            kpropagate_unrecoverable_error();
+            kpropagate_news_of_unrecoverable_error();
             break;
         }
         case CEVENT_NEW_FRAME:
         {
-            kpropagate_new_captured_frame();
+            kpropagate_news_of_new_captured_frame();
             break;
         }
         case CEVENT_NEW_VIDEO_MODE:
         {
-            kpropagate_new_input_video_mode();
+            kpropagate_news_of_new_capture_video_mode();
             break;
         }
         case CEVENT_NO_SIGNAL:
         {
-            kpropagate_lost_input_signal();
+            kpropagate_news_of_lost_capture_signal();
             break;
         }
         case CEVENT_INVALID_SIGNAL:
         {
-            kpropagate_invalid_input_signal();
+            kpropagate_news_of_invalid_capture_signal();
             break;
         }
         case CEVENT_SLEEP:
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        kpropagate_new_input_video_mode();
+        kpropagate_news_of_new_capture_video_mode();
     }
 
     INFO(("Entering the main loop."));

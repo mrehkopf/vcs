@@ -10,7 +10,7 @@
 #include <QDialog>
 
 struct resolution_s;
-struct input_signal_s;
+struct capture_signal_s;
 struct input_video_settings_s;
 struct input_color_settings_s;
 
@@ -29,7 +29,7 @@ public:
     explicit VideoAndColorDialog(QWidget *parent = 0);
     ~VideoAndColorDialog();
 
-    void receive_new_input_signal(const input_signal_s &s);
+    void notify_of_new_capture_signal(void);
 
     void set_controls_enabled(const bool state);
 
