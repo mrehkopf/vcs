@@ -396,16 +396,16 @@ void MainWindow::set_keyboard_shortcuts()
     // Assign alt + arrow keys to move the capture input alignment horizontally and vertically.
     QShortcut *altShiftLeft = new QShortcut(QKeySequence("alt+shift+left"), this);
     altShiftLeft->setContext(Qt::ApplicationShortcut);
-    connect(altShiftLeft, &QShortcut::activated, []{kc_adjust_capture_horizontal_offset(1);});
+    connect(altShiftLeft, &QShortcut::activated, []{kc_adjust_video_horizontal_offset(1);});
     QShortcut *altShiftRight = new QShortcut(QKeySequence("alt+shift+right"), this);
     altShiftRight->setContext(Qt::ApplicationShortcut);
-    connect(altShiftRight, &QShortcut::activated, []{kc_adjust_capture_horizontal_offset(-1);});
+    connect(altShiftRight, &QShortcut::activated, []{kc_adjust_video_horizontal_offset(-1);});
     QShortcut *altShiftUp = new QShortcut(QKeySequence("alt+shift+up"), this);
     altShiftUp->setContext(Qt::ApplicationShortcut);
-    connect(altShiftUp, &QShortcut::activated, []{kc_adjust_capture_vertical_offset(1);});
+    connect(altShiftUp, &QShortcut::activated, []{kc_adjust_video_vertical_offset(1);});
     QShortcut *altShiftDown = new QShortcut(QKeySequence("alt+shift+down"), this);
     altShiftDown->setContext(Qt::ApplicationShortcut);
-    connect(altShiftDown, &QShortcut::activated, []{kc_adjust_capture_vertical_offset(-1);});
+    connect(altShiftDown, &QShortcut::activated, []{kc_adjust_video_vertical_offset(-1);});
 
     /// NOTE: Qt's full-screen mode might not work correctly under Linux, depending
     /// on the distro etc.

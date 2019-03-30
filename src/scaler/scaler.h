@@ -53,7 +53,7 @@ void ks_initialize_scaler(void);
 
 void ks_release_scaler(void);
 
-void ks_scale_frame(captured_frame_s &frame);
+void ks_scale_frame(const captured_frame_s &frame);
 
 resolution_s ks_resolution_to_aspect(const resolution_s &r);
 

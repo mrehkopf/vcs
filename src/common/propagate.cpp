@@ -44,9 +44,9 @@ void kpropagate_news_of_new_capture_video_mode(void)
 // adjusted by the given amount.
 void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int verticalDelta)
 {
-    kc_adjust_capture_horizontal_offset(horizontalDelta);
+    kc_adjust_video_horizontal_offset(horizontalDelta);
 
-    kc_adjust_capture_vertical_offset(verticalDelta);
+    kc_adjust_video_vertical_offset(verticalDelta);
 
     return;
 }
@@ -93,7 +93,7 @@ void kpropagate_news_of_new_captured_frame(void)
         krecord_record_new_frame();
     }
 
-    kc_mark_frame_buffer_as_processed();
+    kc_mark_current_frame_as_processed();
 
     kd_update_display();
 
@@ -133,7 +133,7 @@ void kpropagate_forced_capture_resolution(const resolution_s &r)
         goto done;
     }
 
-    if (!kc_force_capture_resolution(r))
+    if (!kc_set_resolution(r))
     {
         NBENE(("Failed to set the new input resolution (%u x %u).", r.w, r.h));
         goto done;

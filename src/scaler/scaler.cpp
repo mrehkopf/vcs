@@ -397,7 +397,7 @@ void ks_release_scaler(void)
 
 // Converts the given frame to BGRA format.
 //
-void s_convert_frame_to_bgra(captured_frame_s &frame)
+void s_convert_frame_to_bgra(const captured_frame_s &frame)
 {
     #ifdef USE_OPENCV
         u32 conversionType = 0;
@@ -410,11 +410,11 @@ void s_convert_frame_to_bgra(captured_frame_s &frame)
                  "Was asked to convert a frame's color depth, but the color conversion buffer "
                  "was null.");
 
-        if (kc_output_pixel_format() == RGB_PIXELFORMAT_565)
+        if (kc_pixel_format() == RGB_PIXELFORMAT_565)
         {
             conversionType = CV_BGR5652BGRA;
         }
-        else if (kc_output_pixel_format() == RGB_PIXELFORMAT_555)
+        else if (kc_pixel_format() == RGB_PIXELFORMAT_555)
         {
             conversionType = CV_BGR5552BGRA;
         }
@@ -439,8 +439,6 @@ void s_convert_frame_to_bgra(captured_frame_s &frame)
         }
 
         cv::cvtColor(input, colorConv, conversionType);
-
-        frame.r.bpp = 32;
     #else
         k_assert(0, "Was asked to convert the frame to BGRA, but OpenCV had been disabled in the build. Can't do it.");
     #endif
@@ -452,9 +450,10 @@ void s_convert_frame_to_bgra(captured_frame_s &frame)
 // resolution settings. The scaled image is placed in the scaler's internal buffer,
 // not in the source buffer.
 //
-void ks_scale_frame(captured_frame_s &frame)
+void ks_scale_frame(const captured_frame_s &frame)
 {
     u8 *pixelData = frame.pixels.ptr();
+    resolution_s frameRes = frame.r; /// Temp hack. May want to modify the .bpp value.
     resolution_s outputRes = ks_output_resolution();
 
     const resolution_s minres = kc_hardware().meta.minimum_capture_resolution();
@@ -462,7 +461,7 @@ void ks_scale_frame(captured_frame_s &frame)
 
     // Verify that we have a workable frame.
     {
-        if (kc_should_skip_next_frame())
+        if (kc_should_current_frame_be_skipped())
         {
             DEBUG(("Skipping a frame, as requested."));
             goto done;
@@ -485,10 +484,10 @@ void ks_scale_frame(captured_frame_s &frame)
             NBENE(("Was asked to scale a null frame. Ignoring it."));
             goto done;
         }
-        else if (frame.r.bpp != kc_capture_color_depth())
+        else if (frame.r.bpp != kc_output_color_depth())
         {
             NBENE(("Was asked to scale a frame whose bit depth (%u bits) differed from the expected (%u bits). Ignoring it.",
-                   frame.r.bpp, kc_capture_color_depth()));
+                   frame.r.bpp, kc_output_color_depth()));
             goto done;
         }
         else if (frame.r.bpp > MAX_OUTPUT_BPP)
@@ -525,6 +524,7 @@ void ks_scale_frame(captured_frame_s &frame)
     if (frame.r.bpp != OUTPUT_BIT_DEPTH)
     {
         s_convert_frame_to_bgra(frame);
+        frameRes.bpp = 32;
 
         pixelData = COLORCONV_BUFFER.ptr();
     }
@@ -534,7 +534,7 @@ void ks_scale_frame(captured_frame_s &frame)
     // the screen; and if it is, adjust the capture properties to align it.
     if (ALIGN_CAPTURE)
     {
-        const auto alignment = kf_find_capture_alignment(pixelData, frame.r);
+        const auto alignment = kf_find_capture_alignment(pixelData, frameRes);
 
         kpropagate_capture_alignment_adjust(alignment[0], alignment[1]);
 
@@ -543,7 +543,7 @@ void ks_scale_frame(captured_frame_s &frame)
 
     // Perform anti-tearing on the (color-converted) frame. If the user has turned
     // anti-tearing off, this will just return without doing anything.
-    pixelData = kat_anti_tear(pixelData, frame.r);
+    pixelData = kat_anti_tear(pixelData, frameRes);
     if (pixelData == nullptr)
     {
         goto done;
@@ -551,22 +551,22 @@ void ks_scale_frame(captured_frame_s &frame)
 
     // Apply filtering, and scale the frame.
     {
-        kf_apply_pre_filters(pixelData, frame.r);
+        kf_apply_pre_filters(pixelData, frameRes);
 
         // If no need to scale, just copy the data over.
         if (ASPECT_MODE == aspect_mode_e::native &&
-            frame.r.w == outputRes.w &&
-            frame.r.h == outputRes.h)
+            frameRes.w == outputRes.w &&
+            frameRes.h == outputRes.h)
         {
-            memcpy(OUTPUT_BUFFER.ptr(), pixelData, OUTPUT_BUFFER.up_to(frame.r.w * frame.r.h * (OUTPUT_BIT_DEPTH / 8)));
+            memcpy(OUTPUT_BUFFER.ptr(), pixelData, OUTPUT_BUFFER.up_to(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
         }
         else if (DOWNSCALE_FILTER == nullptr ||
                  UPSCALE_FILTER == nullptr)
         {
             NBENE(("Upscale or downscale filter is null. Refusing to scale."));
 
-            outputRes = frame.r;
-            memcpy(OUTPUT_BUFFER.ptr(), pixelData, OUTPUT_BUFFER.up_to(frame.r.w * frame.r.h * (OUTPUT_BIT_DEPTH / 8)));
+            outputRes = frameRes;
+            memcpy(OUTPUT_BUFFER.ptr(), pixelData, OUTPUT_BUFFER.up_to(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
         }
         else
         {
@@ -576,8 +576,8 @@ void ks_scale_frame(captured_frame_s &frame)
             {
                 f = kf_current_filter_set_scaler();
             }
-            else if (frame.r.w < outputRes.w ||
-                     frame.r.h < outputRes.h)
+            else if (frameRes.w < outputRes.w ||
+                     frameRes.h < outputRes.h)
             {
                 f = UPSCALE_FILTER;
             }
@@ -586,7 +586,7 @@ void ks_scale_frame(captured_frame_s &frame)
                 f = DOWNSCALE_FILTER;
             }
 
-            f->scale(pixelData, frame.r, outputRes);
+            f->scale(pixelData, frameRes, outputRes);
         }
 
         kf_apply_post_filters(OUTPUT_BUFFER.ptr(), outputRes);
@@ -595,8 +595,6 @@ void ks_scale_frame(captured_frame_s &frame)
     LATEST_OUTPUT_SIZE = outputRes;
 
     kd_update_gui_filter_set_idx(kf_current_filter_set_idx());
-
-    frame.processed = true;
 
     done:
     return;

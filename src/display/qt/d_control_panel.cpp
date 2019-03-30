@@ -777,7 +777,7 @@ void ControlPanel::set_overlay_indicator_checked(const bool checked)
 //
 void ControlPanel::reset_capture_bit_depth_combobox()
 {
-    QString depthString = QString("%1-bit").arg(kc_output_bit_depth()); // E.g. "24-bit".
+    QString depthString = QString("%1-bit").arg(kc_input_color_depth()); // E.g. "24-bit".
 
     for (int i = 0; i < ui->comboBox_bitDepth->count(); i++)
     {
@@ -872,7 +872,7 @@ void ControlPanel::on_comboBox_frameSkip_currentIndexChanged(const QString &arg1
         k_assert(0, "Unexpected GUI string for frame-skipping.");
     }
 
-    kc_set_capture_frame_dropping(v);
+    kc_set_frame_dropping(v);
 
     return;
 }
@@ -1009,12 +1009,12 @@ void ControlPanel::on_pushButton_inputAdjustVideoColor_clicked()
 void ControlPanel::on_comboBox_inputChannel_currentIndexChanged(int index)
 {
     // If we fail to set the input channel, revert back to the current one.
-    if (!kc_set_capture_input_channel(index))
+    if (!kc_set_input_channel(index))
     {
         block_widget_signals_c b(ui->comboBox_inputChannel);
 
         NBENE(("Failed to set the input channel to %d. Reverting.", index));
-        ui->comboBox_inputChannel->setCurrentIndex(kc_current_capture_input_channel_idx());
+        ui->comboBox_inputChannel->setCurrentIndex(kc_input_channel_idx());
     }
 
     return;
@@ -1069,7 +1069,7 @@ void ControlPanel::on_comboBox_bitDepth_currentIndexChanged(const QString &arg1)
         k_assert(0, "Unrecognized color depth option in the GUI dropbox.");
     }
 
-    if (!kc_set_output_bit_depth(bpp))
+    if (!kc_set_input_color_depth(bpp))
     {
         reset_capture_bit_depth_combobox();
 

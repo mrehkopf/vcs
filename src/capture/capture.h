@@ -7,9 +7,7 @@
 #ifndef CAPTURE_H
 #define CAPTURE_H
 
-#include <QString>
 #include <vector>
-#include <atomic>
 #include "../display/display.h"
 #include "../scaler/scaler.h"
 #include "../common/memory.h"
@@ -25,30 +23,25 @@
     #include "null_rgbeasy.h"
 #endif
 
-enum capture_event_e
+enum class capture_event_e
 {
-    CEVENT_NONE,
-    CEVENT_NEW_FRAME,
-    CEVENT_NEW_VIDEO_MODE,
-    CEVENT_NO_SIGNAL,
-    CEVENT_INVALID_SIGNAL,
-    CEVENT_SLEEP,
-    CEVENT_UNRECOVERABLE_ERROR
+    none,
+    sleep,
+    no_signal,
+    new_frame,
+    new_video_mode,
+    invalid_signal,
+    unrecoverable_error
 };
 
 struct captured_frame_s
 {
     resolution_s r;
-    heap_bytes_s<u8> pixels;
-    bool processed = false;     // Set to true after the frame has been processed for display on the screen (i.e. scaled, filtered, etc.).
 
-    // Returns the number of pixels used up by the frame given its current
-    // resolution. DOES NOT return the size of the pixel buffer, since the
-    // resolution can be changed independently.
-    uint num_pixel_bytes(void) const
-    {
-        return (r.w * r.h * (r.bpp / 8));
-    }
+    heap_bytes_s<u8> pixels;
+
+    // Will be set to true after the frame has been processed (i.e. scaled, filtered, etc.).
+    bool processed = false;
 };
 
 struct capture_signal_s
@@ -57,35 +50,35 @@ struct capture_signal_s
     int refreshRate;
     bool isInterlaced;
     bool isDigital;
-    bool wokeUp;        // Set to true if there was a 'no signal' before this.
+    bool wokeUp;
 };
 
 struct input_video_settings_s
 {
-    unsigned long horScale;
-    long horPos;
-    long verPos;
+    unsigned long horizontalScale;
+    long horizontalPosition;
+    long verticalPosition;
     long phase;
     long blackLevel;
 };
 
 struct input_color_settings_s
 {
-    long bright;
-    long contr;
+    long brightness;
+    long contrast;
 
-    long redBright;
-    long redContr;
+    long redBrightness;
+    long redContrast;
 
-    long greenBright;
-    long greenContr;
+    long greenBrightness;
+    long greenContrast;
 
-    long blueBright;
-    long blueContr;
+    long blueBrightness;
+    long blueContrast;
 };
 
-// For each input mode (i.e. resolution), the set of parameters that the user has
-// defined.
+// For each input mode (i.e. resolution), the set of parameters that the user
+// has defined.
 struct mode_params_s
 {
     resolution_s r;
@@ -99,8 +92,10 @@ struct mode_alias_s
     resolution_s to;
 };
 
-// Information about the capture hardware. These functions generally poll the
-// hardware directly, using the RGBEasy API.
+// Functions that provide information about the capture hardware. These functions
+// generally poll the hardware directly, using the RGBEasy API (although whether
+// the API actually polls the hardware for each call is another matter, but you
+// get the point).
 //
 // NOTE: These functions will be exposed to the entire program, so they should
 // not provide any means (e.g. calls to RGBSet*()) to alter the state of the
@@ -148,88 +143,54 @@ struct capture_hardware_s
     } status;
 };
 
-const capture_hardware_s& kc_hardware(void);
-
-captured_frame_s &kc_latest_captured_frame(void);
-
-bool kc_are_frames_being_missed(void);
-
-uint kc_num_missed_frames(void);
-
-void kc_insert_test_image(void);
-
-void kc_reset_missed_frames_count(void);
-
+// Initialize and release the unit.
 void kc_initialize_capture(void);
-
 void kc_release_capture(void);
 
-bool kc_adjust_capture_vertical_offset(const int delta);
-
-bool kc_adjust_capture_horizontal_offset(const int delta);
-
-uint kc_current_capture_input_channel_idx(void);
-
-bool kc_pause_capture(void);
-
-bool kc_resume_capture(void);
-
-bool kc_is_capture_active(void);
-
-bool kc_load_aliases_(const QString filename, const bool automatic);
-
-bool kc_force_capture_resolution(const resolution_s r);
-
+// Public getters.
 int kc_index_of_alias_resolution(const resolution_s r);
-
+uint kc_num_missed_frames(void);
+uint kc_input_channel_idx(void);
+uint kc_output_color_depth(void);
+uint kc_input_color_depth(void);
+bool kc_are_frames_being_missed(void);
+bool kc_is_capture_active(void);
+bool kc_is_aliased_resolution(void);
+bool kc_should_current_frame_be_skipped(void);
+bool kc_is_invalid_signal(void);
+bool kc_no_signal(void);
+PIXELFORMAT kc_pixel_format(void);
+const capture_hardware_s& kc_hardware(void);
+capture_event_e kc_latest_capture_event(void);
+const captured_frame_s& kc_latest_captured_frame(void);
 mode_params_s kc_mode_params_for_resolution(const resolution_s r);
 
-bool kc_apply_mode_parameters(const resolution_s r);
-
+// Public setters.
+bool kc_set_resolution(const resolution_s r);
+bool kc_set_mode_parameters_for_resolution(const resolution_s r);
+bool kc_set_frame_dropping(const u32 drop);
+bool kc_set_input_channel(const u32 channel);
+bool kc_set_input_color_depth(const u32 bpp);
+void kc_set_color_settings(const input_color_settings_s c);
+void kc_set_video_settings(const input_video_settings_s v);
+void kc_mark_current_frame_as_processed(void);
+void kc_reset_missed_frames_count(void);
+bool kc_adjust_video_vertical_offset(const int delta);
+bool kc_adjust_video_horizontal_offset(const int delta);
 void kc_apply_new_capture_resolution(void);
+#if VALIDATION_RUN
+    void kc_VALIDATION_set_capture_color_depth(const uint bpp);
+    void kc_VALIDATION_set_capture_pixel_format(const PIXELFORMAT pf);
+#endif
 
-bool kc_is_aliased_resolution(void);
-
-void kc_mark_frame_buffer_as_processed(void);
-
-bool kc_should_skip_next_frame(void);
-
-bool kc_no_signal(void);
-
-bool kc_is_invalid_signal(void);
-
-capture_event_e kc_get_next_capture_event(void);
-
-bool kc_set_capture_frame_dropping(const u32 drop);
-
-void kc_set_capture_video_params(const input_video_settings_s p);
-
-void kc_set_capture_color_params(const input_color_settings_s c);
-
-u32 kc_capture_frame_rate(void);
-
-bool kc_set_capture_input_channel(const u32 channel);
-
-bool kc_set_output_bit_depth(const u32 bpp);
-
-PIXELFORMAT kc_output_pixel_format(void);
-
-u32 kc_capture_color_depth(void);
-
-u32 kc_output_bit_depth(void);
-
+// Miscellaneous functions, to be sorted.
 void kc_broadcast_aliases_to_gui(void);
-
-void kc_update_alias_resolutions(const std::vector<mode_alias_s> &aliases);
-
-bool kc_load_aliases(const QString filename, const bool automaticCall);
-
-bool kc_save_aliases(const QString filename);
-
-bool kc_save_mode_params(const QString filename);
-
 void kc_broadcast_mode_params_to_gui(void);
-
+void kc_insert_test_image(void);
+void kc_update_alias_resolutions(const std::vector<mode_alias_s> &aliases);
+bool kc_save_mode_params(const QString filename);
 bool kc_load_mode_params(const QString filename, const bool automaticCall);
+bool kc_load_aliases(const QString filename, const bool automaticCall);
+bool kc_save_aliases(const QString filename);
 
 #endif

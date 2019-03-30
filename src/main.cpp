@@ -68,46 +68,46 @@ static capture_event_e process_next_capture_event(void)
     std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
 
     #if USE_RGBEASY_API
-        const capture_event_e e = kc_get_next_capture_event();
+        const capture_event_e e = kc_latest_capture_event();
     #else
-        const capture_event_e e = CEVENT_NEW_FRAME;
+        const capture_event_e e = capture_event_e::new_frame;
         kc_insert_test_image();
     #endif
 
     switch (e)
     {
-        case CEVENT_UNRECOVERABLE_ERROR:
+        case capture_event_e::unrecoverable_error:
         {
             kpropagate_news_of_unrecoverable_error();
             break;
         }
-        case CEVENT_NEW_FRAME:
+        case capture_event_e::new_frame:
         {
             kpropagate_news_of_new_captured_frame();
             break;
         }
-        case CEVENT_NEW_VIDEO_MODE:
+        case capture_event_e::new_video_mode:
         {
             kpropagate_news_of_new_capture_video_mode();
             break;
         }
-        case CEVENT_NO_SIGNAL:
+        case capture_event_e::no_signal:
         {
             kpropagate_news_of_lost_capture_signal();
             break;
         }
-        case CEVENT_INVALID_SIGNAL:
+        case capture_event_e::invalid_signal:
         {
             kpropagate_news_of_invalid_capture_signal();
             break;
         }
-        case CEVENT_SLEEP:
+        case capture_event_e::sleep:
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(4)); /// TODO. Is 4 the best wait-time?
 
             break;
         }
-        case CEVENT_NONE:
+        case capture_event_e::none:
         {
             /// TODO. Technically we might loop until we get an event other than
             /// none, but for now we just move on.

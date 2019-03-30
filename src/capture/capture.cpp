@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QFile>
 #include <thread>
+#include <atomic>
 #include <mutex>
 #include "../common/command_line.h"
 #include "../common/propagate.h"
@@ -31,9 +32,13 @@ static u32 SKIP_NEXT_NUM_FRAMES = false;
 
 static std::vector<mode_params_s> KNOWN_MODES;
 
-// The capture's current color format.
+// The color depth/format in which the capture hardware captures the frames.
 static PIXELFORMAT CAPTURE_PIXEL_FORMAT = RGB_PIXELFORMAT_888;
-static u32 CAPTURE_COLOR_DEPTH = 32;
+
+// The color depth in which the capture hardware is expected to be sending the
+// frames. This depends on the current pixel format, such that e.g. formats
+// 555 and 565 are probably sent as 16-bit, and 888 as 32-bit.
+static u32 CAPTURE_OUTPUT_COLOR_DEPTH = 32;
 
 // Used to keep track of whether we have new frames to be processed (i.e. if the
 // current count of captured frames doesn't equal the number of processed frames).
@@ -111,7 +116,7 @@ static struct capture_interface_s
 
 // Callback functions for the RGBEasy API, through which the API communicates
 // with VCS.
-static struct api_callbacks_s
+namespace api_callbacks_n
 {
 #if !USE_RGBEASY_API
     void frame_captured(void){}
@@ -122,20 +127,121 @@ static struct api_callbacks_s
 #else
     // Called by the capture hardware when a new frame has been captured. The
     // captured RGBA data is in frameData.
-    void RGBCBKAPI frame_captured(HWND, HRGB, LPBITMAPINFOHEADER frameInfo, void *frameData, ULONG_PTR);
+    void RGBCBKAPI frame_captured(HWND, HRGB, LPBITMAPINFOHEADER frameInfo, void *frameData, ULONG_PTR)
+    {
+        if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
+        {
+            //ERRORI(("The capture hardware sent in a frame before VCS had finished processing "
+            //        "the previous one. Skipping this new one. (Captured: %u, processed: %u.)",
+            //        CNT_FRAMES_CAPTURED.load(), CNT_FRAMES_PROCESSED.load()));
+            CNT_FRAMES_SKIPPED++;
+            return;
+        }
+
+        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
+
+        // Ignore new callback events if the user has signaled to quit the program.
+        if (PROGRAM_EXIT_REQUESTED)
+        {
+            goto done;
+        }
+
+        // This could happen e.g. if direct DMA transfer is enabled.
+        if (frameData == nullptr ||
+                frameInfo == nullptr)
+        {
+            goto done;
+        }
+
+        if (FRAME_BUFFER.pixels.is_null())
+        {
+            //ERRORI(("The capture hardware sent in a frame but the frame buffer was uninitialized. "
+            //        "Ignoring the frame."));
+            goto done;
+        }
+
+        if (frameInfo->biBitCount > MAX_BIT_DEPTH)
+        {
+            //ERRORI(("The capture hardware sent in a frame that had an illegal bit depth (%u). "
+            //        "The maximum allowed bit depth is %u.", frameInfo->biBitCount, MAX_BIT_DEPTH));
+            goto done;
+        }
+
+        FRAME_BUFFER.r.w = frameInfo->biWidth;
+        FRAME_BUFFER.r.h = abs(frameInfo->biHeight);
+        FRAME_BUFFER.r.bpp = frameInfo->biBitCount;
+
+        // Copy the frame's data into our local buffer so we can work on it.
+        memcpy(FRAME_BUFFER.pixels.ptr(), (u8*)frameData,
+               FRAME_BUFFER.pixels.up_to(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8)));
+
+    done:
+        CNT_FRAMES_CAPTURED++;
+        return;
+    }
 
     // Called by the capture hardware when the input video mode changes.
-    void RGBCBKAPI video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO info, ULONG_PTR);
+    void RGBCBKAPI video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO info, ULONG_PTR)
+    {
+        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
+
+        // Ignore new callback events if the user has signaled to quit the program.
+        if (PROGRAM_EXIT_REQUESTED)
+        {
+            goto done;
+        }
+
+        SIGNAL_WOKE_UP = !RECEIVING_A_SIGNAL;
+        RECEIVED_NEW_VIDEO_MODE = true;
+        SIGNAL_IS_INVALID = false;
+
+    done:
+        return;
+    }
 
     // Called by the capture hardware when it's given a signal it can't handle.
-    void RGBCBKAPI invalid_signal(HWND, HRGB, unsigned long horClock, unsigned long verClock, ULONG_PTR captureHandle);
+    void RGBCBKAPI invalid_signal(HWND, HRGB, unsigned long horClock, unsigned long verClock, ULONG_PTR captureHandle)
+    {
+        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
+
+        // Ignore new callback events if the user has signaled to quit the program.
+        if (PROGRAM_EXIT_REQUESTED)
+        {
+            goto done;
+        }
+
+        // Let the card apply its own no signal handler as well, just in case.
+        RGBInvalidSignal(captureHandle, horClock, verClock);
+
+        SIGNAL_IS_INVALID = true;
+
+    done:
+        return;
+    }
 
     // Called by the capture hardware when no input signal is present.
-    void RGBCBKAPI no_signal(HWND, HRGB, ULONG_PTR captureHandle);
+    void RGBCBKAPI no_signal(HWND, HRGB, ULONG_PTR captureHandle)
+    {
+        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
 
-    void RGBCBKAPI error(HWND, HRGB, unsigned long error, ULONG_PTR, unsigned long*);
+        // Let the card apply its own no signal handler as well, just in case.
+        RGBNoSignal(captureHandle);
+
+        SIGNAL_WAS_LOST = true;
+
+        return;
+    }
+
+    void RGBCBKAPI error(HWND, HRGB, unsigned long error, ULONG_PTR, unsigned long*)
+    {
+        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
+
+        UNRECOVERABLE_CAPTURE_ERROR = true;
+
+        return;
+    }
 #endif
-} API_CALLBACKS;
+}
 
 // Returns true if the given RGBEase API call return value indicates an error.
 bool apicall_succeeds(long callReturnValue)
@@ -226,7 +332,7 @@ void kc_insert_test_image(void)
     return;
 }
 
-captured_frame_s& kc_latest_captured_frame(void)
+const captured_frame_s& kc_latest_captured_frame(void)
 {
     return FRAME_BUFFER;
 }
@@ -278,13 +384,13 @@ void kc_initialize_capture(void)
     return;
 }
 
-bool kc_adjust_capture_vertical_offset(const int delta)
+bool kc_adjust_video_vertical_offset(const int delta)
 {
     if (!delta) return true;
 
-    const long newPos = (CAPTURE_HARDWARE.status.video_settings().verPos + delta);
-    if (newPos < std::max(2, (int)CAPTURE_HARDWARE.meta.minimum_video_settings().verPos) ||
-        newPos > CAPTURE_HARDWARE.meta.maximum_video_settings().verPos)
+    const long newPos = (CAPTURE_HARDWARE.status.video_settings().verticalPosition + delta);
+    if (newPos < std::max(2, (int)CAPTURE_HARDWARE.meta.minimum_video_settings().verticalPosition) ||
+        newPos > CAPTURE_HARDWARE.meta.maximum_video_settings().verticalPosition)
     {
         // ^ Testing for < 2 along with < MIN_VIDEO_PARAMS.verPos, since on my
         // VisionRGB-PRO2, MIN_VIDEO_PARAMS.verPos gives a value less than 2,
@@ -300,13 +406,13 @@ bool kc_adjust_capture_vertical_offset(const int delta)
     return true;
 }
 
-bool kc_adjust_capture_horizontal_offset(const int delta)
+bool kc_adjust_video_horizontal_offset(const int delta)
 {
     if (!delta) return true;
 
-    const long newPos = (CAPTURE_HARDWARE.status.video_settings().horPos + delta);
-    if (newPos < CAPTURE_HARDWARE.meta.minimum_video_settings().horPos ||
-        newPos > CAPTURE_HARDWARE.meta.maximum_video_settings().horPos)
+    const long newPos = (CAPTURE_HARDWARE.status.video_settings().horizontalPosition + delta);
+    if (newPos < CAPTURE_HARDWARE.meta.minimum_video_settings().horizontalPosition ||
+        newPos > CAPTURE_HARDWARE.meta.maximum_video_settings().horizontalPosition)
     {
         return false;
     }
@@ -346,7 +452,7 @@ void kc_release_capture(void)
     return;
 }
 
-uint kc_current_capture_input_channel_idx(void)
+uint kc_input_channel_idx(void)
 {
     return INPUT_CHANNEL_IDX;
 }
@@ -356,7 +462,7 @@ bool kc_is_capture_active(void)
     return CAPTURE_IS_ACTIVE;
 }
 
-bool kc_force_capture_resolution(const resolution_s r)
+bool kc_set_resolution(const resolution_s r)
 {
     return CAPTURE_INTERFACE.set_capture_resolution(r);
 }
@@ -393,7 +499,7 @@ mode_params_s kc_mode_params_for_resolution(const resolution_s r)
             CAPTURE_HARDWARE.meta.default_video_settings()};
 }
 
-bool kc_apply_mode_parameters(const resolution_s r)
+bool kc_set_mode_parameters_for_resolution(const resolution_s r)
 {
     INFO(("Applying mode parameters for %u x %u.", r.w, r.h));
 
@@ -403,17 +509,17 @@ bool kc_apply_mode_parameters(const resolution_s r)
     /// TODO. Add error-checking.
     RGBSetPhase(CAPTURE_HANDLE,         p.video.phase);
     RGBSetBlackLevel(CAPTURE_HANDLE,    p.video.blackLevel);
-    RGBSetHorScale(CAPTURE_HANDLE,      p.video.horScale);
-    RGBSetHorPosition(CAPTURE_HANDLE,   p.video.horPos);
-    RGBSetVerPosition(CAPTURE_HANDLE,   p.video.verPos);
-    RGBSetBrightness(CAPTURE_HANDLE,    p.color.bright);
-    RGBSetContrast(CAPTURE_HANDLE,      p.color.contr);
-    RGBSetColourBalance(CAPTURE_HANDLE, p.color.redBright,
-                                        p.color.greenBright,
-                                        p.color.blueBright,
-                                        p.color.redContr,
-                                        p.color.greenContr,
-                                        p.color.blueContr);
+    RGBSetHorScale(CAPTURE_HANDLE,      p.video.horizontalScale);
+    RGBSetHorPosition(CAPTURE_HANDLE,   p.video.horizontalPosition);
+    RGBSetVerPosition(CAPTURE_HANDLE,   p.video.verticalPosition);
+    RGBSetBrightness(CAPTURE_HANDLE,    p.color.brightness);
+    RGBSetContrast(CAPTURE_HANDLE,      p.color.contrast);
+    RGBSetColourBalance(CAPTURE_HANDLE, p.color.redBrightness,
+                                        p.color.greenBrightness,
+                                        p.color.blueBrightness,
+                                        p.color.redContrast,
+                                        p.color.greenContrast,
+                                        p.color.blueContrast);
 
     return true;
 }
@@ -437,7 +543,7 @@ resolution_s aliased(const resolution_s &r)
         newRes = ALIASES[aliasIdx].to;
 
         // Try to switch to the alias resolution.
-        if (!kc_force_capture_resolution(r))
+        if (!kc_set_resolution(r))
         {
             NBENE(("Failed to apply an alias."));
 
@@ -461,7 +567,7 @@ void kc_apply_new_capture_resolution(void)
 {
     resolution_s r = aliased(kc_hardware().status.capture_resolution());
 
-    kc_apply_mode_parameters(r);
+    kc_set_mode_parameters_for_resolution(r);
 
     RECEIVED_NEW_VIDEO_MODE = false;
 
@@ -470,12 +576,12 @@ void kc_apply_new_capture_resolution(void)
     return;
 }
 
-bool kc_should_skip_next_frame(void)
+bool kc_should_current_frame_be_skipped(void)
 {
     return bool(SKIP_NEXT_NUM_FRAMES > 0);
 }
 
-void kc_mark_frame_buffer_as_processed(void)
+void kc_mark_current_frame_as_processed(void)
 {
     CNT_FRAMES_PROCESSED = CNT_FRAMES_CAPTURED.load();
 
@@ -483,6 +589,8 @@ void kc_mark_frame_buffer_as_processed(void)
     {
         SKIP_NEXT_NUM_FRAMES--;
     }
+
+    FRAME_BUFFER.processed = true;
 
     return;
 }
@@ -498,33 +606,33 @@ bool kc_no_signal(void)
 }
 
 // Examine the state of the capture system and decide which has been the most recent
-// capture event. Note that the order in which these conditionals occur is meaningful.
+// capture event.
 //
 /// FIXME: This is a bit of an ugly way to handle things. For instance, the function
 /// is a getter, but also modifies the unit's state.
-capture_event_e kc_get_next_capture_event(void)
+capture_event_e kc_latest_capture_event(void)
 {
     if (UNRECOVERABLE_CAPTURE_ERROR)
     {
-        return CEVENT_UNRECOVERABLE_ERROR;
+        return capture_event_e::unrecoverable_error;
     }
     else if (RECEIVED_NEW_VIDEO_MODE)
     {
         RECEIVING_A_SIGNAL = true;
         SIGNAL_IS_INVALID = false;
 
-        return CEVENT_NEW_VIDEO_MODE;
+        return capture_event_e::new_video_mode;
     }
     else if (SIGNAL_WAS_LOST)
     {
         RECEIVING_A_SIGNAL = false;
         SIGNAL_WAS_LOST = false;
 
-        return CEVENT_NO_SIGNAL;
+        return capture_event_e::no_signal;
     }
     else if (!RECEIVING_A_SIGNAL)
     {
-        return CEVENT_SLEEP;
+        return capture_event_e::sleep;
     }
     else if (SIGNAL_BECAME_INVALID)
     {
@@ -532,22 +640,22 @@ capture_event_e kc_get_next_capture_event(void)
         SIGNAL_IS_INVALID = true;
         SIGNAL_BECAME_INVALID = false;
 
-        return CEVENT_INVALID_SIGNAL;
+        return capture_event_e::invalid_signal;
     }
     else if (SIGNAL_IS_INVALID)
     {
-        return CEVENT_SLEEP;
+        return capture_event_e::sleep;
     }
     else if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
     {
-        return CEVENT_NEW_FRAME;
+        return capture_event_e::new_frame;
     }
 
     // If there were no events.
-    return CEVENT_NONE;
+    return capture_event_e::none;
 }
 
-bool kc_set_capture_frame_dropping(const u32 drop)
+bool kc_set_frame_dropping(const u32 drop)
 {
     // Sanity check.
     k_assert(drop < 100, "Odd frame drop number.");
@@ -573,7 +681,7 @@ bool kc_set_capture_frame_dropping(const u32 drop)
     return false;
 }
 
-bool kc_set_capture_input_channel(const u32 channel)
+bool kc_set_input_channel(const u32 channel)
 {
     if (channel >= MAX_INPUT_CHANNELS)
     {
@@ -599,48 +707,44 @@ bool kc_set_capture_input_channel(const u32 channel)
     return false;
 }
 
-u32 kc_capture_color_depth(void)
+uint kc_output_color_depth(void)
 {
-    return CAPTURE_COLOR_DEPTH;
+    return CAPTURE_OUTPUT_COLOR_DEPTH;
 }
 
-PIXELFORMAT kc_output_pixel_format(void)
+PIXELFORMAT kc_pixel_format(void)
 {
     return CAPTURE_PIXEL_FORMAT;
 }
 
-u32 kc_output_bit_depth(void)
+uint kc_input_color_depth(void)
 {
-    u32 bpp = 0;
-
     switch (CAPTURE_PIXEL_FORMAT)
     {
-        case RGB_PIXELFORMAT_888: bpp = 24; break;
-        case RGB_PIXELFORMAT_565: bpp = 16; break;
-        case RGB_PIXELFORMAT_555: bpp = 15; break;
-        default: k_assert(0, "Found an unknown pixel format while being queried for it.");
+        case RGB_PIXELFORMAT_888: return 24;
+        case RGB_PIXELFORMAT_565: return 16;
+        case RGB_PIXELFORMAT_555: return 15;
+        default: k_assert(0, "Found an unknown pixel format while being queried for it."); return 0;
     }
-
-    return bpp;
 }
 
-bool kc_set_output_bit_depth(const u32 bpp)
+bool kc_set_input_color_depth(const u32 bpp)
 {
     const PIXELFORMAT previousFormat = CAPTURE_PIXEL_FORMAT;
-    const uint previousColorDepth = CAPTURE_COLOR_DEPTH;
+    const uint previousColorDepth = CAPTURE_OUTPUT_COLOR_DEPTH;
 
     switch (bpp)
     {
-        case 24: CAPTURE_PIXEL_FORMAT = RGB_PIXELFORMAT_888; CAPTURE_COLOR_DEPTH = 32; break;
-        case 16: CAPTURE_PIXEL_FORMAT = RGB_PIXELFORMAT_565; CAPTURE_COLOR_DEPTH = 16; break;
-        case 15: CAPTURE_PIXEL_FORMAT = RGB_PIXELFORMAT_555; CAPTURE_COLOR_DEPTH = 16;break;
+        case 24: CAPTURE_PIXEL_FORMAT = RGB_PIXELFORMAT_888; CAPTURE_OUTPUT_COLOR_DEPTH = 32; break;
+        case 16: CAPTURE_PIXEL_FORMAT = RGB_PIXELFORMAT_565; CAPTURE_OUTPUT_COLOR_DEPTH = 16; break;
+        case 15: CAPTURE_PIXEL_FORMAT = RGB_PIXELFORMAT_555; CAPTURE_OUTPUT_COLOR_DEPTH = 16; break;
         default: k_assert(0, "Was asked to set an unknown pixel format."); break;
     }
 
     if (!apicall_succeeds(RGBSetPixelFormat(CAPTURE_HANDLE, CAPTURE_PIXEL_FORMAT)))
     {
         CAPTURE_PIXEL_FORMAT = previousFormat;
-        CAPTURE_COLOR_DEPTH = previousColorDepth;
+        CAPTURE_OUTPUT_COLOR_DEPTH = previousColorDepth;
 
         goto fail;
     }
@@ -826,9 +930,9 @@ bool kc_save_mode_params(const QString filename)
         }
 
         // Video params.
-        f << "vPos," << m.video.verPos << '\n'
-          << "hPos," << m.video.horPos << '\n'
-          << "hScale," << m.video.horScale << '\n'
+        f << "vPos," << m.video.verticalPosition << '\n'
+          << "hPos," << m.video.horizontalPosition << '\n'
+          << "hScale," << m.video.horizontalScale << '\n'
           << "phase," << m.video.phase << '\n'
           << "bLevel," << m.video.blackLevel << '\n';
         if (file.error() != QFileDevice::NoError)
@@ -838,14 +942,14 @@ bool kc_save_mode_params(const QString filename)
         }
 
         // Color params.
-        f << "bright," << m.color.bright << '\n'
-          << "contr," << m.color.contr << '\n'
-          << "redBr," << m.color.redBright << '\n'
-          << "redCn," << m.color.redContr << '\n'
-          << "greenBr," << m.color.greenBright << '\n'
-          << "greenCn," << m.color.greenContr << '\n'
-          << "blueBr," << m.color.blueBright << '\n'
-          << "blueCn," << m.color.blueContr << '\n';
+        f << "bright," << m.color.brightness << '\n'
+          << "contr," << m.color.contrast << '\n'
+          << "redBr," << m.color.redBrightness << '\n'
+          << "redCn," << m.color.redContrast << '\n'
+          << "greenBr," << m.color.greenBrightness << '\n'
+          << "greenCn," << m.color.greenContrast << '\n'
+          << "blueBr," << m.color.blueBrightness << '\n'
+          << "blueCn," << m.color.blueContrast << '\n';
         if (file.error() != QFileDevice::NoError)
         {
             NBENE(("Failed to write mode params to file."));
@@ -941,19 +1045,19 @@ bool kc_load_mode_params(const QString filename, const bool automaticCall)
         {
             // Note: the order in which the params are fetched is fixed to the
             // order in which they were saved.
-            p.video.verPos = get_param("vPos").toInt();
-            p.video.horPos = get_param("hPos").toInt();
-            p.video.horScale = get_param("hScale").toInt();
+            p.video.verticalPosition = get_param("vPos").toInt();
+            p.video.horizontalPosition = get_param("hPos").toInt();
+            p.video.horizontalScale = get_param("hScale").toInt();
             p.video.phase = get_param("phase").toInt();
             p.video.blackLevel = get_param("bLevel").toInt();
-            p.color.bright = get_param("bright").toInt();
-            p.color.contr = get_param("contr").toInt();
-            p.color.redBright = get_param("redBr").toInt();
-            p.color.redContr = get_param("redCn").toInt();
-            p.color.greenBright = get_param("greenBr").toInt();
-            p.color.greenContr = get_param("greenCn").toInt();
-            p.color.blueBright = get_param("blueBr").toInt();
-            p.color.blueContr = get_param("blueCn").toInt();
+            p.color.brightness = get_param("bright").toInt();
+            p.color.contrast = get_param("contr").toInt();
+            p.color.redBrightness = get_param("redBr").toInt();
+            p.color.redContrast = get_param("redCn").toInt();
+            p.color.greenBrightness = get_param("greenBr").toInt();
+            p.color.greenContrast = get_param("greenCn").toInt();
+            p.color.blueBrightness = get_param("blueBr").toInt();
+            p.color.blueContrast = get_param("blueCn").toInt();
         }
         catch (int)
         {
@@ -992,7 +1096,7 @@ bool kc_load_mode_params(const QString filename, const bool automaticCall)
     return false;
 }
 
-void kc_set_capture_color_params(const input_color_settings_s c)
+void kc_set_color_settings(const input_color_settings_s c)
 {
     if (kc_no_signal())
     {
@@ -1001,21 +1105,21 @@ void kc_set_capture_color_params(const input_color_settings_s c)
         return;
     }
 
-    RGBSetBrightness(CAPTURE_HANDLE, c.bright);
-    RGBSetContrast(CAPTURE_HANDLE, c.contr);
-    RGBSetColourBalance(CAPTURE_HANDLE, c.redBright,
-                                        c.greenBright,
-                                        c.blueBright,
-                                        c.redContr,
-                                        c.greenContr,
-                                        c.blueContr);
+    RGBSetBrightness(CAPTURE_HANDLE, c.brightness);
+    RGBSetContrast(CAPTURE_HANDLE, c.contrast);
+    RGBSetColourBalance(CAPTURE_HANDLE, c.redBrightness,
+                                        c.greenBrightness,
+                                        c.blueBrightness,
+                                        c.redContrast,
+                                        c.greenContrast,
+                                        c.blueContrast);
 
     update_known_mode_params(kc_hardware().status.capture_resolution(), &c, nullptr);
 
     return;
 }
 
-void kc_set_capture_video_params(const input_video_settings_s v)
+void kc_set_video_settings(const input_video_settings_s v)
 {
     if (kc_no_signal())
     {
@@ -1026,9 +1130,9 @@ void kc_set_capture_video_params(const input_video_settings_s v)
 
     RGBSetPhase(CAPTURE_HANDLE, v.phase);
     RGBSetBlackLevel(CAPTURE_HANDLE, v.blackLevel);
-    RGBSetHorPosition(CAPTURE_HANDLE, v.horPos);
-    RGBSetHorScale(CAPTURE_HANDLE, v.horScale);
-    RGBSetVerPosition(CAPTURE_HANDLE, v.verPos);
+    RGBSetHorPosition(CAPTURE_HANDLE, v.horizontalPosition);
+    RGBSetHorScale(CAPTURE_HANDLE, v.horizontalScale);
+    RGBSetVerPosition(CAPTURE_HANDLE, v.verticalPosition);
 
     update_known_mode_params(kc_hardware().status.capture_resolution(), nullptr, &v);
 
@@ -1187,14 +1291,14 @@ input_color_settings_s capture_hardware_s::metainfo_s::default_color_settings() 
 {
     input_color_settings_s p = {0};
 
-    if (!apicall_succeeds(RGBGetBrightnessDefault(CAPTURE_HANDLE, &p.bright)) ||
-        !apicall_succeeds(RGBGetContrastDefault(CAPTURE_HANDLE, &p.contr)) ||
-        !apicall_succeeds(RGBGetColourBalanceDefault(CAPTURE_HANDLE, &p.redBright,
-                                                                     &p.greenBright,
-                                                                     &p.blueBright,
-                                                                     &p.redContr,
-                                                                     &p.greenContr,
-                                                                     &p.blueContr)))
+    if (!apicall_succeeds(RGBGetBrightnessDefault(CAPTURE_HANDLE, &p.brightness)) ||
+        !apicall_succeeds(RGBGetContrastDefault(CAPTURE_HANDLE, &p.contrast)) ||
+        !apicall_succeeds(RGBGetColourBalanceDefault(CAPTURE_HANDLE, &p.redBrightness,
+                                                                     &p.greenBrightness,
+                                                                     &p.blueBrightness,
+                                                                     &p.redContrast,
+                                                                     &p.greenContrast,
+                                                                     &p.blueContrast)))
     {
         return {0};
     }
@@ -1206,14 +1310,14 @@ input_color_settings_s capture_hardware_s::metainfo_s::minimum_color_settings() 
 {
     input_color_settings_s p = {0};
 
-    if (!apicall_succeeds(RGBGetBrightnessMinimum(CAPTURE_HANDLE, &p.bright)) ||
-        !apicall_succeeds(RGBGetContrastMinimum(CAPTURE_HANDLE, &p.contr)) ||
-        !apicall_succeeds(RGBGetColourBalanceMinimum(CAPTURE_HANDLE, &p.redBright,
-                                                                     &p.greenBright,
-                                                                     &p.blueBright,
-                                                                     &p.redContr,
-                                                                     &p.greenContr,
-                                                                     &p.blueContr)))
+    if (!apicall_succeeds(RGBGetBrightnessMinimum(CAPTURE_HANDLE, &p.brightness)) ||
+        !apicall_succeeds(RGBGetContrastMinimum(CAPTURE_HANDLE, &p.contrast)) ||
+        !apicall_succeeds(RGBGetColourBalanceMinimum(CAPTURE_HANDLE, &p.redBrightness,
+                                                                     &p.greenBrightness,
+                                                                     &p.blueBrightness,
+                                                                     &p.redContrast,
+                                                                     &p.greenContrast,
+                                                                     &p.blueContrast)))
     {
         return {0};
     }
@@ -1225,14 +1329,14 @@ input_color_settings_s capture_hardware_s::metainfo_s::maximum_color_settings() 
 {
     input_color_settings_s p = {0};
 
-    if (!apicall_succeeds(RGBGetBrightnessMaximum(CAPTURE_HANDLE, &p.bright)) ||
-        !apicall_succeeds(RGBGetContrastMaximum(CAPTURE_HANDLE, &p.contr)) ||
-        !apicall_succeeds(RGBGetColourBalanceMaximum(CAPTURE_HANDLE, &p.redBright,
-                                                                     &p.greenBright,
-                                                                     &p.blueBright,
-                                                                     &p.redContr,
-                                                                     &p.greenContr,
-                                                                     &p.blueContr)))
+    if (!apicall_succeeds(RGBGetBrightnessMaximum(CAPTURE_HANDLE, &p.brightness)) ||
+        !apicall_succeeds(RGBGetContrastMaximum(CAPTURE_HANDLE, &p.contrast)) ||
+        !apicall_succeeds(RGBGetColourBalanceMaximum(CAPTURE_HANDLE, &p.redBrightness,
+                                                                     &p.greenBrightness,
+                                                                     &p.blueBrightness,
+                                                                     &p.redContrast,
+                                                                     &p.greenContrast,
+                                                                     &p.blueContrast)))
     {
         return {0};
     }
@@ -1246,9 +1350,9 @@ input_video_settings_s capture_hardware_s::metainfo_s::default_video_settings() 
 
     if (!apicall_succeeds(RGBGetPhaseDefault(CAPTURE_HANDLE, &p.phase)) ||
         !apicall_succeeds(RGBGetBlackLevelDefault(CAPTURE_HANDLE, &p.blackLevel)) ||
-        !apicall_succeeds(RGBGetHorPositionDefault(CAPTURE_HANDLE, &p.horPos)) ||
-        !apicall_succeeds(RGBGetVerPositionDefault(CAPTURE_HANDLE, &p.verPos)) ||
-        !apicall_succeeds(RGBGetHorScaleDefault(CAPTURE_HANDLE, &p.horScale)))
+        !apicall_succeeds(RGBGetHorPositionDefault(CAPTURE_HANDLE, &p.horizontalPosition)) ||
+        !apicall_succeeds(RGBGetVerPositionDefault(CAPTURE_HANDLE, &p.verticalPosition)) ||
+        !apicall_succeeds(RGBGetHorScaleDefault(CAPTURE_HANDLE, &p.horizontalScale)))
     {
         return {0};
     }
@@ -1262,9 +1366,9 @@ input_video_settings_s capture_hardware_s::metainfo_s::minimum_video_settings() 
 
     if (!apicall_succeeds(RGBGetPhaseMinimum(CAPTURE_HANDLE, &p.phase)) ||
         !apicall_succeeds(RGBGetBlackLevelMinimum(CAPTURE_HANDLE, &p.blackLevel)) ||
-        !apicall_succeeds(RGBGetHorPositionMinimum(CAPTURE_HANDLE, &p.horPos)) ||
-        !apicall_succeeds(RGBGetVerPositionMinimum(CAPTURE_HANDLE, &p.verPos)) ||
-        !apicall_succeeds(RGBGetHorScaleMinimum(CAPTURE_HANDLE, &p.horScale)))
+        !apicall_succeeds(RGBGetHorPositionMinimum(CAPTURE_HANDLE, &p.horizontalPosition)) ||
+        !apicall_succeeds(RGBGetVerPositionMinimum(CAPTURE_HANDLE, &p.verticalPosition)) ||
+        !apicall_succeeds(RGBGetHorScaleMinimum(CAPTURE_HANDLE, &p.horizontalScale)))
     {
         return {0};
     }
@@ -1278,9 +1382,9 @@ input_video_settings_s capture_hardware_s::metainfo_s::maximum_video_settings() 
 
     if (!apicall_succeeds(RGBGetPhaseMaximum(CAPTURE_HANDLE, &p.phase)) ||
         !apicall_succeeds(RGBGetBlackLevelMaximum(CAPTURE_HANDLE, &p.blackLevel)) ||
-        !apicall_succeeds(RGBGetHorPositionMaximum(CAPTURE_HANDLE, &p.horPos)) ||
-        !apicall_succeeds(RGBGetVerPositionMaximum(CAPTURE_HANDLE, &p.verPos)) ||
-        !apicall_succeeds(RGBGetHorScaleMaximum(CAPTURE_HANDLE, &p.horScale)))
+        !apicall_succeeds(RGBGetHorPositionMaximum(CAPTURE_HANDLE, &p.horizontalPosition)) ||
+        !apicall_succeeds(RGBGetVerPositionMaximum(CAPTURE_HANDLE, &p.verticalPosition)) ||
+        !apicall_succeeds(RGBGetHorScaleMaximum(CAPTURE_HANDLE, &p.horizontalScale)))
     {
         return {0};
     }
@@ -1359,7 +1463,7 @@ resolution_s capture_hardware_s::status_s::capture_resolution() const
     r.h = 480;
 #endif
 
-    r.bpp = CAPTURE_COLOR_DEPTH;
+    r.bpp = CAPTURE_OUTPUT_COLOR_DEPTH;
 
     return r;
 }
@@ -1368,14 +1472,14 @@ input_color_settings_s capture_hardware_s::status_s::color_settings() const
 {
     input_color_settings_s p = {0};
 
-    if (!apicall_succeeds(RGBGetBrightness(CAPTURE_HANDLE, &p.bright)) ||
-        !apicall_succeeds(RGBGetContrast(CAPTURE_HANDLE, &p.contr)) ||
-        !apicall_succeeds(RGBGetColourBalance(CAPTURE_HANDLE, &p.redBright,
-                                                              &p.greenBright,
-                                                              &p.blueBright,
-                                                              &p.redContr,
-                                                              &p.greenContr,
-                                                              &p.blueContr)))
+    if (!apicall_succeeds(RGBGetBrightness(CAPTURE_HANDLE, &p.brightness)) ||
+        !apicall_succeeds(RGBGetContrast(CAPTURE_HANDLE, &p.contrast)) ||
+        !apicall_succeeds(RGBGetColourBalance(CAPTURE_HANDLE, &p.redBrightness,
+                                                              &p.greenBrightness,
+                                                              &p.blueBrightness,
+                                                              &p.redContrast,
+                                                              &p.greenContrast,
+                                                              &p.blueContrast)))
     {
         return {0};
     }
@@ -1389,9 +1493,9 @@ input_video_settings_s capture_hardware_s::status_s::video_settings() const
 
     if (!apicall_succeeds(RGBGetPhase(CAPTURE_HANDLE, &p.phase)) ||
         !apicall_succeeds(RGBGetBlackLevel(CAPTURE_HANDLE, &p.blackLevel)) ||
-        !apicall_succeeds(RGBGetHorPosition(CAPTURE_HANDLE, &p.horPos)) ||
-        !apicall_succeeds(RGBGetVerPosition(CAPTURE_HANDLE, &p.verPos)) ||
-        !apicall_succeeds(RGBGetHorScale(CAPTURE_HANDLE, &p.horScale)))
+        !apicall_succeeds(RGBGetHorPosition(CAPTURE_HANDLE, &p.horizontalPosition)) ||
+        !apicall_succeeds(RGBGetVerPosition(CAPTURE_HANDLE, &p.verticalPosition)) ||
+        !apicall_succeeds(RGBGetHorScale(CAPTURE_HANDLE, &p.horizontalScale)))
     {
         return {0};
     }
@@ -1467,11 +1571,11 @@ bool capture_interface_s::initialize_hardware()
         !apicall_succeeds(RGBSetDMADirect(CAPTURE_HANDLE, FALSE)) ||
         !apicall_succeeds(RGBSetPixelFormat(CAPTURE_HANDLE, CAPTURE_PIXEL_FORMAT)) ||
         !apicall_succeeds(RGBUseOutputBuffers(CAPTURE_HANDLE, FALSE)) ||
-        !apicall_succeeds(RGBSetFrameCapturedFn(CAPTURE_HANDLE, API_CALLBACKS.frame_captured, 0)) ||
-        !apicall_succeeds(RGBSetModeChangedFn(CAPTURE_HANDLE, API_CALLBACKS.video_mode_changed, 0)) ||
-        !apicall_succeeds(RGBSetInvalidSignalFn(CAPTURE_HANDLE, API_CALLBACKS.invalid_signal, (ULONG_PTR)&CAPTURE_HANDLE)) ||
-        !apicall_succeeds(RGBSetErrorFn(CAPTURE_HANDLE, API_CALLBACKS.error, (ULONG_PTR)&CAPTURE_HANDLE)) ||
-        !apicall_succeeds(RGBSetNoSignalFn(CAPTURE_HANDLE, API_CALLBACKS.no_signal, (ULONG_PTR)&CAPTURE_HANDLE)))
+        !apicall_succeeds(RGBSetFrameCapturedFn(CAPTURE_HANDLE, api_callbacks_n::frame_captured, 0)) ||
+        !apicall_succeeds(RGBSetModeChangedFn(CAPTURE_HANDLE, api_callbacks_n::video_mode_changed, 0)) ||
+        !apicall_succeeds(RGBSetInvalidSignalFn(CAPTURE_HANDLE, api_callbacks_n::invalid_signal, (ULONG_PTR)&CAPTURE_HANDLE)) ||
+        !apicall_succeeds(RGBSetErrorFn(CAPTURE_HANDLE, api_callbacks_n::error, (ULONG_PTR)&CAPTURE_HANDLE)) ||
+        !apicall_succeeds(RGBSetNoSignalFn(CAPTURE_HANDLE, api_callbacks_n::no_signal, (ULONG_PTR)&CAPTURE_HANDLE)))
     {
         NBENE(("Failed to initialize the capture hardware."));
         goto fail;
@@ -1624,116 +1728,3 @@ bool capture_interface_s::set_capture_resolution(const resolution_s &r)
     fail:
     return false;
 }
-
-#if USE_RGBEASY_API
-    void RGBCBKAPI api_callbacks_s::frame_captured(HWND, void *, LPBITMAPINFOHEADER frameInfo, void *frameData, unsigned long *)
-    {
-        if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
-        {
-            //ERRORI(("The capture hardware sent in a frame before VCS had finished processing "
-            //        "the previous one. Skipping this new one. (Captured: %u, processed: %u.)",
-            //        CNT_FRAMES_CAPTURED.load(), CNT_FRAMES_PROCESSED.load()));
-            CNT_FRAMES_SKIPPED++;
-            return;
-        }
-
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        // Ignore new callback events if the user has signaled to quit the program.
-        if (PROGRAM_EXIT_REQUESTED)
-        {
-            goto done;
-        }
-
-        // This could happen e.g. if direct DMA transfer is enabled.
-        if (frameData == nullptr ||
-                frameInfo == nullptr)
-        {
-            goto done;
-        }
-
-        if (FRAME_BUFFER.pixels.is_null())
-        {
-            //ERRORI(("The capture hardware sent in a frame but the frame buffer was uninitialized. "
-            //        "Ignoring the frame."));
-            goto done;
-        }
-
-        if (frameInfo->biBitCount > MAX_BIT_DEPTH)
-        {
-            //ERRORI(("The capture hardware sent in a frame that had an illegal bit depth (%u). "
-            //        "The maximum allowed bit depth is %u.", frameInfo->biBitCount, MAX_BIT_DEPTH));
-            goto done;
-        }
-
-        FRAME_BUFFER.r.w = frameInfo->biWidth;
-        FRAME_BUFFER.r.h = abs(frameInfo->biHeight);
-        FRAME_BUFFER.r.bpp = frameInfo->biBitCount;
-
-        // Copy the frame's data into our local buffer so we can work on it.
-        memcpy(FRAME_BUFFER.pixels.ptr(), (u8*)frameData,
-               FRAME_BUFFER.pixels.up_to(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8)));
-
-    done:
-        CNT_FRAMES_CAPTURED++;
-        return;
-    }
-
-    void RGBCBKAPI api_callbacks_s::video_mode_changed(HWND, void *, PRGBMODECHANGEDINFO info, unsigned long *)
-    {
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        // Ignore new callback events if the user has signaled to quit the program.
-        if (PROGRAM_EXIT_REQUESTED)
-        {
-            goto done;
-        }
-
-        SIGNAL_WOKE_UP = !RECEIVING_A_SIGNAL;
-        RECEIVED_NEW_VIDEO_MODE = true;
-        SIGNAL_IS_INVALID = false;
-
-    done:
-        return;
-    }
-
-    void RGBCBKAPI api_callbacks_s::invalid_signal(HWND, void *, unsigned long horClock, unsigned long verClock, unsigned long *captureHandle)
-    {
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        // Ignore new callback events if the user has signaled to quit the program.
-        if (PROGRAM_EXIT_REQUESTED)
-        {
-            goto done;
-        }
-
-        // Let the card apply its own no signal handler as well, just in case.
-        RGBInvalidSignal(captureHandle, horClock, verClock);
-
-        SIGNAL_IS_INVALID = true;
-
-    done:
-        return;
-    }
-
-    void RGBCBKAPI api_callbacks_s::no_signal(HWND, void *, unsigned long *captureHandle)
-    {
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        // Let the card apply its own no signal handler as well, just in case.
-        RGBNoSignal(captureHandle);
-
-        SIGNAL_WAS_LOST = true;
-
-        return;
-    }
-
-    void RGBCBKAPI api_callbacks_s::error(HWND, void *, unsigned long error, unsigned long *, unsigned long *)
-    {
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        UNRECOVERABLE_CAPTURE_ERROR = true;
-
-        return;
-    }
-#endif
