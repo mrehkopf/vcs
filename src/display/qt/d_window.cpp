@@ -395,18 +395,18 @@ void MainWindow::set_keyboard_shortcuts()
     }
 
     // Assign alt + arrow keys to move the capture input alignment horizontally and vertically.
-    QShortcut *altLeft = new QShortcut(QKeySequence("alt+left"), this);
-    altLeft->setContext(Qt::ApplicationShortcut);
-    connect(altLeft, &QShortcut::activated, []{kc_adjust_capture_horizontal_offset(1);});
-    QShortcut *altRight = new QShortcut(QKeySequence("alt+right"), this);
-    altRight->setContext(Qt::ApplicationShortcut);
-    connect(altRight, &QShortcut::activated, []{kc_adjust_capture_horizontal_offset(-1);});
-    QShortcut *altUp = new QShortcut(QKeySequence("alt+up"), this);
-    altUp->setContext(Qt::ApplicationShortcut);
-    connect(altUp, &QShortcut::activated, []{kc_adjust_capture_vertical_offset(1);});
-    QShortcut *altDown = new QShortcut(QKeySequence("alt+down"), this);
-    altDown->setContext(Qt::ApplicationShortcut);
-    connect(altDown, &QShortcut::activated, []{kc_adjust_capture_vertical_offset(-1);});
+    QShortcut *altShiftLeft = new QShortcut(QKeySequence("alt+shift+left"), this);
+    altShiftLeft->setContext(Qt::ApplicationShortcut);
+    connect(altShiftLeft, &QShortcut::activated, []{kc_adjust_capture_horizontal_offset(1);});
+    QShortcut *altShiftRight = new QShortcut(QKeySequence("alt+shift+right"), this);
+    altShiftRight->setContext(Qt::ApplicationShortcut);
+    connect(altShiftRight, &QShortcut::activated, []{kc_adjust_capture_horizontal_offset(-1);});
+    QShortcut *altShiftUp = new QShortcut(QKeySequence("alt+shift+up"), this);
+    altShiftUp->setContext(Qt::ApplicationShortcut);
+    connect(altShiftUp, &QShortcut::activated, []{kc_adjust_capture_vertical_offset(1);});
+    QShortcut *altShiftDown = new QShortcut(QKeySequence("alt+shift+down"), this);
+    altShiftDown->setContext(Qt::ApplicationShortcut);
+    connect(altShiftDown, &QShortcut::activated, []{kc_adjust_capture_vertical_offset(-1);});
 
     /// NOTE: Qt's full-screen mode might not work correctly under Linux, depending
     /// on the distro etc.
