@@ -31,7 +31,6 @@
 #include "../../scaler/scaler.h"
 #include "d_window.h"
 #include "w_opengl.h"
-#include "../../main.h"
 
 /// Temp. Stores the number of milliseconds passed for each frame update. This
 /// number includes everything done to the frame - capture, scaling, and display.

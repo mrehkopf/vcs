@@ -27,7 +27,7 @@
 #include "../../record/record.h"
 #include "../../filter/filter.h"
 #include "../../common/globals.h"
-#include "../../main.h"
+#include "../../common/propagate.h"
 #include "../../common/log.h"
 #include "../display.h"
 #include "d_window.h"
@@ -633,7 +633,7 @@ void ControlPanel::parse_input_resolution_button_press(QWidget *button)
 
     assign_resolution:
     DEBUG(("Received a request via the GUI to set the input resolution to %u x %u.", res.w, res.h));
-    kmain_change_capture_input_resolution(res);
+    kpropagate_forced_input_resolution(res);
 
     done:
     return;

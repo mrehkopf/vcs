@@ -9,12 +9,15 @@
  *
  */
 
+#include <mutex>
 #include "propagate.h"
 #include "../common/globals.h"
 #include "../display/display.h"
 #include "../capture/capture.h"
 #include "../scaler/scaler.h"
 #include "../record/record.h"
+
+extern std::mutex INPUT_OUTPUT_MUTEX;
 
 // A new input video mode (e.g. resolution) has been set.
 void kpropagate_new_input_video_mode(void)
@@ -103,6 +106,42 @@ void kpropagate_unrecoverable_error(void)
     NBENE(("VCS has met with an unrecoverable error. Shutting the program down."));
 
     PROGRAM_EXIT_REQUESTED = true;
+
+    return;
+}
+
+void kpropagate_forced_input_resolution(const resolution_s &r)
+{
+    std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
+
+    const resolution_s min = kc_hardware().meta.minimum_capture_resolution();
+    const resolution_s max = kc_hardware().meta.maximum_capture_resolution();
+
+    if (kc_no_signal())
+    {
+        DEBUG(("Was asked to change the input resolution while the capture card was not receiving a signal. Ignoring the request."));
+        goto done;
+    }
+
+    if (r.w > max.w ||
+        r.w < min.w ||
+        r.h > max.h ||
+        r.h < min.h)
+    {
+        NBENE(("Was asked to set an input resolution which is not supported by the capture card (%u x %u). Ignoring the request.",
+               r.w, r.h));
+        goto done;
+    }
+
+    if (!kc_force_capture_input_resolution(r))
+    {
+        NBENE(("Failed to set the new input resolution (%u x %u).", r.w, r.h));
+        goto done;
+    }
+
+    kpropagate_new_input_video_mode();
+
+    done:
 
     return;
 }

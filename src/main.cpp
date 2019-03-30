@@ -18,13 +18,12 @@
 #include "scaler/scaler.h"
 #include "common/globals.h"
 #include "filter/filter.h"
-#include "main.h"
+
+extern std::mutex INPUT_OUTPUT_MUTEX;
 
 // Set to !0 when we want to exit the program.
 /// TODO. Don't have this global.
 i32 PROGRAM_EXIT_REQUESTED = 0;
-
-extern std::mutex INPUT_OUTPUT_MUTEX;
 
 static void cleanup_all(void)
 {
@@ -62,43 +61,6 @@ static bool initialize_all(void)
     }
 
     return !PROGRAM_EXIT_REQUESTED;
-}
-
-// Try to have the capture card force the given input resolution.
-//
-void kmain_change_capture_input_resolution(const resolution_s r)
-{
-    std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-    const resolution_s min = kc_hardware().meta.minimum_capture_resolution();
-    const resolution_s max = kc_hardware().meta.maximum_capture_resolution();
-
-    if (kc_no_signal())
-    {
-        DEBUG(("Was asked to change the input resolution while the capture card was not receiving a signal. Ignoring the request."));
-        goto done;
-    }
-
-    if (r.w > max.w ||
-        r.w < min.w ||
-        r.h > max.h ||
-        r.h < min.h)
-    {
-        NBENE(("Was asked to set an input resolution which is not supported by the capture card (%u x %u). Ignoring the request.",
-               r.w, r.h));
-        goto done;
-    }
-
-    if (!kc_force_capture_input_resolution(r))
-    {
-        NBENE(("Failed to set the new input resolution (%u x %u).", r.w, r.h));
-        goto done;
-    }
-
-    kpropagate_new_input_video_mode();
-
-    done:
-    return;
 }
 
 static capture_event_e process_next_capture_event(void)

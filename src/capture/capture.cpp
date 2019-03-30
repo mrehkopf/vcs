@@ -14,7 +14,6 @@
 #include "../common/propagate.h"
 #include "../display/display.h"
 #include "../common/globals.h"
-#include "../main.h"
 #include "../common/csv.h"
 #include "capture.h"
 
@@ -948,7 +947,7 @@ void kc_update_alias_resolutions(const std::vector<mode_alias_s> &aliases)
             if (alias.from.w == currentRes.w &&
                 alias.from.h == currentRes.h)
             {
-                kmain_change_capture_input_resolution(alias.to);
+                kpropagate_forced_input_resolution(alias.to);
                 break;
             }
         }

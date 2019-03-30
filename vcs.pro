@@ -86,7 +86,6 @@ HEADERS += \
     src/scaler/scaler.h \
     src/capture/capture.h \
     src/display/display.h \
-    src/main.h \
     src/display/qt/d_control_panel.h \
     src/common/log.h \
     src/display/qt/d_video_and_color_dialog.h \

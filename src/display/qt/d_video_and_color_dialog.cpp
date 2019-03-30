@@ -15,7 +15,6 @@
 #include "../../common/persistent_settings.h"
 #include "../../capture/capture.h"
 #include "../display.h"
-#include "../../main.h"
 #include "d_util.h"
 
 /*
