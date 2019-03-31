@@ -6,8 +6,6 @@
  *
  */
 
-#include <QDebug>
-#include <thread>
 #include <atomic>
 #include <mutex>
 #include "../common/command_line.h"
