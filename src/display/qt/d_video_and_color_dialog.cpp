@@ -424,13 +424,16 @@ void VideoAndColorDialog::save_settings(void)
 {
     QString filename = QFileDialog::getSaveFileName(this,
                                                     "Save video and color settings as...", "",
-                                                    "Mode parameters (*.vcsm);;All files(*.*)");
+                                                    "Mode parameters (*.vcsm *.vcs-video);;All files(*.*)");
     if (filename.isNull())
     {
         return;
     }
 
-    if (QFileInfo(filename).suffix() != "vcsm") filename.append(".vcsm");
+    if (!QStringList({"vcs-video", "vcsm"}).contains(QFileInfo(filename).suffix()))
+    {
+        filename.append(".vcs-video");
+    }
 
     kdisk_save_mode_params(kc_mode_params(), filename);
 
@@ -441,7 +444,7 @@ void VideoAndColorDialog::load_settings(void)
 {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     "Load video and color settings from...", "",
-                                                    "Mode parameters (*.vcsm);;All files(*.*)");
+                                                    "Mode parameters (*.vcsm *.vcs-video);;All files(*.*)");
     if (filename.isNull())
     {
         return;
