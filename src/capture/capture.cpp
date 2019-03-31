@@ -435,14 +435,6 @@ void kc_release_capture(void)
 {
     INFO(("Releasing the capturer."));
 
-    if (FRAME_BUFFER.pixels.is_null())
-    {
-        DEBUG(("Was asked to release the capturer, but the framebuffer was null. "
-               "maybe the capturer hadn't been initialized? Ignoring this request."));
-
-        return;
-    }
-
     if (CAPTURE_INTERFACE.stop_capture() &&
         CAPTURE_INTERFACE.release_hardware())
     {
@@ -1325,10 +1317,8 @@ fail:
 
 bool capture_interface_s::release_hardware()
 {
-    if (!RGBEASY_IS_LOADED) return true;
-
     if (!apicall_succeeds(RGBCloseInput(CAPTURE_HANDLE)) ||
-            !apicall_succeeds(RGBFree(CAPTURE_HANDLE)))
+        !apicall_succeeds(RGBFree(CAPTURE_HANDLE)))
     {
         return false;
     }

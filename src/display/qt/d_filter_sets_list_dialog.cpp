@@ -24,6 +24,7 @@
 #include "../../common/globals.h"
 #include "../../filter/filter.h"
 #include "../../scaler/scaler.h"
+#include "../../common/disk.h"
 #include "../../common/csv.h"
 #include "../display.h"
 #include "ui_d_filter_sets_list_dialog.h"
@@ -39,7 +40,7 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
     // Don't show the context help '?' button in the window bar.
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    load_sets_from_file(kcom_filters_file_name());
+    kdisk_load_filter_sets(kcom_filters_file_name());
 
     resize(kpers_value_of(INI_GROUP_GEOMETRY, "filtering", size()).toSize());
 
@@ -121,6 +122,13 @@ void FilterSetsListDialog::signal_filtering_enabled(const bool state)
     return;
 }
 
+void FilterSetsListDialog::update_filter_sets_list(void)
+{
+    this->repopulate_filter_sets_list();
+
+    return;
+}
+
 void FilterSetsListDialog::receive_current_filter_set_idx(const int idx)
 {
     if (!this->filteringIsEnabled) return;
@@ -165,188 +173,18 @@ bool FilterSetsListDialog::load_sets_from_file(void)
 {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     "Load filter sets from...", "",
-                                                    "Filter set files (*.vcsf *.vcs-filtersets);;"
+                                                    "Filter set files (*.vcs-filtersets *.vcsf );;"
                                                     "All files(*.*)");
 
     if (filename.isNull()) return false;
 
-    load_sets_from_file(filename);
-
-    return true;
-}
-
-// Load previously-saved filter sets from the given file.
-//
-/// TODO. Needs cleanup.
-bool FilterSetsListDialog::load_sets_from_file(QString filename)
-{
-    std::vector<filter_set_s*> setsFromDisk;
-
-    if (filename.isEmpty())
+    if (kdisk_load_filter_sets(filename))
     {
-        INFO(("No filter set file defined, skipping."));
+        ui->label_sourceFilename->setText(QFileInfo(filename).fileName());
+
         return true;
     }
 
-    QList<QStringList> rowData = csv_parse_c(filename).contents();
-    if (rowData.isEmpty())
-    {
-        goto fail;
-    }
-
-    // Each mode is saved as a block of rows, starting with a 3-element row defining
-    // the mode's resolution, followed by several 2-element rows defining the various
-    // video and color parameters for the resolution.
-    for (int row = 0; row < rowData.count();)
-    {
-        filter_set_s *set = new filter_set_s;
-
-        if ((rowData[row].count() != 5) ||
-            (rowData[row].at(0) != "inout"))
-        {
-            NBENE(("Expected a 5-parameter 'inout' statement to begin a filter set block."));
-            goto fail;
-        }
-        set->inRes.w = rowData[row].at(1).toUInt();
-        set->inRes.h = rowData[row].at(2).toUInt();
-        set->outRes.w = rowData[row].at(3).toUInt();
-        set->outRes.h = rowData[row].at(4).toUInt();
-
-        set->activation = 0;
-        if (set->inRes.w == 0 && set->inRes.h == 0 &&
-            set->outRes.w == 0 && set->outRes.h == 0)
-        {
-            set->activation |= filter_set_s::activation_e::all;
-        }
-        else
-        {
-            if (set->inRes.w != 0 && set->inRes.h != 0) set->activation |= filter_set_s::activation_e::in;
-            if (set->outRes.w != 0 && set->outRes.h != 0) set->activation |= filter_set_s::activation_e::out;
-        }
-
-        #define verify_first_element_on_row_is(name) if (rowData[row].at(0) != name)\
-                                                     {\
-                                                        NBENE(("Error while loading the filter set file: expected '%s' but got '%s'.",\
-                                                               name, rowData[row].at(0).toStdString().c_str()));\
-                                                        goto fail;\
-                                                     }
-
-        row++;
-        if (rowData[row].at(0) != "enabled") // Legacy support, 'description' was pushed in front of 'enabled' in later revisions.
-        {
-            verify_first_element_on_row_is("description");
-            set->description = rowData[row].at(1);
-
-            row++;
-        }
-        else
-        {
-            set->description = "";
-        }
-
-        verify_first_element_on_row_is("enabled");
-        set->isEnabled = rowData[row].at(1).toInt();
-
-        row++;
-        verify_first_element_on_row_is("scaler");
-        set->scaler = ks_scaler_for_name_string(rowData[row].at(1));
-
-        row++;
-        verify_first_element_on_row_is("preFilters");
-        const uint numPreFilters = rowData[row].at(1).toUInt();
-        for (uint i = 0; i < numPreFilters; i++)
-        {
-            row++;
-            verify_first_element_on_row_is("pre");
-
-            filter_s filter;
-
-            filter.name = rowData[row].at(1);
-
-            const uint numParams = rowData[row].at(2).toUInt();
-            if (numPreFilters >= FILTER_DATA_LENGTH)
-            {
-                NBENE(("Too many parameters specified for a filter."));
-                goto fail;
-            }
-
-            for (uint p = 0; p < numParams; p++)
-            {
-                uint datum = rowData[row].at(3 + p).toInt();
-                if (datum > 255)
-                {
-                    NBENE(("A filter parameter had a value outside of the range allowed (0..255)."));
-                    goto fail;
-                }
-                filter.data[p] = datum;
-            }
-
-            set->preFilters.push_back(filter);
-        }
-
-        /// TODO. Code duplication.
-        row++;
-        verify_first_element_on_row_is("postFilters");
-        const uint numPostFilters = rowData[row].at(1).toUInt();
-        for (uint i = 0; i < numPostFilters; i++)
-        {
-            row++;
-            verify_first_element_on_row_is("post");
-
-            filter_s filter;
-
-            filter.name = rowData[row].at(1);
-
-            const uint numParams = rowData[row].at(2).toUInt();
-            if (numPreFilters >= FILTER_DATA_LENGTH)
-            {
-                NBENE(("Too many parameters specified for a filter."));
-                goto fail;
-            }
-
-            for (uint p = 0; p < numParams; p++)
-            {
-                uint datum = rowData[row].at(3 + p).toInt();
-                if (datum > 255)
-                {
-                    NBENE(("A filter parameter had a value outside of the range allowed (0..255)."));
-                    goto fail;
-                }
-                filter.data[p] = datum;
-            }
-
-            set->postFilters.push_back(filter);
-        }
-
-        #undef verify_first_element_on_row_is
-
-        row++;
-
-        setsFromDisk.push_back(set);
-    }
-
-    // Add the filter sets we just loaded to the filterer and the GUI.
-    {
-        kf_clear_filters();
-
-        for (auto *const set: setsFromDisk)
-        {
-            kf_add_filter_set(set);
-        }
-
-        repopulate_filter_sets_list();
-    }
-
-    ui->label_sourceFilename->setText(QFileInfo(filename).fileName());
-
-    INFO(("Loaded %u filter set(s) from disk.", setsFromDisk.size()));
-    return true;
-
-    fail:
-    kd_show_headless_error_message("Data was not loaded",
-                                   "An error was encountered while loading the filter "
-                                   "sets. No data was loaded.\n\nMore "
-                                   "information about the error may be found in the terminal.");
     return false;
 }
 
@@ -354,7 +192,7 @@ bool FilterSetsListDialog::save_sets_to_file(void)
 {
     QString filename = QFileDialog::getSaveFileName(this,
                                                     "Save filter sets as...", "",
-                                                    "Filter set files (*.vcsf *.vcs-filtersets);;"
+                                                    "Filter set files (*.vcs-filtersets *.vcsf);;"
                                                     "All files(*.*)");
     if (filename.isNull())
     {
@@ -366,92 +204,13 @@ bool FilterSetsListDialog::save_sets_to_file(void)
         filename.append(".vcs-filtersets");
     }
 
-    const QString tempFilename = filename + ".tmp"; // Use a temporary file at first, until we're reasonably sure there were no errors while saving.
-    QFile file(tempFilename);
-    QTextStream f(&file);
-    const std::vector<filter_set_s*> &filterSets = kf_filter_sets();
-
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    if (kdisk_save_filter_sets(kf_filter_sets(), filename))
     {
-        NBENE(("Unable to open the filter set file for saving."));
-        goto fail;
+        ui->label_sourceFilename->setText(QFileInfo(filename).fileName());
+
+        return true;
     }
 
-    for (const auto *set: filterSets)
-    {
-        // Save the resolutions.
-        {
-            // Encode the filter set's activation in the resolution values, where 0
-            // means the set activates for all resolutions.
-            resolution_s inRes = set->inRes, outRes = set->outRes;
-            if (set->activation & filter_set_s::activation_e::all)
-            {
-                inRes = {0, 0};
-                outRes = {0, 0};
-            }
-            else
-            {
-                if (!(set->activation & filter_set_s::activation_e::in)) inRes = {0, 0};
-                if (!(set->activation & filter_set_s::activation_e::out)) outRes = {0, 0};
-            }
-
-            f << "inout,"
-              << inRes.w << ',' << inRes.h << ','
-              << outRes.w << ',' << outRes.h << '\n';
-        }
-
-        f << "description,{" << set->description << "}\n";
-        f << "enabled," << set->isEnabled << '\n';
-        f << "scaler,{" << set->scaler->name << "}\n";
-
-        // Save the filters.
-        auto save_filter_data = [&](std::vector<filter_s> filters, const QString &filterType)
-        {
-            for (auto &filter: filters)
-            {
-                f << filterType << ",{" << filter.name << "}," << FILTER_DATA_LENGTH;
-                for (uint q = 0; q < FILTER_DATA_LENGTH; q++)
-                {
-                    f << ',' << (u8)filter.data[q];
-                }
-                f << '\n';
-            }
-        };
-        f << "preFilters," << set->preFilters.size() << '\n';
-        save_filter_data(set->preFilters, "pre");
-        f << "postFilters," << set->postFilters.size() << '\n';
-        save_filter_data(set->postFilters, "post");
-
-        f << '\n';
-    }
-
-    file.close();
-
-    // Replace the existing save file with our new data.
-    if (QFile(filename).exists())
-    {
-        if (!QFile(filename).remove())
-        {
-            NBENE(("Failed to remove old filter set file."));
-            goto fail;
-        }
-    }
-    if (!QFile(tempFilename).rename(filename))
-    {
-        NBENE(("Failed to write filter sets to file."));
-        goto fail;
-    }
-
-    ui->label_sourceFilename->setText(QFileInfo(filename).fileName());
-
-    INFO(("Saved %u filter set(s) to disk.", filterSets.size()));
-    return true;
-
-    fail:
-    kd_show_headless_error_message("Data was not saved",
-                                   "An error was encountered while preparing the filter "
-                                   "sets for saving. No data was saved. \n\nMore "
-                                   "information about the error may be found in the terminal.");
     return false;
 }
 

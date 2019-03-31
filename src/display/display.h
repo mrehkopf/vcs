@@ -55,6 +55,8 @@ int kd_average_system_latency(void);
 
 void kd_update_gui_video_params(void);
 
+void kd_update_gui_filter_sets_list(void);
+
 bool kd_is_fullscreen(void);
 
 void kd_notify_gui_of_capture_signal_change(const bool receivingSignal);

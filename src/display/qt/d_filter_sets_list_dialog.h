@@ -34,6 +34,8 @@ public:
 
     void signal_filtering_enabled(const bool state);
 
+    void update_filter_sets_list();
+
 private slots:
     void on_treeWidget_setList_itemChanged(QTreeWidgetItem *item);
 
@@ -47,7 +49,6 @@ private slots:
 
     void on_pushButton_down_clicked();
 
-    bool load_sets_from_file(QString filename);
     bool load_sets_from_file();
 
     bool save_sets_to_file();

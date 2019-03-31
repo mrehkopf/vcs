@@ -441,6 +441,14 @@ void ControlPanel::update_current_filter_set_idx(const int idx)
     return;
 }
 
+void ControlPanel::update_filter_sets_list(void)
+{
+    k_assert(filterSetsDlg != nullptr, "");
+    filterSetsDlg->update_filter_sets_list();
+
+    return;
+}
+
 void ControlPanel::update_video_params(void)
 {
     k_assert(videocolorDlg != nullptr, "");

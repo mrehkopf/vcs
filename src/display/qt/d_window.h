@@ -98,6 +98,8 @@ public:
 
     void update_video_params();
 
+    void update_filter_sets_list();
+
 private slots:
     void toggle_window_border();
 

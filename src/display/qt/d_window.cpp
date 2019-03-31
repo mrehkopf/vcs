@@ -556,6 +556,14 @@ void MainWindow::update_current_filter_set_idx(const int idx)
     return;
 }
 
+void MainWindow::update_filter_sets_list(void)
+{
+    k_assert(controlPanel != nullptr, "");
+    controlPanel->update_filter_sets_list();
+
+    return;
+}
+
 void MainWindow::update_video_params(void)
 {
     k_assert(controlPanel != nullptr, "");

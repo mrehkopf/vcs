@@ -13,6 +13,7 @@
 #include "propagate.h"
 #include "../common/globals.h"
 #include "../display/display.h"
+#include "../filter/filter.h"
 #include "../capture/capture.h"
 #include "../scaler/scaler.h"
 #include "../record/record.h"
@@ -69,10 +70,28 @@ void kpropagate_saved_mode_params_to_disk(const std::vector<mode_params_s> &mode
     return;
 }
 
+void kpropagate_saved_filter_sets_to_disk(const std::vector<filter_set_s*> &filterSets,
+                                          const std::string &targetFilename)
+{
+    INFO(("Saved %u filter set(s) to disk.", filterSets.size()));
+
+    return;
+}
+
 void kpropagate_saved_aliases_to_disk(const std::vector<mode_alias_s> &aliases,
                                       const std::string &targetFilename)
 {
     INFO(("Saved %u aliases to disk.", aliases.size()));
+
+    return;
+}
+
+void kpropagate_loaded_filter_sets_from_disk(const std::vector<filter_set_s*> &filterSets,
+                                             const std::string &sourceFilename)
+{
+    INFO(("Loaded %u filter set(s) from disk.", filterSets.size()));
+
+    kd_update_gui_filter_sets_list();
 
     return;
 }

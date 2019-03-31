@@ -100,6 +100,16 @@ void kd_update_gui_filter_set_idx(const int idx)
     return;
 }
 
+void kd_update_gui_filter_sets_list(void)
+{
+    if (WINDOW != nullptr)
+    {
+        WINDOW->update_filter_sets_list();
+    }
+
+    return;
+}
+
 void kd_update_gui_video_params(void)
 {
     if (WINDOW != nullptr)

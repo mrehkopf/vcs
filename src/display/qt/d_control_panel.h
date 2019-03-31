@@ -88,6 +88,8 @@ public:
 
     void update_video_params();
 
+    void update_filter_sets_list();
+
 private slots:
     void on_checkBox_logInfo_toggled(bool);
 
