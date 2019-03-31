@@ -42,16 +42,10 @@ private slots:
 
     void on_spinBox_threshold_valueChanged(int arg1);
 
-    void load_settings(void);
-
-    void save_settings(void);
-
     void restore_default_settings(void);
 
 private:
     void update_visualization_options();
-
-    void create_menu_bar(void);
 
     Ui::AntiTearDialog *ui;
 

@@ -400,7 +400,7 @@ bool kc_adjust_video_vertical_offset(const int delta)
     {
         // ^ Testing for < 2 along with < MIN_VIDEO_PARAMS.verPos, since on my
         // VisionRGB-PRO2, MIN_VIDEO_PARAMS.verPos gives a value less than 2,
-        // but setting any such value corrupts the capture.
+        // but setting any such value corrupts the captured image.
         return false;
     }
 
