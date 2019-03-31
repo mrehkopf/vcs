@@ -1318,7 +1318,7 @@ fail:
 bool capture_interface_s::release_hardware()
 {
     if (!apicall_succeeds(RGBCloseInput(CAPTURE_HANDLE)) ||
-        !apicall_succeeds(RGBFree(CAPTURE_HANDLE)))
+        !apicall_succeeds(RGBFree(RGBAPI_HANDLE)))
     {
         return false;
     }
@@ -1358,15 +1358,14 @@ bool capture_interface_s::stop_capture()
             NBENE(("Failed to stop capture on input channel %d.", (INPUT_CHANNEL_IDX + 1)));
             goto fail;
         }
-
-        CAPTURE_IS_ACTIVE = false;
     }
     else
     {
-        CAPTURE_IS_ACTIVE = false;
-
-        DEBUG(("Was asked to stop the capture even though it hadn't been started. Ignoring this request."));
+        NBENE(("Was asked to stop the capture even though it hadn't been started."));
+        goto fail;
     }
+
+    CAPTURE_IS_ACTIVE = false;
 
     INFO(("Restoring default callback handlers."));
     RGBSetFrameCapturedFn(CAPTURE_HANDLE, NULL, 0);
@@ -1377,7 +1376,7 @@ bool capture_interface_s::stop_capture()
 
     return true;
 
-fail:
+    fail:
     return false;
 }
 
