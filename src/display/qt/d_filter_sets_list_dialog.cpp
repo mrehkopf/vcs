@@ -165,7 +165,7 @@ bool FilterSetsListDialog::load_sets_from_file(void)
 {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     "Load filter sets from...", "",
-                                                    "Filter set files (*.vcsf);;"
+                                                    "Filter set files (*.vcsf *.vcs-filtersets);;"
                                                     "All files(*.*)");
 
     if (filename.isNull()) return false;
@@ -354,14 +354,17 @@ bool FilterSetsListDialog::save_sets_to_file(void)
 {
     QString filename = QFileDialog::getSaveFileName(this,
                                                     "Save filter sets as...", "",
-                                                    "Filter set files (*.vcsf);;"
+                                                    "Filter set files (*.vcsf *.vcs-filtersets);;"
                                                     "All files(*.*)");
     if (filename.isNull())
     {
         return false;
     }
 
-    if (QFileInfo(filename).suffix() != "vcsf") filename.append(".vcsf");
+    if (!QStringList({"vcs-filtersets", "vcsf"}).contains(QFileInfo(filename).suffix()))
+    {
+        filename.append(".vcs-filtersets");
+    }
 
     const QString tempFilename = filename + ".tmp"; // Use a temporary file at first, until we're reasonably sure there were no errors while saving.
     QFile file(tempFilename);
