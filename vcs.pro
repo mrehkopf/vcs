@@ -75,7 +75,8 @@ SOURCES += \
     src/display/qt/d_filter_sets_list_dialog.cpp \
     src/display/qt/w_opengl.cpp \
     src/record/record.cpp \
-    src/common/propagate.cpp
+    src/common/propagate.cpp \
+    src/common/disk.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -106,7 +107,8 @@ HEADERS += \
     src/display/qt/d_filter_sets_list_dialog.h \
     src/display/qt/w_opengl.h \
     src/record/record.h \
-    src/common/propagate.h
+    src/common/propagate.h \
+    src/common/disk.h
 
 FORMS += \
     src/display/qt/d_control_panel.ui \

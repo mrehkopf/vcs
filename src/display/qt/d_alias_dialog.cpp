@@ -16,6 +16,7 @@
 #include "ui_d_alias_dialog.h"
 #include "d_alias_dialog.h"
 #include "../../capture/capture.h"
+#include "../../common/disk.h"
 #include "../display.h"
 
 // Custom Qt::ItemDataRole values.
@@ -74,7 +75,7 @@ void AliasDialog::broadcast_aliases(void)
         aliases.push_back(a);
     }
 
-    kc_update_alias_resolutions(aliases);
+    kc_set_aliases(aliases);
 
     return;
 }
@@ -212,7 +213,7 @@ void AliasDialog::load_aliases()
         return;
     }
 
-    kc_load_aliases(filename, false);
+    kdisk_load_aliases(filename);
 
     return;
 }
@@ -231,7 +232,8 @@ void AliasDialog::save_aliases()
     if (QFileInfo(filename).suffix().isNull()) filename += ".vcsa";
 
     this->broadcast_aliases();
-    kc_save_aliases(filename);
+
+    kdisk_save_aliases(kc_aliases(), filename);
 
     return;
 }

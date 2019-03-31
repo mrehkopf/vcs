@@ -462,10 +462,10 @@ void MainWindow::signal_new_known_mode(const resolution_s r)
     return;
 }
 
-void MainWindow::signal_new_mode_settings_source_file(const QString &filename)
+void MainWindow::signal_new_mode_settings_source_file(const std::string &filename)
 {
     k_assert(controlPanel != nullptr, "");
-    controlPanel->notify_of_new_mode_settings_source_file(filename);
+    controlPanel->notify_of_new_mode_settings_source_file(QString::fromStdString(filename));
 
     return;
 }

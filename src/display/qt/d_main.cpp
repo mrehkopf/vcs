@@ -80,7 +80,7 @@ void kd_signal_new_known_mode(const resolution_s r)
     return;
 }
 
-void kd_signal_new_mode_settings_source_file(const QString &filename)
+void kd_signal_new_mode_settings_source_file(const std::string &filename)
 {
     if (WINDOW != nullptr)
     {

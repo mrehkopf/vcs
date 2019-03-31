@@ -40,6 +40,55 @@ void kpropagate_news_of_new_capture_video_mode(void)
     return;
 }
 
+// Call to let the system know that the given mode parameters have been loaded
+// from the given file.
+void kpropagate_loaded_mode_params_from_disk(const std::vector<mode_params_s> &modeParams,
+                                             const std::string &sourceFilename)
+{
+    kc_set_mode_params(modeParams);
+
+    kc_broadcast_mode_params_to_gui();
+
+    // In case the mode params changed for the current mode, re-initialize it.
+    kpropagate_news_of_new_capture_video_mode();
+
+    kd_signal_new_mode_settings_source_file(sourceFilename);
+
+    INFO(("Loaded %u set(s) of mode params from disk.", modeParams.size()));
+
+    return;
+}
+
+void kpropagate_saved_mode_params_to_disk(const std::vector<mode_params_s> &modeParams,
+                                          const std::string &targetFilename)
+{
+    INFO(("Saved %u set(s) of mode params to disk.", modeParams.size()));
+
+    kd_signal_new_mode_settings_source_file(targetFilename);
+
+    return;
+}
+
+void kpropagate_saved_aliases_to_disk(const std::vector<mode_alias_s> &aliases,
+                                      const std::string &targetFilename)
+{
+    INFO(("Saved %u aliases to disk.", aliases.size()));
+
+    return;
+}
+
+void kpropagate_loaded_aliases_from_disk(const std::vector<mode_alias_s> &aliases,
+                                         const std::string &sourceFilename)
+{
+    kc_set_aliases(aliases);
+
+    kc_broadcast_aliases_to_gui();
+
+    INFO(("Loaded %u alias set(s) from disk.", aliases.size()));
+
+    return;
+}
+
 // Call to ask the capture's horizontal and/or vertical positioning to be
 // adjusted by the given amount.
 void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int verticalDelta)

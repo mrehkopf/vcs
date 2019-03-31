@@ -13,6 +13,7 @@
 #include "ui_d_video_and_color_dialog.h"
 #include "d_video_and_color_dialog.h"
 #include "../../common/persistent_settings.h"
+#include "../../common/disk.h"
 #include "../../capture/capture.h"
 #include "../display.h"
 #include "d_util.h"
@@ -139,13 +140,13 @@ void VideoAndColorDialog::update_color_controls()
 {
     // Current values.
     {
-        const input_color_settings_s p = kc_hardware().status.color_settings();
+        const capture_color_settings_s p = kc_hardware().status.color_settings();
 
-        ui->spinBox_colorBright->setValue(p.brightness);
-        ui->horizontalScrollBar_colorBright->setValue(p.brightness);
+        ui->spinBox_colorBright->setValue(p.overallBrightness);
+        ui->horizontalScrollBar_colorBright->setValue(p.overallBrightness);
 
-        ui->spinBox_colorContr->setValue(p.contrast);
-        ui->horizontalScrollBar_colorContr->setValue(p.contrast);
+        ui->spinBox_colorContr->setValue(p.overallContrast);
+        ui->horizontalScrollBar_colorContr->setValue(p.overallContrast);
 
         ui->spinBox_colorBrightRed->setValue(p.redBrightness);
         ui->horizontalScrollBar_colorBrightRed->setValue(p.redBrightness);
@@ -168,18 +169,18 @@ void VideoAndColorDialog::update_color_controls()
 
     // Current valid ranges.
     {
-        const input_color_settings_s min = kc_hardware().meta.minimum_color_settings();
-        const input_color_settings_s max = kc_hardware().meta.maximum_color_settings();
+        const capture_color_settings_s min = kc_hardware().meta.minimum_color_settings();
+        const capture_color_settings_s max = kc_hardware().meta.maximum_color_settings();
 
-        ui->spinBox_colorBright->setMinimum(min.brightness);
-        ui->spinBox_colorBright->setMaximum(max.brightness);
-        ui->horizontalScrollBar_colorBright->setMinimum(min.brightness);
-        ui->horizontalScrollBar_colorBright->setMaximum(max.brightness);
+        ui->spinBox_colorBright->setMinimum(min.overallBrightness);
+        ui->spinBox_colorBright->setMaximum(max.overallBrightness);
+        ui->horizontalScrollBar_colorBright->setMinimum(min.overallBrightness);
+        ui->horizontalScrollBar_colorBright->setMaximum(max.overallBrightness);
 
-        ui->spinBox_colorContr->setMinimum(min.contrast);
-        ui->spinBox_colorContr->setMaximum(max.contrast);
-        ui->horizontalScrollBar_colorContr->setMinimum(min.contrast);
-        ui->horizontalScrollBar_colorContr->setMaximum(max.contrast);
+        ui->spinBox_colorContr->setMinimum(min.overallContrast);
+        ui->spinBox_colorContr->setMaximum(max.overallContrast);
+        ui->horizontalScrollBar_colorContr->setMinimum(min.overallContrast);
+        ui->horizontalScrollBar_colorContr->setMaximum(max.overallContrast);
 
         ui->spinBox_colorBrightRed->setMinimum(min.redBrightness);
         ui->spinBox_colorBrightRed->setMaximum(max.redBrightness);
@@ -219,7 +220,7 @@ void VideoAndColorDialog::update_video_controls()
 {
     // Current values.
     {
-        const input_video_settings_s p = kc_hardware().status.video_settings();
+        const capture_video_settings_s p = kc_hardware().status.video_settings();
 
         ui->spinBox_videoBlackLevel->setValue(p.blackLevel);
         ui->horizontalScrollBar_videoBlackLevel->setValue(p.blackLevel);
@@ -239,8 +240,8 @@ void VideoAndColorDialog::update_video_controls()
 
     // Current valid ranges.
     {
-        const input_video_settings_s min = kc_hardware().meta.minimum_video_settings();
-        const input_video_settings_s max = kc_hardware().meta.maximum_video_settings();
+        const capture_video_settings_s min = kc_hardware().meta.minimum_video_settings();
+        const capture_video_settings_s max = kc_hardware().meta.maximum_video_settings();
 
         ui->spinBox_videoBlackLevel->setMinimum(min.blackLevel);
         ui->spinBox_videoBlackLevel->setMaximum(max.blackLevel);
@@ -271,12 +272,12 @@ void VideoAndColorDialog::update_video_controls()
     return;
 }
 
-input_color_settings_s VideoAndColorDialog::current_color_params()
+capture_color_settings_s VideoAndColorDialog::current_color_params()
 {
-    input_color_settings_s pc;
+    capture_color_settings_s pc;
 
-    pc.brightness = ui->spinBox_colorBright->value();
-    pc.contrast = ui->spinBox_colorContr->value();
+    pc.overallBrightness = ui->spinBox_colorBright->value();
+    pc.overallContrast = ui->spinBox_colorContr->value();
     pc.redBrightness = ui->spinBox_colorBrightRed->value();
     pc.redContrast = ui->spinBox_colorContrRed->value();
     pc.greenBrightness = ui->spinBox_colorBrightGreen->value();
@@ -287,9 +288,9 @@ input_color_settings_s VideoAndColorDialog::current_color_params()
     return pc;
 }
 
-input_video_settings_s VideoAndColorDialog::current_video_params()
+capture_video_settings_s VideoAndColorDialog::current_video_params()
 {
-    input_video_settings_s pv;
+    capture_video_settings_s pv;
 
     pv.blackLevel = ui->spinBox_videoBlackLevel->value();
     pv.horizontalPosition = ui->spinBox_videoHorPos->value();
@@ -378,8 +379,8 @@ void VideoAndColorDialog::connect_spinboxes_to_their_sliders(QGroupBox *const pa
 //
 void VideoAndColorDialog::broadcast_settings_change()
 {
-    const input_video_settings_s vp = current_video_params();
-    const input_color_settings_s cp = current_color_params();
+    const capture_video_settings_s vp = current_video_params();
+    const capture_color_settings_s cp = current_color_params();
 
     if (!CONTROLS_LIVE_UPDATE)
     {
@@ -431,7 +432,7 @@ void VideoAndColorDialog::save_settings(void)
 
     if (QFileInfo(filename).suffix() != "vcsm") filename.append(".vcsm");
 
-    kc_save_mode_params(filename);
+    kdisk_save_mode_params(kc_mode_params(), filename);
 
     return;
 }
@@ -446,7 +447,7 @@ void VideoAndColorDialog::load_settings(void)
         return;
     }
 
-    kc_load_mode_params(filename, true);
+    kdisk_load_mode_params(filename);
 
     return;
 }

@@ -7,7 +7,6 @@
  */
 
 #include <QDebug>
-#include <QFile>
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -15,7 +14,7 @@
 #include "../common/propagate.h"
 #include "../display/display.h"
 #include "../common/globals.h"
-#include "../common/csv.h"
+#include "../common/disk.h"
 #include "capture.h"
 
 // All local RGBEASY API callbacks lock this for their duration.
@@ -261,8 +260,8 @@ const capture_hardware_s& kc_hardware(void)
 }
 
 void update_known_mode_params(const resolution_s r,
-                              const input_color_settings_s *const c,
-                              const input_video_settings_s *const v)
+                              const capture_color_settings_s *const c,
+                              const capture_video_settings_s *const v)
 {
     uint idx;
     for (idx = 0; idx < KNOWN_MODES.size(); idx++)
@@ -364,14 +363,14 @@ void kc_initialize_capture(void)
 
     // Load previously-saved settings, if any.
     {
-        if (!kc_load_aliases(kcom_alias_file_name(), true))
+        if (!kdisk_load_aliases(kcom_alias_file_name()))
         {
             NBENE(("Failed loading mode aliases from disk.\n"));
             PROGRAM_EXIT_REQUESTED = 1;
             goto done;
         }
 
-        if (!kc_load_mode_params(kcom_params_file_name(), true))
+        if (!kdisk_load_mode_params(kcom_params_file_name()))
         {
             NBENE(("Failed loading mode parameters from disk.\n"));
             PROGRAM_EXIT_REQUESTED = 1;
@@ -381,6 +380,13 @@ void kc_initialize_capture(void)
 
     done:
     kpropagate_news_of_new_capture_video_mode();
+    return;
+}
+
+void kc_set_mode_params(const std::vector<mode_params_s> &modeParams)
+{
+    KNOWN_MODES = modeParams;
+
     return;
 }
 
@@ -512,8 +518,8 @@ bool kc_set_mode_parameters_for_resolution(const resolution_s r)
     RGBSetHorScale(CAPTURE_HANDLE,      p.video.horizontalScale);
     RGBSetHorPosition(CAPTURE_HANDLE,   p.video.horizontalPosition);
     RGBSetVerPosition(CAPTURE_HANDLE,   p.video.verticalPosition);
-    RGBSetBrightness(CAPTURE_HANDLE,    p.color.brightness);
-    RGBSetContrast(CAPTURE_HANDLE,      p.color.contrast);
+    RGBSetBrightness(CAPTURE_HANDLE,    p.color.overallBrightness);
+    RGBSetContrast(CAPTURE_HANDLE,      p.color.overallContrast);
     RGBSetColourBalance(CAPTURE_HANDLE, p.color.redBrightness,
                                         p.color.greenBrightness,
                                         p.color.blueBrightness,
@@ -773,7 +779,17 @@ void kc_broadcast_aliases_to_gui(void)
     return;
 }
 
-void kc_update_alias_resolutions(const std::vector<mode_alias_s> &aliases)
+const std::vector<mode_params_s>& kc_mode_params(void)
+{
+    return KNOWN_MODES;
+}
+
+const std::vector<mode_alias_s>& kc_aliases(void)
+{
+    return ALIASES;
+}
+
+void kc_set_aliases(const std::vector<mode_alias_s> &aliases)
 {
     ALIASES = aliases;
 
@@ -796,200 +812,6 @@ void kc_update_alias_resolutions(const std::vector<mode_alias_s> &aliases)
     return;
 }
 
-bool kc_save_aliases(const QString filename)
-{
-    const QString tempFilename = filename + ".tmp";  // Use a temporary file at first, until we're reasonably sure there were no errors while saving.
-    QFile file(tempFilename);
-    QTextStream f(&file);
-
-    // Write the aliases into the file.
-    {
-        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-        {
-            NBENE(("Unable to open the alias file for saving."));
-            goto fail;
-        }
-
-        for (const auto &a: ALIASES)
-        {
-            f << a.from.w << ',' << a.from.h << ',' << a.to.w << ',' << a.to.h << ",\n";
-        }
-
-        file.close();
-    }
-
-    // Replace the existing save file with our new data.
-    if (QFile(filename).exists())
-    {
-        if (!QFile(filename).remove())
-        {
-            NBENE(("Failed to remove old mode params file."));
-            goto fail;
-        }
-    }
-    if (!QFile(tempFilename).rename(filename))
-    {
-        NBENE(("Failed to write mode params to file."));
-        goto fail;
-    }
-
-    INFO(("Saved %u aliases to disk.", ALIASES.size()));
-
-    return true;
-
-    fail:
-    kd_show_headless_error_message("Data was not saved",
-                                   "An error was encountered while preparing the alias "
-                                   "resolutions for saving. As a result, no data was saved. \n\nMore "
-                                   "information about this error may be found in the terminal.");
-    return false;
-}
-
-// Loads alias definitions from the given file. Will expect automaticCall to be
-// set to false if this function was called directly by a request by the user
-// through the GUI to load the aliases (as opposed to being called automatically
-// on startup or so).
-//
-bool kc_load_aliases(const QString filename, const bool automaticCall)
-{
-    if (filename.isEmpty())
-    {
-        DEBUG(("No alias file defined, skipping."));
-        return true;
-    }
-
-    QList<QStringList> rowData = csv_parse_c(filename).contents();
-    std::vector<mode_alias_s> aliasesFromDisk;
-    for (const auto &row: rowData)
-    {
-        if (row.count() != 4)
-        {
-            NBENE(("Expected a 4-parameter row in the alias file."));
-            goto fail;
-        }
-
-        mode_alias_s a;
-        a.from.w = row.at(0).toUInt();
-        a.from.h = row.at(1).toUInt();
-        a.to.w = row.at(2).toUInt();
-        a.to.h = row.at(3).toUInt();
-
-        aliasesFromDisk.push_back(a);
-    }
-
-    kc_update_alias_resolutions(aliasesFromDisk);
-
-    // Sort the parameters so they display more nicely in the GUI.
-    std::sort(ALIASES.begin(), ALIASES.end(), [](const mode_alias_s &a, const mode_alias_s &b)
-                                              { return (a.to.w * a.to.h) < (b.to.w * b.to.h); });
-
-    kc_broadcast_aliases_to_gui();
-
-    INFO(("Loaded %u alias set(s) from disk.", ALIASES.size()));
-
-    if (!automaticCall)
-    {
-        // Signal a new input mode to force the program to re-evaluate the mode
-        // parameters, in case one of the newly-loaded aliases applies to the
-        // current mode.
-        kpropagate_news_of_new_capture_video_mode();
-    }
-
-    return true;
-
-    fail:
-    kd_show_headless_error_message("Data was not loaded",
-                                   "An error was encountered while loading the alias "
-                                   "file. No data was loaded.\n\nMore "
-                                   "information about the error may be found in the terminal.");
-    return false;
-}
-
-bool kc_save_mode_params(const QString filename)
-{
-    const QString tempFilename = filename + ".tmp";  // Use a temporary file at first, until we're reasonably sure there were no errors while saving.
-    QFile file(tempFilename);
-    QTextStream f(&file);
-
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        NBENE(("Unable to open the mode parameter file for saving."));
-        goto fail;
-    }
-
-    // Each mode params block consists of two values specifying the resolution
-    // followed by a set of string-value pairs for the different parameters.
-    for (const auto &m: KNOWN_MODES)
-    {
-        // Resolution.
-        f << "resolution," << m.r.w << ',' << m.r.h << '\n';
-        if (file.error() != QFileDevice::NoError)
-        {
-            NBENE(("Failed to write mode params to file."));
-            goto fail;
-        }
-
-        // Video params.
-        f << "vPos," << m.video.verticalPosition << '\n'
-          << "hPos," << m.video.horizontalPosition << '\n'
-          << "hScale," << m.video.horizontalScale << '\n'
-          << "phase," << m.video.phase << '\n'
-          << "bLevel," << m.video.blackLevel << '\n';
-        if (file.error() != QFileDevice::NoError)
-        {
-            NBENE(("Failed to write mode params to file."));
-            goto fail;
-        }
-
-        // Color params.
-        f << "bright," << m.color.brightness << '\n'
-          << "contr," << m.color.contrast << '\n'
-          << "redBr," << m.color.redBrightness << '\n'
-          << "redCn," << m.color.redContrast << '\n'
-          << "greenBr," << m.color.greenBrightness << '\n'
-          << "greenCn," << m.color.greenContrast << '\n'
-          << "blueBr," << m.color.blueBrightness << '\n'
-          << "blueCn," << m.color.blueContrast << '\n';
-        if (file.error() != QFileDevice::NoError)
-        {
-            NBENE(("Failed to write mode params to file."));
-            goto fail;
-        }
-
-        f << '\n';  // Separate the next block.
-    }
-
-    file.close();
-
-    // Replace the existing save file with our new data.
-    if (QFile(filename).exists())
-    {
-        if (!QFile(filename).remove())
-        {
-            NBENE(("Failed to remove old mode params file."));
-            goto fail;
-        }
-    }
-    if (!QFile(tempFilename).rename(filename))
-    {
-        NBENE(("Failed to write mode params to file."));
-        goto fail;
-    }
-
-    INFO(("Saved %u set(s) of mode params to disk.", KNOWN_MODES.size()));
-
-    kd_signal_new_mode_settings_source_file(filename);
-
-    return true;
-
-    fail:
-    kd_show_headless_error_message("Data was not saved",
-                                   "An error was encountered while preparing the mode "
-                                   "settings for saving. As a result, no data was saved. \n\nMore "
-                                   "information about this error may be found in the terminal.");
-    return false;
-}
-
 void kc_broadcast_mode_params_to_gui(void)
 {
     kd_clear_known_modes();
@@ -1001,102 +823,7 @@ void kc_broadcast_mode_params_to_gui(void)
     return;
 }
 
-bool kc_load_mode_params(const QString filename, const bool automaticCall)
-{
-    std::vector<mode_params_s> modesFromDisk;
-
-    if (filename.isEmpty())
-    {
-        DEBUG(("No mode settings file defined, skipping."));
-        return true;
-    }
-
-    QList<QStringList> paramRows = csv_parse_c(filename).contents();
-
-    // Each mode is saved as a block of rows, starting with a 3-element row defining
-    // the mode's resolution, followed by several 2-element rows defining the various
-    // video and color parameters for the resolution.
-    for (int i = 0; i < paramRows.count();)
-    {
-        if ((paramRows[i].count() != 3) ||
-            (paramRows[i].at(0) != "resolution"))
-        {
-            NBENE(("Expected a 3-parameter 'resolution' statement to begin a mode params block."));
-            goto fail;
-        }
-
-        mode_params_s p;
-        p.r.w = paramRows[i].at(1).toUInt();
-        p.r.h = paramRows[i].at(2).toUInt();
-
-        i++;    // Move to the next row to start fetching the params for this resolution.
-
-        auto get_param = [&](const QString &name)->QString
-                         {
-                             if (paramRows[i].at(0) != name)
-                             {
-                                 NBENE(("Error while loading the mode params file: expected '%s' but got '%s'.",
-                                        name.toLatin1().constData(), paramRows[i].at(0).toLatin1().constData()));
-                                 throw 0;
-                             }
-                             return paramRows[i++].at(1);
-                         };
-        try
-        {
-            // Note: the order in which the params are fetched is fixed to the
-            // order in which they were saved.
-            p.video.verticalPosition = get_param("vPos").toInt();
-            p.video.horizontalPosition = get_param("hPos").toInt();
-            p.video.horizontalScale = get_param("hScale").toInt();
-            p.video.phase = get_param("phase").toInt();
-            p.video.blackLevel = get_param("bLevel").toInt();
-            p.color.brightness = get_param("bright").toInt();
-            p.color.contrast = get_param("contr").toInt();
-            p.color.redBrightness = get_param("redBr").toInt();
-            p.color.redContrast = get_param("redCn").toInt();
-            p.color.greenBrightness = get_param("greenBr").toInt();
-            p.color.greenContrast = get_param("greenCn").toInt();
-            p.color.blueBrightness = get_param("blueBr").toInt();
-            p.color.blueContrast = get_param("blueCn").toInt();
-        }
-        catch (int)
-        {
-            NBENE(("Failed to load mode params from disk."));
-            goto fail;
-        }
-
-        modesFromDisk.push_back(p);
-    }
-
-    KNOWN_MODES = modesFromDisk;
-
-    // Sort the modes so they display more nicely in the GUI.
-    std::sort(KNOWN_MODES.begin(), KNOWN_MODES.end(), [](const mode_params_s &a, const mode_params_s &b)
-                                                      { return (a.r.w * a.r.h) < (b.r.w * b.r.h); });
-
-    // Update the GUI with information related to the new mode params.
-    kc_broadcast_mode_params_to_gui();
-    kpropagate_news_of_new_capture_video_mode();  // In case the mode params changed for the current mode, re-initialize it.
-    kd_signal_new_mode_settings_source_file(filename);
-
-    INFO(("Loaded %u set(s) of mode params from disk.", KNOWN_MODES.size()));
-    if (!automaticCall)
-    {
-        kd_show_headless_info_message("Data was loaded",
-                                      "The mode parameters were successfully loaded.");
-    }
-
-    return true;
-
-    fail:
-    kd_show_headless_error_message("Data was not loaded",
-                                   "An error was encountered while loading the mode "
-                                   "parameter file. No data was loaded.\n\nMore "
-                                   "information about the error may be found in the terminal.");
-    return false;
-}
-
-void kc_set_color_settings(const input_color_settings_s c)
+void kc_set_color_settings(const capture_color_settings_s c)
 {
     if (kc_no_signal())
     {
@@ -1105,8 +832,8 @@ void kc_set_color_settings(const input_color_settings_s c)
         return;
     }
 
-    RGBSetBrightness(CAPTURE_HANDLE, c.brightness);
-    RGBSetContrast(CAPTURE_HANDLE, c.contrast);
+    RGBSetBrightness(CAPTURE_HANDLE, c.overallBrightness);
+    RGBSetContrast(CAPTURE_HANDLE, c.overallContrast);
     RGBSetColourBalance(CAPTURE_HANDLE, c.redBrightness,
                                         c.greenBrightness,
                                         c.blueBrightness,
@@ -1119,7 +846,7 @@ void kc_set_color_settings(const input_color_settings_s c)
     return;
 }
 
-void kc_set_video_settings(const input_video_settings_s v)
+void kc_set_video_settings(const capture_video_settings_s v)
 {
     if (kc_no_signal())
     {
@@ -1287,12 +1014,12 @@ std::string capture_hardware_s::metainfo_s::firmware_version() const
     return std::to_string(ii.FirmWare);
 }
 
-input_color_settings_s capture_hardware_s::metainfo_s::default_color_settings() const
+capture_color_settings_s capture_hardware_s::metainfo_s::default_color_settings() const
 {
-    input_color_settings_s p = {0};
+    capture_color_settings_s p = {0};
 
-    if (!apicall_succeeds(RGBGetBrightnessDefault(CAPTURE_HANDLE, &p.brightness)) ||
-        !apicall_succeeds(RGBGetContrastDefault(CAPTURE_HANDLE, &p.contrast)) ||
+    if (!apicall_succeeds(RGBGetBrightnessDefault(CAPTURE_HANDLE, &p.overallBrightness)) ||
+        !apicall_succeeds(RGBGetContrastDefault(CAPTURE_HANDLE, &p.overallContrast)) ||
         !apicall_succeeds(RGBGetColourBalanceDefault(CAPTURE_HANDLE, &p.redBrightness,
                                                                      &p.greenBrightness,
                                                                      &p.blueBrightness,
@@ -1306,12 +1033,12 @@ input_color_settings_s capture_hardware_s::metainfo_s::default_color_settings() 
     return p;
 }
 
-input_color_settings_s capture_hardware_s::metainfo_s::minimum_color_settings() const
+capture_color_settings_s capture_hardware_s::metainfo_s::minimum_color_settings() const
 {
-    input_color_settings_s p = {0};
+    capture_color_settings_s p = {0};
 
-    if (!apicall_succeeds(RGBGetBrightnessMinimum(CAPTURE_HANDLE, &p.brightness)) ||
-        !apicall_succeeds(RGBGetContrastMinimum(CAPTURE_HANDLE, &p.contrast)) ||
+    if (!apicall_succeeds(RGBGetBrightnessMinimum(CAPTURE_HANDLE, &p.overallBrightness)) ||
+        !apicall_succeeds(RGBGetContrastMinimum(CAPTURE_HANDLE, &p.overallContrast)) ||
         !apicall_succeeds(RGBGetColourBalanceMinimum(CAPTURE_HANDLE, &p.redBrightness,
                                                                      &p.greenBrightness,
                                                                      &p.blueBrightness,
@@ -1325,12 +1052,12 @@ input_color_settings_s capture_hardware_s::metainfo_s::minimum_color_settings() 
     return p;
 }
 
-input_color_settings_s capture_hardware_s::metainfo_s::maximum_color_settings() const
+capture_color_settings_s capture_hardware_s::metainfo_s::maximum_color_settings() const
 {
-    input_color_settings_s p = {0};
+    capture_color_settings_s p = {0};
 
-    if (!apicall_succeeds(RGBGetBrightnessMaximum(CAPTURE_HANDLE, &p.brightness)) ||
-        !apicall_succeeds(RGBGetContrastMaximum(CAPTURE_HANDLE, &p.contrast)) ||
+    if (!apicall_succeeds(RGBGetBrightnessMaximum(CAPTURE_HANDLE, &p.overallBrightness)) ||
+        !apicall_succeeds(RGBGetContrastMaximum(CAPTURE_HANDLE, &p.overallContrast)) ||
         !apicall_succeeds(RGBGetColourBalanceMaximum(CAPTURE_HANDLE, &p.redBrightness,
                                                                      &p.greenBrightness,
                                                                      &p.blueBrightness,
@@ -1344,9 +1071,9 @@ input_color_settings_s capture_hardware_s::metainfo_s::maximum_color_settings() 
     return p;
 }
 
-input_video_settings_s capture_hardware_s::metainfo_s::default_video_settings() const
+capture_video_settings_s capture_hardware_s::metainfo_s::default_video_settings() const
 {
-    input_video_settings_s p = {0};
+    capture_video_settings_s p = {0};
 
     if (!apicall_succeeds(RGBGetPhaseDefault(CAPTURE_HANDLE, &p.phase)) ||
         !apicall_succeeds(RGBGetBlackLevelDefault(CAPTURE_HANDLE, &p.blackLevel)) ||
@@ -1360,9 +1087,9 @@ input_video_settings_s capture_hardware_s::metainfo_s::default_video_settings() 
     return p;
 }
 
-input_video_settings_s capture_hardware_s::metainfo_s::minimum_video_settings() const
+capture_video_settings_s capture_hardware_s::metainfo_s::minimum_video_settings() const
 {
-    input_video_settings_s p = {0};
+    capture_video_settings_s p = {0};
 
     if (!apicall_succeeds(RGBGetPhaseMinimum(CAPTURE_HANDLE, &p.phase)) ||
         !apicall_succeeds(RGBGetBlackLevelMinimum(CAPTURE_HANDLE, &p.blackLevel)) ||
@@ -1376,9 +1103,9 @@ input_video_settings_s capture_hardware_s::metainfo_s::minimum_video_settings() 
     return p;
 }
 
-input_video_settings_s capture_hardware_s::metainfo_s::maximum_video_settings() const
+capture_video_settings_s capture_hardware_s::metainfo_s::maximum_video_settings() const
 {
-    input_video_settings_s p = {0};
+    capture_video_settings_s p = {0};
 
     if (!apicall_succeeds(RGBGetPhaseMaximum(CAPTURE_HANDLE, &p.phase)) ||
         !apicall_succeeds(RGBGetBlackLevelMaximum(CAPTURE_HANDLE, &p.blackLevel)) ||
@@ -1468,12 +1195,12 @@ resolution_s capture_hardware_s::status_s::capture_resolution() const
     return r;
 }
 
-input_color_settings_s capture_hardware_s::status_s::color_settings() const
+capture_color_settings_s capture_hardware_s::status_s::color_settings() const
 {
-    input_color_settings_s p = {0};
+    capture_color_settings_s p = {0};
 
-    if (!apicall_succeeds(RGBGetBrightness(CAPTURE_HANDLE, &p.brightness)) ||
-        !apicall_succeeds(RGBGetContrast(CAPTURE_HANDLE, &p.contrast)) ||
+    if (!apicall_succeeds(RGBGetBrightness(CAPTURE_HANDLE, &p.overallBrightness)) ||
+        !apicall_succeeds(RGBGetContrast(CAPTURE_HANDLE, &p.overallContrast)) ||
         !apicall_succeeds(RGBGetColourBalance(CAPTURE_HANDLE, &p.redBrightness,
                                                               &p.greenBrightness,
                                                               &p.blueBrightness,
@@ -1487,9 +1214,9 @@ input_color_settings_s capture_hardware_s::status_s::color_settings() const
     return p;
 }
 
-input_video_settings_s capture_hardware_s::status_s::video_settings() const
+capture_video_settings_s capture_hardware_s::status_s::video_settings() const
 {
-    input_video_settings_s p = {0};
+    capture_video_settings_s p = {0};
 
     if (!apicall_succeeds(RGBGetPhase(CAPTURE_HANDLE, &p.phase)) ||
         !apicall_succeeds(RGBGetBlackLevel(CAPTURE_HANDLE, &p.blackLevel)) ||

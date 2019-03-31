@@ -53,7 +53,7 @@ struct capture_signal_s
     bool wokeUp;
 };
 
-struct input_video_settings_s
+struct capture_video_settings_s
 {
     unsigned long horizontalScale;
     long horizontalPosition;
@@ -62,10 +62,10 @@ struct input_video_settings_s
     long blackLevel;
 };
 
-struct input_color_settings_s
+struct capture_color_settings_s
 {
-    long brightness;
-    long contrast;
+    long overallBrightness;
+    long overallContrast;
 
     long redBrightness;
     long redContrast;
@@ -82,8 +82,8 @@ struct input_color_settings_s
 struct mode_params_s
 {
     resolution_s r;
-    input_color_settings_s color;
-    input_video_settings_s video;
+    capture_color_settings_s color;
+    capture_video_settings_s video;
 };
 
 struct mode_alias_s
@@ -116,12 +116,12 @@ struct capture_hardware_s
 
     struct metainfo_s
     {
-        input_color_settings_s default_color_settings(void) const;
-        input_color_settings_s minimum_color_settings(void) const;
-        input_color_settings_s maximum_color_settings(void) const;
-        input_video_settings_s default_video_settings(void) const;
-        input_video_settings_s minimum_video_settings(void) const;
-        input_video_settings_s maximum_video_settings(void) const;
+        capture_color_settings_s default_color_settings(void) const;
+        capture_color_settings_s minimum_color_settings(void) const;
+        capture_color_settings_s maximum_color_settings(void) const;
+        capture_video_settings_s default_video_settings(void) const;
+        capture_video_settings_s minimum_video_settings(void) const;
+        capture_video_settings_s maximum_video_settings(void) const;
         resolution_s minimum_capture_resolution(void) const;
         resolution_s maximum_capture_resolution(void) const;
         std::string firmware_version(void) const;
@@ -135,8 +135,8 @@ struct capture_hardware_s
 
     struct status_s
     {
-        input_color_settings_s color_settings(void) const;
-        input_video_settings_s video_settings(void) const;
+        capture_color_settings_s color_settings(void) const;
+        capture_video_settings_s video_settings(void) const;
         resolution_s capture_resolution(void) const;
         capture_signal_s signal(void) const;
         int frame_rate(void) const;
@@ -163,6 +163,8 @@ PIXELFORMAT kc_pixel_format(void);
 const capture_hardware_s& kc_hardware(void);
 capture_event_e kc_latest_capture_event(void);
 const captured_frame_s& kc_latest_captured_frame(void);
+const std::vector<mode_params_s>& kc_mode_params(void);
+const std::vector<mode_alias_s>& kc_aliases(void);
 mode_params_s kc_mode_params_for_resolution(const resolution_s r);
 
 // Public setters.
@@ -171,12 +173,13 @@ bool kc_set_mode_parameters_for_resolution(const resolution_s r);
 bool kc_set_frame_dropping(const u32 drop);
 bool kc_set_input_channel(const u32 channel);
 bool kc_set_input_color_depth(const u32 bpp);
-void kc_set_color_settings(const input_color_settings_s c);
-void kc_set_video_settings(const input_video_settings_s v);
-void kc_mark_current_frame_as_processed(void);
-void kc_reset_missed_frames_count(void);
 bool kc_adjust_video_vertical_offset(const int delta);
 bool kc_adjust_video_horizontal_offset(const int delta);
+void kc_set_color_settings(const capture_color_settings_s c);
+void kc_set_video_settings(const capture_video_settings_s v);
+void kc_set_mode_params(const std::vector<mode_params_s> &modeParams);
+void kc_mark_current_frame_as_processed(void);
+void kc_reset_missed_frames_count(void);
 void kc_apply_new_capture_resolution(void);
 #if VALIDATION_RUN
     void kc_VALIDATION_set_capture_color_depth(const uint bpp);
@@ -187,10 +190,6 @@ void kc_apply_new_capture_resolution(void);
 void kc_broadcast_aliases_to_gui(void);
 void kc_broadcast_mode_params_to_gui(void);
 void kc_insert_test_image(void);
-void kc_update_alias_resolutions(const std::vector<mode_alias_s> &aliases);
-bool kc_save_mode_params(const QString filename);
-bool kc_load_mode_params(const QString filename, const bool automaticCall);
-bool kc_load_aliases(const QString filename, const bool automaticCall);
-bool kc_save_aliases(const QString filename);
+void kc_set_aliases(const std::vector<mode_alias_s> &aliases);
 
 #endif

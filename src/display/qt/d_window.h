@@ -84,7 +84,7 @@ public:
 
     void measure_framerate();
 
-    void signal_new_mode_settings_source_file(const QString &filename);
+    void signal_new_mode_settings_source_file(const std::__cxx11::string &filename);
 
     void update_current_filter_set_idx(const int idx);
 
