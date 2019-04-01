@@ -61,13 +61,9 @@ bool kd_is_fullscreen(void);
 
 void kd_notify_gui_of_capture_signal_change(const bool receivingSignal);
 
-void kd_signal_new_known_mode(const resolution_s r);
-
 void kd_signal_new_mode_settings_source_file(const std::string &filename);
 
 void kd_signal_new_known_alias(const mode_alias_s a);
-
-void kd_clear_known_modes(void);
 
 void kd_clear_known_aliases(void);
 

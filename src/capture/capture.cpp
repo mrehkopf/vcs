@@ -114,7 +114,12 @@ static struct capture_interface_s
 namespace api_callbacks_n
 {
 #if !USE_RGBEASY_API
-    void frame_captured(void){}
+    void frame_captured(void)
+    {
+        (void)SIGNAL_WOKE_UP;
+        (void)CAPTURE_HANDLE;
+        (void)RGBAPI_HANDLE;
+    }
     void video_mode_changed(void){}
     void invalid_signal(void){}
     void no_signal(void){}
@@ -176,7 +181,7 @@ namespace api_callbacks_n
     }
 
     // Called by the capture hardware when the input video mode changes.
-    void RGBCBKAPI video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO info, ULONG_PTR)
+    void RGBCBKAPI video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO, ULONG_PTR)
     {
         std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
 
@@ -227,7 +232,7 @@ namespace api_callbacks_n
         return;
     }
 
-    void RGBCBKAPI error(HWND, HRGB, unsigned long error, ULONG_PTR, unsigned long*)
+    void RGBCBKAPI error(HWND, HRGB, unsigned long, ULONG_PTR, unsigned long*)
     {
         std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
 
@@ -273,8 +278,6 @@ void update_known_mode_params(const resolution_s r,
     KNOWN_MODES.push_back({r,
                            CAPTURE_HARDWARE.meta.default_color_settings(),
                            CAPTURE_HARDWARE.meta.default_video_settings()});
-
-    kd_signal_new_known_mode(r);
 
     mode_exists:
     // Update the existing mode with the new parameters.
@@ -500,6 +503,8 @@ bool kc_set_mode_parameters_for_resolution(const resolution_s r)
                                         p.color.greenContrast,
                                         p.color.blueContrast);
 
+    (void)p;
+
     return true;
 }
 
@@ -714,17 +719,6 @@ bool kc_set_input_color_depth(const u32 bpp)
 const std::vector<mode_params_s>& kc_mode_params(void)
 {
     return KNOWN_MODES;
-}
-
-void kc_broadcast_mode_params_to_gui(void)
-{
-    kd_clear_known_modes();
-    for (const auto &m: KNOWN_MODES)
-    {
-        kd_signal_new_known_mode(m.r);
-    }
-
-    return;
 }
 
 void kc_set_color_settings(const capture_color_settings_s c)

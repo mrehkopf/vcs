@@ -58,7 +58,6 @@ static bool initialize_all(void)
     {
         kd_acquire_display();
         ka_broadcast_aliases_to_gui();
-        kc_broadcast_mode_params_to_gui();
     }
 
     return !PROGRAM_EXIT_REQUESTED;

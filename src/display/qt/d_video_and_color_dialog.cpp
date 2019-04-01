@@ -43,7 +43,6 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     update_controls();
-    clear_known_modes();
 
     connect_spinboxes_to_their_sliders(ui->groupBox_videoAdjust);
     connect_spinboxes_to_their_sliders(ui->groupBox_colorAdjust);
@@ -299,20 +298,6 @@ capture_video_settings_s VideoAndColorDialog::current_video_params()
     pv.verticalPosition = ui->spinBox_videoVerPos->value();
 
     return pv;
-}
-
-// Clear the list of known video modes.
-//
-void VideoAndColorDialog::clear_known_modes()
-{
-#if 0 // Disabled while the UI is being reworked.
-    { block_widget_signals_c b(ui->comboBox_knownModes);
-        ui->comboBox_knownModes->clear();
-        ui->comboBox_knownModes->addItem("Custom parameters are available for:");   /// Temp hack.
-    }
-#endif
-
-    return;
 }
 
 // Loops through each spinbox to find the corresponding slider to connect their

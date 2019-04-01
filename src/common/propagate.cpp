@@ -49,8 +49,6 @@ void kpropagate_loaded_mode_params_from_disk(const std::vector<mode_params_s> &m
 {
     kc_set_mode_params(modeParams);
 
-    kc_broadcast_mode_params_to_gui();
-
     // In case the mode params changed for the current mode, re-initialize it.
     kpropagate_news_of_new_capture_video_mode();
 
@@ -76,6 +74,8 @@ void kpropagate_saved_filter_sets_to_disk(const std::vector<filter_set_s*> &filt
 {
     INFO(("Saved %u filter set(s) to disk.", filterSets.size()));
 
+    (void)targetFilename;
+
     return;
 }
 
@@ -83,6 +83,8 @@ void kpropagate_saved_aliases_to_disk(const std::vector<mode_alias_s> &aliases,
                                       const std::string &targetFilename)
 {
     INFO(("Saved %u aliases to disk.", aliases.size()));
+
+    (void)targetFilename;
 
     return;
 }
@@ -93,6 +95,8 @@ void kpropagate_loaded_filter_sets_from_disk(const std::vector<filter_set_s*> &f
     INFO(("Loaded %u filter set(s) from disk.", filterSets.size()));
 
     kd_update_gui_filter_sets_list();
+
+    (void)sourceFilename;
 
     return;
 }
@@ -105,6 +109,8 @@ void kpropagate_loaded_aliases_from_disk(const std::vector<mode_alias_s> &aliase
     ka_broadcast_aliases_to_gui();
 
     INFO(("Loaded %u alias set(s) from disk.", aliases.size()));
+
+    (void)sourceFilename;
 
     return;
 }

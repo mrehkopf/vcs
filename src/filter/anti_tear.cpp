@@ -196,27 +196,27 @@ static void validate_tear_strip(void)
     return;
 }
 
-static void cleanup_tear_strip(void)
-{
-#if 0 // Not used at the moment.
-    int numTears = 0;
-    bool curBlockType = TEAR_STRIP[0];
-
-    for (uint y = 1; y < MAXY; y++)
+#if 0 // Not used at the moment; but since the anti-tear code is still work-in-progress, let's leave this up for now.
+    static void cleanup_tear_strip(void)
     {
-        // Clean up isolated islands.
-        /*if (TEAR_STRIP[i] != curBlockType &&
-            (TEAR_STRIP[i - 1] == curBlockType &&
-             TEAR_STRIP[i + 1] == curBlockType))
+        int numTears = 0;
+        bool curBlockType = TEAR_STRIP[0];
+
+        for (uint y = 1; y < MAXY; y++)
         {
-            TEAR_STRIP[i] = curBlockType;
-        }*/
+            // Clean up isolated islands.
+            /*if (TEAR_STRIP[i] != curBlockType &&
+                (TEAR_STRIP[i - 1] == curBlockType &&
+                 TEAR_STRIP[i + 1] == curBlockType))
+            {
+                TEAR_STRIP[i] = curBlockType;
+            }*/
+        }
+
+        done:
+        return;
     }
 #endif
-
-    done:
-    return;
-}
 
 static void update_tear_strip(const captured_frame_s &frame)
 {

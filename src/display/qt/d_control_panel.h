@@ -62,8 +62,6 @@ public:
 
     QString GetString_DroppingFrames();
 
-    void clear_known_modes();
-
     void notify_of_new_alias(const mode_alias_s a);
 
     void clear_known_aliases();

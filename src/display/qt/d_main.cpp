@@ -51,31 +51,11 @@ void kd_clear_known_aliases(void)
     return;
 }
 
-void kd_clear_known_modes(void)
-{
-    if (WINDOW != nullptr)
-    {
-        WINDOW->clear_known_modes();
-    }
-
-    return;
-}
-
 void kd_signal_new_known_alias(const mode_alias_s a)
 {
     if (WINDOW != nullptr)
     {
         WINDOW->signal_new_known_alias(a);
-    }
-
-    return;
-}
-
-void kd_signal_new_known_mode(const resolution_s r)
-{
-    if (WINDOW != nullptr)
-    {
-        WINDOW->signal_new_known_mode(r);
     }
 
     return;

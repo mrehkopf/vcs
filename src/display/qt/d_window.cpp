@@ -455,14 +455,6 @@ void MainWindow::signal_new_known_alias(const mode_alias_s a)
     return;
 }
 
-void MainWindow::signal_new_known_mode(const resolution_s r)
-{
-    //k_assert(controlPanel != nullptr, "");
-    //controlPanel->notify_of_new_known_mode(r);
-
-    return;
-}
-
 void MainWindow::signal_new_mode_settings_source_file(const std::string &filename)
 {
     k_assert(controlPanel != nullptr, "");
@@ -602,14 +594,6 @@ void MainWindow::clear_known_aliases()
 {
     k_assert(controlPanel != nullptr, "");
     controlPanel->clear_known_aliases();
-
-    return;
-}
-
-void MainWindow::clear_known_modes()
-{
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->clear_known_modes();
 
     return;
 }

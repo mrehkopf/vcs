@@ -515,14 +515,6 @@ void ControlPanel::clear_known_aliases()
     return;
 }
 
-void ControlPanel::clear_known_modes()
-{
-    k_assert(videocolorDlg != nullptr, "");
-    videocolorDlg->clear_known_modes();
-
-    return;
-}
-
 // Simulate the given input button being clicked.
 //
 void ControlPanel::activate_capture_res_button(const uint buttonIdx)
@@ -1077,7 +1069,6 @@ void ControlPanel::on_comboBox_bitDepth_currentIndexChanged(const QString &arg1)
     {
         reset_capture_bit_depth_combobox();
 
-        done_reset:
         kd_show_headless_error_message("", "Failed to change the capture color depth.\n\n"
                                            "The previous setting has been restored.");
     }

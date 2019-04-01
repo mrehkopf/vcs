@@ -179,7 +179,6 @@ void kc_apply_new_capture_resolution(void);
 #endif
 
 // Miscellaneous functions, to be sorted.
-void kc_broadcast_mode_params_to_gui(void);
 void kc_insert_test_image(void);
 
 #endif

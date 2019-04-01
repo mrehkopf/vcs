@@ -68,10 +68,6 @@ public:
 
     QString GetString_DroppingFrames();
 
-    void signal_new_known_mode(const resolution_s r);
-
-    void clear_known_modes();
-
     void signal_new_known_alias(const mode_alias_s a);
 
     void clear_known_aliases();

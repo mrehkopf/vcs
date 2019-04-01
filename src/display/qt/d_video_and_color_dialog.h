@@ -33,8 +33,6 @@ public:
 
     void set_controls_enabled(const bool state);
 
-    void clear_known_modes();
-
     void receive_new_mode_settings_filename(const QString &filename);
 
     void update_controls();
