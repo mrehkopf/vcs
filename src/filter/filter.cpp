@@ -7,9 +7,9 @@
  *
  */
 
-#include <QElapsedTimer>
 #include <vector>
 #include <map>
+#include <ctime>
 #include "../display/qt/df_filters.h"
 #include "../display/display.h"
 #include "../capture/capture.h"
@@ -45,7 +45,7 @@ static void filter_func_rotate(FILTER_FUNC_PARAMS);
 // assign a pointer to the function which applies that filter to a given array of
 // pixels, and a point to a user-facing GUI dialog with which the user can adjust
 // the filter's parameters.
-static const std::map<QString, std::pair<filter_function_t, filter_dlg_s*>> FILTERS =
+static const std::map<std::string, std::pair<filter_function_t, filter_dlg_s*>> FILTERS =
                {{"Delta Histogram",  {filter_func_deltahistogram,  []{ static filter_dlg_deltahistogram_s f; return &f; }()}},
                 {"Unique Count",     {filter_func_uniquecount,     []{ static filter_dlg_uniquecount_s f; return &f;    }()}},
                 {"Unsharp Mask",     {filter_func_unsharpmask,     []{ static filter_dlg_unsharpmask_s f; return &f;    }()}},
@@ -70,16 +70,15 @@ const uint NUM_COLOR_CHAN = (32 / 8);
 
 // Returns a list of the names of all of the user-facing filters.
 //
-QStringList kf_filter_name_list(void)
+std::vector<std::string> kf_filter_name_list(void)
 {
-    QStringList l;
-
+    std::vector<std::string> list;
     for (auto &f: FILTERS)
     {
-        l << f.first;
+        list.push_back(f.first);
     }
 
-    return l;
+    return list;
 }
 
 static void clear_filter_sets_list(void)
@@ -169,10 +168,9 @@ static void filter_func_uniquecount(FILTER_FUNC_PARAMS)
     const u8 threshold = params[filter_dlg_uniquecount_s::OFFS_THRESHOLD];
     const u8 corner = params[filter_dlg_uniquecount_s::OFFS_CORNER];
 
-    static u32 uniqueFrames = 0;
-    static u32 uniquePerSecond = 0;
-    static QElapsedTimer timer;
-    if (!timer.isValid()) timer.start();
+    static u32 uniqueFramesProcessed = 0;
+    static u32 uniqueFramesPerSecond = 0;
+    static time_t timer = time(NULL);
 
     for (u32 i = 0; i < (r->w * r->h); i++)
     {
@@ -182,7 +180,7 @@ static void filter_func_uniquecount(FILTER_FUNC_PARAMS)
             abs(pixels[idx + 1] - prevPixels[idx + 1]) > threshold ||
             abs(pixels[idx + 2] - prevPixels[idx + 2]) > threshold)
         {
-            uniqueFrames++;
+            uniqueFramesProcessed++;
 
             break;
         }
@@ -190,17 +188,17 @@ static void filter_func_uniquecount(FILTER_FUNC_PARAMS)
 
     memcpy(prevPixels.ptr(), pixels, prevPixels.up_to(r->w * r->h * (r->bpp / 8)));
 
-    // Once per second.
-    if (timer.elapsed() > 1000)
+    const double secsElapsed = difftime(time(NULL), timer);
+    if (secsElapsed >= 1)
     {
-        uniquePerSecond = round(uniqueFrames / (timer.elapsed() / 1000.0));
-        uniqueFrames = 0;
-        timer.restart();
+        uniqueFramesPerSecond = round(uniqueFramesProcessed / secsElapsed);
+        uniqueFramesProcessed = 0;
+        timer = time(NULL);
     }
 
     // Draw the counter into the frame.
     {
-        std::string counterString = std::to_string(uniquePerSecond);
+        std::string counterString = std::to_string(uniqueFramesPerSecond);
 
         const auto cornerPos = [corner, r, counterString]()->cv::Point
         {
@@ -574,7 +572,7 @@ static void filter_func_blur(FILTER_FUNC_PARAMS)
     return;
 }
 
-bool kf_named_filter_exists(const QString &name)
+bool kf_named_filter_exists(const std::string &name)
 {
     // If we reach the end of the functions list before finding one by the given
     // name, the entry doesn't exist.
@@ -583,7 +581,7 @@ bool kf_named_filter_exists(const QString &name)
     return exists;
 }
 
-const filter_dlg_s* kf_filter_dialog_for_name(const QString &name)
+const filter_dlg_s* kf_filter_dialog_for_name(const std::string &name)
 {
     return FILTERS.at(name).second;
 }
@@ -591,7 +589,7 @@ const filter_dlg_s* kf_filter_dialog_for_name(const QString &name)
 // Returns a pointer to the filter function that corresponds to the given filter
 // name string.
 //
-filter_function_t kf_filter_function_ptr_for_name(const QString &name)
+filter_function_t kf_filter_function_ptr_for_name(const std::string &name)
 {
     return FILTERS.at(name).first;
 }
@@ -603,7 +601,7 @@ void kf_set_filtering_enabled(const bool enabled)
     return;
 }
 
-static void apply_filter(const QString &name, FILTER_FUNC_PARAMS)
+static void apply_filter(const std::string &name, FILTER_FUNC_PARAMS)
 {
     filter_function_t applyFn = kf_filter_function_ptr_for_name(name);
 

@@ -49,7 +49,13 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
 
     // Populate the selection of filters.
     {
-        const QStringList filterNames = kf_filter_name_list();
+        const QStringList filterNames = []()->QStringList
+        {
+            QStringList list;
+            const std::vector<std::string> stringList = kf_filter_name_list();
+            for (auto string: stringList) list << QString::fromStdString(string);
+            return list;
+        }();
         k_assert(!filterNames.isEmpty(),
                  "Expected to receive a list of filters, but got an empty list.");
 
@@ -69,7 +75,7 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
 
     // Initialize the GUI controls to the data in the given filter set.
     {
-        ui->lineEdit_description->setText(filterSet->description);
+        ui->lineEdit_description->setText(QString::fromStdString(filterSet->description));
 
         // Activation type.
         {
@@ -132,7 +138,7 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
 
                     QListWidgetItem *itm = new QListWidgetItem(filterList);
 
-                    itm->setText(filter.name);
+                    itm->setText(QString::fromStdString(filter.name));
 
                     filterData[itm] = (u8*)kmem_allocate(FILTER_DATA_LENGTH, "Filter set data");
                     memcpy(filterData[itm], filter.data, FILTER_DATA_LENGTH);
@@ -183,7 +189,7 @@ filter_set_s FilterSetDialog::get_filter_set_from_current_state(void)
 
         filter_s f;
 
-        f.name = filterName;
+        f.name = filterName.toStdString();
         if (!kf_named_filter_exists(f.name))
         {
             NBENE(("Was asked to access a filter that doesn't exist. Ignoring this."));
@@ -203,7 +209,7 @@ filter_set_s FilterSetDialog::get_filter_set_from_current_state(void)
 
         filter_s f;
 
-        f.name = filterName;
+        f.name = filterName.toStdString();
         if (!kf_named_filter_exists(f.name))
         {
             NBENE(("Was asked to access a filter that doesn't exist. Ignoring this."));
@@ -215,7 +221,7 @@ filter_set_s FilterSetDialog::get_filter_set_from_current_state(void)
         c.postFilters.push_back(f);
     }
 
-    c.description = ui->lineEdit_description->text();
+    c.description = ui->lineEdit_description->text().toStdString();
 
     c.scaler = ks_scaler_for_name_string(ui->comboBox_scaler->currentText());
 
@@ -238,7 +244,7 @@ filter_set_s FilterSetDialog::get_filter_set_from_current_state(void)
 void FilterSetDialog::on_listWidget_preFilters_itemDoubleClicked(QListWidgetItem *item)
 {
     // Pop up a dialog letting the user set the filter's parameters.
-    kf_filter_dialog_for_name(item->text())->poll_user_for_params(filterData[item], this);
+    kf_filter_dialog_for_name(item->text().toStdString())->poll_user_for_params(filterData[item], this);
 
     return;
 }
@@ -246,7 +252,7 @@ void FilterSetDialog::on_listWidget_preFilters_itemDoubleClicked(QListWidgetItem
 void FilterSetDialog::on_listWidget_postFilters_itemDoubleClicked(QListWidgetItem *item)
 {
     // Pop up a dialog letting the user set the filter's parameters.
-    kf_filter_dialog_for_name(item->text())->poll_user_for_params(filterData[item], this);
+    kf_filter_dialog_for_name(item->text().toStdString())->poll_user_for_params(filterData[item], this);
 
     return;
 }
@@ -254,7 +260,7 @@ void FilterSetDialog::on_listWidget_postFilters_itemDoubleClicked(QListWidgetIte
 void FilterSetDialog::on_listWidget_preFilters_itemChanged(QListWidgetItem *item)
 {
     filterData[item] = (u8*)kmem_allocate(FILTER_DATA_LENGTH, "Pre-filter data");
-    kf_filter_dialog_for_name(item->text())->insert_default_params(filterData[item]);
+    kf_filter_dialog_for_name(item->text().toStdString())->insert_default_params(filterData[item]);
 
     return;
 }
@@ -262,7 +268,7 @@ void FilterSetDialog::on_listWidget_preFilters_itemChanged(QListWidgetItem *item
 void FilterSetDialog::on_listWidget_postFilters_itemChanged(QListWidgetItem *item)
 {
     filterData[item] = (u8*)kmem_allocate(FILTER_DATA_LENGTH, "Post-filter data");
-    kf_filter_dialog_for_name(item->text())->insert_default_params(filterData[item]);
+    kf_filter_dialog_for_name(item->text().toStdString())->insert_default_params(filterData[item]);
 
     return;
 }

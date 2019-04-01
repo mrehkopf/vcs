@@ -74,7 +74,7 @@ static QTreeWidgetItem* make_filter_set_tree_item(const filter_set_s &filterSet,
     item->setCheckState(0, filterSet.isEnabled? Qt::Checked : Qt::Unchecked);
     item->setText(1, inputRes);
     item->setText(2, outputRes);
-    item->setText(3, filterSet.description);
+    item->setText(3, QString::fromStdString(filterSet.description));
 
     item->setData(0, Qt::UserRole, setId);
 

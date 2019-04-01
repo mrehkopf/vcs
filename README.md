@@ -403,7 +403,7 @@ struct filter_dlg_NAME_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(filterName + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
         d.setMinimumWidth(dlgMinWidth);
 
         // Add the dialog's widgets. We'll let the user specify

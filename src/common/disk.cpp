@@ -261,7 +261,7 @@ bool kdisk_save_filter_sets(const std::vector<filter_set_s*>& filterSets,
                     << outRes.w << "," << outRes.h << "\n";
         }
 
-        outFile << "description,{" << set->description << "}\n";
+        outFile << "description,{" << QString::fromStdString(set->description) << "}\n";
         outFile << "enabled," << set->isEnabled << "\n";
         outFile << "scaler,{" << set->scaler->name << "}\n";
 
@@ -270,7 +270,7 @@ bool kdisk_save_filter_sets(const std::vector<filter_set_s*>& filterSets,
         {
             for (auto &filter: filters)
             {
-                outFile << filterType << ",{" << filter.name << "}," << FILTER_DATA_LENGTH;
+                outFile << filterType << ",{" << QString::fromStdString(filter.name) << "}," << FILTER_DATA_LENGTH;
                 for (uint q = 0; q < FILTER_DATA_LENGTH; q++)
                 {
                     outFile << "," << (u8)filter.data[q];
@@ -364,7 +364,7 @@ bool kdisk_load_filter_sets(const QString &sourceFilename)
         if (rowData[row].at(0) != "enabled") // Legacy support, 'description' was pushed in front of 'enabled' in later revisions.
         {
             verify_first_element_on_row_is("description");
-            set->description = rowData[row].at(1);
+            set->description = rowData[row].at(1).toStdString();
 
             row++;
         }
@@ -390,7 +390,7 @@ bool kdisk_load_filter_sets(const QString &sourceFilename)
 
             filter_s filter;
 
-            filter.name = rowData[row].at(1);
+            filter.name = rowData[row].at(1).toStdString();
 
             const uint numParams = rowData[row].at(2).toUInt();
             if (numPreFilters >= FILTER_DATA_LENGTH)
@@ -424,7 +424,7 @@ bool kdisk_load_filter_sets(const QString &sourceFilename)
 
             filter_s filter;
 
-            filter.name = rowData[row].at(1);
+            filter.name = rowData[row].at(1).toStdString();
 
             const uint numParams = rowData[row].at(2).toUInt();
             if (numPreFilters >= FILTER_DATA_LENGTH)
