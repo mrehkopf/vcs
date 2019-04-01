@@ -12,14 +12,12 @@
 #include "../common/propagate.h"
 #include "../display/display.h"
 #include "../common/globals.h"
+#include "../capture/alias.h"
 #include "../common/disk.h"
 #include "capture.h"
 
 // All local RGBEASY API callbacks lock this for their duration.
 std::mutex INPUT_OUTPUT_MUTEX;
-
-// Set to true if the current input resolution is an alias for another resolution.
-static bool IS_ALIASED_INPUT_RESOLUTION = false;
 
 // Set to true when receiving the first frame after 'no signal'.
 static bool SIGNAL_WOKE_UP = false;
@@ -463,21 +461,6 @@ bool kc_set_resolution(const resolution_s r)
     return CAPTURE_INTERFACE.set_capture_resolution(r);
 }
 
-int kc_index_of_alias_resolution(const resolution_s r)
-{
-    for (size_t i = 0; i < ALIASES.size(); i++)
-    {
-        if (ALIASES[i].from.w == r.w &&
-            ALIASES[i].from.h == r.h)
-        {
-            return i;
-        }
-    }
-
-    // No alias found.
-    return -1;
-}
-
 mode_params_s kc_mode_params_for_resolution(const resolution_s r)
 {
     for (const auto &m: KNOWN_MODES)
@@ -520,54 +503,27 @@ bool kc_set_mode_parameters_for_resolution(const resolution_s r)
     return true;
 }
 
-bool kc_is_aliased_resolution(void)
-{
-    return IS_ALIASED_INPUT_RESOLUTION;
-}
-
-// See if there isn't an alias resolution for the given resolution.
-// If there is, will return that. Otherwise, returns the resolution
-// that was passed in.
-//
-resolution_s aliased(const resolution_s &r)
-{
-    resolution_s newRes = r;
-    const int aliasIdx = kc_index_of_alias_resolution(r);
-
-    if (aliasIdx >= 0)
-    {
-        newRes = ALIASES[aliasIdx].to;
-
-        // Try to switch to the alias resolution.
-        if (!kc_set_resolution(r))
-        {
-            NBENE(("Failed to apply an alias."));
-
-            IS_ALIASED_INPUT_RESOLUTION = false;
-            newRes = r;
-        }
-        else
-        {
-            IS_ALIASED_INPUT_RESOLUTION = true;
-        }
-    }
-    else
-    {
-        IS_ALIASED_INPUT_RESOLUTION = false;
-    }
-
-    return newRes;
-}
-
 void kc_apply_new_capture_resolution(void)
 {
-    resolution_s r = aliased(kc_hardware().status.capture_resolution());
+    resolution_s currentRes = kc_hardware().status.capture_resolution();
+    resolution_s aliasedRes = ka_aliased(currentRes);
 
-    kc_set_mode_parameters_for_resolution(r);
+    // If the current resolution has an alias, switch to that.
+    if ((currentRes.w != aliasedRes.w) ||
+        (currentRes.h != aliasedRes.h))
+    {
+        if (!kc_set_resolution(aliasedRes))
+        {
+            NBENE(("Failed to apply an alias."));
+        }
+        else currentRes = aliasedRes;
+    }
+
+    kc_set_mode_parameters_for_resolution(currentRes);
 
     RECEIVED_NEW_VIDEO_MODE = false;
 
-    INFO(("Capturer reports new input mode: %u x %u.", r.w, r.h));
+    INFO(("Capturer reports new input mode: %u x %u.", currentRes.w, currentRes.h));
 
     return;
 }
@@ -755,51 +711,9 @@ bool kc_set_input_color_depth(const u32 bpp)
     return false;
 }
 
-// Lets the gui know which aliases we've got loaded.
-void kc_broadcast_aliases_to_gui(void)
-{
-    DEBUG(("Broadcasting %u alias set(s) to the GUI.", ALIASES.size()));
-
-    kd_clear_known_aliases();
-    for (const auto &a: ALIASES)
-    {
-        kd_signal_new_known_alias(a);
-    }
-
-    return;
-}
-
 const std::vector<mode_params_s>& kc_mode_params(void)
 {
     return KNOWN_MODES;
-}
-
-const std::vector<mode_alias_s>& kc_aliases(void)
-{
-    return ALIASES;
-}
-
-void kc_set_aliases(const std::vector<mode_alias_s> &aliases)
-{
-    ALIASES = aliases;
-
-    if (!kc_no_signal())
-    {
-        // If one of the aliases matches the current input resolution, change the
-        // resolution accordingly.
-        const resolution_s currentRes = kc_hardware().status.capture_resolution();
-        for (const auto &alias: ALIASES)
-        {
-            if (alias.from.w == currentRes.w &&
-                alias.from.h == currentRes.h)
-            {
-                kpropagate_forced_capture_resolution(alias.to);
-                break;
-            }
-        }
-    }
-
-    return;
 }
 
 void kc_broadcast_mode_params_to_gui(void)

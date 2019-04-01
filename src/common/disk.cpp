@@ -9,8 +9,9 @@
 #include <QTextStream>
 #include <QString>
 #include <QFile>
-#include "../capture/capture.h"
 #include "../common/propagate.h"
+#include "../capture/capture.h"
+#include "../capture/alias.h"
 #include "../filter/filter.h"
 #include "../common/csv.h"
 #include "disk.h"

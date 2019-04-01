@@ -2,6 +2,7 @@
 #define PROPAGATE_H
 
 #include <vector>
+#include <string>
 
 struct mode_params_s;
 struct filter_set_s;

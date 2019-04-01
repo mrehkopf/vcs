@@ -76,7 +76,8 @@ SOURCES += \
     src/display/qt/w_opengl.cpp \
     src/record/record.cpp \
     src/common/propagate.cpp \
-    src/common/disk.cpp
+    src/common/disk.cpp \
+    src/capture/alias.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -108,7 +109,8 @@ HEADERS += \
     src/display/qt/w_opengl.h \
     src/record/record.h \
     src/common/propagate.h \
-    src/common/disk.h
+    src/common/disk.h \
+    src/capture/alias.h
 
 FORMS += \
     src/display/qt/d_control_panel.ui \

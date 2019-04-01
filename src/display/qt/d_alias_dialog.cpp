@@ -13,11 +13,12 @@
 #include <QDebug>
 #include <QLabel>
 #include "../../common/persistent_settings.h"
-#include "ui_d_alias_dialog.h"
-#include "d_alias_dialog.h"
 #include "../../capture/capture.h"
+#include "../../capture/alias.h"
 #include "../../common/disk.h"
 #include "../display.h"
+#include "d_alias_dialog.h"
+#include "ui_d_alias_dialog.h"
 
 // Custom Qt::ItemDataRole values.
 enum data_role
@@ -75,7 +76,7 @@ void AliasDialog::broadcast_aliases(void)
         aliases.push_back(a);
     }
 
-    kc_set_aliases(aliases);
+    ka_set_aliases(aliases);
 
     return;
 }
@@ -233,7 +234,7 @@ void AliasDialog::save_aliases()
 
     this->broadcast_aliases();
 
-    kdisk_save_aliases(kc_aliases(), filename);
+    kdisk_save_aliases(ka_aliases(), filename);
 
     return;
 }

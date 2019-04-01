@@ -26,6 +26,7 @@
 #include "d_control_panel.h"
 #include "ui_d_window.h"
 #include "../../capture/capture.h"
+#include "../../capture/alias.h"
 #include "../../common/globals.h"
 #include "../../record/record.h"
 #include "../../scaler/scaler.h"

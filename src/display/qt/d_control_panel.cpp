@@ -14,24 +14,25 @@
 #include <QDebug>
 #include <QMenu>
 #include <assert.h>
+#include "../../common/persistent_settings.h"
+#include "../../filter/anti_tear.h"
+#include "../../common/propagate.h"
+#include "../../capture/capture.h"
+#include "../../common/globals.h"
+#include "../../capture/alias.h"
+#include "../../record/record.h"
+#include "../../filter/filter.h"
+#include "../../common/log.h"
+#include "../display.h"
 #include "d_filter_sets_list_dialog.h"
 #include "d_video_and_color_dialog.h"
-#include "../../common/persistent_settings.h"
 #include "d_resolution_dialog.h"
-#include "ui_d_control_panel.h"
 #include "d_anti_tear_dialog.h"
 #include "d_control_panel.h"
 #include "d_alias_dialog.h"
-#include "../../filter/anti_tear.h"
-#include "../../capture/capture.h"
-#include "../../record/record.h"
-#include "../../filter/filter.h"
-#include "../../common/globals.h"
-#include "../../common/propagate.h"
-#include "../../common/log.h"
-#include "../display.h"
 #include "d_window.h"
 #include "d_util.h"
+#include "ui_d_control_panel.h"
 
 #if _WIN32
     #include <windows.h>
@@ -480,11 +481,6 @@ void ControlPanel::update_capture_signal_info(void)
         else
         {
             QString res = QString("%1 x %2").arg(s.r.w).arg(s.r.h);
-
-            if (kc_is_aliased_resolution())
-            {
-                res += " (a)";
-            }
 
             ui->label_captInputResolution->setText(res);
             ui->label_outputInputResolution->setText(res);

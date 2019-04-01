@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <assert.h>
 #include "../../capture/capture.h"
+#include "../../capture/alias.h"
 #include "../../common/globals.h"
 #include "../../filter/filter.h"
 #include "../../common/log.h"

@@ -11,10 +11,11 @@
 
 #include <mutex>
 #include "propagate.h"
-#include "../common/globals.h"
-#include "../display/display.h"
-#include "../filter/filter.h"
 #include "../capture/capture.h"
+#include "../display/display.h"
+#include "../common/globals.h"
+#include "../filter/filter.h"
+#include "../capture/alias.h"
 #include "../scaler/scaler.h"
 #include "../record/record.h"
 
@@ -99,9 +100,9 @@ void kpropagate_loaded_filter_sets_from_disk(const std::vector<filter_set_s*> &f
 void kpropagate_loaded_aliases_from_disk(const std::vector<mode_alias_s> &aliases,
                                          const std::string &sourceFilename)
 {
-    kc_set_aliases(aliases);
+    ka_set_aliases(aliases);
 
-    kc_broadcast_aliases_to_gui();
+    ka_broadcast_aliases_to_gui();
 
     INFO(("Loaded %u alias set(s) from disk.", aliases.size()));
 

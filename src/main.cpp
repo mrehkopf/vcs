@@ -11,6 +11,7 @@
 #include "display/qt/d_window.h"
 #include "filter/anti_tear.h"
 #include "capture/capture.h"
+#include "capture/alias.h"
 #include "display/display.h"
 #include "common/propagate.h"
 #include "record/record.h"
@@ -56,7 +57,7 @@ static bool initialize_all(void)
     if (!PROGRAM_EXIT_REQUESTED)
     {
         kd_acquire_display();
-        kc_broadcast_aliases_to_gui();
+        ka_broadcast_aliases_to_gui();
         kc_broadcast_mode_params_to_gui();
     }
 

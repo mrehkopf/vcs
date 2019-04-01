@@ -86,12 +86,6 @@ struct mode_params_s
     capture_video_settings_s video;
 };
 
-struct mode_alias_s
-{
-    resolution_s from;
-    resolution_s to;
-};
-
 // Functions that provide information about the capture hardware. These functions
 // generally poll the hardware directly, using the RGBEasy API (although whether
 // the API actually polls the hardware for each call is another matter, but you
@@ -148,14 +142,12 @@ void kc_initialize_capture(void);
 void kc_release_capture(void);
 
 // Public getters.
-int kc_index_of_alias_resolution(const resolution_s r);
 uint kc_num_missed_frames(void);
 uint kc_input_channel_idx(void);
 uint kc_output_color_depth(void);
 uint kc_input_color_depth(void);
 bool kc_are_frames_being_missed(void);
 bool kc_is_capture_active(void);
-bool kc_is_aliased_resolution(void);
 bool kc_should_current_frame_be_skipped(void);
 bool kc_is_invalid_signal(void);
 bool kc_no_signal(void);
@@ -164,7 +156,7 @@ const capture_hardware_s& kc_hardware(void);
 capture_event_e kc_latest_capture_event(void);
 const captured_frame_s& kc_latest_captured_frame(void);
 const std::vector<mode_params_s>& kc_mode_params(void);
-const std::vector<mode_alias_s>& kc_aliases(void);
+const std::vector<mode_alias_s>& ka_aliases(void);
 mode_params_s kc_mode_params_for_resolution(const resolution_s r);
 
 // Public setters.
@@ -187,9 +179,7 @@ void kc_apply_new_capture_resolution(void);
 #endif
 
 // Miscellaneous functions, to be sorted.
-void kc_broadcast_aliases_to_gui(void);
 void kc_broadcast_mode_params_to_gui(void);
 void kc_insert_test_image(void);
-void kc_set_aliases(const std::vector<mode_alias_s> &aliases);
 
 #endif
