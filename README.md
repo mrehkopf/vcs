@@ -257,6 +257,8 @@ output window ........... Magnify this portion of the output window.
 Mouse wheel
 output window ........... Scale the output window up/down.
 
+F5 ...................... Snap the capture display to the edges of the frame.
+
 F11 ..................... Toggle fullscreen mode on/off.
 
 Ctrl + A ................ Open the anti-tear dialog.
@@ -267,8 +269,11 @@ Ctrl + V ................ Open the video settings dialog.
 
 Ctrl + O ................ Toggle the output overlay on/off.
 
-Shift + 1 to 9 .......... Shortcuts for the input resolution buttons on the
+Ctrl + 1 to 9 ........... Shortcuts for the input resolution buttons on the
                           control panel's Input tab.
+
+Alt + Shift + Arrows .... Adjust the capture's video position horizontally
+                          and vertically.
 ```
 
 ## Command-line
@@ -276,10 +281,11 @@ Optionally, you can pass one or more of following command-line arguments to VCS:
 ```
 -m <path + filename> .... Load capture parameters from the given file on start-
                           up. Capture parameter files typically have the .vcsm
-                          suffix.
+                          or .vcs-video suffix.
 
 -f <path + filename> .... Load custom filter sets from the given file on start-
-                          up. Filter set files typically have the .vcsf suffix.
+                          up. Filter set files typically have the .vcsf or
+                          .vcs-filterset suffix.
 
 -a <path + filename> .... Load alias resolutions from the given file on start-
                           up. Alias resolution files typically have the .vcsa
