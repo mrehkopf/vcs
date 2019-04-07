@@ -219,9 +219,6 @@
          </widget>
         </item>
        </layout>
-       <zorder>listWidget_filterList</zorder>
-       <zorder>listWidget_filterList</zorder>
-       <zorder>listWidget_filterList</zorder>
       </widget>
      </item>
      <item>
@@ -385,16 +382,6 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_help">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>Help</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="pushButton_apply">
        <property name="text">
         <string>Apply</string>
@@ -418,11 +405,6 @@
     </layout>
    </item>
   </layout>
-  <zorder>groupBox</zorder>
-  <zorder>groupBox_3</zorder>
-  <zorder>groupBox_2</zorder>
-  <zorder>groupBox_4</zorder>
-  <zorder>listWidget_filterList</zorder>
  </widget>
  <customwidgets>
   <customwidget>
