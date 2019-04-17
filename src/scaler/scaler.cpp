@@ -438,6 +438,7 @@ void s_convert_frame_to_bgra(const captured_frame_s &frame)
 
         cv::cvtColor(input, colorConv, conversionType);
     #else
+        (void)frame;
         k_assert(0, "Was asked to convert the frame to BGRA, but OpenCV had been disabled in the build. Can't do it.");
     #endif
 

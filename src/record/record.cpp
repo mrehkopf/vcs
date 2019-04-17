@@ -302,6 +302,8 @@ bool krecord_is_recording(void)
 {
 #ifdef USE_OPENCV
     return VIDEO_WRITER.isOpened();
+#else
+    return false;
 #endif
 }
 
@@ -377,6 +379,8 @@ void encode_frame_buffer(frame_buffer_s *const frameBuffer)
     frameBuffer->reset();
 
     return;
+#else
+    (void)frameBuffer;
 #endif
 }
 

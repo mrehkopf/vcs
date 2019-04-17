@@ -463,7 +463,6 @@ static void filter_func_crop(FILTER_FUNC_PARAMS)
     uint h = *(u16*)&(params[filter_dlg_crop_s::OFFS_HEIGHT]);
 
     #ifdef USE_OPENCV
-        cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
         int scaler = -1;
         switch (params[filter_dlg_crop_s::OFFS_SCALER])
         {
@@ -480,6 +479,7 @@ static void filter_func_crop(FILTER_FUNC_PARAMS)
         }
         else
         {
+            cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
             cv::Mat cropped = output(cv::Rect(x, y, w, h)).clone();
 
             // If the user doesn't want scaling, just append some black borders around the
@@ -487,6 +487,11 @@ static void filter_func_crop(FILTER_FUNC_PARAMS)
             if (scaler < 0) cv::copyMakeBorder(cropped, output, y, (r->h - (h + y)), x, (r->w - (w + x)), cv::BORDER_CONSTANT, 0);
             else cv::resize(cropped, output, output.size(), 0, 0, scaler);
         }
+    #else
+        (void)x;
+        (void)y;
+        (void)w;
+        (void)h;
     #endif
 
     return;
@@ -509,6 +514,8 @@ static void filter_func_flip(FILTER_FUNC_PARAMS)
 
         cv::flip(output, temp, axis);
         temp.copyTo(output);
+    #else
+        (void)axis;
     #endif
 
     return;
@@ -530,6 +537,9 @@ static void filter_func_rotate(FILTER_FUNC_PARAMS)
         cv::Mat transf = cv::getRotationMatrix2D(cv::Point2d((r->w / 2), (r->h / 2)), -angle, scale);
         cv::warpAffine(output, temp, transf, cv::Size(r->w, r->h));
         temp.copyTo(output);
+    #else
+        (void)angle;
+        (void)scale;
     #endif
 
     return;
