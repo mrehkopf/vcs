@@ -252,7 +252,19 @@ void MainWindow::paintEvent(QPaintEvent *)
     // If OpenGL is enabled, its own paintGL() should be getting called instead of paintEvent().
     if (OGL_SURFACE != nullptr) return;
 
-    const QImage frameImage = ks_scaler_output_buffer_as_qimage();
+    // Convert the output buffer into a QImage frame.
+    const QImage frameImage = ([]()->QImage
+    {
+        const resolution_s r = ks_output_resolution();
+        const u8 *const fb = ks_scaler_output_as_raw_ptr();
+
+        if (fb == nullptr)
+        {
+            DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
+            return QImage();
+        }
+        else return QImage(fb, r.w, r.h, QImage::Format_RGB32);
+    })();
 
     QPainter painter(this);
 

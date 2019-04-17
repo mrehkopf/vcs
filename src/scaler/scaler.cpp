@@ -6,8 +6,6 @@
  *
  */
 
-#include <QStringList>
-#include <QImage>
 #include <algorithm>
 #include <vector>
 #include "../filter/anti_tear.h"
@@ -682,34 +680,16 @@ const u8* ks_scaler_output_as_raw_ptr(void)
     return OUTPUT_BUFFER.ptr();
 }
 
-QImage ks_scaler_output_buffer_as_qimage(void)
-{
-    QImage img;
-
-    if (OUTPUT_BUFFER.is_null())
-    {
-        DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
-        img = QImage();
-    }
-    else
-    {
-        const resolution_s r = LATEST_OUTPUT_SIZE;
-        img = QImage(OUTPUT_BUFFER.ptr(), r.w, r.h, QImage::Format_RGB32);
-    }
-
-    return img;
-}
-
 // Returns a list of GUI-displayable names of the scaling filters that're
 // available.
 //
-QStringList ks_list_of_scaling_filter_names(void)
+std::vector<std::string> ks_list_of_scaling_filter_names(void)
 {
-    QStringList names;
+    std::vector<std::string> names;
 
     for (uint i = 0; i < SCALING_FILTERS.size(); i++)
     {
-        names += SCALING_FILTERS[i].name;
+        names.push_back(SCALING_FILTERS[i].name);
     }
 
     return names;
@@ -717,7 +697,7 @@ QStringList ks_list_of_scaling_filter_names(void)
 
 // Returns a scaling filter matching the given name.
 //
-const scaling_filter_s* ks_scaler_for_name_string(const QString &name)
+const scaling_filter_s* ks_scaler_for_name_string(const std::string &name)
 {
     const scaling_filter_s *f = nullptr;
 
@@ -736,13 +716,13 @@ const scaling_filter_s* ks_scaler_for_name_string(const QString &name)
     f = &SCALING_FILTERS.at(0);
     NBENE(("Was unable to find a scaler called '%s'. "
            "Defaulting to the first scaler on the list (%s).",
-           name.toLatin1().constData(), f->name.toLatin1().constData()));
+           name.c_str(), f->name.c_str()));
 
     done:
     return f;
 }
 
-const QString& ks_upscaling_filter_name(void)
+const std::string& ks_upscaling_filter_name(void)
 {
     k_assert(UPSCALE_FILTER != nullptr,
              "Tried to get the name of a null upscale filter.");
@@ -750,7 +730,7 @@ const QString& ks_upscaling_filter_name(void)
     return UPSCALE_FILTER->name;
 }
 
-const QString& ks_downscaling_filter_name(void)
+const std::string& ks_downscaling_filter_name(void)
 {
     k_assert(UPSCALE_FILTER != nullptr,
              "Tried to get the name of a null downscale filter.")
@@ -758,22 +738,20 @@ const QString& ks_downscaling_filter_name(void)
     return DOWNSCALE_FILTER->name;
 }
 
-void ks_set_upscaling_filter(const QString &name)
+void ks_set_upscaling_filter(const std::string &name)
 {
     UPSCALE_FILTER = ks_scaler_for_name_string(name);
 
-    DEBUG(("Assigned '%s' as the upscaling filter.",
-           UPSCALE_FILTER->name.toLatin1().constData()));
+    DEBUG(("Assigned '%s' as the upscaling filter.", UPSCALE_FILTER->name.c_str()));
 
     return;
 }
 
-void ks_set_downscaling_filter(const QString &name)
+void ks_set_downscaling_filter(const std::string &name)
 {
     DOWNSCALE_FILTER = ks_scaler_for_name_string(name);
 
-    DEBUG(("Assigned '%s' as the downscaling filter.",
-           DOWNSCALE_FILTER->name.toLatin1().constData()));
+    DEBUG(("Assigned '%s' as the downscaling filter.", DOWNSCALE_FILTER->name.c_str()));
 
     return;
 }

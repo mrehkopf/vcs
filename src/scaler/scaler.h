@@ -9,8 +9,6 @@
 
 #include "../common/globals.h"
 
-class QImage;
-
 struct captured_frame_s;
 
 // The parameters accepted by scaling functions.
@@ -37,7 +35,7 @@ enum class aspect_mode_e
 
 struct scaling_filter_s
 {
-    QString name;   // The public name of the filter. Shown in the GUI etc.
+    std::string name;   // The public name of the filter. Shown in the GUI etc.
     void (*scale)(SCALER_FUNC_PARAMS);  // The function that executes this scaler with the given pixels.
 };
 
@@ -75,23 +73,21 @@ void ks_clear_scaler_output_buffer(void);
 
 const u8* ks_scaler_output_as_raw_ptr(void);
 
-QImage ks_scaler_output_buffer_as_qimage(void);
+const std::string &ks_upscaling_filter_name(void);
 
-const QString& ks_upscaling_filter_name(void);
-
-const QString& ks_downscaling_filter_name(void);
+const std::string& ks_downscaling_filter_name(void);
 
 real ks_output_scaling(void);
 
-QStringList ks_list_of_scaling_filter_names(void);
+std::vector<std::string> ks_list_of_scaling_filter_names(void);
 
 void ks_set_output_scaling(const real s);
 
-void ks_set_downscaling_filter(const QString &name);
+void ks_set_downscaling_filter(const std::string &name);
 
-void ks_set_upscaling_filter(const QString &name);
+void ks_set_upscaling_filter(const std::string &name);
 
-const scaling_filter_s* ks_scaler_for_name_string(const QString &name);
+const scaling_filter_s* ks_scaler_for_name_string(const std::string &name);
 
 resolution_s ks_scaler_output_resolution(void);
 

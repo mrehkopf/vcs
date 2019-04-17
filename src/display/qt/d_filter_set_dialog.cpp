@@ -65,12 +65,15 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
 
     // Populate the selection of scalers.
     {
-        const QStringList scalerNames = ks_list_of_scaling_filter_names();
-        k_assert(!scalerNames.isEmpty(),
+        const std::vector<std::string> scalerNames = ks_list_of_scaling_filter_names();
+        k_assert(!scalerNames.empty(),
                  "Expected to receive a list of scalers, but got an empty list.");
 
         ui->comboBox_scaler->clear();
-        ui->comboBox_scaler->addItems(scalerNames);
+        for (const auto &name: scalerNames)
+        {
+            ui->comboBox_scaler->addItem(QString::fromStdString(name));
+        }
     }
 
     // Initialize the GUI controls to the data in the given filter set.
@@ -117,7 +120,7 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
         // Scaler.
         if (filterSet->scaler != nullptr)
         {
-            const int itemIdx = ui->comboBox_scaler->findText(filterSet->scaler->name);
+            const int itemIdx = ui->comboBox_scaler->findText(QString::fromStdString(filterSet->scaler->name));
             if (itemIdx >= 0)
             {
                 block_widget_signals_c b(ui->comboBox_scaler);
@@ -223,7 +226,7 @@ filter_set_s FilterSetDialog::get_filter_set_from_current_state(void)
 
     c.description = ui->lineEdit_description->text().toStdString();
 
-    c.scaler = ks_scaler_for_name_string(ui->comboBox_scaler->currentText());
+    c.scaler = ks_scaler_for_name_string(ui->comboBox_scaler->currentText().toStdString());
 
     c.activation = filter_set_s::activation_e::none;
     if (ui->radioButton_activeAlways->isChecked()) c.activation |= filter_set_s::activation_e::all;

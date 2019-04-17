@@ -264,7 +264,7 @@ bool kdisk_save_filter_sets(const std::vector<filter_set_s*>& filterSets,
 
         outFile << "description,{" << QString::fromStdString(set->description) << "}\n";
         outFile << "enabled," << set->isEnabled << "\n";
-        outFile << "scaler,{" << set->scaler->name << "}\n";
+        outFile << "scaler,{" << QString::fromStdString(set->scaler->name) << "}\n";
 
         // Save the filters.
         auto save_filter_data = [&](std::vector<filter_s> filters, const QString &filterType)
@@ -379,7 +379,7 @@ bool kdisk_load_filter_sets(const std::string &sourceFilename)
 
         row++;
         verify_first_element_on_row_is("scaler");
-        set->scaler = ks_scaler_for_name_string(rowData[row].at(1));
+        set->scaler = ks_scaler_for_name_string(rowData[row].at(1).toStdString());
 
         row++;
         verify_first_element_on_row_is("preFilters");

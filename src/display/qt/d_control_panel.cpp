@@ -327,9 +327,8 @@ void ControlPanel::fill_capture_channel_combobox()
 //
 void ControlPanel::fill_output_scaling_filter_comboboxes()
 {
-    const QStringList filters = ks_list_of_scaling_filter_names();
-    k_assert(!filters.isEmpty(),
-             "Expected to receive a list of scaling filters, but got an empty list.");
+    const std::vector<std::string> filterNames = ks_list_of_scaling_filter_names();
+    k_assert(!filterNames.empty(), "Expected to receive a list of scaling filters, but got an empty list.");
 
     block_widget_signals_c b1(ui->comboBox_outputUpscaleFilter);
     block_widget_signals_c b2(ui->comboBox_outputDownscaleFilter);
@@ -337,10 +336,10 @@ void ControlPanel::fill_output_scaling_filter_comboboxes()
     ui->comboBox_outputUpscaleFilter->clear();
     ui->comboBox_outputDownscaleFilter->clear();
 
-    for (int i = 0; i < filters.size(); i++)
+    for (const auto &name: filterNames)
     {
-        ui->comboBox_outputUpscaleFilter->addItem(filters[i]);
-        ui->comboBox_outputDownscaleFilter->addItem(filters[i]);
+        ui->comboBox_outputUpscaleFilter->addItem(QString::fromStdString(name));
+        ui->comboBox_outputDownscaleFilter->addItem(QString::fromStdString(name));
     }
 
     return;
@@ -875,14 +874,14 @@ void ControlPanel::on_comboBox_frameSkip_currentIndexChanged(const QString &arg1
 
 void ControlPanel::on_comboBox_outputUpscaleFilter_currentIndexChanged(const QString &arg1)
 {
-    ks_set_upscaling_filter(arg1);
+    ks_set_upscaling_filter(arg1.toStdString());
 
     return;
 }
 
 void ControlPanel::on_comboBox_outputDownscaleFilter_currentIndexChanged(const QString &arg1)
 {
-    ks_set_downscaling_filter(arg1);
+    ks_set_downscaling_filter(arg1.toStdString());
 
     return;
 }
