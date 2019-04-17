@@ -178,10 +178,9 @@ bool FilterSetsListDialog::load_sets_from_file(void)
 
     if (filename.isNull()) return false;
 
-    if (kdisk_load_filter_sets(filename))
+    if (kdisk_load_filter_sets(filename.toStdString()))
     {
         ui->label_sourceFilename->setText(QFileInfo(filename).fileName());
-
         return true;
     }
 

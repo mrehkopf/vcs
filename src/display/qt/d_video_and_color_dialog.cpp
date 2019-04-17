@@ -435,7 +435,7 @@ void VideoAndColorDialog::load_settings(void)
         return;
     }
 
-    kdisk_load_mode_params(filename);
+    kdisk_load_mode_params(filename.toStdString());
 
     return;
 }

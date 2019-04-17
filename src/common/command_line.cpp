@@ -4,8 +4,6 @@
  *
  */
 
-#include <QString>
-#include <string>
 #include <unistd.h>
 #include "../common/globals.h"
 
@@ -16,11 +14,21 @@
  *
  */
 
-unsigned int INPUT_CHANNEL_IDX = 1;         // Which input channel on the capture card we want to receive frames from.
-unsigned int FRAME_SKIP = 0;                // How many frames the capture card should drop between captures.
-static QString PARAMS_FILE_NAME = "";      // Name of (and path to) the capture parameter file on disk.
-static QString ALIAS_FILE_NAME = "";       // Name of (and path to) the alias file on disk.
-static QString FILTERS_FILE_NAME = "";     // Name of (and path to) the filter set file on disk.
+// Which input channel on the capture hardware we want to receive frames from.
+// Note: This value is 1-indexed, so the first channel is 1 instead of 0.
+uint INPUT_CHANNEL_IDX = 1;
+
+// How many frames the capture card should drop between captures.
+uint FRAME_SKIP = 0;
+
+// Name of (and path to) the capture parameter file on disk.
+static std::string PARAMS_FILE_NAME = "";
+
+// Name of (and path to) the alias file on disk.
+static std::string ALIAS_FILE_NAME = "";
+
+// Name of (and path to) the filter set file on disk.
+static std::string FILTERS_FILE_NAME = "";
 
 bool kcom_parse_command_line(const int argc, char *const argv[])
 {
@@ -78,17 +86,17 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
     return true;
 }
 
-const QString& kcom_alias_file_name(void)
+const std::string& kcom_alias_file_name(void)
 {
     return ALIAS_FILE_NAME;
 }
 
-const QString& kcom_filters_file_name(void)
+const std::string& kcom_filters_file_name(void)
 {
     return FILTERS_FILE_NAME;
 }
 
-const QString& kcom_params_file_name(void)
+const std::string& kcom_params_file_name(void)
 {
     return PARAMS_FILE_NAME;
 }

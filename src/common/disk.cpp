@@ -151,9 +151,9 @@ bool kdisk_save_mode_params(const std::vector<mode_params_s> &modeParams,
     return false;
 }
 
-bool kdisk_load_mode_params(const QString &sourceFilename)
+bool kdisk_load_mode_params(const std::string &sourceFilename)
 {
-    if (sourceFilename.isEmpty())
+    if (sourceFilename.empty())
     {
         DEBUG(("No mode settings file defined, skipping."));
         return true;
@@ -161,7 +161,7 @@ bool kdisk_load_mode_params(const QString &sourceFilename)
 
     std::vector<mode_params_s> modeParams;
 
-    QList<QStringList> paramRows = csv_parse_c(sourceFilename).contents();
+    QList<QStringList> paramRows = csv_parse_c(QString::fromStdString(sourceFilename)).contents();
 
     // Each mode is saved as a block of rows, starting with a 3-element row defining
     // the mode's resolution, followed by several 2-element rows defining the various
@@ -222,7 +222,7 @@ bool kdisk_load_mode_params(const QString &sourceFilename)
     std::sort(modeParams.begin(), modeParams.end(), [](const mode_params_s &a, const mode_params_s &b)
                                           { return (a.r.w * a.r.h) < (b.r.w * b.r.h); });
 
-    kpropagate_loaded_mode_params_from_disk(modeParams, sourceFilename.toStdString());
+    kpropagate_loaded_mode_params_from_disk(modeParams, sourceFilename);
 
     return true;
 
@@ -308,17 +308,17 @@ bool kdisk_save_filter_sets(const std::vector<filter_set_s*>& filterSets,
 }
 
 /// TODO. Needs cleanup.
-bool kdisk_load_filter_sets(const QString &sourceFilename)
+bool kdisk_load_filter_sets(const std::string &sourceFilename)
 {
     std::vector<filter_set_s*> filterSets;
 
-    if (sourceFilename.isEmpty())
+    if (sourceFilename.empty())
     {
         INFO(("No filter set file defined, skipping."));
         return true;
     }
 
-    QList<QStringList> rowData = csv_parse_c(sourceFilename).contents();
+    QList<QStringList> rowData = csv_parse_c(QString::fromStdString(sourceFilename)).contents();
     if (rowData.isEmpty())
     {
         goto fail;
@@ -458,7 +458,7 @@ bool kdisk_load_filter_sets(const QString &sourceFilename)
     kf_clear_filters();
     for (auto *const set: filterSets) kf_add_filter_set(set);
 
-    kpropagate_loaded_filter_sets_from_disk(filterSets, sourceFilename.toStdString());
+    kpropagate_loaded_filter_sets_from_disk(filterSets, sourceFilename);
 
     return true;
 
@@ -475,9 +475,9 @@ bool kdisk_load_filter_sets(const QString &sourceFilename)
 // through the GUI to load the aliases (as opposed to being called automatically
 // on startup or so).
 //
-bool kdisk_load_aliases(const QString &sourceFilename)
+bool kdisk_load_aliases(const std::string &sourceFilename)
 {
-    if (sourceFilename.isEmpty())
+    if (sourceFilename.empty())
     {
         DEBUG(("No alias file defined, skipping."));
         return true;
@@ -485,7 +485,7 @@ bool kdisk_load_aliases(const QString &sourceFilename)
 
     std::vector<mode_alias_s> aliases;
 
-    QList<QStringList> rowData = csv_parse_c(sourceFilename).contents();
+    QList<QStringList> rowData = csv_parse_c(QString::fromStdString(sourceFilename)).contents();
     for (const auto &row: rowData)
     {
         if (row.count() != 4)
@@ -507,7 +507,7 @@ bool kdisk_load_aliases(const QString &sourceFilename)
     std::sort(aliases.begin(), aliases.end(), [](const mode_alias_s &a, const mode_alias_s &b)
                                               { return (a.to.w * a.to.h) < (b.to.w * b.to.h); });
 
-    kpropagate_loaded_aliases_from_disk(aliases, sourceFilename.toStdString());
+    kpropagate_loaded_aliases_from_disk(aliases, sourceFilename);
 
     // Signal a new input mode to force the program to re-evaluate the mode
     // parameters, in case one of the newly-loaded aliases applies to the

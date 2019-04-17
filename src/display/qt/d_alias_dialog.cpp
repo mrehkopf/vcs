@@ -214,7 +214,7 @@ void AliasDialog::load_aliases()
         return;
     }
 
-    kdisk_load_aliases(filename);
+    kdisk_load_aliases(filename.toStdString());
 
     return;
 }
