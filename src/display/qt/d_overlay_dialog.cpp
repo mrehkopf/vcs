@@ -13,11 +13,11 @@
 #include <QPainter>
 #include <QDebug>
 #include <QMenu>
-#include "../../common/persistent_settings.h"
+#include "../../display/qt/persistent_settings.h"
 #include "../../capture/capture.h"
 #include "../display.h"
-#include "d_overlay_dialog.h"
 #include "ui_d_overlay_dialog.h"
+#include "d_overlay_dialog.h"
 #include "d_window.h"
 #include "d_util.h"
 

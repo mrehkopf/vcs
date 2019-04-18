@@ -14,7 +14,7 @@
 #include <QDebug>
 #include <QMenu>
 #include <assert.h>
-#include "../../common/persistent_settings.h"
+#include "../../display/qt/persistent_settings.h"
 #include "../../filter/anti_tear.h"
 #include "../../common/propagate.h"
 #include "../../capture/capture.h"

@@ -68,7 +68,7 @@ SOURCES += \
     src/common/command_line.cpp \
     src/capture/capture.cpp \
     src/filter/anti_tear.cpp \
-    src/common/persistent_settings.cpp \
+    src/display/qt/persistent_settings.cpp \
     src/common/memory.cpp \
     src/display/qt/d_filter_set_dialog.cpp \
     src/display/qt/dw_filter_list.cpp \
@@ -98,7 +98,7 @@ HEADERS += \
     src/filter/filter.h \
     src/common/command_line.h \
     src/display/qt/df_filters.h \
-    src/common/persistent_settings.h \
+    src/display/qt/persistent_settings.h \
     src/display/qt/d_util.h \
     src/common/csv.h \
     src/common/memory.h \

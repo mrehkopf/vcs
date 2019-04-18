@@ -12,13 +12,13 @@
 #include <QSpinBox>
 #include <QDebug>
 #include <QLabel>
-#include "../../common/persistent_settings.h"
+#include "../../display/qt/persistent_settings.h"
 #include "../../capture/capture.h"
 #include "../../capture/alias.h"
 #include "../../common/disk.h"
 #include "../display.h"
-#include "d_alias_dialog.h"
 #include "ui_d_alias_dialog.h"
+#include "d_alias_dialog.h"
 
 // Custom Qt::ItemDataRole values.
 enum data_role

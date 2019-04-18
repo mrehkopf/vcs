@@ -10,7 +10,7 @@
 #include <QPushButton>
 #include <map>
 #include "../../display/qt/d_filter_set_dialog.h"
-#include "../../common/persistent_settings.h"
+#include "../../display/qt/persistent_settings.h"
 #include "../../display/qt/df_filters.h"
 #include "../../display/qt/d_util.h"
 #include "../../common/globals.h"

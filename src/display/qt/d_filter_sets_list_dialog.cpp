@@ -16,7 +16,7 @@
 #include <QFile>
 #include "../../display/qt/d_filter_sets_list_dialog.h"
 #include "../../display/qt/d_filter_set_dialog.h"
-#include "../../common/persistent_settings.h"
+#include "../../display/qt/persistent_settings.h"
 #include "../../display/qt/df_filters.h"
 #include "../../common/command_line.h"
 #include "../../display/qt/d_util.h"
