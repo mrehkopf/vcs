@@ -438,7 +438,7 @@ void MainWindow::set_keyboard_shortcuts()
 
     QShortcut *f5 = new QShortcut(QKeySequence(Qt::Key_F5), this);
     f5->setContext(Qt::ApplicationShortcut);
-    connect(f5, &QShortcut::activated, []{ALIGN_CAPTURE = true;});
+    connect(f5, &QShortcut::activated, []{if (!kc_no_signal()) ALIGN_CAPTURE = true;});
 
     QShortcut *ctrlV = new QShortcut(QKeySequence("ctrl+v"), this);
     ctrlV->setContext(Qt::ApplicationShortcut);

@@ -392,6 +392,7 @@ void kc_set_mode_params(const std::vector<mode_params_s> &modeParams)
 bool kc_adjust_video_vertical_offset(const int delta)
 {
     if (!delta) return true;
+    if (!RECEIVING_A_SIGNAL) return false;
 
     const long newPos = (CAPTURE_HARDWARE.status.video_settings().verticalPosition + delta);
     if (newPos < std::max(2, (int)CAPTURE_HARDWARE.meta.minimum_video_settings().verticalPosition) ||
@@ -414,6 +415,7 @@ bool kc_adjust_video_vertical_offset(const int delta)
 bool kc_adjust_video_horizontal_offset(const int delta)
 {
     if (!delta) return true;
+    if (!RECEIVING_A_SIGNAL) return false;
 
     const long newPos = (CAPTURE_HARDWARE.status.video_settings().horizontalPosition + delta);
     if (newPos < CAPTURE_HARDWARE.meta.minimum_video_settings().horizontalPosition ||
