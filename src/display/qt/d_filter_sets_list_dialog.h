@@ -30,7 +30,7 @@ public:
 
     void repopulate_filter_sets_list(const int newIdx = -1);
 
-    void receive_current_filter_set_idx(const int idx);
+    void update_filter_set_idx(void);
 
     void signal_filtering_enabled(const bool state);
 

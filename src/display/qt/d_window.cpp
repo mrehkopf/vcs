@@ -379,7 +379,7 @@ void MainWindow::measure_framerate()
         UPDATE_LATENCY_AVG = avgProcessTime / numFramesDrawn;
         UPDATE_LATENCY_PEAK = peakProcessTime;
 
-        kd_update_gui_output_framerate_info(fps, kc_are_frames_being_missed());
+        this->update_output_framerate(fps, kc_are_frames_being_missed());
         kc_reset_missed_frames_count();
 
         numFramesDrawn = 0;
@@ -553,10 +553,10 @@ void MainWindow::update_output_framerate(const u32 fps,
     return;
 }
 
-void MainWindow::update_current_filter_set_idx(const int idx)
+void MainWindow::update_filter_set_idx(void)
 {
     k_assert(controlPanel != nullptr, "");
-    controlPanel->update_current_filter_set_idx(idx);
+    controlPanel->update_filter_set_idx();
 
     return;
 }

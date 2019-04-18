@@ -433,10 +433,10 @@ void ControlPanel::update_output_resolution_info(void)
     return;
 }
 
-void ControlPanel::update_current_filter_set_idx(const int idx)
+void ControlPanel::update_filter_set_idx(void)
 {
     k_assert(filterSetsDlg != nullptr, "");
-    filterSetsDlg->receive_current_filter_set_idx(idx);
+    filterSetsDlg->update_filter_set_idx();
 
     return;
 }

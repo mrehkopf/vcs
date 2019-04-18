@@ -50,10 +50,10 @@ void ka_broadcast_aliases_to_gui(void)
 {
     DEBUG(("Broadcasting %u alias set(s) to the GUI.", ALIASES.size()));
 
-    kd_clear_known_aliases();
+    kd_clear_aliases();
     for (const auto &a: ALIASES)
     {
-        kd_signal_new_known_alias(a);
+        kd_add_alias(a);
     }
 
     return;

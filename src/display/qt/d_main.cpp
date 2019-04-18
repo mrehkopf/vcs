@@ -31,7 +31,7 @@ static MainWindow *WINDOW = nullptr;
 extern int UPDATE_LATENCY_PEAK;
 extern int UPDATE_LATENCY_AVG;
 
-void kd_acquire_display(void)
+void kd_acquire_output_window(void)
 {
     INFO(("Acquiring the display."));
 
@@ -41,7 +41,7 @@ void kd_acquire_display(void)
     return;
 }
 
-void kd_clear_known_aliases(void)
+void kd_clear_aliases(void)
 {
     if (WINDOW != nullptr)
     {
@@ -51,7 +51,7 @@ void kd_clear_known_aliases(void)
     return;
 }
 
-void kd_signal_new_known_alias(const mode_alias_s a)
+void kd_add_alias(const mode_alias_s a)
 {
     if (WINDOW != nullptr)
     {
@@ -61,7 +61,7 @@ void kd_signal_new_known_alias(const mode_alias_s a)
     return;
 }
 
-void kd_signal_new_mode_settings_source_file(const std::string &filename)
+void kd_set_video_settings_filename(const std::string &filename)
 {
     if (WINDOW != nullptr)
     {
@@ -71,17 +71,17 @@ void kd_signal_new_mode_settings_source_file(const std::string &filename)
     return;
 }
 
-void kd_update_gui_filter_set_idx(const int idx)
+void kd_update_filter_set_index(void)
 {
     if (WINDOW != nullptr)
     {
-        WINDOW->update_current_filter_set_idx(idx);
+        WINDOW->update_filter_set_idx();
     }
 
     return;
 }
 
-void kd_update_gui_filter_sets_list(void)
+void kd_update_filter_sets_list(void)
 {
     if (WINDOW != nullptr)
     {
@@ -91,7 +91,7 @@ void kd_update_gui_filter_sets_list(void)
     return;
 }
 
-void kd_update_gui_video_params(void)
+void kd_update_video_params(void)
 {
     if (WINDOW != nullptr)
     {
@@ -101,7 +101,7 @@ void kd_update_gui_video_params(void)
     return;
 }
 
-void kd_update_gui_capture_signal_info(void)
+void kd_update_capture_signal_info(void)
 {
     if (WINDOW != nullptr)
     {
@@ -111,11 +111,11 @@ void kd_update_gui_capture_signal_info(void)
     return;
 }
 
-void kd_notify_gui_of_capture_signal_change(const bool receivingSignal)
+void kd_set_capture_signal_reception_status(const bool receivingASignal)
 {
     if (WINDOW != nullptr)
     {
-        if (receivingSignal)
+        if (receivingASignal)
         {
             WINDOW->set_capture_info_as_no_signal();
         }
@@ -136,7 +136,7 @@ bool kd_add_log_entry(const log_entry_s e)
     return false;
 }
 
-void kd_release_display(void)
+void kd_release_output_window(void)
 {
     INFO(("Releasing the display."));
 
@@ -154,7 +154,7 @@ void kd_release_display(void)
     return;
 }
 
-void kd_process_ui_events(void)
+void kd_spin_event_loop(void)
 {
     k_assert(WINDOW != nullptr,
              "Expected the display to have been acquired before accessing it for events processing. ");
@@ -163,17 +163,7 @@ void kd_process_ui_events(void)
     return;
 }
 
-void kd_update_gui_output_framerate_info(const u32 fps,
-                                         const bool missedFrames)
-{
-    k_assert(WINDOW != nullptr,
-             "Expected the display to have been acquired before accessing it for events processing. ");
-    WINDOW->update_output_framerate(fps, missedFrames);
-
-    return;
-}
-
-void kd_update_gui_recording_metainfo(void)
+void kd_update_recording_metainfo(void)
 {
     k_assert(WINDOW != nullptr,
              "Expected the display to have been acquired before accessing it for events processing. ");
@@ -182,7 +172,7 @@ void kd_update_gui_recording_metainfo(void)
     return;
 }
 
-void kd_update_display_size(void)
+void kd_update_output_window_size(void)
 {
     if (WINDOW != nullptr)
     {
@@ -192,12 +182,12 @@ void kd_update_display_size(void)
     return;
 }
 
-int kd_peak_system_latency(void)
+int kd_peak_pipeline_latency(void)
 {
     return UPDATE_LATENCY_PEAK;
 }
 
-int kd_average_system_latency(void)
+int kd_average_pipeline_latency(void)
 {
     return UPDATE_LATENCY_AVG;
 }
@@ -209,7 +199,7 @@ bool kd_is_fullscreen(void)
     return WINDOW->isFullScreen();
 }
 
-void kd_update_display(void)
+void kd_redraw_output_window(void)
 {
     if (WINDOW == nullptr)
     {

@@ -33,11 +33,11 @@ void kpropagate_news_of_new_capture_video_mode(void)
 
     kc_apply_new_capture_resolution();
 
-    kd_update_gui_capture_signal_info();
+    kd_update_capture_signal_info();
 
     ks_set_output_base_resolution(s.r, false);
 
-    kd_update_display();
+    kd_redraw_output_window();
 
     return;
 }
@@ -52,7 +52,7 @@ void kpropagate_loaded_mode_params_from_disk(const std::vector<mode_params_s> &m
     // In case the mode params changed for the current mode, re-initialize it.
     kpropagate_news_of_new_capture_video_mode();
 
-    kd_signal_new_mode_settings_source_file(sourceFilename);
+    kd_set_video_settings_filename(sourceFilename);
 
     INFO(("Loaded %u set(s) of mode params from disk.", modeParams.size()));
 
@@ -64,7 +64,7 @@ void kpropagate_saved_mode_params_to_disk(const std::vector<mode_params_s> &mode
 {
     INFO(("Saved %u set(s) of mode params to disk.", modeParams.size()));
 
-    kd_signal_new_mode_settings_source_file(targetFilename);
+    kd_set_video_settings_filename(targetFilename);
 
     return;
 }
@@ -94,7 +94,7 @@ void kpropagate_loaded_filter_sets_from_disk(const std::vector<filter_set_s*> &f
 {
     INFO(("Loaded %u filter set(s) from disk.", filterSets.size()));
 
-    kd_update_gui_filter_sets_list();
+    kd_update_filter_sets_list();
 
     (void)sourceFilename;
 
@@ -129,11 +129,11 @@ void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int ve
 // The capture hardware received an invalid input signal.
 void kpropagate_news_of_invalid_capture_signal(void)
 {
-    kd_notify_gui_of_capture_signal_change(true);
+    kd_set_capture_signal_reception_status(true);
 
     ks_indicate_invalid_signal();
 
-    kd_update_display();
+    kd_redraw_output_window();
 
     return;
 }
@@ -141,11 +141,11 @@ void kpropagate_news_of_invalid_capture_signal(void)
 // The capture hardware lost its input signal.
 void kpropagate_news_of_lost_capture_signal(void)
 {
-    kd_notify_gui_of_capture_signal_change(true);
+    kd_set_capture_signal_reception_status(true);
 
     ks_indicate_no_signal();
 
-    kd_update_display();
+    kd_redraw_output_window();
 
     return;
 }
@@ -153,7 +153,7 @@ void kpropagate_news_of_lost_capture_signal(void)
 // The capture hardware started receiving an input signal.
 void kpropagate_news_of_gained_capture_signal(void)
 {
-    kd_notify_gui_of_capture_signal_change(false);
+    kd_set_capture_signal_reception_status(false);
 
     return;
 }
@@ -170,7 +170,7 @@ void kpropagate_news_of_new_captured_frame(void)
 
     kc_mark_current_frame_as_processed();
 
-    kd_update_display();
+    kd_redraw_output_window();
 
     return;
 }

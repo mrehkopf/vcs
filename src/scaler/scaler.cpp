@@ -593,7 +593,7 @@ void ks_scale_frame(const captured_frame_s &frame)
 
     LATEST_OUTPUT_SIZE = outputRes;
 
-    kd_update_gui_filter_set_idx(kf_current_filter_set_idx());
+    kd_update_filter_set_index();
 
     done:
     return;
@@ -602,7 +602,7 @@ void ks_scale_frame(const captured_frame_s &frame)
 void ks_set_output_resolution_override_enabled(const bool state)
 {
     FORCE_BASE_RESOLUTION = state;
-    kd_update_display_size();
+    kd_update_output_window_size();
 
     return;
 }
@@ -610,7 +610,7 @@ void ks_set_output_resolution_override_enabled(const bool state)
 void ks_set_output_pad_override_enabled(const bool state)
 {
     FORCE_PADDING = state;
-    kd_update_display_size();
+    kd_update_output_window_size();
 
     return;
 }
@@ -625,7 +625,7 @@ void ks_set_output_base_resolution(const resolution_s &r,
     }
 
     BASE_RESOLUTION = r;
-    kd_update_display_size();
+    kd_update_output_window_size();
 
     return;
 }
@@ -638,7 +638,7 @@ real ks_output_scaling(void)
 void ks_set_output_scaling(const real s)
 {
     OUTPUT_SCALING = s;
-    kd_update_display_size();
+    kd_update_output_window_size();
 
     return;
 }
@@ -647,7 +647,7 @@ void ks_set_output_scale_override_enabled(const bool state)
 {
     FORCE_SCALING = state;
 
-    kd_update_display_size();
+    kd_update_output_window_size();
 
     return;
 }

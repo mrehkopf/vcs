@@ -129,11 +129,12 @@ void FilterSetsListDialog::update_filter_sets_list(void)
     return;
 }
 
-void FilterSetsListDialog::receive_current_filter_set_idx(const int idx)
+void FilterSetsListDialog::update_filter_set_idx(void)
 {
     if (!this->filteringIsEnabled) return;
 
     QString idxStr = "";
+    const int idx = kf_current_filter_set_idx();
 
     if (idx < 0)
     {

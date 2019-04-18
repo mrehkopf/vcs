@@ -30,7 +30,7 @@ static void cleanup_all(void)
 {
     INFO(("Received orders to exit. Initiating cleanup."));
 
-    kd_release_display();
+    kd_release_output_window();
     ks_release_scaler();
     kc_release_capture();
     kat_release_anti_tear();
@@ -56,7 +56,7 @@ static bool initialize_all(void)
     // Ideally, do these last.
     if (!PROGRAM_EXIT_REQUESTED)
     {
-        kd_acquire_display();
+        kd_acquire_output_window();
         ka_broadcast_aliases_to_gui();
     }
 
@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
         while (!PROGRAM_EXIT_REQUESTED)
         {
             process_next_capture_event();
-            kd_process_ui_events();
+            kd_spin_event_loop();
 
             #if !USE_RGBEASY_API
                 // Reduce needless CPU use while debugging, etc.

@@ -70,7 +70,7 @@ public:
 
     void notify_of_new_mode_settings_source_file(const QString &filename);
 
-    void update_current_filter_set_idx(const int idx);
+    void update_filter_set_idx(void);
 
     void open_video_adjust_dialog();
 

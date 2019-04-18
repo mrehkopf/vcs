@@ -82,7 +82,7 @@ public:
 
     void signal_new_mode_settings_source_file(const std::__cxx11::string &filename);
 
-    void update_current_filter_set_idx(const int idx);
+    void update_filter_set_idx(void);
 
     void set_opengl_enabled(const bool enabled);
 

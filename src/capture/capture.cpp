@@ -405,7 +405,7 @@ bool kc_adjust_video_vertical_offset(const int delta)
 
     if (apicall_succeeds(RGBSetVerPosition(CAPTURE_HANDLE, newPos)))
     {
-        kd_update_gui_video_params();
+        kd_update_video_params();
     }
 
     return true;
@@ -424,7 +424,7 @@ bool kc_adjust_video_horizontal_offset(const int delta)
 
     if (apicall_succeeds(RGBSetHorPosition(CAPTURE_HANDLE, newPos)))
     {
-        kd_update_gui_video_params();
+        kd_update_video_params();
     }
 
     return true;
