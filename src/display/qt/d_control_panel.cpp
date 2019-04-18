@@ -677,14 +677,13 @@ void ControlPanel::fill_hardware_info_table()
 void ControlPanel::add_gui_log_entry(const log_entry_s &e)
 {
     // Sanity check, to make sure we've set up the GUI correctly.
-    k_assert(ui->treeWidget_logList->columnCount() == 3,
+    k_assert(ui->treeWidget_logList->columnCount() == 2,
              "Expected the log list to have three columns.");
 
     QTreeWidgetItem *entry = new QTreeWidgetItem;
 
-    entry->setText(0, e.date);
-    entry->setText(1, e.type);
-    entry->setText(2, e.message);
+    entry->setText(0, QString::fromStdString(e.type));
+    entry->setText(1, QString::fromStdString(e.message));
 
     ui->treeWidget_logList->addTopLevelItem(entry);
 
@@ -698,7 +697,8 @@ void ControlPanel::add_gui_log_entry(const log_entry_s &e)
 //
 void ControlPanel::filter_log_entry(QTreeWidgetItem *const entry)
 {
-    const int typeColumn = 1;  // The column index in the tree that gives the log entry's type.
+    // The column index in the tree that gives the log entry's type.
+    const int typeColumn = 0;
 
     entry->setHidden(true);
 

@@ -6,7 +6,6 @@
  *
  */
 
-#include <QDateTime>
 #include <thread>
 #include <deque>
 #include <stdarg.h>
@@ -25,7 +24,7 @@ static const std::thread::id NATIVE_LOG_THREAD = std::this_thread::get_id();
 static std::deque<log_entry_s> LOG_CACHE;
 
 // How many entries we've logged.
-static u32 TOTAL_NUM_LOG_ENTRIES = 0;
+static uint TOTAL_NUM_LOG_ENTRIES = 0;
 
 void klog_set_logging_enabled(const bool state)
 {
@@ -65,8 +64,6 @@ void log(const char *const type, const char *const msg, va_list args)
 
     log_entry_s entry;
     entry.id = TOTAL_NUM_LOG_ENTRIES;
-    entry.date = /*QDateTime::currentDateTime().date().toString("ddd") +
-             " " + */QDateTime::currentDateTime().time().toString("hh:mm:ss.zzz");
     entry.type = type;
     entry.message = buf;
 

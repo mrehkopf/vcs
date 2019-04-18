@@ -7,15 +7,18 @@
 #ifndef LOG_H_
 #define LOG_H_
 
-#include <QString>
+#include <string>
 #include "../common/types.h"
 
 struct log_entry_s
 {
-    u32 id;             // The index of this entry in the master list of log entries.
-    QString date;       // The date (and time) on which this entry was originally made.
-    QString type;       // Whether this is a debug, error, or info entry.
-    QString message;
+    // The index of this entry in the master list of log entries.
+    uint id;
+
+    // Whether this is a debug, error, or info entry.
+    std::string type;
+
+    std::string message;
 };
 
 void klog_log_error(const char *const msg, ...);
