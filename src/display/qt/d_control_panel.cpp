@@ -13,6 +13,7 @@
 #include <QSettings>
 #include <QDebug>
 #include <QMenu>
+#include <QFile>
 #include <assert.h>
 #include "../../display/qt/persistent_settings.h"
 #include "../../filter/anti_tear.h"
@@ -50,13 +51,15 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
     ui->setupUi(this);
 
-    setWindowTitle("VCS - Control Panel");
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    this->setWindowTitle("VCS - Control Panel");
+    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     aliasDlg = new AliasDialog;
     videocolorDlg = new VideoAndColorDialog;
     antitearDlg = new AntiTearDialog;
     filterSetsDlg = new FilterSetsListDialog;
+
+    update_stylesheet(MAIN_WIN->styleSheet());
 
     fill_hardware_info_table();
     connect_capture_resolution_buttons();
@@ -73,7 +76,7 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
         ui->treeWidget_logList->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-        ui->groupBox_aboutVCS->setTitle("VCS v" + QString("%1").arg(PROGRAM_VERSION_STRING));
+        ui->groupBox_aboutVCS->setTitle("VCS " + QString(PROGRAM_VERSION_STRING));
 
         // Disable certain features on the control panel's 'Recording' tab,
         // depending on what functionality should be made available on the
@@ -140,10 +143,10 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
             this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "control_panel", size()).toSize());
             ui->tabWidget->setCurrentIndex(kpers_value_of(INI_GROUP_CONTROL_PANEL, "tab", 0).toUInt());
 
-            // Control panel's 'Log' tab.
+            // Log tab.
             ui->checkBox_logEnabled->setChecked(kpers_value_of(INI_GROUP_LOG, "enabled", 1).toBool());
 
-            // Control panel's 'Output' tab.
+            // Output tab.
             ui->comboBox_outputUpscaleFilter->setCurrentIndex(
                         combobox_idx_of_string(ui->comboBox_outputUpscaleFilter, kpers_value_of(INI_GROUP_OUTPUT, "upscaler", "Linear").toString()));
             ui->comboBox_outputDownscaleFilter->setCurrentIndex(
@@ -157,11 +160,10 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
             ui->spinBox_outputResY->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().height());
             ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_relative_scale", false).toBool());
             ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
-            ui->checkBox_outputAllowMouseWheelScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "mouse_wheel_scaling", true).toBool());
             ui->comboBox_renderer->setCurrentIndex(
                         combobox_idx_of_string(ui->comboBox_renderer, kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString()));
 
-            // // Control panel's 'Record' tab.
+            // Record tab.
             ui->spinBox_recordingFramerate->setValue(kpers_value_of(INI_GROUP_RECORDING, "frame_rate", 60).toUInt());
             ui->checkBox_recordingLinearFrameInsertion->setChecked(kpers_value_of(INI_GROUP_RECORDING, "linear_sampling", true).toBool());
             #if _WIN32
@@ -185,9 +187,16 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
             #endif
 
             // Miscellaneous.
-            ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", 0).toBool());
+            ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
+            ui->checkBox_customStylingEnabled->setChecked(kpers_value_of(INI_GROUP_APP, "use_custom_styling", true).toBool());
         }
     }
+
+    /// For now, don't show the log tab. I might remove it completely, as I'm
+    /// not sure how useful it is in the GUI, and not having it makes things a
+    /// bit cleaner visually.
+    ui->tabWidget->removeTab(3);
+    ui->checkBox_logEnabled->setChecked(true); // So logging still goes through to the terminal.
 
     return;
 }
@@ -196,12 +205,14 @@ ControlPanel::~ControlPanel()
 {
     // Save the current settings.
     {
+        // Miscellaneous.
         kpers_set_value(INI_GROUP_LOG, "enabled", ui->checkBox_logEnabled->isChecked());
         kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", ui->checkBox_outputAntiTear->isChecked());
         kpers_set_value(INI_GROUP_CONTROL_PANEL, "tab", ui->tabWidget->currentIndex());
         kpers_set_value(INI_GROUP_GEOMETRY, "control_panel", size());
+        kpers_set_value(INI_GROUP_APP, "use_custom_styling", ui->checkBox_customStylingEnabled->isChecked());
 
-        // Control panel's output tab.
+        // Output tab.
         kpers_set_value(INI_GROUP_OUTPUT, "upscaler", ui->comboBox_outputUpscaleFilter->currentText());
         kpers_set_value(INI_GROUP_OUTPUT, "downscaler", ui->comboBox_outputDownscaleFilter->currentText());
         kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", ui->checkBox_customFiltering->isChecked());
@@ -211,10 +222,9 @@ ControlPanel::~ControlPanel()
         kpers_set_value(INI_GROUP_OUTPUT, "output_size", QSize(ui->spinBox_outputResX->value(), ui->spinBox_outputResY->value()));
         kpers_set_value(INI_GROUP_OUTPUT, "force_relative_scale", ui->checkBox_forceOutputScale->isChecked());
         kpers_set_value(INI_GROUP_OUTPUT, "relative_scale", ui->spinBox_outputScale->value());
-        kpers_set_value(INI_GROUP_OUTPUT, "mouse_wheel_scaling", ui->checkBox_outputAllowMouseWheelScale->isChecked());
         kpers_set_value(INI_GROUP_OUTPUT, "renderer", ui->comboBox_renderer->currentText());
 
-        // Recording.
+        // Recording tab.
         kpers_set_value(INI_GROUP_RECORDING, "frame_rate", ui->spinBox_recordingFramerate->value());
         kpers_set_value(INI_GROUP_RECORDING, "linear_sampling", ui->checkBox_recordingLinearFrameInsertion->isChecked());
         #if _WIN32
@@ -246,6 +256,20 @@ ControlPanel::~ControlPanel()
     return;
 }
 
+void ControlPanel::update_stylesheet(const QString &stylesheet)
+{
+    k_assert((MAIN_WIN && aliasDlg && videocolorDlg && antitearDlg && filterSetsDlg),
+             "Can't reload the control panel's stylesheet - some of the recipient widgets are null.");
+
+    this->setStyleSheet(stylesheet);
+    aliasDlg->setStyleSheet(stylesheet);
+    videocolorDlg->setStyleSheet(stylesheet);
+    antitearDlg->setStyleSheet(stylesheet);
+    filterSetsDlg->setStyleSheet(stylesheet);
+
+    return;
+}
+
 void ControlPanel::keyPressEvent(QKeyEvent *event)
 {
     // Don't allow ESC to close the control panel.
@@ -257,6 +281,13 @@ void ControlPanel::keyPressEvent(QKeyEvent *event)
     {
         QDialog::keyPressEvent(event);
     }
+
+    return;
+}
+
+void ControlPanel::resizeEvent(QResizeEvent *)
+{
+    update_tab_widths();
 
     return;
 }
@@ -282,6 +313,24 @@ void ControlPanel::closeEvent(QCloseEvent *event)
 
         k_assert(filterSetsDlg != nullptr, "");
         filterSetsDlg->close();
+    }
+
+    return;
+}
+
+// Resize the tab widget's tabs so that together they span the tab bar's entire width.
+void ControlPanel::update_tab_widths(void)
+{
+    if (ui->checkBox_customStylingEnabled->isChecked())
+    {
+        const uint tabWidth = (ui->tabWidget->width() / ui->tabWidget->count());
+        const uint lastTabWidth = (ui->tabWidget->width() - (tabWidth * (ui->tabWidget->count() - 1)));
+        ui->tabWidget->setStyleSheet("QTabBar::tab {width: " + QString::number(tabWidth) + "px;}"
+                                     "QTabBar::tab:last {width: " + QString::number(lastTabWidth) + "px;}");
+    }
+    else
+    {
+        ui->tabWidget->setStyleSheet("");
     }
 
     return;
@@ -364,7 +413,6 @@ void ControlPanel::update_output_framerate(const uint fps,
 void ControlPanel::set_capture_info_as_no_signal()
 {
     ui->label_captInputResolution->setText("n/a");
-    ui->label_outputInputResolution->setText("n/a");
 
     if (kc_is_invalid_signal())
     {
@@ -411,12 +459,10 @@ void ControlPanel::set_capture_controls_enabled(const bool state)
 void ControlPanel::set_output_controls_enabled(const bool state)
 {
     ui->label_outputFPS->setEnabled(state);
-    ui->label_outputInputResolution->setEnabled(state);
     ui->label_outputProcessTime->setEnabled(state);
 
     ui->label_outputFPS->setText("n/a");
     ui->label_outputProcessTime->setText("n/a");
-    ui->label_outputInputResolution->setText("n/a");
 
     return;
 }
@@ -475,14 +521,12 @@ void ControlPanel::update_capture_signal_info(void)
         if (s.r.w == 0 || s.r.h == 0)
         {
             ui->label_captInputResolution->setText("n/a");
-            ui->label_outputInputResolution->setText("n/a");
         }
         else
         {
             QString res = QString("%1 x %2").arg(s.r.w).arg(s.r.h);
 
             ui->label_captInputResolution->setText(res);
-            ui->label_outputInputResolution->setText(res);
         }
 
         // Mark the refresh rate. If the value is 0, we expect it to be an invalid
@@ -736,6 +780,11 @@ void ControlPanel::refresh_log_list_filtering()
     return;
 }
 
+bool ControlPanel::is_overlay_enabled(void)
+{
+    return ui->checkBox_outputOverlayEnabled->isChecked();
+}
+
 // Adjusts the output scale value in the GUI by a pre-set step size in the given
 // direction. Note that this will automatically trigger a change in the actual
 // scaler output size as well.
@@ -823,7 +872,6 @@ void ControlPanel::on_checkBox_forceOutputRes_stateChanged(int arg1)
 
     ui->spinBox_outputResX->setEnabled(checked);
     ui->spinBox_outputResY->setEnabled(checked);
-    ui->label_outputBaseResSeparator->setEnabled(checked);
 
     ks_set_output_resolution_override_enabled(checked);
 
@@ -1033,16 +1081,6 @@ void ControlPanel::on_pushButton_editOverlay_clicked()
     return;
 }
 
-void ControlPanel::on_checkBox_outputOverlayEnabled_stateChanged(int arg1)
-{
-    const bool checked = (arg1 == Qt::Checked)? 1 : 0;
-
-    k_assert(MAIN_WIN != nullptr, "");
-    MAIN_WIN->set_overlay_enabled(checked);
-
-    return;
-}
-
 void ControlPanel::on_comboBox_bitDepth_currentIndexChanged(const QString &arg1)
 {
     u32 bpp = 0;
@@ -1172,8 +1210,7 @@ QString ControlPanel::GetString_OutputLatency()
 bool ControlPanel::is_mouse_wheel_scaling_allowed()
 {
     return (!kd_is_fullscreen() && // In my virtual machine, at least, wheel scaling while in full-screen messes up the full-screen mode.
-            !krecord_is_recording() &&
-            ui->checkBox_outputAllowMouseWheelScale->isChecked());
+            !krecord_is_recording());
 }
 
 void ControlPanel::update_recording_metainfo(void)
@@ -1363,7 +1400,7 @@ void ControlPanel::on_pushButton_recordingStart_clicked()
         ui->pushButton_recordingStop->setEnabled(true);
         ui->frame_recordingSettings->setEnabled(false);
         ui->frame_recordingFile->setEnabled(false);
-        ui->groupBox_outputOverrides->setEnabled(false);
+        ui->frame_outputOverrides->setEnabled(false);
 
         MAIN_WIN->update_window_title();
     }
@@ -1379,7 +1416,7 @@ void ControlPanel::on_pushButton_recordingStop_clicked()
     ui->pushButton_recordingStop->setEnabled(false);
     ui->frame_recordingSettings->setEnabled(true);
     ui->frame_recordingFile->setEnabled(true);
-    ui->groupBox_outputOverrides->setEnabled(true);
+    ui->frame_outputOverrides->setEnabled(true);
 
     MAIN_WIN->update_window_size();
     MAIN_WIN->update_window_title();
@@ -1430,6 +1467,25 @@ void ControlPanel::on_comboBox_outputAspectMode_currentIndexChanged(const QStrin
     {
         k_assert(0, "Unknown aspect mode.");
     }
+
+    return;
+}
+
+void ControlPanel::on_checkBox_customStylingEnabled_toggled(bool checked)
+{
+    if (checked)
+    {
+        /// TODO: There should be a mechanism by which the user can select which
+        /// stylesheet to apply.
+        MAIN_WIN->apply_programwide_styling(":/res/stylesheets/gray.qss");
+    }
+    else
+    {
+        // Remove all custom styling.
+        MAIN_WIN->apply_programwide_styling("");
+    }
+
+    update_tab_widths();
 
     return;
 }

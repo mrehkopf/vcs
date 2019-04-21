@@ -1,0 +1,344 @@
+/* A gray program-wide style for VCS's Qt-based GUI.
+ *
+ * Author: Tarpeeksi Hyvae Soft
+ * Date: April 2019
+ */
+
+*:focus
+{
+    outline: none;
+}
+
+QDialog
+{
+    background-color: #b0b0b0;
+    border: none;
+}
+
+QFrame
+{
+    background-color: transparent;
+    border: none;
+}
+
+QScrollArea
+{
+    background-color: transparent;
+}
+
+QScrollArea > QWidget > QWidget
+{
+    background-color: transparent;
+}
+
+/* Prevent scroll bars' style from being modified, to maintain native
+ * styling (I don't want to have to create a custom style for them, for
+ * now).*/
+QScrollArea > QWidget > QScrollBar
+{
+    background-color: auto;
+}
+
+QTabBar::tab
+{
+    /* Note: Tab width is set automatically in code so that the tabs span
+     *       the entire tab bar. You should not specify any left or right
+     *       padding or margin for tabs. Any tab width you specify will be
+     *       overridden by code.*/
+
+    background-color: #959595;
+    color: #202020;
+    border: none;
+    border-radius: 0;
+    padding: 4px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+QTabBar::tab:!selected
+{
+    color: #555555;
+}
+
+QTabBar::tab:hover
+{
+    background-color: #a1a1a1;
+}
+
+QTabBar::tab:selected
+{
+    background-color: #b0b0b0;
+    color: #202020;
+}
+
+QPlainTextEdit
+{
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 0px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    color: #101010;
+}
+
+QAbstractButton
+{
+    color: #202020;
+}
+
+QPushButton
+{
+    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 rgba(0, 0, 0, 0.30), stop: 1 rgba(0, 0, 0, 0.35));
+    border: 1px solid #606060;
+    border-top: 1px solid #636363;
+    border-radius: 2px;
+    padding: 3px;
+    color: #e0e0e0;
+}
+
+QPushButton:pressed
+{
+    border-bottom: none;
+    margin-top: 1px;
+}
+
+QComboBox
+{
+    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 rgba(0, 0, 0, 0.30), stop: 1 rgba(0, 0, 0, 0.35));
+    border: 1px solid #606060;
+    border-top: 1px solid #636363;
+    border-radius: 2px;
+    padding: 2px;
+    color: #e0e0e0;
+}
+
+QComboBox::drop-down
+{
+    border: none;
+    padding-right: 5px;
+    padding-top: 2px;
+}
+
+QComboBox::down-arrow, QAbstractButton::menu-indicator
+{
+    image: url(:/res/images/icons/arrow_down.png);
+    width: 11px;
+    height: 10px;
+}
+
+QComboBox::down-arrow:disabled
+{
+    image: url(:/res/images/icons/arrow_down_disabled.png);
+    width: 11px;
+    height: 10px;
+}
+
+QComboBox QAbstractItemView
+{
+    border: none;
+    background-color: #202020;
+    border-radius: 0px;
+    selection-background-color: transparent;
+    color: #c0c0c0;
+}
+
+QListWidget
+{
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #e5e5e5;
+}
+
+QListWidget::item:selected:active
+{
+    background: rgba(0, 0, 0, 0.1);
+}
+
+QListWidget::item:selected
+{
+    background: rgba(0, 0, 0, 0.1);
+}
+
+QTreeWidget
+{
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #e5e5e5;
+}
+
+QTreeWidget QAbstractItemView
+{
+	background-color: transparent;
+}
+
+QTreeWidget QHeaderView::section
+{
+	background-color: dimgray;
+	color: #d0d0d0;
+    border: none;
+    border-left: 1px solid rgba(0,0,0,0.1);
+    padding: 6px;
+}
+
+QTreeWidget QHeaderView::section:first
+{
+    border: none;
+}
+
+QTreeWidget::item:hover
+{
+    background: transparent;
+}
+
+QTreeWidget::item:selected
+{
+    background: rgba(0, 0, 0, 0.1);
+    color: #e5e5e5;
+}
+
+QMenuBar
+{
+    background-color: #404040;
+    color: #c0c0c0;
+}
+
+QMenuBar::item
+{
+    background-color: transparent;
+}
+
+QGroupBox
+{
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 2px;
+    padding-top: 16px;
+    margin: 3px;
+    border: none;
+}
+
+QGroupBox::title
+{
+    left: 3px;
+    top: 3px;
+}
+
+QRadioButton::indicator
+{
+    width: 12px;
+    height: 12px;
+    border: none;
+    margin-top: 1px;
+    border-radius: 6px;
+    background: transparent;
+}
+
+QRadioButton::indicator::!checked
+{
+    background: rgba(0,0,0,0.07);
+    border: none;
+    border-left: 1px solid rgba(0,0,0,0.2);
+    border-top: 1px solid rgba(0,0,0,0.2);
+}
+
+QRadioButton::indicator::checked
+{
+    width: 13px;
+    height: 13px;
+    background: rgba(0,0,0,0.35);
+    border: none;
+}
+
+QRadioButton::indicator::checked:disabled
+{
+    background: rgba(0,0,0,0.2);
+}
+
+QCheckBox::indicator, QGroupBox::indicator, QTreeWidget::indicator
+{
+    width: 12px;
+    height: 12px;
+    border: none;
+    margin-top: 1px;
+    border-radius: 2px;
+    background: transparent;
+}
+
+QCheckBox::indicator::!checked, QGroupBox::indicator::!checked, QTreeWidget::indicator::!checked
+{
+    background: rgba(0,0,0,0.07);
+    border: none;
+    border-left: 1px solid rgba(0,0,0,0.2);
+    border-top: 1px solid rgba(0,0,0,0.2);
+}
+
+QCheckBox::indicator::checked, QGroupBox::indicator::checked, QTreeWidget::indicator::checked
+{
+    width: 13px;
+    height: 13px;
+    background: rgba(0,0,0,0.35);
+    border: none;
+}
+
+QCheckBox::indicator::checked:disabled, QGroupBox::indicator::checked:disabled
+{
+    background: rgba(0,0,0,0.2);
+}
+
+QSpinBox, QDoubleSpinBox, QLineEdit
+{
+    background-color: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 rgba(0, 0, 0, 0.30), stop: 1 rgba(0, 0, 0, 0.35));
+    border: 1px solid #606060;
+    border-radius: 2px;
+    padding: 2px;
+    color: #e0e0e0;
+}
+
+QSpinBox::up-button, QDoubleSpinBox::up-button, QSpinBox::down-button, QDoubleSpinBox::down-button
+{
+    border: none;
+    padding-right: 5px;
+}
+
+QSpinBox::up-arrow, QDoubleSpinBox::up-arrow
+{
+    image: url(:/res/images/icons/arrow_up.png);
+    border: none;
+}
+
+QSpinBox::up-arrow:disabled, QDoubleSpinBox::up-arrow:off
+{
+    image: url(:/res/images/icons/arrow_up_disabled.png);
+    border: none;
+}
+
+QSpinBox::down-arrow, QDoubleSpinBox::down-arrow
+{
+    image: url(:/res/images/icons/arrow_down.png);
+    border: none;
+}
+
+QSpinBox::down-arrow:disabled, QDoubleSpinBox::down-arrow:off
+{
+    image: url(:/res/images/icons/arrow_down_disabled.png);
+    border: none;
+}
+
+QGroupBox, QLabel
+{
+    color: #202020;
+}
+
+QPushButton:disabled
+{
+    background-color: rgba(0, 0, 0, 0.07);
+    border: none;
+    color: rgba(0, 0, 0, 0.3);
+}
+
+QLabel:disabled, QFrame:disabled, QAbstractButton:disabled
+{
+    color: rgba(0, 0, 0, 0.25);
+}
+
+QSpinBox:disabled, QLineEdit:disabled, QComboBox:disabled
+{
+    background-color: rgba(0, 0, 0, 0.07);
+    border: none;
+    color: rgba(0, 0, 0, 0.3);
+}

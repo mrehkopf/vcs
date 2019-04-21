@@ -74,8 +74,6 @@ public:
 
     void show_overlay_dialog();
 
-    void set_overlay_enabled(const bool state);
-
     void signal_that_overlay_is_enabled(const bool enabled);
 
     void measure_framerate();
@@ -96,6 +94,8 @@ public:
 
     void update_filter_sets_list();
 
+    bool apply_programwide_styling(const QString &filename);
+
 private slots:
     void toggle_window_border();
 
@@ -110,6 +110,8 @@ private:
     void changeEvent(QEvent *event);
 
     void set_keyboard_shortcuts();
+
+    bool load_font(const QString &filename);
 
     Ui::MainWindow *ui = nullptr;
 

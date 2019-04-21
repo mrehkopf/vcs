@@ -37,18 +37,19 @@ OverlayDialog::OverlayDialog(MainWindow *const mainWin, QWidget *parent) :
     OVERLAY_DOC.setDefaultFont(QGuiApplication::font());
     OVERLAY_DOC.setDocumentMargin(0);
 
+    update_stylesheet(MAIN_WIN->styleSheet());
+
     ui->setupUi(this);
 
     make_button_menus();
 
-    setWindowTitle("VCS - Overlay");
+    setWindowTitle("VCS - Overlay Editor");
 
     // Don't show the context help '?' button in the window bar.
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     // Load a previous overlay from disk, if any.
     ui->plainTextEdit->setPlainText(kpers_value_of(INI_GROUP_OVERLAY, "content", "").toString());
-    ui->groupBox_overlay->setChecked(kpers_value_of(INI_GROUP_OVERLAY, "enabled", 0).toBool());
 
     resize(kpers_value_of(INI_GROUP_GEOMETRY, "overlay", size()).toSize());
 
@@ -59,10 +60,16 @@ OverlayDialog::~OverlayDialog()
 {
     // Save the current settings.
     kpers_set_value(INI_GROUP_OVERLAY, "content", ui->plainTextEdit->toPlainText());
-    kpers_set_value(INI_GROUP_OVERLAY, "enabled", ui->groupBox_overlay->isChecked());
     kpers_set_value(INI_GROUP_GEOMETRY, "overlay", size());
 
     delete ui; ui = nullptr;
+
+    return;
+}
+
+void OverlayDialog::update_stylesheet(const QString &stylesheet)
+{
+    this->setStyleSheet(stylesheet);
 
     return;
 }
@@ -78,8 +85,6 @@ void OverlayDialog::set_overlay_max_width(const uint width)
 //
 QImage OverlayDialog::overlay_as_qimage(void)
 {
-    if (!is_overlay_enabled()) return QImage();
-
     const resolution_s r = ks_output_resolution();
     QImage image = QImage(r.w, r.h, QImage::Format_ARGB32_Premultiplied);
     image.fill(QColor(0, 0, 0, 0));
@@ -119,27 +124,21 @@ void OverlayDialog::add_menu_item(QMenu *const menu,
 //
 void OverlayDialog::make_button_menus()
 {
-    QMenu *resolution = new QMenu(this);
-    add_menu_item(resolution, "Input", "|inRes|");
-    add_menu_item(resolution, "Output", "|outRes|");
-    ui->pushButton_resolution->setMenu(resolution);
-
-    QMenu *latency = new QMenu(this);
-    add_menu_item(latency, "Peak (ms)", "|msLatP|");
-    add_menu_item(latency, "Average (ms)", "|msLatA|");
-    latency->addSeparator();
-    add_menu_item(latency, "Dropping frames?", "|strLat|");
-    ui->pushButton_latency->setMenu(latency);
+    QMenu *capture = new QMenu(this);
+    add_menu_item(capture, "Input refresh rate (Hz)", "|inHz|");
+    add_menu_item(capture, "Output frame rate", "|outFPS|");
+    capture->addSeparator();
+    add_menu_item(capture, "Input resolution", "|inRes|");
+    add_menu_item(capture, "Output resolution", "|outRes|");
+    capture->addSeparator();
+    add_menu_item(capture, "Peak capture latency (ms)", "|msLatP|");
+    add_menu_item(capture, "Average capture latency (ms)", "|msLatA|");
+    ui->pushButton_capture->setMenu(capture);
 
     QMenu *system = new QMenu(this);
     add_menu_item(system, "Time", "|sysTime|");
     add_menu_item(system, "Date", "|sysDate|");
     ui->pushButton_system->setMenu(system);
-
-    QMenu *refresh = new QMenu(this);
-    add_menu_item(refresh, "Input (Hz)", "|inHz|");
-    add_menu_item(refresh, "Output (FPS)", "|outFPS|");
-    ui->pushButton_refresh->setMenu(refresh);
 
     QMenu *formatting = new QMenu(this);
     add_menu_item(formatting, "Bullet", "&bull;");
@@ -193,31 +192,3 @@ void OverlayDialog::add_image_to_overlay()
     return;
 }
 
-void OverlayDialog::set_overlay_enabled(const bool state)
-{
-    { block_widget_signals_c b(ui->groupBox_overlay);
-        ui->groupBox_overlay->setChecked(state);
-    }
-
-    return;
-}
-
-bool OverlayDialog::is_overlay_enabled()
-{
-    return (!kc_no_signal() && ui->groupBox_overlay->isChecked());
-}
-
-void OverlayDialog::on_groupBox_overlay_toggled(bool)
-{
-    const bool enabled = ui->groupBox_overlay->isChecked();
-
-    if (enabled)
-    {
-        ui->plainTextEdit->setFocus();
-    }
-
-    k_assert(MAIN_WIN != nullptr, "");
-    MAIN_WIN->signal_that_overlay_is_enabled(enabled);
-
-    return;
-}

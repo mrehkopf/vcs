@@ -5,7 +5,7 @@
 #include "../../filter/filter.h"
 #include "../../common/types.h"
 
-class QListWidgetItem;
+class QTreeWidgetItem;
 struct filter_set_s;
 
 namespace Ui {
@@ -25,13 +25,13 @@ private slots:
 
     void on_checkBox_activeOut_toggled(bool checked);
 
-    void on_listWidget_preFilters_itemChanged(QListWidgetItem *item);
+    void on_treeWidget_preFilters_itemChanged(QTreeWidgetItem *item);
 
-    void on_listWidget_postFilters_itemChanged(QListWidgetItem *item);
+    void on_treeWidget_postFilters_itemChanged(QTreeWidgetItem *item);
 
-    void on_listWidget_preFilters_itemDoubleClicked(QListWidgetItem *item);
+    void on_treeWidget_preFilters_itemDoubleClicked(QTreeWidgetItem *item);
 
-    void on_listWidget_postFilters_itemDoubleClicked(QListWidgetItem *item);
+    void on_treeWidget_postFilters_itemDoubleClicked(QTreeWidgetItem *item);
 
     void on_pushButton_ok_clicked();
 

@@ -37,7 +37,7 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    setWindowTitle("VCS - Video and Color Adjust");
+    setWindowTitle("VCS - Video & Color Adjust");
 
     // Don't show the context help '?' button in the window bar.
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -100,10 +100,6 @@ void VideoAndColorDialog::create_menu_bar()
 //
 void VideoAndColorDialog::notify_of_new_capture_signal(void)
 {
-    const capture_signal_s s = kc_hardware().status.signal();
-
-    ui->label_currentMode->setText(QString("%1 x %2, %3 Hz").arg(s.r.w).arg(s.r.h).arg(s.refreshRate));
-
     update_controls();
 
     return;
@@ -126,11 +122,6 @@ void VideoAndColorDialog::set_controls_enabled(const bool state)
     ui->groupBox_colorAdjust->setEnabled(state);
     ui->groupBox_videoAdjust->setEnabled(state);
     ui->groupBox_meta->setEnabled(state);
-
-    if (!state)
-    {
-        ui->label_currentMode->setText("n/a");
-    }
 
     return;
 }

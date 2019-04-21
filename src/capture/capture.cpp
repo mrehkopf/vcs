@@ -8,6 +8,7 @@
 
 #include <atomic>
 #include <mutex>
+#include <cmath>
 #include "../common/command_line.h"
 #include "../common/propagate.h"
 #include "../display/display.h"

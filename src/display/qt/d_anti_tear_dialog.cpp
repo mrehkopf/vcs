@@ -23,19 +23,18 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AntiTearDialog)
 {
-    const anti_tear_options_s a = kat_default_settings();
-
     ui->setupUi(this);
 
-    setWindowTitle("VCS - Anti-Tear");
+    setWindowTitle("VCS - Anti-Tearing");
 
     // Don't show the context help '?' button in the window bar.
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+    const anti_tear_options_s a = kat_default_settings();
     ui->spinBox_rangeUp->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "range_up", a.rangeUp).toInt());
     ui->spinBox_rangeDown->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "range_down", a.rangeDown).toInt());
     ui->spinBox_threshold->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "threshold", a.threshold).toInt());
-    ui->spinBox_matchedReqd->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "matches_reqd", a.matchesReqd).toInt());
+    ui->spinBox_matchesReqd->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "matches_reqd", a.matchesReqd).toInt());
     ui->spinBox_domainSize->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "window_len", a.windowLen).toInt());
 
     resize(kpers_value_of(INI_GROUP_GEOMETRY, "anti_tear", this->size()).toSize());
@@ -50,7 +49,7 @@ AntiTearDialog::~AntiTearDialog()
     kpers_set_value(INI_GROUP_ANTI_TEAR, "range_down", ui->spinBox_rangeDown->value());
     kpers_set_value(INI_GROUP_ANTI_TEAR, "threshold", ui->spinBox_threshold->value());
     kpers_set_value(INI_GROUP_ANTI_TEAR, "window_len", ui->spinBox_domainSize->value());
-    kpers_set_value(INI_GROUP_ANTI_TEAR, "matches_reqd", ui->spinBox_matchedReqd->value());
+    kpers_set_value(INI_GROUP_ANTI_TEAR, "matches_reqd", ui->spinBox_matchesReqd->value());
     kpers_set_value(INI_GROUP_ANTI_TEAR, "direction", 0);
 
     delete ui;
@@ -77,7 +76,7 @@ void AntiTearDialog::restore_default_settings(void)
     ui->spinBox_rangeUp->setValue(a.rangeUp);
     ui->spinBox_rangeDown->setValue(a.rangeDown);
     ui->spinBox_threshold->setValue(a.threshold);
-    ui->spinBox_matchedReqd->setValue(a.matchesReqd);
+    ui->spinBox_matchesReqd->setValue(a.matchesReqd);
     ui->spinBox_domainSize->setValue(a.windowLen);
     ui->spinBox_stepSize->setValue(a.stepSize);
     kat_set_buffer_updates_disabled(false);
@@ -115,9 +114,9 @@ void AntiTearDialog::on_spinBox_domainSize_valueChanged(int)
     return;
 }
 
-void AntiTearDialog::on_spinBox_matchedReqd_valueChanged(int)
+void AntiTearDialog::on_spinBox_matchesReqd_valueChanged(int)
 {
-    kat_set_matches_required(ui->spinBox_matchedReqd->value());
+    kat_set_matches_required(ui->spinBox_matchesReqd->value());
 
     return;
 }
@@ -146,6 +145,22 @@ void AntiTearDialog::on_checkBox_visualizeRange_stateChanged(int)
 void AntiTearDialog::on_checkBox_visualizeTear_stateChanged(int)
 {
     update_visualization_options();
+
+    return;
+}
+
+void AntiTearDialog::on_pushButton_resetDefaults_clicked()
+{
+    const anti_tear_options_s a = kat_default_settings();
+
+    kat_set_buffer_updates_disabled(true);
+    ui->spinBox_rangeUp->setValue(a.rangeUp);
+    ui->spinBox_rangeDown->setValue(a.rangeDown);
+    ui->spinBox_threshold->setValue(a.threshold);
+    ui->spinBox_matchesReqd->setValue(a.matchesReqd);
+    ui->spinBox_domainSize->setValue(a.windowLen);
+    ui->spinBox_stepSize->setValue(a.stepSize);
+    kat_set_buffer_updates_disabled(false);
 
     return;
 }

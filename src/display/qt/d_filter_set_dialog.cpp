@@ -7,6 +7,7 @@
  *
  */
 
+#include <QTreeWidgetItem>
 #include <QPushButton>
 #include <map>
 #include "../../display/qt/d_filter_set_dialog.h"
@@ -31,18 +32,12 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
 
     ui->setupUi(this);
 
-    // The CSV parser preserves {} for its own use, so discourage the user from
-    // entering those characters into the description string.
-    /// TODO: When saving data, you should pass it through the CSV parser for
-    /// validation, instead of validating on the spot like this.
-    ui->lineEdit_description->setValidator(new QRegExpValidator(QRegExp("[^{}]*"), this));
-
     if (!allowApply)
     {
         ui->pushButton_apply->setEnabled(false);
     }
 
-    this->setWindowTitle("VCS - Define a filter set");
+    this->setWindowTitle("VCS - Filter Set");
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     this->setAttribute(Qt::WA_DeleteOnClose);
@@ -60,7 +55,12 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
                  "Expected to receive a list of filters, but got an empty list.");
 
         ui->listWidget_filterList->clear();
-        ui->listWidget_filterList->addItems(filterNames);
+        for (const auto &filterName: filterNames)
+        {
+            QTreeWidgetItem *item = new QTreeWidgetItem;
+            item->setText(0, filterName);
+            ui->listWidget_filterList->addTopLevelItem(item);
+        }
     }
 
     // Populate the selection of scalers.
@@ -78,8 +78,6 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
 
     // Initialize the GUI controls to the data in the given filter set.
     {
-        ui->lineEdit_description->setText(QString::fromStdString(filterSet->description));
-
         // Activation type.
         {
             if (filterSet->activation & filter_set_s::activation_e::all)
@@ -130,28 +128,28 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
 
         // Pre and post-filters.
         {
-            ui->listWidget_preFilters->clear();
-            ui->listWidget_postFilters->clear();
+            ui->treeWidget_preFilters->clear();
+            ui->treeWidget_postFilters->clear();
 
-            auto add_filters_to_gui = [=](const std::vector<filter_s> filters, QListWidget *const filterList)
+            auto add_filters_to_gui = [=](const std::vector<filter_s> filters, QTreeWidget *const filterList)
             {
                 for (auto &filter: filters)
                 {
                     block_widget_signals_c b(filterList);
 
-                    QListWidgetItem *itm = new QListWidgetItem(filterList);
+                    QTreeWidgetItem *itm = new QTreeWidgetItem(filterList);
 
-                    itm->setText(QString::fromStdString(filter.name));
+                    itm->setText(0, QString::fromStdString(filter.name));
 
                     filterData[itm] = (u8*)kmem_allocate(FILTER_DATA_LENGTH, "Filter set data");
                     memcpy(filterData[itm], filter.data, FILTER_DATA_LENGTH);
 
-                    filterList->addItem(itm);
+                    filterList->addTopLevelItem(itm);
                 }
             };
 
-            add_filters_to_gui(filterSet->preFilters, ui->listWidget_preFilters);
-            add_filters_to_gui(filterSet->postFilters, ui->listWidget_postFilters);
+            add_filters_to_gui(filterSet->preFilters, ui->treeWidget_preFilters);
+            add_filters_to_gui(filterSet->postFilters, ui->treeWidget_postFilters);
         }
     }
 
@@ -185,46 +183,52 @@ filter_set_s FilterSetDialog::get_filter_set_from_current_state(void)
 
     // Add the pre-filters.
     /// TODO. Code duplication.
-    for (int i = 0; i < ui->listWidget_preFilters->count(); i++)
     {
-        const QListWidgetItem *const item = ui->listWidget_preFilters->item(i);
-        const QString filterName = item->text();
+        const auto items = ui->treeWidget_preFilters->findItems("*", Qt::MatchWildcard);
 
-        filter_s f;
-
-        f.name = filterName.toStdString();
-        if (!kf_named_filter_exists(f.name))
+        for (int i = 0; i < items.count(); i++)
         {
-            NBENE(("Was asked to access a filter that doesn't exist. Ignoring this."));
-            continue;
+            const QString filterName = items.at(0)->text(0);
+
+            filter_s f;
+
+            f.name = filterName.toStdString();
+            if (!kf_named_filter_exists(f.name))
+            {
+                NBENE(("Was asked to access a filter that doesn't exist. Ignoring this."));
+                continue;
+            }
+
+            memcpy(f.data, filterData[items.at(0)], FILTER_DATA_LENGTH);
+
+            c.preFilters.push_back(f);
         }
-
-        memcpy(f.data, filterData[item], FILTER_DATA_LENGTH);
-
-        c.preFilters.push_back(f);
     }
 
     // Add the post-filters.
-    for (int i = 0; i < ui->listWidget_postFilters->count(); i++)
     {
-        const QListWidgetItem *const item = ui->listWidget_postFilters->item(i);
-        const QString filterName = ui->listWidget_postFilters->item(i)->text();
+        const auto items = ui->treeWidget_postFilters->findItems("*", Qt::MatchWildcard);
 
-        filter_s f;
-
-        f.name = filterName.toStdString();
-        if (!kf_named_filter_exists(f.name))
+        for (int i = 0; i < items.count(); i++)
         {
-            NBENE(("Was asked to access a filter that doesn't exist. Ignoring this."));
-            continue;
+            const QString filterName = items.at(0)->text(0);
+
+            filter_s f;
+
+            f.name = filterName.toStdString();
+            if (!kf_named_filter_exists(f.name))
+            {
+                NBENE(("Was asked to access a filter that doesn't exist. Ignoring this."));
+                continue;
+            }
+
+            memcpy(f.data, filterData[items.at(0)], FILTER_DATA_LENGTH);
+
+            c.postFilters.push_back(f);
         }
-
-        memcpy(f.data, filterData[item], FILTER_DATA_LENGTH);
-
-        c.postFilters.push_back(f);
     }
 
-    c.description = ui->lineEdit_description->text().toStdString();
+    c.description = "";// ui->lineEdit_description->text().toStdString();
 
     c.scaler = ks_scaler_for_name_string(ui->comboBox_scaler->currentText().toStdString());
 
@@ -244,34 +248,34 @@ filter_set_s FilterSetDialog::get_filter_set_from_current_state(void)
     return c;
 }
 
-void FilterSetDialog::on_listWidget_preFilters_itemDoubleClicked(QListWidgetItem *item)
+void FilterSetDialog::on_treeWidget_preFilters_itemDoubleClicked(QTreeWidgetItem *item)
 {
     // Pop up a dialog letting the user set the filter's parameters.
-    kf_filter_dialog_for_name(item->text().toStdString())->poll_user_for_params(filterData[item], this);
+    kf_filter_dialog_for_name(item->text(0).toStdString())->poll_user_for_params(filterData[item], this);
 
     return;
 }
 
-void FilterSetDialog::on_listWidget_postFilters_itemDoubleClicked(QListWidgetItem *item)
+void FilterSetDialog::on_treeWidget_postFilters_itemDoubleClicked(QTreeWidgetItem *item)
 {
     // Pop up a dialog letting the user set the filter's parameters.
-    kf_filter_dialog_for_name(item->text().toStdString())->poll_user_for_params(filterData[item], this);
+    kf_filter_dialog_for_name(item->text(0).toStdString())->poll_user_for_params(filterData[item], this);
 
     return;
 }
 
-void FilterSetDialog::on_listWidget_preFilters_itemChanged(QListWidgetItem *item)
+void FilterSetDialog::on_treeWidget_preFilters_itemChanged(QTreeWidgetItem *item)
 {
     filterData[item] = (u8*)kmem_allocate(FILTER_DATA_LENGTH, "Pre-filter data");
-    kf_filter_dialog_for_name(item->text().toStdString())->insert_default_params(filterData[item]);
+    kf_filter_dialog_for_name(item->text(0).toStdString())->insert_default_params(filterData[item]);
 
     return;
 }
 
-void FilterSetDialog::on_listWidget_postFilters_itemChanged(QListWidgetItem *item)
+void FilterSetDialog::on_treeWidget_postFilters_itemChanged(QTreeWidgetItem *item)
 {
     filterData[item] = (u8*)kmem_allocate(FILTER_DATA_LENGTH, "Post-filter data");
-    kf_filter_dialog_for_name(item->text().toStdString())->insert_default_params(filterData[item]);
+    kf_filter_dialog_for_name(item->text(0).toStdString())->insert_default_params(filterData[item]);
 
     return;
 }
@@ -283,13 +287,11 @@ void FilterSetDialog::on_radioButton_activeIn_toggled(bool checked)
     // Toggle the "in" controls.
     ui->spinBox_inputX->setEnabled(checked);
     ui->spinBox_inputY->setEnabled(checked);
-    ui->label_inputSeparator->setEnabled(checked);
 
     // Toggle the "out" controls.
     ui->checkBox_activeOut->setEnabled(checked);
     ui->spinBox_outputX->setEnabled(checked && ui->checkBox_activeOut->isChecked());
     ui->spinBox_outputY->setEnabled(checked && ui->checkBox_activeOut->isChecked());
-    ui->label_outputSparator->setEnabled(checked && ui->checkBox_activeOut->isChecked());
 
     return;
 }
@@ -300,7 +302,6 @@ void FilterSetDialog::on_checkBox_activeOut_toggled(bool checked)
 {
     ui->spinBox_outputX->setEnabled(checked);
     ui->spinBox_outputY->setEnabled(checked);
-    ui->label_outputSparator->setEnabled(checked);
 
     return;
 }

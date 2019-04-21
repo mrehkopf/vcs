@@ -15,16 +15,16 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="spacing">
-    <number>0</number>
+    <number>6</number>
    </property>
    <property name="leftMargin">
-    <number>0</number>
+    <number>6</number>
    </property>
    <property name="topMargin">
-    <number>0</number>
+    <number>6</number>
    </property>
    <property name="rightMargin">
-    <number>0</number>
+    <number>6</number>
    </property>
    <property name="bottomMargin">
     <number>6</number>
@@ -42,11 +42,26 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>313</width>
-        <height>618</height>
+        <width>301</width>
+        <height>557</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QGroupBox" name="groupBox_meta">
          <property name="title">
@@ -55,6 +70,12 @@
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <property name="spacing">
            <number>6</number>
+          </property>
+          <property name="leftMargin">
+           <number>9</number>
+          </property>
+          <property name="rightMargin">
+           <number>9</number>
           </property>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
@@ -67,7 +88,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Settings file:</string>
+               <string>Source file:</string>
               </property>
              </widget>
             </item>
@@ -75,30 +96,6 @@
              <widget class="QLabel" name="label_settingsFilename">
               <property name="text">
                <string>none</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1">
-            <item>
-             <widget class="QLabel" name="label_14">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Input mode:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_currentMode">
-              <property name="text">
-               <string>unknown</string>
               </property>
              </widget>
             </item>
@@ -112,10 +109,7 @@
          <property name="title">
           <string>Video</string>
          </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout">
+         <layout class="QGridLayout" name="gridLayout" columnstretch="3,1,2" columnminimumwidth="0,0,0">
           <property name="leftMargin">
            <number>11</number>
           </property>
@@ -213,7 +207,7 @@
           <item row="1" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
-             <string>Horizontal position:</string>
+             <string>Horizontal pos.:</string>
             </property>
            </widget>
           </item>
@@ -298,10 +292,7 @@
          <property name="title">
           <string>Color</string>
          </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_2">
+         <layout class="QGridLayout" name="gridLayout_2" columnstretch="3,1,2">
           <property name="leftMargin">
            <number>11</number>
           </property>
@@ -493,7 +484,7 @@
           <item row="0" column="0">
            <widget class="QLabel" name="label_6">
             <property name="text">
-             <string>Overall brightness:</string>
+             <string>Brightness:</string>
             </property>
             <property name="indent">
              <number>-1</number>
@@ -598,7 +589,7 @@
           <item row="1" column="0">
            <widget class="QLabel" name="label_7">
             <property name="text">
-             <string>Overall contrast:</string>
+             <string>Contrast:</string>
             </property>
             <property name="indent">
              <number>-1</number>

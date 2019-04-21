@@ -24,20 +24,16 @@ public:
     explicit OverlayDialog(MainWindow *const mainWin, QWidget *parent = 0);
     ~OverlayDialog();
 
-    bool is_overlay_enabled();
-
     QImage overlay_as_qimage();
 
-    void set_overlay_enabled(const bool state);
-
     void set_overlay_max_width(const uint width);
+
+    void update_stylesheet(const QString &stylesheet);
 
 private slots:
     void insert_text_into_overlay(const QString &t);
 
     void add_image_to_overlay();
-
-    void on_groupBox_overlay_toggled(bool);
 
 private:
     void add_menu_item(QMenu *const menu, const QString &menuText,

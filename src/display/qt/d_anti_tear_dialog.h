@@ -30,7 +30,7 @@ private slots:
 
     void on_spinBox_domainSize_valueChanged(int);
 
-    void on_spinBox_matchedReqd_valueChanged(int);
+    void on_spinBox_matchesReqd_valueChanged(int);
 
     void on_groupBox_visualization_toggled(bool);
 
@@ -43,6 +43,8 @@ private slots:
     void on_spinBox_threshold_valueChanged(int arg1);
 
     void restore_default_settings(void);
+
+    void on_pushButton_resetDefaults_clicked();
 
 private:
     void update_visualization_options();

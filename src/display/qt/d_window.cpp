@@ -12,6 +12,7 @@
 #include <QElapsedTimer>
 #include <QTextDocument>
 #include <QElapsedTimer>
+#include <QFontDatabase>
 #include <QVBoxLayout>
 #include <QTreeWidget>
 #include <QMessageBox>
@@ -50,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    apply_programwide_styling(":/res/stylesheets/gray.qss");
+
     ui->setupUi(this);
 
     // Set up a layout for the central widget now, so we can add the OpenGL
@@ -102,9 +105,56 @@ MainWindow::~MainWindow()
     return;
 }
 
+// Load the font pointed to by the given filename, and make it available to the program.
+bool MainWindow::load_font(const QString &filename)
+{
+    if (QFontDatabase::addApplicationFont(filename) == -1)
+    {
+        NBENE(("Failed to load the font '%s'.", filename.toStdString().c_str()));
+        return false;
+    }
+
+    return true;
+}
+
+// Loads a QSS stylesheet from the given file, and assigns it to the entire
+// program. Returns true if the file was successfully opened; false otherwise;
+// will not signal whether actually assigning the stylesheet succeeded or not.
+bool MainWindow::apply_programwide_styling(const QString &filename)
+{
+    // Take an empty filename to mean that all custom stylings should be removed.
+    if (filename.isEmpty())
+    {
+        qApp->setStyleSheet("");
+
+        return true;
+    }
+
+    // Apply the given style, prepended by an OS-specific font style.
+    QFile styleFile(filename);
+    #if _WIN32
+        QFile defaultFontStyleFile(":/res/stylesheets/font-windows.qss");
+    #else
+        QFile defaultFontStyleFile(":/res/stylesheets/font-linux.qss");
+    #endif
+    if (styleFile.open(QIODevice::ReadOnly) &&
+        defaultFontStyleFile.open(QIODevice::ReadOnly))
+    {
+        qApp->setStyleSheet(QString("%1 %2").arg(QString(defaultFontStyleFile.readAll()))
+                                            .arg(QString(styleFile.readAll())));
+
+        return true;
+    }
+
+    return false;
+}
+
 void MainWindow::refresh(void)
 {
-    if (OGL_SURFACE != nullptr) OGL_SURFACE->repaint();
+    if (OGL_SURFACE != nullptr)
+    {
+        OGL_SURFACE->repaint();
+    }
     else this->repaint();
 
     return;
@@ -240,7 +290,7 @@ QImage MainWindow::overlay_image(void)
 {
     if (!kc_no_signal() &&
         overlayDlg != nullptr &&
-        overlayDlg->is_overlay_enabled())
+        controlPanel->is_overlay_enabled())
     {
         return overlayDlg->overlay_as_qimage();
     }
@@ -650,14 +700,6 @@ void MainWindow::signal_that_overlay_is_enabled(const bool enabled)
 {
     k_assert(controlPanel != nullptr, "");
     controlPanel->set_overlay_indicator_checked(enabled);
-
-    return;
-}
-
-void MainWindow::set_overlay_enabled(const bool state)
-{
-    k_assert(overlayDlg != nullptr, "");
-    overlayDlg->set_overlay_enabled(state);
 
     return;
 }

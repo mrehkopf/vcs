@@ -47,6 +47,7 @@ TEMPLATE = app
 CONFIG += console c++11
 
 OBJECTS_DIR = generated_files
+RCC_DIR = generated_files
 MOC_DIR = generated_files
 UI_DIR = generated_files
 
@@ -131,3 +132,6 @@ QMAKE_CXXFLAGS += -pipe
 QMAKE_CXXFLAGS += -pedantic
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
+
+RESOURCES += \
+    src/display/qt/res.qrc

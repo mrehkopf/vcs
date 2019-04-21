@@ -34,9 +34,9 @@ private slots:
 
     void save_aliases();
 
-    void on_pushButton_removeAlias_clicked();
+    void remove_selected_aliases();
 
-    void on_pushButton_addAlias_clicked();
+    void add_alias();
 
 private:
     Ui::AliasDialog *ui;

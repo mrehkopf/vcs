@@ -88,6 +88,10 @@ public:
 
     void update_filter_sets_list();
 
+    bool is_overlay_enabled(void);
+
+    void update_stylesheet(const QString &stylesheet);
+
 private slots:
     void on_checkBox_logInfo_toggled(bool);
 
@@ -123,8 +127,6 @@ private slots:
 
     void on_pushButton_editOverlay_clicked();
 
-    void on_checkBox_outputOverlayEnabled_stateChanged(int arg1);
-
     void on_comboBox_bitDepth_currentIndexChanged(const QString &arg1);
 
     void on_checkBox_outputAntiTear_stateChanged(int arg1);
@@ -147,9 +149,12 @@ private slots:
 
     void on_comboBox_outputAspectMode_currentIndexChanged(const QString &arg1);
 
+    void on_checkBox_customStylingEnabled_toggled(bool checked);
+
 private:
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);
+    void resizeEvent(QResizeEvent *);
 
     void refresh_log_list_filtering();
 
@@ -170,6 +175,8 @@ private:
     void reset_capture_bit_depth_combobox();
 
     bool apply_x264_registry_settings();
+
+    void update_tab_widths();
 
     VideoAndColorDialog *videocolorDlg = nullptr;
 

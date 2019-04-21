@@ -98,6 +98,17 @@ void AliasDialog::create_menu_bar(void)
         menubar->addMenu(fileMenu);
     }
 
+    // Aliases...
+    {
+        QMenu *fileMenu = new QMenu("Aliases", this);
+
+        fileMenu->addAction("Add an alias", this, SLOT(add_alias()));
+        fileMenu->addSeparator();
+        fileMenu->addAction("Remove selected", this, SLOT(remove_selected_aliases()));
+
+        menubar->addMenu(fileMenu);
+    }
+
     // Help...
     {
         QMenu *fileMenu = new QMenu("Help", this);
@@ -153,13 +164,7 @@ QWidget* AliasDialog::create_resolution_widget(QTreeWidgetItem *parentItem, cons
         this->broadcast_aliases();
     });
 
-    QLabel *separator = new QLabel;
-    separator->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    separator->setText("x");
-    separator->setEnabled(false);
-
     layout->addWidget(x);
-    layout->addWidget(separator);
     layout->addWidget(y);
 
     return container;
@@ -203,6 +208,27 @@ void AliasDialog::clear_known_aliases()
     return;
 }
 
+void AliasDialog::add_alias(void)
+{
+    mode_alias_s newAlias;
+    newAlias.from = {1, 1, 0};
+    newAlias.to = {640, 480, 0};
+
+    this->receive_new_alias(newAlias);
+
+    return;
+}
+
+void AliasDialog::remove_selected_aliases(void)
+{
+    const auto selectedItems = ui->treeWidget_knownAliases->selectedItems();
+    for (auto item: selectedItems) delete item;
+
+    this->broadcast_aliases();
+
+    return;
+}
+
 void AliasDialog::load_aliases()
 {
     QString filename = QFileDialog::getOpenFileName(this,
@@ -239,26 +265,3 @@ void AliasDialog::save_aliases()
     return;
 }
 
-void AliasDialog::on_pushButton_removeAlias_clicked()
-{
-    const auto selectedItems = ui->treeWidget_knownAliases->selectedItems();
-    for (auto item: selectedItems)
-    {
-        delete item;
-    }
-
-    this->broadcast_aliases();
-
-    return;
-}
-
-void AliasDialog::on_pushButton_addAlias_clicked()
-{
-    mode_alias_s newAlias;
-    newAlias.from = {1, 1, 0};
-    newAlias.to = {640, 480, 0};
-
-    this->receive_new_alias(newAlias);
-
-    return;
-}
