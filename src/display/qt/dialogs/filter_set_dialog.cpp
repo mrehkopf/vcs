@@ -38,8 +38,15 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
     }
 
     this->setWindowTitle("VCS - Filter Set");
-    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+    // Append the filter set's description, if any, to the window title.
+    if (!filterSet->description.empty())
+    {
+        this->setWindowTitle(QString("%1 - \"%2\"").arg(this->windowTitle())
+                                                   .arg(QString::fromStdString(filterSet->description)));
+    }
+
+    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     this->setAttribute(Qt::WA_DeleteOnClose);
 
     // Populate the selection of filters.

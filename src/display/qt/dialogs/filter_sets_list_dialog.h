@@ -55,10 +55,14 @@ private slots:
 
     void on_treeWidget_setList_itemChanged(QTreeWidgetItem *item, int column);
 
+    void on_pushButton_editSelected_clicked();
+
 private:
     void create_menu_bar();
 
     void flag_unsaved_changes();
+
+    void edit_set(const QTreeWidgetItem *const item);
 
     Ui::FilterSetsListDialog *ui;
 

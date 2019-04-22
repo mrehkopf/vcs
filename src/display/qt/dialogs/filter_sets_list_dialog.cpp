@@ -61,7 +61,8 @@ FilterSetsListDialog::~FilterSetsListDialog()
 {
     kpers_set_value(INI_GROUP_GEOMETRY, "filtering", size());
 
-    delete ui; ui = nullptr;
+    delete ui;
+    ui = nullptr;
 
     return;
 }
@@ -270,15 +271,34 @@ void FilterSetsListDialog::add_new_set()
     return;
 }
 
+// Trigger the filter set edit dialog on the filter set corresponding to the
+// given list item. Once the user has closed the dialog, its parameters will
+// be assigned to that filter set.
+//
+void FilterSetsListDialog::edit_set(const QTreeWidgetItem *const item)
+{
+    // Find out which filter set the item corresponds to.
+    const int filterSetIdx = item->data(0, Qt::UserRole).value<uint>();
+    filter_set_s *const filterSet = kf_filter_sets().at(filterSetIdx);
+
+    FilterSetDialog *setDialog = new FilterSetDialog(filterSet, this);
+    setDialog->open();
+
+    connect(setDialog, &FilterSetDialog::accepted,
+                 this, [this]
+    {
+        repopulate_filter_sets_list();
+        flag_unsaved_changes();
+    });
+
+    return;
+}
+
 // On double-clicking an item in the set list, open the filter set dialog to let
 // the user modify the set's parameters.
 //
 void FilterSetsListDialog::on_treeWidget_setList_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    // Find out which filter set this item corresponds to.
-    const int filterSetIdx = item->data(0, Qt::UserRole).value<uint>();
-    filter_set_s *const filterSet = kf_filter_sets().at(filterSetIdx);
-
     switch (column)
     {
         // The set's enabled/disabled checkbox could potentially generate
@@ -303,15 +323,7 @@ void FilterSetsListDialog::on_treeWidget_setList_itemDoubleClicked(QTreeWidgetIt
         // corresponding filter set.
         default:
         {
-            FilterSetDialog *setDialog = new FilterSetDialog(filterSet, this);
-            setDialog->open();
-
-            connect(setDialog, &FilterSetDialog::accepted,
-                         this, [this]
-            {
-                repopulate_filter_sets_list();
-                flag_unsaved_changes();
-            });
+            edit_set(item);
 
             return;
         }
@@ -400,6 +412,16 @@ void FilterSetsListDialog::on_pushButton_down_clicked()
     repopulate_filter_sets_list(idx+1);
 
     flag_unsaved_changes();
+
+    return;
+}
+
+void FilterSetsListDialog::on_pushButton_editSelected_clicked()
+{
+    const QTreeWidgetItem *currentItem = ui->treeWidget_setList->currentItem();
+    if (!currentItem) return;
+
+    edit_set(currentItem);
 
     return;
 }
