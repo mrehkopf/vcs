@@ -50,7 +50,7 @@ QTabBar::tab
     color: #202020;
     border: none;
     border-radius: 0;
-    padding: 4px;
+    padding: 5px;
     padding-left: 0;
     padding-right: 0;
 }
