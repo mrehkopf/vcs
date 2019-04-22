@@ -37,8 +37,6 @@ public:
     void update_filter_sets_list();
 
 private slots:
-    void on_treeWidget_setList_itemChanged(QTreeWidgetItem *item);
-
     void add_new_set();
 
     void on_treeWidget_setList_itemDoubleClicked(QTreeWidgetItem *item, int column);
@@ -54,6 +52,8 @@ private slots:
     bool save_sets_to_file();
 
     void on_pushButton_add_clicked();
+
+    void on_treeWidget_setList_itemChanged(QTreeWidgetItem *item, int column);
 
 private:
     void create_menu_bar();

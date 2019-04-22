@@ -29,6 +29,14 @@
 #include "../../../common/csv.h"
 #include "ui_filter_sets_list_dialog.h"
 
+// The index of the column in the filter sets tree widget that holds the set's
+// enabled/disabled status.
+static const uint CHECKBOX_COLUMN_IDX = 0;
+
+// The index of the column in the filter sets tree widget that holds the set's
+// description string.
+static const uint DESCRIPTION_COLUMN_IDX = 3;
+
 FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::FilterSetsListDialog)
@@ -75,6 +83,9 @@ static QTreeWidgetItem* make_filter_set_tree_item(const filter_set_s &filterSet,
     item->setText(1, inputRes);
     item->setText(2, outputRes);
     item->setText(3, QString::fromStdString(filterSet.description));
+
+    // We'll allow the user to edit the 'Description' column.
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
 
     item->setData(0, Qt::UserRole, setId);
 
@@ -152,20 +163,6 @@ void FilterSetsListDialog::update_filter_set_idx(void)
     }
 
     ui->label_activeSet->setText(idxStr);
-
-    return;
-}
-
-// Used to detect when filter sets' checkboxes are checked.
-//
-void FilterSetsListDialog::on_treeWidget_setList_itemChanged(QTreeWidgetItem *item)
-{
-    const int idx = item->data(0, Qt::UserRole).value<uint>();
-    if (idx < 0) return;
-
-    const bool enabled = (item->checkState(0) == Qt::Checked)? 1 : 0;
-
-    kf_set_filter_set_enabled(idx, enabled);
 
     return;
 }
@@ -278,26 +275,79 @@ void FilterSetsListDialog::add_new_set()
 //
 void FilterSetsListDialog::on_treeWidget_setList_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    // Assume that the first column holds a toggleable checkbox. This could
-    // easily generate accidental double-clicks, so ignore it.
-    if (column == 0) return;
+    // Find out which filter set this item corresponds to.
+    const int filterSetIdx = item->data(0, Qt::UserRole).value<uint>();
+    filter_set_s *const filterSet = kf_filter_sets().at(filterSetIdx);
 
-    const int idx = item->data(0, Qt::UserRole).value<uint>();
-
-    filter_set_s *const set = kf_filter_sets().at(idx);
-    FilterSetDialog *setDialog = new FilterSetDialog(set, this);
-    setDialog->open();
-
-    connect(setDialog, &FilterSetDialog::accepted,
-                 this, [this]
+    switch (column)
     {
-        repopulate_filter_sets_list();
-        flag_unsaved_changes();
-    });
+        // The set's enabled/disabled checkbox could potentially generate
+        // accidental double-clicks, so ignore double-clicks on it altogether.
+        case CHECKBOX_COLUMN_IDX:
+        {
+            return;
+        }
 
-    return;
+        // Let the user edit the 'Description' column's text. An itemChanged
+        // signal will be emitted when the user finishes this edit, to which
+        // we'll react elsewhere by updating the set's description with the
+        // user's text.
+        case DESCRIPTION_COLUMN_IDX:
+        {
+            ui->treeWidget_setList->editItem(item, column);
+
+            return;
+        }
+
+        // Open a dialog box to let the user customize the properties of the
+        // corresponding filter set.
+        default:
+        {
+            FilterSetDialog *setDialog = new FilterSetDialog(filterSet, this);
+            setDialog->open();
+
+            connect(setDialog, &FilterSetDialog::accepted,
+                         this, [this]
+            {
+                repopulate_filter_sets_list();
+                flag_unsaved_changes();
+            });
+
+            return;
+        }
+    }
 
     (void)column;
+}
+
+void FilterSetsListDialog::on_treeWidget_setList_itemChanged(QTreeWidgetItem *item, int column)
+{
+    // Find out which filter set this item corresponds to.
+    const int filterSetIdx = item->data(0, Qt::UserRole).value<uint>();
+    filter_set_s *const filterSet = kf_filter_sets().at(filterSetIdx);
+
+    switch (column)
+    {
+        // Enable or disable the filter set.
+        case CHECKBOX_COLUMN_IDX:
+        {
+            kf_set_filter_set_enabled(filterSetIdx, (item->checkState(CHECKBOX_COLUMN_IDX) == Qt::Checked));
+
+            return;
+        }
+
+        // The user finished editing the set's description, so update the set
+        // with that information.
+        case DESCRIPTION_COLUMN_IDX:
+        {
+            filterSet->description = item->text(DESCRIPTION_COLUMN_IDX).toStdString();
+
+            return;
+        }
+
+        // Ignore all other changes.
+        default: return;
+    }
 }
 
 void FilterSetsListDialog::on_pushButton_remove_clicked()
