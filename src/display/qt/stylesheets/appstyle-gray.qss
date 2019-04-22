@@ -259,6 +259,11 @@ QCheckBox::indicator, QGroupBox::indicator, QTreeWidget::indicator
     background: transparent;
 }
 
+QTreeWidget::indicator
+{
+    margin: 4px;
+}
+
 QCheckBox::indicator::!checked, QGroupBox::indicator::!checked, QTreeWidget::indicator::!checked
 {
     background: rgba(0,0,0,0.07);
