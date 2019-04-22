@@ -72,7 +72,6 @@ SOURCES += \
     src/display/qt/persistent_settings.cpp \
     src/common/memory.cpp \
     src/display/qt/d_filter_set_dialog.cpp \
-    src/display/qt/dw_filter_list.cpp \
     src/display/qt/d_filter_sets_list_dialog.cpp \
     src/display/qt/w_opengl.cpp \
     src/record/record.cpp \
@@ -105,7 +104,6 @@ HEADERS += \
     src/common/memory.h \
     src/common/memory_interface.h \
     src/display/qt/d_filter_set_dialog.h \
-    src/display/qt/dw_filter_list.h \
     src/display/qt/d_filter_sets_list_dialog.h \
     src/display/qt/w_opengl.h \
     src/record/record.h \
