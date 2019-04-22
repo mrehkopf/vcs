@@ -54,14 +54,14 @@ UI_DIR = generated_files
 INCLUDEPATH += $$PWD/src/display/qt/
 
 SOURCES += \
-    src/display/qt/d_window.cpp \
-    src/display/qt/d_resolution_dialog.cpp \
+    src/display/qt/windows/output_window.cpp \
+    src/display/qt/dialogs/resolution_dialog.cpp \
     src/display/qt/d_main.cpp \
-    src/display/qt/d_control_panel.cpp \
-    src/display/qt/d_video_and_color_dialog.cpp \
-    src/display/qt/d_overlay_dialog.cpp \
-    src/display/qt/d_alias_dialog.cpp \
-    src/display/qt/d_anti_tear_dialog.cpp \
+    src/display/qt/windows/control_panel_window.cpp \
+    src/display/qt/dialogs/video_and_color_dialog.cpp \
+    src/display/qt/dialogs/overlay_dialog.cpp \
+    src/display/qt/dialogs/alias_dialog.cpp \
+    src/display/qt/dialogs/anti_tear_dialog.cpp \
     src/scaler/scaler.cpp \
     src/main.cpp \
     src/common/log.cpp \
@@ -71,9 +71,9 @@ SOURCES += \
     src/filter/anti_tear.cpp \
     src/display/qt/persistent_settings.cpp \
     src/common/memory.cpp \
-    src/display/qt/d_filter_set_dialog.cpp \
-    src/display/qt/d_filter_sets_list_dialog.cpp \
-    src/display/qt/w_opengl.cpp \
+    src/display/qt/dialogs/filter_set_dialog.cpp \
+    src/display/qt/dialogs/filter_sets_list_dialog.cpp \
+    src/display/qt/subclasses/QOpenGLWidget_opengl_widget.cpp \
     src/record/record.cpp \
     src/common/propagate.cpp \
     src/common/disk.cpp \
@@ -83,44 +83,44 @@ HEADERS += \
     src/common/globals.h \
     src/capture/null_rgbeasy.h \
     src/common/types.h \
-    src/display/qt/d_window.h \
-    src/display/qt/d_resolution_dialog.h \
+    src/display/qt/windows/output_window.h \
+    src/display/qt/dialogs/resolution_dialog.h \
     src/scaler/scaler.h \
     src/capture/capture.h \
     src/display/display.h \
-    src/display/qt/d_control_panel.h \
+    src/display/qt/windows/control_panel_window.h \
     src/common/log.h \
-    src/display/qt/d_video_and_color_dialog.h \
-    src/display/qt/d_overlay_dialog.h \
-    src/display/qt/d_alias_dialog.h \
+    src/display/qt/dialogs/video_and_color_dialog.h \
+    src/display/qt/dialogs/overlay_dialog.h \
+    src/display/qt/dialogs/alias_dialog.h \
     src/filter/anti_tear.h \
-    src/display/qt/d_anti_tear_dialog.h \
+    src/display/qt/dialogs/anti_tear_dialog.h \
     src/filter/filter.h \
     src/common/command_line.h \
-    src/display/qt/df_filters.h \
+    src/display/qt/dialogs/filter_dialogs.h \
     src/display/qt/persistent_settings.h \
-    src/display/qt/d_util.h \
+    src/display/qt/utility.h \
     src/common/csv.h \
     src/common/memory.h \
     src/common/memory_interface.h \
-    src/display/qt/d_filter_set_dialog.h \
-    src/display/qt/d_filter_sets_list_dialog.h \
-    src/display/qt/w_opengl.h \
+    src/display/qt/dialogs/filter_set_dialog.h \
+    src/display/qt/dialogs/filter_sets_list_dialog.h \
+    src/display/qt/subclasses/QOpenGLWidget_opengl_widget.h \
     src/record/record.h \
     src/common/propagate.h \
     src/common/disk.h \
     src/capture/alias.h
 
 FORMS += \
-    src/display/qt/d_control_panel.ui \
-    src/display/qt/d_window.ui \
-    src/display/qt/d_video_and_color_dialog.ui \
-    src/display/qt/d_overlay_dialog.ui \
-    src/display/qt/d_resolution_dialog.ui \
-    src/display/qt/d_alias_dialog.ui \
-    src/display/qt/d_anti_tear_dialog.ui \
-    src/display/qt/d_filter_set_dialog.ui \
-    src/display/qt/d_filter_sets_list_dialog.ui
+    src/display/qt/windows/ui/control_panel_window.ui \
+    src/display/qt/windows/ui/output_window.ui \
+    src/display/qt/dialogs/ui/video_and_color_dialog.ui \
+    src/display/qt/dialogs/ui/overlay_dialog.ui \
+    src/display/qt/dialogs/ui/resolution_dialog.ui \
+    src/display/qt/dialogs/ui/alias_dialog.ui \
+    src/display/qt/dialogs/ui/anti_tear_dialog.ui \
+    src/display/qt/dialogs/ui/filter_set_dialog.ui \
+    src/display/qt/dialogs/ui/filter_sets_list_dialog.ui
 
 # C++. For GCC/Clang/MinGW.
 QMAKE_CXXFLAGS += -g

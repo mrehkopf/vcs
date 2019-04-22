@@ -337,7 +337,7 @@ While developing VCS, I've been compiling it with GCC 5.4 on Linux and MinGW 5.3
 - The scaled frame will be fed into the `Filter` module again for any post-scaling filtering.
 - Finally, the frame is sent to the `Display` module for displaying on screen.
 
-**Qt's event loop.** The loop in which Qt processes GUI-related events is spun manually (by `update_gui_state()` in [src/display/qt/d_window.cpp](src/display/qt/d_window.cpp)) each time a new frame has been received from the capture hardware. This is done to match the rate of screen updates on the output to that of the input capture source.
+**Qt's event loop.** The loop in which Qt processes GUI-related events is spun manually (by `update_gui_state()` in [src/display/qt/windows/output_window.cpp](src/display/qt/windows/output_window.cpp)) each time a new frame has been received from the capture hardware. This is done to match the rate of screen updates on the output to that of the input capture source.
 
 ## How-to
 
@@ -387,7 +387,7 @@ static void filter_func_blue(FILTER_FUNC_PARAMS)
 
 You can have a look at the existing filter functions in [src/filter/filter.cpp](src/filter/filter.cpp) to get a feel for how the filter function can be operated.
 
-The filter dialog is to be defined in [src/display/qt/df_filters.h](src/display/qt/df_filters.h), where you can also find the dialogs of VCS's other filters. Each dialog is defined as a separate struct inheriting from the dialog base `filter_dlc_s`. A filter can have no more or less than one dialog.
+The filter dialog is to be defined in [src/display/qt/dialogs/filter_dialogs.h](src/display/qt/dialogs/filter_dialogs.h), where you can also find the dialogs of VCS's other filters. Each dialog is defined as a separate struct inheriting from the dialog base `filter_dlc_s`. A filter can have no more or less than one dialog.
 
 The following is a minimal filter dialog:
 

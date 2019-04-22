@@ -15,7 +15,15 @@
 #include <QMenu>
 #include <QFile>
 #include <assert.h>
+#include "../../display/qt/dialogs/filter_sets_list_dialog.h"
+#include "../../display/qt/dialogs/video_and_color_dialog.h"
+#include "../../display/qt/windows/control_panel_window.h"
+#include "../../display/qt/dialogs/resolution_dialog.h"
+#include "../../display/qt/dialogs/anti_tear_dialog.h"
+#include "../../display/qt/windows/output_window.h"
+#include "../../display/qt/dialogs/alias_dialog.h"
 #include "../../display/qt/persistent_settings.h"
+#include "../../display/qt/utility.h"
 #include "../../filter/anti_tear.h"
 #include "../../common/propagate.h"
 #include "../../capture/capture.h"
@@ -25,15 +33,7 @@
 #include "../../filter/filter.h"
 #include "../../common/log.h"
 #include "../display.h"
-#include "d_filter_sets_list_dialog.h"
-#include "d_video_and_color_dialog.h"
-#include "d_resolution_dialog.h"
-#include "d_anti_tear_dialog.h"
-#include "d_control_panel.h"
-#include "d_alias_dialog.h"
-#include "d_window.h"
-#include "d_util.h"
-#include "ui_d_control_panel.h"
+#include "ui_control_panel_window.h"
 
 #if _WIN32
     #include <windows.h>

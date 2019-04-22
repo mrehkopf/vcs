@@ -10,11 +10,11 @@
 #include <vector>
 #include <map>
 #include <ctime>
-#include "../display/qt/df_filters.h"
-#include "../display/display.h"
-#include "../capture/capture.h"
-#include "../common/globals.h"
-#include "filter.h"
+#include "../../src/display/qt/dialogs/filter_dialogs.h"
+#include "../../src/display/display.h"
+#include "../../src/capture/capture.h"
+#include "../../src/common/globals.h"
+#include "../../src/filter/filter.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/imgproc/imgproc.hpp>

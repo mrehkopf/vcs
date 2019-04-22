@@ -7,18 +7,18 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include "display/qt/windows/output_window.h"
 #include "common/command_line.h"
-#include "display/qt/d_window.h"
 #include "filter/anti_tear.h"
-#include "capture/capture.h"
-#include "capture/alias.h"
-#include "display/display.h"
 #include "common/propagate.h"
-#include "record/record.h"
-#include "memory.h"
-#include "scaler/scaler.h"
+#include "capture/capture.h"
+#include "display/display.h"
 #include "common/globals.h"
+#include "capture/alias.h"
+#include "record/record.h"
+#include "scaler/scaler.h"
 #include "filter/filter.h"
+#include "common/memory.h"
 
 extern std::mutex INPUT_OUTPUT_MUTEX;
 
