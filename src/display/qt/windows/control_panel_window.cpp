@@ -336,6 +336,11 @@ void ControlPanel::update_tab_widths(void)
     return;
 }
 
+bool ControlPanel::custom_program_styling_enabled(void)
+{
+    return ui->checkBox_customStylingEnabled->isChecked();
+}
+
 void ControlPanel::notify_of_new_alias(const mode_alias_s a)
 {
     k_assert(aliasDlg != nullptr, "");

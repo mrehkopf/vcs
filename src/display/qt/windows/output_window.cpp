@@ -51,8 +51,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    apply_programwide_styling(":/res/stylesheets/appstyle-gray.qss");
-
     ui->setupUi(this);
 
     // Set up a layout for the central widget now, so we can add the OpenGL
@@ -63,6 +61,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     controlPanel = new ControlPanel(this);
     overlayDlg = new OverlayDialog(this);
+
+    if (controlPanel->custom_program_styling_enabled())
+    {
+        apply_programwide_styling(":/res/stylesheets/appstyle-gray.qss");
+    }
 
     // We intend to repaint the entire window every time we update it, so ask for no automatic fill.
     this->setAttribute(Qt::WA_OpaquePaintEvent, true);

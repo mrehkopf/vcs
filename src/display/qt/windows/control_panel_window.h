@@ -92,6 +92,8 @@ public:
 
     void update_stylesheet(const QString &stylesheet);
 
+    bool custom_program_styling_enabled();
+
 private slots:
     void on_checkBox_logInfo_toggled(bool);
 
