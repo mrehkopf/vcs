@@ -44,7 +44,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <property name="documentMode">
       <bool>true</bool>
@@ -1878,13 +1878,13 @@
         <number>0</number>
        </property>
        <property name="leftMargin">
-        <number>6</number>
+        <number>9</number>
        </property>
        <property name="topMargin">
-        <number>6</number>
+        <number>9</number>
        </property>
        <property name="rightMargin">
-        <number>6</number>
+        <number>9</number>
        </property>
        <property name="bottomMargin">
         <number>9</number>
@@ -1902,7 +1902,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>548</width>
+            <width>542</width>
             <height>554</height>
            </rect>
           </property>
