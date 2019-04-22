@@ -2,8 +2,8 @@
 #define D_FILTER_SET_H
 
 #include <QDialog>
-#include "../../filter/filter.h"
-#include "../../common/types.h"
+#include "../../../filter/filter.h"
+#include "../../../common/types.h"
 
 class QTreeWidgetItem;
 struct filter_set_s;

@@ -6,10 +6,10 @@
  *
  */
 
-#include "../../display/qt/dialogs/resolution_dialog.h"
-#include "../../capture/capture.h"
-#include "../../common/globals.h"
-#include "../display.h"
+#include "../../../display/qt/dialogs/resolution_dialog.h"
+#include "../../../capture/capture.h"
+#include "../../../display/display.h"
+#include "../../../common/globals.h"
 #include "ui_resolution_dialog.h"
 
 static resolution_s *RESOLUTION;

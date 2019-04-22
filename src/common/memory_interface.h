@@ -7,9 +7,9 @@
 #ifndef HEAP_MEM_H
 #define HEAP_MEM_H
 
-#include "../common/globals.h"
-#include "../common/memory.h"
-#include "../common/types.h"
+#include "../../common/globals.h"
+#include "../../common/memory.h"
+#include "../../common/types.h"
 
 /*
  * TODOS:

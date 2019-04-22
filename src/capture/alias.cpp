@@ -11,9 +11,9 @@
  */
 
 #include <vector>
-#include "../../common/propagate.h"
-#include "../../capture/capture.h"
-#include "../../common/globals.h"
+#include "../common/propagate.h"
+#include "../capture/capture.h"
+#include "../common/globals.h"
 #include "alias.h"
 
 static std::vector<mode_alias_s> ALIASES;

@@ -8,7 +8,7 @@
 #define D_FILTER_DIALOG_H
 
 #include <QDialog>
-#include "../../common/types.h"
+#include "../../../common/types.h"
 
 class QTreeWidgetItem;
 class QListWidgetItem;

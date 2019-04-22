@@ -22,16 +22,16 @@
 #include <QScreen>
 #include <QImage>
 #include <QLabel>
-#include "../../display/qt/subclasses/QOpenGLWidget_opengl_widget.h"
-#include "../../display/qt/windows/control_panel_window.h"
-#include "../../display/qt/dialogs/resolution_dialog.h"
-#include "../../display/qt/dialogs/overlay_dialog.h"
-#include "../../display/qt/windows/output_window.h"
-#include "../../capture/capture.h"
-#include "../../capture/alias.h"
-#include "../../common/globals.h"
-#include "../../record/record.h"
-#include "../../scaler/scaler.h"
+#include "../../../display/qt/subclasses/QOpenGLWidget_opengl_widget.h"
+#include "../../../display/qt/windows/control_panel_window.h"
+#include "../../../display/qt/dialogs/resolution_dialog.h"
+#include "../../../display/qt/dialogs/overlay_dialog.h"
+#include "../../../display/qt/windows/output_window.h"
+#include "../../../capture/capture.h"
+#include "../../../capture/alias.h"
+#include "../../../common/globals.h"
+#include "../../../record/record.h"
+#include "../../../scaler/scaler.h"
 #include "ui_output_window.h"
 
 /// Temp. Stores the number of milliseconds passed for each frame update. This

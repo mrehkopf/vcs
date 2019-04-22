@@ -7,7 +7,7 @@
  */
 
 #include <QSettings>
-#include "persistent_settings.h"
+#include "../../display/qt/persistent_settings.h"
 
 static const char SETTINGS_FILENAME[] = "vcs.ini";
 

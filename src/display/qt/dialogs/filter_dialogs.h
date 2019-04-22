@@ -25,8 +25,8 @@
 #include <QString>
 #include <QDialog>
 #include <QLabel>
-#include "../../common/globals.h"
-#include "../../common/types.h"
+#include "../../../common/globals.h"
+#include "../../../common/types.h"
 
 // Filter dialog base. Inherit from this to create custom ones.
 struct filter_dlg_s

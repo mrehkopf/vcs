@@ -8,7 +8,7 @@
 #define MEMORY_H
 
 #include <string>
-#include "../common/types.h"
+#include "../../common/types.h"
 
 void kmem_lock_cache_alloc(void);
 

@@ -7,9 +7,9 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "../display/display.h"
-#include "../common/log.h"
-#include "../common/types.h"
+#include "../../display/display.h"
+#include "../../common/log.h"
+#include "../../common/types.h"
 
 #ifdef NDEBUG
     #error "NDEBUG disables assertions. Assertions are required by design."

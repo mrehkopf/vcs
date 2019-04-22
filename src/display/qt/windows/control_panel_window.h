@@ -8,7 +8,7 @@
 #define D_CONTROL_PANEL_H
 
 #include <QDialog>
-#include "../../common/types.h"
+#include "../../../common/types.h"
 
 class MainWindow;
 class AliasDialog;

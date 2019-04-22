@@ -12,9 +12,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <thread>
-#include "memory_interface.h"
-#include "memory.h"
+#include "../common/memory_interface.h"
 #include "../common/globals.h"
+#include "../common/memory.h"
 
 /*
  * TODOS:

@@ -16,7 +16,7 @@
 #include "../common/globals.h"
 #include "../filter/filter.h"
 #include "../record/record.h"
-#include "scaler.h"
+#include "../scaler/scaler.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/imgproc/imgproc.hpp>

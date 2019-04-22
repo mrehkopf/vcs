@@ -18,7 +18,7 @@
 #include "../scaler/scaler.h"
 #include "../display/display.h"
 #include "../common/memory.h"
-#include "record.h"
+#include "../record/record.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/core/core.hpp>
