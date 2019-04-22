@@ -181,6 +181,18 @@ QTreeWidget QHeaderView::section:first
     border: none;
 }
 
+/* For the line edit field that appears while a tree widget item's text is edited.*/
+QTreeWidget QLineEdit
+{
+    /* The background is non-transparent to hide the tree widget item's text underneath.*/
+    background-color: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #7a7a7a, stop: 1 #737373);
+    border: 1px solid #606060;
+    border-radius: 3px;
+    padding: 2px;
+    padding-left: 0px;
+    color: #e0e0e0;
+}
+
 QTreeWidget::item:hover
 {
     background: transparent;
