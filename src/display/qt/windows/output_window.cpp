@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    apply_programwide_styling(":/res/stylesheets/gray.qss");
+    apply_programwide_styling(":/res/stylesheets/appstyle-gray.qss");
 
     ui->setupUi(this);
 

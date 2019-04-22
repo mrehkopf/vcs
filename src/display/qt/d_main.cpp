@@ -2,19 +2,20 @@
  * 2018 Tarpeeksi Hyvae Soft /
  * VCS display wrapper
  *
- * A convenience wrapper for GUI functionality.
+ * Implements VCS's display interface using Qt, i.e. wraps the interface's
+ * functions around the Qt-based GUI.
  *
  */
 
 #include <QApplication>
 #include <QMessageBox>
 #include <assert.h>
+#include "../../display/qt/windows/output_window.h"
 #include "../../capture/capture.h"
 #include "../../capture/alias.h"
 #include "../../common/globals.h"
 #include "../../filter/filter.h"
 #include "../../common/log.h"
-#include "../../display/qt/windows/output_window.h"
 
 // Qt wants a QApplication object around for the GUI to function.
 namespace app_n

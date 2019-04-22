@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/res">
-        <file>stylesheets/gray.qss</file>
+        <file>stylesheets/appstyle-gray.qss</file>
         <file>fonts/Ubuntu-R.ttf</file>
         <file>images/icons/arrow_down_disabled.png</file>
         <file>images/icons/arrow_down.png</file>

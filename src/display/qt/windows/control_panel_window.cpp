@@ -1477,7 +1477,7 @@ void ControlPanel::on_checkBox_customStylingEnabled_toggled(bool checked)
     {
         /// TODO: There should be a mechanism by which the user can select which
         /// stylesheet to apply.
-        MAIN_WIN->apply_programwide_styling(":/res/stylesheets/gray.qss");
+        MAIN_WIN->apply_programwide_styling(":/res/stylesheets/appstyle-gray.qss");
     }
     else
     {
