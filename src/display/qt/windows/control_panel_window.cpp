@@ -1400,6 +1400,9 @@ void ControlPanel::on_pushButton_recordingStart_clicked()
         ui->pushButton_recordingStop->setEnabled(true);
         ui->frame_recordingSettings->setEnabled(false);
         ui->frame_recordingFile->setEnabled(false);
+
+        // Disable any GUI functionality that would let the user change the output
+        // size, since we want to keep the output resolution constant while recording.
         ui->frame_outputOverrides->setEnabled(false);
 
         MAIN_WIN->update_window_title();
