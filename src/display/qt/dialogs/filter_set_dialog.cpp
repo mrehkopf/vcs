@@ -9,7 +9,6 @@
 
 #include <QTreeWidgetItem>
 #include <QPushButton>
-#include <map>
 #include "../../../display/qt/dialogs/filter_set_dialog.h"
 #include "../../../display/qt/dialogs/filter_dialogs.h"
 #include "../../../display/qt/persistent_settings.h"
@@ -17,6 +16,7 @@
 #include "../../../common/globals.h"
 #include "../../../scaler/scaler.h"
 #include "../../../common/memory.h"
+#include "../../../display/qt/utility.h"
 #include "ui_filter_set_dialog.h"
 
 // Takes in the filter set for which we'll set the parameters.
@@ -65,7 +65,12 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
         for (const auto &filterName: filterNames)
         {
             QTreeWidgetItem *item = new QTreeWidgetItem;
+
             item->setText(0, filterName);
+
+            // Don't allow dropping into the item.
+            item->setFlags(item->flags() & ~Qt::ItemIsDropEnabled);
+
             ui->listWidget_filterList->addTopLevelItem(item);
         }
     }
@@ -134,30 +139,8 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
         }
 
         // Pre and post-filters.
-        {
-            ui->treeWidget_preFilters->clear();
-            ui->treeWidget_postFilters->clear();
-
-            auto add_filters_to_gui = [=](const std::vector<filter_s> filters, QTreeWidget *const filterList)
-            {
-                for (auto &filter: filters)
-                {
-                    block_widget_signals_c b(filterList);
-
-                    QTreeWidgetItem *itm = new QTreeWidgetItem(filterList);
-
-                    itm->setText(0, QString::fromStdString(filter.name));
-
-                    filterData[itm] = (u8*)kmem_allocate(FILTER_DATA_LENGTH, "Filter set data");
-                    memcpy(filterData[itm], filter.data, FILTER_DATA_LENGTH);
-
-                    filterList->addTopLevelItem(itm);
-                }
-            };
-
-            add_filters_to_gui(filterSet->preFilters, ui->treeWidget_preFilters);
-            add_filters_to_gui(filterSet->postFilters, ui->treeWidget_postFilters);
-        }
+        ui->treeWidget_preFilters->set_filters(filterSet->preFilters);
+        ui->treeWidget_postFilters->set_filters(filterSet->postFilters);
     }
 
     resize(kpers_value_of(INI_GROUP_GEOMETRY, "filter_set", size()).toSize());
@@ -171,75 +154,24 @@ FilterSetDialog::~FilterSetDialog()
 
     delete ui;
 
-    for (auto item: filterData)
-    {
-        kmem_release((void**)&item.second);
-    }
-
     return;
 }
 
 // Constructs a filter set out of the current user-definable GUI state.
 //
-filter_set_s FilterSetDialog::get_filter_set_from_current_state(void)
+filter_set_s FilterSetDialog::make_filter_set_from_current_state(void)
 {
     filter_set_s c;
 
     // Default to all new sets being enabled.
     c.isEnabled = true;
 
-    // Add the pre-filters.
-    /// TODO. Code duplication.
-    {
-        const auto items = ui->treeWidget_preFilters->findItems("*", Qt::MatchWildcard);
-
-        for (int i = 0; i < items.count(); i++)
-        {
-            const QString filterName = items.at(0)->text(0);
-
-            filter_s f;
-
-            f.name = filterName.toStdString();
-            if (!kf_named_filter_exists(f.name))
-            {
-                NBENE(("Was asked to access a filter that doesn't exist. Ignoring this."));
-                continue;
-            }
-
-            memcpy(f.data, filterData[items.at(0)], FILTER_DATA_LENGTH);
-
-            c.preFilters.push_back(f);
-        }
-    }
-
-    // Add the post-filters.
-    {
-        const auto items = ui->treeWidget_postFilters->findItems("*", Qt::MatchWildcard);
-
-        for (int i = 0; i < items.count(); i++)
-        {
-            const QString filterName = items.at(0)->text(0);
-
-            filter_s f;
-
-            f.name = filterName.toStdString();
-            if (!kf_named_filter_exists(f.name))
-            {
-                NBENE(("Was asked to access a filter that doesn't exist. Ignoring this."));
-                continue;
-            }
-
-            memcpy(f.data, filterData[items.at(0)], FILTER_DATA_LENGTH);
-
-            c.postFilters.push_back(f);
-        }
-    }
-
+    c.preFilters = ui->treeWidget_preFilters->filters();
+    c.postFilters = ui->treeWidget_postFilters->filters();
     c.description = "";// ui->lineEdit_description->text().toStdString();
-
     c.scaler = ks_scaler_for_name_string(ui->comboBox_scaler->currentText().toStdString());
-
     c.activation = filter_set_s::activation_e::none;
+
     if (ui->radioButton_activeAlways->isChecked()) c.activation |= filter_set_s::activation_e::all;
     else
     {
@@ -253,38 +185,6 @@ filter_set_s FilterSetDialog::get_filter_set_from_current_state(void)
     c.outRes.h = ui->spinBox_outputY->value();
 
     return c;
-}
-
-void FilterSetDialog::on_treeWidget_preFilters_itemDoubleClicked(QTreeWidgetItem *item)
-{
-    // Pop up a dialog letting the user set the filter's parameters.
-    kf_filter_dialog_for_name(item->text(0).toStdString())->poll_user_for_params(filterData[item], this);
-
-    return;
-}
-
-void FilterSetDialog::on_treeWidget_postFilters_itemDoubleClicked(QTreeWidgetItem *item)
-{
-    // Pop up a dialog letting the user set the filter's parameters.
-    kf_filter_dialog_for_name(item->text(0).toStdString())->poll_user_for_params(filterData[item], this);
-
-    return;
-}
-
-void FilterSetDialog::on_treeWidget_preFilters_itemChanged(QTreeWidgetItem *item)
-{
-    filterData[item] = (u8*)kmem_allocate(FILTER_DATA_LENGTH, "Pre-filter data");
-    kf_filter_dialog_for_name(item->text(0).toStdString())->insert_default_params(filterData[item]);
-
-    return;
-}
-
-void FilterSetDialog::on_treeWidget_postFilters_itemChanged(QTreeWidgetItem *item)
-{
-    filterData[item] = (u8*)kmem_allocate(FILTER_DATA_LENGTH, "Post-filter data");
-    kf_filter_dialog_for_name(item->text(0).toStdString())->insert_default_params(filterData[item]);
-
-    return;
 }
 
 // Toggle controls related to the activation selection.
@@ -315,7 +215,7 @@ void FilterSetDialog::on_checkBox_activeOut_toggled(bool checked)
 
 void FilterSetDialog::apply_current_settings(void)
 {
-    *filterSet = get_filter_set_from_current_state();
+    *filterSet = make_filter_set_from_current_state();
     return;
 }
 

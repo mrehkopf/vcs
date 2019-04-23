@@ -51,7 +51,8 @@ RCC_DIR = generated_files
 MOC_DIR = generated_files
 UI_DIR = generated_files
 
-INCLUDEPATH += $$PWD/src/display/qt/
+INCLUDEPATH += $$PWD/src/display/qt/ \
+               $$PWD/src/display/qt/subclasses/
 
 SOURCES += \
     src/display/qt/windows/output_window.cpp \
@@ -77,7 +78,8 @@ SOURCES += \
     src/record/record.cpp \
     src/common/propagate.cpp \
     src/common/disk.cpp \
-    src/capture/alias.cpp
+    src/capture/alias.cpp \
+    src/display/qt/subclasses/QTreeWidget_filter_list.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -109,7 +111,8 @@ HEADERS += \
     src/record/record.h \
     src/common/propagate.h \
     src/common/disk.h \
-    src/capture/alias.h
+    src/capture/alias.h \
+    src/display/qt/subclasses/QTreeWidget_filter_list.h
 
 FORMS += \
     src/display/qt/windows/ui/control_panel_window.ui \

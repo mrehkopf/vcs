@@ -25,14 +25,6 @@ private slots:
 
     void on_checkBox_activeOut_toggled(bool checked);
 
-    void on_treeWidget_preFilters_itemChanged(QTreeWidgetItem *item);
-
-    void on_treeWidget_postFilters_itemChanged(QTreeWidgetItem *item);
-
-    void on_treeWidget_preFilters_itemDoubleClicked(QTreeWidgetItem *item);
-
-    void on_treeWidget_postFilters_itemDoubleClicked(QTreeWidgetItem *item);
-
     void on_pushButton_ok_clicked();
 
     void on_pushButton_cancel_clicked();
@@ -40,15 +32,11 @@ private slots:
     void on_pushButton_apply_clicked();
 
 private:
-    filter_set_s get_filter_set_from_current_state(void);
+    filter_set_s make_filter_set_from_current_state(void);
 
     void apply_current_settings(void);
 
     Ui::FilterSetDialog *ui;
-
-    // Maps pointers to filter list items to data arrays holding the parameters of
-    // each filter.
-    std::map<const void*, u8*> filterData;
 
     // A pointer to the filter set that we'll modify.
     filter_set_s *const filterSet;

@@ -33,7 +33,8 @@ const uint MAX_OUTPUT_HEIGHT = 4096;
 const uint MAX_OUTPUT_BPP = 32;
 const u32 MAX_FRAME_SIZE = MAX_OUTPUT_WIDTH * MAX_OUTPUT_HEIGHT * u64(MAX_OUTPUT_BPP / 8);    // The maximum number of bytes a single frame will take.
 
-const u32 FILTER_DATA_LENGTH = 16;          // How many bytes are allocated for each filter's parameter data.
+// How many bytes are allocated for each filter's parameter data.
+const u32 FILTER_DATA_LENGTH = 16;
 
 #define NUM_ELEMENTS(array) int((sizeof(array) / sizeof((array)[0])))
 
