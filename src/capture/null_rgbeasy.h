@@ -13,13 +13,13 @@
 #ifndef NULL_RGBEASY_H
 #define NULL_RGBEASY_H
 
-#include "../../common/globals.h"
+#include "common/globals.h"
 
 #define NULL_RGBEASY_FUNCTION(fn_name)      DEBUG_(("Function called: %s.", fn_name))
 #define NULL_RGBEASY_CONSTANT               -1
 #define NULL_RGBEASY_POINTER                void*
 #ifndef _WIN32 /// Temp hack.
-    #define ULONG_PTR                           unsigned long*
+    #define ULONG_PTR                       unsigned long*
 #endif
 
 // Functions.

@@ -11,13 +11,13 @@
 
 #include <mutex>
 #include "propagate.h"
-#include "../capture/capture.h"
-#include "../display/display.h"
-#include "../common/globals.h"
-#include "../filter/filter.h"
-#include "../capture/alias.h"
-#include "../scaler/scaler.h"
-#include "../record/record.h"
+#include "capture/capture.h"
+#include "display/display.h"
+#include "common/globals.h"
+#include "filter/filter.h"
+#include "capture/alias.h"
+#include "scaler/scaler.h"
+#include "record/record.h"
 
 extern std::mutex INPUT_OUTPUT_MUTEX;
 

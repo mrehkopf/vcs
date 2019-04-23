@@ -9,12 +9,12 @@
 #include <QTextStream>
 #include <QString>
 #include <QFile>
-#include "../common/propagate.h"
-#include "../capture/capture.h"
-#include "../capture/alias.h"
-#include "../filter/filter.h"
-#include "../common/csv.h"
-#include "disk.h"
+#include "common/propagate.h"
+#include "capture/capture.h"
+#include "capture/alias.h"
+#include "filter/filter.h"
+#include "common/disk.h"
+#include "common/csv.h"
 
 // A wrapper for Qt's file-saving functionality. Streams given strings via the
 // << operator on the object into a file.

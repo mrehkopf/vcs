@@ -8,7 +8,7 @@
 #define LOG_H_
 
 #include <string>
-#include "../../common/types.h"
+#include "common/types.h"
 
 struct log_entry_s
 {

@@ -10,10 +10,10 @@
 #include <QCoreApplication>
 #include <QOpenGLWidget>
 #include <QMatrix4x4>
-#include "../../../display/qt/subclasses/QOpenGLWidget_opengl_widget.h"
-#include "../../../capture/capture.h"
-#include "../../../common/globals.h"
-#include "../../../scaler/scaler.h"
+#include "display/qt/subclasses/QOpenGLWidget_opengl_widget.h"
+#include "capture/capture.h"
+#include "common/globals.h"
+#include "scaler/scaler.h"
 
 // The texture into which we'll stream the captured frames.
 GLuint FRAMEBUFFER_TEXTURE;

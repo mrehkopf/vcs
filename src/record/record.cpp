@@ -9,16 +9,16 @@
  *
  */
 
-#include <QElapsedTimer>
-#include <QFileInfo>
 #include <QtConcurrent/QtConcurrent>
 #include <QFutureWatcher>
+#include <QElapsedTimer>
+#include <QFileInfo>
 #include <QFuture>
-#include "../common/globals.h"
-#include "../scaler/scaler.h"
-#include "../display/display.h"
-#include "../common/memory.h"
-#include "../record/record.h"
+#include "display/display.h"
+#include "common/globals.h"
+#include "scaler/scaler.h"
+#include "common/memory.h"
+#include "record/record.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/core/core.hpp>

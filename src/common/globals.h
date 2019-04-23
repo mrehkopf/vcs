@@ -7,15 +7,15 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "../../display/display.h"
-#include "../../common/log.h"
-#include "../../common/types.h"
+#include "display/display.h"
+#include "common/types.h"
+#include "common/log.h"
 
 #ifdef NDEBUG
     #error "NDEBUG disables assertions. Assertions are required by design."
 #endif
-#include <cassert>
 #include <stdexcept>
+#include <cassert>
 
 const char PROGRAM_NAME[] = "\"VCS\" by Tarpeeksi Hyvae Soft";
 const char PROGRAM_VERSION_STRING[] = "1.4.1";

@@ -11,12 +11,12 @@
 #include <QSettings>
 #include <QMenuBar>
 #include <QFile>
-#include "../../../display/qt/dialogs/anti_tear_dialog.h"
-#include "../../../display/qt/persistent_settings.h"
-#include "../../../filter/anti_tear.h"
-#include "../../../display/display.h"
-#include "../../../common/globals.h"
-#include "../../../common/csv.h"
+#include "display/qt/dialogs/anti_tear_dialog.h"
+#include "display/qt/persistent_settings.h"
+#include "filter/anti_tear.h"
+#include "display/display.h"
+#include "common/globals.h"
+#include "common/csv.h"
 #include "ui_anti_tear_dialog.h"
 
 AntiTearDialog::AntiTearDialog(QWidget *parent) :

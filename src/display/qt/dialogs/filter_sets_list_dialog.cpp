@@ -14,19 +14,19 @@
 #include <QMenuBar>
 #include <QDebug>
 #include <QFile>
-#include "../../../display/qt/dialogs/filter_sets_list_dialog.h"
-#include "../../../display/qt/dialogs/filter_set_dialog.h"
-#include "../../../display/qt/dialogs/filter_dialogs.h"
-#include "../../../display/qt/persistent_settings.h"
-#include "../../../common/command_line.h"
-#include "../../../display/qt/utility.h"
-#include "../../../capture/capture.h"
-#include "../../../display/display.h"
-#include "../../../common/globals.h"
-#include "../../../filter/filter.h"
-#include "../../../scaler/scaler.h"
-#include "../../../common/disk.h"
-#include "../../../common/csv.h"
+#include "display/qt/dialogs/filter_sets_list_dialog.h"
+#include "display/qt/dialogs/filter_set_dialog.h"
+#include "display/qt/dialogs/filter_dialogs.h"
+#include "display/qt/persistent_settings.h"
+#include "common/command_line.h"
+#include "display/qt/utility.h"
+#include "capture/capture.h"
+#include "display/display.h"
+#include "common/globals.h"
+#include "filter/filter.h"
+#include "scaler/scaler.h"
+#include "common/disk.h"
+#include "common/csv.h"
 #include "ui_filter_sets_list_dialog.h"
 
 // The index of the column in the filter sets tree widget that holds the set's

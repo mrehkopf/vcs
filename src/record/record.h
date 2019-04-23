@@ -7,7 +7,7 @@
 #ifndef RECORD_H
 #define RECORD_H
 
-#include "../common/types.h"
+#include "common/types.h"
 
 bool krecord_start_recording(const char *const filename, const uint width, const uint height, const uint frameRate, const bool linearFrameInsertion = true);
 

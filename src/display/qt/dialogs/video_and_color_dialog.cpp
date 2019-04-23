@@ -10,12 +10,12 @@
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QDebug>
-#include "../../../display/qt/dialogs/video_and_color_dialog.h"
-#include "../../../display/qt/persistent_settings.h"
-#include "../../../display/qt/utility.h"
-#include "../../../display/display.h"
-#include "../../../capture/capture.h"
-#include "../../../common/disk.h"
+#include "display/qt/dialogs/video_and_color_dialog.h"
+#include "display/qt/persistent_settings.h"
+#include "display/qt/utility.h"
+#include "display/display.h"
+#include "capture/capture.h"
+#include "common/disk.h"
 #include "ui_video_and_color_dialog.h"
 
 /*

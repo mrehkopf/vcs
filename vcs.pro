@@ -51,8 +51,10 @@ RCC_DIR = generated_files
 MOC_DIR = generated_files
 UI_DIR = generated_files
 
-INCLUDEPATH += $$PWD/src/display/qt/ \
+INCLUDEPATH += $$PWD/src/ \
                $$PWD/src/display/qt/subclasses/
+
+RESOURCES += src/display/qt/res.qrc
 
 SOURCES += \
     src/display/qt/windows/output_window.cpp \
@@ -133,6 +135,3 @@ QMAKE_CXXFLAGS += -pipe
 QMAKE_CXXFLAGS += -pedantic
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
-
-RESOURCES += \
-    src/display/qt/res.qrc

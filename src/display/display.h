@@ -15,7 +15,7 @@
 #define DISPLAY_H
 
 #include <string>
-#include "../../common/types.h"
+#include "common/types.h"
 
 struct log_entry_s;
 struct mode_alias_s;

@@ -7,9 +7,9 @@
 #ifndef CAPTURE_TEST_H
 #define CAPTURE_TEST_H
 
-#include "../../src/common/types.h"
+#include "common/types.h"
 #ifndef USE_RGBEASY_API
-    #include "../../src/capture/null_rgbeasy.h"
+    #include "capture/null_rgbeasy.h"
 #endif
 
 // Helper functions to directly manipulate certain program-side capture

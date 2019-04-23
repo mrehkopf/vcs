@@ -10,11 +10,11 @@
 #include <QGuiApplication>
 #include <QTreeWidget>
 #include <vector>
-#include "../../../display/qt/subclasses/QTreeWidget_filter_list.h"
-#include "../../../display/qt/dialogs/filter_dialogs.h"
-#include "../../../display/qt/utility.h"
-#include "../../../filter/filter.h"
-#include "../../../common/memory.h"
+#include "display/qt/subclasses/QTreeWidget_filter_list.h"
+#include "display/qt/dialogs/filter_dialogs.h"
+#include "display/qt/utility.h"
+#include "filter/filter.h"
+#include "common/memory.h"
 
 FilterListTreeWidget::FilterListTreeWidget(QWidget *parent) : QTreeWidget(parent)
 {

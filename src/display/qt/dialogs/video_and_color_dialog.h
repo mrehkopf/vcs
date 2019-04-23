@@ -9,10 +9,10 @@
 
 #include <QDialog>
 
-struct resolution_s;
-struct capture_signal_s;
 struct capture_video_settings_s;
 struct capture_color_settings_s;
+struct capture_signal_s;
+struct resolution_s;
 
 class QGroupBox;
 class QMenuBar;

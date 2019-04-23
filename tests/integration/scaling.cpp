@@ -12,10 +12,10 @@
  */
 
 #include "scaling.h"
-#include "src/capture/capture.h"
-#include "src/scaler/scaler.h"
-#include "src/filter/filter.h"
-#include "src/common/globals.h"
+#include "capture/capture.h"
+#include "scaler/scaler.h"
+#include "filter/filter.h"
+#include "common/globals.h"
 
 static const char ASPECT_TO_TEST[] = "Scaling";
 

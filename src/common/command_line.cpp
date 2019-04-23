@@ -5,7 +5,7 @@
  */
 
 #include <unistd.h>
-#include "../common/globals.h"
+#include "common/globals.h"
 
 /*
  * TODOS:

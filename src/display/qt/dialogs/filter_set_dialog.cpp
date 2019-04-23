@@ -9,14 +9,14 @@
 
 #include <QTreeWidgetItem>
 #include <QPushButton>
-#include "../../../display/qt/dialogs/filter_set_dialog.h"
-#include "../../../display/qt/dialogs/filter_dialogs.h"
-#include "../../../display/qt/persistent_settings.h"
-#include "../../../display/qt/utility.h"
-#include "../../../common/globals.h"
-#include "../../../scaler/scaler.h"
-#include "../../../common/memory.h"
-#include "../../../display/qt/utility.h"
+#include "display/qt/dialogs/filter_set_dialog.h"
+#include "display/qt/dialogs/filter_dialogs.h"
+#include "display/qt/persistent_settings.h"
+#include "display/qt/utility.h"
+#include "common/globals.h"
+#include "scaler/scaler.h"
+#include "common/memory.h"
+#include "display/qt/utility.h"
 #include "ui_filter_set_dialog.h"
 
 // Takes in the filter set for which we'll set the parameters.

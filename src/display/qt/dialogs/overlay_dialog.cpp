@@ -13,12 +13,12 @@
 #include <QPainter>
 #include <QDebug>
 #include <QMenu>
-#include "../../../display/qt/dialogs/overlay_dialog.h"
-#include "../../../display/qt/windows/output_window.h"
-#include "../../../display/qt/persistent_settings.h"
-#include "../../../display/qt/utility.h"
-#include "../../../display/display.h"
-#include "../../../capture/capture.h"
+#include "display/qt/dialogs/overlay_dialog.h"
+#include "display/qt/windows/output_window.h"
+#include "display/qt/persistent_settings.h"
+#include "display/qt/utility.h"
+#include "display/display.h"
+#include "capture/capture.h"
 #include "ui_overlay_dialog.h"
 
 static MainWindow *MAIN_WIN = nullptr;

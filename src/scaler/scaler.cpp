@@ -8,15 +8,15 @@
 
 #include <algorithm>
 #include <vector>
-#include "../filter/anti_tear.h"
-#include "../capture/capture.h"
-#include "../display/display.h"
-#include "../common/memory.h"
-#include "../common/propagate.h"
-#include "../common/globals.h"
-#include "../filter/filter.h"
-#include "../record/record.h"
-#include "../scaler/scaler.h"
+#include "filter/anti_tear.h"
+#include "common/propagate.h"
+#include "capture/capture.h"
+#include "display/display.h"
+#include "common/globals.h"
+#include "common/memory.h"
+#include "filter/filter.h"
+#include "record/record.h"
+#include "scaler/scaler.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/imgproc/imgproc.hpp>

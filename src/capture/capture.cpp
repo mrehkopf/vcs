@@ -9,13 +9,13 @@
 #include <atomic>
 #include <mutex>
 #include <cmath>
-#include "../common/command_line.h"
-#include "../common/propagate.h"
-#include "../display/display.h"
-#include "../common/globals.h"
-#include "../capture/alias.h"
-#include "../common/disk.h"
-#include "capture.h"
+#include "common/command_line.h"
+#include "common/propagate.h"
+#include "capture/capture.h"
+#include "display/display.h"
+#include "common/globals.h"
+#include "capture/alias.h"
+#include "common/disk.h"
 
 // All local RGBEASY API callbacks lock this for their duration.
 std::mutex INPUT_OUTPUT_MUTEX;

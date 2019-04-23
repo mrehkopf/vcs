@@ -9,9 +9,9 @@
 #include <thread>
 #include <deque>
 #include <stdarg.h>
-#include "../display/display.h"
-#include "../common/globals.h"
-#include "log.h"
+#include "display/display.h"
+#include "common/globals.h"
+#include "common/log.h"
 
 // Set to false to ignore any log events submitted.
 static bool LOGGING_ENABLED = true;

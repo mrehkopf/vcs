@@ -7,7 +7,7 @@
 #ifndef SCALER_H
 #define SCALER_H
 
-#include "../common/globals.h"
+#include "common/globals.h"
 
 struct captured_frame_s;
 

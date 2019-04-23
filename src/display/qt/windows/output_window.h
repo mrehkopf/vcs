@@ -8,8 +8,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "../../../display/display.h"
-#include "../../../common/globals.h"
+#include "display/display.h"
+#include "common/globals.h"
 
 class OverlayDialog;
 class ControlPanel;

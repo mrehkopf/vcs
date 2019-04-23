@@ -1,7 +1,7 @@
 #ifndef CAPTURE_ALIAS_H
 #define CAPTURE_ALIAS_H
 
-#include "../../display/display.h"
+#include "display/display.h"
 
 struct mode_alias_s
 {

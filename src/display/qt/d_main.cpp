@@ -10,12 +10,12 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <assert.h>
-#include "../../display/qt/windows/output_window.h"
-#include "../../capture/capture.h"
-#include "../../capture/alias.h"
-#include "../../common/globals.h"
-#include "../../filter/filter.h"
-#include "../../common/log.h"
+#include "display/qt/windows/output_window.h"
+#include "capture/capture.h"
+#include "common/globals.h"
+#include "filter/filter.h"
+#include "capture/alias.h"
+#include "common/log.h"
 
 // Qt wants a QApplication object around for the GUI to function.
 namespace app_n

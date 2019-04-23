@@ -8,12 +8,12 @@
  *
  */
 
-#include "../filter/anti_tear.h"
-#include "../display/display.h"
-#include "../capture/capture.h"
-#include "../common/globals.h"
-#include "../common/memory.h"
-#include "../common/csv.h"
+#include "filter/anti_tear.h"
+#include "display/display.h"
+#include "capture/capture.h"
+#include "common/globals.h"
+#include "common/memory.h"
+#include "common/csv.h"
 
 /*
  * TODOS:

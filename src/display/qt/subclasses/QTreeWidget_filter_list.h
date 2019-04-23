@@ -8,7 +8,7 @@
 #define FILTER_LIST_TREE_WIDGET_H
 
 #include <QTreeWidget>
-#include "../../../common/types.h"
+#include "common/types.h"
 
 struct filter_s;
 

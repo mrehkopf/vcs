@@ -8,11 +8,11 @@
 #define CAPTURE_H
 
 #include <vector>
-#include "../../display/display.h"
-#include "../../scaler/scaler.h"
-#include "../../common/memory.h"
-#include "../../common/globals.h"
-#include "../../common/types.h"
+#include "display/display.h"
+#include "common/globals.h"
+#include "scaler/scaler.h"
+#include "common/memory.h"
+#include "common/types.h"
 
 #if USE_RGBEASY_API
     #include <windows.h>
