@@ -79,7 +79,7 @@ void kd_spin_event_loop(void);
 // wrong while initializing a non-GUI part of VCS).
 void kd_show_headless_info_message(const char *const title, const char *const msg);
 void kd_show_headless_error_message(const char *const title, const char *const msg);
-void kd_show_headless_assert_error_message(const char *const msg);
+void kd_show_headless_assert_error_message(const char *const msg, const char * const filename, const uint lineNum);
 
 // A new log entry has occurred. If the GUI has a means to display VCS's log
 // entries, add the given entry to it.

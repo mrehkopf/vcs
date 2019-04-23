@@ -41,8 +41,7 @@ static void cleanup_all(void)
     // Call this last.
     kmem_deallocate_memory_cache();
 
-    INFO(("Cleanup is done."));
-    INFO(("Ready for exit."));
+    INFO(("Cleanup is done. Ready to exit."));
     return;
 }
 
@@ -127,14 +126,26 @@ static capture_event_e process_next_capture_event(void)
 #ifndef VALIDATION_RUN
 int main(int argc, char *argv[])
 {
-    printf("VCS %s\n", PROGRAM_VERSION_STRING);
-    printf("---------+\n");
+    printf("VCS %s\n---------+\n", PROGRAM_VERSION_STRING);
+
+    // We want to be sure that the capture hardware is released in a controlled
+    // manner, if possible, in the event of a runtime failure. (Not releasing the
+    // hardware on program termination may cause a degradation in its subsequent
+    // performance until the computer is rebooted.)
+    std::set_terminate([]
+    {
+        NBENE(("VCS has encountered a runtime error and has decided that it's best "
+               "to close down."));
+
+        PROGRAM_EXIT_REQUESTED = true;
+        cleanup_all();
+    });
 
     INFO(("Parsing the command line."));
     if (!kcom_parse_command_line(argc, argv))
     {
         NBENE(("Command line parse failed. Exiting."));
-        goto done;
+        return 1;
     }
 
     INFO(("Initializing the program."));
@@ -146,6 +157,9 @@ int main(int argc, char *argv[])
                                        "\n\nMore information will have been printed into "
                                        "the console. If a console window was not already "
                                        "open, run VCS again from the command line.");
+
+        cleanup_all();
+        return 1;
     }
     else
     {
@@ -153,30 +167,17 @@ int main(int argc, char *argv[])
     }
 
     INFO(("Entering the main loop."));
-    try
+    while (!PROGRAM_EXIT_REQUESTED)
     {
-        while (!PROGRAM_EXIT_REQUESTED)
-        {
-            process_next_capture_event();
-            kd_spin_event_loop();
+        process_next_capture_event();
+        kd_spin_event_loop();
 
-            #if !USE_RGBEASY_API
-                // Reduce needless CPU use while debugging, etc.
-                std::this_thread::sleep_for(std::chrono::milliseconds(16));
-            #endif
-        }
-    }
-    catch (std::exception &e)
-    {
-        char excStr[2048];
-        snprintf(excStr, NUM_ELEMENTS(excStr), "VCS has encountered a runtime error and has decided "
-                                               "that it's best to close down. The following error was "
-                                               "encountered: '%s'", e.what());
-        NBENE(("%s", excStr));
+        #if !USE_RGBEASY_API
+            // Reduce needless CPU use while debugging, etc.
+            std::this_thread::sleep_for(std::chrono::milliseconds(16));
+        #endif
     }
 
-    done:
-    PROGRAM_EXIT_REQUESTED = true;  // In case we got here through an exception or the like.
     cleanup_all();
     return 0;
 }

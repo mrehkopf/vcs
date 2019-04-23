@@ -258,21 +258,26 @@ void kd_show_headless_error_message(const char *const title,
 
     return;
 }
-void kd_show_headless_assert_error_message(const char *const msg)
+void kd_show_headless_assert_error_message(const char *const msg,
+                                           const char *const filename,
+                                           const uint lineNum)
 {
     QMessageBox mb;
     mb.setWindowTitle("VCS Assertion Error");
-    mb.setText("VCS has come across an unexpected condition in its code. As a precaution, "
-               "the program will shut itself down now.\n\nThe following additional information "
-               "was provided:\n\"" + QString(msg) + "\"\n\nFurther diagnostics should appear "
-               "in the console window once VCS has terminated.");
+    mb.setText("<html>"
+               "VCS has come across an unexpected condition in its code. As a precaution, "
+               "the program will shut itself down now.<br><br>"
+               "<b>Error:</b> " + QString(msg) + "<br>"
+               "<b>In file:</b> " + QString(filename) + "<br>"
+               "<b>On line:</b> " + QString::number(lineNum) +
+               "</html>");
     mb.setStandardButtons(QMessageBox::Ok);
     mb.setIcon(QMessageBox::Critical);
     mb.setDefaultButton(QMessageBox::Ok);
 
     mb.exec();
 
-    NBENE(("%s", msg));
+    NBENE(("%s %s %d", msg, filename, lineNum));
 
     return;
 }

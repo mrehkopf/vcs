@@ -39,8 +39,8 @@ const u32 FILTER_DATA_LENGTH = 16;          // How many bytes are allocated for 
 
 #define k_assert(condition, error_string)   if (!(condition))\
                                             {\
-                                                kd_show_headless_assert_error_message(error_string);\
-                                                NBENE(("Assertion failure in %s {%d}: '%s'", __FILE__, __LINE__, error_string));\
+                                                kd_show_headless_assert_error_message(error_string, __FILE__, __LINE__);\
+                                                NBENE(("Assertion failure in %s {%d}: \"%s\"", __FILE__, __LINE__, error_string));\
                                                 throw std::runtime_error(error_string);\
                                             }
 

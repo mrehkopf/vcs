@@ -83,7 +83,7 @@ struct heap_bytes_s
     {
         if (data == nullptr)
         {
-            DEBUG(("Was called to release a null memory object. Ignoring this."));
+            DEBUG(("Was asked to release a null pointer in the memory cache. Ignoring this."));
             return;
         }
 
