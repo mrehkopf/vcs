@@ -189,7 +189,7 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
             // Miscellaneous.
             ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
             ui->comboBox_customInterfaceStyling->setCurrentIndex(
-                        combobox_idx_of_string(ui->comboBox_customInterfaceStyling, kpers_value_of(INI_GROUP_APP, "custom_styling", "Disabled").toString()));
+                        combobox_idx_of_string(ui->comboBox_customInterfaceStyling, kpers_value_of(INI_GROUP_APP, "custom_styling", "Grayscale").toString()));
         }
     }
 
