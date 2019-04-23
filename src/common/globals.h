@@ -18,7 +18,7 @@
 #include <stdexcept>
 
 const char PROGRAM_NAME[] = "\"VCS\" by Tarpeeksi Hyvae Soft";
-const char PROGRAM_VERSION_STRING[] = "1.3.6";
+const char PROGRAM_VERSION_STRING[] = "1.4.1";
 
 const uint MAX_INPUT_CHANNELS = 2;  // For now, we only support up to two input channels.
 const uint MAX_FRAME_SKIP = 4;
