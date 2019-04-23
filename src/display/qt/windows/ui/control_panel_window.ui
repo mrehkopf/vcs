@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>578</width>
-    <height>329</height>
+    <width>576</width>
+    <height>336</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1160,7 +1160,7 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>281</width>
+                    <width>280</width>
                     <height>299</height>
                    </rect>
                   </property>
@@ -1902,8 +1902,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>542</width>
-            <height>554</height>
+            <width>540</width>
+            <height>555</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1946,7 +1946,7 @@
               <item>
                <widget class="QLabel" name="label_17">
                 <property name="text">
-                 <string>A third-party capture utility for certain Datapath capture cards. Neither associated with nor endorsed by Datapath. Copyright (c) 2017-2019 Tarpeeksi Hyvae Soft et al.
+                 <string>A third-party capture utility for certain Datapath capture cards. Neither associated with nor endorsed by Datapath. Copyright (c) 2017-2019 Tarpeeksi Hyvae Soft.
 
 VCS interfaces with the Qt framework, copyright (c) The Qt Company; the RGBEasy API, copyright (c) Datapath Ltd; and the OpenCV library, copyright (c) OpenCV team. Find out more in the VCS readme.</string>
                 </property>
@@ -1960,37 +1960,32 @@ VCS interfaces with the Qt framework, copyright (c) The Qt Company; the RGBEasy 
               </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_26">
-                <property name="sizeConstraint">
-                 <enum>QLayout::SetDefaultConstraint</enum>
-                </property>
                 <item>
-                 <widget class="QCheckBox" name="checkBox_customStylingEnabled">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
+                 <widget class="QLabel" name="label_4">
                   <property name="text">
-                   <string>Custom interface styling</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
+                   <string>Custom interface styling:</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="horizontalSpacer_2">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
+                 <widget class="QComboBox" name="comboBox_customInterfaceStyling">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
                   </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>9000</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
+                  <item>
+                   <property name="text">
+                    <string>Disabled</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Grayscale</string>
+                   </property>
+                  </item>
+                 </widget>
                 </item>
                </layout>
               </item>

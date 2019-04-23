@@ -168,12 +168,10 @@ int main(int argc, char *argv[])
     }
     catch (std::exception &e)
     {
-        char excStr[256];
-        snprintf(excStr, NUM_ELEMENTS(excStr), "VCS has encountered a runtime error, and has decided "
-                                               "that it's best to close down."
-                                               "\n\nThe following error was caught:\n\"%s\"", e.what());
-
-        kd_show_headless_error_message("Exception caught", excStr);
+        char excStr[2048];
+        snprintf(excStr, NUM_ELEMENTS(excStr), "VCS has encountered a runtime error and has decided "
+                                               "that it's best to close down. The following error was "
+                                               "encountered: '%s'", e.what());
         NBENE(("%s", excStr));
     }
 

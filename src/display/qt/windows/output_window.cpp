@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
     controlPanel = new ControlPanel(this);
     overlayDlg = new OverlayDialog(this);
 
-    if (controlPanel->custom_program_styling_enabled())
+    if (controlPanel && controlPanel->custom_program_styling_enabled())
     {
         apply_programwide_styling(":/res/stylesheets/appstyle-gray.qss");
     }

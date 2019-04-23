@@ -188,7 +188,8 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
             // Miscellaneous.
             ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
-            ui->checkBox_customStylingEnabled->setChecked(kpers_value_of(INI_GROUP_APP, "use_custom_styling", true).toBool());
+            ui->comboBox_customInterfaceStyling->setCurrentIndex(
+                        combobox_idx_of_string(ui->comboBox_customInterfaceStyling, kpers_value_of(INI_GROUP_APP, "custom_styling", "Disabled").toString()));
         }
     }
 
@@ -210,7 +211,7 @@ ControlPanel::~ControlPanel()
         kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", ui->checkBox_outputAntiTear->isChecked());
         kpers_set_value(INI_GROUP_CONTROL_PANEL, "tab", ui->tabWidget->currentIndex());
         kpers_set_value(INI_GROUP_GEOMETRY, "control_panel", size());
-        kpers_set_value(INI_GROUP_APP, "use_custom_styling", ui->checkBox_customStylingEnabled->isChecked());
+        kpers_set_value(INI_GROUP_APP, "custom_styling", ui->comboBox_customInterfaceStyling->currentText());
 
         // Output tab.
         kpers_set_value(INI_GROUP_OUTPUT, "upscaler", ui->comboBox_outputUpscaleFilter->currentText());
@@ -321,7 +322,7 @@ void ControlPanel::closeEvent(QCloseEvent *event)
 // Resize the tab widget's tabs so that together they span the tab bar's entire width.
 void ControlPanel::update_tab_widths(void)
 {
-    if (ui->checkBox_customStylingEnabled->isChecked())
+    if (custom_program_styling_enabled())
     {
         const uint tabWidth = (ui->tabWidget->width() / ui->tabWidget->count());
         const uint lastTabWidth = (ui->tabWidget->width() - (tabWidth * (ui->tabWidget->count() - 1)));
@@ -338,7 +339,7 @@ void ControlPanel::update_tab_widths(void)
 
 bool ControlPanel::custom_program_styling_enabled(void)
 {
-    return ui->checkBox_customStylingEnabled->isChecked();
+    return (ui->comboBox_customInterfaceStyling->currentText().toLower() != "disabled");
 }
 
 void ControlPanel::notify_of_new_alias(const mode_alias_s a)
@@ -1479,19 +1480,28 @@ void ControlPanel::on_comboBox_outputAspectMode_currentIndexChanged(const QStrin
     return;
 }
 
-void ControlPanel::on_checkBox_customStylingEnabled_toggled(bool checked)
+// Receive instructions from the user on which custom GUI styling to use.
+/// TODO: There would ideally be a non-hardcoded way to handle styles; and to
+/// allow the user to add their own styles without having to recompile the app.
+void ControlPanel::on_comboBox_customInterfaceStyling_currentIndexChanged(const QString &styleName)
 {
-    if (checked)
+    QString styleFileName;
+
+    if (styleName == "Disabled")
     {
-        /// TODO: There should be a mechanism by which the user can select which
-        /// stylesheet to apply.
-        MAIN_WIN->apply_programwide_styling(":/res/stylesheets/appstyle-gray.qss");
+        // Remove all custom styling.
+        styleFileName = "";
+    }
+    else if (styleName == "Grayscale")
+    {
+        styleFileName = ":/res/stylesheets/appstyle-gray.qss";
     }
     else
     {
-        // Remove all custom styling.
-        MAIN_WIN->apply_programwide_styling("");
+        k_assert(0, "Unknown custom interface style name.");
     }
+
+    MAIN_WIN->apply_programwide_styling(styleFileName);
 
     update_tab_widths();
 

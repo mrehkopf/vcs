@@ -151,7 +151,7 @@ private slots:
 
     void on_comboBox_outputAspectMode_currentIndexChanged(const QString &arg1);
 
-    void on_checkBox_customStylingEnabled_toggled(bool checked);
+    void on_comboBox_customInterfaceStyling_currentIndexChanged(const QString &styleName);
 
 private:
     void closeEvent(QCloseEvent *event);
