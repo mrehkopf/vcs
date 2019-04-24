@@ -211,18 +211,21 @@ void FilterSetDialog::on_checkBox_activeOut_toggled(bool checked)
 void FilterSetDialog::apply_current_settings(void)
 {
     *filterSet = make_filter_set_from_current_state();
+
     return;
 }
 
 void FilterSetDialog::on_pushButton_ok_clicked()
 {
     apply_current_settings();
+
     done(1);
 }
 
 void FilterSetDialog::on_pushButton_cancel_clicked()
 {
     *filterSet = backupFilterSet;
+
     done(0);
 }
 

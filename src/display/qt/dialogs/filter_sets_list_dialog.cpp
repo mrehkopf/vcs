@@ -389,6 +389,9 @@ void FilterSetsListDialog::on_treeWidget_setList_itemChanged(QTreeWidgetItem *it
 
 void FilterSetsListDialog::on_pushButton_remove_clicked()
 {
+    k_assert((ui->treeWidget_setList->selectionMode() == QAbstractItemView::SingleSelection),
+             "Expected the tree widget's selection mode to be for single items.");
+
     const auto selectedItems = ui->treeWidget_setList->selectedItems();
     if (selectedItems.empty()) return;
 
@@ -433,6 +436,9 @@ void FilterSetsListDialog::move_item_vertically(const QTreeWidgetItem *const ite
 
 void FilterSetsListDialog::on_pushButton_up_clicked()
 {
+    k_assert((ui->treeWidget_setList->selectionMode() == QAbstractItemView::SingleSelection),
+             "Expected the tree widget's selection mode to be for single items.");
+
     const auto selectedItems = ui->treeWidget_setList->selectedItems();
     if (selectedItems.empty()) return;
 
@@ -443,6 +449,9 @@ void FilterSetsListDialog::on_pushButton_up_clicked()
 
 void FilterSetsListDialog::on_pushButton_down_clicked()
 {
+    k_assert((ui->treeWidget_setList->selectionMode() == QAbstractItemView::SingleSelection),
+             "Expected the tree widget's selection mode to be for single items.");
+
     const auto selectedItems = ui->treeWidget_setList->selectedItems();
     if (selectedItems.empty()) return;
 
@@ -453,6 +462,9 @@ void FilterSetsListDialog::on_pushButton_down_clicked()
 
 void FilterSetsListDialog::on_pushButton_editSelected_clicked()
 {
+    k_assert((ui->treeWidget_setList->selectionMode() == QAbstractItemView::ContiguousSelection),
+             "Expected the tree widget's selection mode to be for single items.");
+
     const auto selectedItems = ui->treeWidget_setList->selectedItems();
     if (selectedItems.empty()) return;
 

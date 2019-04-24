@@ -76,18 +76,18 @@ std::vector<filter_s> FilterListTreeWidget::filters(void)
     std::vector<filter_s> filterList;
 
     const auto items = this->findItems("*", Qt::MatchWildcard);
-    for (int i = 0; i < items.count(); i++)
+    for (auto *item: items)
     {
         filter_s f;
 
-        f.name = items.at(0)->text(0).toStdString();
+        f.name = item->text(0).toStdString();
         if (!kf_named_filter_exists(f.name))
         {
             NBENE(("Was asked to access a filter that doesn't exist. Ignoring this."));
             continue;
         }
 
-        memcpy(f.data, filterData[items.at(0)], FILTER_DATA_LENGTH);
+        memcpy(f.data, filterData[item], FILTER_DATA_LENGTH);
 
         filterList.push_back(f);
     }
