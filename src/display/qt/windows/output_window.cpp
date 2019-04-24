@@ -699,14 +699,6 @@ QString MainWindow::GetString_DroppingFrames()
     return controlPanel->GetString_DroppingFrames();
 }
 
-void MainWindow::signal_that_overlay_is_enabled(const bool enabled)
-{
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->set_overlay_indicator_checked(enabled);
-
-    return;
-}
-
 void MainWindow::show_overlay_dialog()
 {
     k_assert(overlayDlg != nullptr, "");

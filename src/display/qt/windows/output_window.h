@@ -74,8 +74,6 @@ public:
 
     void show_overlay_dialog();
 
-    void signal_that_overlay_is_enabled(const bool enabled);
-
     void measure_framerate();
 
     void signal_new_mode_settings_source_file(const std::__cxx11::string &filename);

@@ -39,4 +39,4 @@ private:
     bool apply_x264_registry_settings();
 };
 
-#endif // CONTROL_PANEL_RECORD_WIDGET_H
+#endif

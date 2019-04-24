@@ -16,6 +16,7 @@
 #include <QFile>
 #include <assert.h>
 #include "display/qt/widgets/control_panel_record_widget.h"
+#include "display/qt/widgets/control_panel_output_widget.h"
 #include "display/qt/widgets/control_panel_about_widget.h"
 #include "display/qt/dialogs/filter_sets_list_dialog.h"
 #include "display/qt/dialogs/video_and_color_dialog.h"
@@ -76,25 +77,78 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
         });
     }
 
+    // Set up the contents of the 'Output' tab.
+    {
+        outputWidget = new ControlPanelOutputWidget;
+        ui->tab_output->layout()->addWidget(outputWidget);
+
+        connect(outputWidget, &ControlPanelOutputWidget::open_antitear_dialog,
+                        this, [this]
+        {
+            this->open_antitear_dialog();
+        });
+
+        connect(outputWidget, &ControlPanelOutputWidget::open_filter_sets_dialog,
+                        this, [this]
+        {
+            this->open_filter_sets_dialog();
+        });
+
+        connect(outputWidget, &ControlPanelOutputWidget::open_overlay_dialog,
+                        this, [this]
+        {
+            k_assert(MAIN_WIN != nullptr, "");
+            MAIN_WIN->show_overlay_dialog();
+        });
+
+        connect(outputWidget, &ControlPanelOutputWidget::set_filtering_enabled,
+                        this, [this](const bool state)
+        {
+            kf_set_filtering_enabled(state);
+
+            k_assert(filterSetsDlg != nullptr, "");
+            filterSetsDlg->signal_filtering_enabled(state);
+        });
+
+        connect(outputWidget, &ControlPanelOutputWidget::set_renderer,
+                        this, [this](const QString &rendererName)
+        {
+            if (rendererName == "Software")
+            {
+                INFO(("Renderer: software."));
+                MAIN_WIN->set_opengl_enabled(false);
+            }
+            else if (rendererName == "OpenGL")
+            {
+                INFO(("Renderer: OpenGL."));
+                MAIN_WIN->set_opengl_enabled(true);
+            }
+            else
+            {
+                k_assert(0, "Unknown renderer type.");
+            }
+        });
+    }
+
     // Set up the contents of the 'Record' tab.
     {
         recordWidget = new ControlPanelRecordWidget;
         ui->tab_record->layout()->addWidget(recordWidget);
 
         connect(recordWidget, &ControlPanelRecordWidget::set_output_size_controls_enabled,
-                       this, [this](const bool state)
+                        this, [this](const bool state)
         {
-            ui->frame_outputOverrides->setEnabled(state);
+            outputWidget->set_output_size_controls_enabled(state);
         });
 
         connect(recordWidget, &ControlPanelRecordWidget::update_output_window_title,
-                       this, [this]
+                        this, [this]
         {
             MAIN_WIN->update_window_title();
         });
 
         connect(recordWidget, &ControlPanelRecordWidget::update_output_window_size,
-                       this, [this]
+                        this, [this]
         {
             MAIN_WIN->update_window_size();
         });
@@ -103,61 +157,21 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
     update_stylesheet(MAIN_WIN->styleSheet());
 
     connect_capture_resolution_buttons();
-    fill_output_scaling_filter_comboboxes();
     fill_capture_channel_combobox();
     reset_capture_bit_depth_combobox();
 
     // Adjust sundry GUI controls to their proper values.
     {
-        ui->spinBox_outputResX->setMinimum(MIN_OUTPUT_WIDTH);
-        ui->spinBox_outputResY->setMinimum(MIN_OUTPUT_HEIGHT);
-        ui->spinBox_outputResX->setMaximum(MAX_OUTPUT_WIDTH);
-        ui->spinBox_outputResY->setMaximum(MAX_OUTPUT_HEIGHT);
-
         ui->treeWidget_logList->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
         // Restore persistent settings.
         {
-            const auto combobox_idx_of_string = [](const QComboBox *const box, const QString &string)
-            {
-                int idx = box->findText(string, Qt::MatchExactly);
-                if (idx == -1)
-                {
-                    NBENE(("Unable to find a combo-box item called '%s'. Defaulting to the box's first entry.",
-                           string.toStdString().c_str()));
-
-                    idx = 0;
-                }
-
-                return idx;
-            };
-
             // Control panel.
             this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "control_panel", size()).toSize());
             ui->tabWidget->setCurrentIndex(kpers_value_of(INI_GROUP_CONTROL_PANEL, "tab", 0).toUInt());
 
             // Log tab.
             ui->checkBox_logEnabled->setChecked(kpers_value_of(INI_GROUP_LOG, "enabled", 1).toBool());
-
-            // Output tab.
-            ui->comboBox_outputUpscaleFilter->setCurrentIndex(
-                        combobox_idx_of_string(ui->comboBox_outputUpscaleFilter, kpers_value_of(INI_GROUP_OUTPUT, "upscaler", "Linear").toString()));
-            ui->comboBox_outputDownscaleFilter->setCurrentIndex(
-                        combobox_idx_of_string(ui->comboBox_outputDownscaleFilter, kpers_value_of(INI_GROUP_OUTPUT, "downscaler", "Linear").toString()));
-            ui->checkBox_customFiltering->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", 0).toBool());
-            ui->checkBox_outputKeepAspectRatio->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "keep_aspect", true).toBool());
-            ui->comboBox_outputAspectMode->setCurrentIndex(
-                        combobox_idx_of_string(ui->comboBox_outputAspectMode, kpers_value_of(INI_GROUP_OUTPUT, "aspect_mode", "Native").toString()));
-            ui->checkBox_forceOutputRes->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_output_size", false).toBool());
-            ui->spinBox_outputResX->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().width());
-            ui->spinBox_outputResY->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().height());
-            ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_relative_scale", false).toBool());
-            ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
-            ui->comboBox_renderer->setCurrentIndex(
-                        combobox_idx_of_string(ui->comboBox_renderer, kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString()));
-
-            // Miscellaneous.
-            ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
         }
     }
 
@@ -176,21 +190,8 @@ ControlPanel::~ControlPanel()
     {
         // Miscellaneous.
         kpers_set_value(INI_GROUP_LOG, "enabled", ui->checkBox_logEnabled->isChecked());
-        kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", ui->checkBox_outputAntiTear->isChecked());
         kpers_set_value(INI_GROUP_CONTROL_PANEL, "tab", ui->tabWidget->currentIndex());
         kpers_set_value(INI_GROUP_GEOMETRY, "control_panel", size());
-
-        // Output tab.
-        kpers_set_value(INI_GROUP_OUTPUT, "upscaler", ui->comboBox_outputUpscaleFilter->currentText());
-        kpers_set_value(INI_GROUP_OUTPUT, "downscaler", ui->comboBox_outputDownscaleFilter->currentText());
-        kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", ui->checkBox_customFiltering->isChecked());
-        kpers_set_value(INI_GROUP_OUTPUT, "keep_aspect", ui->checkBox_outputKeepAspectRatio->isChecked());
-        kpers_set_value(INI_GROUP_OUTPUT, "aspect_mode", ui->comboBox_outputAspectMode->currentText());
-        kpers_set_value(INI_GROUP_OUTPUT, "force_output_size", ui->checkBox_forceOutputRes->isChecked());
-        kpers_set_value(INI_GROUP_OUTPUT, "output_size", QSize(ui->spinBox_outputResX->value(), ui->spinBox_outputResY->value()));
-        kpers_set_value(INI_GROUP_OUTPUT, "force_relative_scale", ui->checkBox_forceOutputScale->isChecked());
-        kpers_set_value(INI_GROUP_OUTPUT, "relative_scale", ui->spinBox_outputScale->value());
-        kpers_set_value(INI_GROUP_OUTPUT, "renderer", ui->comboBox_renderer->currentText());
     }
 
     delete ui;
@@ -334,40 +335,10 @@ void ControlPanel::fill_capture_channel_combobox()
     return;
 }
 
-// Adds the names of the available scaling filters to the GUI's list.
-//
-void ControlPanel::fill_output_scaling_filter_comboboxes()
-{
-    const std::vector<std::string> filterNames = ks_list_of_scaling_filter_names();
-    k_assert(!filterNames.empty(), "Expected to receive a list of scaling filters, but got an empty list.");
-
-    block_widget_signals_c b1(ui->comboBox_outputUpscaleFilter);
-    block_widget_signals_c b2(ui->comboBox_outputDownscaleFilter);
-
-    ui->comboBox_outputUpscaleFilter->clear();
-    ui->comboBox_outputDownscaleFilter->clear();
-
-    for (const auto &name: filterNames)
-    {
-        ui->comboBox_outputUpscaleFilter->addItem(QString::fromStdString(name));
-        ui->comboBox_outputDownscaleFilter->addItem(QString::fromStdString(name));
-    }
-
-    return;
-}
-
 void ControlPanel::update_output_framerate(const uint fps,
                                            const bool hasMissedFrames)
 {
-    if (kc_no_signal())
-    {
-        DEBUG(("Was asked to update GUI output info while there was no signal."));
-    }
-    else
-    {
-        ui->label_outputFPS->setText((fps == 0)? "Unknown" : QString("%1").arg(fps));
-        ui->label_outputProcessTime->setText(hasMissedFrames? "Dropping frames" : "No problem");
-    }
+    outputWidget->update_output_framerate(fps, hasMissedFrames);
 
     return;
 }
@@ -385,8 +356,8 @@ void ControlPanel::set_capture_info_as_no_signal()
         ui->label_captInputSignal->setText("No signal");
     }
 
-    set_capture_controls_enabled(false);
-    set_output_controls_enabled(false);
+    set_input_controls_enabled(false);
+    outputWidget->set_output_info_enabled(false);
 
     k_assert(videocolorDlg != nullptr, "");
     videocolorDlg->set_controls_enabled(false);
@@ -396,8 +367,8 @@ void ControlPanel::set_capture_info_as_no_signal()
 
 void ControlPanel::set_capture_info_as_receiving_signal()
 {
-    set_capture_controls_enabled(true);
-    set_output_controls_enabled(true);
+    set_input_controls_enabled(true);
+    outputWidget->set_output_info_enabled(true);
 
     k_assert(videocolorDlg != nullptr, "");
     videocolorDlg->set_controls_enabled(true);
@@ -405,7 +376,7 @@ void ControlPanel::set_capture_info_as_receiving_signal()
     return;
 }
 
-void ControlPanel::set_capture_controls_enabled(const bool state)
+void ControlPanel::set_input_controls_enabled(const bool state)
 {
     ui->frame_inputForceButtons->setEnabled(state);
     ui->pushButton_inputAdjustVideoColor->setEnabled(state);
@@ -416,27 +387,9 @@ void ControlPanel::set_capture_controls_enabled(const bool state)
     return;
 }
 
-// Sets the output tab's control buttons etc. as enabled or disabled.
-//
-void ControlPanel::set_output_controls_enabled(const bool state)
-{
-    ui->label_outputFPS->setEnabled(state);
-    ui->label_outputProcessTime->setEnabled(state);
-
-    ui->label_outputFPS->setText("n/a");
-    ui->label_outputProcessTime->setText("n/a");
-
-    return;
-}
-
-// Signal to the control panel that it should update itself on the current output
-// resolution.
-//
 void ControlPanel::update_output_resolution_info(void)
 {
-    const resolution_s r = ks_output_resolution();
-
-    ui->label_outputResolution->setText(QString("%1 x %2").arg(r.w).arg(r.h));
+    outputWidget->update_output_resolution_info();
 
     return;
 }
@@ -502,11 +455,7 @@ void ControlPanel::update_capture_signal_info(void)
 
         ui->label_captInputSignal->setText(s.isDigital? "Digital" : "Analog");
 
-        if (!ui->checkBox_forceOutputRes->isChecked())
-        {
-            ui->spinBox_outputResX->setValue(s.r.w);
-            ui->spinBox_outputResY->setValue(s.r.h);
-        }
+        outputWidget->update_capture_signal_info();
     }
 
     return;
@@ -704,7 +653,7 @@ void ControlPanel::refresh_log_list_filtering()
 
 bool ControlPanel::is_overlay_enabled(void)
 {
-    return ui->checkBox_outputOverlayEnabled->isChecked();
+    return outputWidget->is_overlay_enabled();
 }
 
 // Adjusts the output scale value in the GUI by a pre-set step size in the given
@@ -713,27 +662,7 @@ bool ControlPanel::is_overlay_enabled(void)
 //
 void ControlPanel::adjust_output_scaling(const int dir)
 {
-    const int curValue = ui->spinBox_outputScale->value();
-    const int stepSize = ui->spinBox_outputScale->singleStep();
-
-    k_assert((dir == 1 || dir == -1),
-             "Expected the parameter for AdjustOutputScaleValue to be either 1 or -1.");
-
-    if (!ui->checkBox_forceOutputScale->isChecked())
-    {
-        ui->checkBox_forceOutputScale->setChecked(true);
-    }
-
-    ui->spinBox_outputScale->setValue(curValue + (stepSize * dir));
-
-    return;
-}
-
-void ControlPanel::set_overlay_indicator_checked(const bool checked)
-{
-    block_widget_signals_c b(ui->checkBox_outputOverlayEnabled);
-
-    ui->checkBox_outputOverlayEnabled->setChecked(checked);
+    outputWidget->adjust_output_scaling(dir);
 
     return;
 }
@@ -757,58 +686,6 @@ void ControlPanel::reset_capture_bit_depth_combobox()
     k_assert(0, "Failed to set up the GUI for the current capture bit depth.");
 
     done:
-    return;
-}
-
-void ControlPanel::on_checkBox_forceOutputScale_stateChanged(int arg1)
-{
-    const bool checked = (arg1 == Qt::Checked)? 1 : 0;
-
-    k_assert(arg1 != Qt::PartiallyChecked,
-             "Expected a two-state toggle for 'forceOutputScale'. It appears to have a third state.");
-
-    ui->spinBox_outputScale->setEnabled(checked);
-
-    if (checked)
-    {
-        const int s = ui->spinBox_outputScale->value();
-
-        ks_set_output_scaling(s / 100.0);
-    }
-    else
-    {
-        ui->spinBox_outputScale->setValue(100);
-    }
-
-    ks_set_output_scale_override_enabled(checked);
-
-    return;
-}
-
-void ControlPanel::on_checkBox_forceOutputRes_stateChanged(int arg1)
-{
-    const bool checked = (arg1 == Qt::Checked)? 1 : 0;
-
-    k_assert(arg1 != Qt::PartiallyChecked,
-             "Expected a two-state toggle for 'outputRes'. It appears to have a third state.");
-
-    ui->spinBox_outputResX->setEnabled(checked);
-    ui->spinBox_outputResY->setEnabled(checked);
-
-    ks_set_output_resolution_override_enabled(checked);
-
-    if (!checked)
-    {
-        resolution_s outr;
-        const resolution_s r = kc_hardware().status.capture_resolution();
-
-        ks_set_output_base_resolution(r, true);
-
-        outr = ks_output_base_resolution();
-        ui->spinBox_outputResX->setValue(outr.w);
-        ui->spinBox_outputResY->setValue(outr.h);
-    }
-
     return;
 }
 
@@ -842,40 +719,6 @@ void ControlPanel::on_comboBox_frameSkip_currentIndexChanged(const QString &arg1
     return;
 }
 
-void ControlPanel::on_comboBox_outputUpscaleFilter_currentIndexChanged(const QString &arg1)
-{
-    ks_set_upscaling_filter(arg1.toStdString());
-
-    return;
-}
-
-void ControlPanel::on_comboBox_outputDownscaleFilter_currentIndexChanged(const QString &arg1)
-{
-    ks_set_downscaling_filter(arg1.toStdString());
-
-    return;
-}
-
-void ControlPanel::on_comboBox_renderer_currentIndexChanged(const QString &arg1)
-{
-    if (arg1 == "Software")
-    {
-        INFO(("Renderer: software."));
-        MAIN_WIN->set_opengl_enabled(false);
-    }
-    else if (arg1 == "OpenGL")
-    {
-        INFO(("Renderer: OpenGL."));
-        MAIN_WIN->set_opengl_enabled(true);
-    }
-    else
-    {
-        k_assert(0, "Unknown renderer type.");
-    }
-
-    return;
-}
-
 void ControlPanel::on_checkBox_logEnabled_stateChanged(int arg1)
 {
     k_assert(arg1 != Qt::PartiallyChecked,
@@ -884,45 +727,6 @@ void ControlPanel::on_checkBox_logEnabled_stateChanged(int arg1)
     klog_set_logging_enabled(arg1);
 
     ui->treeWidget_logList->setEnabled(arg1);
-
-    return;
-}
-
-void ControlPanel::on_spinBox_outputScale_valueChanged(int)
-{
-    real scale = ui->spinBox_outputScale->value() / 100.0;
-
-    ks_set_output_scaling(scale);
-
-    return;
-}
-
-void ControlPanel::on_spinBox_outputResX_valueChanged(int)
-{
-    const resolution_s r = {(uint)ui->spinBox_outputResX->value(),
-                            (uint)ui->spinBox_outputResY->value(), 0};
-
-    if (!ui->checkBox_forceOutputRes->isChecked())
-    {
-        return;
-    }
-
-    ks_set_output_base_resolution(r, true);
-
-    return;
-}
-
-void ControlPanel::on_spinBox_outputResY_valueChanged(int)
-{
-    const resolution_s r = {(uint)ui->spinBox_outputResX->value(),
-                            (uint)ui->spinBox_outputResY->value(), 0};
-
-    if (!ui->checkBox_forceOutputRes->isChecked())
-    {
-        return;
-    }
-
-    ks_set_output_base_resolution(r, true);
 
     return;
 }
@@ -949,7 +753,7 @@ void ControlPanel::open_antitear_dialog(void)
 
 void ControlPanel::toggle_overlay(void)
 {
-    ui->checkBox_outputOverlayEnabled->toggle();
+    outputWidget->toggle_overlay();
 
     return;
 }
@@ -995,14 +799,6 @@ void ControlPanel::on_pushButton_inputAliases_clicked()
     return;
 }
 
-void ControlPanel::on_pushButton_editOverlay_clicked()
-{
-    k_assert(MAIN_WIN != nullptr, "");
-    MAIN_WIN->show_overlay_dialog();
-
-    return;
-}
-
 void ControlPanel::on_comboBox_bitDepth_currentIndexChanged(const QString &arg1)
 {
     u32 bpp = 0;
@@ -1035,47 +831,6 @@ void ControlPanel::on_comboBox_bitDepth_currentIndexChanged(const QString &arg1)
     return;
 }
 
-void ControlPanel::on_checkBox_outputAntiTear_stateChanged(int arg1)
-{
-    const bool checked = (arg1 == Qt::Checked)? 1 : 0;
-
-    k_assert(arg1 != Qt::PartiallyChecked,
-             "Expected a two-state toggle for 'outputAntiTear'. It appears to have a third state.");
-
-    kat_set_anti_tear_enabled(checked);
-
-    return;
-}
-
-void ControlPanel::on_pushButton_antiTearOptions_clicked()
-{
-    this->open_antitear_dialog();
-
-    return;
-}
-
-void ControlPanel::on_pushButton_configureFiltering_clicked()
-{
-    this->open_filter_sets_dialog();
-
-    return;
-}
-
-void ControlPanel::on_checkBox_customFiltering_stateChanged(int arg1)
-{
-    const bool checked = (arg1 == Qt::Checked)? 1 : 0;
-
-    k_assert(arg1 != Qt::PartiallyChecked,
-             "Expected a two-state toggle for 'customFiltering'. It appears to have a third state.");
-
-    kf_set_filtering_enabled(checked);
-
-    k_assert(filterSetsDlg != nullptr, "");
-    filterSetsDlg->signal_filtering_enabled(checked);
-
-    return;
-}
-
 void ControlPanel::on_checkBox_logInfo_toggled(bool)
 {
     refresh_log_list_filtering();
@@ -1097,11 +852,6 @@ void ControlPanel::on_checkBox_logErrors_toggled(bool)
     return;
 }
 
-QString ControlPanel::GetString_OutputResolution()
-{
-    return ui->label_outputResolution->text();
-}
-
 QString ControlPanel::GetString_InputResolution()
 {
     const resolution_s r = kc_hardware().status.capture_resolution();
@@ -1116,17 +866,22 @@ QString ControlPanel::GetString_InputRefreshRate()
 
 QString ControlPanel::GetString_OutputFrameRate()
 {
-    return ui->label_outputFPS->text();
+    return outputWidget->output_framerate_as_qstring();
 }
 
 QString ControlPanel::GetString_DroppingFrames()
 {
-    return ui->label_outputProcessTime->text();
+    return outputWidget->output_framedrop_as_qstring();
 }
 
 QString ControlPanel::GetString_OutputLatency()
 {
-    return ui->label_outputProcessTime->text();
+    return outputWidget->output_latency_as_qstring();
+}
+
+QString ControlPanel::GetString_OutputResolution()
+{
+    return outputWidget->output_resolution_as_qstring();
 }
 
 bool ControlPanel::is_mouse_wheel_scaling_allowed()
@@ -1139,38 +894,6 @@ void ControlPanel::update_recording_metainfo(void)
 {
     k_assert(recordWidget, "Attempted to access the Record tab widget before it had been initialized.");
     recordWidget->update_recording_metainfo();
-
-    return;
-}
-
-void ControlPanel::on_checkBox_outputKeepAspectRatio_stateChanged(int arg1)
-{
-    ks_set_output_pad_override_enabled((arg1 == Qt::Checked));
-    ui->comboBox_outputAspectMode->setEnabled((arg1 == Qt::Checked));
-
-    return;
-}
-
-void ControlPanel::on_comboBox_outputAspectMode_currentIndexChanged(const QString &arg1)
-{
-    INFO(("Setting aspect mode to '%s'.", arg1.toStdString().c_str()));
-
-    if (arg1 == "Native")
-    {
-        ks_set_aspect_mode(aspect_mode_e::native);
-    }
-    else if (arg1 == "Traditional 4:3")
-    {
-        ks_set_aspect_mode(aspect_mode_e::traditional_4_3);
-    }
-    else if (arg1 == "Always 4:3")
-    {
-        ks_set_aspect_mode(aspect_mode_e::always_4_3);
-    }
-    else
-    {
-        k_assert(0, "Unknown aspect mode.");
-    }
 
     return;
 }

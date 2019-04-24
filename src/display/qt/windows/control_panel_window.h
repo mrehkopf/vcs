@@ -11,6 +11,7 @@
 #include "common/types.h"
 
 class ControlPanelRecordWidget;
+class ControlPanelOutputWidget;
 class ControlPanelAboutWidget;
 class FilterSetsListDialog;
 class VideoAndColorDialog;
@@ -68,8 +69,6 @@ public:
 
     void clear_known_aliases();
 
-    void set_overlay_indicator_checked(const bool checked);
-
     void notify_of_new_mode_settings_source_file(const QString &filename);
 
     void update_filter_set_idx(void);
@@ -107,45 +106,15 @@ private slots:
 
     void on_comboBox_frameSkip_currentIndexChanged(const QString &arg1);
 
-    void on_checkBox_forceOutputRes_stateChanged(int arg1);
-
-    void on_comboBox_outputUpscaleFilter_currentIndexChanged(const QString &arg1);
-
-    void on_comboBox_outputDownscaleFilter_currentIndexChanged(const QString &arg1);
-
     void on_checkBox_logEnabled_stateChanged(int arg1);
 
-    void on_spinBox_outputScale_valueChanged(int);
-
-    void on_spinBox_outputResX_valueChanged(int);
-
-    void on_spinBox_outputResY_valueChanged(int);
-
     void on_pushButton_inputAdjustVideoColor_clicked();
-
-    void on_checkBox_forceOutputScale_stateChanged(int arg1);
 
     void on_comboBox_inputChannel_currentIndexChanged(int index);
 
     void on_pushButton_inputAliases_clicked();
 
-    void on_pushButton_editOverlay_clicked();
-
     void on_comboBox_bitDepth_currentIndexChanged(const QString &arg1);
-
-    void on_checkBox_outputAntiTear_stateChanged(int arg1);
-
-    void on_pushButton_antiTearOptions_clicked();
-
-    void on_pushButton_configureFiltering_clicked();
-
-    void on_checkBox_customFiltering_stateChanged(int arg1);
-
-    void on_comboBox_renderer_currentIndexChanged(const QString &arg1);
-
-    void on_checkBox_outputKeepAspectRatio_stateChanged(int arg1);
-
-    void on_comboBox_outputAspectMode_currentIndexChanged(const QString &arg1);
 
 private:
     void closeEvent(QCloseEvent *event);
@@ -156,13 +125,9 @@ private:
 
     void connect_capture_resolution_buttons();
 
-    void fill_output_scaling_filter_comboboxes();
-
     void fill_capture_channel_combobox();
 
-    void set_capture_controls_enabled(const bool state);
-
-    void set_output_controls_enabled(const bool state);
+    void set_input_controls_enabled(const bool state);
 
     void filter_log_entry(QTreeWidgetItem *const entry);
 
@@ -177,6 +142,7 @@ private:
 
     ControlPanelAboutWidget *aboutWidget = nullptr;
     ControlPanelRecordWidget *recordWidget = nullptr;
+    ControlPanelOutputWidget *outputWidget = nullptr;
 
     Ui::ControlPanel *ui;
 };
