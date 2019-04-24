@@ -76,7 +76,6 @@ SOURCES += \
     src/common/memory.cpp \
     src/display/qt/dialogs/filter_set_dialog.cpp \
     src/display/qt/dialogs/filter_sets_list_dialog.cpp \
-    src/display/qt/subclasses/QOpenGLWidget_opengl_widget.cpp \
     src/record/record.cpp \
     src/common/propagate.cpp \
     src/common/disk.cpp \
@@ -85,7 +84,8 @@ SOURCES += \
     src/display/qt/widgets/control_panel_about_widget.cpp \
     src/display/qt/widgets/control_panel_record_widget.cpp \
     src/display/qt/widgets/control_panel_output_widget.cpp \
-    src/display/qt/widgets/control_panel_input_widget.cpp
+    src/display/qt/widgets/control_panel_input_widget.cpp \
+    src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -113,7 +113,6 @@ HEADERS += \
     src/common/memory_interface.h \
     src/display/qt/dialogs/filter_set_dialog.h \
     src/display/qt/dialogs/filter_sets_list_dialog.h \
-    src/display/qt/subclasses/QOpenGLWidget_opengl_widget.h \
     src/record/record.h \
     src/common/propagate.h \
     src/common/disk.h \
@@ -122,7 +121,8 @@ HEADERS += \
     src/display/qt/widgets/control_panel_about_widget.h \
     src/display/qt/widgets/control_panel_record_widget.h \
     src/display/qt/widgets/control_panel_output_widget.h \
-    src/display/qt/widgets/control_panel_input_widget.h
+    src/display/qt/widgets/control_panel_input_widget.h \
+    src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.h
 
 FORMS += \
     src/display/qt/windows/ui/control_panel_window.ui \
