@@ -49,10 +49,10 @@ QTabBar::tab
     background-color: #959595;
     color: #202020;
     border: none;
-    border-radius: 0;
+    border-radius: 0px;
     padding: 5px;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 QTabBar::tab:!selected
@@ -169,8 +169,8 @@ QTreeWidget QAbstractItemView
 
 QTreeWidget QHeaderView::section
 {
-	background-color: dimgray;
-	color: #d0d0d0;
+    background-color: dimgray;
+    color: #d0d0d0;
     border: none;
     border-left: 1px solid rgba(0,0,0,0.1);
     padding: 6px;
@@ -188,8 +188,7 @@ QTreeWidget QLineEdit
     background-color: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #7a7a7a, stop: 1 #737373);
     border: 1px solid #606060;
     border-radius: 3px;
-    padding: 2px;
-    padding-left: 0px;
+    padding: 0px;
     color: #e0e0e0;
 }
 
