@@ -10,12 +10,12 @@
 #include <QDialog>
 
 class QMenuBar;
-class QTreeWidgetItem;
-struct mode_alias_s;
 
 namespace Ui {
 class AliasDialog;
 }
+
+struct mode_alias_s;
 
 class AliasDialog : public QDialog
 {
@@ -41,13 +41,9 @@ private slots:
 private:
     Ui::AliasDialog *ui;
 
-    void create_menu_bar();
-
     void broadcast_aliases();
 
-    QWidget* create_resolution_widget(QTreeWidgetItem *parentItem, const uint column, const uint width, const uint height);
-
-    void adjust_tree_widget_column_size();
+    void adjust_treewidget_column_size();
 
     void resizeEvent(QResizeEvent *);
 
