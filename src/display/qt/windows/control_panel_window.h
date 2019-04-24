@@ -53,18 +53,6 @@ public:
 
     bool is_mouse_wheel_scaling_allowed();
 
-    QString GetString_OutputResolution();
-
-    QString GetString_InputRefreshRate();
-
-    QString GetString_InputResolution();
-
-    QString GetString_OutputFrameRate();
-
-    QString GetString_OutputLatency();
-
-    QString GetString_DroppingFrames();
-
     void notify_of_new_alias(const mode_alias_s a);
 
     void clear_known_aliases();

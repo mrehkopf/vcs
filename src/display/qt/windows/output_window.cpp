@@ -573,47 +573,47 @@ void MainWindow::signal_new_mode_settings_source_file(const std::string &filenam
 //
 void MainWindow::update_window_title()
 {
-    QString scale, latency, inRes, recording;
+    QString scaleString, latencyString, inResString, recordingString;
 
     if (kc_no_signal())
     {
-        latency = " - No signal";
+        latencyString = " - No signal";
     }
     else if (kc_is_invalid_signal())
     {
-        latency = " - Invalid signal";
+        latencyString = " - Invalid signal";
     }
     else
     {
-        const resolution_s rin = kc_hardware().status.capture_resolution();
-        const resolution_s rout = ks_output_resolution();
-        const int size = round((rout.h / (real)rin.h) * 100);
+        const resolution_s inRes = kc_hardware().status.capture_resolution();
+        const resolution_s outRes = ks_output_resolution();
+        const int size = round((outRes.h / (real)inRes.h) * 100);
 
         // Estimate the % by which the input image is scaled up/down.
-        if ((rin.w == rout.w) &&
-            (rin.h == rout.h))
+        if ((inRes.w == outRes.w) &&
+            (inRes.h == outRes.h))
         {
-            scale = QString(" scaled to %1%").arg(size);
+            scaleString = QString(" scaled to %1%").arg(size);
         }
         else
         {
-            scale = QString(" scaled to ~%1%").arg(size);
+            scaleString = QString(" scaled to ~%1%").arg(size);
         }
 
         if (kc_are_frames_being_missed())
         {
-            latency = " (dropping frames)";
+            latencyString = " (dropping frames)";
         }
 
         if (krecord_is_recording())
         {
-            recording = "[REC] ";
+            recordingString = "[REC] ";
         }
 
-        inRes = " - " + controlPanel->GetString_InputResolution();
+        inResString = " - " + QString("%1 x %2").arg(inRes.w).arg(inRes.h);
     }
 
-    setWindowTitle(recording + QString(PROGRAM_NAME) + inRes + scale + latency);
+    this->setWindowTitle(recordingString + QString(PROGRAM_NAME) + inResString + scaleString + latencyString);
 
     return;
 }
@@ -709,42 +709,6 @@ void MainWindow::clear_known_aliases()
     controlPanel->clear_known_aliases();
 
     return;
-}
-
-QString MainWindow::GetString_OutputResolution()
-{
-    k_assert(controlPanel != nullptr, "");
-    return controlPanel->GetString_OutputResolution();
-}
-
-QString MainWindow::GetString_InputResolution()
-{
-    k_assert(controlPanel != nullptr, "");
-    return controlPanel->GetString_InputResolution();
-}
-
-QString MainWindow::GetString_InputRefreshRate()
-{
-    k_assert(controlPanel != nullptr, "");
-    return controlPanel->GetString_InputRefreshRate();
-}
-
-QString MainWindow::GetString_OutputLatency()
-{
-    k_assert(controlPanel != nullptr, "");
-    return controlPanel->GetString_OutputLatency();
-}
-
-QString MainWindow::GetString_OutputFrameRate()
-{
-    k_assert(controlPanel != nullptr, "");
-    return controlPanel->GetString_OutputFrameRate();
-}
-
-QString MainWindow::GetString_DroppingFrames()
-{
-    k_assert(controlPanel != nullptr, "");
-    return controlPanel->GetString_DroppingFrames();
 }
 
 void MainWindow::show_overlay_dialog()

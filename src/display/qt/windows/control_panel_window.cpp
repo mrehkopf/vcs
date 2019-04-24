@@ -547,38 +547,6 @@ void ControlPanel::on_checkBox_logErrors_toggled(bool)
     return;
 }
 
-QString ControlPanel::GetString_InputResolution()
-{
-    const resolution_s r = kc_hardware().status.capture_resolution();
-
-    return QString("%1 x %2").arg(r.w).arg(r.h);
-}
-
-QString ControlPanel::GetString_InputRefreshRate()
-{
-    return QString("%1 Hz").arg(kc_hardware().status.signal().refreshRate);
-}
-
-QString ControlPanel::GetString_OutputFrameRate()
-{
-    return outputWidget->output_framerate_as_qstring();
-}
-
-QString ControlPanel::GetString_DroppingFrames()
-{
-    return outputWidget->output_framedrop_as_qstring();
-}
-
-QString ControlPanel::GetString_OutputLatency()
-{
-    return outputWidget->output_latency_as_qstring();
-}
-
-QString ControlPanel::GetString_OutputResolution()
-{
-    return outputWidget->output_resolution_as_qstring();
-}
-
 bool ControlPanel::is_mouse_wheel_scaling_allowed()
 {
     return (!kd_is_fullscreen() && // In my virtual machine, at least, wheel scaling while in full-screen messes up the full-screen mode.

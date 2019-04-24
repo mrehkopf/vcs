@@ -187,26 +187,6 @@ void ControlPanelOutputWidget::adjust_output_scaling(const int dir)
     return;
 }
 
-QString ControlPanelOutputWidget::output_framerate_as_qstring(void)
-{
-    return ui->label_outputFPS->text();
-}
-
-QString ControlPanelOutputWidget::output_framedrop_as_qstring(void)
-{
-    return ui->label_outputProcessTime->text();
-}
-
-QString ControlPanelOutputWidget::output_latency_as_qstring(void)
-{
-    return ui->label_outputProcessTime->text();
-}
-
-QString ControlPanelOutputWidget::output_resolution_as_qstring(void)
-{
-    return ui->label_outputResolution->text();
-}
-
 void ControlPanelOutputWidget::toggle_overlay(void)
 {
     ui->checkBox_outputOverlayEnabled->toggle();

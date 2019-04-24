@@ -56,18 +56,6 @@ public:
 
     void update_window_title();
 
-    QString GetString_OutputResolution();
-
-    QString GetString_InputResolution();
-
-    QString GetString_InputRefreshRate();
-
-    QString GetString_OutputFrameRate();
-
-    QString GetString_OutputLatency();
-
-    QString GetString_DroppingFrames();
-
     void signal_new_known_alias(const mode_alias_s a);
 
     void clear_known_aliases();

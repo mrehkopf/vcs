@@ -29,14 +29,6 @@ public:
 
     void adjust_output_scaling(const int dir);
 
-    QString output_framerate_as_qstring(void);
-
-    QString output_framedrop_as_qstring(void);
-
-    QString output_latency_as_qstring(void);
-
-    QString output_resolution_as_qstring(void);
-
     void toggle_overlay();
 
 private slots:
