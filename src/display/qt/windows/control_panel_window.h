@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef D_CONTROL_PANEL_H
-#define D_CONTROL_PANEL_H
+#ifndef CONTROL_PANEL_WINDOW_H
+#define CONTROL_PANEL_WINDOW_H
 
 #include <QDialog>
 #include "common/types.h"
@@ -83,15 +83,6 @@ public:
 
     bool custom_program_styling_enabled();
 
-private slots:
-    void on_checkBox_logInfo_toggled(bool);
-
-    void on_checkBox_logDebug_toggled(bool);
-
-    void on_checkBox_logErrors_toggled(bool);
-
-    void on_checkBox_logEnabled_stateChanged(int arg1);
-
 signals:
     void new_programwide_style_file(const QString &filename);
 
@@ -110,10 +101,6 @@ private:
     void keyPressEvent(QKeyEvent *event);
     void resizeEvent(QResizeEvent *);
 
-    void refresh_log_list_filtering();
-
-    void filter_log_entry(QTreeWidgetItem *const entry);
-
     void update_tab_widths();
 
     FilterSetsListDialog *filterSetsDlg = nullptr;
@@ -129,4 +116,4 @@ private:
     Ui::ControlPanel *ui;
 };
 
-#endif // D_CONTROL_PANEL_H
+#endif

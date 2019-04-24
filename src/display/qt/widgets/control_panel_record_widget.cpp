@@ -15,6 +15,10 @@
 #include "record/record.h"
 #include "ui_control_panel_record_widget.h"
 
+#if _WIN32
+    #include <windows.h>
+#endif
+
 ControlPanelRecordWidget::ControlPanelRecordWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ControlPanelRecordWidget)

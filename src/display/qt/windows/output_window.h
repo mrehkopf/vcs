@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef OUTPUT_WINDOW_H
+#define OUTPUT_WINDOW_H
 
 #include <QMainWindow>
 #include "display/display.h"
@@ -114,4 +114,4 @@ private:
     bool captureInitFail = false;
 };
 
-#endif // MAINWINDOW_H
+#endif

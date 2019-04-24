@@ -38,10 +38,6 @@
 #include "common/log.h"
 #include "ui_control_panel_window.h"
 
-#if _WIN32
-    #include <windows.h>
-#endif
-
 ControlPanel::ControlPanel(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ControlPanel)
@@ -49,6 +45,7 @@ ControlPanel::ControlPanel(QWidget *parent) :
     ui->setupUi(this);
 
     this->setWindowTitle("VCS - Control Panel");
+
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     aliasDlg = new AliasDialog;
@@ -154,34 +151,20 @@ ControlPanel::ControlPanel(QWidget *parent) :
 
     // Set the GUI controls to their proper initial values.
     {
-        ui->treeWidget_logList->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
         // Restore persistent settings.
         {
-            // Control panel.
             this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "control_panel", size()).toSize());
             ui->tabWidget->setCurrentIndex(kpers_value_of(INI_GROUP_CONTROL_PANEL, "tab", 0).toUInt());
-
-            // Log tab.
-            ui->checkBox_logEnabled->setChecked(kpers_value_of(INI_GROUP_LOG, "enabled", 1).toBool());
         }
     }
-
-    /// For now, don't show the log tab. I might remove it completely, as I'm
-    /// not sure how useful it is in the GUI, and not having it makes things a
-    /// bit cleaner visually.
-    ui->tabWidget->removeTab(3);
-    ui->checkBox_logEnabled->setChecked(true); // So logging still goes through to the terminal.
 
     return;
 }
 
 ControlPanel::~ControlPanel()
 {
-    // Save the current settings.
+    // Save persistent settings.
     {
-        // Miscellaneous.
-        kpers_set_value(INI_GROUP_LOG, "enabled", ui->checkBox_logEnabled->isChecked());
         kpers_set_value(INI_GROUP_CONTROL_PANEL, "tab", ui->tabWidget->currentIndex());
         kpers_set_value(INI_GROUP_GEOMETRY, "control_panel", size());
     }
@@ -391,62 +374,10 @@ void ControlPanel::activate_capture_res_button(const uint buttonIdx)
 
 void ControlPanel::add_gui_log_entry(const log_entry_s &e)
 {
-    // Sanity check, to make sure we've set up the GUI correctly.
-    k_assert(ui->treeWidget_logList->columnCount() == 2,
-             "Expected the log list to have three columns.");
+    /// Logging functionality in the GUI is currently fully disabled, so we'll
+    /// just ignore this call.
 
-    QTreeWidgetItem *entry = new QTreeWidgetItem;
-
-    entry->setText(0, QString::fromStdString(e.type));
-    entry->setText(1, QString::fromStdString(e.message));
-
-    ui->treeWidget_logList->addTopLevelItem(entry);
-
-    filter_log_entry(entry);
-
-    return;
-}
-
-// Initializes the visibility of the given entry based on whether the user has
-// selected to show/hide entries of its kind.
-//
-void ControlPanel::filter_log_entry(QTreeWidgetItem *const entry)
-{
-    // The column index in the tree that gives the log entry's type.
-    const int typeColumn = 0;
-
-    entry->setHidden(true);
-
-    if (ui->checkBox_logInfo->isChecked() &&
-        entry->text(typeColumn) == "Info")
-    {
-        entry->setHidden(false);
-    }
-
-    if (ui->checkBox_logDebug->isChecked() &&
-        entry->text(typeColumn) == "Debug")
-    {
-        entry->setHidden(false);
-    }
-
-    if (ui->checkBox_logErrors->isChecked() &&
-        entry->text(typeColumn) == "N.B.")
-    {
-        entry->setHidden(false);
-    }
-
-    return;
-}
-
-void ControlPanel::refresh_log_list_filtering()
-{
-    const int typeColumn = 1;  // The column index in the tree that gives the log entry's type.
-    QList<QTreeWidgetItem*> entries = ui->treeWidget_logList->findItems("*", Qt::MatchWildcard, typeColumn);
-
-    for (auto *entry: entries)
-    {
-        filter_log_entry(entry);
-    }
+    (void)e;
 
     return;
 }
@@ -463,18 +394,6 @@ bool ControlPanel::is_overlay_enabled(void)
 void ControlPanel::adjust_output_scaling(const int dir)
 {
     outputWidget->adjust_output_scaling(dir);
-
-    return;
-}
-
-void ControlPanel::on_checkBox_logEnabled_stateChanged(int arg1)
-{
-    k_assert(arg1 != Qt::PartiallyChecked,
-             "Expected a two-state toggle for 'enableLogging'. It appears to have a third state.");
-
-    klog_set_logging_enabled(arg1);
-
-    ui->treeWidget_logList->setEnabled(arg1);
 
     return;
 }
@@ -522,27 +441,6 @@ void ControlPanel::open_filter_sets_dialog(void)
     filterSetsDlg->show();
     filterSetsDlg->activateWindow();
     filterSetsDlg->raise();
-
-    return;
-}
-
-void ControlPanel::on_checkBox_logInfo_toggled(bool)
-{
-    refresh_log_list_filtering();
-
-    return;
-}
-
-void ControlPanel::on_checkBox_logDebug_toggled(bool)
-{
-    refresh_log_list_filtering();
-
-    return;
-}
-
-void ControlPanel::on_checkBox_logErrors_toggled(bool)
-{
-    refresh_log_list_filtering();
 
     return;
 }

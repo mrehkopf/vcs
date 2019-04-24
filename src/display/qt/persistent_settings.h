@@ -17,7 +17,6 @@
 #define INI_GROUP_RECORDING             "RECORDING"
 #define INI_GROUP_GEOMETRY              "DIALOG_GEOMETRY"
 #define INI_GROUP_OVERLAY               "OVERLAY"
-#define INI_GROUP_LOG                   "LOG"
 #define INI_GROUP_APP                   "APP"
 
 QVariant kpers_value_of(const QString &group, const QString &name, const QVariant &defaultValue = QVariant());
