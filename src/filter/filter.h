@@ -34,7 +34,7 @@ struct filter_set_s
 {
     // A user-facing, user-specified string that describes in brief this filter's
     // purpose or the like.
-    std::string description;
+    std::string description = "";
 
     const scaling_filter_s *scaler = nullptr;     // The scaler used for up/downscaling.
 

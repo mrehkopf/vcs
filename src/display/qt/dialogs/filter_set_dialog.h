@@ -17,7 +17,7 @@ class FilterSetDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit FilterSetDialog(filter_set_s *const filterSet, QWidget *parent = 0, const bool allowApply = true);
+    explicit FilterSetDialog(filter_set_s *const filterSet, QWidget *parent = 0, const bool allowApplyButton = true);
     ~FilterSetDialog();
 
 private slots:

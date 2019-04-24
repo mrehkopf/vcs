@@ -21,7 +21,7 @@
 
 // Takes in the filter set for which we'll set the parameters.
 //
-FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent, const bool allowApply) :
+FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent, const bool allowApplyButton) :
     QDialog(parent),
     ui(new Ui::FilterSetDialog),
     filterSet(filterSet)
@@ -32,10 +32,7 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
 
     ui->setupUi(this);
 
-    if (!allowApply)
-    {
-        ui->pushButton_apply->setEnabled(false);
-    }
+    ui->pushButton_apply->setEnabled(allowApplyButton);
 
     this->setWindowTitle("VCS - Filter Set");
 
@@ -168,7 +165,7 @@ filter_set_s FilterSetDialog::make_filter_set_from_current_state(void)
 
     c.preFilters = ui->treeWidget_preFilters->filters();
     c.postFilters = ui->treeWidget_postFilters->filters();
-    c.description = "";// ui->lineEdit_description->text().toStdString();
+    c.description = filterSet->description;
     c.scaler = ks_scaler_for_name_string(ui->comboBox_scaler->currentText().toStdString());
     c.activation = filter_set_s::activation_e::none;
 
