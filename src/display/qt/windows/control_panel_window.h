@@ -10,6 +10,7 @@
 #include <QDialog>
 #include "common/types.h"
 
+class ControlPanelRecordWidget;
 class ControlPanelAboutWidget;
 class FilterSetsListDialog;
 class VideoAndColorDialog;
@@ -142,12 +143,6 @@ private slots:
 
     void on_comboBox_renderer_currentIndexChanged(const QString &arg1);
 
-    void on_pushButton_recordingStart_clicked();
-
-    void on_pushButton_recordingStop_clicked();
-
-    void on_pushButton_recordingSelectFilename_clicked();
-
     void on_checkBox_outputKeepAspectRatio_stateChanged(int arg1);
 
     void on_comboBox_outputAspectMode_currentIndexChanged(const QString &arg1);
@@ -173,8 +168,6 @@ private:
 
     void reset_capture_bit_depth_combobox();
 
-    bool apply_x264_registry_settings();
-
     void update_tab_widths();
 
     FilterSetsListDialog *filterSetsDlg = nullptr;
@@ -183,6 +176,7 @@ private:
     AliasDialog *aliasDlg = nullptr;
 
     ControlPanelAboutWidget *aboutWidget = nullptr;
+    ControlPanelRecordWidget *recordWidget = nullptr;
 
     Ui::ControlPanel *ui;
 };

@@ -21,8 +21,11 @@ ControlPanelAboutWidget::ControlPanelAboutWidget(QWidget *parent) :
 
     ui->groupBox_aboutVCS->setTitle("VCS " + QString(PROGRAM_VERSION_STRING));
 
-    const QString customStyleName = kpers_value_of(INI_GROUP_APP, "custom_styling", "Grayscale").toString();
-    set_qcombobox_idx_c(ui->comboBox_customInterfaceStyling).by_string(customStyleName);
+    // Restore persistent settings.
+    {
+        set_qcombobox_idx_c(ui->comboBox_customInterfaceStyling)
+                           .by_string(kpers_value_of(INI_GROUP_APP, "custom_styling", "Grayscale").toString());
+    }
 
     // Poll the capture hardware to fill the information matrix about the
     // hardware's capabilities.
@@ -54,7 +57,10 @@ ControlPanelAboutWidget::ControlPanelAboutWidget(QWidget *parent) :
 
 ControlPanelAboutWidget::~ControlPanelAboutWidget()
 {
-    kpers_set_value(INI_GROUP_APP, "custom_styling", ui->comboBox_customInterfaceStyling->currentText());
+    // Save persistent settings.
+    {
+        kpers_set_value(INI_GROUP_APP, "custom_styling", ui->comboBox_customInterfaceStyling->currentText());
+    }
 
     delete ui;
 

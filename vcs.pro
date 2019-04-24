@@ -82,7 +82,8 @@ SOURCES += \
     src/common/disk.cpp \
     src/capture/alias.cpp \
     src/display/qt/subclasses/QTreeWidget_filter_list.cpp \
-    src/display/qt/widgets/control_panel_about_widget.cpp
+    src/display/qt/widgets/control_panel_about_widget.cpp \
+    src/display/qt/widgets/control_panel_record_widget.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -116,7 +117,8 @@ HEADERS += \
     src/common/disk.h \
     src/capture/alias.h \
     src/display/qt/subclasses/QTreeWidget_filter_list.h \
-    src/display/qt/widgets/control_panel_about_widget.h
+    src/display/qt/widgets/control_panel_about_widget.h \
+    src/display/qt/widgets/control_panel_record_widget.h
 
 FORMS += \
     src/display/qt/windows/ui/control_panel_window.ui \
@@ -128,7 +130,8 @@ FORMS += \
     src/display/qt/dialogs/ui/anti_tear_dialog.ui \
     src/display/qt/dialogs/ui/filter_set_dialog.ui \
     src/display/qt/dialogs/ui/filter_sets_list_dialog.ui \
-    src/display/qt/widgets/ui/control_panel_about_widget.ui
+    src/display/qt/widgets/ui/control_panel_about_widget.ui \
+    src/display/qt/widgets/ui/control_panel_record_widget.ui
 
 # C++. For GCC/Clang/MinGW.
 QMAKE_CXXFLAGS += -g
