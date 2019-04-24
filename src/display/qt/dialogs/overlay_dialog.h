@@ -28,8 +28,6 @@ public:
 
     void set_overlay_max_width(const uint width);
 
-    void update_stylesheet(const QString &stylesheet);
-
 private slots:
     void insert_text_into_overlay(const QString &t);
 

@@ -37,8 +37,6 @@ OverlayDialog::OverlayDialog(MainWindow *const mainWin, QWidget *parent) :
     OVERLAY_DOC.setDefaultFont(QGuiApplication::font());
     OVERLAY_DOC.setDocumentMargin(0);
 
-    update_stylesheet(MAIN_WIN->styleSheet());
-
     ui->setupUi(this);
 
     make_button_menus();
@@ -63,13 +61,6 @@ OverlayDialog::~OverlayDialog()
     kpers_set_value(INI_GROUP_GEOMETRY, "overlay", size());
 
     delete ui; ui = nullptr;
-
-    return;
-}
-
-void OverlayDialog::update_stylesheet(const QString &stylesheet)
-{
-    this->setStyleSheet(stylesheet);
 
     return;
 }

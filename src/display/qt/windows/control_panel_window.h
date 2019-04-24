@@ -94,8 +94,6 @@ public:
 
     bool is_overlay_enabled(void);
 
-    void update_stylesheet(const QString &stylesheet);
-
     bool custom_program_styling_enabled();
 
 private slots:

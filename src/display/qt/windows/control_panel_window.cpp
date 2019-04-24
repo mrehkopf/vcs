@@ -173,8 +173,6 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
         });
     }
 
-    update_stylesheet(MAIN_WIN->styleSheet());
-
     // Set the GUI controls to their proper initial values.
     {
         ui->treeWidget_logList->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -223,21 +221,6 @@ ControlPanel::~ControlPanel()
 
     delete filterSetsDlg;
     filterSetsDlg = nullptr;
-
-    return;
-}
-
-void ControlPanel::update_stylesheet(const QString &stylesheet)
-{
-    k_assert((MAIN_WIN && aliasDlg && videocolorDlg && antitearDlg && filterSetsDlg && aboutWidget),
-             "Can't reload the control panel's stylesheet - some of the recipient widgets are null.");
-
-    this->setStyleSheet(stylesheet);
-    aliasDlg->setStyleSheet(stylesheet);
-    videocolorDlg->setStyleSheet(stylesheet);
-    antitearDlg->setStyleSheet(stylesheet);
-    filterSetsDlg->setStyleSheet(stylesheet);
-    aboutWidget->setStyleSheet(stylesheet);
 
     return;
 }
