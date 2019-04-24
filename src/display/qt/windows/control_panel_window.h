@@ -13,6 +13,7 @@
 class ControlPanelRecordWidget;
 class ControlPanelOutputWidget;
 class ControlPanelAboutWidget;
+class ControlPanelInputWidget;
 class FilterSetsListDialog;
 class VideoAndColorDialog;
 class QTreeWidgetItem;
@@ -79,6 +80,8 @@ public:
 
     void open_filter_sets_dialog();
 
+    void open_alias_dialog();
+
     void update_recording_metainfo();
 
     void toggle_overlay();
@@ -102,19 +105,7 @@ private slots:
 
     void on_checkBox_logErrors_toggled(bool);
 
-    void parse_capture_resolution_button_press(QWidget *button);
-
-    void on_comboBox_frameSkip_currentIndexChanged(const QString &arg1);
-
     void on_checkBox_logEnabled_stateChanged(int arg1);
-
-    void on_pushButton_inputAdjustVideoColor_clicked();
-
-    void on_comboBox_inputChannel_currentIndexChanged(int index);
-
-    void on_pushButton_inputAliases_clicked();
-
-    void on_comboBox_bitDepth_currentIndexChanged(const QString &arg1);
 
 private:
     void closeEvent(QCloseEvent *event);
@@ -123,15 +114,7 @@ private:
 
     void refresh_log_list_filtering();
 
-    void connect_capture_resolution_buttons();
-
-    void fill_capture_channel_combobox();
-
-    void set_input_controls_enabled(const bool state);
-
     void filter_log_entry(QTreeWidgetItem *const entry);
-
-    void reset_capture_bit_depth_combobox();
 
     void update_tab_widths();
 
@@ -143,6 +126,7 @@ private:
     ControlPanelAboutWidget *aboutWidget = nullptr;
     ControlPanelRecordWidget *recordWidget = nullptr;
     ControlPanelOutputWidget *outputWidget = nullptr;
+    ControlPanelInputWidget *inputWidget = nullptr;
 
     Ui::ControlPanel *ui;
 };
