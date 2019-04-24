@@ -57,6 +57,8 @@ private slots:
 
     void on_pushButton_editSelected_clicked();
 
+    void on_treeWidget_setList_itemSelectionChanged();
+
 private:
     void create_menu_bar();
 
@@ -64,7 +66,9 @@ private:
 
     void edit_set(const QTreeWidgetItem *const item);
 
-    void move_item_vertically(const QTreeWidgetItem * const item, const int direction);
+    void move_item_vertically(const QTreeWidgetItem *const item, const int direction);
+
+    void update_selection_sensitive_controls(void);
 
     Ui::FilterSetsListDialog *ui;
 

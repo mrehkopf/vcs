@@ -54,6 +54,8 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
 
     create_menu_bar();
 
+    update_selection_sensitive_controls();
+
     return;
 }
 
@@ -227,6 +229,20 @@ void FilterSetsListDialog::flag_unsaved_changes(void)
     return;
 }
 
+// Enables/disables controls whose such state depends on the current selection
+// of items.
+//
+void FilterSetsListDialog::update_selection_sensitive_controls(void)
+{
+    const auto selectedItems = ui->treeWidget_setList->selectedItems();
+    ui->pushButton_up->setDisabled(selectedItems.isEmpty());
+    ui->pushButton_down->setDisabled(selectedItems.isEmpty());
+    ui->pushButton_remove->setDisabled(selectedItems.isEmpty());
+    ui->pushButton_editSelected->setDisabled(selectedItems.isEmpty());
+
+    return;
+}
+
 // Repopulates the filter sets list based on which filter sets are available to the filterer.
 // If given an index, will set the item at that index (row) as the current item.
 //
@@ -252,6 +268,8 @@ void FilterSetsListDialog::repopulate_filter_sets_list(int newIdx)
         // Set to have no selection.
         ui->treeWidget_setList->setCurrentIndex(QModelIndex());
     }
+
+    update_selection_sensitive_controls();
 
     return;
 }
@@ -439,6 +457,13 @@ void FilterSetsListDialog::on_pushButton_editSelected_clicked()
     if (selectedItems.empty()) return;
 
     edit_set(selectedItems.at(0));
+
+    return;
+}
+
+void FilterSetsListDialog::on_treeWidget_setList_itemSelectionChanged()
+{
+    update_selection_sensitive_controls();
 
     return;
 }
