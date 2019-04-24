@@ -160,9 +160,7 @@ filter_set_s FilterSetDialog::make_filter_set_from_current_state(void)
 {
     filter_set_s c;
 
-    // Default to all new sets being enabled.
-    c.isEnabled = true;
-
+    c.isEnabled = filterSet->isEnabled;
     c.preFilters = ui->treeWidget_preFilters->filters();
     c.postFilters = ui->treeWidget_postFilters->filters();
     c.description = filterSet->description;
