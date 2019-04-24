@@ -462,7 +462,7 @@ void FilterSetsListDialog::on_pushButton_down_clicked()
 
 void FilterSetsListDialog::on_pushButton_editSelected_clicked()
 {
-    k_assert((ui->treeWidget_setList->selectionMode() == QAbstractItemView::ContiguousSelection),
+    k_assert((ui->treeWidget_setList->selectionMode() == QAbstractItemView::SingleSelection),
              "Expected the tree widget's selection mode to be for single items.");
 
     const auto selectedItems = ui->treeWidget_setList->selectedItems();
