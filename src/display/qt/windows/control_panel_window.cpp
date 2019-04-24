@@ -24,7 +24,6 @@
 #include "display/qt/windows/control_panel_window.h"
 #include "display/qt/dialogs/resolution_dialog.h"
 #include "display/qt/dialogs/anti_tear_dialog.h"
-#include "display/qt/windows/output_window.h"
 #include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"

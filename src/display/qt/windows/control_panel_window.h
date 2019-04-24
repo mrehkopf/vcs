@@ -19,7 +19,6 @@ class VideoAndColorDialog;
 class QTreeWidgetItem;
 class AntiTearDialog;
 class AliasDialog;
-class MainWindow;
 
 struct capture_signal_s;
 struct resolution_s;

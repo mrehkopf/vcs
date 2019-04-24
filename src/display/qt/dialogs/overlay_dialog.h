@@ -10,7 +10,6 @@
 #include <QDialog>
 
 class QMenu;
-class MainWindow;
 
 namespace Ui {
 class OverlayDialog;
@@ -21,7 +20,7 @@ class OverlayDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit OverlayDialog(MainWindow *const mainWin, QWidget *parent = 0);
+    explicit OverlayDialog(QWidget *parent = 0);
     ~OverlayDialog();
 
     QImage overlay_as_qimage();
@@ -44,4 +43,4 @@ private:
     Ui::OverlayDialog *ui;
 };
 
-#endif // D_OVERLAY_DIALOG_H
+#endif

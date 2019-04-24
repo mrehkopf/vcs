@@ -106,6 +106,8 @@ void kd_set_video_settings_filename(const std::string &filename);
 // just as a window resized to fill the screen).
 bool kd_is_fullscreen(void);
 
+uint kd_output_framerate(void);
+
 /// Temporary. These keep track of the total processing latency in the VCS
 /// pipeline, from when a frame is received from the capture hardware to when
 /// it's been processed and drawn on screen in the output window. The values are

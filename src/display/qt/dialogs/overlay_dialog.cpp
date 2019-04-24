@@ -14,26 +14,19 @@
 #include <QDebug>
 #include <QMenu>
 #include "display/qt/dialogs/overlay_dialog.h"
-#include "display/qt/windows/output_window.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "display/display.h"
 #include "capture/capture.h"
 #include "ui_overlay_dialog.h"
 
-static MainWindow *MAIN_WIN = nullptr;
-
 // Used to render the overlay's HTML into an image.
 static QTextDocument OVERLAY_DOC;
 
-OverlayDialog::OverlayDialog(MainWindow *const mainWin, QWidget *parent) :
+OverlayDialog::OverlayDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::OverlayDialog)
 {
-    MAIN_WIN = mainWin;
-    k_assert(MAIN_WIN != nullptr,
-             "Expected a valid main window pointer in the overlay dialog, but got null.");
-
     OVERLAY_DOC.setDefaultFont(QGuiApplication::font());
     OVERLAY_DOC.setDocumentMargin(0);
 
@@ -155,13 +148,19 @@ QString OverlayDialog::parsed_overlay_string()
 {
     QString o = ui->plainTextEdit->toPlainText();
 
-    o.replace("|inRes|", MAIN_WIN->GetString_InputResolution());
-    o.replace("|outRes|", MAIN_WIN->GetString_OutputResolution());
-    o.replace("|inHz|", QString("%1").arg(kc_hardware().status.signal().refreshRate));
-    o.replace("|outFPS|", MAIN_WIN->GetString_OutputFrameRate());
-    o.replace("|strLat|", (MAIN_WIN->GetString_DroppingFrames() == "Dropping frames")? "Dropping frames" : "");
-    o.replace("|msLatP|", QString("%1").arg(kd_peak_pipeline_latency()));
-    o.replace("|msLatA|", QString("%1").arg(kd_average_pipeline_latency()));
+    /// TODO. I'm not totally sure how good, performance-wise, it is to poll the
+    /// capture hardware every frame. Depends on how the Datapath API caches this
+    /// info etc.
+    const auto inRes = kc_hardware().status.capture_resolution();
+    const auto outRes = ks_output_resolution();
+
+    o.replace("|inRes|", QString("%1 x %2").arg(inRes.w).arg(inRes.h));
+    o.replace("|outRes|", QString("%1 x %2").arg(outRes.w).arg(outRes.h));
+    o.replace("|inHz|", QString::number(kc_hardware().status.signal().refreshRate));
+    o.replace("|outFPS|", QString::number(kd_output_framerate()));
+    o.replace("|strLat|", (kc_are_frames_being_missed()? "Dropping frames" : ""));
+    o.replace("|msLatP|", QString::number(kd_peak_pipeline_latency()));
+    o.replace("|msLatA|", QString::number(kd_average_pipeline_latency()));
     o.replace("|sysTime|", QDateTime::currentDateTime().time().toString());
     o.replace("|sysDate|", QDateTime::currentDateTime().date().toString());
 

@@ -204,6 +204,13 @@ bool kd_is_fullscreen(void)
     return WINDOW->isFullScreen();
 }
 
+uint kd_output_framerate(void)
+{
+    k_assert(WINDOW != nullptr, "Tried to query the display before it had been initialized.");
+
+    return WINDOW->output_framerate();
+}
+
 void kd_redraw_output_window(void)
 {
     if (WINDOW == nullptr)

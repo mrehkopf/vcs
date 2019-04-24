@@ -39,6 +39,9 @@
 int UPDATE_LATENCY_PEAK = 0;
 int UPDATE_LATENCY_AVG = 0;
 
+/// Temporary.
+uint CURRENT_OUTPUT_FRAMERATE = 0;
+
 // Set to true to have the capture's horizontal and vertical positions be
 // adjusted next frame to align the captured image with the edges of the
 // screen.
@@ -97,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Set up the overalay dialog.
     {
-        overlayDlg = new OverlayDialog(this);
+        overlayDlg = new OverlayDialog;
     }
 
     if (controlPanel && controlPanel->custom_program_styling_enabled())
@@ -633,9 +636,16 @@ void MainWindow::set_capture_info_as_receiving_signal()
     return;
 }
 
+uint MainWindow::output_framerate(void)
+{
+    return CURRENT_OUTPUT_FRAMERATE;
+}
+
 void MainWindow::update_output_framerate(const u32 fps,
                                          const bool missedFrames)
 {
+    CURRENT_OUTPUT_FRAMERATE = fps;
+
     update_window_title();
 
     k_assert(controlPanel != nullptr, "");

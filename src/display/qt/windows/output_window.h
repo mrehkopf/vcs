@@ -94,6 +94,8 @@ public:
 
     bool apply_programwide_styling(const QString &filename);
 
+    uint output_framerate();
+
 private slots:
     void toggle_window_border();
 
