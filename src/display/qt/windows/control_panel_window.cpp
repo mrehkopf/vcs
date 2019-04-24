@@ -15,6 +15,7 @@
 #include <QMenu>
 #include <QFile>
 #include <assert.h>
+#include "display/qt/widgets/control_panel_about_widget.h"
 #include "display/qt/dialogs/filter_sets_list_dialog.h"
 #include "display/qt/dialogs/video_and_color_dialog.h"
 #include "display/qt/windows/control_panel_window.h"
@@ -59,9 +60,23 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
     antitearDlg = new AntiTearDialog;
     filterSetsDlg = new FilterSetsListDialog;
 
+    // Set up the contents of the 'About' tab.
+    {
+        aboutWidget = new ControlPanelAboutWidget;
+        ui->tab_about->layout()->addWidget(aboutWidget);
+
+        // Emitted when the user assigns a new app-wide stylesheet file via the
+        // tab's controls.
+        connect(aboutWidget, &ControlPanelAboutWidget::new_programwide_style_file,
+                       this, [this](const QString &filename)
+        {
+            MAIN_WIN->apply_programwide_styling(filename);
+            this->update_tab_widths();
+        });
+    }
+
     update_stylesheet(MAIN_WIN->styleSheet());
 
-    fill_hardware_info_table();
     connect_capture_resolution_buttons();
     fill_output_scaling_filter_comboboxes();
     fill_capture_channel_combobox();
@@ -75,8 +90,6 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
         ui->spinBox_outputResY->setMaximum(MAX_OUTPUT_HEIGHT);
 
         ui->treeWidget_logList->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
-        ui->groupBox_aboutVCS->setTitle("VCS " + QString(PROGRAM_VERSION_STRING));
 
         // Disable certain features on the control panel's 'Recording' tab,
         // depending on what functionality should be made available on the
@@ -188,8 +201,6 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
 
             // Miscellaneous.
             ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
-            ui->comboBox_customInterfaceStyling->setCurrentIndex(
-                        combobox_idx_of_string(ui->comboBox_customInterfaceStyling, kpers_value_of(INI_GROUP_APP, "custom_styling", "Grayscale").toString()));
         }
     }
 
@@ -211,7 +222,6 @@ ControlPanel::~ControlPanel()
         kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", ui->checkBox_outputAntiTear->isChecked());
         kpers_set_value(INI_GROUP_CONTROL_PANEL, "tab", ui->tabWidget->currentIndex());
         kpers_set_value(INI_GROUP_GEOMETRY, "control_panel", size());
-        kpers_set_value(INI_GROUP_APP, "custom_styling", ui->comboBox_customInterfaceStyling->currentText());
 
         // Output tab.
         kpers_set_value(INI_GROUP_OUTPUT, "upscaler", ui->comboBox_outputUpscaleFilter->currentText());
@@ -254,6 +264,9 @@ ControlPanel::~ControlPanel()
     delete filterSetsDlg;
     filterSetsDlg = nullptr;
 
+    delete aboutWidget;
+    aboutWidget = nullptr;
+
     return;
 }
 
@@ -267,6 +280,7 @@ void ControlPanel::update_stylesheet(const QString &stylesheet)
     videocolorDlg->setStyleSheet(stylesheet);
     antitearDlg->setStyleSheet(stylesheet);
     filterSetsDlg->setStyleSheet(stylesheet);
+    aboutWidget->setStyleSheet(stylesheet);
 
     return;
 }
@@ -339,7 +353,7 @@ void ControlPanel::update_tab_widths(void)
 
 bool ControlPanel::custom_program_styling_enabled(void)
 {
-    return (ui->comboBox_customInterfaceStyling->currentText().toLower() != "disabled");
+    return aboutWidget->custom_program_styling_enabled();
 }
 
 void ControlPanel::notify_of_new_alias(const mode_alias_s a)
@@ -681,46 +695,6 @@ void ControlPanel::parse_capture_resolution_button_press(QWidget *button)
     kpropagate_forced_capture_resolution(res);
 
     done:
-    return;
-}
-
-// Polls the capture hardware for information about itself, and puts that info
-// in the GUI for perusal.
-//
-void ControlPanel::fill_hardware_info_table()
-{
-    QString s;
-
-    // Get the capture card model name.
-    ui->groupBox_captureDeviceInfo->setTitle("Capture device: " + QString::fromStdString(kc_hardware().meta.model_name()));
-
-    const resolution_s &minres = kc_hardware().meta.minimum_capture_resolution();
-    const resolution_s &maxres = kc_hardware().meta.maximum_capture_resolution();
-
-    // Get the minimum and maximum resolutions;
-    s = QString("%1 x %2").arg(minres.w).arg(minres.h);
-    ui->label_inputMinResolutionString->setText(s);
-    s = QString("%1 x %2").arg(maxres.w).arg(maxres.h);
-    ui->label_inputMaxResolutionString->setText(s);
-
-    // Number of input channels.
-    s = QString::number(kc_hardware().meta.num_capture_inputs());
-    ui->label_inputChannelsString->setText(s);
-
-    // Firmware and driver versions.
-    ui->label_firmwareString->setText(QString::fromStdString(kc_hardware().meta.firmware_version()));
-    ui->label_driverString->setText(QString::fromStdString(kc_hardware().meta.driver_version()));
-
-    // Support matrix for various features.
-    ui->label_supportsDirectDMAString->setText(kc_hardware().supports.dma()? "Yes" : "No");
-    ui->label_supportsDeinterlaceString->setText(kc_hardware().supports.deinterlace()? "Yes" : "No");
-    ui->label_supportsYUVString->setText(kc_hardware().supports.yuv()? "Yes" : "No");
-    ui->label_supportsVGACaptureString->setText(kc_hardware().supports.vga()? "Yes" : "No");
-    ui->label_supportsDVICaptureString->setText(kc_hardware().supports.dvi()? "Yes" : "No");
-    ui->label_supportsCompositeCaptureString->setText(kc_hardware().supports.composite_capture()? "Yes" : "No");
-    ui->label_supportsComponentCaptureString->setText(kc_hardware().supports.component_capture()? "Yes" : "No");
-    ui->label_supportsSVideoCaptureString->setText(kc_hardware().supports.svideo()? "Yes" : "No");
-
     return;
 }
 
@@ -1476,34 +1450,6 @@ void ControlPanel::on_comboBox_outputAspectMode_currentIndexChanged(const QStrin
     {
         k_assert(0, "Unknown aspect mode.");
     }
-
-    return;
-}
-
-// Receive instructions from the user on which custom GUI styling to use.
-/// TODO: There would ideally be a non-hardcoded way to handle styles; and to
-/// allow the user to add their own styles without having to recompile the app.
-void ControlPanel::on_comboBox_customInterfaceStyling_currentIndexChanged(const QString &styleName)
-{
-    QString styleFileName;
-
-    if (styleName == "Disabled")
-    {
-        // Remove all custom styling.
-        styleFileName = "";
-    }
-    else if (styleName == "Grayscale")
-    {
-        styleFileName = ":/res/stylesheets/appstyle-gray.qss";
-    }
-    else
-    {
-        k_assert(0, "Unknown custom interface style name.");
-    }
-
-    MAIN_WIN->apply_programwide_styling(styleFileName);
-
-    update_tab_widths();
 
     return;
 }

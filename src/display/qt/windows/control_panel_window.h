@@ -10,17 +10,18 @@
 #include <QDialog>
 #include "common/types.h"
 
-class MainWindow;
-class AliasDialog;
+class ControlPanelAboutWidget;
 class FilterSetsListDialog;
-class AntiTearDialog;
-class QTreeWidgetItem;
 class VideoAndColorDialog;
+class QTreeWidgetItem;
+class AntiTearDialog;
+class AliasDialog;
+class MainWindow;
 
-struct log_entry_s;
+struct capture_signal_s;
 struct resolution_s;
 struct mode_alias_s;
-struct capture_signal_s;
+struct log_entry_s;
 
 namespace Ui {
 class ControlPanel;
@@ -151,8 +152,6 @@ private slots:
 
     void on_comboBox_outputAspectMode_currentIndexChanged(const QString &arg1);
 
-    void on_comboBox_customInterfaceStyling_currentIndexChanged(const QString &styleName);
-
 private:
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent *event);
@@ -161,8 +160,6 @@ private:
     void refresh_log_list_filtering();
 
     void connect_capture_resolution_buttons();
-
-    void fill_hardware_info_table();
 
     void fill_output_scaling_filter_comboboxes();
 
@@ -180,13 +177,12 @@ private:
 
     void update_tab_widths();
 
+    FilterSetsListDialog *filterSetsDlg = nullptr;
     VideoAndColorDialog *videocolorDlg = nullptr;
-
+    AntiTearDialog *antitearDlg = nullptr;
     AliasDialog *aliasDlg = nullptr;
 
-    FilterSetsListDialog *filterSetsDlg = nullptr;
-
-    AntiTearDialog *antitearDlg = nullptr;
+    ControlPanelAboutWidget *aboutWidget = nullptr;
 
     Ui::ControlPanel *ui;
 };
