@@ -77,7 +77,7 @@ signals:
     // Ask the control panel to open the filter sets dialog.
     void open_filter_sets_dialog();
 
-    // Ask the control panel to open the overlya dialog.
+    // Ask the control panel to open the overlay dialog.
     void open_overlay_dialog();
 
     // Signal that the user has chosen to enable/disable custom output filtering.

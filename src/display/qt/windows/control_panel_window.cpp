@@ -43,16 +43,10 @@
     #include <windows.h>
 #endif
 
-static MainWindow *MAIN_WIN = nullptr;
-
-ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
+ControlPanel::ControlPanel(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ControlPanel)
 {
-    MAIN_WIN = mainWin;
-    k_assert(MAIN_WIN != nullptr,
-             "Expected a valid main window pointer in the control panel, but got null.");
-
     ui->setupUi(this);
 
     this->setWindowTitle("VCS - Control Panel");
@@ -73,7 +67,7 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
         connect(aboutWidget, &ControlPanelAboutWidget::new_programwide_style_file,
                        this, [this](const QString &filename)
         {
-            MAIN_WIN->apply_programwide_styling(filename);
+            emit new_programwide_style_file(filename);
             this->update_tab_widths();
         });
     }
@@ -116,8 +110,7 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
         connect(outputWidget, &ControlPanelOutputWidget::open_overlay_dialog,
                         this, [this]
         {
-            k_assert(MAIN_WIN != nullptr, "");
-            MAIN_WIN->show_overlay_dialog();
+            emit open_overlay_dialog();
         });
 
         connect(outputWidget, &ControlPanelOutputWidget::set_filtering_enabled,
@@ -132,20 +125,7 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
         connect(outputWidget, &ControlPanelOutputWidget::set_renderer,
                         this, [this](const QString &rendererName)
         {
-            if (rendererName == "Software")
-            {
-                INFO(("Renderer: software."));
-                MAIN_WIN->set_opengl_enabled(false);
-            }
-            else if (rendererName == "OpenGL")
-            {
-                INFO(("Renderer: OpenGL."));
-                MAIN_WIN->set_opengl_enabled(true);
-            }
-            else
-            {
-                k_assert(0, "Unknown renderer type.");
-            }
+            emit set_renderer(rendererName);
         });
     }
 
@@ -163,13 +143,13 @@ ControlPanel::ControlPanel(MainWindow *const mainWin, QWidget *parent) :
         connect(recordWidget, &ControlPanelRecordWidget::update_output_window_title,
                         this, [this]
         {
-            MAIN_WIN->update_window_title();
+            emit update_output_window_title();
         });
 
         connect(recordWidget, &ControlPanelRecordWidget::update_output_window_size,
                         this, [this]
         {
-            MAIN_WIN->update_window_size();
+            emit update_output_window_size();
         });
     }
 

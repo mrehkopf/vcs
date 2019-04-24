@@ -35,7 +35,7 @@ class ControlPanel : public QDialog
     Q_OBJECT
 
 public:
-    explicit ControlPanel(MainWindow *const mainWin, QWidget *parent = 0);
+    explicit ControlPanel(QWidget *parent = 0);
     ~ControlPanel();
 
     void add_gui_log_entry(const log_entry_s &e);
@@ -104,6 +104,19 @@ private slots:
     void on_checkBox_logErrors_toggled(bool);
 
     void on_checkBox_logEnabled_stateChanged(int arg1);
+
+signals:
+    void new_programwide_style_file(const QString &filename);
+
+    // Ask the output window to open the overlay dialog.
+    void open_overlay_dialog(void);
+
+    void update_output_window_title(void);
+
+    void update_output_window_size(void);
+
+    // Signal that the user has activated the renderer of the given name.
+    void set_renderer(const QString &rendererName);
 
 private:
     void closeEvent(QCloseEvent *event);

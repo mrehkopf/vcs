@@ -59,8 +59,46 @@ MainWindow::MainWindow(QWidget *parent) :
     mainLayout->setMargin(0);
     mainLayout->setSpacing(0);
 
-    controlPanel = new ControlPanel(this);
-    overlayDlg = new OverlayDialog(this);
+    // Set up the control panel window.
+    {
+        controlPanel = new ControlPanel;
+
+        connect(controlPanel, &ControlPanel::new_programwide_style_file,
+                        this, [this](const QString &filename)
+        {
+            apply_programwide_styling(filename);
+        });
+
+        connect(controlPanel, &ControlPanel::open_overlay_dialog,
+                        this, [this]
+        {
+            show_overlay_dialog();
+        });
+
+        connect(controlPanel, &ControlPanel::set_renderer,
+                        this, [this](const QString &rendererName)
+        {
+            if (rendererName == "Software")
+            {
+                INFO(("Renderer: software."));
+                set_opengl_enabled(false);
+            }
+            else if (rendererName == "OpenGL")
+            {
+                INFO(("Renderer: OpenGL."));
+                set_opengl_enabled(true);
+            }
+            else
+            {
+                k_assert(0, "Unknown renderer type.");
+            }
+        });
+    }
+
+    // Set up the overalay dialog.
+    {
+        overlayDlg = new OverlayDialog(this);
+    }
 
     if (controlPanel && controlPanel->custom_program_styling_enabled())
     {
