@@ -28,7 +28,7 @@ public:
     explicit FilterSetsListDialog(QWidget *parent = 0);
     ~FilterSetsListDialog();
 
-    void repopulate_filter_sets_list(const int newIdx = -1);
+    void repopulate_filter_sets_list(int newIdx = -1);
 
     void update_filter_set_idx(void);
 
@@ -63,6 +63,8 @@ private:
     void flag_unsaved_changes();
 
     void edit_set(const QTreeWidgetItem *const item);
+
+    void move_item_vertically(const QTreeWidgetItem * const item, const int direction);
 
     Ui::FilterSetsListDialog *ui;
 

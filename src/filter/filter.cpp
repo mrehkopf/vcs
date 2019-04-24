@@ -142,7 +142,7 @@ void kf_filter_set_swap_downward(const uint idx)
 
 void kf_remove_filter_set(const uint idx)
 {
-    k_assert((idx <= FILTER_SETS.size()), "Attempting to remove a filter set out of bounds.");
+    k_assert((idx < FILTER_SETS.size()), "Attempting to remove a filter set out of bounds.");
 
     FILTER_SETS.erase(FILTER_SETS.begin() + idx);
 

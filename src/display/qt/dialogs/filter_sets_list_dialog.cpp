@@ -228,22 +228,29 @@ void FilterSetsListDialog::flag_unsaved_changes(void)
 }
 
 // Repopulates the filter sets list based on which filter sets are available to the filterer.
-// if given an index, will set the item at that index (row) as the current item.
+// If given an index, will set the item at that index (row) as the current item.
 //
-void FilterSetsListDialog::repopulate_filter_sets_list(const int newIdx)
+void FilterSetsListDialog::repopulate_filter_sets_list(int newIdx)
 {
     ui->treeWidget_setList->clear();
 
     const auto filterSets = kf_filter_sets();
     for (uint i = 0; i < filterSets.size(); i++)
     {
-        ui->treeWidget_setList->addTopLevelItem(make_filter_set_tree_item(*filterSets.at(i), i));
+        auto listItem = make_filter_set_tree_item(*filterSets.at(i), i);
+        ui->treeWidget_setList->addTopLevelItem(listItem);
     }
 
-    if (newIdx >= 0)
+    if (newIdx != -1) // Assumes newIdx defaults to -1 if no value is specified.
     {
-        const auto targetItem = ui->treeWidget_setList->findItems("*", Qt::MatchWildcard).at(newIdx);
+        newIdx = std::max(0, std::min(newIdx, int(filterSets.size() - 1)));
+        auto targetItem = ui->treeWidget_setList->findItems("*", Qt::MatchWildcard).at(newIdx);
         ui->treeWidget_setList->setCurrentItem(targetItem);
+    }
+    else
+    {
+        // Set to have no selection.
+        ui->treeWidget_setList->setCurrentIndex(QModelIndex());
     }
 
     return;
@@ -364,13 +371,13 @@ void FilterSetsListDialog::on_treeWidget_setList_itemChanged(QTreeWidgetItem *it
 
 void FilterSetsListDialog::on_pushButton_remove_clicked()
 {
-    const QTreeWidgetItem *itm = ui->treeWidget_setList->currentItem();
-    if (itm == nullptr) return;
+    const auto selectedItems = ui->treeWidget_setList->selectedItems();
+    if (selectedItems.empty()) return;
 
-    const int idx = itm->data(0, Qt::UserRole).value<uint>();
+    const int filterSetIdx = selectedItems.at(0)->data(0, Qt::UserRole).value<uint>();
+    kf_remove_filter_set(filterSetIdx);
 
-    kf_remove_filter_set(idx);
-    repopulate_filter_sets_list();
+    repopulate_filter_sets_list(-1);
 
     flag_unsaved_changes();
 
@@ -384,44 +391,54 @@ void FilterSetsListDialog::on_pushButton_add_clicked()
     return;
 }
 
-void FilterSetsListDialog::on_pushButton_up_clicked()
+// Moves the given item vertically in the list by one position in the given
+// direction.
+void FilterSetsListDialog::move_item_vertically(const QTreeWidgetItem *const item,
+                                                const int direction)
 {
-    const QTreeWidgetItem *itm = ui->treeWidget_setList->currentItem();
-    if (itm == nullptr) return;
+    const int filterSetIdx = item->data(0, Qt::UserRole).value<uint>();
 
-    const int idx = itm->data(0, Qt::UserRole).value<uint>();
-    if (idx <= 0) return;
+    switch (direction)
+    {
+        case -1: kf_filter_set_swap_upward(filterSetIdx); break;
+        case  1: kf_filter_set_swap_downward(filterSetIdx); break;
+        default: k_assert(0, "Unknown direction for vertical move in filter set list."); break;
+    }
 
-    kf_filter_set_swap_upward(idx);
-    repopulate_filter_sets_list(idx-1);
+    const uint newIdx = std::max(0, std::min((filterSetIdx + direction), int(kf_filter_sets().size() - 1)));
+    repopulate_filter_sets_list(newIdx);
 
     flag_unsaved_changes();
+
+    return;
+}
+
+void FilterSetsListDialog::on_pushButton_up_clicked()
+{
+    const auto selectedItems = ui->treeWidget_setList->selectedItems();
+    if (selectedItems.empty()) return;
+
+    move_item_vertically(selectedItems.at(0), -1);
 
     return;
 }
 
 void FilterSetsListDialog::on_pushButton_down_clicked()
 {
-    const QTreeWidgetItem *itm = ui->treeWidget_setList->currentItem();
-    if (itm == nullptr) return;
+    const auto selectedItems = ui->treeWidget_setList->selectedItems();
+    if (selectedItems.empty()) return;
 
-    const int idx = itm->data(0, Qt::UserRole).value<uint>();
-    if (idx >= (ui->treeWidget_setList->topLevelItemCount() - 1)) return;
-
-    kf_filter_set_swap_downward(idx);
-    repopulate_filter_sets_list(idx+1);
-
-    flag_unsaved_changes();
+    move_item_vertically(selectedItems.at(0), 1);
 
     return;
 }
 
 void FilterSetsListDialog::on_pushButton_editSelected_clicked()
 {
-    const QTreeWidgetItem *currentItem = ui->treeWidget_setList->currentItem();
-    if (!currentItem) return;
+    const auto selectedItems = ui->treeWidget_setList->selectedItems();
+    if (selectedItems.empty()) return;
 
-    edit_set(currentItem);
+    edit_set(selectedItems.at(0));
 
     return;
 }
