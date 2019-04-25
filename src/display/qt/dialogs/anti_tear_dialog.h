@@ -19,6 +19,7 @@ class AntiTearDialog : public QDialog
 
 public:
     explicit AntiTearDialog(QWidget *parent = 0);
+
     ~AntiTearDialog();
 
 private:

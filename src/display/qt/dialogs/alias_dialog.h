@@ -23,6 +23,7 @@ class AliasDialog : public QDialog
 
 public:
     explicit AliasDialog(QWidget *parent = 0);
+
     ~AliasDialog();
 
     void clear_known_aliases();

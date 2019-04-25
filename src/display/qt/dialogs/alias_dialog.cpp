@@ -238,6 +238,7 @@ void AliasDialog::load_aliases()
                                                     "Select the file to load aliases from", "",
                                                     "Alias files (*.vcsa);;"
                                                     "All files(*.*)");
+
     if (filename.isEmpty())
     {
         return;
@@ -254,6 +255,7 @@ void AliasDialog::save_aliases()
                                                     "Select the file to save the aliases into", "",
                                                     "Alias files (*.vcsa);;"
                                                     "All files(*.*)");
+
     if (filename.isEmpty())
     {
         return;
