@@ -20,133 +20,131 @@
 #include "capture/capture.h"
 #include "ui_overlay_dialog.h"
 
-// Used to render the overlay's HTML into an image.
-static QTextDocument OVERLAY_DOC;
-
 OverlayDialog::OverlayDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::OverlayDialog)
 {
-    OVERLAY_DOC.setDefaultFont(QGuiApplication::font());
-    OVERLAY_DOC.setDocumentMargin(0);
+    overlayDocument.setDefaultFont(QGuiApplication::font());
+    overlayDocument.setDocumentMargin(0);
 
     ui->setupUi(this);
 
-    make_button_menus();
-
-    setWindowTitle("VCS - Overlay Editor");
+    this->setWindowTitle("VCS - Overlay Editor");
 
     // Don't show the context help '?' button in the window bar.
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    // Load a previous overlay from disk, if any.
-    ui->plainTextEdit->setPlainText(kpers_value_of(INI_GROUP_OVERLAY, "content", "").toString());
+    // Set the GUI controls to their proper initial values.
+    {
+        // Create push button menus for inserting variables into the overlay.
+        {
+            // Adds an action into the given menu, such that when the action is
+            // triggered, the given output string is inserted into the overlay's text
+            // field.
+            auto add_action_to_menu = [=](QMenu *const menu,
+                                          const QString &actionText,
+                                          const QString &actionOutput)
+            {
+                connect(menu->addAction(actionText), &QAction::triggered, this,
+                        [=]{ this->insert_text_into_overlay_editor(actionOutput); });
 
-    resize(kpers_value_of(INI_GROUP_GEOMETRY, "overlay", size()).toSize());
+                return;
+            };
+
+            QMenu *capture = new QMenu(this);
+            add_action_to_menu(capture, "Input refresh rate (Hz)", "|inHz|");
+            add_action_to_menu(capture, "Output frame rate", "|outFPS|");
+            capture->addSeparator();
+            add_action_to_menu(capture, "Input resolution", "|inRes|");
+            add_action_to_menu(capture, "Output resolution", "|outRes|");
+            capture->addSeparator();
+            add_action_to_menu(capture, "Peak capture latency (ms)", "|msLatP|");
+            add_action_to_menu(capture, "Average capture latency (ms)", "|msLatA|");
+            ui->pushButton_capture->setMenu(capture);
+
+            QMenu *system = new QMenu(this);
+            add_action_to_menu(system, "Time", "|sysTime|");
+            add_action_to_menu(system, "Date", "|sysDate|");
+            ui->pushButton_system->setMenu(system);
+
+            QMenu *formatting = new QMenu(this);
+            add_action_to_menu(formatting, "Bullet", "&bull;");
+            add_action_to_menu(formatting, "Line break", "<br>\n");
+            add_action_to_menu(formatting, "Force space", "&nbsp;");
+            formatting->addSeparator();
+            add_action_to_menu(formatting, "Bold", "<b></b>");
+            add_action_to_menu(formatting, "Italic", "<i></i>");
+            add_action_to_menu(formatting, "Underline", "<u></u>");
+            formatting->addSeparator();
+            add_action_to_menu(formatting, "Align right", "<div align=\"right\">Right</div>");
+            formatting->addSeparator();
+            formatting->addAction("Image...", this, SLOT(add_image_to_overlay()));
+            ui->pushButton_htmlFormat->setMenu(formatting);
+        }
+
+        // Restore persistent settings.
+        {
+            this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "overlay", size()).toSize());
+
+            // Load the previous overlay from disk, if such was saved.
+            ui->plainTextEdit->setPlainText(kpers_value_of(INI_GROUP_OVERLAY, "content", "").toString());
+        }
+    }
 
     return;
 }
 
 OverlayDialog::~OverlayDialog()
 {
-    // Save the current settings.
-    kpers_set_value(INI_GROUP_OVERLAY, "content", ui->plainTextEdit->toPlainText());
-    kpers_set_value(INI_GROUP_GEOMETRY, "overlay", size());
+    // Save persistent settings.
+    {
+        kpers_set_value(INI_GROUP_OVERLAY, "content", ui->plainTextEdit->toPlainText());
+        kpers_set_value(INI_GROUP_GEOMETRY, "overlay", size());
+    }
 
-    delete ui; ui = nullptr;
+    delete ui;
+    ui = nullptr;
 
     return;
 }
 
 void OverlayDialog::set_overlay_max_width(const uint width)
 {
-    OVERLAY_DOC.setTextWidth(width);
+    overlayDocument.setTextWidth(width);
 
     return;
 }
 
 // Renders the overlay into a QImage, and returns the image.
-//
 QImage OverlayDialog::overlay_as_qimage(void)
 {
-    const resolution_s r = ks_output_resolution();
-    QImage image = QImage(r.w, r.h, QImage::Format_ARGB32_Premultiplied);
+    const resolution_s outputRes = ks_output_resolution();
+
+    QImage image = QImage(outputRes.w, outputRes.h, QImage::Format_ARGB32_Premultiplied);
     image.fill(QColor(0, 0, 0, 0));
 
     QPainter painter(&image);
-    OVERLAY_DOC.setHtml(parsed_overlay_string());
-    OVERLAY_DOC.drawContents(&painter, image.rect());
+    overlayDocument.setHtml(parsed_overlay_string());
+    overlayDocument.drawContents(&painter, image.rect());
 
     return image;
 }
 
-void OverlayDialog::insert_text_into_overlay(const QString &t)
+// Appends the given bit of text into the overlay editor's text field at its
+// current cursor position.
+void OverlayDialog::insert_text_into_overlay_editor(const QString &text)
 {
-    ui->plainTextEdit->insertPlainText(t);
+    ui->plainTextEdit->insertPlainText(text);
     ui->plainTextEdit->setFocus();
 
     return;
 }
 
-// Adds an action to the given menu with the given text, such that when the action
-// is triggered, the string in outText is emitted into the overlay.
-//
-void OverlayDialog::add_menu_item(QMenu *const menu,
-                                  const QString &menuText,
-                                  const QString &outText)
+// Parses the overlay string to replace variable tags with their corresponding
+// data, and returns the parsed version.
+QString OverlayDialog::parsed_overlay_string(void)
 {
-    QAction *const action = menu->addAction(menuText);
-
-    connect(action, &QAction::triggered,
-              this, [this,outText]{this->insert_text_into_overlay(outText);});
-
-    return;
-}
-
-// Creates menus for the overlay dialog's push-button through which the buttons'
-// actions can be triggered.
-//
-void OverlayDialog::make_button_menus()
-{
-    QMenu *capture = new QMenu(this);
-    add_menu_item(capture, "Input refresh rate (Hz)", "|inHz|");
-    add_menu_item(capture, "Output frame rate", "|outFPS|");
-    capture->addSeparator();
-    add_menu_item(capture, "Input resolution", "|inRes|");
-    add_menu_item(capture, "Output resolution", "|outRes|");
-    capture->addSeparator();
-    add_menu_item(capture, "Peak capture latency (ms)", "|msLatP|");
-    add_menu_item(capture, "Average capture latency (ms)", "|msLatA|");
-    ui->pushButton_capture->setMenu(capture);
-
-    QMenu *system = new QMenu(this);
-    add_menu_item(system, "Time", "|sysTime|");
-    add_menu_item(system, "Date", "|sysDate|");
-    ui->pushButton_system->setMenu(system);
-
-    QMenu *formatting = new QMenu(this);
-    add_menu_item(formatting, "Bullet", "&bull;");
-    add_menu_item(formatting, "Line break", "<br>\n");
-    add_menu_item(formatting, "Force space", "&nbsp;");
-    formatting->addSeparator();
-    add_menu_item(formatting, "Bold", "<b></b>");
-    add_menu_item(formatting, "Italic", "<i></i>");
-    add_menu_item(formatting, "Underline", "<u></u>");
-    formatting->addSeparator();
-    add_menu_item(formatting, "Align right", "<div align=\"right\">Right</div>");
-    formatting->addSeparator();
-    formatting->addAction("Image...", this, SLOT(add_image_to_overlay()));
-    ui->pushButton_htmlFormat->setMenu(formatting);
-
-    return;
-}
-
-// Parses the overlay string to replace certain tags with their corresponding data.
-// Returns the modified version.
-//
-QString OverlayDialog::parsed_overlay_string()
-{
-    QString o = ui->plainTextEdit->toPlainText();
+    QString parsed = ui->plainTextEdit->toPlainText();
 
     /// TODO. I'm not totally sure how good, performance-wise, it is to poll the
     /// capture hardware every frame. Depends on how the Datapath API caches this
@@ -154,31 +152,34 @@ QString OverlayDialog::parsed_overlay_string()
     const auto inRes = kc_hardware().status.capture_resolution();
     const auto outRes = ks_output_resolution();
 
-    o.replace("|inRes|", QString("%1 x %2").arg(inRes.w).arg(inRes.h));
-    o.replace("|outRes|", QString("%1 x %2").arg(outRes.w).arg(outRes.h));
-    o.replace("|inHz|", QString::number(kc_hardware().status.signal().refreshRate));
-    o.replace("|outFPS|", QString::number(kd_output_framerate()));
-    o.replace("|strLat|", (kc_are_frames_being_missed()? "Dropping frames" : ""));
-    o.replace("|msLatP|", QString::number(kd_peak_pipeline_latency()));
-    o.replace("|msLatA|", QString::number(kd_average_pipeline_latency()));
-    o.replace("|sysTime|", QDateTime::currentDateTime().time().toString());
-    o.replace("|sysDate|", QDateTime::currentDateTime().date().toString());
+    parsed.replace("|inRes|", QString("%1 x %2").arg(inRes.w).arg(inRes.h));
+    parsed.replace("|outRes|", QString("%1 x %2").arg(outRes.w).arg(outRes.h));
+    parsed.replace("|inHz|", QString::number(kc_hardware().status.signal().refreshRate));
+    parsed.replace("|outFPS|", QString::number(kd_output_framerate()));
+    parsed.replace("|strLat|", (kc_are_frames_being_missed()? "Dropping frames" : ""));
+    parsed.replace("|msLatP|", QString::number(kd_peak_pipeline_latency()));
+    parsed.replace("|msLatA|", QString::number(kd_average_pipeline_latency()));
+    parsed.replace("|sysTime|", QDateTime::currentDateTime().time().toString());
+    parsed.replace("|sysDate|", QDateTime::currentDateTime().date().toString());
 
-    return "<font style=\"font-size: x-large; color: white; background-color: black;\">" + o + "</font>";
+    return ("<font style=\"font-size: x-large; color: white; background-color: black;\">" + parsed + "</font>");
 }
 
-void OverlayDialog::add_image_to_overlay()
+// A convenience function to query the user for the name of an image file, and
+// then to insert into the overlay editor's text field corresponding HTML code
+// to display that image in the overlay.
+void OverlayDialog::add_image_to_overlay(void)
 {
     QString filename = QFileDialog::getOpenFileName(this, "Select an image", "",
                                                     "Image files (*.png *.gif *.jpeg *.jpg *.bmp);;"
                                                     "All files(*.*)");
-    if (filename.isNull())
+
+    if (filename.isEmpty())
     {
         return;
     }
 
-    insert_text_into_overlay("<img src=\"" + filename + "\">");
+    insert_text_into_overlay_editor("<img src=\"" + filename + "\">");
 
     return;
 }
-

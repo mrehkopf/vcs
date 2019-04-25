@@ -4,9 +4,10 @@
  *
  */
 
-#ifndef D_OVERLAY_DIALOG_H
-#define D_OVERLAY_DIALOG_H
+#ifndef OVERLAY_DIALOG_H
+#define OVERLAY_DIALOG_H
 
+#include <QTextDocument>
 #include <QDialog>
 
 class QMenu;
@@ -23,24 +24,22 @@ public:
     explicit OverlayDialog(QWidget *parent = 0);
     ~OverlayDialog();
 
-    QImage overlay_as_qimage();
+    QImage overlay_as_qimage(void);
 
     void set_overlay_max_width(const uint width);
 
 private slots:
-    void insert_text_into_overlay(const QString &t);
-
-    void add_image_to_overlay();
+    void add_image_to_overlay(void);
 
 private:
-    void add_menu_item(QMenu *const menu, const QString &menuText,
-                       const QString &outText);
+    void insert_text_into_overlay_editor(const QString &text);
 
-    void make_button_menus();
-
-    QString parsed_overlay_string();
+    QString parsed_overlay_string(void);
 
     Ui::OverlayDialog *ui;
+
+    // Used to render the overlay's HTML into an image.
+    QTextDocument overlayDocument;
 };
 
 #endif
