@@ -65,8 +65,6 @@ ControlPanelInputWidget::ControlPanelInputWidget(QWidget *parent) :
             connect((QPushButton*)w, &QPushButton::clicked,
                                this, [this,w]{this->parse_capture_resolution_button_press(w);});
         }
-
-        return;
     }
 
     return;

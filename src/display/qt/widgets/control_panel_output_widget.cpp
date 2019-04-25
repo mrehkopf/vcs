@@ -44,8 +44,6 @@ ControlPanelOutputWidget::ControlPanelOutputWidget(QWidget *parent) :
                 ui->comboBox_outputUpscaleFilter->addItem(QString::fromStdString(name));
                 ui->comboBox_outputDownscaleFilter->addItem(QString::fromStdString(name));
             }
-
-            return;
         }
 
         // Restore persistent settings.

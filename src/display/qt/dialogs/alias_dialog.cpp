@@ -261,7 +261,7 @@ void AliasDialog::save_aliases()
         return;
     }
 
-    if (QFileInfo(filename).suffix().isNull())
+    if (QFileInfo(filename).suffix().isEmpty())
     {
         filename += ".vcsa";
     }

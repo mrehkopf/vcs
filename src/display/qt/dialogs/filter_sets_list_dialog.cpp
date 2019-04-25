@@ -194,7 +194,7 @@ bool FilterSetsListDialog::save_sets_to_file(void)
                                                     "Save filter sets as...", "",
                                                     "Filter set files (*.vcs-filtersets *.vcsf);;"
                                                     "All files(*.*)");
-    if (filename.isNull())
+    if (filename.isEmpty())
     {
         return false;
     }
