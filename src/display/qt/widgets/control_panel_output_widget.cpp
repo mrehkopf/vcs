@@ -64,6 +64,8 @@ ControlPanelOutputWidget::ControlPanelOutputWidget(QWidget *parent) :
 
             ui->checkBox_outputKeepAspectRatio->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "keep_aspect", true).toBool());
 
+            ui->checkBox_outputOverlayEnabled->setChecked(kpers_value_of(INI_GROUP_OVERLAY, "enabled", true).toBool());
+
             ui->checkBox_forceOutputRes->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_output_size", false).toBool());
 
             ui->spinBox_outputResX->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().width());
@@ -86,6 +88,7 @@ ControlPanelOutputWidget::~ControlPanelOutputWidget()
     // Save persistent settings.
     {
         kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", ui->checkBox_outputAntiTear->isChecked());
+        kpers_set_value(INI_GROUP_OVERLAY, "enabled", ui->checkBox_outputOverlayEnabled->isChecked());
         kpers_set_value(INI_GROUP_OUTPUT, "upscaler", ui->comboBox_outputUpscaleFilter->currentText());
         kpers_set_value(INI_GROUP_OUTPUT, "downscaler", ui->comboBox_outputDownscaleFilter->currentText());
         kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", ui->checkBox_customFiltering->isChecked());
