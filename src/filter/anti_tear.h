@@ -42,7 +42,7 @@ void kat_set_buffer_updates_disabled(const bool disabled);
 
 void kat_release_anti_tear(void);
 
-anti_tear_options_s kat_default_settings(void);
+const anti_tear_options_s& kat_default_settings(void);
 
 void kat_set_range(const u32 min, const u32 max);
 

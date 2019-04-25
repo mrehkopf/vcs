@@ -618,7 +618,7 @@ void kat_initialize_anti_tear(void)
     return;
 }
 
-anti_tear_options_s kat_default_settings(void)
+const anti_tear_options_s& kat_default_settings(void)
 {
     return DEFAULT_SETTINGS;
 }
