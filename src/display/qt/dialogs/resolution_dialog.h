@@ -4,16 +4,16 @@
  *
  */
 
-#ifndef D_RESOLUTION_DIALOG_H
-#define D_RESOLUTION_DIALOG_H
+#ifndef RESOLUTION_DIALOG_H
+#define RESOLUTION_DIALOG_H
 
 #include <QDialog>
-
-struct resolution_s;
 
 namespace Ui {
 class ResolutionDialog;
 }
+
+struct resolution_s;
 
 class ResolutionDialog : public QDialog
 {
@@ -21,13 +21,14 @@ class ResolutionDialog : public QDialog
 
 public:
     explicit ResolutionDialog(const QString title, resolution_s *const r, QWidget *parent = 0);
-    ~ResolutionDialog();
 
-private slots:
-    void on_buttonBox_accepted();
+    ~ResolutionDialog();
 
 private:
     Ui::ResolutionDialog *ui;
+
+    // A pointer to the resolution object on which this dialog operates.
+    resolution_s *const resolution;
 };
 
-#endif // D_RESOLUTION_DIALOG_H
+#endif

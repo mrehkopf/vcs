@@ -12,52 +12,62 @@
 #include "common/globals.h"
 #include "ui_resolution_dialog.h"
 
-static resolution_s *RESOLUTION;
-
 ResolutionDialog::ResolutionDialog(const QString title, resolution_s *const r, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ResolutionDialog)
+    ui(new Ui::ResolutionDialog),
+    resolution(r)
 {
-    k_assert((r != nullptr),
-             "Expected a valid width and height pointers in the resolution dialog, but got null.");
+    k_assert((resolution != nullptr),
+             "Expected a valid resolution pointer as an argument to the resolution dialog, but got null.");
 
     ui->setupUi(this);
 
-    RESOLUTION = r;
-
-    setWindowTitle(title);
-
-    const resolution_s &minres = kc_hardware().meta.minimum_capture_resolution();
-    const resolution_s &maxres = kc_hardware().meta.maximum_capture_resolution();
-
-    ui->spinBox_x->setMinimum(minres.w);
-    ui->spinBox_x->setMaximum(maxres.w);
-    ui->spinBox_y->setMinimum(minres.h);
-    ui->spinBox_y->setMaximum(maxres.h);
-
-    ui->label_minRes->setText(QString("Minimum: %1 x %2").arg(minres.w)
-                                                         .arg(minres.h));
-    ui->label_maxRes->setText(QString("Maximum: %1 x %2").arg(maxres.w)
-                                                         .arg(maxres.h));
-
-    ui->spinBox_x->setValue(RESOLUTION->w);
-    ui->spinBox_y->setValue(RESOLUTION->h);
+    this->setWindowTitle(title);
 
     // Don't show the context help '?' button in the window bar.
-    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
+    // Set the GUI controls to their proper initial values.
+    {
+        const resolution_s minres = kc_hardware().meta.minimum_capture_resolution();
+        const resolution_s maxres = kc_hardware().meta.maximum_capture_resolution();
+
+        ui->spinBox_x->setMinimum(minres.w);
+        ui->spinBox_x->setMaximum(maxres.w);
+        ui->spinBox_y->setMinimum(minres.h);
+        ui->spinBox_y->setMaximum(maxres.h);
+        ui->spinBox_x->setValue(resolution->w);
+        ui->spinBox_y->setValue(resolution->h);
+
+        ui->label_minRes->setText(QString("Minimum: %1 x %2").arg(minres.w).arg(minres.h));
+        ui->label_maxRes->setText(QString("Maximum: %1 x %2").arg(maxres.w).arg(maxres.h));
+    }
+
+    // Connect GUI controls to consequences for operating them.
+    {
+        // Update the target resolution, and exit the dialog.
+        connect(ui->pushButton_ok, &QPushButton::clicked, this, [this]
+        {
+            resolution->w = ui->spinBox_x->value();
+            resolution->h = ui->spinBox_y->value();
+
+            this->accept();
+        });
+
+        // Exit the dialog without modifying the target resolution.
+        connect(ui->pushButton_cancel, &QPushButton::clicked, this, [this]
+        {
+            this->reject();
+        });
+    }
 
     return;
 }
 
 ResolutionDialog::~ResolutionDialog()
 {
-    delete ui; ui = nullptr;
-}
-
-void ResolutionDialog::on_buttonBox_accepted()
-{
-    RESOLUTION->w = ui->spinBox_x->value();
-    RESOLUTION->h = ui->spinBox_y->value();
+    delete ui;
+    ui = nullptr;
 
     return;
 }
