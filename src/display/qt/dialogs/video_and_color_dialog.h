@@ -4,22 +4,21 @@
  *
  */
 
-#ifndef D_VIDEO_AND_COLOR_DIALOG_H
-#define D_VIDEO_AND_COLOR_DIALOG_H
+#ifndef VIDEO_AND_COLOR_DIALOG_H
+#define VIDEO_AND_COLOR_DIALOG_H
 
 #include <QDialog>
 
-struct capture_video_settings_s;
-struct capture_color_settings_s;
-struct capture_signal_s;
-struct resolution_s;
-
-class QGroupBox;
 class QMenuBar;
 
 namespace Ui {
 class VideoAndColorDialog;
 }
+
+struct capture_video_settings_s;
+struct capture_color_settings_s;
+struct capture_signal_s;
+struct resolution_s;
 
 class VideoAndColorDialog : public QDialog
 {
@@ -35,33 +34,23 @@ public:
 
     void receive_new_mode_settings_filename(const QString &filename);
 
-    void update_controls();
+    void update_controls(void);
 
 private slots:
     void save_settings(void);
 
     void load_settings(void);
 
-    void broadcast_settings_change();
+    void broadcast_settings(void);
 
 private:
-    capture_video_settings_s current_video_params();
+    void flag_unsaved_changes(void);
 
-    capture_color_settings_s current_color_params();
-
-    void connect_spinboxes_to_their_sliders(QGroupBox *const parent);
-
-    void create_menu_bar();
-
-    void update_video_controls();
-
-    void update_color_controls();
-
-    void flag_unsaved_changes();
+    void remove_unsaved_changes_flag(void);
 
     Ui::VideoAndColorDialog *ui;
 
     QMenuBar *menubar = nullptr;
 };
 
-#endif // D_VIDEO_AND_COLOR_DIALOG_H
+#endif
