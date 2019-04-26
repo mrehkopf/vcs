@@ -593,7 +593,12 @@ void ks_scale_frame(const captured_frame_s &frame)
 
     LATEST_OUTPUT_SIZE = outputRes;
 
-    kd_update_filter_set_index();
+    static int currentFilterSetIdx = ~0;
+    if (currentFilterSetIdx != kf_current_filter_set_idx())
+    {
+        kd_update_filter_set_index();
+        currentFilterSetIdx = kf_current_filter_set_idx();
+    }
 
     done:
     return;

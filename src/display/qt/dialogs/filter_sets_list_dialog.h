@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef D_FILTER_DIALOG_H
-#define D_FILTER_DIALOG_H
+#ifndef FILTER_SETS_LIST_DIALOG_H
+#define FILTER_SETS_LIST_DIALOG_H
 
 #include <QDialog>
 #include "common/types.h"
@@ -13,12 +13,13 @@
 class QTreeWidgetItem;
 class QListWidgetItem;
 class QMenuBar;
-struct capture_signal_s;
-struct filter_set_s;
 
 namespace Ui {
 class FilterSetsListDialog;
 }
+
+struct capture_signal_s;
+struct filter_set_s;
 
 class FilterSetsListDialog : public QDialog
 {
@@ -28,45 +29,25 @@ public:
     explicit FilterSetsListDialog(QWidget *parent = 0);
     ~FilterSetsListDialog();
 
-    void repopulate_filter_sets_list(int newIdx = -1);
-
     void update_filter_set_idx(void);
 
     void signal_filtering_enabled(const bool state);
 
-    void update_filter_sets_list();
+    void update_filter_sets_list(void);
 
 private slots:
-    void add_new_set();
+    bool load_sets_from_file(void);
 
-    void on_treeWidget_setList_itemDoubleClicked(QTreeWidgetItem *item, int column);
-
-    void on_pushButton_remove_clicked();
-
-    void on_pushButton_up_clicked();
-
-    void on_pushButton_down_clicked();
-
-    bool load_sets_from_file();
-
-    bool save_sets_to_file();
-
-    void on_pushButton_add_clicked();
-
-    void on_treeWidget_setList_itemChanged(QTreeWidgetItem *item, int column);
-
-    void on_pushButton_editSelected_clicked();
-
-    void on_treeWidget_setList_itemSelectionChanged();
+    bool save_sets_to_file(void);
 
 private:
-    void create_menu_bar();
+    void flag_unsaved_changes(void);
 
-    void flag_unsaved_changes();
+    void repopulate_filter_sets_list(int newIdx = -1);
 
-    void edit_set(const QTreeWidgetItem *const item);
+    void remove_unsaved_changes_flag();
 
-    void move_item_vertically(const QTreeWidgetItem *const item, const int direction);
+    void edit_item(const QTreeWidgetItem *const item);
 
     void update_selection_sensitive_controls(void);
 
@@ -79,4 +60,4 @@ private:
     bool filteringIsEnabled = false;
 };
 
-#endif // D_FILTER_DIALOG_H
+#endif

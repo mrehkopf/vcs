@@ -698,7 +698,7 @@ std::vector<int> kf_find_capture_alignment(u8 *const pixels, const resolution_s 
             (top? top : -bottom)};
 }
 
-uint kf_current_filter_set_idx(void)
+int kf_current_filter_set_idx(void)
 {
     return MOST_RECENT_FILTER_SET_IDX;
 }

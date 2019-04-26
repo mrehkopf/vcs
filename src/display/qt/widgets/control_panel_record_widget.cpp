@@ -83,9 +83,7 @@ ControlPanelRecordWidget::ControlPanelRecordWidget(QWidget *parent) :
                                .by_string(kpers_value_of(INI_GROUP_RECORDING, "preset", "Superfast").toString());
 
             ui->spinBox_recordingEncoderCRF->setValue(kpers_value_of(INI_GROUP_RECORDING, "crf", 1).toUInt());
-
             ui->checkBox_recordingEncoderZeroLatency->setChecked(kpers_value_of(INI_GROUP_RECORDING, "zero_latency", false).toBool());
-
             ui->lineEdit_recordingEncoderArguments->setText(kpers_value_of(INI_GROUP_RECORDING, "command_line", "").toString());
         #endif
     }

@@ -81,7 +81,7 @@ const filter_set_s* kf_current_filter_set(void);
 
 std::vector<int> kf_find_capture_alignment(u8 *const pixels, const resolution_s &r);
 
-uint kf_current_filter_set_idx(void);
+int kf_current_filter_set_idx(void);
 
 void kf_apply_pre_filters(u8 *const pixels, const resolution_s &r);
 
