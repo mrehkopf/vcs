@@ -78,6 +78,18 @@ MainWindow::MainWindow(QWidget *parent) :
             show_overlay_dialog();
         });
 
+        connect(controlPanel, &ControlPanel::update_output_window_title,
+                        this, [this]
+        {
+            update_window_title();
+        });
+
+        connect(controlPanel, &ControlPanel::update_output_window_size,
+                        this, [this]
+        {
+            update_window_size();
+        });
+
         connect(controlPanel, &ControlPanel::set_renderer,
                         this, [this](const QString &rendererName)
         {
@@ -612,7 +624,7 @@ void MainWindow::update_window_title()
 
         if (krecord_is_recording())
         {
-            recordingString = "[REC] ";
+            recordingString = "[rec] ";
         }
 
         inResString = " - " + QString("%1 x %2").arg(inRes.w).arg(inRes.h);
