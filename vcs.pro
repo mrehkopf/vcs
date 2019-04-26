@@ -38,7 +38,7 @@ win32 {
         LIBS += -lopencv_world320
     }
 
-    RC_ICONS = "src/display/qt/appicon.rc"
+    RC_ICONS = "src/display/qt/images/icons/appicon.ico"
 }
 
 QT += core gui
