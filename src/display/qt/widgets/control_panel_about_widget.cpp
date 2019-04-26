@@ -46,6 +46,36 @@ ControlPanelAboutWidget::ControlPanelAboutWidget(QWidget *parent) :
         ui->label_supportsSVideoCaptureString->setText(kc_hardware().supports.svideo()? "Yes" : "No");
     }
 
+    // Connect the GUI controls to consequences for changing their values.
+    {
+        // Emitted when the user requests the app to use a different GUI styling.
+        connect(ui->comboBox_customInterfaceStyling,
+                static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
+                this, [this](const QString &styleName)
+        {
+            /// TODO: There would ideally be a non-hardcoded way to handle styles; and to
+            /// allow the user to add their own styles without having to recompile the app.
+
+            QString styleFileName;
+
+            if (styleName == "Disabled")
+            {
+                // Remove all custom styling.
+                styleFileName = "";
+            }
+            else if (styleName == "Grayscale")
+            {
+                styleFileName = ":/res/stylesheets/appstyle-gray.qss";
+            }
+            else
+            {
+                k_assert(0, "Unknown custom interface style name.");
+            }
+
+            emit new_programwide_style_file(styleFileName);
+        });
+    }
+
     return;
 }
 
@@ -71,33 +101,7 @@ void ControlPanelAboutWidget::restore_persistent_settings(void)
 
 // Returns true if the user has requested via this dialog to apply a custom,
 // program wide styling.
-bool ControlPanelAboutWidget::custom_program_styling_enabled(void)
+bool ControlPanelAboutWidget::is_custom_program_styling_enabled(void)
 {
     return (ui->comboBox_customInterfaceStyling->currentText().toLower() != "disabled");
-}
-
-// Receive instructions from the user on which custom GUI styling to use.
-/// TODO: There would ideally be a non-hardcoded way to handle styles; and to
-/// allow the user to add their own styles without having to recompile the app.
-void ControlPanelAboutWidget::on_comboBox_customInterfaceStyling_currentIndexChanged(const QString &styleName)
-{
-    QString styleFileName;
-
-    if (styleName == "Disabled")
-    {
-        // Remove all custom styling.
-        styleFileName = "";
-    }
-    else if (styleName == "Grayscale")
-    {
-        styleFileName = ":/res/stylesheets/appstyle-gray.qss";
-    }
-    else
-    {
-        k_assert(0, "Unknown custom interface style name.");
-    }
-
-    emit new_programwide_style_file(styleFileName);
-
-    return;
 }

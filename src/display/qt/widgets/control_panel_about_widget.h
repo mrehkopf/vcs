@@ -15,15 +15,12 @@ public:
     explicit ControlPanelAboutWidget(QWidget *parent = 0);
     ~ControlPanelAboutWidget();
 
-    bool custom_program_styling_enabled();
+    bool is_custom_program_styling_enabled(void);
 
-    void restore_persistent_settings();
+    void restore_persistent_settings(void);
 
 signals:
     void new_programwide_style_file(const QString &filename);
-
-private slots:
-    void on_comboBox_customInterfaceStyling_currentIndexChanged(const QString &styleName);
 
 private:
     Ui::ControlPanelAboutWidget *ui;

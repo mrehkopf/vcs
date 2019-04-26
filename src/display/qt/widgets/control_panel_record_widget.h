@@ -15,30 +15,19 @@ public:
     explicit ControlPanelRecordWidget(QWidget *parent = 0);
     ~ControlPanelRecordWidget();
 
-    void update_recording_metainfo();
+    void update_recording_metainfo(void);
 
-    void restore_persistent_settings();
-
-private slots:
-    void on_pushButton_recordingStart_clicked();
-
-    void on_pushButton_recordingStop_clicked();
-
-    void on_pushButton_recordingSelectFilename_clicked();
+    void restore_persistent_settings(void);
 
 signals:
-    // Ask for any controls by which the user can adjust the capture output
-    // size from its current settings to be enabled/disabled.
-    void set_output_size_controls_enabled(const bool state);
+    void recording_started(void);
 
-    void update_output_window_title(void);
-
-    void update_output_window_size(void);
+    void recording_stopped(void);
 
 private:
-    Ui::ControlPanelRecordWidget *ui;
+    bool apply_x264_registry_settings(void);
 
-    bool apply_x264_registry_settings();
+    Ui::ControlPanelRecordWidget *ui;
 };
 
 #endif

@@ -130,23 +130,25 @@ ControlPanel::ControlPanel(QWidget *parent) :
         recordWidget = new ControlPanelRecordWidget;
         ui->tab_record->layout()->addWidget(recordWidget);
 
-        connect(recordWidget, &ControlPanelRecordWidget::set_output_size_controls_enabled,
-                        this, [this](const bool state)
-        {
-            outputWidget->set_output_size_controls_enabled(state);
-        });
-
-        connect(recordWidget, &ControlPanelRecordWidget::update_output_window_title,
+        connect(recordWidget, &ControlPanelRecordWidget::recording_started,
                         this, [this]
         {
+            // Disable any GUI functionality that would let the user change the current
+            // output size, since we want to keep the output resolution constant while
+            // recording.
+            outputWidget->set_output_size_controls_enabled(false);
+
             emit update_output_window_title();
-        });
+        }, Qt::DirectConnection);
 
-        connect(recordWidget, &ControlPanelRecordWidget::update_output_window_size,
+        connect(recordWidget, &ControlPanelRecordWidget::recording_stopped,
                         this, [this]
         {
+            outputWidget->set_output_size_controls_enabled(true);
+
             emit update_output_window_size();
-        });
+            emit update_output_window_title();
+        }, Qt::DirectConnection);
     }
 
     return;
@@ -262,7 +264,7 @@ void ControlPanel::update_tab_widths(void)
 bool ControlPanel::custom_program_styling_enabled(void)
 {
     k_assert(aboutWidget, "Attempted to access the About tab widget before it had been initialized.");
-    return aboutWidget->custom_program_styling_enabled();
+    return aboutWidget->is_custom_program_styling_enabled();
 }
 
 void ControlPanel::notify_of_new_alias(const mode_alias_s a)

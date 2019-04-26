@@ -47,6 +47,137 @@ ControlPanelOutputWidget::ControlPanelOutputWidget(QWidget *parent) :
         }
     }
 
+    // Connect the GUI controls to consequences for changing their values.
+    {
+        // For overloaded signals. I'm using Qt 5.5, but you may have better ways
+        // of doing this in later versions.
+        #define QCOMBOBOX_QSTRING static_cast<void (QComboBox::*)(const QString&)>
+        #define QSPINBOX_INT static_cast<void (QSpinBox::*)(int)>
+
+        // Returns true if the given checkbox is in a proper checked state.
+        // Returns false if it's in a proper unchecked state; and assert fails
+        // if the checkbox is neither fully checked nor fully unchecked.
+        auto is_checked = [](int qcheckboxCheckedState)
+        {
+            k_assert(qcheckboxCheckedState != Qt::PartiallyChecked,
+                     "Expected this QCheckBox to have a two-state toggle. It appears to have a third state.");
+
+            return ((qcheckboxCheckedState == Qt::Checked)? true : false);
+        };
+
+        connect(ui->checkBox_outputAntiTearEnabled, &QCheckBox::stateChanged, this,
+                [=](int state){ kat_set_anti_tear_enabled(is_checked(state)); });
+
+        connect(ui->checkBox_outputFilteringEnabled, &QCheckBox::stateChanged, this,
+                [=](int state){ emit set_filtering_enabled(is_checked(state)); });
+
+        connect(ui->pushButton_antiTearOptions, &QPushButton::clicked, this,
+                [this]{ emit open_antitear_dialog(); });
+
+        connect(ui->pushButton_configureFiltering, &QPushButton::clicked, this,
+                [this]{ emit open_filter_sets_dialog(); });
+
+        connect(ui->pushButton_editOverlay, &QPushButton::clicked, this, [this]
+                { emit open_overlay_dialog(); });
+
+        connect(ui->checkBox_forceOutputScale, &QCheckBox::stateChanged, this, [=](int state)
+        {
+            if (is_checked(state))
+            {
+                ks_set_output_scaling(ui->spinBox_outputScale->value() / 100.0);
+            }
+            else
+            {
+                ui->spinBox_outputScale->setValue(100);
+            }
+
+            ui->spinBox_outputScale->setEnabled(is_checked(state));
+            ks_set_output_scale_override_enabled(is_checked(state));
+        });
+
+        connect(ui->checkBox_forceOutputRes, &QCheckBox::stateChanged, this, [=](int state)
+        {
+            ui->spinBox_outputResX->setEnabled(is_checked(state));
+            ui->spinBox_outputResY->setEnabled(is_checked(state));
+
+            ks_set_output_resolution_override_enabled(is_checked(state));
+
+            if (!is_checked(state))
+            {
+                ks_set_output_base_resolution(kc_hardware().status.capture_resolution(), true);
+
+                ui->spinBox_outputResX->setValue(ks_output_base_resolution().w);
+                ui->spinBox_outputResY->setValue(ks_output_base_resolution().h);
+            }
+        });
+
+        connect(ui->checkBox_outputKeepAspectRatio, &QCheckBox::stateChanged, this, [=](int state)
+        {
+            ks_set_output_pad_override_enabled(is_checked(state));
+            ui->comboBox_outputAspectMode->setEnabled(is_checked(state));
+        });
+
+        connect(ui->spinBox_outputResX, QSPINBOX_INT(&QSpinBox::valueChanged), this,
+                [this]
+        {
+            if (!ui->checkBox_forceOutputRes->isChecked()) return;
+
+            const resolution_s r = {(uint)ui->spinBox_outputResX->value(),
+                                    (uint)ui->spinBox_outputResY->value(), 0};
+
+            ks_set_output_base_resolution(r, true);
+        });
+
+        connect(ui->spinBox_outputResY, QSPINBOX_INT(&QSpinBox::valueChanged), this,
+                [this]
+        {
+            if (!ui->checkBox_forceOutputRes->isChecked()) return;
+
+            const resolution_s r = {(uint)ui->spinBox_outputResX->value(),
+                                    (uint)ui->spinBox_outputResY->value(), 0};
+
+            ks_set_output_base_resolution(r, true);
+        });
+
+        connect(ui->spinBox_outputScale, QSPINBOX_INT(&QSpinBox::valueChanged), this,
+                [this]{ ks_set_output_scaling(ui->spinBox_outputScale->value() / 100.0); });
+
+        connect(ui->comboBox_outputUpscaleFilter, QCOMBOBOX_QSTRING(&QComboBox::currentIndexChanged), this,
+                [this](const QString &upscalerName) { ks_set_upscaling_filter(upscalerName.toStdString()); });
+
+        connect(ui->comboBox_outputDownscaleFilter, QCOMBOBOX_QSTRING(&QComboBox::currentIndexChanged), this,
+                [this](const QString &downscalerName) { ks_set_downscaling_filter(downscalerName.toStdString()); });
+
+        connect(ui->comboBox_renderer, QCOMBOBOX_QSTRING(&QComboBox::currentIndexChanged), this,
+                [this](const QString &rendererName) { emit set_renderer(rendererName); });
+
+        connect(ui->comboBox_outputAspectMode, QCOMBOBOX_QSTRING(&QComboBox::currentIndexChanged), this,
+                [this](const QString &aspectModeString)
+        {
+            INFO(("Setting aspect mode to '%s'.", aspectModeString.toStdString().c_str()));
+
+            if (aspectModeString == "Native")
+            {
+                ks_set_aspect_mode(aspect_mode_e::native);
+            }
+            else if (aspectModeString == "Traditional 4:3")
+            {
+                ks_set_aspect_mode(aspect_mode_e::traditional_4_3);
+            }
+            else if (aspectModeString == "Always 4:3")
+            {
+                ks_set_aspect_mode(aspect_mode_e::always_4_3);
+            }
+            else
+            {
+                k_assert(0, "Unknown aspect mode.");
+            }
+        });
+
+        #undef QCOMBOBOX_QSTRING
+        #undef QSPINBOX_INT
+    }
+
     return;
 }
 
@@ -54,11 +185,11 @@ ControlPanelOutputWidget::~ControlPanelOutputWidget()
 {
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", ui->checkBox_outputAntiTear->isChecked());
+        kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", ui->checkBox_outputAntiTearEnabled->isChecked());
         kpers_set_value(INI_GROUP_OVERLAY, "enabled", ui->checkBox_outputOverlayEnabled->isChecked());
         kpers_set_value(INI_GROUP_OUTPUT, "upscaler", ui->comboBox_outputUpscaleFilter->currentText());
         kpers_set_value(INI_GROUP_OUTPUT, "downscaler", ui->comboBox_outputDownscaleFilter->currentText());
-        kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", ui->checkBox_customFiltering->isChecked());
+        kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", ui->checkBox_outputFilteringEnabled->isChecked());
         kpers_set_value(INI_GROUP_OUTPUT, "keep_aspect", ui->checkBox_outputKeepAspectRatio->isChecked());
         kpers_set_value(INI_GROUP_OUTPUT, "aspect_mode", ui->comboBox_outputAspectMode->currentText());
         kpers_set_value(INI_GROUP_OUTPUT, "force_output_size", ui->checkBox_forceOutputRes->isChecked());
@@ -87,7 +218,7 @@ void ControlPanelOutputWidget::restore_persistent_settings(void)
     set_qcombobox_idx_c(ui->comboBox_renderer)
                        .by_string(kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString());
 
-    ui->checkBox_customFiltering->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", 0).toBool());
+    ui->checkBox_outputFilteringEnabled->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", 0).toBool());
     ui->checkBox_outputKeepAspectRatio->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "keep_aspect", true).toBool());
     ui->checkBox_outputOverlayEnabled->setChecked(kpers_value_of(INI_GROUP_OVERLAY, "enabled", true).toBool());
     ui->checkBox_forceOutputRes->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_output_size", false).toBool());
@@ -95,7 +226,7 @@ void ControlPanelOutputWidget::restore_persistent_settings(void)
     ui->spinBox_outputResY->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().height());
     ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_relative_scale", false).toBool());
     ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
-    ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
+    ui->checkBox_outputAntiTearEnabled->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
 
     return;
 }
@@ -185,193 +316,6 @@ void ControlPanelOutputWidget::adjust_output_scaling(const int dir)
 void ControlPanelOutputWidget::toggle_overlay(void)
 {
     ui->checkBox_outputOverlayEnabled->toggle();
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_checkBox_forceOutputScale_stateChanged(int arg1)
-{
-    const bool checked = (arg1 == Qt::Checked)? 1 : 0;
-
-    k_assert(arg1 != Qt::PartiallyChecked,
-             "Expected a two-state toggle for 'forceOutputScale'. It appears to have a third state.");
-
-    ui->spinBox_outputScale->setEnabled(checked);
-
-    if (checked)
-    {
-        const int s = ui->spinBox_outputScale->value();
-
-        ks_set_output_scaling(s / 100.0);
-    }
-    else
-    {
-        ui->spinBox_outputScale->setValue(100);
-    }
-
-    ks_set_output_scale_override_enabled(checked);
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_checkBox_forceOutputRes_stateChanged(int arg1)
-{
-    const bool checked = (arg1 == Qt::Checked)? 1 : 0;
-
-    k_assert(arg1 != Qt::PartiallyChecked,
-             "Expected a two-state toggle for 'outputRes'. It appears to have a third state.");
-
-    ui->spinBox_outputResX->setEnabled(checked);
-    ui->spinBox_outputResY->setEnabled(checked);
-
-    ks_set_output_resolution_override_enabled(checked);
-
-    if (!checked)
-    {
-        resolution_s outr;
-        const resolution_s r = kc_hardware().status.capture_resolution();
-
-        ks_set_output_base_resolution(r, true);
-
-        outr = ks_output_base_resolution();
-        ui->spinBox_outputResX->setValue(outr.w);
-        ui->spinBox_outputResY->setValue(outr.h);
-    }
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_spinBox_outputScale_valueChanged(int)
-{
-    real scale = ui->spinBox_outputScale->value() / 100.0;
-
-    ks_set_output_scaling(scale);
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_spinBox_outputResX_valueChanged(int)
-{
-    const resolution_s r = {(uint)ui->spinBox_outputResX->value(),
-                            (uint)ui->spinBox_outputResY->value(), 0};
-
-    if (!ui->checkBox_forceOutputRes->isChecked())
-    {
-        return;
-    }
-
-    ks_set_output_base_resolution(r, true);
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_spinBox_outputResY_valueChanged(int)
-{
-    const resolution_s r = {(uint)ui->spinBox_outputResX->value(),
-                            (uint)ui->spinBox_outputResY->value(), 0};
-
-    if (!ui->checkBox_forceOutputRes->isChecked())
-    {
-        return;
-    }
-
-    ks_set_output_base_resolution(r, true);
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_checkBox_outputKeepAspectRatio_stateChanged(int arg1)
-{
-    ks_set_output_pad_override_enabled((arg1 == Qt::Checked));
-    ui->comboBox_outputAspectMode->setEnabled((arg1 == Qt::Checked));
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_comboBox_outputAspectMode_currentIndexChanged(const QString &arg1)
-{
-    INFO(("Setting aspect mode to '%s'.", arg1.toStdString().c_str()));
-
-    if (arg1 == "Native")
-    {
-        ks_set_aspect_mode(aspect_mode_e::native);
-    }
-    else if (arg1 == "Traditional 4:3")
-    {
-        ks_set_aspect_mode(aspect_mode_e::traditional_4_3);
-    }
-    else if (arg1 == "Always 4:3")
-    {
-        ks_set_aspect_mode(aspect_mode_e::always_4_3);
-    }
-    else
-    {
-        k_assert(0, "Unknown aspect mode.");
-    }
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_comboBox_outputUpscaleFilter_currentIndexChanged(const QString &arg1)
-{
-    ks_set_upscaling_filter(arg1.toStdString());
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_comboBox_outputDownscaleFilter_currentIndexChanged(const QString &arg1)
-{
-    ks_set_downscaling_filter(arg1.toStdString());
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_checkBox_outputAntiTear_stateChanged(int arg1)
-{
-    const bool checked = (arg1 == Qt::Checked)? 1 : 0;
-
-    k_assert(arg1 != Qt::PartiallyChecked,
-             "Expected a two-state toggle for 'outputAntiTear'. It appears to have a third state.");
-
-    kat_set_anti_tear_enabled(checked);
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_pushButton_antiTearOptions_clicked(void)
-{
-    emit open_antitear_dialog();
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_pushButton_configureFiltering_clicked(void)
-{
-    emit open_filter_sets_dialog();
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_pushButton_editOverlay_clicked(void)
-{
-    emit open_overlay_dialog();
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_checkBox_customFiltering_stateChanged(int arg1)
-{
-    k_assert(arg1 != Qt::PartiallyChecked,
-             "Expected a two-state toggle for 'customFiltering'. It appears to have a third state.");
-
-    emit set_filtering_enabled((arg1 == Qt::Checked)? 1 : 0);
-
-    return;
-}
-
-void ControlPanelOutputWidget::on_comboBox_renderer_currentIndexChanged(const QString &rendererName)
-{
-    emit set_renderer(rendererName);
 
     return;
 }

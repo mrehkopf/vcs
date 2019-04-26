@@ -103,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent) :
         controlPanel->restore_persistent_settings();
     }
 
-    // Set up the overalay dialog.
+    // Set up the overlay dialog.
     {
         overlayDlg = new OverlayDialog;
     }

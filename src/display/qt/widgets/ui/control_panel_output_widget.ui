@@ -234,7 +234,7 @@
           </widget>
          </item>
          <item row="19" column="0">
-          <widget class="QCheckBox" name="checkBox_outputAntiTear">
+          <widget class="QCheckBox" name="checkBox_outputAntiTearEnabled">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -266,7 +266,7 @@
           </widget>
          </item>
          <item row="18" column="0">
-          <widget class="QCheckBox" name="checkBox_customFiltering">
+          <widget class="QCheckBox" name="checkBox_outputFilteringEnabled">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>

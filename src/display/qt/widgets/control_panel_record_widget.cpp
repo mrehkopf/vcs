@@ -16,6 +16,7 @@
 #include "ui_control_panel_record_widget.h"
 
 #if _WIN32
+    // For accessing the Windows registry.
     #include <windows.h>
 #endif
 
@@ -66,6 +67,56 @@ ControlPanelRecordWidget::ControlPanelRecordWidget(QWidget *parent) :
 
             ui->comboBox_recordingEncoding->addItem(encoderName);
         }
+    }
+
+    // Connect the GUI controls to consequences for changing their values.
+    {
+        connect(ui->pushButton_recordingStart, &QPushButton::clicked, this, [this]
+        {
+            if (!apply_x264_registry_settings()) return;
+
+            // Remove the existing file, if any. Without this, the file size reported
+            // in VCS's GUI during recording may be inaccurate on some platforms.
+            QFile(ui->lineEdit_recordingFilename->text()).remove();
+
+            const resolution_s videoResolution = ks_output_resolution();
+
+            if (krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
+                                        videoResolution.w, videoResolution.h,
+                                        ui->spinBox_recordingFramerate->value(),
+                                        ui->checkBox_recordingLinearFrameInsertion->isChecked()))
+            {
+                ui->pushButton_recordingStart->setEnabled(false);
+                ui->pushButton_recordingStop->setEnabled(true);
+                ui->frame_recordingSettings->setEnabled(false);
+                ui->frame_recordingFile->setEnabled(false);
+
+                emit recording_started();
+            }
+        });
+
+        connect(ui->pushButton_recordingStop, &QPushButton::clicked, this, [this]
+        {
+            krecord_stop_recording();
+
+            ui->pushButton_recordingStart->setEnabled(true);
+            ui->pushButton_recordingStop->setEnabled(false);
+            ui->frame_recordingSettings->setEnabled(true);
+            ui->frame_recordingFile->setEnabled(true);
+
+            emit recording_stopped();
+        });
+
+        connect(ui->pushButton_recordingSelectFilename, &QPushButton::clicked, this, [this]
+        {
+            QString filename = QFileDialog::getSaveFileName(this,
+                                                            "Select a file to record the video into", "",
+                                                            "All files(*.*)");
+
+            if (filename.isEmpty()) return;
+
+            ui->lineEdit_recordingFilename->setText(filename);
+        });
     }
 
     return;
@@ -280,70 +331,4 @@ bool ControlPanelRecordWidget::apply_x264_registry_settings(void)
 #endif
 
     return true;
-}
-
-void ControlPanelRecordWidget::on_pushButton_recordingStart_clicked()
-{
-    if (!apply_x264_registry_settings())
-    {
-        return;
-    }
-
-    // Remove the existing file, if any. Without this, the file size reported
-    // in VCS's GUI during recording may be inaccurate.
-    QFile(ui->lineEdit_recordingFilename->text()).remove();
-
-    const resolution_s videoResolution = ks_output_resolution();
-
-    if (krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
-                                videoResolution.w, videoResolution.h,
-                                ui->spinBox_recordingFramerate->value(),
-                                ui->checkBox_recordingLinearFrameInsertion->isChecked()))
-    {
-        ui->pushButton_recordingStart->setEnabled(false);
-        ui->pushButton_recordingStop->setEnabled(true);
-        ui->frame_recordingSettings->setEnabled(false);
-        ui->frame_recordingFile->setEnabled(false);
-
-        // Disable any GUI functionality that would let the user change the current
-        // output size, since we want to keep the output resolution constant while
-        // recording.
-        emit set_output_size_controls_enabled(false);
-
-        emit update_output_window_title();
-    }
-
-    return;
-}
-
-void ControlPanelRecordWidget::on_pushButton_recordingStop_clicked()
-{
-    krecord_stop_recording();
-
-    ui->pushButton_recordingStart->setEnabled(true);
-    ui->pushButton_recordingStop->setEnabled(false);
-    ui->frame_recordingSettings->setEnabled(true);
-    ui->frame_recordingFile->setEnabled(true);
-
-    emit set_output_size_controls_enabled(true);
-
-    emit update_output_window_size();
-    emit update_output_window_title();
-
-    return;
-}
-
-void ControlPanelRecordWidget::on_pushButton_recordingSelectFilename_clicked()
-{
-    QString filename = QFileDialog::getSaveFileName(this,
-                                                    "Select a file to record the video into", "",
-                                                    "All files(*.*)");
-    if (filename.isNull())
-    {
-        return;
-    }
-
-    ui->lineEdit_recordingFilename->setText(filename);
-
-    return;
 }

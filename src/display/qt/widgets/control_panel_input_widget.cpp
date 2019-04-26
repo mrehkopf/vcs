@@ -45,25 +45,95 @@ ControlPanelInputWidget::ControlPanelInputWidget(QWidget *parent) :
         }
     }
 
-    // Wire up the buttons for forcing the capture input resolution.
+    // Connect the GUI controls to consequences for changing their values.
     {
-        for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)
+        connect(ui->pushButton_inputAdjustVideoColor, &QPushButton::clicked, this, [this]
         {
-            QWidget *const w = ui->frame_inputForceButtons->layout()->itemAt(i)->widget();
+            emit open_video_adjust_dialog();
+        });
 
-            k_assert(w->objectName().contains("pushButton"), "Expected all widgets in this layout to be pushbuttons.");
+        connect(ui->pushButton_inputAliases, &QPushButton::clicked, this, [this]
+        {
+            emit open_alias_dialog();
+        });
 
-            // Store the unique id of this button, so we can later identify it.
-            ((QPushButton*)w)->setProperty("butt_id", i);
-
-            // Load in any custom resolutions the user may have set earlier.
-            if (kpers_contains(INI_GROUP_INPUT, QString("force_res_%1").arg(i)))
+        connect(ui->comboBox_bitDepth,
+                static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
+                this, [this](const QString &bitDepthString)
+        {
+            const uint bpp = ([bitDepthString]()->uint
             {
-                ((QPushButton*)w)->setText(kpers_value_of(INI_GROUP_INPUT, QString("force_res_%1").arg(i)).toString());
-            }
+                if (bitDepthString.contains("24-bit")) return 24;
+                else if (bitDepthString.contains("16-bit")) return 16;
+                else if (bitDepthString.contains("15-bit")) return 15;
+                else
+                {
+                    k_assert(0, "Unrecognized color depth option in the GUI dropbox.");
+                    return 0;
+                }
+            })();
 
-            connect((QPushButton*)w, &QPushButton::clicked,
-                               this, [this,w]{this->parse_capture_resolution_button_press(w);});
+            if (!kc_set_input_color_depth(bpp))
+            {
+                reset_color_depth_combobox_selection();
+                kd_show_headless_error_message("", "Failed to change the capture color depth.\n\n"
+                                                   "The previous setting has been restored.");
+            }
+        });
+
+        connect(ui->comboBox_inputChannel,
+                static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+                this, [this](int channelIndex)
+        {
+            if (!kc_set_input_channel(channelIndex))
+            {
+                NBENE(("Failed to set the input channel to %d. Reverting.", channelIndex));
+
+                block_widget_signals_c b(ui->comboBox_inputChannel);
+                ui->comboBox_inputChannel->setCurrentIndex(kc_input_channel_idx());
+            }
+        });
+
+        connect(ui->comboBox_frameSkip,
+                static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged),
+                this, [this](const QString &skipString)
+        {
+            const uint skipNum = ([skipString]()->uint
+            {
+                if (skipString == "None") return 0;
+                else if (skipString == "Half") return 1;
+                else if (skipString == "Two thirds") return 2;
+                else if (skipString == "Three quarters") return 3;
+                else
+                {
+                    k_assert(0, "Unexpected GUI string for frame-skipping.");
+                    return 0;
+                }
+            })();
+
+            kc_set_frame_dropping(skipNum);
+        });
+
+        // Wire up the buttons for forcing the capture input resolution.
+        {
+            for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)
+            {
+                QWidget *const w = ui->frame_inputForceButtons->layout()->itemAt(i)->widget();
+
+                k_assert(w->objectName().contains("pushButton"), "Expected all widgets in this layout to be pushbuttons.");
+
+                // Store the unique id of this button, so we can later identify it.
+                ((QPushButton*)w)->setProperty("butt_id", i);
+
+                // Load in any custom resolutions the user may have set earlier.
+                if (kpers_contains(INI_GROUP_INPUT, QString("force_res_%1").arg(i)))
+                {
+                    ((QPushButton*)w)->setText(kpers_value_of(INI_GROUP_INPUT, QString("force_res_%1").arg(i)).toString());
+                }
+
+                connect((QPushButton*)w, &QPushButton::clicked,
+                                   this, [this,w]{this->parse_capture_resolution_button_press(w);});
+            }
         }
     }
 
@@ -244,8 +314,7 @@ void ControlPanelInputWidget::parse_capture_resolution_button_press(QWidget *but
 
 // Queries the current capture input bit depth and sets the GUI combobox selection
 // accordingly.
-//
-void ControlPanelInputWidget::reset_color_depth_combobox_selection()
+void ControlPanelInputWidget::reset_color_depth_combobox_selection(void)
 {
     QString depthString = QString("%1-bit").arg(kc_input_color_depth()); // E.g. "24-bit".
 
@@ -261,78 +330,5 @@ void ControlPanelInputWidget::reset_color_depth_combobox_selection()
     k_assert(0, "Failed to set up the GUI for the current capture bit depth.");
 
     done:
-    return;
-}
-
-void ControlPanelInputWidget::on_comboBox_bitDepth_currentIndexChanged(const QString &bitDepthString)
-{
-    const uint bpp = ([bitDepthString]()->uint
-    {
-        if (bitDepthString.contains("24-bit")) return 24;
-        else if (bitDepthString.contains("16-bit")) return 16;
-        else if (bitDepthString.contains("15-bit")) return 15;
-        else
-        {
-            k_assert(0, "Unrecognized color depth option in the GUI dropbox.");
-            return 0;
-        }
-    })();
-
-    if (!kc_set_input_color_depth(bpp))
-    {
-        reset_color_depth_combobox_selection();
-
-        kd_show_headless_error_message("", "Failed to change the capture color depth.\n\n"
-                                           "The previous setting has been restored.");
-    }
-
-    return;
-}
-
-void ControlPanelInputWidget::on_comboBox_inputChannel_currentIndexChanged(int index)
-{
-    // If we fail to set the input channel, revert back to the current one.
-    if (!kc_set_input_channel(index))
-    {
-        block_widget_signals_c b(ui->comboBox_inputChannel);
-
-        NBENE(("Failed to set the input channel to %d. Reverting.", index));
-        ui->comboBox_inputChannel->setCurrentIndex(kc_input_channel_idx());
-    }
-
-    return;
-}
-
-void ControlPanelInputWidget::on_comboBox_frameSkip_currentIndexChanged(const QString &skipString)
-{
-    const uint skipNum = ([skipString]()->uint
-    {
-        if (skipString == "None") return 0;
-        else if (skipString == "Half") return 1;
-        else if (skipString == "Two thirds") return 2;
-        else if (skipString == "Three quarters") return 3;
-        else
-        {
-            k_assert(0, "Unexpected GUI string for frame-skipping.");
-            return 0;
-        }
-    })();
-
-    kc_set_frame_dropping(skipNum);
-
-    return;
-}
-
-void ControlPanelInputWidget::on_pushButton_inputAdjustVideoColor_clicked(void)
-{
-    emit open_video_adjust_dialog();
-
-    return;
-}
-
-void ControlPanelInputWidget::on_pushButton_inputAliases_clicked(void)
-{
-    emit open_alias_dialog();
-
     return;
 }
