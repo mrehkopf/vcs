@@ -37,6 +37,8 @@ win32 {
         LIBS += -L"C:/Program Files (x86)/OpenCV/3.2.0/bin/mingw"
         LIBS += -lopencv_world320
     }
+
+    RC_ICONS = "src/display/qt/appicon.rc"
 }
 
 QT += core gui

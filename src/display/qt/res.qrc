@@ -8,5 +8,6 @@
         <file>stylesheets/font-windows.qss</file>
         <file>images/icons/arrow_up_disabled.png</file>
         <file>images/icons/arrow_up.png</file>
+        <file>images/icons/appicon.ico</file>
     </qresource>
 </RCC>

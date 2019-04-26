@@ -120,9 +120,14 @@ MainWindow::MainWindow(QWidget *parent) :
         overlayDlg = new OverlayDialog;
     }
 
-    if (controlPanel && controlPanel->custom_program_styling_enabled())
+    // Apply program styling.
     {
-        apply_programwide_styling(":/res/stylesheets/appstyle-gray.qss");
+        qApp->setWindowIcon(QIcon(":/res/images/icons/appicon.ico"));
+
+        if (controlPanel && controlPanel->custom_program_styling_enabled())
+        {
+            apply_programwide_styling(":/res/stylesheets/appstyle-gray.qss");
+        }
     }
 
     // We intend to repaint the entire window every time we update it, so ask for no automatic fill.
