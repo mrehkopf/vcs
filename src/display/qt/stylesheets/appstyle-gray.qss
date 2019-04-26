@@ -11,7 +11,7 @@
 
 QDialog
 {
-    background-color: #b0b0b0;
+    background-color: #b0b0ad;
     border: none;
 }
 
@@ -57,23 +57,23 @@ QTabBar::tab
 
 QTabBar::tab:!selected
 {
-    color: #555555;
+    color: #555553;
 }
 
 QTabBar::tab:hover
 {
-    background-color: #a1a1a1;
+    background-color: #a1a19f;
 }
 
 QTabBar::tab:selected
 {
-    background-color: #b0b0b0;
+    background-color: #b0b0ad;
     color: #202020;
 }
 
 QPlainTextEdit
 {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(10, 10, 0, 0.05);
     border-radius: 0px;
     border: 1px solid rgba(0, 0, 0, 0.15);
     color: #101010;
@@ -142,23 +142,23 @@ QComboBox QAbstractItemView
 
 QListWidget
 {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(10, 10, 0, 0.1);
     color: #e5e5e5;
 }
 
 QListWidget::item:selected:active
 {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(10, 10, 0, 0.1);
 }
 
 QListWidget::item:selected
 {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(10, 10, 0, 0.1);
 }
 
 QTreeWidget
 {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(10, 10, 0, 0.1);
     color: #e5e5e5;
 }
 
@@ -169,7 +169,7 @@ QTreeWidget QAbstractItemView
 
 QTreeWidget QHeaderView::section
 {
-    background-color: dimgray;
+    background-color: #696967;
     color: #d0d0d0;
     border: none;
     border-left: 1px solid rgba(0,0,0,0.1);
@@ -216,7 +216,7 @@ QMenuBar::item
 
 QGroupBox
 {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(5, 5, 0, 0.05);
     border-radius: 2px;
     padding-top: 16px;
     margin: 3px;
@@ -243,7 +243,7 @@ QRadioButton::indicator
 
 QRadioButton::indicator::!checked
 {
-    background: rgba(0,0,0,0.07);
+    background: rgba(0,0,0,0.06);
     border: none;
     border-left: 1px solid rgba(0,0,0,0.2);
     border-top: 1px solid rgba(0,0,0,0.2);
@@ -259,7 +259,7 @@ QRadioButton::indicator::checked
 
 QRadioButton::indicator::checked:disabled
 {
-    background: rgba(0,0,0,0.2);
+    background: rgba(5,5,0,0.2);
 }
 
 QCheckBox::indicator, QGroupBox::indicator, QTreeWidget::indicator
@@ -279,7 +279,7 @@ QTreeWidget::indicator
 
 QCheckBox::indicator::!checked, QGroupBox::indicator::!checked, QTreeWidget::indicator::!checked
 {
-    background: rgba(0,0,0,0.07);
+    background: rgba(0,0,0,0.06);
     border: none;
     border-left: 1px solid rgba(0,0,0,0.25);
     border-top: 1px solid rgba(0,0,0,0.25);
@@ -295,7 +295,7 @@ QCheckBox::indicator::checked, QGroupBox::indicator::checked, QTreeWidget::indic
 
 QCheckBox::indicator::checked:disabled, QGroupBox::indicator::checked:disabled
 {
-    background: rgba(0,0,0,0.2);
+    background: rgba(5,5,0,0.2);
 }
 
 QSpinBox, QDoubleSpinBox, QLineEdit
@@ -344,7 +344,7 @@ QGroupBox, QLabel
 
 QPushButton:disabled
 {
-    background-color: rgba(0, 0, 0, 0.07);
+    background-color: rgba(5, 5, 0, 0.07);
     border: none;
     color: rgba(0, 0, 0, 0.3);
 }
@@ -356,7 +356,7 @@ QLabel:disabled, QFrame:disabled, QAbstractButton:disabled
 
 QSpinBox:disabled, QLineEdit:disabled, QComboBox:disabled
 {
-    background-color: rgba(0, 0, 0, 0.07);
+    background-color: rgba(5, 5, 0, 0.07);
     border: none;
     color: rgba(0, 0, 0, 0.3);
 }
