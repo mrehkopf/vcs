@@ -83,6 +83,8 @@ public:
 
     bool custom_program_styling_enabled();
 
+    void restore_persistent_settings();
+
 signals:
     void new_programwide_style_file(const QString &filename);
 

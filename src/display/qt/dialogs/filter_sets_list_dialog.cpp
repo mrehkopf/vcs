@@ -45,46 +45,32 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    // Set the GUI controls to their proper initial values.
+    // Create the dialog's menu bar.
     {
-        // Create the dialog's menu bar.
+        this->menubar = new QMenuBar(this);
+
+        // File...
         {
-            this->menubar = new QMenuBar(this);
+            QMenu *fileMenu = new QMenu("File", this);
 
-            // File...
-            {
-                QMenu *fileMenu = new QMenu("File", this);
+            fileMenu->addAction("Load sets...", this, SLOT(load_sets_from_file()));
+            fileMenu->addSeparator();
+            fileMenu->addAction("Save sets as...", this, SLOT(save_sets_to_file()));
 
-                fileMenu->addAction("Load sets...", this, SLOT(load_sets_from_file()));
-                fileMenu->addSeparator();
-                fileMenu->addAction("Save sets as...", this, SLOT(save_sets_to_file()));
-
-                menubar->addMenu(fileMenu);
-            }
-
-            // Help...
-            {
-                QMenu *fileMenu = new QMenu("Help", this);
-
-                fileMenu->addAction("About...");
-                fileMenu->actions().at(0)->setEnabled(false); /// TODO: Add the actual help.
-
-                menubar->addMenu(fileMenu);
-            }
-
-            this->layout()->setMenuBar(menubar);
+            menubar->addMenu(fileMenu);
         }
 
-        // Restore persistent settings.
+        // Help...
         {
-            this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "filtering", size()).toSize());
+            QMenu *fileMenu = new QMenu("Help", this);
+
+            fileMenu->addAction("About...");
+            fileMenu->actions().at(0)->setEnabled(false); /// TODO: Add the actual help.
+
+            menubar->addMenu(fileMenu);
         }
 
-        // If the user supplied a filter sets file on the command-line when starting
-        // the program, load it in.
-        kdisk_load_filter_sets(kcom_filters_file_name());
-
-        update_selection_sensitive_controls();
+        this->layout()->setMenuBar(menubar);
     }
 
     // Connect GUI controls to consequences for operating them.
@@ -242,6 +228,17 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
             }
         });
     }
+
+    // Restore persistent settings.
+    {
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "filtering", size()).toSize());
+    }
+
+    // If the user supplied a filter sets file on the command-line when starting
+    // the program, load it in.
+    kdisk_load_filter_sets(kcom_filters_file_name());
+
+    update_selection_sensitive_controls();
 
     return;
 }

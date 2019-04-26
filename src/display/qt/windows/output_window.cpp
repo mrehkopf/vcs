@@ -96,6 +96,11 @@ MainWindow::MainWindow(QWidget *parent) :
                 k_assert(0, "Unknown renderer type.");
             }
         });
+
+        // Note: the relevant signals and slots should be connected, above, before
+        // asking to restore persistent settings, so that any settings that rely
+        // on emitting signals back take proper effect.
+        controlPanel->restore_persistent_settings();
     }
 
     // Set up the overalay dialog.

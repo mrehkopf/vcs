@@ -143,11 +143,11 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
 
             update_controls();
         }
+    }
 
-        // Restore persistent settings.
-        {
-            this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "video_and_color", size()).toSize());
-        }
+    // Restore persistent settings.
+    {
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "video_and_color", size()).toSize());
     }
 
     return;

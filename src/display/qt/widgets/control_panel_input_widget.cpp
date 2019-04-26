@@ -20,7 +20,7 @@ ControlPanelInputWidget::ControlPanelInputWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Set the GUI controls to their proper initial values.
+    // Initialize the GUI controls.
     {
         reset_color_depth_combobox_selection();
 
@@ -73,6 +73,13 @@ ControlPanelInputWidget::ControlPanelInputWidget(QWidget *parent) :
 ControlPanelInputWidget::~ControlPanelInputWidget()
 {
     delete ui;
+
+    return;
+}
+
+void ControlPanelInputWidget::restore_persistent_settings(void)
+{
+    /// No persistent settings for this dialog, yet.
 
     return;
 }

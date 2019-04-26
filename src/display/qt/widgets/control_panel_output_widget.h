@@ -31,6 +31,8 @@ public:
 
     void toggle_overlay();
 
+    void restore_persistent_settings();
+
 private slots:
     void on_checkBox_forceOutputScale_stateChanged(int arg1);
 

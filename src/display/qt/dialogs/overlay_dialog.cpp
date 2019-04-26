@@ -81,14 +81,14 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
             formatting->addAction("Image...", this, SLOT(add_image_to_overlay()));
             ui->pushButton_htmlFormat->setMenu(formatting);
         }
+    }
 
-        // Restore persistent settings.
-        {
-            this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "overlay", size()).toSize());
+    // Restore persistent settings.
+    {
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "overlay", size()).toSize());
 
-            // Load the previous overlay from disk, if such was saved.
-            ui->plainTextEdit->setPlainText(kpers_value_of(INI_GROUP_OVERLAY, "content", "").toString());
-        }
+        // Load the previous overlay from disk, if such was saved.
+        ui->plainTextEdit->setPlainText(kpers_value_of(INI_GROUP_OVERLAY, "content", "").toString());
     }
 
     return;

@@ -23,6 +23,8 @@ public:
 
     void activate_capture_res_button(const uint buttonIdx);
 
+    void restore_persistent_settings();
+
 private slots:
     void set_input_controls_enabled(const bool state);
 

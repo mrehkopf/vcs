@@ -135,11 +135,6 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
             ui->treeWidget_preFilters->set_filters(filterSet->preFilters);
             ui->treeWidget_postFilters->set_filters(filterSet->postFilters);
         }
-
-        // Restore persistent settings.
-        {
-            resize(kpers_value_of(INI_GROUP_GEOMETRY, "filter_set", size()).toSize());
-        }
     }
 
     // Connect GUI controls to consequences for operating them.
@@ -206,6 +201,11 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
         // Undo any changes, and exit the dialog.
         connect(ui->pushButton_cancel, &QPushButton::clicked, this,
                 [=]{ *filterSet = originalFilterSet; this->done(0); });
+    }
+
+    // Restore persistent settings.
+    {
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "filter_set", size()).toSize());
     }
 
     return;

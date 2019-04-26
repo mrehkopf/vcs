@@ -17,6 +17,8 @@ public:
 
     void update_recording_metainfo();
 
+    void restore_persistent_settings();
+
 private slots:
     void on_pushButton_recordingStart_clicked();
 

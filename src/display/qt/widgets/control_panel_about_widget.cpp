@@ -21,12 +21,6 @@ ControlPanelAboutWidget::ControlPanelAboutWidget(QWidget *parent) :
 
     ui->groupBox_aboutVCS->setTitle("VCS " + QString(PROGRAM_VERSION_STRING));
 
-    // Restore persistent settings.
-    {
-        set_qcombobox_idx_c(ui->comboBox_customInterfaceStyling)
-                           .by_string(kpers_value_of(INI_GROUP_APP, "custom_styling", "Grayscale").toString());
-    }
-
     // Poll the capture hardware to fill the information matrix about the
     // hardware's capabilities.
     {
@@ -63,6 +57,14 @@ ControlPanelAboutWidget::~ControlPanelAboutWidget()
     }
 
     delete ui;
+
+    return;
+}
+
+void ControlPanelAboutWidget::restore_persistent_settings(void)
+{
+    set_qcombobox_idx_c(ui->comboBox_customInterfaceStyling)
+                       .by_string(kpers_value_of(INI_GROUP_APP, "custom_styling", "Grayscale").toString());
 
     return;
 }

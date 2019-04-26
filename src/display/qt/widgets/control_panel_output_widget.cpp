@@ -21,7 +21,7 @@ ControlPanelOutputWidget::ControlPanelOutputWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Set the GUI controls to their proper initial values.
+    // Initialize the GUI controls.
     {
         ui->spinBox_outputResX->setMinimum(MIN_OUTPUT_WIDTH);
         ui->spinBox_outputResY->setMinimum(MIN_OUTPUT_HEIGHT);
@@ -44,31 +44,6 @@ ControlPanelOutputWidget::ControlPanelOutputWidget(QWidget *parent) :
                 ui->comboBox_outputUpscaleFilter->addItem(QString::fromStdString(name));
                 ui->comboBox_outputDownscaleFilter->addItem(QString::fromStdString(name));
             }
-        }
-
-        // Restore persistent settings.
-        {
-            set_qcombobox_idx_c(ui->comboBox_outputUpscaleFilter)
-                               .by_string(kpers_value_of(INI_GROUP_OUTPUT, "upscaler", "Linear").toString());
-
-            set_qcombobox_idx_c(ui->comboBox_outputDownscaleFilter)
-                               .by_string(kpers_value_of(INI_GROUP_OUTPUT, "downscaler", "Linear").toString());
-
-            set_qcombobox_idx_c(ui->comboBox_outputAspectMode)
-                               .by_string(kpers_value_of(INI_GROUP_OUTPUT, "aspect_mode", "Native").toString());
-
-            set_qcombobox_idx_c(ui->comboBox_renderer)
-                               .by_string(kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString());
-
-            ui->checkBox_customFiltering->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", 0).toBool());
-            ui->checkBox_outputKeepAspectRatio->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "keep_aspect", true).toBool());
-            ui->checkBox_outputOverlayEnabled->setChecked(kpers_value_of(INI_GROUP_OVERLAY, "enabled", true).toBool());
-            ui->checkBox_forceOutputRes->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_output_size", false).toBool());
-            ui->spinBox_outputResX->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().width());
-            ui->spinBox_outputResY->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().height());
-            ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_relative_scale", false).toBool());
-            ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
-            ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
         }
     }
 
@@ -94,6 +69,33 @@ ControlPanelOutputWidget::~ControlPanelOutputWidget()
     }
 
     delete ui;
+
+    return;
+}
+
+void ControlPanelOutputWidget::restore_persistent_settings(void)
+{
+    set_qcombobox_idx_c(ui->comboBox_outputUpscaleFilter)
+                       .by_string(kpers_value_of(INI_GROUP_OUTPUT, "upscaler", "Linear").toString());
+
+    set_qcombobox_idx_c(ui->comboBox_outputDownscaleFilter)
+                       .by_string(kpers_value_of(INI_GROUP_OUTPUT, "downscaler", "Linear").toString());
+
+    set_qcombobox_idx_c(ui->comboBox_outputAspectMode)
+                       .by_string(kpers_value_of(INI_GROUP_OUTPUT, "aspect_mode", "Native").toString());
+
+    set_qcombobox_idx_c(ui->comboBox_renderer)
+                       .by_string(kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString());
+
+    ui->checkBox_customFiltering->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", 0).toBool());
+    ui->checkBox_outputKeepAspectRatio->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "keep_aspect", true).toBool());
+    ui->checkBox_outputOverlayEnabled->setChecked(kpers_value_of(INI_GROUP_OVERLAY, "enabled", true).toBool());
+    ui->checkBox_forceOutputRes->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_output_size", false).toBool());
+    ui->spinBox_outputResX->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().width());
+    ui->spinBox_outputResY->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().height());
+    ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_relative_scale", false).toBool());
+    ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
+    ui->checkBox_outputAntiTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
 
     return;
 }

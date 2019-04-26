@@ -149,15 +149,6 @@ ControlPanel::ControlPanel(QWidget *parent) :
         });
     }
 
-    // Set the GUI controls to their proper initial values.
-    {
-        // Restore persistent settings.
-        {
-            this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "control_panel", size()).toSize());
-            ui->tabWidget->setCurrentIndex(kpers_value_of(INI_GROUP_CONTROL_PANEL, "tab", 0).toUInt());
-        }
-    }
-
     return;
 }
 
@@ -183,6 +174,21 @@ ControlPanel::~ControlPanel()
 
     delete filterSetsDlg;
     filterSetsDlg = nullptr;
+
+    return;
+}
+
+void ControlPanel::restore_persistent_settings(void)
+{
+    // Restore the control panel's persistent settings.
+    this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "control_panel", size()).toSize());
+    ui->tabWidget->setCurrentIndex(kpers_value_of(INI_GROUP_CONTROL_PANEL, "tab", 0).toUInt());
+
+    // Restore the related widgets' persistent settings.
+    aboutWidget->restore_persistent_settings();
+    inputWidget->restore_persistent_settings();
+    outputWidget->restore_persistent_settings();
+    recordWidget->restore_persistent_settings();
 
     return;
 }

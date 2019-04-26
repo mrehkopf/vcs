@@ -26,19 +26,6 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    // Restore persistent settings.
-    {
-        const anti_tear_options_s defaults = kat_default_settings();
-
-        ui->spinBox_rangeUp->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "range_up", defaults.rangeUp).toInt());
-        ui->spinBox_rangeDown->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "range_down", defaults.rangeDown).toInt());
-        ui->spinBox_threshold->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "threshold", defaults.threshold).toInt());
-        ui->spinBox_matchesReqd->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "matches_reqd", defaults.matchesReqd).toInt());
-        ui->spinBox_domainSize->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "window_len", defaults.windowLen).toInt());
-
-        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "anti_tear", this->size()).toSize());
-    }
-
     // Connect the GUI controls to consequences for changing their values.
     {
         // The valueChanged() signal is overloaded for int and QString, and we
@@ -100,6 +87,19 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 
         connect(ui->checkBox_visualizeTear, &QCheckBox::stateChanged, this,
                 [=]{ update_visualization_options(); });
+    }
+
+    // Restore persistent settings.
+    {
+        const anti_tear_options_s defaults = kat_default_settings();
+
+        ui->spinBox_rangeUp->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "range_up", defaults.rangeUp).toInt());
+        ui->spinBox_rangeDown->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "range_down", defaults.rangeDown).toInt());
+        ui->spinBox_threshold->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "threshold", defaults.threshold).toInt());
+        ui->spinBox_matchesReqd->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "matches_reqd", defaults.matchesReqd).toInt());
+        ui->spinBox_domainSize->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "window_len", defaults.windowLen).toInt());
+
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "anti_tear", this->size()).toSize());
     }
 
     return;
