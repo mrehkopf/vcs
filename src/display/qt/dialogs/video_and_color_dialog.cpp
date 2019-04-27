@@ -411,7 +411,7 @@ void VideoAndColorDialog::load_settings(void)
 
     if (filename.isEmpty()) return;
 
-    if (kdisk_load_mode_params(filename.toStdString()))
+    if (kdisk_load_video_mode_params(filename.toStdString()))
     {
         remove_unsaved_changes_flag();
     }

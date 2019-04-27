@@ -79,7 +79,7 @@ struct capture_color_settings_s
 
 // For each input mode (i.e. resolution), the set of parameters that the user
 // has defined.
-struct mode_params_s
+struct video_mode_params_s
 {
     resolution_s r;
     capture_color_settings_s color;
@@ -155,9 +155,9 @@ PIXELFORMAT kc_pixel_format(void);
 const capture_hardware_s& kc_hardware(void);
 capture_event_e kc_latest_capture_event(void);
 const captured_frame_s& kc_latest_captured_frame(void);
-const std::vector<mode_params_s>& kc_mode_params(void);
+const std::vector<video_mode_params_s>& kc_mode_params(void);
 const std::vector<mode_alias_s>& ka_aliases(void);
-mode_params_s kc_mode_params_for_resolution(const resolution_s r);
+video_mode_params_s kc_mode_params_for_resolution(const resolution_s r);
 
 // Public setters.
 bool kc_set_resolution(const resolution_s r);
@@ -169,7 +169,7 @@ bool kc_adjust_video_vertical_offset(const int delta);
 bool kc_adjust_video_horizontal_offset(const int delta);
 void kc_set_color_settings(const capture_color_settings_s c);
 void kc_set_video_settings(const capture_video_settings_s v);
-void kc_set_mode_params(const std::vector<mode_params_s> &modeParams);
+void kc_set_mode_params(const std::vector<video_mode_params_s> &modeParams);
 void kc_mark_current_frame_as_processed(void);
 void kc_reset_missed_frames_count(void);
 void kc_apply_new_capture_resolution(void);

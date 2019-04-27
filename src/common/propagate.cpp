@@ -44,7 +44,7 @@ void kpropagate_news_of_new_capture_video_mode(void)
 
 // Call to let the system know that the given mode parameters have been loaded
 // from the given file.
-void kpropagate_loaded_mode_params_from_disk(const std::vector<mode_params_s> &modeParams,
+void kpropagate_loaded_mode_params_from_disk(const std::vector<video_mode_params_s> &modeParams,
                                              const std::string &sourceFilename)
 {
     kc_set_mode_params(modeParams);
@@ -59,7 +59,7 @@ void kpropagate_loaded_mode_params_from_disk(const std::vector<mode_params_s> &m
     return;
 }
 
-void kpropagate_saved_mode_params_to_disk(const std::vector<mode_params_s> &modeParams,
+void kpropagate_saved_mode_params_to_disk(const std::vector<video_mode_params_s> &modeParams,
                                           const std::string &targetFilename)
 {
     INFO(("Saved %u set(s) of mode params to disk.", modeParams.size()));

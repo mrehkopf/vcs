@@ -99,7 +99,7 @@ private:
     }
 };
 
-bool kdisk_save_mode_params(const std::vector<mode_params_s> &modeParams,
+bool kdisk_save_mode_params(const std::vector<video_mode_params_s> &modeParams,
                             const QString &targetFilename)
 {
     file_writer_c outFile(targetFilename);
@@ -151,7 +151,7 @@ bool kdisk_save_mode_params(const std::vector<mode_params_s> &modeParams,
     return false;
 }
 
-bool kdisk_load_mode_params(const std::string &sourceFilename)
+bool kdisk_load_video_mode_params(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
     {
@@ -159,7 +159,7 @@ bool kdisk_load_mode_params(const std::string &sourceFilename)
         return true;
     }
 
-    std::vector<mode_params_s> modeParams;
+    std::vector<video_mode_params_s> videoModeParams;
 
     QList<QStringList> paramRows = csv_parse_c(QString::fromStdString(sourceFilename)).contents();
 
@@ -175,7 +175,7 @@ bool kdisk_load_mode_params(const std::string &sourceFilename)
             goto fail;
         }
 
-        mode_params_s p;
+        video_mode_params_s p;
         p.r.w = paramRows[i].at(1).toUInt();
         p.r.h = paramRows[i].at(2).toUInt();
 
@@ -185,7 +185,7 @@ bool kdisk_load_mode_params(const std::string &sourceFilename)
                          {
                              if (paramRows[i].at(0) != name)
                              {
-                                 NBENE(("Error while loading the mode params file: expected '%s' but got '%s'.",
+                                 NBENE(("Error while loading video parameters: expected '%s' but got '%s'.",
                                         name.toLatin1().constData(), paramRows[i].at(0).toLatin1().constData()));
                                  throw 0;
                              }
@@ -215,22 +215,22 @@ bool kdisk_load_mode_params(const std::string &sourceFilename)
             goto fail;
         }
 
-        modeParams.push_back(p);
+        videoModeParams.push_back(p);
     }
 
     // Sort the modes so they'll display more nicely in the GUI.
-    std::sort(modeParams.begin(), modeParams.end(), [](const mode_params_s &a, const mode_params_s &b)
+    std::sort(videoModeParams.begin(), videoModeParams.end(), [](const video_mode_params_s &a, const video_mode_params_s &b)
                                           { return (a.r.w * a.r.h) < (b.r.w * b.r.h); });
 
-    kpropagate_loaded_mode_params_from_disk(modeParams, sourceFilename);
+    kpropagate_loaded_mode_params_from_disk(videoModeParams, sourceFilename);
 
     return true;
 
     fail:
     kd_show_headless_error_message("Data was not loaded",
-                                   "An error was encountered while loading the mode "
-                                   "parameter file. No data was loaded.\n\nMore "
-                                   "information about the error may be found in the terminal.");
+                                   "An error was encountered while loading video parameters. "
+                                   "No data was loaded.\n\nMore information about the error "
+                                   "may be found in the terminal.");
     return false;
 }
 
@@ -356,7 +356,7 @@ bool kdisk_load_filter_sets(const std::string &sourceFilename)
 
         #define verify_first_element_on_row_is(name) if (rowData[row].at(0) != name)\
                                                      {\
-                                                        NBENE(("Error while loading the filter set file: expected '%s' but got '%s'.",\
+                                                        NBENE(("Error while loading filter set file: expected '%s' but got '%s'.",\
                                                                name, rowData[row].at(0).toStdString().c_str()));\
                                                         goto fail;\
                                                      }
@@ -464,7 +464,7 @@ bool kdisk_load_filter_sets(const std::string &sourceFilename)
 
     fail:
     kd_show_headless_error_message("Data was not loaded",
-                                   "An error was encountered while loading the filter "
+                                   "An error was encountered while loading filter "
                                    "sets. No data was loaded.\n\nMore "
                                    "information about the error may be found in the terminal.");
     return false;
@@ -518,9 +518,9 @@ bool kdisk_load_aliases(const std::string &sourceFilename)
 
     fail:
     kd_show_headless_error_message("Data was not loaded",
-                                   "An error was encountered while loading the alias "
-                                   "file. No data was loaded.\n\nMore "
-                                   "information about the error may be found in the terminal.");
+                                   "An error was encountered while loading aliases. No data was "
+                                   "loaded.\n\nMore information about the error may be found in "
+                                   "the terminal.");
     return false;
 }
 

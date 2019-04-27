@@ -234,12 +234,6 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "filtering", size()).toSize());
     }
 
-    // If the user supplied a filter sets file on the command-line when starting
-    // the program, load it in.
-    kdisk_load_filter_sets(kcom_filters_file_name());
-
-    update_selection_sensitive_controls();
-
     return;
 }
 

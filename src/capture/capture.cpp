@@ -26,7 +26,7 @@ static bool SIGNAL_WOKE_UP = false;
 // If set to true, the scaler should skip the next frame we send.
 static u32 SKIP_NEXT_NUM_FRAMES = false;
 
-static std::vector<mode_params_s> KNOWN_MODES;
+static std::vector<video_mode_params_s> KNOWN_MODES;
 
 // The color depth/format in which the capture hardware captures the frames.
 static PIXELFORMAT CAPTURE_PIXEL_FORMAT = RGB_PIXELFORMAT_888;
@@ -361,29 +361,12 @@ void kc_initialize_capture(void)
         }
     }
 
-    // Load previously-saved settings, if any.
-    {
-        if (!kdisk_load_aliases(kcom_alias_file_name()))
-        {
-            NBENE(("Failed loading mode aliases from disk.\n"));
-            PROGRAM_EXIT_REQUESTED = 1;
-            goto done;
-        }
-
-        if (!kdisk_load_mode_params(kcom_params_file_name()))
-        {
-            NBENE(("Failed loading mode parameters from disk.\n"));
-            PROGRAM_EXIT_REQUESTED = 1;
-            goto done;
-        }
-    }
-
     done:
     kpropagate_news_of_new_capture_video_mode();
     return;
 }
 
-void kc_set_mode_params(const std::vector<mode_params_s> &modeParams)
+void kc_set_mode_params(const std::vector<video_mode_params_s> &modeParams)
 {
     KNOWN_MODES = modeParams;
 
@@ -467,7 +450,7 @@ bool kc_set_resolution(const resolution_s r)
     return CAPTURE_INTERFACE.set_capture_resolution(r);
 }
 
-mode_params_s kc_mode_params_for_resolution(const resolution_s r)
+video_mode_params_s kc_mode_params_for_resolution(const resolution_s r)
 {
     for (const auto &m: KNOWN_MODES)
     {
@@ -488,7 +471,7 @@ bool kc_set_mode_parameters_for_resolution(const resolution_s r)
 {
     INFO(("Applying mode parameters for %u x %u.", r.w, r.h));
 
-    mode_params_s p = kc_mode_params_for_resolution(r);
+    video_mode_params_s p = kc_mode_params_for_resolution(r);
 
     // Apply the set of mode parameters for the current input resolution.
     /// TODO. Add error-checking.
@@ -719,7 +702,7 @@ bool kc_set_input_color_depth(const u32 bpp)
     return false;
 }
 
-const std::vector<mode_params_s>& kc_mode_params(void)
+const std::vector<video_mode_params_s>& kc_mode_params(void)
 {
     return KNOWN_MODES;
 }

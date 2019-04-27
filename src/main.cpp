@@ -19,6 +19,7 @@
 #include "scaler/scaler.h"
 #include "filter/filter.h"
 #include "common/memory.h"
+#include "common/disk.h"
 
 extern std::mutex INPUT_OUTPUT_MUTEX;
 
@@ -123,6 +124,16 @@ static capture_event_e process_next_capture_event(void)
     return e;
 }
 
+// Load in any data files that the user requested via the command-line.
+static void load_user_data(void)
+{
+    kdisk_load_video_mode_params(kcom_params_file_name());
+    kdisk_load_filter_sets(kcom_filters_file_name());
+    kdisk_load_aliases(kcom_alias_file_name());
+
+    return;
+}
+
 #ifndef VALIDATION_RUN
 int main(int argc, char *argv[])
 {
@@ -163,6 +174,7 @@ int main(int argc, char *argv[])
     }
     else
     {
+        load_user_data();
         kpropagate_news_of_new_capture_video_mode();
     }
 
