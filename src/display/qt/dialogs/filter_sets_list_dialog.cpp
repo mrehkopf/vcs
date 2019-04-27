@@ -234,6 +234,8 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "filtering", size()).toSize());
     }
 
+    repopulate_filter_sets_list();
+
     return;
 }
 
