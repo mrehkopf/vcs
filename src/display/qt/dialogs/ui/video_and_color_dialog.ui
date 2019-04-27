@@ -119,10 +119,16 @@
           <item row="3" column="1">
            <widget class="QSpinBox" name="spinBox_videoVerPos">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
@@ -158,10 +164,16 @@
           <item row="4" column="1">
            <widget class="QSpinBox" name="spinBox_videoPhase">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
@@ -183,6 +195,18 @@
           </item>
           <item row="4" column="0">
            <widget class="QLabel" name="label_4">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Phase:</string>
             </property>
@@ -206,6 +230,18 @@
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Horizontal pos.:</string>
             </property>
@@ -213,6 +249,18 @@
           </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Horizontal size:</string>
             </property>
@@ -220,6 +268,18 @@
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Vertical position:</string>
             </property>
@@ -228,10 +288,16 @@
           <item row="1" column="1">
            <widget class="QSpinBox" name="spinBox_videoHorPos">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
@@ -240,6 +306,18 @@
           </item>
           <item row="5" column="0">
            <widget class="QLabel" name="label_5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Black level:</string>
             </property>
@@ -261,10 +339,16 @@
           <item row="0" column="1">
            <widget class="QSpinBox" name="spinBox_videoHorSize">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
@@ -274,10 +358,16 @@
           <item row="5" column="1">
            <widget class="QSpinBox" name="spinBox_videoBlackLevel">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
@@ -333,6 +423,18 @@
           </item>
           <item row="9" column="0">
            <widget class="QLabel" name="label_10">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Blue brightness:</string>
             </property>
@@ -344,10 +446,16 @@
           <item row="0" column="1">
            <widget class="QSpinBox" name="spinBox_colorBright">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
@@ -357,10 +465,16 @@
           <item row="1" column="1">
            <widget class="QSpinBox" name="spinBox_colorContr">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
@@ -370,10 +484,16 @@
           <item row="9" column="1">
            <widget class="QSpinBox" name="spinBox_colorBrightBlue">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
@@ -383,10 +503,16 @@
           <item row="7" column="1">
            <widget class="QSpinBox" name="spinBox_colorContrGreen">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
@@ -395,6 +521,18 @@
           </item>
           <item row="4" column="0">
            <widget class="QLabel" name="label_11">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Red contrast:</string>
             </property>
@@ -434,6 +572,18 @@
           </item>
           <item row="10" column="0">
            <widget class="QLabel" name="label_13">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Blue contrast:</string>
             </property>
@@ -483,6 +633,18 @@
           </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label_6">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Brightness:</string>
             </property>
@@ -494,10 +656,16 @@
           <item row="6" column="1">
            <widget class="QSpinBox" name="spinBox_colorBrightGreen">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
@@ -519,6 +687,18 @@
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_8">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Red brightness:</string>
             </property>
@@ -530,10 +710,16 @@
           <item row="3" column="1">
            <widget class="QSpinBox" name="spinBox_colorBrightRed">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
@@ -542,6 +728,18 @@
           </item>
           <item row="7" column="0">
            <widget class="QLabel" name="label_12">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Green contrast:</string>
             </property>
@@ -565,6 +763,18 @@
           </item>
           <item row="6" column="0">
            <widget class="QLabel" name="label_9">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Green brightness:</string>
             </property>
@@ -588,6 +798,18 @@
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_7">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>130</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="text">
              <string>Contrast:</string>
             </property>
@@ -599,10 +821,16 @@
           <item row="10" column="1">
            <widget class="QSpinBox" name="spinBox_colorContrBlue">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
@@ -625,10 +853,16 @@
           <item row="4" column="1">
            <widget class="QSpinBox" name="spinBox_colorContrRed">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>48</width>
+              <height>0</height>
+             </size>
             </property>
             <property name="buttonSymbols">
              <enum>QAbstractSpinBox::NoButtons</enum>
