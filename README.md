@@ -118,43 +118,39 @@ The `Output` tab lets you view and control the parameters related to VCS's outpu
 
 ![](images/screenshots/v1.4.1/control-panel-output.png)
 
-**Resolution.** The current output resolution. This will be the size of the output window.
-
-**Original.** The current input resolution.
-
-**Latency.** If the capture card sends VCS a new frame before VCS has finished processing the previous one, the new frame will be ignored, and this will display "Dropping frames". Otherwise, all frames sent by the capture card are being processed and displayed by VCS in a timely manner, and this shows "No problem".
-
-**Frame rate.** The number of frames passing through the capture pipeline 
-per second. The pipeline consists of the following stages: a frame being received by VCS from the capture card, the frame being scaled and filtered, and the frame being drawn on VCS's output window.
-
 **Renderer.** Set the type of rendering VCS uses to draw captured frames onto the [output window](#the-output-window). The _software_ renderer should be the most compatible option. The _OpenGL_ renderer may offer e.g. compatibility with adaptive synchronization technologies.
 - The _OpenGL_ renderer may not work in Windows XP.
 - The [magnifying glass](#magnifying-glass) is not available when using the _OpenGL_ renderer.
 
-**Overlay.** Create a message to be overlaid on the [output window](#the-output-window) during capture. You can enter custom text or images, choose from several variables that update in real-time, and apply styling with HTML and CSS. Note that the overlay will only be shown while a signal is being received from the capture hardware.
+**Resolution.** The current output resolution. This will be the size of the output window.
 
-![](images/screenshots/v1.4.1/overlay-dialog.png)
+**Frame rate.** The number of frames passing through the capture pipeline 
+per second. The pipeline consists of the following stages: a frame being received by VCS from the capture card, the frame being scaled and filtered, and the frame being drawn on VCS's output window.
+
+**Latency.** If the capture card sends VCS a new frame before VCS has finished processing the previous one, the new frame will be ignored, and this will display "Dropping frames". Otherwise, all frames sent by the capture card are being processed and displayed by VCS in a timely manner, and this shows "No problem".
+
+**Filters.** Create sets of image filters to be applied to incoming frames. You can find more information about custom filtering in the [Custom filters](#custom-filters) subsection.
 
 **Anti-tear.** Enable automatic removal of image tears from captured frames. Tearing can result, for instance, when the capture source is displaying a non-v-synced application: capturing DOS games often results in torn frames, as does capturing games in general whose FPS is less than or more than the refresh rate. The anti-tearing will not work in all cases &ndash; for instance, when the capture source's application is redrawing its screen at a rate higher than the refresh rate, e.g. at more than 60 FPS. You can find more information about anti-tearing in the [Anti-tearing](#anti-tearing) subsection.
 
 ![](images/screenshots/v1.4.1/anti-tear-dialog.png)
 
-**Output size.** Set a custom output resolution, i.e. the resolution to which all captured frames will be scaled prior to being displayed in the [output window](#the-output-window).
+**Overlay.** Create a message to be overlaid on the [output window](#the-output-window) during capture. You can enter custom text or images, choose from several variables that update in real-time, and apply styling with HTML and CSS. Note that the overlay will only be shown while a signal is being received from the capture hardware.
+
+![](images/screenshots/v1.4.1/overlay-dialog.png)
+
+**Resolution (adjustable).** Set a custom output resolution, i.e. the resolution to which all captured frames will be scaled prior to being displayed in the [output window](#the-output-window).
 
 **Relative scale.** Scale captured frames by a percentage relative to the resolution set in the `Output size` field.
 
-**Keep aspect ratio.** When displaying captured frames, conserve a desired aspect ratio. If disabled, frames will be stretched to fully fit the size of the [output window](#the-output-window). The following aspect ratio modes are available:
+**Aspect.** When displaying captured frames, conserve a desired aspect ratio. If disabled, frames will be stretched to fully fit the size of the [output window](#the-output-window). The following aspect ratio modes are available:
 - `Native` Conserve each frame's original aspect ratio. A frame of 720 x 400 will be displayed with an aspect ratio of 9:5, and a frame of 640 x 480 with 4:3.
 - `Traditional 4:3` Certain older, non-4:3 resolutions &ndash; like 720 x 400, 640 x 400, and 320 x 200 &ndash; were sometimes intended to be displayed in a 4:3 aspect. This mode sets a 4:3 aspect ratio for those resolutions, and otherwise acts like the `Native` mode.
 - `Always 4:3` All frames will be displayed in a 4:3 aspect.
 
-**Mouse wheel scales output window.** Set whether scrolling the mouse wheel over the [output window](#the-output-window) scales the size of the window up or down. This works by modifying the `Relative scale` value, which in turns affects the size of the output window.
-
 **Upscaler.** Set the type of scaling to be used when the output resolution is larger than the input resolution. Any relevant custom filtering (see below) will override this setting.
 
 **Downscaler.** Set the type of scaling to be used when the output resolution is smaller than the input resolution. Any relevant custom filtering (see below) will override this setting.
-
-**Custom filtering.** Create sets of image filters to be applied to incoming frames. You can find more information about custom filtering in the [Custom filters](#custom-filters) subsection.
 
 ### Record tab
 On the `Record` tab, you can tell VCS record captured frames &ndash; as they are displayed on its [output window](#the-output-window) &ndash; into a video.
