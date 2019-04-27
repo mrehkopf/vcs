@@ -38,6 +38,9 @@
       <property name="spacing">
        <number>10</number>
       </property>
+      <property name="bottomMargin">
+       <number>8</number>
+      </property>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
