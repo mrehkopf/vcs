@@ -34,6 +34,72 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
     // afterward if the user so requests.
     this->originalFilterSet = *this->filterSet;
 
+    // Connect GUI controls to consequences for operating them.
+    {
+        // Enable/disable the filter set activation input/output condition controls
+        // if the user has specified that there should be such conditions.
+        connect(ui->radioButton_conditionInput, &QRadioButton::toggled, this, [this](bool state)
+        {
+            ui->spinBox_inputX->setEnabled(state);
+            ui->spinBox_inputY->setEnabled(state);
+
+            ui->checkBox_conditionOutput->setEnabled(state);
+            ui->spinBox_outputX->setEnabled(state && ui->checkBox_conditionOutput->isChecked());
+            ui->spinBox_outputY->setEnabled(state && ui->checkBox_conditionOutput->isChecked());
+        });
+
+        connect(ui->checkBox_conditionOutput, &QCheckBox::toggled, this, [this](bool state)
+        {
+            ui->spinBox_outputX->setEnabled(state);
+            ui->spinBox_outputY->setEnabled(state);
+        });
+
+        // Returns a filter set whose attributes are set based on the dialog's
+        // user-definable GUI state at the time of this call.
+        auto current_filter_set = [=]
+        {
+            filter_set_s c;
+
+            c.isEnabled = filterSet->isEnabled;
+            c.description = filterSet->description;
+            c.scaler = ks_scaler_for_name_string(ui->comboBox_scaler->currentText().toStdString());
+            c.activation = filter_set_s::activation_e::none;
+            c.preFilters = ui->treeWidget_preFilters->filters();
+            c.postFilters = ui->treeWidget_postFilters->filters();
+
+            if (ui->radioButton_conditionAlways->isChecked())
+            {
+                c.activation |= filter_set_s::activation_e::all;
+            }
+            else
+            {
+                if (ui->radioButton_conditionInput->isChecked()) c.activation |= filter_set_s::activation_e::in;
+                if (ui->checkBox_conditionOutput->isChecked()) c.activation |= filter_set_s::activation_e::out;
+            }
+
+            c.inRes.w = ui->spinBox_inputX->value();
+            c.inRes.h = ui->spinBox_inputY->value();
+            c.outRes.w = ui->spinBox_outputX->value();
+            c.outRes.h = ui->spinBox_outputY->value();
+
+            return c;
+        };
+
+        // Copy the current settings from the GUI into the target filter set, but
+        // don't exit the dialog.
+        connect(ui->pushButton_apply, &QPushButton::clicked, this,
+                [=]{ *filterSet = current_filter_set(); });
+
+        // Copy the current settings from the GUI into the target filter set, and
+        // exit the dialog.
+        connect(ui->pushButton_ok, &QPushButton::clicked, this,
+                [=]{ *filterSet = current_filter_set(); this->done(1); });
+
+        // Undo any changes, and exit the dialog.
+        connect(ui->pushButton_cancel, &QPushButton::clicked, this,
+                [=]{ *filterSet = originalFilterSet; this->done(0); });
+    }
+
     // Set the GUI controls to their proper initial values.
     {
         ui->pushButton_apply->setVisible(allowApplyButton);
@@ -135,72 +201,6 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
             ui->treeWidget_preFilters->set_filters(filterSet->preFilters);
             ui->treeWidget_postFilters->set_filters(filterSet->postFilters);
         }
-    }
-
-    // Connect GUI controls to consequences for operating them.
-    {
-        // Enable/disable the filter set activation input/output condition controls
-        // if the user has specified that there should be such conditions.
-        connect(ui->radioButton_conditionInput, &QRadioButton::toggled, this, [this](bool state)
-        {
-            ui->spinBox_inputX->setEnabled(state);
-            ui->spinBox_inputY->setEnabled(state);
-
-            ui->checkBox_conditionOutput->setEnabled(state);
-            ui->spinBox_outputX->setEnabled(state && ui->checkBox_conditionOutput->isChecked());
-            ui->spinBox_outputY->setEnabled(state && ui->checkBox_conditionOutput->isChecked());
-        });
-
-        connect(ui->checkBox_conditionOutput, &QCheckBox::toggled, this, [this](bool state)
-        {
-            ui->spinBox_outputX->setEnabled(state);
-            ui->spinBox_outputY->setEnabled(state);
-        });
-
-        // Returns a filter set whose attributes are set based on the dialog's
-        // user-definable GUI state at the time of this call.
-        auto current_filter_set = [=]
-        {
-            filter_set_s c;
-
-            c.isEnabled = filterSet->isEnabled;
-            c.description = filterSet->description;
-            c.scaler = ks_scaler_for_name_string(ui->comboBox_scaler->currentText().toStdString());
-            c.activation = filter_set_s::activation_e::none;
-            c.preFilters = ui->treeWidget_preFilters->filters();
-            c.postFilters = ui->treeWidget_postFilters->filters();
-
-            if (ui->radioButton_conditionAlways->isChecked())
-            {
-                c.activation |= filter_set_s::activation_e::all;
-            }
-            else
-            {
-                if (ui->radioButton_conditionInput->isChecked()) c.activation |= filter_set_s::activation_e::in;
-                if (ui->checkBox_conditionOutput->isChecked()) c.activation |= filter_set_s::activation_e::out;
-            }
-
-            c.inRes.w = ui->spinBox_inputX->value();
-            c.inRes.h = ui->spinBox_inputY->value();
-            c.outRes.w = ui->spinBox_outputX->value();
-            c.outRes.h = ui->spinBox_outputY->value();
-
-            return c;
-        };
-
-        // Copy the current settings from the GUI into the target filter set, but
-        // don't exit the dialog.
-        connect(ui->pushButton_apply, &QPushButton::clicked, this,
-                [=]{ *filterSet = current_filter_set(); });
-
-        // Copy the current settings from the GUI into the target filter set, and
-        // exit the dialog.
-        connect(ui->pushButton_ok, &QPushButton::clicked, this,
-                [=]{ *filterSet = current_filter_set(); this->done(1); });
-
-        // Undo any changes, and exit the dialog.
-        connect(ui->pushButton_cancel, &QPushButton::clicked, this,
-                [=]{ *filterSet = originalFilterSet; this->done(0); });
     }
 
     // Restore persistent settings.
