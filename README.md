@@ -195,7 +195,7 @@ _Coming_
 ![](images/screenshots/v1.4.1/filter-sets-list-dialog.png)
 ![](images/screenshots/v1.4.1/filter-set-dialog.png)
 
-(While this section awaits being written, a few words are in order about how to operate the filter dialogs. To add filters to a new filter set [second image, above], drag them from the "Filters available" list into either the "Pre-scaling filters" list or the "Post-scaling filters" list, depending on whether you want the filter to be applied before or after the frame has been scaled. To remove a filter from either of the two aforementioned list, click on the item while holding the Ctrl key. To edit the attributes of a filter once you've dragged it into either list, double-click on it.)
+(While this section awaits being written, a few words are in order about how to operate the filter dialogs. To add filters to a new filter set [second image, above], drag them from the "Filters available" list into either the "Pre-scaling filters" list or the "Post-scaling filters" list, depending on whether you want the filter to be applied before or after the frame has been scaled. To remove a filter from either of the two aforementioned list, click on the item while holding the Ctrl key. To edit the attributes of a filter once you've dragged it into either list, double-click on it. To edit a filter set's description [see first image, above], double-click its "Description" field and type in the desired text.)
 
 ## Alias resolutions
 _Coming_
