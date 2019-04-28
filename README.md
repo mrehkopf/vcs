@@ -47,7 +47,7 @@ The central feature of VCS is the output window, where the captured frame data i
 
 The output window has been kept free of unnecessary clutter &ndash; there are no visible controls, only a couple of bits of convenient information in the window's title bar. This allows you to concentrate fully on the capture output.
 
-![](images/screenshots/v1.2.6/output-window.png)
+![](images/screenshots/v1.4.1/output-window.png)
 
 ### Hidden functionality in the output window
 To tell you a secret, there _is_ some hidden functionality to the output window, despite it having no visible controls per se.
@@ -57,8 +57,8 @@ If you press and hold the right mouse button over the output window, a portion o
 
 The magnifying glass can be useful if, for instance, you're adjusting the capture's video parameters, like phase, and want to inspect the output for any smaller artefacts remaining.
 
-![](images/screenshots/v1.2.6/output-window-nonmagnified-small.png)
-![](images/screenshots/v1.2.6/output-window-magnified-small.png)
+![](images/screenshots/v1.4.1/output-window-nonmagnified-small.png)
+![](images/screenshots/v1.4.1/output-window-magnified-small.png)
 
 #### Borderless mode
 You can double-click inside the output window to toggle the output window's border on and off.
@@ -69,7 +69,7 @@ When the border is toggled off, the window is automatically snapped to the top l
 
 While borderless, you can drag the window by grabbing anywhere on it with the left mouse button.
 
-![](images/screenshots/v1.2.6/output-window-small.png)
+![](images/screenshots/v1.4.1/output-window-small.png)
 ![](images/screenshots/v1.2.6/output-window-borderless-small.png)
 
 #### Fullscreen mode
