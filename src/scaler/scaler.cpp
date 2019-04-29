@@ -559,33 +559,32 @@ void ks_scale_frame(const captured_frame_s &frame)
         {
             memcpy(OUTPUT_BUFFER.ptr(), pixelData, OUTPUT_BUFFER.up_to(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
         }
-        else if (DOWNSCALE_FILTER == nullptr ||
-                 UPSCALE_FILTER == nullptr)
-        {
-            NBENE(("Upscale or downscale filter is null. Refusing to scale."));
-
-            outputRes = frameRes;
-            memcpy(OUTPUT_BUFFER.ptr(), pixelData, OUTPUT_BUFFER.up_to(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
-        }
         else
         {
-            const scaling_filter_s *f;
+            const scaling_filter_s *scaler;
 
             if (kf_current_filter_set_scaler() != nullptr)
             {
-                f = kf_current_filter_set_scaler();
+                scaler = kf_current_filter_set_scaler();
             }
             else if (frameRes.w < outputRes.w ||
                      frameRes.h < outputRes.h)
             {
-                f = UPSCALE_FILTER;
+                scaler = UPSCALE_FILTER;
             }
             else
             {
-                f = DOWNSCALE_FILTER;
+                scaler = DOWNSCALE_FILTER;
             }
 
-            f->scale(pixelData, frameRes, outputRes);
+            if (!scaler)
+            {
+                NBENE(("Upscale or downscale filter is null. Refusing to scale."));
+
+                outputRes = frameRes;
+                memcpy(OUTPUT_BUFFER.ptr(), pixelData, OUTPUT_BUFFER.up_to(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
+            }
+            else scaler->scale(pixelData, frameRes, outputRes);
         }
 
         kf_apply_post_filters(OUTPUT_BUFFER.ptr(), outputRes);

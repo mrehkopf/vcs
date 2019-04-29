@@ -703,10 +703,13 @@ int kf_current_filter_set_idx(void)
     return MOST_RECENT_FILTER_SET_IDX;
 }
 
-// Returns a pointer to the filter set which the current input/output resolutions
-// activate.
+// Returns a pointer to the filter set which the current input/output capture
+// resolutions activate, or nullptr if no such match exists or if filtering is
+// altogether disabled.
 const filter_set_s* kf_current_filter_set(void)
 {
+    if (!FILTERING_ENABLED) return nullptr;
+
     const resolution_s inputRes = kc_hardware().status.capture_resolution();
     const resolution_s outputRes = ks_output_resolution();
 
