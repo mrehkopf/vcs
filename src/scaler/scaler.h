@@ -28,9 +28,9 @@ enum scaling_filter_id_e
 // determines what that ratio is.
 enum class aspect_mode_e
 {
-    native,         // Frame width / height.
+    native,           // Frame width / height.
     traditional_4_3,  // Frame width / height; except for some resolutions like 720 x 400, where 4 / 3.
-    always_4_3           // 4 / 3.
+    always_4_3        // 4 / 3.
 };
 
 struct scaling_filter_s
@@ -43,7 +43,7 @@ resolution_s ks_output_base_resolution(void);
 
 resolution_s ks_output_resolution(void);
 
-bool ks_is_output_padding_enabled(void);
+bool ks_is_forced_aspect_enabled(void);
 
 uint ks_max_output_bit_depth(void);
 
@@ -63,7 +63,7 @@ void ks_set_output_base_resolution(const resolution_s &r, const bool originatesF
 
 void ks_set_output_resolution_override_enabled(const bool state);
 
-void ks_set_output_pad_override_enabled(const bool state);
+void ks_set_forced_aspect_enabled(const bool state);
 
 void ks_indicate_no_signal(void);
 

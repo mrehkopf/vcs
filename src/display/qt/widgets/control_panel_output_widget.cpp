@@ -113,7 +113,7 @@ ControlPanelOutputWidget::ControlPanelOutputWidget(QWidget *parent) :
 
         connect(ui->checkBox_outputKeepAspectRatio, &QCheckBox::stateChanged, this, [=](int state)
         {
-            ks_set_output_pad_override_enabled(is_checked(state));
+            ks_set_forced_aspect_enabled(is_checked(state));
             ui->comboBox_outputAspectMode->setEnabled(is_checked(state));
         });
 

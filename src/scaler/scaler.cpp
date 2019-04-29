@@ -50,6 +50,7 @@ static heap_bytes_s<u8> COLORCONV_BUFFER;
 static heap_bytes_s<u8> TMP_BUFFER;
 
 static aspect_mode_e ASPECT_MODE = aspect_mode_e::native;
+static bool FORCE_ASPECT = true;
 
 static resolution_s LATEST_OUTPUT_SIZE = {0};       // The size of the image currently in the scaler's output buffer.
 
@@ -57,8 +58,6 @@ static const u32 OUTPUT_BIT_DEPTH = 32;             // The bit depth we're curre
 
 static resolution_s BASE_RESOLUTION = {640, 480, 0};// The size of the capture window, before any other scaling.
 static bool FORCE_BASE_RESOLUTION = false;          // If false, the base resolution will track the capture card's output resolution.
-
-static bool FORCE_PADDING = true;
 
 // The multiplier by which to up/downscale the base output resolution.
 static real OUTPUT_SCALING = 1;
@@ -142,9 +141,9 @@ resolution_s ks_output_resolution(void)
     return outRes;
 }
 
-bool ks_is_output_padding_enabled(void)
+bool ks_is_forced_aspect_enabled(void)
 {
-    return FORCE_PADDING;
+    return FORCE_ASPECT;
 }
 
 #if USE_OPENCV
@@ -223,7 +222,7 @@ void opencv_scale(u8 *const pixelData,
     cv::Mat scratch = cv::Mat(sourceRes.h, sourceRes.w, CV_8UC4, pixelData);
     cv::Mat output = cv::Mat(targetRes.h, targetRes.w, CV_8UC4, outputBuffer);
 
-    if (ks_is_output_padding_enabled())
+    if (ks_is_forced_aspect_enabled())
     {
         const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
         cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
@@ -553,7 +552,7 @@ void ks_scale_frame(const captured_frame_s &frame)
         kf_apply_pre_filters(pixelData, frameRes);
 
         // If no need to scale, just copy the data over.
-        if (ASPECT_MODE == aspect_mode_e::native &&
+        if ((!FORCE_ASPECT || ASPECT_MODE == aspect_mode_e::native) &&
             frameRes.w == outputRes.w &&
             frameRes.h == outputRes.h)
         {
@@ -611,9 +610,9 @@ void ks_set_output_resolution_override_enabled(const bool state)
     return;
 }
 
-void ks_set_output_pad_override_enabled(const bool state)
+void ks_set_forced_aspect_enabled(const bool state)
 {
-    FORCE_PADDING = state;
+    FORCE_ASPECT = state;
     kd_update_output_window_size();
 
     return;
