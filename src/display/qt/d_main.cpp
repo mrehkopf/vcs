@@ -92,11 +92,11 @@ void kd_update_filter_sets_list(void)
     return;
 }
 
-void kd_update_video_params(void)
+void kd_update_video_mode_params(void)
 {
     if (WINDOW != nullptr)
     {
-        WINDOW->update_video_params();
+        WINDOW->update_video_mode_params();
     }
 
     return;

@@ -336,7 +336,7 @@ void ControlPanel::update_filter_sets_list(void)
     return;
 }
 
-void ControlPanel::update_video_params(void)
+void ControlPanel::update_video_mode_params(void)
 {
     k_assert(videocolorDlg != nullptr, "");
     videocolorDlg->update_controls();

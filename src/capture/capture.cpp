@@ -261,7 +261,7 @@ const capture_hardware_s& kc_hardware(void)
     return CAPTURE_HARDWARE;
 }
 
-void update_known_mode_params(const resolution_s r,
+void update_known_video_mode_params(const resolution_s r,
                               const capture_color_settings_s *const c,
                               const capture_video_settings_s *const v)
 {
@@ -390,7 +390,12 @@ bool kc_adjust_video_vertical_offset(const int delta)
 
     if (apicall_succeeds(RGBSetVerPosition(CAPTURE_HANDLE, newPos)))
     {
-        kd_update_video_params();
+        // Assume that this was a user-requested change, and as such that it
+        // should affect the user's custom mode parameter settings.
+        const auto currentVideoParams = kc_hardware().status.video_settings();
+        update_known_video_mode_params(kc_hardware().status.capture_resolution(), nullptr, &currentVideoParams);
+
+        kd_update_video_mode_params();
     }
 
     return true;
@@ -410,7 +415,12 @@ bool kc_adjust_video_horizontal_offset(const int delta)
 
     if (apicall_succeeds(RGBSetHorPosition(CAPTURE_HANDLE, newPos)))
     {
-        kd_update_video_params();
+        // Assume that this was a user-requested change, and as such that it
+        // should affect the user's custom mode parameter settings.
+        const auto currentVideoParams = kc_hardware().status.video_settings();
+        update_known_video_mode_params(kc_hardware().status.capture_resolution(), nullptr, &currentVideoParams);
+
+        kd_update_video_mode_params();
     }
 
     return true;
@@ -725,7 +735,7 @@ void kc_set_color_settings(const capture_color_settings_s c)
                                         c.greenContrast,
                                         c.blueContrast);
 
-    update_known_mode_params(kc_hardware().status.capture_resolution(), &c, nullptr);
+    update_known_video_mode_params(kc_hardware().status.capture_resolution(), &c, nullptr);
 
     return;
 }
@@ -745,7 +755,7 @@ void kc_set_video_settings(const capture_video_settings_s v)
     RGBSetHorScale(CAPTURE_HANDLE, v.horizontalScale);
     RGBSetVerPosition(CAPTURE_HANDLE, v.verticalPosition);
 
-    update_known_mode_params(kc_hardware().status.capture_resolution(), nullptr, &v);
+    update_known_video_mode_params(kc_hardware().status.capture_resolution(), nullptr, &v);
 
     return;
 }

@@ -692,10 +692,10 @@ void MainWindow::update_filter_sets_list(void)
     return;
 }
 
-void MainWindow::update_video_params(void)
+void MainWindow::update_video_mode_params(void)
 {
     k_assert(controlPanel != nullptr, "");
-    controlPanel->update_video_params();
+    controlPanel->update_video_mode_params();
 
     return;
 }

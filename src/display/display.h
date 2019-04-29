@@ -56,7 +56,7 @@ void kd_update_recording_metainfo(void);
 
 // The current capture video parameters have changed. Poll their current values,
 // and update the GUI accordingly.
-void kd_update_video_params(void);
+void kd_update_video_mode_params(void);
 
 // The current filter set index has changed. Poll its current value, and update
 // the GUI accordingly.

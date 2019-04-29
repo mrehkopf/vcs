@@ -75,7 +75,7 @@ public:
 
     void activate_capture_res_button(const uint buttonIdx);
 
-    void update_video_params();
+    void update_video_mode_params();
 
     void update_filter_sets_list();
 

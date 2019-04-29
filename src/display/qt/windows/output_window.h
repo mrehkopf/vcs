@@ -76,7 +76,7 @@ public:
 
     void update_recording_metainfo();
 
-    void update_video_params();
+    void update_video_mode_params();
 
     void update_filter_sets_list();
 
