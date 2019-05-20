@@ -514,63 +514,46 @@ void MainWindow::measure_framerate()
 
 void MainWindow::set_keyboard_shortcuts()
 {
-    // Assign ctrl + number key 1-9 to the input resolution force buttons.
+    // Creates a new QShortcut instance assigned to the given QKeySequence-
+    // compatible sequence string (e.g. "F1" for the F1 key).
+    auto keyboardShortcut = [this](const std::string keySequence)->QShortcut*
+    {
+        QShortcut *shortcut = new QShortcut(QKeySequence(keySequence.c_str()), this);
+        shortcut->setContext(Qt::ApplicationShortcut);
+
+        return shortcut;
+    };
+
+    // Assign ctrl + numeral key 1-9 to the input resolution force buttons.
     for (uint i = 1; i <= 9; i++)
     {
-        QShortcut *s = new QShortcut(QKeySequence(QString("ctrl+%1").arg(QString::number(i))), this);
-        s->setContext(Qt::ApplicationShortcut);
-        connect(s, &QShortcut::activated, [this, i]{this->controlPanel->activate_capture_res_button(i);});
+        connect(keyboardShortcut(QString("ctrl+%1").arg(QString::number(i)).toStdString()),
+                &QShortcut::activated, [=]{this->controlPanel->activate_capture_res_button(i);});
     }
 
     // Assign alt + arrow keys to move the capture input alignment horizontally and vertically.
-    QShortcut *altShiftLeft = new QShortcut(QKeySequence("alt+shift+left"), this);
-    altShiftLeft->setContext(Qt::ApplicationShortcut);
-    connect(altShiftLeft, &QShortcut::activated, []{kc_adjust_video_horizontal_offset(1);});
-    QShortcut *altShiftRight = new QShortcut(QKeySequence("alt+shift+right"), this);
-    altShiftRight->setContext(Qt::ApplicationShortcut);
-    connect(altShiftRight, &QShortcut::activated, []{kc_adjust_video_horizontal_offset(-1);});
-    QShortcut *altShiftUp = new QShortcut(QKeySequence("alt+shift+up"), this);
-    altShiftUp->setContext(Qt::ApplicationShortcut);
-    connect(altShiftUp, &QShortcut::activated, []{kc_adjust_video_vertical_offset(1);});
-    QShortcut *altShiftDown = new QShortcut(QKeySequence("alt+shift+down"), this);
-    altShiftDown->setContext(Qt::ApplicationShortcut);
-    connect(altShiftDown, &QShortcut::activated, []{kc_adjust_video_vertical_offset(-1);});
+    connect(keyboardShortcut("alt+shift+left"), &QShortcut::activated, []{kc_adjust_video_horizontal_offset(1);});
+    connect(keyboardShortcut("alt+shift+right"), &QShortcut::activated, []{kc_adjust_video_horizontal_offset(-1);});
+    connect(keyboardShortcut("alt+shift+up"), &QShortcut::activated, []{kc_adjust_video_vertical_offset(1);});
+    connect(keyboardShortcut("alt+shift+down"), &QShortcut::activated, []{kc_adjust_video_vertical_offset(-1);});
 
     /// NOTE: Qt's full-screen mode might not work correctly under Linux, depending
     /// on the distro etc.
-    QShortcut *f11 = new QShortcut(QKeySequence(Qt::Key_F11), this);
-    f11->setContext(Qt::ApplicationShortcut);
-    connect(f11, &QShortcut::activated, [this]
+    connect(keyboardShortcut("f11"), &QShortcut::activated, [this]
     {
         if (this->isFullScreen())
         {
             this->showNormal();
         }
-        else
-        {
-            this->showFullScreen();
-        }
+        else this->showFullScreen();
     });
 
-    QShortcut *f5 = new QShortcut(QKeySequence(Qt::Key_F5), this);
-    f5->setContext(Qt::ApplicationShortcut);
-    connect(f5, &QShortcut::activated, []{if (!kc_no_signal()) ALIGN_CAPTURE = true;});
+    connect(keyboardShortcut("f5"), &QShortcut::activated, []{if (!kc_no_signal()) ALIGN_CAPTURE = true;});
 
-    QShortcut *ctrlV = new QShortcut(QKeySequence("ctrl+v"), this);
-    ctrlV->setContext(Qt::ApplicationShortcut);
-    connect(ctrlV, &QShortcut::activated, [this]{this->controlPanel->open_video_adjust_dialog();});
-
-    QShortcut *ctrlA = new QShortcut(QKeySequence("ctrl+a"), this);
-    ctrlA->setContext(Qt::ApplicationShortcut);
-    connect(ctrlA, &QShortcut::activated, [this]{this->controlPanel->open_antitear_dialog();});
-
-    QShortcut *ctrlF = new QShortcut(QKeySequence("ctrl+f"), this);
-    ctrlF->setContext(Qt::ApplicationShortcut);
-    connect(ctrlF, &QShortcut::activated, [this]{this->controlPanel->open_filter_sets_dialog();});
-
-    QShortcut *ctrlO = new QShortcut(QKeySequence("ctrl+o"), this);
-    ctrlO->setContext(Qt::ApplicationShortcut);
-    connect(ctrlO, &QShortcut::activated, [this]{this->controlPanel->toggle_overlay();});
+    connect(keyboardShortcut("ctrl+v"), &QShortcut::activated, [this]{this->controlPanel->open_video_adjust_dialog();});
+    connect(keyboardShortcut("ctrl+a"), &QShortcut::activated, [this]{this->controlPanel->open_antitear_dialog();});
+    connect(keyboardShortcut("ctrl+f"), &QShortcut::activated, [this]{this->controlPanel->open_filter_sets_dialog();});
+    connect(keyboardShortcut("ctrl+o"), &QShortcut::activated, [this]{this->controlPanel->toggle_overlay();});
 
     return;
 }
