@@ -354,6 +354,69 @@ struct filter_dlg_denoise_s : public filter_dlg_s
     }
 };
 
+struct filter_dlg_denoise_nlm_s : public filter_dlg_s
+{
+    filter_dlg_denoise_nlm_s() :
+        filter_dlg_s("Denoise (NLM)") {}
+
+    // Offsets in the paramData array of the various parameters' values.
+    enum data_offset_e { OFFS_H = 0, OFFS_H_COLOR = 1, OFFS_TEMPLATE_WINDOW_SIZE = 2, OFFS_SEARCH_WINDOW_SIZE = 3};
+
+    // Initialize paramData to its default values for this filter.
+    void insert_default_params(u8 *const paramData) const override
+    {
+        memset(paramData, 0, FILTER_DATA_LENGTH);
+        paramData[OFFS_H] = 10;
+        paramData[OFFS_H_COLOR] = 10;
+        paramData[OFFS_TEMPLATE_WINDOW_SIZE] = 7;
+        paramData[OFFS_SEARCH_WINDOW_SIZE] = 21;
+    }
+
+    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
+    {
+        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        d.setWindowTitle("Non-Local Means Denoise Filter");
+        d.setMinimumWidth(dlgMinWidth);
+
+        QLabel hLabel("Strength (luminance):");
+        QLabel hColorLabel("Strength (color):");
+        QLabel templateWindowLabel("Template window:");
+        QLabel searchWindowLabel("Search window:");
+
+        QSpinBox hSpin;
+        hSpin.setRange(0, 255);
+        hSpin.setValue(paramData[OFFS_H]);
+
+        QSpinBox hColorSpin;
+        hColorSpin.setRange(0, 255);
+        hColorSpin.setValue(paramData[OFFS_H_COLOR]);
+
+        QSpinBox templateWindowSpin;
+        templateWindowSpin.setRange(0, 255);
+        templateWindowSpin.setValue(paramData[OFFS_TEMPLATE_WINDOW_SIZE]);
+
+        QSpinBox searchWindowSpin;
+        searchWindowSpin.setRange(0, 255);
+        searchWindowSpin.setValue(paramData[OFFS_SEARCH_WINDOW_SIZE]);
+
+        QFormLayout layout;
+        layout.addRow(&hLabel, &hSpin);
+        layout.addRow(&hColorLabel, &hColorSpin);
+        layout.addRow(&templateWindowLabel, &templateWindowSpin);
+        layout.addRow(&searchWindowLabel, &searchWindowSpin);
+        d.setLayout(&layout);
+
+        // Display the dialog (blocking).
+        d.exec();
+
+        // Update paramData with values provided by the user.
+        paramData[OFFS_H] = hSpin.value();
+        paramData[OFFS_H_COLOR] = hColorSpin.value();
+        paramData[OFFS_TEMPLATE_WINDOW_SIZE] = templateWindowSpin.value();
+        paramData[OFFS_SEARCH_WINDOW_SIZE] = searchWindowSpin.value();
+    }
+};
+
 struct filter_dlg_sharpen_s : public filter_dlg_s
 {
     filter_dlg_sharpen_s() :

@@ -18,6 +18,7 @@
 
 #ifdef USE_OPENCV
     #include <opencv2/imgproc/imgproc.hpp>
+    #include <opencv2/photo/photo.hpp>
     #include <opencv2/core/core.hpp>
 #endif
 
@@ -30,6 +31,7 @@ static void filter_func_unsharpmask(FILTER_FUNC_PARAMS);
 static void filter_func_deltahistogram(FILTER_FUNC_PARAMS);
 static void filter_func_decimate(FILTER_FUNC_PARAMS);
 static void filter_func_denoise(FILTER_FUNC_PARAMS);
+static void filter_func_denoise_nlm(FILTER_FUNC_PARAMS);
 static void filter_func_sharpen(FILTER_FUNC_PARAMS);
 static void filter_func_median(FILTER_FUNC_PARAMS);
 static void filter_func_crop(FILTER_FUNC_PARAMS);
@@ -52,6 +54,7 @@ static const std::map<std::string, std::pair<filter_function_t, filter_dlg_s*>> 
                 {"Blur",             {filter_func_blur,            []{ static filter_dlg_blur_s f; return &f;           }()}},
                 {"Decimate",         {filter_func_decimate,        []{ static filter_dlg_decimate_s f; return &f;       }()}},
                 {"Denoise",          {filter_func_denoise,         []{ static filter_dlg_denoise_s f; return &f;        }()}},
+                {"Denoise (NLM)",    {filter_func_denoise_nlm,     []{ static filter_dlg_denoise_nlm_s f; return &f;    }()}},
                 {"Sharpen",          {filter_func_sharpen,         []{ static filter_dlg_sharpen_s f; return &f;        }()}},
                 {"Median",           {filter_func_median,          []{ static filter_dlg_median_s f; return &f;         }()}},
                 {"Crop",             {filter_func_crop,            []{ static filter_dlg_crop_s f; return &f;           }()}},
@@ -225,68 +228,54 @@ static void filter_func_uniquecount(FILTER_FUNC_PARAMS)
     return;
 }
 
-// Reduce image noise.
+// Non-local means denoising. Slow.
+//
+static void filter_func_denoise_nlm(FILTER_FUNC_PARAMS)
+{
+    VALIDATE_FILTER_INPUT
+
+    #if USE_OPENCV
+        const u8 h = params[filter_dlg_denoise_nlm_s::OFFS_H];
+        const u8 hColor = params[filter_dlg_denoise_nlm_s::OFFS_H_COLOR];
+        const u8 templateWindowSize = params[filter_dlg_denoise_nlm_s::OFFS_TEMPLATE_WINDOW_SIZE];
+        const u8 searchWindowSize = params[filter_dlg_denoise_nlm_s::OFFS_SEARCH_WINDOW_SIZE];
+
+        cv::Mat input = cv::Mat(r->h, r->w, CV_8UC4, pixels);
+        cv::fastNlMeansDenoisingColored(input, input, h, hColor, templateWindowSize, searchWindowSize);
+    #endif
+
+    return;
+}
+
+// Reduce temporal image noise by requiring that pixels between frames vary by at least
+// a threshold value before being updated on screen.
 //
 static void filter_func_denoise(FILTER_FUNC_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    const u8 type = filter_dlg_denoise_s::FILTER_TYPE_TEMPORAL;
+    const u8 threshold = params[filter_dlg_denoise_s::OFFS_THRESHOLD];
+    static heap_bytes_s<u8> prevPixels(MAX_FRAME_SIZE, "Denoising filter buffer");
 
-    if (type == filter_dlg_denoise_s::FILTER_TYPE_SPATIAL)
+    for (uint i = 0; i < (r->h * r->w); i++)
     {
-#if 0 /// TODO. Runs real slow.
-        static u8 *const denoiseBuffer = (u8*)malloc(PAGE_SIZE);//TEMP_BUFFER + PAGE_DENOISE;
-        const int templateWindowSize = 3;
-        const int searchWindowSize = 3;
-        const int hLuminance = 1;
-        const int hColor = 4;
+        const u32 idx = i * NUM_COLOR_CHAN;
 
-        cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
-        cv::Mat denoised = cv::Mat(r->h, r->w, CV_8UC1, denoiseBuffer);
-
-        // All channels.
-        cv::cvtColor(output, denoised, CV_BGRA2BGR);
-        cv::fastNlMeansDenoisingColored(denoised, denoised,
-                                        templateWindowSize,
-                                        searchWindowSize,
-                                        hLuminance,
-                                        hColor);
-        cv::cvtColor(denoised, output, CV_BGR2BGRA);
-#endif
-    }
-    else if (type == filter_dlg_denoise_s::FILTER_TYPE_TEMPORAL)
-    {
-        // Denoise temporally, i.e. require pixels to change by > threshold between
-        // frames before they're allowed through.
-
-        const u8 threshold = params[filter_dlg_denoise_s::OFFS_THRESHOLD];
-        static heap_bytes_s<u8> prevPixels(MAX_FRAME_SIZE, "Denoising filter buffer");
-
-        for (uint i = 0; i < (r->h * r->w); i++)
+        if ((abs(pixels[idx + 0] - prevPixels[idx + 0]) > threshold) ||
+            (abs(pixels[idx + 1] - prevPixels[idx + 1]) > threshold) ||
+            (abs(pixels[idx + 2] - prevPixels[idx + 2]) > threshold))
         {
-            const u32 idx = i * NUM_COLOR_CHAN;
-
-            if ((abs(pixels[idx + 0] - prevPixels[idx + 0]) > threshold) ||
-                (abs(pixels[idx + 1] - prevPixels[idx + 1]) > threshold) ||
-                (abs(pixels[idx + 2] - prevPixels[idx + 2]) > threshold))
-            {
-                prevPixels[idx + 0] = pixels[idx + 0];
-                prevPixels[idx + 1] = pixels[idx + 1];
-                prevPixels[idx + 2] = pixels[idx + 2];
-            }
-            else
-            {
-                pixels[idx + 0] = prevPixels[idx + 0];
-                pixels[idx + 1] = prevPixels[idx + 1];
-                pixels[idx + 2] = prevPixels[idx + 2];
-            }
+            prevPixels[idx + 0] = pixels[idx + 0];
+            prevPixels[idx + 1] = pixels[idx + 1];
+            prevPixels[idx + 2] = pixels[idx + 2];
         }
-    }
-    else
-    {
-        NBENE(("Unknown filter type for denoising. Skipping it."));
+        else
+        {
+            pixels[idx + 0] = prevPixels[idx + 0];
+            pixels[idx + 1] = prevPixels[idx + 1];
+            pixels[idx + 2] = prevPixels[idx + 2];
+        }
     }
 #endif
 
