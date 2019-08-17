@@ -127,23 +127,18 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
 
         // Populate the selection of filters.
         {
-            const QStringList filterNames = ([]
-            {
-                QStringList qStringList;
-
-                const std::vector<std::string> filterNames = kf_filter_name_list();
-                for (auto filterName: filterNames)
-                {
-                    qStringList << QString::fromStdString(filterName);
-                }
-
-                return qStringList;
-            })();
-
-            k_assert(!filterNames.isEmpty(),
-                     "Expected to receive a list of filters, but got an empty list.");
-
             ui->listWidget_filterList->clear();
+
+            const std::vector<std::string> filterUUIDs = kf_filter_uuid_list();
+
+            QStringList filterNames;
+            for (const auto &uuid: filterUUIDs)
+            {
+                filterNames << QString::fromStdString(kf_filter_name_for_uuid(uuid));
+            }
+
+            filterNames.sort();
+
             for (const auto &filterName: filterNames)
             {
                 QTreeWidgetItem *item = new QTreeWidgetItem;

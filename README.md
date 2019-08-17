@@ -349,7 +349,7 @@ static void filter_func_NAME(FILTER_FUNC_PARAMS);
 // Add the filter to VCS's list of known filters.
 static const std::map ... FILTERS =
     ...
-    {"DISPLAY_NAME", {filter_func_NAME, []{ static filter_dlg_NAME_s f; return &f;}()}},
+    {"UUID", {filter_func_NAME, []{ static filter_dlg_NAME_s f; return &f;}()}},
     ...
 
 // Define the filter function.
@@ -406,7 +406,7 @@ struct filter_dlg_NAME_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName));
         d.setMinimumWidth(dlgMinWidth);
 
         // Add the dialog's widgets. We'll let the user specify

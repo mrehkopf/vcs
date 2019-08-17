@@ -21,8 +21,10 @@ typedef void(*filter_function_t)(FILTER_FUNC_PARAMS);
 // A single filter.
 struct filter_s
 {
-    // A string that uniquely identifies this filter. Will also be shown in the
-    // GUI, i.e. is user-facing.
+    // An internal string that uniquely identifies this filter.
+    std::string uuid;
+
+    // A name string that identifies this filter in the GUI.
     std::string name;
 
     // A set of bytes you can cast into the filter's parameters.
@@ -55,9 +57,11 @@ struct filter_set_s
 
 void kf_initialize_filters(void);
 
-std::vector<std::string> kf_filter_name_list(void);
+std::vector<std::string> kf_filter_uuid_list(void);
 
 void kf_clear_filters(void);
+
+std::string kf_filter_name_for_uuid(const std::string uuid);
 
 void kf_set_filter_set_enabled(const uint idx, const bool isEnabled);
 
@@ -87,10 +91,12 @@ void kf_apply_pre_filters(u8 *const pixels, const resolution_s &r);
 
 void kf_apply_post_filters(u8 *const pixels, const resolution_s &r);
 
-filter_function_t kf_filter_function_ptr_for_name(const std::string &name);
+filter_function_t kf_filter_function_ptr_for_uuid(const std::string &name);
 
-const filter_dlg_s *kf_filter_dialog_for_name(const std::string &name);
+std::string kf_filter_uuid_for_name(const std::string &name);
 
-bool kf_named_filter_exists(const std::string &name);
+const filter_dlg_s *kf_filter_dialog_for_uuid(const std::string &name);
+
+bool kf_filter_exists(const std::string &name);
 
 #endif

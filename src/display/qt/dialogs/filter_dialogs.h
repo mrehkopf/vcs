@@ -81,7 +81,7 @@ struct filter_dlg_crop_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName));
         d.setMinimumWidth(dlgMinWidth);
 
         QLabel xLabel("X:");
@@ -148,7 +148,7 @@ struct filter_dlg_flip_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName));
         d.setMinimumWidth(dlgMinWidth);
 
         QLabel axisLabel("Axis:");
@@ -194,7 +194,7 @@ struct filter_dlg_rotate_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName));
         d.setMinimumWidth(dlgMinWidth);
 
         QLabel rotLabel("Angle:");
@@ -241,7 +241,7 @@ struct filter_dlg_median_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName));
         d.setMinimumWidth(dlgMinWidth);
 
         // Median radius.
@@ -282,7 +282,7 @@ struct filter_dlg_blur_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName));
         d.setMinimumWidth(dlgMinWidth);
 
         // Blur type.
@@ -320,7 +320,7 @@ struct filter_dlg_denoise_s : public filter_dlg_s
     enum filter_type_e { FILTER_TYPE_TEMPORAL = 0, FILTER_TYPE_SPATIAL = 1 };
 
     filter_dlg_denoise_s() :
-        filter_dlg_s("Denoise") {}
+        filter_dlg_s("Denoise (Temporal)") {}
 
     void insert_default_params(u8 *const paramData) const override
     {
@@ -333,7 +333,7 @@ struct filter_dlg_denoise_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName));
         d.setMinimumWidth(dlgMinWidth);
 
         // Denoising threshold.
@@ -432,7 +432,7 @@ struct filter_dlg_sharpen_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName));
         d.setMinimumWidth(dlgMinWidth);
 
         QLabel noneLabel(QString::fromStdString(noParamsMsg));
@@ -468,7 +468,7 @@ struct filter_dlg_unsharpmask_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName));
         d.setMinimumWidth(dlgMinWidth);
 
         // Strength.
@@ -518,7 +518,7 @@ struct filter_dlg_decimate_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName));
         d.setMinimumWidth(dlgMinWidth);
 
         // Factor.
@@ -566,7 +566,7 @@ struct filter_dlg_deltahistogram_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName));
         d.setMinimumWidth(dlgMinWidth);
 
         QLabel noneLabel(QString::fromStdString(noParamsMsg));
@@ -602,7 +602,7 @@ struct filter_dlg_uniquecount_s : public filter_dlg_s
     void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
     {
         QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName) + " Filter");
+        d.setWindowTitle(QString::fromStdString(filterName));
         d.setMinimumWidth(dlgMinWidth);
 
         // Denoising threshold.

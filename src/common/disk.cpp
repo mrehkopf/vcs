@@ -271,7 +271,7 @@ bool kdisk_save_filter_sets(const std::vector<filter_set_s*>& filterSets,
         {
             for (auto &filter: filters)
             {
-                outFile << filterType << ",{" << QString::fromStdString(filter.name) << "}," << FILTER_DATA_LENGTH;
+                outFile << filterType << ",{" << QString::fromStdString(filter.uuid) << "}," << FILTER_DATA_LENGTH;
                 for (uint q = 0; q < FILTER_DATA_LENGTH; q++)
                 {
                     outFile << "," << (u8)filter.data[q];
@@ -381,6 +381,29 @@ bool kdisk_load_filter_sets(const std::string &sourceFilename)
         verify_first_element_on_row_is("scaler");
         set->scaler = ks_scaler_for_name_string(rowData[row].at(1).toStdString());
 
+        // Takes in a proposed UUID string and returns a valid version of it. Provides backwards-
+        // compatibility with older versions of VCS, which saved filters by name rather than by
+        // UUID.
+        const auto uuid_string = [](const QString proposedString)->std::string
+        {
+            // Replace legacy VCS filter names with their corresponding UUIDs.
+            if (proposedString == "Delta Histogram") return "fc85a109-c57a-4317-994f-786652231773";
+            if (proposedString == "Unique Count")    return "badb0129-f48c-4253-a66f-b0ec94e225a0";
+            if (proposedString == "Unsharp Mask")    return "03847778-bb9c-4e8c-96d5-0c10335c4f34";
+            if (proposedString == "Blur")            return "a5426f2e-b060-48a9-adf8-1646a2d3bd41";
+            if (proposedString == "Decimate")        return "eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03";
+            if (proposedString == "Denoise")         return "94adffac-be42-43ac-9839-9cc53a6d615c";
+            if (proposedString == "Denoise (NLM)")   return "e31d5ee3-f5df-4e7c-81b8-227fc39cbe76";
+            if (proposedString == "Sharpen")         return "1c25bbb1-dbf4-4a03-93a1-adf24b311070";
+            if (proposedString == "Median")          return "de60017c-afe5-4e5e-99ca-aca5756da0e8";
+            if (proposedString == "Crop")            return "2448cf4a-112d-4d70-9fc1-b3e9176b6684";
+            if (proposedString == "Flip")            return "80a3ac29-fcec-4ae0-ad9e-bbd8667cc680";
+            if (proposedString == "Rotate")          return "140c514d-a4b0-4882-abc6-b4e9e1ff4451";
+
+            // Otherwise, we'll assume the string is already a valid UUID.
+            return proposedString.toStdString();
+        };
+
         row++;
         verify_first_element_on_row_is("preFilters");
         const uint numPreFilters = rowData[row].at(1).toUInt();
@@ -391,7 +414,8 @@ bool kdisk_load_filter_sets(const std::string &sourceFilename)
 
             filter_s filter;
 
-            filter.name = rowData[row].at(1).toStdString();
+            filter.uuid = uuid_string(rowData[row].at(1));
+            filter.name = kf_filter_name_for_uuid(filter.uuid);
 
             const uint numParams = rowData[row].at(2).toUInt();
             if (numPreFilters >= FILTER_DATA_LENGTH)
@@ -425,7 +449,8 @@ bool kdisk_load_filter_sets(const std::string &sourceFilename)
 
             filter_s filter;
 
-            filter.name = rowData[row].at(1).toStdString();
+            filter.uuid = uuid_string(rowData[row].at(1));
+            filter.name = kf_filter_name_for_uuid(filter.uuid);
 
             const uint numParams = rowData[row].at(2).toUInt();
             if (numPreFilters >= FILTER_DATA_LENGTH)

@@ -45,21 +45,26 @@ static void filter_func_rotate(FILTER_FUNC_PARAMS);
 
 // Establish a list of all the filters which the user can apply. For each filter,
 // assign a pointer to the function which applies that filter to a given array of
-// pixels, and a point to a user-facing GUI dialog with which the user can adjust
+// pixels, and a pointer to a user-facing GUI dialog with which the user can adjust
 // the filter's parameters.
+//
+// Note: Each filter is identified by a UUID string. A UUID must be unique to a filter.
+// The UUID of a filter must never be changed - a filter must remain identifiable with
+// its initially-set UUID.
+//
 static const std::map<std::string, std::pair<filter_function_t, filter_dlg_s*>> FILTERS =
-               {{"Delta Histogram",  {filter_func_deltahistogram,  []{ static filter_dlg_deltahistogram_s f; return &f; }()}},
-                {"Unique Count",     {filter_func_uniquecount,     []{ static filter_dlg_uniquecount_s f; return &f;    }()}},
-                {"Unsharp Mask",     {filter_func_unsharpmask,     []{ static filter_dlg_unsharpmask_s f; return &f;    }()}},
-                {"Blur",             {filter_func_blur,            []{ static filter_dlg_blur_s f; return &f;           }()}},
-                {"Decimate",         {filter_func_decimate,        []{ static filter_dlg_decimate_s f; return &f;       }()}},
-                {"Denoise",          {filter_func_denoise,         []{ static filter_dlg_denoise_s f; return &f;        }()}},
-                {"Denoise (NLM)",    {filter_func_denoise_nlm,     []{ static filter_dlg_denoise_nlm_s f; return &f;    }()}},
-                {"Sharpen",          {filter_func_sharpen,         []{ static filter_dlg_sharpen_s f; return &f;        }()}},
-                {"Median",           {filter_func_median,          []{ static filter_dlg_median_s f; return &f;         }()}},
-                {"Crop",             {filter_func_crop,            []{ static filter_dlg_crop_s f; return &f;           }()}},
-                {"Flip",             {filter_func_flip,            []{ static filter_dlg_flip_s f; return &f;           }()}},
-                {"Rotate",           {filter_func_rotate,          []{ static filter_dlg_rotate_s f; return &f;         }()}}};
+       {{"fc85a109-c57a-4317-994f-786652231773", {filter_func_deltahistogram, []{ static filter_dlg_deltahistogram_s f; return &f; }()}},
+        {"badb0129-f48c-4253-a66f-b0ec94e225a0", {filter_func_uniquecount,    []{ static filter_dlg_uniquecount_s f; return &f;    }()}},
+        {"03847778-bb9c-4e8c-96d5-0c10335c4f34", {filter_func_unsharpmask,    []{ static filter_dlg_unsharpmask_s f; return &f;    }()}},
+        {"a5426f2e-b060-48a9-adf8-1646a2d3bd41", {filter_func_blur,           []{ static filter_dlg_blur_s f; return &f;           }()}},
+        {"eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03", {filter_func_decimate,       []{ static filter_dlg_decimate_s f; return &f;       }()}},
+        {"94adffac-be42-43ac-9839-9cc53a6d615c", {filter_func_denoise,        []{ static filter_dlg_denoise_s f; return &f;        }()}},
+        {"e31d5ee3-f5df-4e7c-81b8-227fc39cbe76", {filter_func_denoise_nlm,    []{ static filter_dlg_denoise_nlm_s f; return &f;    }()}},
+        {"1c25bbb1-dbf4-4a03-93a1-adf24b311070", {filter_func_sharpen,        []{ static filter_dlg_sharpen_s f; return &f;        }()}},
+        {"de60017c-afe5-4e5e-99ca-aca5756da0e8", {filter_func_median,         []{ static filter_dlg_median_s f; return &f;         }()}},
+        {"2448cf4a-112d-4d70-9fc1-b3e9176b6684", {filter_func_crop,           []{ static filter_dlg_crop_s f; return &f;           }()}},
+        {"80a3ac29-fcec-4ae0-ad9e-bbd8667cc680", {filter_func_flip,           []{ static filter_dlg_flip_s f; return &f;           }()}},
+        {"140c514d-a4b0-4882-abc6-b4e9e1ff4451", {filter_func_rotate,         []{ static filter_dlg_rotate_s f; return &f;         }()}}};
 
 static std::vector<filter_set_s*> FILTER_SETS;
 
@@ -71,9 +76,9 @@ static int MOST_RECENT_FILTER_SET_IDX = -1;
 // All filters expect 32-bit color, i.e. 4 channels.
 const uint NUM_COLOR_CHAN = (32 / 8);
 
-// Returns a list of the names of all of the user-facing filters.
+// Returns a list of the UUIDs of all user-facing filters.
 //
-std::vector<std::string> kf_filter_name_list(void)
+std::vector<std::string> kf_filter_uuid_list(void)
 {
     std::vector<std::string> list;
     for (auto &f: FILTERS)
@@ -95,6 +100,13 @@ static void clear_filter_sets_list(void)
     MOST_RECENT_FILTER_SET_IDX = -1;
 
     return;
+}
+
+// Returns the display name of the filter identified by the given UUID.
+//
+std::string kf_filter_name_for_uuid(const std::string uuid)
+{
+    return FILTERS.at(uuid).second->name();
 }
 
 void kf_clear_filters(void)
@@ -571,7 +583,7 @@ static void filter_func_blur(FILTER_FUNC_PARAMS)
     return;
 }
 
-bool kf_named_filter_exists(const std::string &name)
+bool kf_filter_exists(const std::string &name)
 {
     // If we reach the end of the functions list before finding one by the given
     // name, the entry doesn't exist.
@@ -580,17 +592,35 @@ bool kf_named_filter_exists(const std::string &name)
     return exists;
 }
 
-const filter_dlg_s* kf_filter_dialog_for_name(const std::string &name)
+const filter_dlg_s* kf_filter_dialog_for_uuid(const std::string &uuid)
 {
-    return FILTERS.at(name).second;
+    return FILTERS.at(uuid).second;
 }
 
 // Returns a pointer to the filter function that corresponds to the given filter
-// name string.
+// UUID.
 //
-filter_function_t kf_filter_function_ptr_for_name(const std::string &name)
+filter_function_t kf_filter_function_ptr_for_uuid(const std::string &uuid)
 {
-    return FILTERS.at(name).first;
+    return FILTERS.at(uuid).first;
+}
+
+// Returns the filter UUID corresponding to the given filter name. If no such name
+// could be found among the filters, an empty string will be returned.
+//
+std::string kf_filter_uuid_for_name(const std::string &name)
+{
+    for (const auto filter: FILTERS)
+    {
+        const auto uuid = filter.first;
+
+        if (kf_filter_name_for_uuid(uuid) == name)
+        {
+            return uuid;
+        }
+    }
+
+    return "";
 }
 
 void kf_set_filtering_enabled(const bool enabled)
@@ -600,9 +630,9 @@ void kf_set_filtering_enabled(const bool enabled)
     return;
 }
 
-static void apply_filter(const std::string &name, FILTER_FUNC_PARAMS)
+static void apply_filter(const std::string &uuid, FILTER_FUNC_PARAMS)
 {
-    filter_function_t applyFn = kf_filter_function_ptr_for_name(name);
+    filter_function_t applyFn = kf_filter_function_ptr_for_uuid(uuid);
 
     applyFn(pixels, r, params);
 
@@ -751,7 +781,7 @@ void kf_apply_pre_filters(u8 *const pixels, const resolution_s &r)
 
     for (auto &f: filterSet->preFilters)
     {
-        apply_filter(f.name, pixels, &r, f.data);
+        apply_filter(f.uuid, pixels, &r, f.data);
     }
 
     return;
@@ -770,7 +800,7 @@ void kf_apply_post_filters(u8 *const pixels, const resolution_s &r)
 
     for (auto &f: filterSet->postFilters)
     {
-        apply_filter(f.name, pixels, &r, f.data);
+        apply_filter(f.uuid, pixels, &r, f.data);
     }
 
     return;
@@ -779,14 +809,6 @@ void kf_apply_post_filters(u8 *const pixels, const resolution_s &r)
 void kf_initialize_filters(void)
 {
     DEBUG(("Initializing custom filtering."));
-
-    // Make sure the filter dialog names match the names of their corresponding
-    // filters.
-    for (auto f: FILTERS)
-    {
-        k_assert(f.second.first == kf_filter_function_ptr_for_name(f.second.second->name()),
-                 "Found a filter whose screen name didn't match its base name.");
-    }
 
     return;
 }

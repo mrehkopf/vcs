@@ -36,7 +36,8 @@ FilterListTreeWidget::FilterListTreeWidget(QWidget *parent) : QTreeWidget(parent
             this, [this](QTreeWidgetItem *item)
     {
         // Pop up a dialog letting the user set the filter's parameters.
-        kf_filter_dialog_for_name(item->text(0).toStdString())->poll_user_for_params(filterData[item], this);
+        const auto uuid = kf_filter_uuid_for_name(item->text(0).toStdString());
+        kf_filter_dialog_for_uuid(uuid)->poll_user_for_params(filterData[item], this);
 
         return;
     });
@@ -47,7 +48,8 @@ FilterListTreeWidget::FilterListTreeWidget(QWidget *parent) : QTreeWidget(parent
         // Assume that this signal being emitted means a new item (filter) has
         // been dropped on the list; so initialize a new filter entry accordingly.
         filterData[item] = (u8*)kmem_allocate(FILTER_DATA_LENGTH, "Post-filter data");
-        kf_filter_dialog_for_name(item->text(0).toStdString())->insert_default_params(filterData[item]);
+        const auto uuid = kf_filter_uuid_for_name(item->text(0).toStdString());
+        kf_filter_dialog_for_uuid(uuid)->insert_default_params(filterData[item]);
 
         // By default, tree widget items will adopt drops as their children, but
         // we want them to not do so, and instead for all drops to be added as
@@ -81,7 +83,9 @@ std::vector<filter_s> FilterListTreeWidget::filters(void)
         filter_s f;
 
         f.name = item->text(0).toStdString();
-        if (!kf_named_filter_exists(f.name))
+        f.uuid = kf_filter_uuid_for_name(f.name);
+
+        if (!kf_filter_exists(f.uuid))
         {
             NBENE(("Was asked to access a filter that doesn't exist. Ignoring this."));
             continue;
