@@ -35,7 +35,7 @@ struct filter_dlg_s
     const std::string filterName;
 
     // How small at most the dialog can be horizontally.
-    const uint dlgMinWidth = 180;
+    const uint dlgMinWidth = 250;
 
     // The message shown in dialogs for filters that take no parameters.
     const std::string noParamsMsg = "This filter takes no parameters.";
