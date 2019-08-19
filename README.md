@@ -3,7 +3,7 @@ A third-party capture tool for Datapath's VisionRGB range of capture cards. Grea
 
 VCS interfaces with compatible capture hardware to display the capture output in a window on your desktop. Additionally, you can apply filters, scalers, anti-tearing, and various other adjustments to the output before it's displayed. A more complete list of VCS's features is given below.
 
-Starting from version 1.4.2, you can obtain a binary distribution of VCS for Windows for a nominal fee via Tarpeeksi Hyvae Soft's [website](http://tarpeeksihyvaesoft.com/soft/). Alternately, you can build it yourself from the source code provided in this repo for either Windows or Linux. You'll find build instructions in the [Building](#building) section of this document.
+You can find the pre-built binary distribution of VCS for Windows on [Tarpeeksi Hyvae Soft's website](http://tarpeeksihyvaesoft.com/soft/).
 
 ### Features
 - On-the-fly frame filtering: blur, crop, flip, decimate, rotate, sharpen, ...
