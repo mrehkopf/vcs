@@ -26,13 +26,21 @@
 #include "common/csv.h"
 #include "ui_filter_sets_list_dialog.h"
 
-// The index of the column in the filter sets tree widget that holds the set's
-// enabled/disabled status.
-static const uint CHECKBOX_COLUMN_IDX = 0;
+// Names for the filter set tree widget's columns.
+enum column_index_e
+{
+    // Column that holds a checkbox for enabling/disabling the filter set.
+    checkbox = 0,
 
-// The index of the column in the filter sets tree widget that holds the set's
-// description string.
-static const uint DESCRIPTION_COLUMN_IDX = 3;
+    // Column that holds the input resolution that activates this filter set.
+    input_res,
+
+    // Column that holds the output resolution that activates this filter set.
+    output_res,
+
+    // Column that holds a textual description of the filter set.
+    description,
+};
 
 FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
     QDialog(parent),
@@ -123,7 +131,7 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
 
         connect(ui->pushButton_editSelected, &QPushButton::clicked, this, [=]
         {
-            edit_item(selected_item());
+            edit_filter_set(selected_item());
         });
 
         connect(ui->pushButton_removeSelected, &QPushButton::clicked, this, [=]
@@ -173,7 +181,7 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
             {
                 // The set's enabled/disabled checkbox could potentially generate
                 // accidental double-clicks, so ignore double-clicks on it altogether.
-                case CHECKBOX_COLUMN_IDX:
+                case column_index_e::checkbox:
                 {
                     return;
                 }
@@ -182,7 +190,7 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
                 // signal will be emitted when the user finishes this edit, to which
                 // we'll react elsewhere by updating the set's description with the
                 // user's text.
-                case DESCRIPTION_COLUMN_IDX:
+                case column_index_e::description:
                 {
                     ui->treeWidget_setList->editItem(item, column);
                     return;
@@ -192,7 +200,7 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
                 // corresponding filter set.
                 default:
                 {
-                    edit_item(item);
+                    edit_filter_set(item);
                     return;
                 }
             }
@@ -209,17 +217,25 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
             switch (column)
             {
                 // Enable or disable the filter set.
-                case CHECKBOX_COLUMN_IDX:
+                case column_index_e::checkbox:
                 {
-                    kf_set_filter_set_enabled(filterSetIdx, (item->checkState(CHECKBOX_COLUMN_IDX) == Qt::Checked));
+                    kf_set_filter_set_enabled(filterSetIdx, (item->checkState(column_index_e::checkbox) == Qt::Checked));
+
+                    /// Kludge. QTreeWidget doesn't allow individual columns to be set editable,
+                    /// and we need one of the columns (the one for description) to be editable,
+                    /// so as an unwanted side-effect, the checkbox column is also editable. To
+                    /// mitigate this, we'll make sure to reset any information in the column
+                    /// that should remain constant, in case the user changed it.
+                    item->setText(0, QString::number(filterSetIdx+1));
+
                     return;
                 }
 
                 // The user finished editing the set's description, so update the set
                 // with that information.
-                case DESCRIPTION_COLUMN_IDX:
+                case column_index_e::description:
                 {
-                    filterSet->description = item->text(DESCRIPTION_COLUMN_IDX).toStdString();
+                    filterSet->description = item->text(column_index_e::description).toStdString();
                     return;
                 }
 
@@ -398,16 +414,16 @@ void FilterSetsListDialog::repopulate_filter_sets_list(int newIdx)
                                   QString("%1 x %2").arg(filterSet.outRes.w).arg(filterSet.outRes.h)
                                   : "*";
 
-        item->setText(0, QString::number(filterSetIdx + 1));
-        item->setCheckState(0, filterSet.isEnabled? Qt::Checked : Qt::Unchecked);
-        item->setText(1, inputRes);
-        item->setText(2, outputRes);
-        item->setText(3, QString::fromStdString(filterSet.description));
+        item->setCheckState(column_index_e::checkbox, filterSet.isEnabled? Qt::Checked : Qt::Unchecked);
+        item->setText(column_index_e::checkbox, QString::number(filterSetIdx + 1));
+        item->setText(column_index_e::input_res, inputRes);
+        item->setText(column_index_e::output_res, outputRes);
+        item->setText(column_index_e::description, QString::fromStdString(filterSet.description));
 
-        // We'll allow the user to edit the 'Description' column.
+        // We want to allow the user to edit the 'Description' column.
         item->setFlags(item->flags() | Qt::ItemIsEditable);
 
-        item->setData(0, Qt::UserRole, filterSetIdx);
+        item->setData(column_index_e::checkbox, Qt::UserRole, filterSetIdx);
 
         return item;
     };
@@ -438,7 +454,7 @@ void FilterSetsListDialog::repopulate_filter_sets_list(int newIdx)
 
 // Lets the user edit a particular filter set given in the sets list, by spawning
 // a dialog in which the user can customize the attributes of said set.
-void FilterSetsListDialog::edit_item(const QTreeWidgetItem *const item)
+void FilterSetsListDialog::edit_filter_set(const QTreeWidgetItem *const item)
 {
     if (item == nullptr) return;
 

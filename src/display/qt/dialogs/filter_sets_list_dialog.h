@@ -47,7 +47,7 @@ private:
 
     void remove_unsaved_changes_flag();
 
-    void edit_item(const QTreeWidgetItem *const item);
+    void edit_filter_set(const QTreeWidgetItem *const item);
 
     void update_selection_sensitive_controls(void);
 
