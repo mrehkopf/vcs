@@ -1,7 +1,7 @@
 /* A gray program-wide style for VCS's Qt-based GUI.
  *
  * Author: Tarpeeksi Hyvae Soft
- * Date: April 2019
+ * Created: April 2019
  */
 
 *:focus
@@ -86,9 +86,8 @@ QAbstractButton
 
 QPushButton
 {
-    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 rgba(0, 0, 0, 0.30), stop: 1 rgba(0, 0, 0, 0.35));
-    border: 1px solid #606060;
-    border-top: 1px solid #636363;
+    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 rgba(0, 0, 0, 0.35), stop: 1 rgba(0, 0, 0, 0.4));
+    border: 1px solid #707070;
     border-radius: 2px;
     padding: 3px;
     color: #e0e0e0;
@@ -102,9 +101,8 @@ QPushButton:pressed
 
 QComboBox
 {
-    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 rgba(0, 0, 0, 0.30), stop: 1 rgba(0, 0, 0, 0.35));
-    border: 1px solid #606060;
-    border-top: 1px solid #636363;
+    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 rgba(0, 0, 0, 0.35), stop: 1 rgba(0, 0, 0, 0.4));
+    border: 1px solid #707070;
     border-radius: 2px;
     padding: 2px;
     color: #e0e0e0;
@@ -164,7 +162,7 @@ QTreeWidget
 
 QTreeWidget QAbstractItemView
 {
-	background-color: transparent;
+        background-color: transparent;
 }
 
 QTreeWidget QHeaderView::section
@@ -253,7 +251,7 @@ QRadioButton::indicator::checked
 {
     width: 13px;
     height: 13px;
-    background: rgba(0,0,0,0.35);
+    background: #757575;
     border: none;
 }
 
@@ -264,8 +262,8 @@ QRadioButton::indicator::checked:disabled
 
 QCheckBox::indicator, QGroupBox::indicator, QTreeWidget::indicator
 {
-    width: 12px;
-    height: 12px;
+    width: 11px;
+    height: 11px;
     border: none;
     margin-top: 1px;
     border-radius: 2px;
@@ -279,17 +277,17 @@ QTreeWidget::indicator
 
 QCheckBox::indicator::!checked, QGroupBox::indicator::!checked, QTreeWidget::indicator::!checked
 {
-    background: rgba(0,0,0,0.06);
-    border: none;
-    border-left: 1px solid rgba(0,0,0,0.25);
-    border-top: 1px solid rgba(0,0,0,0.25);
+    background: rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.05);
+    border-left: 1px solid rgba(0,0,0,0.3);
+    border-top: 1px solid rgba(0,0,0,0.3);
 }
 
 QCheckBox::indicator::checked, QGroupBox::indicator::checked, QTreeWidget::indicator::checked
 {
     width: 13px;
     height: 13px;
-    background: rgba(0,0,0,0.35);
+    background: #707070;
     border: none;
 }
 
@@ -300,8 +298,8 @@ QCheckBox::indicator::checked:disabled, QGroupBox::indicator::checked:disabled
 
 QSpinBox, QDoubleSpinBox, QLineEdit
 {
-    background-color: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 rgba(0, 0, 0, 0.30), stop: 1 rgba(0, 0, 0, 0.35));
-    border: 1px solid #606060;
+    background: #757575;
+    border: 1px solid #757575;
     border-radius: 2px;
     padding: 2px;
     color: #e0e0e0;
