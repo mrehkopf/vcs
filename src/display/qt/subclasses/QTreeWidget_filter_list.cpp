@@ -9,6 +9,7 @@
 
 #include <QGuiApplication>
 #include <QTreeWidget>
+#include <cstring>
 #include <vector>
 #include "display/qt/subclasses/QTreeWidget_filter_list.h"
 #include "display/qt/dialogs/filter_dialogs.h"

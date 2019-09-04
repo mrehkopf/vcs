@@ -8,6 +8,7 @@
  *
  */
 
+#include <cstring>
 #include "filter/anti_tear.h"
 #include "display/display.h"
 #include "capture/capture.h"

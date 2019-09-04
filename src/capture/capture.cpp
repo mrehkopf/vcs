@@ -6,6 +6,7 @@
  *
  */
 
+#include <cstring>
 #include <atomic>
 #include <mutex>
 #include <cmath>

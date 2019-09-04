@@ -25,6 +25,8 @@
 #include <QString>
 #include <QDialog>
 #include <QLabel>
+#include <cstring>
+#include <cmath>
 #include "common/globals.h"
 #include "common/types.h"
 

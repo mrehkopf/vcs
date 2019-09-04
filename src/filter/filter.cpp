@@ -7,9 +7,11 @@
  *
  */
 
+#include <cstring>
 #include <vector>
-#include <map>
 #include <ctime>
+#include <cmath>
+#include <map>
 #include "display/qt/dialogs/filter_dialogs.h"
 #include "display/display.h"
 #include "capture/capture.h"

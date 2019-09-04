@@ -7,7 +7,9 @@
  */
 
 #include <algorithm>
+#include <cstring>
 #include <vector>
+#include <cmath>
 #include "filter/anti_tear.h"
 #include "common/propagate.h"
 #include "capture/capture.h"
