@@ -94,7 +94,7 @@ ControlPanelAboutWidget::~ControlPanelAboutWidget()
 void ControlPanelAboutWidget::restore_persistent_settings(void)
 {
     set_qcombobox_idx_c(ui->comboBox_customInterfaceStyling)
-                       .by_string(kpers_value_of(INI_GROUP_APP, "custom_styling", "Grayscale").toString());
+                       .by_string(kpers_value_of(INI_GROUP_APP, "custom_styling", "Disabled").toString());
 
     return;
 }
