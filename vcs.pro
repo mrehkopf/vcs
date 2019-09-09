@@ -87,7 +87,8 @@ SOURCES += \
     src/display/qt/widgets/control_panel_record_widget.cpp \
     src/display/qt/widgets/control_panel_output_widget.cpp \
     src/display/qt/widgets/control_panel_input_widget.cpp \
-    src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.cpp
+    src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.cpp \
+    src/display/qt/dialogs/filters_dialog.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -124,7 +125,8 @@ HEADERS += \
     src/display/qt/widgets/control_panel_record_widget.h \
     src/display/qt/widgets/control_panel_output_widget.h \
     src/display/qt/widgets/control_panel_input_widget.h \
-    src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.h
+    src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.h \
+    src/display/qt/dialogs/filters_dialog.h
 
 FORMS += \
     src/display/qt/windows/ui/control_panel_window.ui \
@@ -139,7 +141,8 @@ FORMS += \
     src/display/qt/widgets/ui/control_panel_about_widget.ui \
     src/display/qt/widgets/ui/control_panel_record_widget.ui \
     src/display/qt/widgets/ui/control_panel_output_widget.ui \
-    src/display/qt/widgets/ui/control_panel_input_widget.ui
+    src/display/qt/widgets/ui/control_panel_input_widget.ui \
+    src/display/qt/dialogs/ui/filters_dialog.ui
 
 # C++. For GCC/Clang/MinGW.
 QMAKE_CXXFLAGS += -g

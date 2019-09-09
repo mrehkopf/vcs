@@ -24,6 +24,7 @@
 #include "display/qt/windows/control_panel_window.h"
 #include "display/qt/dialogs/resolution_dialog.h"
 #include "display/qt/dialogs/anti_tear_dialog.h"
+#include "display/qt/dialogs/filters_dialog.h"
 #include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
@@ -52,6 +53,7 @@ ControlPanel::ControlPanel(QWidget *parent) :
     videocolorDlg = new VideoAndColorDialog;
     antitearDlg = new AntiTearDialog;
     filterSetsDlg = new FilterSetsListDialog;
+    filtersDlg = new FiltersDialog;
 
     // Set up the contents of the 'About' tab.
     {
@@ -176,6 +178,9 @@ ControlPanel::~ControlPanel()
 
     delete filterSetsDlg;
     filterSetsDlg = nullptr;
+
+    delete filtersDlg;
+    filtersDlg = nullptr;
 
     return;
 }
@@ -445,10 +450,22 @@ void ControlPanel::toggle_overlay(void)
 
 void ControlPanel::open_filter_sets_dialog(void)
 {
-    k_assert(filterSetsDlg != nullptr, "");
-    filterSetsDlg->show();
-    filterSetsDlg->activateWindow();
-    filterSetsDlg->raise();
+    // While working on the new filters dialog, allow the 'secret' combination
+    // of Shift + click to open the (currently unfinished) dialog.
+    if (QGuiApplication::keyboardModifiers() & Qt::ShiftModifier)
+    {
+        k_assert(filtersDlg != nullptr, "");
+        filtersDlg->show();
+        filtersDlg->activateWindow();
+        filtersDlg->raise();
+    }
+    else
+    {
+        k_assert(filterSetsDlg != nullptr, "");
+        filterSetsDlg->show();
+        filterSetsDlg->activateWindow();
+        filterSetsDlg->raise();
+    }
 
     return;
 }

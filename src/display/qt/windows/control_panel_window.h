@@ -18,6 +18,7 @@ class FilterSetsListDialog;
 class VideoAndColorDialog;
 class QTreeWidgetItem;
 class AntiTearDialog;
+class FiltersDialog;
 class AliasDialog;
 
 struct capture_signal_s;
@@ -108,6 +109,7 @@ private:
     FilterSetsListDialog *filterSetsDlg = nullptr;
     VideoAndColorDialog *videocolorDlg = nullptr;
     AntiTearDialog *antitearDlg = nullptr;
+    FiltersDialog *filtersDlg = nullptr;
     AliasDialog *aliasDlg = nullptr;
 
     ControlPanelAboutWidget *aboutWidget = nullptr;
