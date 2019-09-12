@@ -3,6 +3,7 @@
 
 #include <QDialog>
 
+class QGraphicsScene;
 class QMenuBar;
 
 namespace Ui {
@@ -21,6 +22,7 @@ private:
     Ui::FiltersDialog *ui;
 
     QMenuBar *menubar = nullptr;
+    QGraphicsScene *graphicsScene = nullptr;
 };
 
 #endif

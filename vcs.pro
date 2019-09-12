@@ -90,7 +90,8 @@ SOURCES += \
     src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.cpp \
     src/display/qt/dialogs/filters_dialog.cpp \
     src/display/qt/subclasses/QGraphicsScene_forward_node_graph.cpp \
-    src/display/qt/subclasses/QGraphicsItem_forward_node_graph_node.cpp
+    src/display/qt/subclasses/QGraphicsItem_forward_node_graph_node.cpp \
+    src/display/qt/dialogs/filters_dialog_nodes.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -130,7 +131,8 @@ HEADERS += \
     src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.h \
     src/display/qt/dialogs/filters_dialog.h \
     src/display/qt/subclasses/QGraphicsScene_forward_node_graph.h \
-    src/display/qt/subclasses/QGraphicsItem_forward_node_graph_node.h
+    src/display/qt/subclasses/QGraphicsItem_forward_node_graph_node.h \
+    src/display/qt/dialogs/filters_dialog_nodes.h
 
 FORMS += \
     src/display/qt/windows/ui/control_panel_window.ui \
