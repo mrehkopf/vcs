@@ -7,6 +7,7 @@
  *
  */
 
+#include <unordered_map>
 #include <cstring>
 #include <vector>
 #include <ctime>
@@ -69,6 +70,28 @@ static const std::map<std::string, std::pair<filter_function_t, filter_dlg_s*>> 
         {"80a3ac29-fcec-4ae0-ad9e-bbd8667cc680", {filter_func_flip,           []{ static filter_dlg_flip_s f; return &f;           }()}},
         {"140c514d-a4b0-4882-abc6-b4e9e1ff4451", {filter_func_rotate,         []{ static filter_dlg_rotate_s f; return &f;         }()}}};
 
+// All filter types available for use.
+/// NOTE: This is intended for use by the new node graph-based filters dialog that
+/// is currently being worked on but is not yet finalized.
+static const std::unordered_map<std::string, const filter_meta_s> KNOWN_FILTER_TYPES =
+{
+    {"a5426f2e-b060-48a9-adf8-1646a2d3bd41", {"Blur",              filter_enum_e::blur,                   filter_func_blur           }},
+    {"fc85a109-c57a-4317-994f-786652231773", {"Delta histogram",   filter_enum_e::delta_histogram,        filter_func_deltahistogram }},
+    {"badb0129-f48c-4253-a66f-b0ec94e225a0", {"Unique count",      filter_enum_e::unique_count,           filter_func_uniquecount    }},
+    {"03847778-bb9c-4e8c-96d5-0c10335c4f34", {"Unsharp mask",      filter_enum_e::unsharp_mask,           filter_func_unsharpmask    }},
+    {"eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03", {"Decimate",          filter_enum_e::decimate,               filter_func_decimate       }},
+    {"94adffac-be42-43ac-9839-9cc53a6d615c", {"Denoise",           filter_enum_e::denoise,                filter_func_denoise        }},
+    {"e31d5ee3-f5df-4e7c-81b8-227fc39cbe76", {"Denoise (NLM)",     filter_enum_e::denoise_nonlocal_means, filter_func_denoise_nlm    }},
+    {"1c25bbb1-dbf4-4a03-93a1-adf24b311070", {"Sharpen",           filter_enum_e::sharpen,                filter_func_sharpen        }},
+    {"de60017c-afe5-4e5e-99ca-aca5756da0e8", {"Median",            filter_enum_e::median,                 filter_func_median         }},
+    {"2448cf4a-112d-4d70-9fc1-b3e9176b6684", {"Crop",              filter_enum_e::crop,                   filter_func_crop           }},
+    {"80a3ac29-fcec-4ae0-ad9e-bbd8667cc680", {"Flip",              filter_enum_e::flip,                   filter_func_flip           }},
+    {"140c514d-a4b0-4882-abc6-b4e9e1ff4451", {"Rotate",            filter_enum_e::rotate,                 filter_func_rotate         }},
+
+    {"136deb34-ac79-46b1-a09c-d57dcfaa84ad", {"Input gate",        filter_enum_e::input_gate,             nullptr                    }},
+    {"be8443e2-4355-40fd-aded-63cebcbfb8ce", {"Output gate",       filter_enum_e::output_gate,            nullptr                    }},
+};
+
 static std::vector<filter_set_s*> FILTER_SETS;
 
 // The index in the list of filter sets of the set which was most recently used.
@@ -86,6 +109,18 @@ static std::vector<filter_c*> FILTER_POOL;
 // and ending with an output gate. These chains will be used to filter incoming
 // frames.
 static std::vector<std::vector<filter_c*>> FILTER_CHAINS;
+
+std::vector<const filter_meta_s*> kf_known_filter_types(void)
+{
+    std::vector<const filter_meta_s*> filtersMetadata;
+
+    for (const auto &filter: KNOWN_FILTER_TYPES)
+    {
+        filtersMetadata.push_back(&filter.second);
+    }
+
+    return filtersMetadata;
+}
 
 void kf_set_filter_chains(std::vector<std::vector<filter_c*>> newChains)
 {
@@ -858,11 +893,10 @@ void kf_initialize_filters(void)
     return;
 }
 
-filter_c::filter_c(const char * const id) :
-    type(filter_type_for_id(id)),
-    apply(filter_function_for_type(type)),
+filter_c::filter_c(const char *const id) :
+    metaData(KNOWN_FILTER_TYPES.at(id)),
     parameterData(heap_bytes_s<u8>(FILTER_DATA_LENGTH, "Filter parameter data")),
-    guiWidget(filter_widget_for_type(type, parameterData.ptr()))
+    guiWidget(new_gui_widget())
 {
     this->guiWidget->reset_parameter_data();
 
@@ -877,64 +911,18 @@ filter_c::~filter_c()
     return;
 }
 
-filter_c::filter_types_e filter_c::filter_type_for_id(const std::string id)
+filter_widget_s *filter_c::new_gui_widget(void)
 {
-    static const std::map<const std::string, const filter_types_e> filterType =
+    u8 *const paramData = this->parameterData.ptr();
+
+    switch (this->metaData.type)
     {
-        {"a5426f2e-b060-48a9-adf8-1646a2d3bd41", filter_types_e::blur                    },
-        {"fc85a109-c57a-4317-994f-786652231773", filter_types_e::delta_histogram,        },
-        {"badb0129-f48c-4253-a66f-b0ec94e225a0", filter_types_e::unique_count,           },
-        {"03847778-bb9c-4e8c-96d5-0c10335c4f34", filter_types_e::unsharp_mask,           },
-        {"eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03", filter_types_e::decimate,               },
-        {"94adffac-be42-43ac-9839-9cc53a6d615c", filter_types_e::denoise,                },
-        {"e31d5ee3-f5df-4e7c-81b8-227fc39cbe76", filter_types_e::denoise_nonlocal_means, },
-        {"1c25bbb1-dbf4-4a03-93a1-adf24b311070", filter_types_e::sharpen,                },
-        {"de60017c-afe5-4e5e-99ca-aca5756da0e8", filter_types_e::median,                 },
-        {"2448cf4a-112d-4d70-9fc1-b3e9176b6684", filter_types_e::crop,                   },
-        {"80a3ac29-fcec-4ae0-ad9e-bbd8667cc680", filter_types_e::flip,                   },
-        {"140c514d-a4b0-4882-abc6-b4e9e1ff4451", filter_types_e::rotate,                 },
+        case filter_enum_e::blur:                   return new filter_widget_blur_s(paramData);
+        case filter_enum_e::rotate:                 return new filter_widget_rotate_s(paramData);
 
-        {"136deb34-ac79-46b1-a09c-d57dcfaa84ad", filter_types_e::input_gate,             },
-        {"be8443e2-4355-40fd-aded-63cebcbfb8ce", filter_types_e::output_gate,            },
-    };
+        case filter_enum_e::input_gate:             return new filter_widget_input_gate_s(paramData);
+        case filter_enum_e::output_gate:            return new filter_widget_output_gate_s(paramData);
 
-    return filterType.at(id);
-}
-
-filter_function_t filter_c::filter_function_for_type(const filter_c::filter_types_e type)
-{
-    switch (type)
-    {
-        case filter_types_e::blur:                   return filter_func_blur;
-        case filter_types_e::delta_histogram:        return filter_func_deltahistogram;
-        case filter_types_e::unique_count:           return filter_func_uniquecount;
-        case filter_types_e::unsharp_mask:           return filter_func_unsharpmask;
-        case filter_types_e::decimate:               return filter_func_decimate;
-        case filter_types_e::denoise:                return filter_func_denoise;
-        case filter_types_e::denoise_nonlocal_means: return filter_func_denoise_nlm;
-        case filter_types_e::sharpen:                return filter_func_sharpen;
-        case filter_types_e::median:                 return filter_func_median;
-        case filter_types_e::crop:                   return filter_func_crop;
-        case filter_types_e::flip:                   return filter_func_flip;
-        case filter_types_e::rotate:                 return filter_func_rotate;
-
-        case filter_types_e::input_gate:             return nullptr;
-        case filter_types_e::output_gate:            return nullptr;
-
-        default: k_assert(0, "Unknown filter type.");
-    };
-}
-
-filter_widget_s *filter_c::filter_widget_for_type(const filter_c::filter_types_e type, u8 *const parameterData)
-{
-    switch (type)
-    {
-        case filter_types_e::blur:                   return new filter_widget_blur_s(parameterData);
-        case filter_types_e::rotate:                 return new filter_widget_rotate_s(parameterData);
-
-        case filter_types_e::input_gate:             return new filter_widget_input_gate_s(parameterData);
-        case filter_types_e::output_gate:            return new filter_widget_output_gate_s(parameterData);
-
-        default: k_assert(0, "Unknown filter type.");
+        default: k_assert(0, "No GUI widget is available for the given filter type.");
     }
 }

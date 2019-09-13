@@ -1,7 +1,6 @@
 #ifndef FILTER_WIDGETS_H
 #define FILTER_WIDGETS_H
 
-
 #include <QDoubleSpinBox>
 #include <QFormLayout>
 #include <QComboBox>

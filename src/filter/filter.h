@@ -21,35 +21,45 @@ struct filter_dlg_s;
 #define FILTER_FUNC_PARAMS u8 *const pixels, const resolution_s *const r, const u8 *const params
 typedef void(*filter_function_t)(FILTER_FUNC_PARAMS);
 
+enum class filter_enum_e
+{
+    blur,
+    delta_histogram,
+    unique_count,
+    unsharp_mask,
+    decimate,
+    denoise,
+    denoise_nonlocal_means,
+    sharpen,
+    median,
+    crop,
+    flip,
+    rotate,
+
+    input_gate,
+    output_gate,
+};
+
+struct filter_meta_s
+{
+    // The filter's user-facing display name; e.g. "Blur" for a blur filter. This
+    // will be shown in the GUI.
+    std::string name;
+
+    filter_enum_e type;
+
+    // A function used to apply this filter to a pixel buffer (frame).
+    filter_function_t apply;
+};
+
+// A concrete instance of a filter.
 class filter_c
 {
 public:
     filter_c(const char *const id);
     ~filter_c();
 
-    enum class filter_types_e
-    {
-        blur,
-        delta_histogram,
-        unique_count,
-        unsharp_mask,
-        decimate,
-        denoise,
-        denoise_nonlocal_means,
-        sharpen,
-        median,
-        crop,
-        flip,
-        rotate,
-
-        input_gate,
-        output_gate,
-    };
-
-    const filter_types_e type;
-
-    // A function used to apply this filter to a pixel buffer (frame).
-    const filter_function_t apply;
+    const filter_meta_s& metaData;
 
     // An array containing the filter's parameter values; like radius for a blur
     // filter.
@@ -60,9 +70,7 @@ public:
     filter_widget_s *const guiWidget;
 
 private:
-    filter_types_e filter_type_for_id(const std::string id);
-    filter_function_t filter_function_for_type(const filter_types_e type);
-    filter_widget_s* filter_widget_for_type(const filter_types_e type, u8 *const parameterData);
+    filter_widget_s* new_gui_widget(void);
 };
 
 // A single filter.
@@ -103,6 +111,8 @@ struct filter_set_s
 };
 
 void kf_initialize_filters(void);
+
+std::vector<const filter_meta_s*> kf_known_filter_types(void);
 
 const filter_c* kf_create_filter(const char *const id);
 
