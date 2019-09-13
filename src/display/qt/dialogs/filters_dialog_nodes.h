@@ -29,7 +29,7 @@ private:
 class InputGateNode : public ForwardNodeGraphNode
 {
 public:
-    InputGateNode() : ForwardNodeGraphNode("Input gate", 200, 100)
+    InputGateNode(const QString title) : ForwardNodeGraphNode(title, 200, 130)
     {
         this->edges =
         {
@@ -50,7 +50,7 @@ private:
 class OutputGateNode : public ForwardNodeGraphNode
 {
 public:
-    OutputGateNode() : ForwardNodeGraphNode("Output gate", 200, 100)
+    OutputGateNode(const QString title) : ForwardNodeGraphNode(title, 200, 130)
     {
         this->edges =
         {

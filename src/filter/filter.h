@@ -7,9 +7,12 @@
 #ifndef FILTER_H_
 #define FILTER_H_
 
+#include "common/memory_interface.h"
 #include "display/display.h"
 #include "common/globals.h"
 
+class filter_c;
+struct filter_widget_s;
 struct scaling_filter_s;
 struct filter_dlg_s;
 
@@ -17,6 +20,50 @@ struct filter_dlg_s;
 // given pixels.
 #define FILTER_FUNC_PARAMS u8 *const pixels, const resolution_s *const r, const u8 *const params
 typedef void(*filter_function_t)(FILTER_FUNC_PARAMS);
+
+class filter_c
+{
+public:
+    filter_c(const char *const id);
+    ~filter_c();
+
+    enum class filter_types_e
+    {
+        blur,
+        delta_histogram,
+        unique_count,
+        unsharp_mask,
+        decimate,
+        denoise,
+        denoise_nonlocal_means,
+        sharpen,
+        median,
+        crop,
+        flip,
+        rotate,
+
+        input_gate,
+        output_gate,
+    };
+
+    const filter_types_e type;
+
+    // A function used to apply this filter to a pixel buffer (frame).
+    const filter_function_t apply;
+
+    // An array containing the filter's parameter values; like radius for a blur
+    // filter.
+    heap_bytes_s<u8> parameterData;
+
+    // A GUI-displayable widget containing e.g. user-interactible controls for
+    // adjusting the filter's parameters.
+    filter_widget_s *const guiWidget;
+
+private:
+    filter_types_e filter_type_for_id(const std::string id);
+    filter_function_t filter_function_for_type(const filter_types_e type);
+    filter_widget_s* filter_widget_for_type(const filter_types_e type, u8 *const parameterData);
+};
 
 // A single filter.
 struct filter_s
@@ -56,6 +103,8 @@ struct filter_set_s
 };
 
 void kf_initialize_filters(void);
+
+const filter_c* kf_create_filter(const char *const id);
 
 std::vector<std::string> kf_filter_uuid_list(void);
 

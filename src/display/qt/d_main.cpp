@@ -187,6 +187,15 @@ void kd_update_output_window_size(void)
     return;
 }
 
+void kd_refresh_filter_chains(void)
+{
+    k_assert(0, "An unimplemented function was called.");
+
+    /// TODO.
+
+    return;
+}
+
 int kd_peak_pipeline_latency(void)
 {
     return UPDATE_LATENCY_PEAK;

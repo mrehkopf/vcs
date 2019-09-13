@@ -12,6 +12,7 @@
 #include <ctime>
 #include <cmath>
 #include <map>
+#include "display/qt/widgets/filter_widgets.h"
 #include "display/qt/dialogs/filter_dialogs.h"
 #include "display/display.h"
 #include "capture/capture.h"
@@ -76,7 +77,44 @@ static std::vector<filter_set_s*> FILTER_SETS;
 static int MOST_RECENT_FILTER_SET_IDX = -1;
 
 // All filters expect 32-bit color, i.e. 4 channels.
-const uint NUM_COLOR_CHAN = (32 / 8);
+const uint NUM_COLOR_CHANNELS = (32 / 8);
+
+// All filters the user has added to the filter graph.
+static std::vector<filter_c*> FILTER_POOL;
+
+// Sets of filters, starting with an input gate, followed by a number of filters,
+// and ending with an output gate. These chains will be used to filter incoming
+// frames.
+static std::vector<std::vector<filter_c*>> FILTER_CHAINS;
+
+void kf_set_filter_chains(std::vector<std::vector<filter_c*>> newChains)
+{
+    FILTER_CHAINS = newChains;
+
+    return;
+}
+
+const filter_c* kf_create_filter(const char *const id)
+{
+    filter_c *filter = new filter_c(id);
+
+    FILTER_POOL.push_back(filter);
+
+    return filter;
+}
+
+void kf_delete_filter(const filter_c *const filter)
+{
+    const auto filterEntry = std::find(FILTER_POOL.begin(), FILTER_POOL.end(), filter);
+
+    k_assert(filterEntry != FILTER_POOL.end(),"Was asked to delete an unknown filter.");
+
+    FILTER_POOL.erase(filterEntry);
+
+    kd_refresh_filter_chains();
+
+    return;
+}
 
 // Returns a list of the UUIDs of all user-facing filters.
 //
@@ -135,6 +173,11 @@ void kf_release_filters(void)
 
     clear_filter_sets_list();
 
+    for (auto filter: FILTER_POOL)
+    {
+        delete filter;
+    }
+
     return;
 }
 
@@ -191,7 +234,7 @@ static void filter_func_uniquecount(FILTER_FUNC_PARAMS)
 
     for (u32 i = 0; i < (r->w * r->h); i++)
     {
-        const u32 idx = i * NUM_COLOR_CHAN;
+        const u32 idx = i * NUM_COLOR_CHANNELS;
 
         if (abs(pixels[idx + 0] - prevPixels[idx + 0]) > threshold ||
             abs(pixels[idx + 1] - prevPixels[idx + 1]) > threshold ||
@@ -274,7 +317,7 @@ static void filter_func_denoise(FILTER_FUNC_PARAMS)
 
     for (uint i = 0; i < (r->h * r->w); i++)
     {
-        const u32 idx = i * NUM_COLOR_CHAN;
+        const u32 idx = i * NUM_COLOR_CHANNELS;
 
         if ((abs(pixels[idx + 0] - prevPixels[idx + 0]) > threshold) ||
             (abs(pixels[idx + 1] - prevPixels[idx + 1]) > threshold) ||
@@ -314,7 +357,7 @@ static void filter_func_deltahistogram(FILTER_FUNC_PARAMS)
     uint re[numBins] = {0};
     for (uint i = 0; i < (r->w * r->h); i++)
     {
-        const uint idx = i * NUM_COLOR_CHAN;
+        const uint idx = i * NUM_COLOR_CHANNELS;
         const uint deltaBlue = (pixels[idx + 0] - prevFramePixels[idx + 0]) + 255;
         const uint deltaGreen = (pixels[idx + 1] - prevFramePixels[idx + 1]) + 255;
         const uint deltaRed = (pixels[idx + 2] - prevFramePixels[idx + 2]) + 255;
@@ -415,7 +458,7 @@ static void filter_func_decimate(FILTER_FUNC_PARAMS)
                 {
                     for (int xd = 0; xd < factor; xd++)
                     {
-                        const u32 idx = ((x + xd) + (y + yd) * r->w) * NUM_COLOR_CHAN;
+                        const u32 idx = ((x + xd) + (y + yd) * r->w) * NUM_COLOR_CHANNELS;
 
                         ab += pixels[idx + 0];
                         ag += pixels[idx + 1];
@@ -428,7 +471,7 @@ static void filter_func_decimate(FILTER_FUNC_PARAMS)
             }
             else if (type == filter_dlg_decimate_s::FILTER_TYPE_NEAREST)
             {
-                const u32 idx = (x + y * r->w) * NUM_COLOR_CHAN;
+                const u32 idx = (x + y * r->w) * NUM_COLOR_CHANNELS;
 
                 ab = pixels[idx + 0];
                 ag = pixels[idx + 1];
@@ -439,7 +482,7 @@ static void filter_func_decimate(FILTER_FUNC_PARAMS)
             {
                 for (int xd = 0; xd < factor; xd++)
                 {
-                    const u32 idx = ((x + xd) + (y + yd) * r->w) * NUM_COLOR_CHAN;
+                    const u32 idx = ((x + xd) + (y + yd) * r->w) * NUM_COLOR_CHANNELS;
 
                     pixels[idx + 0] = ab;
                     pixels[idx + 1] = ag;
@@ -813,4 +856,85 @@ void kf_initialize_filters(void)
     DEBUG(("Initializing custom filtering."));
 
     return;
+}
+
+filter_c::filter_c(const char * const id) :
+    type(filter_type_for_id(id)),
+    apply(filter_function_for_type(type)),
+    parameterData(heap_bytes_s<u8>(FILTER_DATA_LENGTH, "Filter parameter data")),
+    guiWidget(filter_widget_for_type(type, parameterData.ptr()))
+{
+    this->guiWidget->reset_parameter_data();
+
+    return;
+}
+
+filter_c::~filter_c()
+{
+    delete this->guiWidget;
+    this->parameterData.release_memory();
+
+    return;
+}
+
+filter_c::filter_types_e filter_c::filter_type_for_id(const std::string id)
+{
+    static const std::map<const std::string, const filter_types_e> filterType =
+    {
+        {"a5426f2e-b060-48a9-adf8-1646a2d3bd41", filter_types_e::blur                    },
+        {"fc85a109-c57a-4317-994f-786652231773", filter_types_e::delta_histogram,        },
+        {"badb0129-f48c-4253-a66f-b0ec94e225a0", filter_types_e::unique_count,           },
+        {"03847778-bb9c-4e8c-96d5-0c10335c4f34", filter_types_e::unsharp_mask,           },
+        {"eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03", filter_types_e::decimate,               },
+        {"94adffac-be42-43ac-9839-9cc53a6d615c", filter_types_e::denoise,                },
+        {"e31d5ee3-f5df-4e7c-81b8-227fc39cbe76", filter_types_e::denoise_nonlocal_means, },
+        {"1c25bbb1-dbf4-4a03-93a1-adf24b311070", filter_types_e::sharpen,                },
+        {"de60017c-afe5-4e5e-99ca-aca5756da0e8", filter_types_e::median,                 },
+        {"2448cf4a-112d-4d70-9fc1-b3e9176b6684", filter_types_e::crop,                   },
+        {"80a3ac29-fcec-4ae0-ad9e-bbd8667cc680", filter_types_e::flip,                   },
+        {"140c514d-a4b0-4882-abc6-b4e9e1ff4451", filter_types_e::rotate,                 },
+
+        {"136deb34-ac79-46b1-a09c-d57dcfaa84ad", filter_types_e::input_gate,             },
+        {"be8443e2-4355-40fd-aded-63cebcbfb8ce", filter_types_e::output_gate,            },
+    };
+
+    return filterType.at(id);
+}
+
+filter_function_t filter_c::filter_function_for_type(const filter_c::filter_types_e type)
+{
+    switch (type)
+    {
+        case filter_types_e::blur:                   return filter_func_blur;
+        case filter_types_e::delta_histogram:        return filter_func_deltahistogram;
+        case filter_types_e::unique_count:           return filter_func_uniquecount;
+        case filter_types_e::unsharp_mask:           return filter_func_unsharpmask;
+        case filter_types_e::decimate:               return filter_func_decimate;
+        case filter_types_e::denoise:                return filter_func_denoise;
+        case filter_types_e::denoise_nonlocal_means: return filter_func_denoise_nlm;
+        case filter_types_e::sharpen:                return filter_func_sharpen;
+        case filter_types_e::median:                 return filter_func_median;
+        case filter_types_e::crop:                   return filter_func_crop;
+        case filter_types_e::flip:                   return filter_func_flip;
+        case filter_types_e::rotate:                 return filter_func_rotate;
+
+        case filter_types_e::input_gate:             return nullptr;
+        case filter_types_e::output_gate:            return nullptr;
+
+        default: k_assert(0, "Unknown filter type.");
+    };
+}
+
+filter_widget_s *filter_c::filter_widget_for_type(const filter_c::filter_types_e type, u8 *const parameterData)
+{
+    switch (type)
+    {
+        case filter_types_e::blur:                   return new filter_widget_blur_s(parameterData);
+        case filter_types_e::rotate:                 return new filter_widget_rotate_s(parameterData);
+
+        case filter_types_e::input_gate:             return new filter_widget_input_gate_s(parameterData);
+        case filter_types_e::output_gate:            return new filter_widget_output_gate_s(parameterData);
+
+        default: k_assert(0, "Unknown filter type.");
+    }
 }

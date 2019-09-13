@@ -241,14 +241,15 @@ void kmem_deallocate_memory_cache(void)
     DEBUG(("Released:\t%d KB.", (TOTAL_BYTES_RELEASED / 1024)));
     DEBUG(("Balance:\t%d bytes.", (TOTAL_BYTES_ALLOCATED - TOTAL_BYTES_RELEASED)));
 
-    /*for (uint i = 0; i < NUM_ELEMENTS(ALLOC_TABLE); i++)
+    for (uint i = 0; i < NUM_ALLOC_TABLE_ELEMENTS; i++)
     {
-        if ((ALLOC_TABLE[i].alloc != NULL) &&
-            !ALLOC_TABLE[i].isUnused)
+
+        if ((ALLOC_TABLE[i].memory != NULL) &&
+            ALLOC_TABLE[i].isInUse)
         {
-            DEBUG(("Unreleased memory: %p, %u bytes. Stated purpose: '%s'.", ALLOC_TABLE[i].alloc, ALLOC_TABLE[i].numBytes, ALLOC_TABLE[i].reason));
+            DEBUG(("Unreleased memory: %p, %u bytes. Stated purpose: '%s'.", ALLOC_TABLE[i].memory, ALLOC_TABLE[i].numBytes, ALLOC_TABLE[i].reason));
         }
-    }*/
+    }
 
     DEBUG(("(Unreleased allocations will be freed automatically.)"));
 

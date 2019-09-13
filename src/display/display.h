@@ -15,6 +15,7 @@
 #define DISPLAY_H
 
 #include <string>
+#include <vector>
 #include "common/types.h"
 
 struct log_entry_s;
@@ -105,6 +106,10 @@ void kd_set_video_settings_filename(const std::string &filename);
 // Returns true if the output window is in fullscreen mode (true fullscreen, not
 // just as a window resized to fill the screen).
 bool kd_is_fullscreen(void);
+
+// Re-create the current known filter chains based on the user's selections in the
+// filter node graph.
+void kd_refresh_filter_chains(void);
 
 uint kd_output_framerate(void);
 
