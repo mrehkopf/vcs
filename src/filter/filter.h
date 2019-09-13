@@ -56,7 +56,7 @@ struct filter_meta_s
 class filter_c
 {
 public:
-    filter_c(const char *const id);
+    filter_c(const std::string &id);
     ~filter_c();
 
     const filter_meta_s& metaData;
@@ -114,7 +114,8 @@ void kf_initialize_filters(void);
 
 std::vector<const filter_meta_s*> kf_known_filter_types(void);
 
-const filter_c* kf_create_filter(const char *const id);
+const filter_c* kf_create_new_filter_instance(const char *const id);
+const filter_c* kf_create_new_filter_instance(const filter_enum_e type);
 
 std::vector<std::string> kf_filter_uuid_list(void);
 

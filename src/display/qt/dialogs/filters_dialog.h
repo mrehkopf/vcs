@@ -2,7 +2,9 @@
 #define FILTERS_DIALOG_H
 
 #include <QDialog>
+#include "filter/filter.h"
 
+class ForwardNodeGraphNode;
 class QGraphicsScene;
 class QMenuBar;
 
@@ -23,6 +25,9 @@ private:
 
     QMenuBar *menubar = nullptr;
     QGraphicsScene *graphicsScene = nullptr;
+
+public slots:
+    ForwardNodeGraphNode* add_filter_node(const filter_enum_e type);
 };
 
 #endif

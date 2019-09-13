@@ -129,13 +129,33 @@ void kf_set_filter_chains(std::vector<std::vector<filter_c*>> newChains)
     return;
 }
 
-const filter_c* kf_create_filter(const char *const id)
+const filter_c* kf_create_new_filter_instance(const char *const id)
 {
     filter_c *filter = new filter_c(id);
 
     FILTER_POOL.push_back(filter);
 
     return filter;
+}
+
+const filter_c* kf_create_new_filter_instance(const filter_enum_e type)
+{
+    filter_c *newFilterInstance = nullptr;
+
+    for (const auto filter: KNOWN_FILTER_TYPES)
+    {
+        if (filter.second.type == type)
+        {
+            newFilterInstance = new filter_c(filter.first);
+            break;
+        }
+    }
+
+    k_assert(newFilterInstance, "Failed to create a filter of the given type.");
+
+    FILTER_POOL.push_back(newFilterInstance);
+
+    return newFilterInstance;
 }
 
 void kf_delete_filter(const filter_c *const filter)
@@ -893,7 +913,7 @@ void kf_initialize_filters(void)
     return;
 }
 
-filter_c::filter_c(const char *const id) :
+filter_c::filter_c(const std::string &id) :
     metaData(KNOWN_FILTER_TYPES.at(id)),
     parameterData(heap_bytes_s<u8>(FILTER_DATA_LENGTH, "Filter parameter data")),
     guiWidget(new_gui_widget())
@@ -923,6 +943,6 @@ filter_widget_s *filter_c::new_gui_widget(void)
         case filter_enum_e::input_gate:             return new filter_widget_input_gate_s(paramData);
         case filter_enum_e::output_gate:            return new filter_widget_output_gate_s(paramData);
 
-        default: k_assert(0, "No GUI widget is available for the given filter type.");
+        default: k_assert(0, "No GUI widget is yet available for the given filter type.");
     }
 }

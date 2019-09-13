@@ -1,3 +1,4 @@
+#include <QGraphicsDropShadowEffect>
 #include <QGraphicsProxyWidget>
 #include <QMenuBar>
 #include <QTimer>
@@ -6,7 +7,6 @@
 #include "display/qt/dialogs/filters_dialog.h"
 #include "display/qt/widgets/filter_widgets.h"
 #include "ui_filters_dialog.h"
-#include "filter/filter.h"
 
 FiltersDialog::FiltersDialog(QWidget *parent) :
     QDialog(parent),
@@ -30,23 +30,59 @@ FiltersDialog::FiltersDialog(QWidget *parent) :
             menubar->addMenu(fileMenu);
         }
 
-        // Nodes...
+        // Add...
         {
-            QMenu *fileMenu = new QMenu("Nodes", this);
+            QMenu *addMenu = new QMenu("Add", this);
 
-            fileMenu->addAction("Add");
+            // Insert the names of all available filter types.
+            {
+                std::vector<const filter_meta_s*> knownFilterTypes = kf_known_filter_types();
 
-            menubar->addMenu(fileMenu);
+                std::sort(knownFilterTypes.begin(), knownFilterTypes.end(), [](const filter_meta_s *a, const filter_meta_s *b)
+                {
+                    return a->name < b->name;
+                });
+
+                // Add gates.
+                for (const auto filter: knownFilterTypes)
+                {
+                    if ((filter->type != filter_enum_e::output_gate) &&
+                        (filter->type != filter_enum_e::input_gate))
+                    {
+                        continue;
+                    }
+
+                    connect(addMenu->addAction(QString::fromStdString(filter->name)), &QAction::triggered,
+                            [=]{add_filter_node(filter->type);});
+                }
+
+                addMenu->addSeparator();
+
+                // Add filters.
+                for (const auto filter: knownFilterTypes)
+                {
+                    if ((filter->type == filter_enum_e::output_gate) ||
+                        (filter->type == filter_enum_e::input_gate))
+                    {
+                        continue;
+                    }
+
+                    connect(addMenu->addAction(QString::fromStdString(filter->name)), &QAction::triggered,
+                            [=]{add_filter_node(filter->type);});
+                }
+            }
+
+            menubar->addMenu(addMenu);
         }
 
         // Help...
         {
-            QMenu *fileMenu = new QMenu("Help", this);
+            QMenu *helpMenu = new QMenu("Help", this);
 
-            fileMenu->addAction("About...");
-            fileMenu->actions().at(0)->setEnabled(false); /// TODO: Add the actual help.
+            helpMenu->addAction("About...");
+            helpMenu->actions().at(0)->setEnabled(false); /// TODO: Add the actual help.
 
-            menubar->addMenu(fileMenu);
+            menubar->addMenu(helpMenu);
         }
 
         this->layout()->setMenuBar(menubar);
@@ -56,43 +92,18 @@ FiltersDialog::FiltersDialog(QWidget *parent) :
     {
         this->graphicsScene = new ForwardNodeGraph(this);
 
-        this->graphicsScene->setBackgroundBrush(QBrush("#303030"));
+        this->graphicsScene->setBackgroundBrush(QBrush("#353535"));
 
         ui->graphicsView->setScene(this->graphicsScene);
     }
 
     // For temporary testing purposes, add some placeholder nodes into the graphics scene.
     {
-        const filter_c *const blurFilter = kf_create_filter("a5426f2e-b060-48a9-adf8-1646a2d3bd41");
-        const filter_c *const rotateFilter = kf_create_filter("140c514d-a4b0-4882-abc6-b4e9e1ff4451");
-        const filter_c *const inputGateFilter = kf_create_filter("136deb34-ac79-46b1-a09c-d57dcfaa84ad");
+        auto inputGateNode = this->add_filter_node(filter_enum_e::input_gate);
+        auto outputGateNode = this->add_filter_node(filter_enum_e::output_gate);
 
-        FilterNode *filterNode = new FilterNode(blurFilter->guiWidget->title);
-        filterNode->setFlags(filterNode->flags() | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges);
-        this->graphicsScene->addItem(filterNode);
-
-        FilterNode *filterNode2 = new FilterNode(rotateFilter->guiWidget->title);
-        filterNode2->setFlags(filterNode2->flags() | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges);
-        this->graphicsScene->addItem(filterNode2);
-
-        InputGateNode *inputNode = new InputGateNode(inputGateFilter->guiWidget->title);
-        inputNode->setFlags(inputNode->flags() | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges);
-        this->graphicsScene->addItem(inputNode);
-
-        QGraphicsProxyWidget* filterNodeProxy = new QGraphicsProxyWidget(filterNode);
-        filterNodeProxy->setWidget(blurFilter->guiWidget->widget);
-        filterNodeProxy->widget()->move(10, 45); // Center widget in the graphics node.
-
-        QGraphicsProxyWidget* filterNodeProxy2 = new QGraphicsProxyWidget(filterNode2);
-        filterNodeProxy2->setWidget(rotateFilter->guiWidget->widget);
-        filterNodeProxy2->widget()->move(10, 45);
-
-        QGraphicsProxyWidget* filterNodeProxy3 = new QGraphicsProxyWidget(inputNode);
-        filterNodeProxy3->setWidget(inputGateFilter->guiWidget->widget);
-        filterNodeProxy3->widget()->move(10, 45);
-
-        filterNode2->moveBy(350, 0);
-        inputNode->moveBy(-350, 0);
+        inputGateNode->moveBy(-200, 0);
+        outputGateNode->moveBy(200, 0);
     }
 
     return;
@@ -103,4 +114,38 @@ FiltersDialog::~FiltersDialog()
     delete ui;
 
     return;
+}
+
+// Adds a new instance of the given filter type into the node graph. Returns a
+// pointer to the new node.
+ForwardNodeGraphNode* FiltersDialog::add_filter_node(const filter_enum_e type)
+{
+    const filter_c *const newFilter = kf_create_new_filter_instance(type);
+
+    k_assert(newFilter, "Failed to add a new filter node.");
+
+    ForwardNodeGraphNode *newNode = nullptr;
+
+    switch (type)
+    {
+        case filter_enum_e::input_gate: newNode = new InputGateNode(newFilter->guiWidget->title); break;
+        case filter_enum_e::output_gate: newNode = new OutputGateNode(newFilter->guiWidget->title); break;
+        default: newNode = new FilterNode(newFilter->guiWidget->title); break;
+    }
+
+    newNode->setFlags(newNode->flags() | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges);
+    this->graphicsScene->addItem(newNode);
+
+    QGraphicsProxyWidget* nodeWidgetProxy = new QGraphicsProxyWidget(newNode);
+    nodeWidgetProxy->setWidget(newFilter->guiWidget->widget);
+    nodeWidgetProxy->widget()->move(10, 45);
+
+    QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect(this);
+    dropShadow->setBlurRadius(5);
+    dropShadow->setColor(QColor("black"));
+    dropShadow->setXOffset(0);
+    dropShadow->setYOffset(0);
+    newNode->setGraphicsEffect(dropShadow);
+
+    return newNode;
 }
