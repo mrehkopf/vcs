@@ -32,6 +32,10 @@ private:
 
     node_connection_event_s connectionEvent;
     std::vector<node_edge_connection_s> edgeConnections;
+
+signals:
+    // Emitted when the user connects two edges in the scene.
+    void edgesConnected(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
 };
 
 #endif

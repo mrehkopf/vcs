@@ -21,7 +21,7 @@ struct filter_dlg_s;
 #define FILTER_FUNC_PARAMS u8 *const pixels, const resolution_s *const r, const u8 *const params
 typedef void(*filter_function_t)(FILTER_FUNC_PARAMS);
 
-enum class filter_enum_e
+enum class filter_type_enum_e
 {
     blur,
     delta_histogram,
@@ -46,7 +46,7 @@ struct filter_meta_s
     // will be shown in the GUI.
     std::string name;
 
-    filter_enum_e type;
+    filter_type_enum_e type;
 
     // A function used to apply this filter to a pixel buffer (frame).
     filter_function_t apply;
@@ -112,10 +112,14 @@ struct filter_set_s
 
 void kf_initialize_filters(void);
 
+void kf_add_filter_chain(std::vector<const filter_c*> newChain);
+
+void kf_remove_all_filter_chains(void);
+
 std::vector<const filter_meta_s*> kf_known_filter_types(void);
 
 const filter_c* kf_create_new_filter_instance(const char *const id);
-const filter_c* kf_create_new_filter_instance(const filter_enum_e type);
+const filter_c* kf_create_new_filter_instance(const filter_type_enum_e type);
 
 std::vector<std::string> kf_filter_uuid_list(void);
 

@@ -196,6 +196,8 @@ void ForwardNodeGraph::connect_scene_edges(const node_edge_s *const sourceEdge,
                                                                this->addLine(line, QPen("mediumseagreen"))));
     }
 
+    emit edgesConnected(sourceEdge, targetEdge);
+
     return;
 }
 

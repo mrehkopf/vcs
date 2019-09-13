@@ -78,7 +78,9 @@ struct node_connection_event_s
 class ForwardNodeGraphNode : public QGraphicsItem
 {
 public:
-    ForwardNodeGraphNode(const QString title, const unsigned width = 260, const unsigned height = 130) :
+    ForwardNodeGraphNode(const QString title,
+                         const unsigned width = 260,
+                         const unsigned height = 130) :
         width(width),
         height(height),
         title(title)

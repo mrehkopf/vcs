@@ -4,8 +4,8 @@
 #include <QDialog>
 #include "filter/filter.h"
 
-class ForwardNodeGraphNode;
-class QGraphicsScene;
+class ForwardNodeGraph;
+class FilterGraphNode;
 class QMenuBar;
 
 namespace Ui {
@@ -20,14 +20,18 @@ public:
     explicit FiltersDialog(QWidget *parent = 0);
     ~FiltersDialog();
 
-private:
-    Ui::FiltersDialog *ui;
-
-    QMenuBar *menubar = nullptr;
-    QGraphicsScene *graphicsScene = nullptr;
+    void recalculate_filter_chains(void);
 
 public slots:
-    ForwardNodeGraphNode* add_filter_node(const filter_enum_e type);
+    FilterGraphNode *add_filter_node(const filter_type_enum_e type);
+
+private:
+    Ui::FiltersDialog *ui;
+    QMenuBar *menubar = nullptr;
+    ForwardNodeGraph *graphicsScene = nullptr;
+
+    // All the nodes that are currently in the graph.
+    std::vector<FilterGraphNode*> inputGateNodes;
 };
 
 #endif

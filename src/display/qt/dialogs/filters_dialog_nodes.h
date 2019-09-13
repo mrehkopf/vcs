@@ -3,10 +3,31 @@
 
 #include "display/qt/subclasses/QGraphicsItem_forward_node_graph_node.h"
 
-class FilterNode : public ForwardNodeGraphNode
+class filter_c;
+
+class FilterGraphNode : public ForwardNodeGraphNode
 {
 public:
-    FilterNode(const QString title) : ForwardNodeGraphNode(title, 260, 130)
+    FilterGraphNode(const QString title,
+                    const unsigned width = 260,
+                    const unsigned height = 130) : ForwardNodeGraphNode(title, width, height)
+    {
+        return;
+    }
+
+    const filter_c *associatedFilter;
+
+    // Convenience functions that can be used to access the node's (default) input and output edge.
+    virtual const node_edge_s& input_edge() const { return this->edges.at(-1); }
+    virtual const node_edge_s& output_edge() const { return this->edges.at(-1); }
+
+private:
+};
+
+class FilterNode : public FilterGraphNode
+{
+public:
+    FilterNode(const QString title) : FilterGraphNode(title, 260, 130)
     {
         this->edges =
         {
@@ -20,16 +41,16 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    const node_edge_s& input_edge() const;
-    const node_edge_s& output_edge() const;
+    const node_edge_s& input_edge() const override;
+    const node_edge_s& output_edge() const override;
 
 private:
 };
 
-class InputGateNode : public ForwardNodeGraphNode
+class InputGateNode : public FilterGraphNode
 {
 public:
-    InputGateNode(const QString title) : ForwardNodeGraphNode(title, 200, 130)
+    InputGateNode(const QString title) : FilterGraphNode(title, 200, 130)
     {
         this->edges =
         {
@@ -42,15 +63,15 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    const node_edge_s& output_edge() const;
+    const node_edge_s& output_edge() const override;
 
 private:
 };
 
-class OutputGateNode : public ForwardNodeGraphNode
+class OutputGateNode : public FilterGraphNode
 {
 public:
-    OutputGateNode(const QString title) : ForwardNodeGraphNode(title, 200, 130)
+    OutputGateNode(const QString title) : FilterGraphNode(title, 200, 130)
     {
         this->edges =
         {
@@ -63,7 +84,7 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    const node_edge_s& input_edge() const;
+    const node_edge_s& input_edge() const override;
 
 private:
 };
