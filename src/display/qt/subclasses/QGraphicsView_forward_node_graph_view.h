@@ -11,6 +11,13 @@ public:
     explicit ForwardNodeGraphView(QWidget *parent = 0);
 
 private:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
+
+    // Stores the last known position of the mouse cursor when it was moved while
+    // a button was simultaneously held down.
+    QPointF lastKnownMouseMiddleDragPos;
 };
 
 #endif

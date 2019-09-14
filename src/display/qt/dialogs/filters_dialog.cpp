@@ -144,17 +144,12 @@ FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type)
     nodeWidgetProxy->setWidget(newFilter->guiWidget->widget);
     nodeWidgetProxy->widget()->move(10, 45);
 
-    QGraphicsDropShadowEffect *dropShadow = new QGraphicsDropShadowEffect(this);
-    dropShadow->setBlurRadius(10);
-    dropShadow->setColor(QColor("#101010"));
-    dropShadow->setXOffset(0);
-    dropShadow->setYOffset(2);
-    newNode->setGraphicsEffect(dropShadow);
-
     if (type == filter_type_enum_e::input_gate)
     {
         this->inputGateNodes.push_back(newNode);
     }
+
+    ui->graphicsView->centerOn(newNode);
 
     return newNode;
 }
