@@ -99,12 +99,12 @@ void InputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         // Background.
         {
             // Body background.
-            painter->setBrush(QBrush(QColor(120, 120, 147)));
+            painter->setBrush(QBrush(QColor(127, 127, 127)));
             painter->setPen(QColor("transparent"));
             painter->drawRoundedRect(0, 0, this->width, this->height, 4, 4);
 
             // Title background.
-            painter->setBrush(QBrush(QColor(QColor(90, 90, 90))));
+            painter->setBrush(QBrush(QColor(QColor(75, 75, 150))));
             painter->drawRoundedRect(0, 0, this->width, 40, 4, 4);
         }
 
@@ -163,12 +163,12 @@ void OutputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
         // Background.
         {
             // Body background.
-            painter->setBrush(QBrush(QColor(147, 120, 120)));
+            painter->setBrush(QBrush(QColor(127, 127, 127)));
             painter->setPen(QColor("transparent"));
             painter->drawRoundedRect(0, 0, this->width, this->height, 4, 4);
 
             // Title background.
-            painter->setBrush(QBrush(QColor(QColor(90, 90, 90))));
+            painter->setBrush(QBrush(QColor(QColor(150, 75, 75))));
             painter->drawRoundedRect(0, 0, this->width, 40, 4, 4);
         }
 

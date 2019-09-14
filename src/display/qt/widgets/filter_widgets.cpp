@@ -166,7 +166,7 @@ void filter_widget_input_gate_s::create_widget()
     QObject::connect(heightSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterData, "Expected non-null filter data.");
-         *(u16*)&this->parameterData[OFFS_WIDTH] = newValue;
+         *(u16*)&this->parameterData[OFFS_HEIGHT] = newValue;
     });
 
     this->widget = frame;
@@ -215,7 +215,7 @@ void filter_widget_output_gate_s::create_widget()
     QObject::connect(heightSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterData, "Expected non-null filter data.");
-         *(u16*)&this->parameterData[OFFS_WIDTH] = newValue;
+         *(u16*)&this->parameterData[OFFS_HEIGHT] = newValue;
     });
 
     this->widget = frame;

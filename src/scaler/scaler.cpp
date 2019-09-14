@@ -552,6 +552,7 @@ void ks_scale_frame(const captured_frame_s &frame)
     // Apply filtering, and scale the frame.
     {
         kf_apply_pre_filters(pixelData, frameRes);
+        kf_apply_filter_chain(pixelData, frameRes);
 
         // If no need to scale, just copy the data over.
         if ((!FORCE_ASPECT || ASPECT_MODE == aspect_mode_e::native) &&

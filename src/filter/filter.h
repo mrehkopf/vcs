@@ -116,6 +116,8 @@ void kf_add_filter_chain(std::vector<const filter_c*> newChain);
 
 void kf_remove_all_filter_chains(void);
 
+void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r);
+
 std::vector<const filter_meta_s*> kf_known_filter_types(void);
 
 const filter_c* kf_create_new_filter_instance(const char *const id);

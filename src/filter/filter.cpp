@@ -110,6 +110,46 @@ static std::vector<filter_c*> FILTER_POOL;
 // frames.
 static std::vector<std::vector<const filter_c*>> FILTER_CHAINS;
 
+// Apply to the given pixel buffer the chain of filters (if any) whose input gate
+// matches the frame's resolution and output gate that of the current output resolution.
+void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
+{
+    if (!FILTERING_ENABLED) return;
+
+    k_assert((r.bpp == 32), "Filters can only be applied to 32-bit pixel data.");
+
+    for (const auto filterChain: FILTER_CHAINS)
+    {
+        const unsigned inputGateWidth = *(u16*)&(filterChain.front()->parameterData[0]);
+        const unsigned inputGateHeight = *(u16*)&(filterChain.front()->parameterData[2]);
+
+        if ((r.w != inputGateWidth) || (r.h != inputGateHeight))
+        {
+            continue;
+        }
+
+        const unsigned outputGateWidth = *(u16*)&(filterChain.back()->parameterData[0]);
+        const unsigned outputGateHeight = *(u16*)&(filterChain.back()->parameterData[2]);
+        const resolution_s outputRes = ks_output_resolution();
+
+        if ((outputRes.w != outputGateWidth) || (outputRes.h != outputGateHeight))
+        {
+            continue;
+        }
+
+        // The gate filters are expected to be #first and #last, while the actual
+        // applicable filters are the ones in-between.
+        for (unsigned i = 1; i < (filterChain.size() - 1); i++)
+        {
+            filterChain[i]->metaData.apply(pixels, &r, filterChain[i]->parameterData.ptr());
+        }
+
+        return;
+    }
+
+    return;
+}
+
 std::vector<const filter_meta_s*> kf_known_filter_types(void)
 {
     std::vector<const filter_meta_s*> filtersMetadata;
