@@ -60,6 +60,10 @@ void ForwardNodeGraphView::wheelEvent(QWheelEvent *event)
         {
             this->scale(0.8, 0.8);
         }
+
+        // Don't let the event propagate any further. This prevents e.g. the wheel from
+        // inadvertently engaging an underlying GUI element.
+        return;
     }
 
     QGraphicsView::wheelEvent(event);
