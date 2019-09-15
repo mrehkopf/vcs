@@ -97,6 +97,7 @@ FiltersDialog::FiltersDialog(QWidget *parent) :
         ui->graphicsView->setScene(this->graphicsScene);
 
         connect(this->graphicsScene, &ForwardNodeGraph::newEdgeConnection, this, [this]{this->recalculate_filter_chains();});
+        connect(this->graphicsScene, &ForwardNodeGraph::removedEdgeConnection, this, [this]{this->recalculate_filter_chains();});
     }
 
     // For temporary testing purposes, add some placeholder nodes into the graphics scene.
@@ -125,6 +126,7 @@ FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type)
     const filter_c *const newFilter = kf_create_new_filter_instance(type);
     const unsigned filterWidgetWidth = (newFilter->guiWidget->widget->width() + 20);
     const unsigned filterWidgetHeight = (newFilter->guiWidget->widget->height() + 49);
+    const QString nodeTitle = QString("#%1: %2").arg(this->numNodesAdded+1).arg(newFilter->guiWidget->title);
 
     k_assert(newFilter, "Failed to add a new filter node.");
 
@@ -132,9 +134,9 @@ FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type)
 
     switch (type)
     {
-        case filter_type_enum_e::input_gate: newNode = new InputGateNode(newFilter->guiWidget->title, filterWidgetWidth, filterWidgetHeight); break;
-        case filter_type_enum_e::output_gate: newNode = new OutputGateNode(newFilter->guiWidget->title, filterWidgetWidth, filterWidgetHeight); break;
-        default: newNode = new FilterNode(newFilter->guiWidget->title, filterWidgetWidth, filterWidgetHeight); break;
+        case filter_type_enum_e::input_gate: newNode = new InputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
+        case filter_type_enum_e::output_gate: newNode = new OutputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
+        default: newNode = new FilterNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
     }
 
     newNode->associatedFilter = newFilter;
@@ -151,6 +153,8 @@ FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type)
     }
 
     ui->graphicsView->centerOn(newNode);
+
+    this->numNodesAdded++;
 
     return newNode;
 }

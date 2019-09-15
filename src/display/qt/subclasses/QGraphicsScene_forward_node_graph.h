@@ -19,6 +19,8 @@ class ForwardNodeGraph : public QGraphicsScene
 public:
     explicit ForwardNodeGraph(QObject *parent = 0);
 
+    void disconnect_scene_edges(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
+
 private:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -36,6 +38,9 @@ private:
 signals:
     // Emitted when the user connects two edges in the scene.
     void newEdgeConnection(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
+
+    // Emitted when the user disconnects two edges in the scene.
+    void removedEdgeConnection(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
 };
 
 #endif

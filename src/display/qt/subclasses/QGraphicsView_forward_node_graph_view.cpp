@@ -4,11 +4,21 @@
 #include <QWheelEvent>
 #include <QScrollBar>
 #include <QDebug>
+#include <QMenu>
 #include "display/qt/subclasses/QGraphicsView_forward_node_graph_view.h"
 #include "display/qt/subclasses/QGraphicsItem_forward_node_graph_node.h"
+#include "display/qt/subclasses/QGraphicsScene_forward_node_graph.h"
+#include "display/qt/dialogs/filters_dialog_nodes.h"
+#include "common/globals.h"
 
 ForwardNodeGraphView::ForwardNodeGraphView(QWidget *parent) : QGraphicsView(parent)
 {
+    // Create and set up menus.
+    {
+        this->nodeClickMenu = new QMenu(this);
+        this->edgeClickMenu = new QMenu(this);
+    }
+
     return;
 }
 
@@ -19,7 +29,42 @@ void ForwardNodeGraphView::mousePressEvent(QMouseEvent *event)
     {
         lastKnownMouseMiddleDragPos = event->pos();
 
+        // Don't allow the event to propagate further.
         return;
+    }
+    // Pressing the right mouse button over a node or edge opens a context-sensitive popup menu.
+    else if (event->button() == Qt::RightButton)
+    {
+        const QPointF scenePos = this->mapToScene(event->pos());
+
+        // If this press was over a node edge, start an edge connection event.
+        const auto itemsUnderCursor = this->scene()->items(scenePos, Qt::IntersectsItemBoundingRect);
+        for (const auto item: itemsUnderCursor)
+        {
+            const auto nodeUnderCursor = dynamic_cast<ForwardNodeGraphNode*>(item);
+
+            if (nodeUnderCursor)
+            {
+                node_edge_s *const edgeUnderCursor = nodeUnderCursor->intersected_edge(scenePos);
+
+                if (edgeUnderCursor)
+                {
+                    if (edgeUnderCursor->direction == node_edge_s::direction_e::out)
+                    {
+                        this->populate_edge_click_menu(edgeUnderCursor);
+                        this->edgeClickMenu->popup(this->mapToGlobal(event->pos()));
+                    }
+                }
+                else
+                {
+                    this->populate_node_click_menu(nodeUnderCursor);
+                    this->nodeClickMenu->popup(this->mapToGlobal(event->pos()));
+                }
+
+                // Don't allow the event to propagate further.
+                return;
+            }
+        }
     }
 
     QGraphicsView::mousePressEvent(event);
@@ -67,6 +112,46 @@ void ForwardNodeGraphView::wheelEvent(QWheelEvent *event)
     }
 
     QGraphicsView::wheelEvent(event);
+
+    return;
+}
+
+void ForwardNodeGraphView::populate_node_click_menu(ForwardNodeGraphNode *const node)
+{
+    k_assert(this->nodeClickMenu, "Expected a non-null node click menu object.");
+
+    this->nodeClickMenu->clear();
+
+    this->nodeClickMenu->addAction(node->title);
+    this->nodeClickMenu->actions().at(0)->setEnabled(false);
+
+    this->nodeClickMenu->addSeparator();
+
+    connect(this->nodeClickMenu->addAction("Remove this node"), &QAction::triggered,
+            [=]{});
+
+    return;
+}
+
+void ForwardNodeGraphView::populate_edge_click_menu(node_edge_s *const edge)
+{
+    k_assert(this->edgeClickMenu, "Expected a non-null edge click menu object.");
+
+    this->edgeClickMenu->clear();
+
+    this->edgeClickMenu->addAction("Disconnect from");
+    this->edgeClickMenu->actions().at(0)->setEnabled(false);
+
+    this->edgeClickMenu->addSeparator();
+
+    for (auto outgoing: edge->outgoingConnections)
+    {
+        connect(this->edgeClickMenu->addAction(outgoing->parentNode->title), &QAction::triggered, this, [=]
+        {
+            edge->disconnect_from(outgoing);
+            dynamic_cast<ForwardNodeGraph*>(this->scene())->disconnect_scene_edges(edge, outgoing);
+        });
+    }
 
     return;
 }

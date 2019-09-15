@@ -23,7 +23,7 @@ public:
     void recalculate_filter_chains(void);
 
 public slots:
-    FilterGraphNode *add_filter_node(const filter_type_enum_e type);
+    FilterGraphNode* add_filter_node(const filter_type_enum_e type);
 
 private:
     Ui::FiltersDialog *ui;
@@ -32,6 +32,8 @@ private:
 
     // All the nodes that are currently in the graph.
     std::vector<FilterGraphNode*> inputGateNodes;
+
+    unsigned numNodesAdded = 0;
 };
 
 #endif

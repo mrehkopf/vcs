@@ -35,7 +35,16 @@ node_edge_s *ForwardNodeGraphNode::intersected_edge(const QPointF &point)
 //
 // Returns true if the connection succeeds; false otherwise.
 //
-bool node_edge_s::connect_to(node_edge_s * const targetEdge)
+node_edge_s::node_edge_s(const node_edge_s::direction_e direction, const QRect rect, ForwardNodeGraphNode *const parent)
+{
+    this->direction = direction;
+    this->rect = rect;
+    this->parentNode = parent;
+
+    return;
+}
+
+bool node_edge_s::connect_to(node_edge_s *const targetEdge)
 {
     if (!(this->direction ^ targetEdge->direction))
     {
@@ -80,7 +89,7 @@ bool node_edge_s::connect_to(node_edge_s * const targetEdge)
 //
 // Returns true if the disconnection succeeds; false otherwise.
 //
-bool node_edge_s::disconnect_from(node_edge_s * const targetEdge)
+bool node_edge_s::disconnect_from(node_edge_s *const targetEdge)
 {
     if (!(this->direction ^ targetEdge->direction))
     {

@@ -37,6 +37,7 @@
 #include <QCursor>
 #include <QDebug>
 #include "QGraphicsScene_forward_node_graph.h"
+#include "common/globals.h"
 
 ForwardNodeGraph::ForwardNodeGraph(QObject *parent) :
     QGraphicsScene(parent)
@@ -163,6 +164,26 @@ void ForwardNodeGraph::update_scene_connections(void)
             this->connectionEvent.graphicsLine = this->addLine(line, QPen(QColor("mediumseagreen"), 2));
         }
     }
+
+    return;
+}
+
+void ForwardNodeGraph::disconnect_scene_edges(const node_edge_s *const sourceEdge,
+                                              const node_edge_s *const targetEdge)
+{
+    const auto existingConnection = std::find_if(this->edgeConnections.begin(), this->edgeConnections.end(), [=](const node_edge_connection_s &connection)
+    {
+        return ((connection.edge1 == sourceEdge && connection.edge2 == targetEdge) ||
+                (connection.edge1 == targetEdge && connection.edge2 == sourceEdge));
+    });
+
+    k_assert((existingConnection != this->edgeConnections.end()), "Was asked to disconnected node edges that were not connected in the first place.");
+
+    this->removeItem((*existingConnection).line);
+    delete (*existingConnection).line;
+    this->edgeConnections.erase(existingConnection);
+
+    emit removedEdgeConnection(sourceEdge, targetEdge);
 
     return;
 }

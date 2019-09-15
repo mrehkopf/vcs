@@ -28,15 +28,7 @@ struct node_edge_s
     // Whether this edge flows data in or out.
     enum direction_e { in = 0, out = !in } direction;
 
-    node_edge_s(const direction_e direction, const QRect rect, ForwardNodeGraphNode *const parent)
-    {
-        this->direction = direction;
-        this->rect = rect;
-        this->parentNode = parent;
-
-        return;
-    }
-
+    node_edge_s(const direction_e direction, const QRect rect, ForwardNodeGraphNode *const parent);
     bool connect_to(node_edge_s *const targetEdge);
     bool disconnect_from(node_edge_s *const targetEdge);
 };
@@ -90,11 +82,12 @@ public:
 
     node_edge_s* intersected_edge(const QPointF &point);
 
-protected:
-    std::vector<node_edge_s> edges;
     const unsigned width;
     const unsigned height;
     const QString title;
+
+protected:
+    std::vector<node_edge_s> edges;
 
 private:
 };

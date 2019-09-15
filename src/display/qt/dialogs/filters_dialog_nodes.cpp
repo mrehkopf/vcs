@@ -17,7 +17,6 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
     QFont bodyFont = painter->font();
     QFont titleFont = painter->font();
-    titleFont.setPointSize(bodyFont.pointSize()+1);
 
     // Draw the node's body.
     {
@@ -93,7 +92,6 @@ void InputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     QFont bodyFont = painter->font();
     QFont titleFont = painter->font();
-    titleFont.setPointSize(bodyFont.pointSize()+1);
 
     // Draw the node's body.
     {
@@ -160,7 +158,6 @@ void OutputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
 
     QFont bodyFont = painter->font();
     QFont titleFont = painter->font();
-    titleFont.setPointSize(bodyFont.pointSize()+1);
 
     // Draw the node's body.
     {
