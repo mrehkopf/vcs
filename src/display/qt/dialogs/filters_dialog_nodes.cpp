@@ -38,7 +38,14 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
             for (const auto &edge: this->edges)
             {
-                painter->drawEllipse(edge.rect);
+                if (edge.direction == node_edge_s::direction_e::out)
+                {
+                    painter->drawRoundedRect(edge.rect, 2, 2);
+                }
+                else
+                {
+                    painter->drawEllipse(edge.rect);
+                }
             }
         }
     }
@@ -107,7 +114,14 @@ void InputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
             for (const auto &edge: this->edges)
             {
-                painter->drawEllipse(edge.rect);
+                if (edge.direction == node_edge_s::direction_e::out)
+                {
+                    painter->drawRoundedRect(edge.rect, 2, 2);
+                }
+                else
+                {
+                    painter->drawEllipse(edge.rect);
+                }
             }
         }
     }
@@ -167,7 +181,14 @@ void OutputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
 
             for (const auto &edge: this->edges)
             {
-                painter->drawEllipse(edge.rect);
+                if (edge.direction == node_edge_s::direction_e::out)
+                {
+                    painter->drawRoundedRect(edge.rect, 2, 2);
+                }
+                else
+                {
+                    painter->drawEllipse(edge.rect);
+                }
             }
         }
     }
