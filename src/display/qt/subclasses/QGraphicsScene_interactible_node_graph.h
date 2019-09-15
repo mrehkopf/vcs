@@ -10,14 +10,14 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
 #include <QDebug>
-#include "QGraphicsItem_forward_node_graph_node.h"
+#include "QGraphicsItem_interactible_node_graph_node.h"
 
-class ForwardNodeGraph : public QGraphicsScene
+class InteractibleNodeGraph : public QGraphicsScene
 {
     Q_OBJECT
 
 public:
-    explicit ForwardNodeGraph(QObject *parent = 0);
+    explicit InteractibleNodeGraph(QObject *parent = 0);
 
     void disconnect_scene_edges(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
 

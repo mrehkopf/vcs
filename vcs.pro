@@ -89,11 +89,11 @@ SOURCES += \
     src/display/qt/widgets/control_panel_input_widget.cpp \
     src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.cpp \
     src/display/qt/dialogs/filters_dialog.cpp \
-    src/display/qt/subclasses/QGraphicsScene_forward_node_graph.cpp \
-    src/display/qt/subclasses/QGraphicsItem_forward_node_graph_node.cpp \
     src/display/qt/dialogs/filters_dialog_nodes.cpp \
     src/display/qt/widgets/filter_widgets.cpp \
-    src/display/qt/subclasses/QGraphicsView_forward_node_graph_view.cpp
+    src/display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.cpp \
+    src/display/qt/subclasses/QGraphicsScene_interactible_node_graph.cpp \
+    src/display/qt/subclasses/QGraphicsView_interactible_node_graph_view.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -132,11 +132,11 @@ HEADERS += \
     src/display/qt/widgets/control_panel_input_widget.h \
     src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.h \
     src/display/qt/dialogs/filters_dialog.h \
-    src/display/qt/subclasses/QGraphicsScene_forward_node_graph.h \
-    src/display/qt/subclasses/QGraphicsItem_forward_node_graph_node.h \
     src/display/qt/dialogs/filters_dialog_nodes.h \
     src/display/qt/widgets/filter_widgets.h \
-    src/display/qt/subclasses/QGraphicsView_forward_node_graph_view.h
+    src/display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h \
+    src/display/qt/subclasses/QGraphicsScene_interactible_node_graph.h \
+    src/display/qt/subclasses/QGraphicsView_interactible_node_graph_view.h
 
 FORMS += \
     src/display/qt/windows/ui/control_panel_window.ui \

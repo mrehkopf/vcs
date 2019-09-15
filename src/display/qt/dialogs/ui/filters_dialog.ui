@@ -27,15 +27,15 @@
     <number>9</number>
    </property>
    <item>
-    <widget class="ForwardNodeGraphView" name="graphicsView"/>
+    <widget class="InteractibleNodeGraphView" name="graphicsView"/>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ForwardNodeGraphView</class>
+   <class>InteractibleNodeGraphView</class>
    <extends>QGraphicsView</extends>
-   <header>QGraphicsView_forward_node_graph_view.h</header>
+   <header>QGraphicsView_interactible_node_graph_view.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -5,13 +5,13 @@
 #include <QScrollBar>
 #include <QDebug>
 #include <QMenu>
-#include "display/qt/subclasses/QGraphicsView_forward_node_graph_view.h"
-#include "display/qt/subclasses/QGraphicsItem_forward_node_graph_node.h"
-#include "display/qt/subclasses/QGraphicsScene_forward_node_graph.h"
+#include "display/qt/subclasses/QGraphicsView_interactible_node_graph_view.h"
+#include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
+#include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/dialogs/filters_dialog_nodes.h"
 #include "common/globals.h"
 
-ForwardNodeGraphView::ForwardNodeGraphView(QWidget *parent) : QGraphicsView(parent)
+InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphicsView(parent)
 {
     // Create and set up menus.
     {
@@ -22,7 +22,7 @@ ForwardNodeGraphView::ForwardNodeGraphView(QWidget *parent) : QGraphicsView(pare
     return;
 }
 
-void ForwardNodeGraphView::mousePressEvent(QMouseEvent *event)
+void InteractibleNodeGraphView::mousePressEvent(QMouseEvent *event)
 {
     // Dragging with the middle button will translate the view.
     if (event->button() == Qt::MiddleButton)
@@ -41,7 +41,7 @@ void ForwardNodeGraphView::mousePressEvent(QMouseEvent *event)
         const auto itemsUnderCursor = this->scene()->items(scenePos, Qt::IntersectsItemBoundingRect);
         for (const auto item: itemsUnderCursor)
         {
-            const auto nodeUnderCursor = dynamic_cast<ForwardNodeGraphNode*>(item);
+            const auto nodeUnderCursor = dynamic_cast<InteractibleNodeGraphNode*>(item);
 
             if (nodeUnderCursor)
             {
@@ -49,11 +49,8 @@ void ForwardNodeGraphView::mousePressEvent(QMouseEvent *event)
 
                 if (edgeUnderCursor)
                 {
-                    if (edgeUnderCursor->direction == node_edge_s::direction_e::out)
-                    {
-                        this->populate_edge_click_menu(edgeUnderCursor);
-                        this->edgeClickMenu->popup(this->mapToGlobal(event->pos()));
-                    }
+                    this->populate_edge_click_menu(edgeUnderCursor);
+                    this->edgeClickMenu->popup(this->mapToGlobal(event->pos()));
                 }
                 else
                 {
@@ -72,7 +69,7 @@ void ForwardNodeGraphView::mousePressEvent(QMouseEvent *event)
     return;
 }
 
-void ForwardNodeGraphView::mouseMoveEvent(QMouseEvent *event)
+void InteractibleNodeGraphView::mouseMoveEvent(QMouseEvent *event)
 {
     // Dragging with the middle button translates the view.
     if (event->buttons() & Qt::MiddleButton)
@@ -92,7 +89,7 @@ void ForwardNodeGraphView::mouseMoveEvent(QMouseEvent *event)
     return;
 }
 
-void ForwardNodeGraphView::wheelEvent(QWheelEvent *event)
+void InteractibleNodeGraphView::wheelEvent(QWheelEvent *event)
 {
     // Scrolling the mouse wheel while holding down control scales the view.
     if (QApplication::keyboardModifiers() & Qt::ControlModifier)
@@ -116,7 +113,7 @@ void ForwardNodeGraphView::wheelEvent(QWheelEvent *event)
     return;
 }
 
-void ForwardNodeGraphView::populate_node_click_menu(ForwardNodeGraphNode *const node)
+void InteractibleNodeGraphView::populate_node_click_menu(InteractibleNodeGraphNode *const node)
 {
     k_assert(this->nodeClickMenu, "Expected a non-null node click menu object.");
 
@@ -133,7 +130,7 @@ void ForwardNodeGraphView::populate_node_click_menu(ForwardNodeGraphNode *const 
     return;
 }
 
-void ForwardNodeGraphView::populate_edge_click_menu(node_edge_s *const edge)
+void InteractibleNodeGraphView::populate_edge_click_menu(node_edge_s *const edge)
 {
     k_assert(this->edgeClickMenu, "Expected a non-null edge click menu object.");
 
@@ -144,12 +141,12 @@ void ForwardNodeGraphView::populate_edge_click_menu(node_edge_s *const edge)
 
     this->edgeClickMenu->addSeparator();
 
-    for (auto outgoing: edge->outgoingConnections)
+    for (auto outgoing: edge->connectedTo)
     {
         connect(this->edgeClickMenu->addAction(outgoing->parentNode->title), &QAction::triggered, this, [=]
         {
             edge->disconnect_from(outgoing);
-            dynamic_cast<ForwardNodeGraph*>(this->scene())->disconnect_scene_edges(edge, outgoing);
+            dynamic_cast<InteractibleNodeGraph*>(this->scene())->disconnect_scene_edges(edge, outgoing);
         });
     }
 

@@ -1,16 +1,16 @@
 #ifndef FILTERS_DIALOG_NODES_H
 #define FILTERS_DIALOG_NODES_H
 
-#include "display/qt/subclasses/QGraphicsItem_forward_node_graph_node.h"
+#include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 
 class filter_c;
 
-class FilterGraphNode : public ForwardNodeGraphNode
+class FilterGraphNode : public InteractibleNodeGraphNode
 {
 public:
     FilterGraphNode(const QString title,
                     const unsigned width = 240,
-                    const unsigned height = 130) : ForwardNodeGraphNode(title, width, height)
+                    const unsigned height = 130) : InteractibleNodeGraphNode(title, width, height)
     {
         return;
     }

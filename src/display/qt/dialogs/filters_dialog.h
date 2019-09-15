@@ -4,7 +4,7 @@
 #include <QDialog>
 #include "filter/filter.h"
 
-class ForwardNodeGraph;
+class InteractibleNodeGraph;
 class FilterGraphNode;
 class QMenuBar;
 
@@ -28,7 +28,7 @@ public slots:
 private:
     Ui::FiltersDialog *ui;
     QMenuBar *menubar = nullptr;
-    ForwardNodeGraph *graphicsScene = nullptr;
+    InteractibleNodeGraph *graphicsScene = nullptr;
 
     // All the nodes that are currently in the graph.
     std::vector<FilterGraphNode*> inputGateNodes;

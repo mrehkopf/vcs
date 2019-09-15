@@ -2,8 +2,8 @@
 #include <QMenuBar>
 #include <QTimer>
 #include <functional>
-#include "display/qt/subclasses/QGraphicsItem_forward_node_graph_node.h"
-#include "display/qt/subclasses/QGraphicsScene_forward_node_graph.h"
+#include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
+#include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/dialogs/filters_dialog_nodes.h"
 #include "display/qt/dialogs/filters_dialog.h"
 #include "display/qt/widgets/filter_widgets.h"
@@ -91,13 +91,13 @@ FiltersDialog::FiltersDialog(QWidget *parent) :
 
     // Create and configure the graphics scene.
     {
-        this->graphicsScene = new ForwardNodeGraph(this);
+        this->graphicsScene = new InteractibleNodeGraph(this);
         this->graphicsScene->setBackgroundBrush(QBrush("#353535"));
 
         ui->graphicsView->setScene(this->graphicsScene);
 
-        connect(this->graphicsScene, &ForwardNodeGraph::newEdgeConnection, this, [this]{this->recalculate_filter_chains();});
-        connect(this->graphicsScene, &ForwardNodeGraph::removedEdgeConnection, this, [this]{this->recalculate_filter_chains();});
+        connect(this->graphicsScene, &InteractibleNodeGraph::newEdgeConnection, this, [this]{this->recalculate_filter_chains();});
+        connect(this->graphicsScene, &InteractibleNodeGraph::removedEdgeConnection, this, [this]{this->recalculate_filter_chains();});
     }
 
     // For temporary testing purposes, add some placeholder nodes into the graphics scene.
@@ -181,7 +181,7 @@ void FiltersDialog::recalculate_filter_chains(void)
         }
 
         // NOTE: This assumes that each node in the graph only has one output edge.
-        for (auto outgoing: node->output_edge().outgoingConnections)
+        for (auto outgoing: node->output_edge().connectedTo)
         {
             traverse_filter_node(dynamic_cast<FilterGraphNode*>(outgoing->parentNode), accumulatedNodes);
         }

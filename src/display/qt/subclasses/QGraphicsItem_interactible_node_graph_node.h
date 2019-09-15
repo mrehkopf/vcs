@@ -11,7 +11,7 @@
 #include <QDebug>
 #include <algorithm>
 
-class ForwardNodeGraphNode;
+class InteractibleNodeGraphNode;
 
 struct node_edge_s
 {
@@ -19,18 +19,17 @@ struct node_edge_s
     QRect rect = QRect();
 
     // The node this edge belongs to.
-    ForwardNodeGraphNode *parentNode = nullptr;
+    InteractibleNodeGraphNode *parentNode = nullptr;
 
-    // All connections from this edge out to others. Note that only output edges
-    // will have outgoing connections; for input edges, this vector will remain empty.
-    std::vector<node_edge_s*> outgoingConnections;
+    // All connections between this edge and others.
+    std::vector<node_edge_s*> connectedTo;
 
     // Whether this edge flows data in or out.
     enum direction_e { in = 0, out = !in } direction;
 
-    node_edge_s(const direction_e direction, const QRect rect, ForwardNodeGraphNode *const parent);
-    bool connect_to(node_edge_s *const targetEdge);
-    bool disconnect_from(node_edge_s *const targetEdge);
+    node_edge_s(const direction_e direction, const QRect rect, InteractibleNodeGraphNode *const parent);
+    bool connect_to(node_edge_s *const targetEdge, const bool recursed = false);
+    bool disconnect_from(node_edge_s *const targetEdge, const bool recursed = false);
 };
 
 // A connection between two node edges.
@@ -67,10 +66,10 @@ struct node_connection_event_s
     QGraphicsLineItem *graphicsLine = nullptr;
 };
 
-class ForwardNodeGraphNode : public QGraphicsItem
+class InteractibleNodeGraphNode : public QGraphicsItem
 {
 public:
-    ForwardNodeGraphNode(const QString title,
+    InteractibleNodeGraphNode(const QString title,
                          const unsigned width = 260,
                          const unsigned height = 130) :
         width(width),

@@ -2,17 +2,17 @@
  * 2019 Tarpeeksi Hyvae Soft /
  * VCS
  *
- * A forward-flowing node graph implemented as a subclass of QGraphicsScene.
+ * A user-interactible node grapg implemented as a subclass of QGraphicsScene.
  *
  * Usage is along the lines of:
  *
  *     // Establish the scene and set up a view to draw it.
  *     QGraphicsView *view = new QGraphicsView(this);
- *     QGraphicsScen *scene = new ForwardNodeGraph(this);
+ *     QGraphicsScen *scene = new InteractibleNodeGraph(this);
  *     view->setScene(scene);
  *
  *     // Create a node to be displayed in the scene.
- *     ForwardNodeGraphNode *node = new ForwardNodeGraphNode("Test");
+ *     InteractibleNodeGraphNode *node = new InteractibleNodeGraphNode("Test");
  *     node->setFlags(node->flags() | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges);
  *     scene->addItem(node);
  *
@@ -21,10 +21,6 @@
  *
  * Each node in the graph has one or more input and/or output edges, via which
  * connections can be established to other nodes.
- *
- * The graph can be visited via its nodes in the forward direction only, as each
- * node stores only its outgoing connections, not incoming ones. You can check out
- * the implementation of ForwardNodeGraphNode for more information.
  *
  * The user can connect nodes to each other by pressing the mouse button over a
  * node's edge and releasing the press over the target edge. In-code, this is
@@ -36,16 +32,16 @@
 #include <QWidget>
 #include <QCursor>
 #include <QDebug>
-#include "QGraphicsScene_forward_node_graph.h"
+#include "QGraphicsScene_interactible_node_graph.h"
 #include "common/globals.h"
 
-ForwardNodeGraph::ForwardNodeGraph(QObject *parent) :
+InteractibleNodeGraph::InteractibleNodeGraph(QObject *parent) :
     QGraphicsScene(parent)
 {
     return;
 }
 
-void ForwardNodeGraph::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void InteractibleNodeGraph::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
@@ -53,7 +49,7 @@ void ForwardNodeGraph::mousePressEvent(QGraphicsSceneMouseEvent *event)
         const auto intersectedItems = this->items(event->scenePos(), Qt::IntersectsItemBoundingRect);
         for (const auto item: intersectedItems)
         {
-            const auto node = dynamic_cast<ForwardNodeGraphNode*>(item);
+            const auto node = dynamic_cast<InteractibleNodeGraphNode*>(item);
 
             if (node)
             {
@@ -75,7 +71,7 @@ void ForwardNodeGraph::mousePressEvent(QGraphicsSceneMouseEvent *event)
     return;
 }
 
-void ForwardNodeGraph::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void InteractibleNodeGraph::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
@@ -83,7 +79,7 @@ void ForwardNodeGraph::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         const auto intersectedItems = this->items(event->scenePos(), Qt::IntersectsItemBoundingRect);
         for (const auto item: intersectedItems)
         {
-            const auto node = dynamic_cast<ForwardNodeGraphNode*>(item);
+            const auto node = dynamic_cast<InteractibleNodeGraphNode*>(item);
 
             if (node)
             {
@@ -110,7 +106,7 @@ void ForwardNodeGraph::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     return;
 }
 
-void ForwardNodeGraph::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void InteractibleNodeGraph::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     // Assume that if the user is holding the mouse button down while moving
     // the cursor, they're dragging one of the items in the scene.
@@ -128,7 +124,7 @@ void ForwardNodeGraph::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 // Reposition any connections between nodes in the scene, to account for any changes
 // in the nodes' positioning etc.
-void ForwardNodeGraph::update_scene_connections(void)
+void InteractibleNodeGraph::update_scene_connections(void)
 {
     // Refresh connections between nodes.
     for (const auto &connection: this->edgeConnections)
@@ -168,7 +164,7 @@ void ForwardNodeGraph::update_scene_connections(void)
     return;
 }
 
-void ForwardNodeGraph::disconnect_scene_edges(const node_edge_s *const sourceEdge,
+void InteractibleNodeGraph::disconnect_scene_edges(const node_edge_s *const sourceEdge,
                                               const node_edge_s *const targetEdge)
 {
     const auto existingConnection = std::find_if(this->edgeConnections.begin(), this->edgeConnections.end(), [=](const node_edge_connection_s &connection)
@@ -189,7 +185,7 @@ void ForwardNodeGraph::disconnect_scene_edges(const node_edge_s *const sourceEdg
 }
 
 // Connect the two edges to each other in the scene using a line.
-void ForwardNodeGraph::connect_scene_edges(const node_edge_s *const sourceEdge,
+void InteractibleNodeGraph::connect_scene_edges(const node_edge_s *const sourceEdge,
                                            const node_edge_s *const targetEdge)
 {
     const QPoint p1 = QPoint(sourceEdge->parentNode->mapToScene(sourceEdge->rect.center()).x(),
@@ -222,7 +218,7 @@ void ForwardNodeGraph::connect_scene_edges(const node_edge_s *const sourceEdge,
     return;
 }
 
-void ForwardNodeGraph::start_connection_event(node_edge_s *const sourceEdge,
+void InteractibleNodeGraph::start_connection_event(node_edge_s *const sourceEdge,
                                               const QPointF mousePos)
 {
     if (this->connectionEvent.sourceEdge)
@@ -237,7 +233,7 @@ void ForwardNodeGraph::start_connection_event(node_edge_s *const sourceEdge,
     return;
 }
 
-void ForwardNodeGraph::complete_connection_event(node_edge_s *const finalEdge)
+void InteractibleNodeGraph::complete_connection_event(node_edge_s *const finalEdge)
 {
     if (!this->connectionEvent.sourceEdge)
     {
@@ -255,7 +251,7 @@ void ForwardNodeGraph::complete_connection_event(node_edge_s *const finalEdge)
     return;
 }
 
-void ForwardNodeGraph::reset_current_connection_event(void)
+void InteractibleNodeGraph::reset_current_connection_event(void)
 {
     this->connectionEvent.sourceEdge = nullptr;
     this->connectionEvent.mousePos = QPointF();
