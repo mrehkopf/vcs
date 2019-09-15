@@ -164,8 +164,20 @@ void InteractibleNodeGraph::update_scene_connections(void)
     return;
 }
 
+void InteractibleNodeGraph::remove_node(InteractibleNodeGraphNode *const node)
+{
+    node->disconnect_all_edges();
+
+    this->removeItem(node);
+
+    emit nodeRemoved(node);
+
+    return;
+}
+
 void InteractibleNodeGraph::disconnect_scene_edges(const node_edge_s *const sourceEdge,
-                                              const node_edge_s *const targetEdge)
+                                                   const node_edge_s *const targetEdge,
+                                                   const bool noEmit)
 {
     const auto existingConnection = std::find_if(this->edgeConnections.begin(), this->edgeConnections.end(), [=](const node_edge_connection_s &connection)
     {
@@ -179,14 +191,17 @@ void InteractibleNodeGraph::disconnect_scene_edges(const node_edge_s *const sour
     delete (*existingConnection).line;
     this->edgeConnections.erase(existingConnection);
 
-    emit removedEdgeConnection(sourceEdge, targetEdge);
+    if (!noEmit)
+    {
+        emit edgeConnectionRemoved(sourceEdge, targetEdge);
+    }
 
     return;
 }
 
 // Connect the two edges to each other in the scene using a line.
 void InteractibleNodeGraph::connect_scene_edges(const node_edge_s *const sourceEdge,
-                                           const node_edge_s *const targetEdge)
+                                                const node_edge_s *const targetEdge)
 {
     const QPoint p1 = QPoint(sourceEdge->parentNode->mapToScene(sourceEdge->rect.center()).x(),
                              sourceEdge->parentNode->mapToScene(sourceEdge->rect.center()).y());
@@ -213,13 +228,13 @@ void InteractibleNodeGraph::connect_scene_edges(const node_edge_s *const sourceE
                                                                this->addLine(line, QPen(QColor("mediumseagreen"), 2))));
     }
 
-    emit newEdgeConnection(sourceEdge, targetEdge);
+    emit edgeConnectionAdded(sourceEdge, targetEdge);
 
     return;
 }
 
 void InteractibleNodeGraph::start_connection_event(node_edge_s *const sourceEdge,
-                                              const QPointF mousePos)
+                                                   const QPointF mousePos)
 {
     if (this->connectionEvent.sourceEdge)
     {
@@ -241,10 +256,7 @@ void InteractibleNodeGraph::complete_connection_event(node_edge_s *const finalEd
         return;
     }
 
-    if (this->connectionEvent.sourceEdge->connect_to(finalEdge))
-    {
-        connect_scene_edges(this->connectionEvent.sourceEdge, finalEdge);
-    }
+    this->connectionEvent.sourceEdge->connect_to(finalEdge);
 
     reset_current_connection_event();
 

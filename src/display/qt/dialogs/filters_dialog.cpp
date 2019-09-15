@@ -96,8 +96,27 @@ FiltersDialog::FiltersDialog(QWidget *parent) :
 
         ui->graphicsView->setScene(this->graphicsScene);
 
-        connect(this->graphicsScene, &InteractibleNodeGraph::newEdgeConnection, this, [this]{this->recalculate_filter_chains();});
-        connect(this->graphicsScene, &InteractibleNodeGraph::removedEdgeConnection, this, [this]{this->recalculate_filter_chains();});
+        connect(this->graphicsScene, &InteractibleNodeGraph::edgeConnectionAdded, this, [this]{this->recalculate_filter_chains();});
+        connect(this->graphicsScene, &InteractibleNodeGraph::edgeConnectionRemoved, this, [this]{this->recalculate_filter_chains();});
+        connect(this->graphicsScene, &InteractibleNodeGraph::nodeRemoved, this, [this](InteractibleNodeGraphNode *const node)
+        {
+            FilterGraphNode *const filterNode = dynamic_cast<FilterGraphNode*>(node);
+
+            if (filterNode)
+            {
+                if (filterNode->associatedFilter->metaData.type == filter_type_enum_e::input_gate)
+                {
+                    this->inputGateNodes.erase(std::find(inputGateNodes.begin(), inputGateNodes.end(), filterNode));
+                }
+
+                delete filterNode;
+
+                /// TODO: When a node is deleted, recalculate_filter_chains() gets
+                /// called quite a few times more than needed - once for each of its
+                /// connections, and a last time here.
+                this->recalculate_filter_chains();
+            }
+        });
     }
 
     // For temporary testing purposes, add some placeholder nodes into the graphics scene.

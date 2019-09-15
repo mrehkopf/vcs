@@ -124,8 +124,10 @@ void InteractibleNodeGraphView::populate_node_click_menu(InteractibleNodeGraphNo
 
     this->nodeClickMenu->addSeparator();
 
-    connect(this->nodeClickMenu->addAction("Remove this node"), &QAction::triggered,
-            [=]{});
+    connect(this->nodeClickMenu->addAction("Remove this node"), &QAction::triggered, this, [=]
+    {
+        dynamic_cast<InteractibleNodeGraph*>(this->scene())->remove_node(node);
+    });
 
     return;
 }
@@ -146,7 +148,6 @@ void InteractibleNodeGraphView::populate_edge_click_menu(node_edge_s *const edge
         connect(this->edgeClickMenu->addAction(outgoing->parentNode->title), &QAction::triggered, this, [=]
         {
             edge->disconnect_from(outgoing);
-            dynamic_cast<InteractibleNodeGraph*>(this->scene())->disconnect_scene_edges(edge, outgoing);
         });
     }
 

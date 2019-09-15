@@ -11,7 +11,8 @@
  *
  */
 
-#include "QGraphicsItem_interactible_node_graph_node.h"
+#include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
+#include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 
 // Returns a pointer to the first edge on this node that is intersected by the given
 // point; or nullptr if such an edge cannot be found.
@@ -28,6 +29,19 @@ node_edge_s *InteractibleNodeGraphNode::intersected_edge(const QPointF &point)
     }
 
     return nullptr;
+}
+
+void InteractibleNodeGraphNode::disconnect_all_edges(void)
+{
+    for (auto &edge: this->edges)
+    {
+        for (auto &connection: edge.connectedTo)
+        {
+            edge.disconnect_from(connection);
+        }
+    }
+
+    return;
 }
 
 // Connect this edge to the given target edge. If this is an input node, the
@@ -68,6 +82,12 @@ bool node_edge_s::connect_to(node_edge_s *const targetEdge, const bool recursed)
     if (existingConnection == this->connectedTo.end())
     {
         this->connectedTo.push_back(targetEdge);
+
+        auto *scene = dynamic_cast<InteractibleNodeGraph*>(this->parentNode->scene());
+        if (scene && !recursed)
+        {
+            scene->connect_scene_edges(this, targetEdge);
+        }
     }
 
     return recursed? true : targetEdge->connect_to(this, true);
@@ -83,6 +103,12 @@ bool node_edge_s::disconnect_from(node_edge_s *const targetEdge, const bool recu
     if (existingConnection != this->connectedTo.end())
     {
         this->connectedTo.erase(existingConnection);
+
+        auto *scene = dynamic_cast<InteractibleNodeGraph*>(this->parentNode->scene());
+        if (scene && !recursed)
+        {
+            scene->disconnect_scene_edges(this, targetEdge);
+        }
     }
 
     return recursed? true : targetEdge->disconnect_from(this, true);

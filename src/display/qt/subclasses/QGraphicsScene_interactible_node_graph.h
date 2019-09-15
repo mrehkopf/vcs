@@ -19,7 +19,9 @@ class InteractibleNodeGraph : public QGraphicsScene
 public:
     explicit InteractibleNodeGraph(QObject *parent = 0);
 
-    void disconnect_scene_edges(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
+    void connect_scene_edges(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
+    void disconnect_scene_edges(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge, const bool noEmit = false);
+    void remove_node(InteractibleNodeGraphNode *const node);
 
 private:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
@@ -30,17 +32,19 @@ private:
     void start_connection_event(node_edge_s *const sourceEdge, const QPointF mousePos);
     void reset_current_connection_event(void);
     void update_scene_connections(void);
-    void connect_scene_edges(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
 
     node_connection_event_s connectionEvent;
     std::vector<node_edge_connection_s> edgeConnections;
 
 signals:
-    // Emitted when the user connects two edges in the scene.
-    void newEdgeConnection(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
+    // Emitted when the given two edges are connected in the scene.
+    void edgeConnectionAdded(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
 
-    // Emitted when the user disconnects two edges in the scene.
-    void removedEdgeConnection(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
+    // Emitted when the given two edges are disconnected in the scene.
+    void edgeConnectionRemoved(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
+
+    // Emitted when the given node is removed from the scene.
+    void nodeRemoved(InteractibleNodeGraphNode *const node);
 };
 
 #endif

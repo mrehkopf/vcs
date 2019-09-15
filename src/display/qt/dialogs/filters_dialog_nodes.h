@@ -18,8 +18,8 @@ public:
     const filter_c *associatedFilter;
 
     // Convenience functions that can be used to access the node's (default) input and output edge.
-    virtual const node_edge_s& input_edge() const { return this->edges.at(-1); }
-    virtual const node_edge_s& output_edge() const { return this->edges.at(-1); }
+    virtual const node_edge_s& input_edge(void) const { return this->edges.at(-1); }
+    virtual const node_edge_s& output_edge(void) const { return this->edges.at(-1); }
 
 private:
 };
@@ -43,8 +43,8 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    const node_edge_s& input_edge() const override;
-    const node_edge_s& output_edge() const override;
+    const node_edge_s& input_edge(void) const override;
+    const node_edge_s& output_edge(void) const override;
 
 private:
 };
@@ -67,7 +67,7 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    const node_edge_s& output_edge() const override;
+    const node_edge_s& output_edge(void) const override;
 
 private:
 };
@@ -90,7 +90,7 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    const node_edge_s& input_edge() const override;
+    const node_edge_s& input_edge(void) const override;
 
 private:
 };

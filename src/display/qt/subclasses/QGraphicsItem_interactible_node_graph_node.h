@@ -80,6 +80,7 @@ public:
     }
 
     node_edge_s* intersected_edge(const QPointF &point);
+    void disconnect_all_edges(void);
 
     const unsigned width;
     const unsigned height;
