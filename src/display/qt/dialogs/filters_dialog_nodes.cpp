@@ -26,18 +26,14 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         // Background.
         {
             // Body background.
-            painter->setBrush(QBrush(QColor(127, 127, 127)));
-            painter->setPen(QColor("transparent"));
-            painter->drawRoundedRect(0, 0, this->width, this->height, 4, 4);
-
-            // Title background.
+            painter->setPen(QColor("black"));
             painter->setBrush(QBrush(QColor(QColor(90, 90, 90))));
-            painter->drawRoundedRect(0, 0, this->width, 40, 4, 4);
+            painter->drawRoundedRect(0, 0, this->width, this->height, 0, 0);
         }
 
         // Connection points (edges).
         {
-            painter->setPen(QColor("transparent"));
+            painter->setPen(QColor("black"));
             painter->setBrush(QBrush(QColor("mediumseagreen")));
 
             for (const auto &edge: this->edges)
@@ -99,18 +95,14 @@ void InputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         // Background.
         {
             // Body background.
-            painter->setBrush(QBrush(QColor(127, 127, 127)));
-            painter->setPen(QColor("transparent"));
-            painter->drawRoundedRect(0, 0, this->width, this->height, 4, 4);
-
-            // Title background.
-            painter->setBrush(QBrush(QColor(QColor(75, 75, 150))));
-            painter->drawRoundedRect(0, 0, this->width, 40, 4, 4);
+            painter->setPen(QColor("black"));
+            painter->setBrush(QBrush(QColor(QColor(125, 75, 120))));
+            painter->drawRoundedRect(0, 0, this->width, this->height, 0, 0);
         }
 
         // Connection points (edges).
         {
-            painter->setPen(QColor("transparent"));
+            painter->setPen(QColor("black"));
             painter->setBrush(QBrush(QColor("mediumseagreen")));
 
             for (const auto &edge: this->edges)
@@ -163,18 +155,14 @@ void OutputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
         // Background.
         {
             // Body background.
-            painter->setBrush(QBrush(QColor(127, 127, 127)));
-            painter->setPen(QColor("transparent"));
-            painter->drawRoundedRect(0, 0, this->width, this->height, 4, 4);
-
-            // Title background.
-            painter->setBrush(QBrush(QColor(QColor(150, 75, 75))));
-            painter->drawRoundedRect(0, 0, this->width, 40, 4, 4);
+            painter->setPen(QColor("black"));
+            painter->setBrush(QBrush(QColor(QColor(100, 75, 125))));
+            painter->drawRoundedRect(0, 0, this->width, this->height, 0, 0);
         }
 
         // Connection points (edges).
         {
-            painter->setPen(QColor("transparent"));
+            painter->setPen(QColor("black"));
             painter->setBrush(QBrush(QColor("mediumseagreen")));
 
             for (const auto &edge: this->edges)
