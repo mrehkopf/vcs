@@ -528,6 +528,7 @@ void filter_widget_sharpen_s::create_widget(void)
     frame->setMinimumWidth(this->minWidth);
 
     QLabel *noneLabel = new QLabel(this->noParamsMsg);
+    noneLabel->setAlignment(Qt::AlignHCenter);
 
     QHBoxLayout *l = new QHBoxLayout(frame);
     l->addWidget(noneLabel);
@@ -665,6 +666,7 @@ void filter_widget_delta_histogram_s::create_widget(void)
     frame->setMinimumWidth(this->minWidth);
 
     QLabel *noneLabel = new QLabel(this->noParamsMsg);
+    noneLabel->setAlignment(Qt::AlignHCenter);
 
     QHBoxLayout *l = new QHBoxLayout(frame);
     l->addWidget(noneLabel);

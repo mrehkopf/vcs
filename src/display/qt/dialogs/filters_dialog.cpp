@@ -168,22 +168,34 @@ void FiltersDialog::recalculate_filter_chains(void)
     kf_remove_all_filter_chains();
 
     const std::function<void(FilterGraphNode *const, std::vector<const filter_c*>)> traverse_filter_node =
-          [&](FilterGraphNode *const node, std::vector<const filter_c*> accumulatedNodes)
+          [&](FilterGraphNode *const node, std::vector<const filter_c*> accumulatedFilterChain)
     {
         k_assert(node, "Trying to visit an invalid node.");
 
-        accumulatedNodes.push_back(node->associatedFilter);
+        if (std::find(accumulatedFilterChain.begin(),
+                      accumulatedFilterChain.end(),
+                      node->associatedFilter) != accumulatedFilterChain.end())
+        {
+            kd_show_headless_error_message("VCS detected a potential infinite loop",
+                                           "One or more filter chains in the filter graph are connected in a loop "
+                                           "(a node's output connects back to its input).\n\nChains containing an "
+                                           "infinite loop will remain unusable until the loop is disconnected.");
+
+            return;
+        }
+
+        accumulatedFilterChain.push_back(node->associatedFilter);
 
         if (node->associatedFilter->metaData.type == filter_type_enum_e::output_gate)
         {
-            kf_add_filter_chain(accumulatedNodes);
+            kf_add_filter_chain(accumulatedFilterChain);
             return;
         }
 
         // NOTE: This assumes that each node in the graph only has one output edge.
         for (auto outgoing: node->output_edge().connectedTo)
         {
-            traverse_filter_node(dynamic_cast<FilterGraphNode*>(outgoing->parentNode), accumulatedNodes);
+            traverse_filter_node(dynamic_cast<FilterGraphNode*>(outgoing->parentNode), accumulatedFilterChain);
         }
 
         return;

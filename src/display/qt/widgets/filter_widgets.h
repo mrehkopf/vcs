@@ -36,7 +36,7 @@ public:
 
     // The string shown to the user in the widget if this filter has no
     // user-configurable parameters.
-    const QString noParamsMsg = "This filter has no parameters.";
+    const QString noParamsMsg = "(No parameters.)";
 
     u8 *const parameterData;
 
