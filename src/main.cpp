@@ -65,6 +65,19 @@ static bool initialize_all(void)
 
 static capture_event_e process_next_capture_event(void)
 {
+    // Normally, the capture card's output rate limits the program's frame rate;
+    // but if the program is built without capture functionality, the rate needs
+    // to be limited artificially.
+    #if !USE_RGBEASY_API
+        static auto startTime_ = std::chrono::system_clock::now();
+        std::chrono::duration<double> timeDelta_ = (std::chrono::system_clock::now() - startTime_);
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(timeDelta_).count() <= 16)
+        {
+            return capture_event_e::none;
+        }
+        else startTime_ = std::chrono::system_clock::now();
+    #endif
+
     std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
 
     #if USE_RGBEASY_API
@@ -183,11 +196,6 @@ int main(int argc, char *argv[])
     {
         process_next_capture_event();
         kd_spin_event_loop();
-
-        #if !USE_RGBEASY_API
-            // Reduce needless CPU use while debugging, etc.
-            std::this_thread::sleep_for(std::chrono::milliseconds(16));
-        #endif
     }
 
     cleanup_all();
