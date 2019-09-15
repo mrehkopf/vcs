@@ -28,7 +28,7 @@ enum class filter_type_enum_e
     unique_count,
     unsharp_mask,
     decimate,
-    denoise,
+    denoise_temporal,
     denoise_nonlocal_means,
     sharpen,
     median,
@@ -115,6 +115,8 @@ void kf_initialize_filters(void);
 void kf_add_filter_chain(std::vector<const filter_c*> newChain);
 
 void kf_remove_all_filter_chains(void);
+
+std::string kf_filter_name_for_type(const filter_type_enum_e type);
 
 void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r);
 

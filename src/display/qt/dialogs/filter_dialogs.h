@@ -227,7 +227,7 @@ struct filter_dlg_rotate_s : public filter_dlg_s
 
 struct filter_dlg_median_s : public filter_dlg_s
 {
-    enum data_offset_e { OFF_KERNEL_SIZE = 0 };
+    enum data_offset_e { OFFS_KERNEL_SIZE = 0 };
 
     filter_dlg_median_s() :
         filter_dlg_s("Median") {}
@@ -235,7 +235,7 @@ struct filter_dlg_median_s : public filter_dlg_s
     void insert_default_params(u8 *const paramData) const override
     {
         memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
-        paramData[OFF_KERNEL_SIZE] = 3;
+        paramData[OFFS_KERNEL_SIZE] = 3;
 
         return;
     }
@@ -250,7 +250,7 @@ struct filter_dlg_median_s : public filter_dlg_s
         QLabel radiusLabel("Radius:");
         QSpinBox radiusSpin;
         radiusSpin.setRange(0, 99);
-        radiusSpin.setValue(paramData[OFF_KERNEL_SIZE] / 2);
+        radiusSpin.setValue(paramData[OFFS_KERNEL_SIZE] / 2);
 
         QFormLayout l;
         l.addRow(&radiusLabel, &radiusSpin);
@@ -258,7 +258,7 @@ struct filter_dlg_median_s : public filter_dlg_s
         d.setLayout(&l);
         d.exec();       // Blocking execute until the user closes the dialog.
 
-        paramData[OFF_KERNEL_SIZE] = ((radiusSpin.value() * 2) + 1);
+        paramData[OFFS_KERNEL_SIZE] = ((radiusSpin.value() * 2) + 1);
 
         return;
     }
@@ -266,7 +266,7 @@ struct filter_dlg_median_s : public filter_dlg_s
 
 struct filter_dlg_blur_s : public filter_dlg_s
 {
-    enum data_offset_e { OFF_TYPE = 0, OFF_KERNEL_SIZE = 1 };
+    enum data_offset_e { OFFS_TYPE = 0, OFFS_KERNEL_SIZE = 1 };
     enum filter_type_e { FILTER_TYPE_BOX = 0, FILTER_TYPE_GAUSSIAN = 1 };
 
     filter_dlg_blur_s() :
@@ -275,8 +275,8 @@ struct filter_dlg_blur_s : public filter_dlg_s
     void insert_default_params(u8 *const paramData) const override
     {
         memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
-        paramData[OFF_KERNEL_SIZE] = 10;
-        paramData[OFF_TYPE] = FILTER_TYPE_GAUSSIAN;
+        paramData[OFFS_KERNEL_SIZE] = 10;
+        paramData[OFFS_TYPE] = FILTER_TYPE_GAUSSIAN;
 
         return;
     }
@@ -292,14 +292,14 @@ struct filter_dlg_blur_s : public filter_dlg_s
         QComboBox typeList;
         typeList.addItem("Box");
         typeList.addItem("Gaussian");
-        typeList.setCurrentIndex(paramData[OFF_TYPE]);
+        typeList.setCurrentIndex(paramData[OFFS_TYPE]);
 
         // Blur radius.
         QLabel radiusLabel("Radius:");
         QDoubleSpinBox radiusSpin;
         radiusSpin.setRange(0, 25);
         radiusSpin.setDecimals(1);
-        radiusSpin.setValue(paramData[OFF_KERNEL_SIZE] / 10.0);
+        radiusSpin.setValue(paramData[OFFS_KERNEL_SIZE] / 10.0);
 
         QFormLayout l;
         l.addRow(&typeLabel, &typeList);
@@ -309,8 +309,8 @@ struct filter_dlg_blur_s : public filter_dlg_s
         d.exec();       // Blocking execute until the user closes the dialog.
 
         // Fetch the settings the user gave.
-        paramData[OFF_TYPE] = typeList.currentIndex();
-        paramData[OFF_KERNEL_SIZE] = round(radiusSpin.value() * 10.0);
+        paramData[OFFS_TYPE] = typeList.currentIndex();
+        paramData[OFFS_KERNEL_SIZE] = round(radiusSpin.value() * 10.0);
 
         return;
     }

@@ -1,4 +1,3 @@
-#include <QGraphicsDropShadowEffect>
 #include <QGraphicsProxyWidget>
 #include <QMenuBar>
 #include <QTimer>
@@ -97,7 +96,7 @@ FiltersDialog::FiltersDialog(QWidget *parent) :
 
         ui->graphicsView->setScene(this->graphicsScene);
 
-        connect(this->graphicsScene, &ForwardNodeGraph::edgesConnected, this, [this]{this->recalculate_filter_chains();});
+        connect(this->graphicsScene, &ForwardNodeGraph::newEdgeConnection, this, [this]{this->recalculate_filter_chains();});
     }
 
     // For temporary testing purposes, add some placeholder nodes into the graphics scene.
@@ -124,6 +123,8 @@ FiltersDialog::~FiltersDialog()
 FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type)
 {
     const filter_c *const newFilter = kf_create_new_filter_instance(type);
+    const unsigned filterWidgetWidth = (newFilter->guiWidget->widget->width() + 20);
+    const unsigned filterWidgetHeight = (newFilter->guiWidget->widget->height() + 49);
 
     k_assert(newFilter, "Failed to add a new filter node.");
 
@@ -131,9 +132,9 @@ FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type)
 
     switch (type)
     {
-        case filter_type_enum_e::input_gate: newNode = new InputGateNode(newFilter->guiWidget->title); break;
-        case filter_type_enum_e::output_gate: newNode = new OutputGateNode(newFilter->guiWidget->title); break;
-        default: newNode = new FilterNode(newFilter->guiWidget->title); break;
+        case filter_type_enum_e::input_gate: newNode = new InputGateNode(newFilter->guiWidget->title, filterWidgetWidth, filterWidgetHeight); break;
+        case filter_type_enum_e::output_gate: newNode = new OutputGateNode(newFilter->guiWidget->title, filterWidgetWidth, filterWidgetHeight); break;
+        default: newNode = new FilterNode(newFilter->guiWidget->title, filterWidgetWidth, filterWidgetHeight); break;
     }
 
     newNode->associatedFilter = newFilter;
@@ -142,7 +143,7 @@ FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type)
 
     QGraphicsProxyWidget* nodeWidgetProxy = new QGraphicsProxyWidget(newNode);
     nodeWidgetProxy->setWidget(newFilter->guiWidget->widget);
-    nodeWidgetProxy->widget()->move(10, 45);
+    nodeWidgetProxy->widget()->move(10, 40);
 
     if (type == filter_type_enum_e::input_gate)
     {
@@ -156,7 +157,8 @@ FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type)
 
 // Visit each node in the graph and while doing so, group together such chains of
 // filters that run from an input gate through one or more filters into an output
-// gate. The chains will then be submitted to the filter handler.
+// gate. The chains will then be submitted to the filter handler for use in applying
+// the filters to captured frames.
 void FiltersDialog::recalculate_filter_chains(void)
 {
     kf_remove_all_filter_chains();

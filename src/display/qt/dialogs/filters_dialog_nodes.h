@@ -9,7 +9,7 @@ class FilterGraphNode : public ForwardNodeGraphNode
 {
 public:
     FilterGraphNode(const QString title,
-                    const unsigned width = 260,
+                    const unsigned width = 240,
                     const unsigned height = 130) : ForwardNodeGraphNode(title, width, height)
     {
         return;
@@ -27,7 +27,9 @@ private:
 class FilterNode : public FilterGraphNode
 {
 public:
-    FilterNode(const QString title) : FilterGraphNode(title, 260, 130)
+    FilterNode(const QString title,
+               const unsigned width = 240,
+               const unsigned height = 130) : FilterGraphNode(title, width, height)
     {
         this->edges =
         {
@@ -50,7 +52,9 @@ private:
 class InputGateNode : public FilterGraphNode
 {
 public:
-    InputGateNode(const QString title) : FilterGraphNode(title, 200, 130)
+    InputGateNode(const QString title,
+                  const unsigned width = 200,
+                  const unsigned height = 130) : FilterGraphNode(title, width, height)
     {
         this->edges =
         {
@@ -71,7 +75,9 @@ private:
 class OutputGateNode : public FilterGraphNode
 {
 public:
-    OutputGateNode(const QString title) : FilterGraphNode(title, 200, 130)
+    OutputGateNode(const QString title,
+                   const unsigned width = 200,
+                   const unsigned height = 130) : FilterGraphNode(title, width, height)
     {
         this->edges =
         {

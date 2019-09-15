@@ -160,7 +160,7 @@ void ForwardNodeGraph::update_scene_connections(void)
         }
         else
         {
-            this->connectionEvent.graphicsLine = this->addLine(line, QPen(QColor("mediumseagreen"), 3));
+            this->connectionEvent.graphicsLine = this->addLine(line, QPen(QColor("mediumseagreen"), 2));
         }
     }
 
@@ -193,10 +193,10 @@ void ForwardNodeGraph::connect_scene_edges(const node_edge_s *const sourceEdge,
     else
     {
         this->edgeConnections.push_back(node_edge_connection_s(sourceEdge, targetEdge,
-                                                               this->addLine(line, QPen(QColor("mediumseagreen"), 3))));
+                                                               this->addLine(line, QPen(QColor("mediumseagreen"), 2))));
     }
 
-    emit edgesConnected(sourceEdge, targetEdge);
+    emit newEdgeConnection(sourceEdge, targetEdge);
 
     return;
 }

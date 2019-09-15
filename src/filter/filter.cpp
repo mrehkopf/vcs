@@ -80,8 +80,8 @@ static const std::unordered_map<std::string, const filter_meta_s> KNOWN_FILTER_T
     {"badb0129-f48c-4253-a66f-b0ec94e225a0", {"Unique count",      filter_type_enum_e::unique_count,           filter_func_uniquecount    }},
     {"03847778-bb9c-4e8c-96d5-0c10335c4f34", {"Unsharp mask",      filter_type_enum_e::unsharp_mask,           filter_func_unsharpmask    }},
     {"eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03", {"Decimate",          filter_type_enum_e::decimate,               filter_func_decimate       }},
-    {"94adffac-be42-43ac-9839-9cc53a6d615c", {"Denoise",           filter_type_enum_e::denoise,                filter_func_denoise        }},
-    {"e31d5ee3-f5df-4e7c-81b8-227fc39cbe76", {"Denoise (NLM)",     filter_type_enum_e::denoise_nonlocal_means, filter_func_denoise_nlm    }},
+    {"94adffac-be42-43ac-9839-9cc53a6d615c", {"Denoise/temporal",  filter_type_enum_e::denoise_temporal,       filter_func_denoise        }},
+    {"e31d5ee3-f5df-4e7c-81b8-227fc39cbe76", {"Denoise/NLM",       filter_type_enum_e::denoise_nonlocal_means, filter_func_denoise_nlm    }},
     {"1c25bbb1-dbf4-4a03-93a1-adf24b311070", {"Sharpen",           filter_type_enum_e::sharpen,                filter_func_sharpen        }},
     {"de60017c-afe5-4e5e-99ca-aca5756da0e8", {"Median",            filter_type_enum_e::median,                 filter_func_median         }},
     {"2448cf4a-112d-4d70-9fc1-b3e9176b6684", {"Crop",              filter_type_enum_e::crop,                   filter_func_crop           }},
@@ -109,6 +109,21 @@ static std::vector<filter_c*> FILTER_POOL;
 // and ending with an output gate. These chains will be used to filter incoming
 // frames.
 static std::vector<std::vector<const filter_c*>> FILTER_CHAINS;
+
+std::string kf_filter_name_for_type(const filter_type_enum_e type)
+{
+    for (const auto filterType: KNOWN_FILTER_TYPES)
+    {
+        if (filterType.second.type == type)
+        {
+            return filterType.second.name;
+        }
+    }
+
+    k_assert(0, "Unable to find a name for the given filter type.");
+
+    return "(unknown)";
+}
 
 // Apply to the given pixel buffer the chain of filters (if any) whose input gate
 // matches the frame's resolution and output gate that of the current output resolution.
@@ -703,7 +718,7 @@ static void filter_func_median(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    const u8 kernelS = params[filter_dlg_median_s::OFF_KERNEL_SIZE];
+    const u8 kernelS = params[filter_dlg_median_s::OFFS_KERNEL_SIZE];
 
     cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
     cv::medianBlur(output, output, kernelS);
@@ -717,11 +732,11 @@ static void filter_func_blur(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    const real kernelS = (params[filter_dlg_blur_s::OFF_KERNEL_SIZE] / 10.0);
+    const real kernelS = (params[filter_dlg_blur_s::OFFS_KERNEL_SIZE] / 10.0);
 
     cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
 
-    if (params[filter_dlg_blur_s::OFF_TYPE] == filter_dlg_blur_s::FILTER_TYPE_GAUSSIAN)
+    if (params[filter_dlg_blur_s::OFFS_TYPE] == filter_dlg_blur_s::FILTER_TYPE_GAUSSIAN)
     {
         cv::GaussianBlur(output, output, cv::Size(0, 0), kernelS);
     }
@@ -991,6 +1006,16 @@ filter_widget_s *filter_c::new_gui_widget(void)
     {
         case filter_type_enum_e::blur:                   return new filter_widget_blur_s(paramData);
         case filter_type_enum_e::rotate:                 return new filter_widget_rotate_s(paramData);
+        case filter_type_enum_e::crop:                   return new filter_widget_crop_s(paramData);
+        case filter_type_enum_e::flip:                   return new filter_widget_flip_s(paramData);
+        case filter_type_enum_e::median:                 return new filter_widget_median_s(paramData);
+        case filter_type_enum_e::denoise_temporal:       return new filter_widget_denoise_temporal_s(paramData);
+        case filter_type_enum_e::denoise_nonlocal_means: return new filter_widget_denoise_nonlocal_means_s(paramData);
+        case filter_type_enum_e::sharpen:                return new filter_widget_sharpen_s(paramData);
+        case filter_type_enum_e::unsharp_mask:           return new filter_widget_unsharp_mask_s(paramData);
+        case filter_type_enum_e::decimate:               return new filter_widget_decimate_s(paramData);
+        case filter_type_enum_e::delta_histogram:        return new filter_widget_delta_histogram_s(paramData);
+        case filter_type_enum_e::unique_count:           return new filter_widget_unique_count_s(paramData);
 
         case filter_type_enum_e::input_gate:             return new filter_widget_input_gate_s(paramData);
         case filter_type_enum_e::output_gate:            return new filter_widget_output_gate_s(paramData);
