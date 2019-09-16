@@ -159,7 +159,7 @@ void FiltersDialog::reset_graph(void)
 void FiltersDialog::load_filters(void)
 {
     QString filename = QFileDialog::getOpenFileName(this,
-                                                    "Select a file to load filters from", "",
+                                                    "Select a file containing the filter graph to be loaded", "",
                                                     "Filter files (*.vcs-filters);;"
                                                     "All files(*.*)");
 
@@ -173,7 +173,7 @@ void FiltersDialog::load_filters(void)
         filename += ".vcs-filters";
     }
 
-    kdisk_load_filter_nodes(filename);
+    kdisk_load_filter_graph(filename);
 
     // Make sure all the connecting lines between the nodes are correctly positioned.
     this->graphicsScene->update_scene_connections();
@@ -184,7 +184,7 @@ void FiltersDialog::load_filters(void)
 void FiltersDialog::save_filters(void)
 {
     QString filename = QFileDialog::getSaveFileName(this,
-                                                    "Select a file to save the filters into", "",
+                                                    "Select a file to save the filter graph into", "",
                                                     "Filter files (*.vcs-filters);;"
                                                     "All files(*.*)");
 
@@ -212,7 +212,7 @@ void FiltersDialog::save_filters(void)
         }
     }
 
-    kdisk_save_filter_nodes(filterNodes, filename);
+    kdisk_save_filter_graph(filterNodes, filename);
 
     return;
 }

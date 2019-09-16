@@ -577,12 +577,12 @@ bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
     return false;
 }
 
-bool kdisk_save_filter_nodes(std::vector<FilterGraphNode*> &nodes,
+bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
                              const QString &targetFilename)
 {
     file_writer_c outFile(targetFilename);
 
-    outFile << "fileType,{VCS filter nodes}\n"
+    outFile << "fileType,{VCS filter graph}\n"
             << "fileVersion,a\n";
 
     // Save filter information.
@@ -640,19 +640,19 @@ bool kdisk_save_filter_nodes(std::vector<FilterGraphNode*> &nodes,
 
     fail:
     kd_show_headless_error_message("Data was not saved",
-                                   "An error was encountered while preparing filter data for saving. "
+                                   "An error was encountered while preparing filter graph data for saving. "
                                    "As a result, no data was saved. \n\nMore information about this "
                                    "error may be found in the terminal.");
     return false;
 }
 
-bool kdisk_load_filter_nodes(const QString &sourceFilename)
+bool kdisk_load_filter_graph(const QString &sourceFilename)
 {
     std::vector<FilterGraphNode*> nodes;
 
     #define verify_first_element_on_row_is(name) if (rowData[row].at(0) != name)\
                                                  {\
-                                                    NBENE(("Error while loading filter file: expected '%s' but got '%s'.",\
+                                                    NBENE(("Error while loading filter graph file: expected '%s' but got '%s'.",\
                                                            name, rowData[row].at(0).toStdString().c_str()));\
                                                     goto fail;\
                                                  }
@@ -731,7 +731,7 @@ bool kdisk_load_filter_nodes(const QString &sourceFilename)
 
     fail:
     kd_show_headless_error_message("Data was not loaded",
-                                   "An error was encountered while loading filters. No data was "
+                                   "An error was encountered while loading the filter graph. No data was "
                                    "loaded.\n\nMore information about the error may be found in "
                                    "the terminal.");
     return false;

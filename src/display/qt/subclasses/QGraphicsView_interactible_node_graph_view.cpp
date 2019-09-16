@@ -19,6 +19,8 @@ InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphic
         this->edgeClickMenu = new QMenu(this);
     }
 
+    this->setRenderHints(QPainter::Antialiasing);
+
     return;
 }
 

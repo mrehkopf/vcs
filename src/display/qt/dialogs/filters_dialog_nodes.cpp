@@ -32,7 +32,7 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
         // Connection points (edges).
         {
-            painter->setPen(QColor("black"));
+            painter->setPen(QColor("transparent"));
             painter->setBrush(QBrush(QColor("mediumseagreen")));
 
             for (const auto &edge: this->edges)
@@ -107,7 +107,7 @@ void InputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
         // Connection points (edges).
         {
-            painter->setPen(QColor("black"));
+            painter->setPen(QColor("transparent"));
             painter->setBrush(QBrush(QColor("mediumseagreen")));
 
             for (const auto &edge: this->edges)
@@ -173,7 +173,7 @@ void OutputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
 
         // Connection points (edges).
         {
-            painter->setPen(QColor("black"));
+            painter->setPen(QColor("transparent"));
             painter->setBrush(QBrush(QColor("mediumseagreen")));
 
             for (const auto &edge: this->edges)
