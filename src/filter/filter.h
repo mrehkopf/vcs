@@ -11,7 +11,6 @@
 #include "display/display.h"
 #include "common/globals.h"
 
-class filter_c;
 struct filter_widget_s;
 struct scaling_filter_s;
 struct filter_dlg_s;
@@ -56,7 +55,7 @@ struct filter_meta_s
 class filter_c
 {
 public:
-    filter_c(const std::string &id);
+    filter_c(const std::string &id, const u8 *initialParameterValues = nullptr);
     ~filter_c();
 
     const filter_meta_s& metaData;
@@ -70,7 +69,7 @@ public:
     filter_widget_s *const guiWidget;
 
 private:
-    filter_widget_s* new_gui_widget(void);
+    filter_widget_s* new_gui_widget(const u8 *const initialParameterValues = nullptr);
 };
 
 // A single filter.
@@ -118,12 +117,16 @@ void kf_remove_all_filter_chains(void);
 
 std::string kf_filter_name_for_type(const filter_type_enum_e type);
 
+std::string kf_filter_id_for_type(const filter_type_enum_e type);
+
+filter_type_enum_e kf_filter_type_for_id(const std::string id);
+
 void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r);
 
 std::vector<const filter_meta_s*> kf_known_filter_types(void);
 
 const filter_c* kf_create_new_filter_instance(const char *const id);
-const filter_c* kf_create_new_filter_instance(const filter_type_enum_e type);
+const filter_c* kf_create_new_filter_instance(const filter_type_enum_e type, const u8 *const initialParameterValues = nullptr);
 
 std::vector<std::string> kf_filter_uuid_list(void);
 

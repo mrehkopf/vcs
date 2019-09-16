@@ -16,10 +16,13 @@ class ControlPanelAboutWidget;
 class ControlPanelInputWidget;
 class FilterSetsListDialog;
 class VideoAndColorDialog;
+class FilterGraphNode;
 class QTreeWidgetItem;
 class AntiTearDialog;
 class FiltersDialog;
 class AliasDialog;
+
+enum class filter_type_enum_e;
 
 struct capture_signal_s;
 struct resolution_s;
@@ -46,45 +49,49 @@ public:
 
     void update_output_resolution_info(void);
 
-    void set_capture_info_as_no_signal();
+    void set_capture_info_as_no_signal(void);
 
-    void set_capture_info_as_receiving_signal();
+    void set_capture_info_as_receiving_signal(void);
 
     void adjust_output_scaling(const int dir);
 
-    bool is_mouse_wheel_scaling_allowed();
+    bool is_mouse_wheel_scaling_allowed(void);
 
     void notify_of_new_alias(const mode_alias_s a);
 
-    void clear_known_aliases();
+    void clear_known_aliases(void);
 
     void notify_of_new_mode_settings_source_file(const QString &filename);
 
     void update_filter_set_idx(void);
 
-    void open_video_adjust_dialog();
+    void open_video_adjust_dialog(void);
 
-    void open_antitear_dialog();
+    void open_antitear_dialog(void);
 
-    void open_filter_sets_dialog();
+    void open_filter_sets_dialog(void);
 
-    void open_alias_dialog();
+    void open_alias_dialog(void);
 
-    void update_recording_metainfo();
+    void update_recording_metainfo(void);
 
-    void toggle_overlay();
+    void toggle_overlay(void);
 
     void activate_capture_res_button(const uint buttonIdx);
 
-    void update_video_mode_params();
+    void update_video_mode_params(void);
 
-    void update_filter_sets_list();
+    void update_filter_sets_list(void);
 
     bool is_overlay_enabled(void);
 
-    bool custom_program_styling_enabled();
+    bool custom_program_styling_enabled(void);
 
-    void restore_persistent_settings();
+    void restore_persistent_settings(void);
+
+    void clear_filter_graph(void);
+
+    FilterGraphNode* add_filter_graph_node(const filter_type_enum_e &filterType, const u8 * const initialParameterValues);
 
 signals:
     void new_programwide_style_file(const QString &filename);

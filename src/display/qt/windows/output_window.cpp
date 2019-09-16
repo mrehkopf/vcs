@@ -567,6 +567,21 @@ void MainWindow::signal_new_known_alias(const mode_alias_s a)
     return;
 }
 
+void MainWindow::clear_filter_graph(void)
+{
+    k_assert(controlPanel != nullptr, "");
+    controlPanel->clear_filter_graph();
+
+    return;
+}
+
+FilterGraphNode* MainWindow::add_filter_graph_node(const filter_type_enum_e &filterType,
+                                                   const u8 *const initialParameterValues)
+{
+    k_assert(controlPanel != nullptr, "");
+    return controlPanel->add_filter_graph_node(filterType, initialParameterValues);
+}
+
 void MainWindow::signal_new_mode_settings_source_file(const std::string &filename)
 {
     k_assert(controlPanel != nullptr, "");

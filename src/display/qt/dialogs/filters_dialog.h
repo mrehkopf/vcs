@@ -22,10 +22,17 @@ public:
 
     void recalculate_filter_chains(void);
 
-public slots:
-    FilterGraphNode* add_filter_node(const filter_type_enum_e type);
+    void clear_filter_graph(void);
+
+    FilterGraphNode* add_filter_graph_node(const filter_type_enum_e &filterType, const u8 * const initialParameterValues);
+
+    FilterGraphNode* add_filter_node(const filter_type_enum_e type, const u8 *const initialParameterValues = nullptr);
 
 private:
+    void reset_graph(void);
+    void save_filters(void);
+    void load_filters(void);
+
     Ui::FiltersDialog *ui;
     QMenuBar *menubar = nullptr;
     InteractibleNodeGraph *graphicsScene = nullptr;

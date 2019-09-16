@@ -280,6 +280,21 @@ void ControlPanel::notify_of_new_alias(const mode_alias_s a)
     return;
 }
 
+void ControlPanel::clear_filter_graph(void)
+{
+    k_assert(filtersDlg != nullptr, "");
+    filtersDlg->clear_filter_graph();
+
+    return;
+}
+
+FilterGraphNode* ControlPanel::add_filter_graph_node(const filter_type_enum_e &filterType,
+                                                     const u8 *const initialParameterValues)
+{
+    k_assert(filtersDlg != nullptr, "");
+    return filtersDlg->add_filter_graph_node(filterType, initialParameterValues);
+}
+
 void ControlPanel::notify_of_new_mode_settings_source_file(const QString &filename)
 {
     k_assert(videocolorDlg != nullptr, "");

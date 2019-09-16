@@ -17,9 +17,11 @@ public:
 
     const filter_c *associatedFilter;
 
+    void connect_to(FilterGraphNode *const targetNode);
+
     // Convenience functions that can be used to access the node's (default) input and output edge.
-    virtual const node_edge_s& input_edge(void) const { return this->edges.at(-1); }
-    virtual const node_edge_s& output_edge(void) const { return this->edges.at(-1); }
+    virtual node_edge_s* input_edge(void) { return nullptr; }
+    virtual node_edge_s* output_edge(void) { return nullptr; }
 
 private:
 };
@@ -40,11 +42,11 @@ public:
         return;
     }
 
-    QRectF boundingRect() const override;
+    QRectF boundingRect(void) const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    const node_edge_s& input_edge(void) const override;
-    const node_edge_s& output_edge(void) const override;
+    node_edge_s* input_edge(void) override;
+    node_edge_s* output_edge(void) override;
 
 private:
 };
@@ -64,10 +66,10 @@ public:
         return;
     }
 
-    QRectF boundingRect() const override;
+    QRectF boundingRect(void) const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    const node_edge_s& output_edge(void) const override;
+    node_edge_s* output_edge(void) override;
 
 private:
 };
@@ -87,10 +89,10 @@ public:
         return;
     }
 
-    QRectF boundingRect() const override;
+    QRectF boundingRect(void) const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    const node_edge_s& input_edge(void) const override;
+    node_edge_s* input_edge(void) override;
 
 private:
 };

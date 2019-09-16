@@ -31,10 +31,10 @@ public:
     ~MainWindow();
 
     // Gets user input in the GUI, etc.
-    void update_gui_state();
+    void update_gui_state(void);
 
     // Returns true if the window has a border.
-    bool window_has_border();
+    bool window_has_border(void);
 
     u32 ShowMessageBox_Query(const QString title, const QString msg);
 
@@ -48,21 +48,21 @@ public:
 
     void update_output_framerate(const u32 fps, const bool missedFrames);
 
-    void set_capture_info_as_no_signal();
+    void set_capture_info_as_no_signal(void);
 
-    void set_capture_info_as_receiving_signal();
+    void set_capture_info_as_receiving_signal(void);
 
-    void update_window_size();
+    void update_window_size(void);
 
-    void update_window_title();
+    void update_window_title(void);
 
     void signal_new_known_alias(const mode_alias_s a);
 
-    void clear_known_aliases();
+    void clear_known_aliases(void);
 
-    void show_overlay_dialog();
+    void show_overlay_dialog(void);
 
-    void measure_framerate();
+    void measure_framerate(void);
 
     void signal_new_mode_settings_source_file(const std::string &filename);
 
@@ -70,22 +70,26 @@ public:
 
     void set_opengl_enabled(const bool enabled);
 
-    void refresh();
+    void refresh(void);
 
-    QImage overlay_image();
+    QImage overlay_image(void);
 
-    void update_recording_metainfo();
+    void update_recording_metainfo(void);
 
-    void update_video_mode_params();
+    void update_video_mode_params(void);
 
-    void update_filter_sets_list();
+    void update_filter_sets_list(void);
 
     bool apply_programwide_styling(const QString &filename);
 
-    uint output_framerate();
+    uint output_framerate(void);
+
+    void clear_filter_graph(void);
+
+    FilterGraphNode* add_filter_graph_node(const filter_type_enum_e &filterType, const u8 * const initialParameterValues);
 
 private slots:
-    void toggle_window_border();
+    void toggle_window_border(void);
 
 private:
     void paintEvent(QPaintEvent *);

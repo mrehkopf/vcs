@@ -125,6 +125,26 @@ std::string kf_filter_name_for_type(const filter_type_enum_e type)
     return "(unknown)";
 }
 
+filter_type_enum_e kf_filter_type_for_id(const std::string id)
+{
+    return KNOWN_FILTER_TYPES.at(id).type;
+}
+
+std::string kf_filter_id_for_type(const filter_type_enum_e type)
+{
+    for (const auto filterType: KNOWN_FILTER_TYPES)
+    {
+        if (filterType.second.type == type)
+        {
+            return filterType.first;
+        }
+    }
+
+    k_assert(0, "Unable to find an id for the given filter type.");
+
+    return "(unknown)";
+}
+
 // Apply to the given pixel buffer the chain of filters (if any) whose input gate
 // matches the frame's resolution and output gate that of the current output resolution.
 void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
@@ -205,7 +225,8 @@ const filter_c* kf_create_new_filter_instance(const char *const id)
     return filter;
 }
 
-const filter_c* kf_create_new_filter_instance(const filter_type_enum_e type)
+const filter_c* kf_create_new_filter_instance(const filter_type_enum_e type,
+                                              const u8 *const initialParameterValues)
 {
     filter_c *newFilterInstance = nullptr;
 
@@ -213,7 +234,7 @@ const filter_c* kf_create_new_filter_instance(const filter_type_enum_e type)
     {
         if (filter.second.type == type)
         {
-            newFilterInstance = new filter_c(filter.first);
+            newFilterInstance = new filter_c(filter.first, initialParameterValues);
             break;
         }
     }
@@ -980,13 +1001,11 @@ void kf_initialize_filters(void)
     return;
 }
 
-filter_c::filter_c(const std::string &id) :
+filter_c::filter_c(const std::string &id, const u8 *initialParameterValues) :
     metaData(KNOWN_FILTER_TYPES.at(id)),
     parameterData(heap_bytes_s<u8>(FILTER_DATA_LENGTH, "Filter parameter data")),
-    guiWidget(new_gui_widget())
+    guiWidget(new_gui_widget(initialParameterValues))
 {
-    this->guiWidget->reset_parameter_data();
-
     return;
 }
 
@@ -998,28 +1017,32 @@ filter_c::~filter_c()
     return;
 }
 
-filter_widget_s *filter_c::new_gui_widget(void)
+filter_widget_s *filter_c::new_gui_widget(const u8 *const initialParameterValues)
 {
-    u8 *const paramData = this->parameterData.ptr();
+    u8 *const paramArray = this->parameterData.ptr();
+
+    #define arguments paramArray, initialParameterValues
 
     switch (this->metaData.type)
     {
-        case filter_type_enum_e::blur:                   return new filter_widget_blur_s(paramData);
-        case filter_type_enum_e::rotate:                 return new filter_widget_rotate_s(paramData);
-        case filter_type_enum_e::crop:                   return new filter_widget_crop_s(paramData);
-        case filter_type_enum_e::flip:                   return new filter_widget_flip_s(paramData);
-        case filter_type_enum_e::median:                 return new filter_widget_median_s(paramData);
-        case filter_type_enum_e::denoise_temporal:       return new filter_widget_denoise_temporal_s(paramData);
-        case filter_type_enum_e::denoise_nonlocal_means: return new filter_widget_denoise_nonlocal_means_s(paramData);
-        case filter_type_enum_e::sharpen:                return new filter_widget_sharpen_s(paramData);
-        case filter_type_enum_e::unsharp_mask:           return new filter_widget_unsharp_mask_s(paramData);
-        case filter_type_enum_e::decimate:               return new filter_widget_decimate_s(paramData);
-        case filter_type_enum_e::delta_histogram:        return new filter_widget_delta_histogram_s(paramData);
-        case filter_type_enum_e::unique_count:           return new filter_widget_unique_count_s(paramData);
+        case filter_type_enum_e::blur:                   return new filter_widget_blur_s(arguments);
+        case filter_type_enum_e::rotate:                 return new filter_widget_rotate_s(arguments);
+        case filter_type_enum_e::crop:                   return new filter_widget_crop_s(arguments);
+        case filter_type_enum_e::flip:                   return new filter_widget_flip_s(arguments);
+        case filter_type_enum_e::median:                 return new filter_widget_median_s(arguments);
+        case filter_type_enum_e::denoise_temporal:       return new filter_widget_denoise_temporal_s(arguments);
+        case filter_type_enum_e::denoise_nonlocal_means: return new filter_widget_denoise_nonlocal_means_s(arguments);
+        case filter_type_enum_e::sharpen:                return new filter_widget_sharpen_s(arguments);
+        case filter_type_enum_e::unsharp_mask:           return new filter_widget_unsharp_mask_s(arguments);
+        case filter_type_enum_e::decimate:               return new filter_widget_decimate_s(arguments);
+        case filter_type_enum_e::delta_histogram:        return new filter_widget_delta_histogram_s(arguments);
+        case filter_type_enum_e::unique_count:           return new filter_widget_unique_count_s(arguments);
 
-        case filter_type_enum_e::input_gate:             return new filter_widget_input_gate_s(paramData);
-        case filter_type_enum_e::output_gate:            return new filter_widget_output_gate_s(paramData);
+        case filter_type_enum_e::input_gate:             return new filter_widget_input_gate_s(arguments);
+        case filter_type_enum_e::output_gate:            return new filter_widget_output_gate_s(arguments);
 
         default: k_assert(0, "No GUI widget is yet available for the given filter type.");
     }
+
+    #undef arguments
 }

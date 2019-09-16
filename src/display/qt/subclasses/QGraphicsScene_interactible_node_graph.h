@@ -19,9 +19,11 @@ class InteractibleNodeGraph : public QGraphicsScene
 public:
     explicit InteractibleNodeGraph(QObject *parent = 0);
 
+    void update_scene_connections(void);
     void connect_scene_edges(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
     void disconnect_scene_edges(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge, const bool noEmit = false);
     void remove_node(InteractibleNodeGraphNode *const node);
+    void reset_scene();
 
 private:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
@@ -31,7 +33,6 @@ private:
     void complete_connection_event(node_edge_s *const finalEdge);
     void start_connection_event(node_edge_s *const sourceEdge, const QPointF mousePos);
     void reset_current_connection_event(void);
-    void update_scene_connections(void);
 
     node_connection_event_s connectionEvent;
     std::vector<node_edge_connection_s> edgeConnections;

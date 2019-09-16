@@ -57,7 +57,7 @@ void InteractibleNodeGraph::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
                 if (edge)
                 {
-                    start_connection_event(edge, event->scenePos());
+                    this->start_connection_event(edge, event->scenePos());
                     return;
                 }
 
@@ -92,13 +92,13 @@ void InteractibleNodeGraph::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 }
 
                 // In case the user released the mouse button after dragging a node.
-                update_scene_connections();
+                this->update_scene_connections();
 
                 break;
             }
         }
 
-        reset_current_connection_event();
+        this->reset_current_connection_event();
     }
 
     QGraphicsScene::mouseReleaseEvent(event);
@@ -112,7 +112,7 @@ void InteractibleNodeGraph::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     // the cursor, they're dragging one of the items in the scene.
     if (QApplication::mouseButtons() == Qt::LeftButton)
     {
-        update_scene_connections();
+        this->update_scene_connections();
 
         this->connectionEvent.mousePos = event->scenePos();
     }
@@ -170,7 +170,7 @@ void InteractibleNodeGraph::remove_node(InteractibleNodeGraphNode *const node)
 
     this->removeItem(node);
 
-    emit nodeRemoved(node);
+    emit this->nodeRemoved(node);
 
     return;
 }
@@ -193,7 +193,7 @@ void InteractibleNodeGraph::disconnect_scene_edges(const node_edge_s *const sour
 
     if (!noEmit)
     {
-        emit edgeConnectionRemoved(sourceEdge, targetEdge);
+        emit this->edgeConnectionRemoved(sourceEdge, targetEdge);
     }
 
     return;
@@ -228,7 +228,9 @@ void InteractibleNodeGraph::connect_scene_edges(const node_edge_s *const sourceE
                                                                this->addLine(line, QPen(QColor("mediumseagreen"), 2))));
     }
 
-    emit edgeConnectionAdded(sourceEdge, targetEdge);
+    emit this->edgeConnectionAdded(sourceEdge, targetEdge);
+
+    this->update_scene_connections();
 
     return;
 }
@@ -258,7 +260,7 @@ void InteractibleNodeGraph::complete_connection_event(node_edge_s *const finalEd
 
     this->connectionEvent.sourceEdge->connect_to(finalEdge);
 
-    reset_current_connection_event();
+    this->reset_current_connection_event();
 
     return;
 }
@@ -274,6 +276,14 @@ void InteractibleNodeGraph::reset_current_connection_event(void)
         delete this->connectionEvent.graphicsLine;
         this->connectionEvent.graphicsLine = nullptr;
     }
+
+    return;
+}
+
+void InteractibleNodeGraph::reset_scene(void)
+{
+    this->clear();
+    this->edgeConnections.clear();
 
     return;
 }

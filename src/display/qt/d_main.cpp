@@ -32,6 +32,27 @@ static MainWindow *WINDOW = nullptr;
 extern int UPDATE_LATENCY_PEAK;
 extern int UPDATE_LATENCY_AVG;
 
+void kd_clear_filter_graph(void)
+{
+    if (WINDOW != nullptr)
+    {
+        WINDOW->clear_filter_graph();
+    }
+
+    return;
+}
+
+FilterGraphNode* kd_add_filter_graph_node(const filter_type_enum_e &filterType,
+                                          const u8 *const initialParameterValues)
+{
+    if (WINDOW != nullptr)
+    {
+        return WINDOW->add_filter_graph_node(filterType, initialParameterValues);
+    }
+
+    return nullptr;
+}
+
 void kd_acquire_output_window(void)
 {
     INFO(("Acquiring the display."));

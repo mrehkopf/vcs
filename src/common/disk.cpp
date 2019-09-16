@@ -8,7 +8,10 @@
 
 #include <QTextStream>
 #include <QString>
+#include <QDebug>
 #include <QFile>
+#include "display/qt/dialogs/filters_dialog_nodes.h"
+#include "display/qt/widgets/filter_widgets.h"
 #include "common/propagate.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
@@ -495,11 +498,6 @@ bool kdisk_load_filter_sets(const std::string &sourceFilename)
     return false;
 }
 
-// Loads alias definitions from the given file. Will expect automaticCall to be
-// set to false if this function was called directly by a request by the user
-// through the GUI to load the aliases (as opposed to being called automatically
-// on startup or so).
-//
 bool kdisk_load_aliases(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
@@ -576,5 +574,165 @@ bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
                                    "An error was encountered while preparing the alias "
                                    "resolutions for saving. As a result, no data was saved. \n\nMore "
                                    "information about this error may be found in the terminal.");
+    return false;
+}
+
+bool kdisk_save_filter_nodes(std::vector<FilterGraphNode*> &nodes,
+                             const QString &targetFilename)
+{
+    file_writer_c outFile(targetFilename);
+
+    outFile << "fileType,{VCS filter nodes}\n"
+            << "fileVersion,a\n";
+
+    // Save filter information.
+    {
+        outFile << "filterCount," << nodes.size() << "\n";
+
+        for (FilterGraphNode *const node: nodes)
+        {
+            outFile << "id,{" << QString::fromStdString(kf_filter_id_for_type(node->associatedFilter->metaData.type)) << "}\n";
+
+            outFile << "parameterData," << FILTER_DATA_LENGTH;
+            for (unsigned i = 0; i < FILTER_DATA_LENGTH; i++)
+            {
+                outFile << QString(",%1").arg(node->associatedFilter->parameterData[i]);
+            }
+            outFile << "\n";
+        }
+    }
+
+    // Save node information.
+    {
+        outFile << "nodeCount," << nodes.size() << "\n";
+
+        for (FilterGraphNode *const node: nodes)
+        {
+            outFile << "scenePosition," << QString("%1,%2").arg(node->pos().x()).arg(node->pos().y()) << "\n";
+
+            outFile << "connections,";
+            if (node->output_edge())
+            {
+                outFile << node->output_edge()->connectedTo.size();
+                for (const node_edge_s *const connection: node->output_edge()->connectedTo)
+                {
+                    const auto nodeIt = std::find(nodes.begin(), nodes.end(), connection->parentNode);
+                    k_assert((nodeIt != nodes.end()), "Cannot find the target node of a connection.");
+                    outFile << QString(",%1").arg(std::distance(nodes.begin(), nodeIt));
+                }
+                outFile << "\n";
+            }
+            else
+            {
+                outFile << "0\n";
+            }
+        }
+    }
+
+    if (!outFile.is_valid() ||
+        !outFile.save_and_close())
+    {
+        NBENE(("Failed to write aliases to file."));
+        goto fail;
+    }
+
+    return true;
+
+    fail:
+    kd_show_headless_error_message("Data was not saved",
+                                   "An error was encountered while preparing filter data for saving. "
+                                   "As a result, no data was saved. \n\nMore information about this "
+                                   "error may be found in the terminal.");
+    return false;
+}
+
+bool kdisk_load_filter_nodes(const QString &sourceFilename)
+{
+    std::vector<FilterGraphNode*> nodes;
+
+    #define verify_first_element_on_row_is(name) if (rowData[row].at(0) != name)\
+                                                 {\
+                                                    NBENE(("Error while loading filter file: expected '%s' but got '%s'.",\
+                                                           name, rowData[row].at(0).toStdString().c_str()));\
+                                                    goto fail;\
+                                                 }
+
+    QList<QStringList> rowData = csv_parse_c(sourceFilename).contents();
+
+    kd_clear_filter_graph();
+
+    // Load the data.
+    {
+        unsigned row = 0;
+
+        verify_first_element_on_row_is("fileType");
+        //const QString fileType = rowData[row].at(1);
+
+        row++;
+        verify_first_element_on_row_is("fileVersion");
+        //const QString fileVersion = rowData[row].at(1);
+
+        row++;
+        verify_first_element_on_row_is("filterCount");
+        const unsigned numFilters = rowData[row].at(1).toUInt();
+
+        // Load the filter data.
+        for (unsigned i = 0; i < numFilters; i++)
+        {
+            row++;
+            verify_first_element_on_row_is("id");
+            const filter_type_enum_e filterType = kf_filter_type_for_id(rowData[row].at(1).toStdString());
+
+            row++;
+            verify_first_element_on_row_is("parameterData");
+            const unsigned numParameters = rowData[row].at(1).toUInt();
+
+            std::vector<u8> params;
+            params.reserve(numParameters);
+            for (unsigned p = 0; p < numParameters; p++)
+            {
+                params.push_back(rowData[row].at(2+p).toUInt());
+            }
+
+            const auto newNode = kd_add_filter_graph_node(filterType, (const u8*)params.data());
+            nodes.push_back(newNode);
+        }
+
+        // Load the node data.
+        row++;
+        verify_first_element_on_row_is("nodeCount");
+        const unsigned nodeCount = rowData[row].at(1).toUInt();
+
+        for (unsigned i = 0; i < nodeCount; i++)
+        {
+            row++;
+            verify_first_element_on_row_is("scenePosition");
+            nodes.at(i)->setPos(QPointF(rowData[row].at(1).toDouble(), rowData[row].at(2).toDouble()));
+
+            row++;
+            verify_first_element_on_row_is("connections");
+            const unsigned numConnections = rowData[row].at(1).toUInt();
+
+            for (unsigned p = 0; p < numConnections; p++)
+            {
+                node_edge_s *const sourceEdge = nodes.at(i)->output_edge();
+                node_edge_s *const targetEdge = nodes.at(rowData[row].at(2+p).toUInt())->input_edge();
+
+                k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
+
+                sourceEdge->connect_to(targetEdge);
+            }
+        }
+    }
+
+    #undef verify_first_element_on_row_is
+
+    return true;
+
+    fail:
+    kd_show_headless_error_message("Data was not loaded",
+                                   "An error was encountered while loading filters. No data was "
+                                   "loaded.\n\nMore information about the error may be found in "
+                                   "the terminal.");
     return false;
 }

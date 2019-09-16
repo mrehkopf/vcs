@@ -21,6 +21,10 @@
 struct log_entry_s;
 struct mode_alias_s;
 
+class FilterGraphNode;
+
+enum class filter_type_enum_e;
+
 struct resolution_s
 {
     unsigned long w, h, bpp;
@@ -41,6 +45,10 @@ struct resolution_s
 // Create/destroy the output window.
 void kd_acquire_output_window(void);
 void kd_release_output_window(void);
+
+void kd_clear_filter_graph(void);
+
+FilterGraphNode* kd_add_filter_graph_node(const filter_type_enum_e &filterType, const u8 *const initialParameterValues);
 
 // The current output frame's contents have changed (e.g. a new frame has been
 // received from the capture hardware). Get the current frame's data, and paint

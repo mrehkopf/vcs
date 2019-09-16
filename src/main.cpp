@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
                                        "open, run VCS again from the command line.");
 
         cleanup_all();
-        return 1;
+        return EXIT_FAILURE;
     }
     else
     {
@@ -199,6 +199,6 @@ int main(int argc, char *argv[])
     }
 
     cleanup_all();
-    return 0;
+    return EXIT_SUCCESS;
 }
 #endif

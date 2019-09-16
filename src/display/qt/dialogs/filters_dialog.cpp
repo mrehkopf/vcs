@@ -1,4 +1,6 @@
 #include <QGraphicsProxyWidget>
+#include <QMessageBox>
+#include <QFileDialog>
 #include <QMenuBar>
 #include <QTimer>
 #include <functional>
@@ -7,6 +9,7 @@
 #include "display/qt/dialogs/filters_dialog_nodes.h"
 #include "display/qt/dialogs/filters_dialog.h"
 #include "display/qt/widgets/filter_widgets.h"
+#include "common/disk.h"
 #include "ui_filters_dialog.h"
 
 FiltersDialog::FiltersDialog(QWidget *parent) :
@@ -15,9 +18,7 @@ FiltersDialog::FiltersDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Filters");
-
-    // Don't show the context help '?' button in the window bar.
+    this->setWindowTitle("VCS - Filter graph");
     this->setWindowFlags(Qt::Window);
 
     // Create the dialog's menu bar.
@@ -28,7 +29,12 @@ FiltersDialog::FiltersDialog(QWidget *parent) :
         {
             QMenu *fileMenu = new QMenu("File", this);
 
-            menubar->addMenu(fileMenu);
+            connect(fileMenu->addAction("Reset graph"), &QAction::triggered, this, [=]{this->reset_graph();});
+            connect(fileMenu->addAction("Load graph..."), &QAction::triggered, this, [=]{this->load_filters();});
+            fileMenu->addSeparator();
+            connect(fileMenu->addAction("Save graph..."), &QAction::triggered, this, [=]{this->save_filters();});
+
+            this->menubar->addMenu(fileMenu);
         }
 
         // Add...
@@ -53,8 +59,8 @@ FiltersDialog::FiltersDialog(QWidget *parent) :
                         continue;
                     }
 
-                    connect(addMenu->addAction(QString::fromStdString(filter->name)), &QAction::triggered,
-                            [=]{add_filter_node(filter->type);});
+                    connect(addMenu->addAction(QString::fromStdString(filter->name)), &QAction::triggered, this,
+                            [=]{this->add_filter_node(filter->type);});
                 }
 
                 addMenu->addSeparator();
@@ -68,12 +74,12 @@ FiltersDialog::FiltersDialog(QWidget *parent) :
                         continue;
                     }
 
-                    connect(addMenu->addAction(QString::fromStdString(filter->name)), &QAction::triggered,
-                            [=]{add_filter_node(filter->type);});
+                    connect(addMenu->addAction(QString::fromStdString(filter->name)), &QAction::triggered, this,
+                            [=]{this->add_filter_node(filter->type);});
                 }
             }
 
-            menubar->addMenu(addMenu);
+            this->menubar->addMenu(addMenu);
         }
 
         // Help...
@@ -83,7 +89,7 @@ FiltersDialog::FiltersDialog(QWidget *parent) :
             helpMenu->addAction("About...");
             helpMenu->actions().at(0)->setEnabled(false); /// TODO: Add the actual help.
 
-            menubar->addMenu(helpMenu);
+            this->menubar->addMenu(helpMenu);
         }
 
         this->layout()->setMenuBar(menubar);
@@ -138,11 +144,85 @@ FiltersDialog::~FiltersDialog()
     return;
 }
 
+void FiltersDialog::reset_graph(void)
+{
+    if (QMessageBox::question(this,
+                              "Graph reset",
+                              "Really remove all nodes from the graph?") == QMessageBox::Yes)
+    {
+        this->clear_filter_graph();
+    }
+
+    return;
+}
+
+void FiltersDialog::load_filters(void)
+{
+    QString filename = QFileDialog::getOpenFileName(this,
+                                                    "Select a file to load filters from", "",
+                                                    "Filter files (*.vcs-filters);;"
+                                                    "All files(*.*)");
+
+    if (filename.isEmpty())
+    {
+        return;
+    }
+
+    if (QFileInfo(filename).suffix().isEmpty())
+    {
+        filename += ".vcs-filters";
+    }
+
+    kdisk_load_filter_nodes(filename);
+
+    // Make sure all the connecting lines between the nodes are correctly positioned.
+    this->graphicsScene->update_scene_connections();
+
+    return;
+}
+
+void FiltersDialog::save_filters(void)
+{
+    QString filename = QFileDialog::getSaveFileName(this,
+                                                    "Select a file to save the filters into", "",
+                                                    "Filter files (*.vcs-filters);;"
+                                                    "All files(*.*)");
+
+    if (filename.isEmpty())
+    {
+        return;
+    }
+
+    if (QFileInfo(filename).suffix().isEmpty())
+    {
+        filename += ".vcs-filters";
+    }
+
+    std::vector<FilterGraphNode*> filterNodes;
+    {
+        const QList<QGraphicsItem*> sceneNodes = this->graphicsScene->items();
+        for (auto node: sceneNodes)
+        {
+            const auto filterNode = dynamic_cast<FilterGraphNode*>(node);
+
+            if (filterNode)
+            {
+                filterNodes.push_back(filterNode);
+            }
+        }
+    }
+
+    kdisk_save_filter_nodes(filterNodes, filename);
+
+    return;
+}
+
 // Adds a new instance of the given filter type into the node graph. Returns a
 // pointer to the new node.
-FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type)
+FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type,
+                                                const u8 *const initialParameterValues)
 {
-    const filter_c *const newFilter = kf_create_new_filter_instance(type);
+    const filter_c *const newFilter = kf_create_new_filter_instance(type, initialParameterValues);
     const unsigned filterWidgetWidth = (newFilter->guiWidget->widget->width() + 20);
     const unsigned filterWidgetHeight = (newFilter->guiWidget->widget->height() + 49);
     const QString nodeTitle = QString("#%1: %2").arg(this->numNodesAdded+1).arg(newFilter->guiWidget->title);
@@ -171,6 +251,8 @@ FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type)
         this->inputGateNodes.push_back(newNode);
     }
 
+    newNode->moveBy(rand()%20, rand()%20);
+
     ui->graphicsView->centerOn(newNode);
 
     this->numNodesAdded++;
@@ -189,7 +271,7 @@ void FiltersDialog::recalculate_filter_chains(void)
     const std::function<void(FilterGraphNode *const, std::vector<const filter_c*>)> traverse_filter_node =
           [&](FilterGraphNode *const node, std::vector<const filter_c*> accumulatedFilterChain)
     {
-        k_assert(node, "Trying to visit an invalid node.");
+        k_assert((node && node->associatedFilter), "Trying to visit an invalid node.");
 
         if (std::find(accumulatedFilterChain.begin(),
                       accumulatedFilterChain.end(),
@@ -212,7 +294,7 @@ void FiltersDialog::recalculate_filter_chains(void)
         }
 
         // NOTE: This assumes that each node in the graph only has one output edge.
-        for (auto outgoing: node->output_edge().connectedTo)
+        for (auto outgoing: node->output_edge()->connectedTo)
         {
             traverse_filter_node(dynamic_cast<FilterGraphNode*>(outgoing->parentNode), accumulatedFilterChain);
         }
@@ -226,4 +308,18 @@ void FiltersDialog::recalculate_filter_chains(void)
     }
 
     return;
+}
+
+void FiltersDialog::clear_filter_graph(void)
+{
+    this->graphicsScene->reset_scene();
+    this->inputGateNodes.clear();
+
+    return;
+}
+
+FilterGraphNode* FiltersDialog::add_filter_graph_node(const filter_type_enum_e &filterType,
+                                                      const u8 *const initialParameterValues)
+{
+    return add_filter_node(filterType, initialParameterValues);
 }
