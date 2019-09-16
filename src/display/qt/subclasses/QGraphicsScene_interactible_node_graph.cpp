@@ -55,6 +55,18 @@ void InteractibleNodeGraph::mousePressEvent(QGraphicsSceneMouseEvent *event)
             {
                 const auto edge = node->intersected_edge(event->scenePos());
 
+                // Make the clicked node the top-most in the graph.
+                real maxZ = 0;
+                const auto sceneItems = this->items();
+                for (auto item: sceneItems)
+                {
+                    if (item->zValue() > maxZ)
+                    {
+                        maxZ = item->zValue();
+                    }
+                }
+                node->setZValue(maxZ+1);
+
                 if (edge)
                 {
                     this->start_connection_event(edge, event->scenePos());
@@ -154,6 +166,7 @@ void InteractibleNodeGraph::update_scene_connections(void)
         if (this->connectionEvent.graphicsLine)
         {
             this->connectionEvent.graphicsLine->setLine(line);
+            this->connectionEvent.graphicsLine->setZValue(std::numeric_limits<qreal>::max());
         }
         else
         {
@@ -229,8 +242,6 @@ void InteractibleNodeGraph::connect_scene_edges(const node_edge_s *const sourceE
     }
 
     emit this->edgeConnectionAdded(sourceEdge, targetEdge);
-
-    this->update_scene_connections();
 
     return;
 }
