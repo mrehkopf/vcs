@@ -84,7 +84,7 @@ bool node_edge_s::connect_to(node_edge_s *const targetEdge, const bool recursed)
         this->connectedTo.push_back(targetEdge);
 
         auto *scene = dynamic_cast<InteractibleNodeGraph*>(this->parentNode->scene());
-        if (scene && !recursed)
+        if (scene && recursed)
         {
             scene->connect_scene_edges(this, targetEdge);
         }
@@ -105,7 +105,7 @@ bool node_edge_s::disconnect_from(node_edge_s *const targetEdge, const bool recu
         this->connectedTo.erase(existingConnection);
 
         auto *scene = dynamic_cast<InteractibleNodeGraph*>(this->parentNode->scene());
-        if (scene && !recursed)
+        if (scene && recursed)
         {
             scene->disconnect_scene_edges(this, targetEdge);
         }

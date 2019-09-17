@@ -15,8 +15,6 @@ public:
 
     const filter_c *associatedFilter = nullptr;
 
-    void connect_to(FilterGraphNode *const targetNode);
-
     // Convenience functions that can be used to access the node's (default) input and output edge.
     virtual node_edge_s* input_edge(void) { return nullptr; }
     virtual node_edge_s* output_edge(void) { return nullptr; }
