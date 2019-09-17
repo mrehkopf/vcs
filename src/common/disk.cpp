@@ -11,7 +11,7 @@
 #include <QString>
 #include <QDebug>
 #include <QFile>
-#include "display/qt/dialogs/filters_dialog_nodes.h"
+#include "display/qt/subclasses/InteractibleNodeGraphNode_filters_dialog_nodes.h"
 #include "display/qt/widgets/filter_widgets.h"
 #include "common/file_writer.h"
 #include "common/propagate.h"
