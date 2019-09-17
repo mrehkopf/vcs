@@ -473,6 +473,8 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
         #undef verify_first_element_on_row_is
     }
 
+    kpropagate_loaded_filter_graph_from_disk(sourceFilename);
+
     return true;
 
     fail:

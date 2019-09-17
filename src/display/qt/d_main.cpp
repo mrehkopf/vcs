@@ -103,6 +103,16 @@ void kd_update_video_mode_params(void)
     return;
 }
 
+void kd_refresh_filter_graph(void)
+{
+    if (WINDOW != nullptr)
+    {
+        WINDOW->refresh_filter_graph();
+    }
+
+    return;
+}
+
 void kd_update_capture_signal_info(void)
 {
     if (WINDOW != nullptr)

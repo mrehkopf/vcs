@@ -48,6 +48,8 @@ void kd_release_output_window(void);
 
 void kd_clear_filter_graph(void);
 
+void kd_refresh_filter_graph(void);
+
 FilterGraphNode* kd_add_filter_graph_node(const filter_type_enum_e &filterType, const u8 *const initialParameterValues);
 
 // The current output frame's contents have changed (e.g. a new frame has been

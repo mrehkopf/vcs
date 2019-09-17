@@ -93,6 +93,17 @@ void kpropagate_loaded_aliases_from_disk(const std::vector<mode_alias_s> &aliase
     return;
 }
 
+void kpropagate_loaded_filter_graph_from_disk(const std::string &sourceFilename)
+{
+    // Kludge fix for the filter graph not repainting itself properly when new nodes
+    // are loaded in. Let's just force it to do so.
+    kd_refresh_filter_graph();
+
+    (void)sourceFilename;
+
+    return;
+}
+
 // Call to ask the capture's horizontal and/or vertical positioning to be
 // adjusted by the given amount.
 void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int verticalDelta)

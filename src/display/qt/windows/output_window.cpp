@@ -691,6 +691,14 @@ void MainWindow::update_capture_signal_info(void)
     return;
 }
 
+void MainWindow::refresh_filter_graph(void)
+{
+    k_assert(controlPanel != nullptr, "");
+    controlPanel->refresh_filter_graph();
+
+    return;
+}
+
 void MainWindow::update_recording_metainfo(void)
 {
     k_assert(controlPanel != nullptr, "");

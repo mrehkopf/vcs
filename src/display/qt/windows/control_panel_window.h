@@ -89,6 +89,8 @@ public:
 
     FilterGraphNode* add_filter_graph_node(const filter_type_enum_e &filterType, const u8 * const initialParameterValues);
 
+    void refresh_filter_graph(void);
+
 signals:
     void new_programwide_style_file(const QString &filename);
 

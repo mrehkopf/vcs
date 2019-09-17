@@ -18,6 +18,7 @@ void kpropagate_news_of_new_captured_frame(void);
 void kpropagate_saved_mode_params_to_disk(const std::vector<video_mode_params_s> &modeParams, const std::string &targetFilename);
 void kpropagate_saved_aliases_to_disk(const std::vector<mode_alias_s> &aliases, const std::string &targetFilename);
 
+void kpropagate_loaded_filter_graph_from_disk(const std::string &sourceFilename);
 void kpropagate_loaded_mode_params_from_disk(const std::vector<video_mode_params_s> &modeParams, const std::string &sourceFilename);
 void kpropagate_loaded_aliases_from_disk(const std::vector<mode_alias_s> &aliases, const std::string &sourceFilename);
 

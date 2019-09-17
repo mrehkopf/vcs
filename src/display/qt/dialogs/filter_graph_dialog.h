@@ -28,6 +28,8 @@ public:
 
     FilterGraphNode* add_filter_node(const filter_type_enum_e type, const u8 *const initialParameterValues = nullptr);
 
+    void refresh_filter_graph(void);
+
 private:
     void reset_graph(void);
     void save_filters(void);

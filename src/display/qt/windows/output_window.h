@@ -84,6 +84,8 @@ public:
 
     FilterGraphNode* add_filter_graph_node(const filter_type_enum_e &filterType, const u8 * const initialParameterValues);
 
+    void refresh_filter_graph(void);
+
 private slots:
     void toggle_window_border(void);
 

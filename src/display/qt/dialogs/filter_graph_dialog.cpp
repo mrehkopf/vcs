@@ -170,9 +170,6 @@ void FilterGraphDialog::load_filters(void)
 
     kdisk_load_filter_graph(filename.toStdString());
 
-    // Make sure all the connecting lines between the nodes are correctly positioned.
-    this->graphicsScene->update_scene_connections();
-
     return;
 }
 
@@ -330,4 +327,11 @@ FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const filter_type_enum
                                                           const u8 *const initialParameterValues)
 {
     return add_filter_node(filterType, initialParameterValues);
+}
+
+void FilterGraphDialog::refresh_filter_graph(void)
+{
+    this->graphicsScene->update_scene_connections();
+
+    return;
 }

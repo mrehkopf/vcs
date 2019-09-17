@@ -439,6 +439,14 @@ void ControlPanel::toggle_overlay(void)
     return;
 }
 
+void ControlPanel::refresh_filter_graph(void)
+{
+    k_assert(filterGraphDlg != nullptr, "");
+    filterGraphDlg->refresh_filter_graph();
+
+    return;
+}
+
 void ControlPanel::open_filter_graph_dialog(void)
 {
     k_assert(filterGraphDlg != nullptr, "");
