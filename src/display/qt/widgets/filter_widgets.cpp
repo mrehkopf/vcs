@@ -57,13 +57,13 @@ void filter_widget_blur_s::create_widget(void)
     l->addRow(typeLabel, typeList);
     l->addRow(radiusLabel, radiusSpin);
 
-    QObject::connect(radiusSpin, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](const double newValue)
+    connect(radiusSpin, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](const double newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_KERNEL_SIZE] = round(newValue * 10.0);
     });
 
-    QObject::connect(typeList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int currentIdx)
+    connect(typeList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int currentIdx)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_TYPE] = ((currentIdx == -1)? 0 : currentIdx);
@@ -111,13 +111,13 @@ void filter_widget_rotate_s::create_widget(void)
     l->addRow(rotLabel, rotSpin);
     l->addRow(scaleLabel, scaleSpin);
 
-    QObject::connect(rotSpin, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](const double newValue)
+    connect(rotSpin, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](const double newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
          *(i16*)&(this->parameterArray[OFFS_ROT]) = (newValue * 10);
     });
 
-    QObject::connect(scaleSpin, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](const double newValue)
+    connect(scaleSpin, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](const double newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         *(i16*)&(this->parameterArray[OFFS_SCALE]) = (newValue * 100);
@@ -158,13 +158,13 @@ void filter_widget_input_gate_s::create_widget(void)
     l->addRow(widthLabel, widthSpin);
     l->addRow(heightLabel, heightSpin);
 
-    QObject::connect(widthSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(widthSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
          *(u16*)&(this->parameterArray[OFFS_WIDTH]) = newValue;
     });
 
-    QObject::connect(heightSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(heightSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
          *(u16*)&(this->parameterArray[OFFS_HEIGHT]) = newValue;
@@ -207,13 +207,13 @@ void filter_widget_output_gate_s::create_widget(void)
     l->addRow(widthLabel, widthSpin);
     l->addRow(heightLabel, heightSpin);
 
-    QObject::connect(widthSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(widthSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
          *(u16*)&(this->parameterArray[OFFS_WIDTH]) = newValue;
     });
 
-    QObject::connect(heightSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(heightSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
          *(u16*)&(this->parameterArray[OFFS_HEIGHT]) = newValue;
@@ -279,31 +279,31 @@ void filter_widget_crop_s::create_widget(void)
     l->addRow(heightLabel, heightSpin);
     l->addRow(scalerLabel, scalerList);
 
-    QObject::connect(xSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(xSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
          *(u16*)&(this->parameterArray[OFFS_X]) = newValue;
     });
 
-    QObject::connect(ySpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(ySpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
          *(u16*)&(this->parameterArray[OFFS_Y]) = newValue;
     });
 
-    QObject::connect(widthSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(widthSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
          *(u16*)&(this->parameterArray[OFFS_WIDTH]) = newValue;
     });
 
-    QObject::connect(heightSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(heightSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
          *(u16*)&(this->parameterArray[OFFS_HEIGHT]) = newValue;
     });
 
-    QObject::connect(scalerList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int newIndex)
+    connect(scalerList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int newIndex)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_SCALER] = newIndex;
@@ -339,7 +339,7 @@ void filter_widget_flip_s::create_widget(void)
     QFormLayout *l = new QFormLayout(frame);
     l->addRow(axisLabel, axisList);
 
-    QObject::connect(axisList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int newIndex)
+    connect(axisList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int newIndex)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
          *(u16*)&(this->parameterArray[OFFS_AXIS]) = newIndex;
@@ -376,7 +376,7 @@ void filter_widget_median_s::create_widget(void)
     QFormLayout *l = new QFormLayout(frame);
     l->addRow(radiusLabel, radiusSpin);
 
-    QObject::connect(radiusSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(radiusSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_KERNEL_SIZE] = ((newValue * 2) + 1);
@@ -413,7 +413,7 @@ void filter_widget_denoise_temporal_s::create_widget(void)
     QFormLayout *l = new QFormLayout(frame);
     l->addRow(thresholdLabel, thresholdSpin);
 
-    QObject::connect(thresholdSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(thresholdSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_THRESHOLD] = newValue;
@@ -471,25 +471,25 @@ void filter_widget_denoise_nonlocal_means_s::create_widget(void)
     layout->addRow(searchWindowLabel, searchWindowSpin);
     layout->addRow(templateWindowLabel, templateWindowSpin);
 
-    QObject::connect(hSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(hSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_H] = newValue;
     });
 
-    QObject::connect(hColorSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(hColorSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_H_COLOR] = newValue;
     });
 
-    QObject::connect(templateWindowSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(templateWindowSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_TEMPLATE_WINDOW_SIZE] = newValue;
     });
 
-    QObject::connect(searchWindowSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(searchWindowSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_SEARCH_WINDOW_SIZE] = newValue;
@@ -560,13 +560,13 @@ void filter_widget_unsharp_mask_s::create_widget(void)
     l->addRow(strLabel, strSpin);
     l->addRow(radiusLabel, radiusdSpin);
 
-    QObject::connect(strSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(strSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_STRENGTH] = newValue;
     });
 
-    QObject::connect(radiusdSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(radiusdSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_RADIUS] = (newValue * 10);
@@ -615,13 +615,13 @@ void filter_widget_decimate_s::create_widget(void)
     l->addRow(factorLabel, factorList);
     l->addRow(radiusLabel, samplingList);
 
-    QObject::connect(factorList, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged), [this](const QString &newIndexText)
+    connect(factorList, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged), [this](const QString &newIndexText)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_FACTOR] = newIndexText.toUInt();
     });
 
-    QObject::connect(samplingList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int newIndex)
+    connect(samplingList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int newIndex)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_TYPE] = newIndex;
@@ -695,13 +695,13 @@ void filter_widget_unique_count_s::create_widget()
     l->addRow(cornerLabel, cornerList);
     l->addRow(thresholdLabel, thresholdSpin);
 
-    QObject::connect(thresholdSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+    connect(thresholdSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_THRESHOLD] = newValue;
     });
 
-    QObject::connect(cornerList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int newIndex)
+    connect(cornerList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int newIndex)
     {
         k_assert(this->parameterArray, "Expected non-null filter data.");
         this->parameterArray[OFFS_CORNER] = newIndex;

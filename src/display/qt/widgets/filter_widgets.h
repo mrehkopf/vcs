@@ -15,9 +15,6 @@
 
 struct filter_widget_s : public QObject
 {
-    Q_OBJECT
-
-public:
     filter_widget_s(const filter_type_enum_e filterType,
                     u8 *const parameterArray,
                     const u8 *const initialParameterValues = nullptr,
@@ -45,6 +42,9 @@ public:
 
     // The default width of the widget.
     const unsigned minWidth;
+
+private:
+    Q_OBJECT
 };
 
 
@@ -65,6 +65,8 @@ struct filter_widget_input_gate_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -86,6 +88,8 @@ struct filter_widget_output_gate_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -107,6 +111,8 @@ struct filter_widget_blur_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -128,6 +134,8 @@ struct filter_widget_rotate_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -149,6 +157,8 @@ struct filter_widget_crop_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -169,6 +179,8 @@ struct filter_widget_flip_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -189,6 +201,8 @@ struct filter_widget_median_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -210,6 +224,8 @@ struct filter_widget_denoise_temporal_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -231,6 +247,8 @@ struct filter_widget_denoise_nonlocal_means_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -249,6 +267,8 @@ struct filter_widget_sharpen_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -269,6 +289,8 @@ struct filter_widget_unsharp_mask_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -290,6 +312,8 @@ struct filter_widget_decimate_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -308,6 +332,8 @@ struct filter_widget_delta_histogram_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
@@ -328,6 +354,8 @@ struct filter_widget_unique_count_s : public filter_widget_s
     void reset_parameter_data(void) override;
 
 private:
+    Q_OBJECT
+
     void create_widget(void) override;
 };
 
