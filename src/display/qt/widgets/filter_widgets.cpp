@@ -11,7 +11,7 @@ filter_widget_s::filter_widget_s(const filter_type_enum_e filterType,
 {
     if (initialParameterValues)
     {
-        memcpy(parameterArray, initialParameterValues, FILTER_DATA_LENGTH);
+        memcpy(parameterArray, initialParameterValues, FILTER_PARAMETER_ARRAY_LENGTH);
     }
 
     return;
@@ -26,7 +26,7 @@ void filter_widget_blur_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     this->parameterArray[OFFS_KERNEL_SIZE] = 10;
     this->parameterArray[OFFS_TYPE] = FILTER_TYPE_GAUSSIAN;
@@ -79,7 +79,7 @@ void filter_widget_rotate_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     // The scale value gets divided by 100 when used.
     *(i16*)&(this->parameterArray[OFFS_SCALE]) = 100;
@@ -133,7 +133,7 @@ void filter_widget_input_gate_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     *(u16*)&(this->parameterArray[OFFS_WIDTH]) = 640;
     *(u16*)&(this->parameterArray[OFFS_HEIGHT]) = 480;
@@ -180,7 +180,7 @@ void filter_widget_output_gate_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     *(u16*)&(this->parameterArray[OFFS_WIDTH]) = 1920;
     *(u16*)&(this->parameterArray[OFFS_HEIGHT]) = 1080;
@@ -229,7 +229,7 @@ void filter_widget_crop_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     *(u16*)&(this->parameterArray[OFFS_X]) = 0;
     *(u16*)&(this->parameterArray[OFFS_Y]) = 0;
@@ -319,7 +319,7 @@ void filter_widget_flip_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     return;
 }
@@ -355,7 +355,7 @@ void filter_widget_median_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     this->parameterArray[OFFS_KERNEL_SIZE] = 3;
 
@@ -392,7 +392,7 @@ void filter_widget_denoise_temporal_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     this->parameterArray[OFFS_THRESHOLD] = 5;
 
@@ -429,7 +429,7 @@ void filter_widget_denoise_nonlocal_means_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     this->parameterArray[OFFS_H] = 10;
     this->parameterArray[OFFS_H_COLOR] = 10;
@@ -505,7 +505,7 @@ void filter_widget_sharpen_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     return;
 }
@@ -531,7 +531,7 @@ void filter_widget_unsharp_mask_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     this->parameterArray[OFFS_STRENGTH] = 50;
     this->parameterArray[OFFS_RADIUS] = 10;
@@ -582,7 +582,7 @@ void filter_widget_decimate_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     this->parameterArray[OFFS_FACTOR] = 2;
     this->parameterArray[OFFS_TYPE] = FILTER_TYPE_AVERAGE;
@@ -637,7 +637,7 @@ void filter_widget_delta_histogram_s::reset_parameter_data(void)
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     return;
 }
@@ -663,7 +663,7 @@ void filter_widget_unique_count_s::reset_parameter_data()
 {
     k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-    memset(this->parameterArray, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+    memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
     this->parameterArray[OFFS_THRESHOLD] = 20;
     this->parameterArray[OFFS_CORNER] = 0;

@@ -69,7 +69,7 @@ void kpropagate_saved_mode_params_to_disk(const std::vector<video_mode_params_s>
     return;
 }
 
-void kpropagate_saved_filter_sets_to_disk(const std::vector<filter_set_s*> &filterSets,
+void kpropagate_saved_filter_sets_to_disk(const std::vector<legacy14_filter_set_s*> &filterSets,
                                           const std::string &targetFilename)
 {
     INFO(("Saved %u filter set(s) to disk.", filterSets.size()));
@@ -89,7 +89,7 @@ void kpropagate_saved_aliases_to_disk(const std::vector<mode_alias_s> &aliases,
     return;
 }
 
-void kpropagate_loaded_filter_sets_from_disk(const std::vector<filter_set_s*> &filterSets,
+void kpropagate_loaded_filter_sets_from_disk(const std::vector<legacy14_filter_set_s*> &filterSets,
                                              const std::string &sourceFilename)
 {
     INFO(("Loaded %u filter set(s) from disk.", filterSets.size()));

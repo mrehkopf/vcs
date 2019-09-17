@@ -19,7 +19,7 @@ class FilterSetsListDialog;
 }
 
 struct capture_signal_s;
-struct filter_set_s;
+struct legacy14_filter_set_s;
 
 class FilterSetsListDialog : public QDialog
 {

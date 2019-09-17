@@ -10,7 +10,7 @@
 #include <QTreeWidget>
 #include "common/types.h"
 
-struct filter_s;
+struct legacy14_filter_s;
 
 class FilterListTreeWidget : public QTreeWidget
 {
@@ -20,9 +20,9 @@ public:
     FilterListTreeWidget(QWidget *parent = 0);
     ~FilterListTreeWidget();
 
-    std::vector<filter_s> filters();
+    std::vector<legacy14_filter_s> filters();
 
-    void set_filters(const std::vector<filter_s> &filters);
+    void set_filters(const std::vector<legacy14_filter_s> &filters);
 
 private:
     // Maps pointers to filter list items to data arrays holding the parameters

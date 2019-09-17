@@ -23,6 +23,7 @@
 #include "filter/filter.h"
 #include "scaler/scaler.h"
 #include "common/disk.h"
+#include "common/disk_legacy.h"
 #include "common/csv.h"
 #include "ui_filter_sets_list_dialog.h"
 
@@ -150,7 +151,7 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
         // closed, the new set will be added to the sets list.
         connect(ui->pushButton_add, &QPushButton::clicked, this, [=]
         {
-            filter_set_s *newSet = new filter_set_s;
+            legacy14_filter_set_s *newSet = new legacy14_filter_set_s;
 
             FilterSetDialog *setDialog = new FilterSetDialog(newSet, this, false);
             setDialog->open(); /// FIXME: Can't use exec(), otherwise event loop issues come up with mouse drag inside the dialog.
@@ -212,7 +213,7 @@ FilterSetsListDialog::FilterSetsListDialog(QWidget *parent) :
 
             // Find out which filter set this item corresponds to.
             const int filterSetIdx = item->data(0, Qt::UserRole).value<uint>();
-            filter_set_s *const filterSet = kf_filter_sets().at(filterSetIdx);
+            legacy14_filter_set_s *const filterSet = kf_filter_sets().at(filterSetIdx);
 
             switch (column)
             {
@@ -318,7 +319,7 @@ bool FilterSetsListDialog::load_sets_from_file(void)
 
     if (filename.isEmpty()) return false;
 
-    if (kdisk_load_filter_sets(filename.toStdString()))
+    if (kdisk_legacy14_load_filter_sets(filename.toStdString()).size())
     {
         remove_unsaved_changes_flag();
 
@@ -344,7 +345,7 @@ bool FilterSetsListDialog::save_sets_to_file(void)
         filename.append(".vcs-filtersets");
     }
 
-    if (kdisk_save_filter_sets(kf_filter_sets(), filename))
+    if (kdisk_legacy14_save_filter_sets(kf_filter_sets(), filename))
     {
         remove_unsaved_changes_flag();
 
@@ -401,16 +402,16 @@ void FilterSetsListDialog::repopulate_filter_sets_list(int newIdx)
 {
     ui->treeWidget_setList->clear();
 
-    auto make_filter_set_tree_item = [](const filter_set_s &filterSet,
+    auto make_filter_set_tree_item = [](const legacy14_filter_set_s &filterSet,
                                         const uint filterSetIdx)->QTreeWidgetItem*
     {
         QTreeWidgetItem *item = new QTreeWidgetItem;
 
-        const QString inputRes = (filterSet.activation & filter_set_s::activation_e::in)?
+        const QString inputRes = (filterSet.activation & legacy14_filter_set_s::activation_e::in)?
                                  QString("%1 x %2").arg(filterSet.inRes.w).arg(filterSet.inRes.h)
                                  : "*";
 
-        const QString outputRes = (filterSet.activation & filter_set_s::activation_e::out)?
+        const QString outputRes = (filterSet.activation & legacy14_filter_set_s::activation_e::out)?
                                   QString("%1 x %2").arg(filterSet.outRes.w).arg(filterSet.outRes.h)
                                   : "*";
 
@@ -460,7 +461,7 @@ void FilterSetsListDialog::edit_filter_set(const QTreeWidgetItem *const item)
 
     // Find out which filter set the list item corresponds to.
     const int filterSetIdx = item->data(0, Qt::UserRole).value<uint>();
-    filter_set_s *const filterSet = kf_filter_sets().at(filterSetIdx);
+    legacy14_filter_set_s *const filterSet = kf_filter_sets().at(filterSetIdx);
 
     FilterSetDialog *setDialog = new FilterSetDialog(filterSet, this);
     setDialog->open();

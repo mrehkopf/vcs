@@ -160,17 +160,12 @@ void FiltersDialog::load_filters(void)
 {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     "Select a file containing the filter graph to be loaded", "",
-                                                    "Filter files (*.vcs-filters);;"
+                                                    "Filter graphs (*.vcs-filter-graph);;Legacy filter sets (*.vcs-filtersets);;"
                                                     "All files(*.*)");
 
     if (filename.isEmpty())
     {
         return;
-    }
-
-    if (QFileInfo(filename).suffix().isEmpty())
-    {
-        filename += ".vcs-filters";
     }
 
     kdisk_load_filter_graph(filename);
@@ -185,7 +180,7 @@ void FiltersDialog::save_filters(void)
 {
     QString filename = QFileDialog::getSaveFileName(this,
                                                     "Select a file to save the filter graph into", "",
-                                                    "Filter files (*.vcs-filters);;"
+                                                    "Filter files (*.vcs-filter-graph);;"
                                                     "All files(*.*)");
 
     if (filename.isEmpty())
@@ -195,7 +190,7 @@ void FiltersDialog::save_filters(void)
 
     if (QFileInfo(filename).suffix().isEmpty())
     {
-        filename += ".vcs-filters";
+        filename += ".vcs-filter-graph";
     }
 
     std::vector<FilterGraphNode*> filterNodes;
@@ -252,6 +247,17 @@ FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type,
     }
 
     newNode->moveBy(rand()%20, rand()%20);
+
+    real maxZ = 0;
+    const auto sceneItems = this->graphicsScene->items();
+    for (auto item: sceneItems)
+    {
+        if (item->zValue() > maxZ)
+        {
+            maxZ = item->zValue();
+        }
+    }
+    newNode->setZValue(maxZ+1);
 
     ui->graphicsView->centerOn(newNode);
 
@@ -312,8 +318,10 @@ void FiltersDialog::recalculate_filter_chains(void)
 
 void FiltersDialog::clear_filter_graph(void)
 {
+    kf_remove_all_filter_chains();
     this->graphicsScene->reset_scene();
     this->inputGateNodes.clear();
+    this->numNodesAdded = 0;
 
     return;
 }

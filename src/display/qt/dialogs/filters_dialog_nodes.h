@@ -10,12 +10,10 @@ class FilterGraphNode : public InteractibleNodeGraphNode
 public:
     FilterGraphNode(const QString title,
                     const unsigned width = 240,
-                    const unsigned height = 130) : InteractibleNodeGraphNode(title, width, height)
-    {
-        return;
-    }
+                    const unsigned height = 130);
+    virtual ~FilterGraphNode();
 
-    const filter_c *associatedFilter;
+    const filter_c *associatedFilter = nullptr;
 
     void connect_to(FilterGraphNode *const targetNode);
 

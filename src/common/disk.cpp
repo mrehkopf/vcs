@@ -7,100 +7,21 @@
  */
 
 #include <QTextStream>
+#include <QFileInfo>
 #include <QString>
 #include <QDebug>
 #include <QFile>
 #include "display/qt/dialogs/filters_dialog_nodes.h"
 #include "display/qt/widgets/filter_widgets.h"
+#include "common/file_writer.h"
 #include "common/propagate.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
 #include "filter/filter.h"
+#include "filter/filter_legacy.h"
 #include "common/disk.h"
+#include "common/disk_legacy.h"
 #include "common/csv.h"
-
-// A wrapper for Qt's file-saving functionality. Streams given strings via the
-// << operator on the object into a file.
-class file_writer_c
-{
-public:
-    file_writer_c(QString filename) :
-        targetFilename(filename),
-        tempFilename(targetFilename + ".temporary")
-    {
-        file.setFileName(tempFilename);
-        file.open(QIODevice::WriteOnly | QIODevice::Text);
-        stream.setDevice(&file);
-
-        return;
-    }
-
-    // Saves the data from the temp file to the final target file.
-    bool save_and_close(void)
-    {
-        if (QFile(targetFilename).exists() &&
-            !QFile(targetFilename).remove())
-        {
-            return false;
-        }
-
-        file.close();
-
-        if (!QFile::rename(tempFilename, targetFilename))
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    bool is_valid(void)
-    {
-        return isValid;
-    }
-
-    QTextStream& operator<<(const QString &string)
-    {
-        if (this->isValid)
-        {
-            stream << string;
-            test_validity();
-        }
-
-        return stream;
-    }
-
-    QTextStream& operator<<(const unsigned unsignedInt)
-    {
-        return stream << QString::number(unsignedInt);
-    }
-
-private:
-    bool isValid = true;
-
-    QFile file;
-    QTextStream stream;
-
-    // The filename we want to save to.
-    QString targetFilename;
-
-    // The filename we'll first temporarily write the data to. If all goes well,
-    // we'll rename this to the target filename, and remove the old target file,
-    // if it exists.
-    QString tempFilename;
-
-    void test_validity(void)
-    {
-        if (!this->file.isWritable() ||
-            !this->file.isOpen() ||
-            this->file.error() != QFileDevice::NoError)
-        {
-            isValid = false;
-        }
-
-        return;
-    }
-};
 
 bool kdisk_save_mode_params(const std::vector<video_mode_params_s> &modeParams,
                             const QString &targetFilename)
@@ -237,267 +158,6 @@ bool kdisk_load_video_mode_params(const std::string &sourceFilename)
     return false;
 }
 
-bool kdisk_save_filter_sets(const std::vector<filter_set_s*>& filterSets,
-                            const QString &targetFilename)
-{
-    file_writer_c outFile(targetFilename);
-
-    for (const auto *set: filterSets)
-    {
-        // Save the resolutions.
-        {
-            // Encode the filter set's activation in the resolution values, where 0
-            // means the set activates for all resolutions.
-            resolution_s inRes = set->inRes, outRes = set->outRes;
-            if (set->activation & filter_set_s::activation_e::all)
-            {
-                inRes = {0, 0};
-                outRes = {0, 0};
-            }
-            else
-            {
-                if (!(set->activation & filter_set_s::activation_e::in)) inRes = {0, 0};
-                if (!(set->activation & filter_set_s::activation_e::out)) outRes = {0, 0};
-            }
-
-            outFile << "inout,"
-                    << inRes.w << "," << inRes.h << ","
-                    << outRes.w << "," << outRes.h << "\n";
-        }
-
-        outFile << "description,{" << QString::fromStdString(set->description) << "}\n";
-        outFile << "enabled," << set->isEnabled << "\n";
-        outFile << "scaler,{" << QString::fromStdString(set->scaler->name) << "}\n";
-
-        // Save the filters.
-        auto save_filter_data = [&](std::vector<filter_s> filters, const QString &filterType)
-        {
-            for (auto &filter: filters)
-            {
-                outFile << filterType << ",{" << QString::fromStdString(filter.uuid) << "}," << FILTER_DATA_LENGTH;
-                for (uint q = 0; q < FILTER_DATA_LENGTH; q++)
-                {
-                    outFile << "," << (u8)filter.data[q];
-                }
-                outFile << "\n";
-            }
-        };
-        outFile << "preFilters," << set->preFilters.size() << "\n";
-        save_filter_data(set->preFilters, "pre");
-
-        outFile << "postFilters," << set->postFilters.size() << "\n";
-        save_filter_data(set->postFilters, "post");
-
-        outFile << "\n";
-    }
-
-    if (!outFile.is_valid() ||
-        !outFile.save_and_close())
-    {
-        NBENE(("Failed to write filter sets to file."));
-        goto fail;
-    }
-
-    kpropagate_saved_filter_sets_to_disk(filterSets, targetFilename.toStdString());
-
-    return true;
-
-    fail:
-    kd_show_headless_error_message("Data was not saved",
-                                   "An error was encountered while preparing the filter "
-                                   "sets for saving. No data was saved. \n\nMore "
-                                   "information about the error may be found in the terminal.");
-    return false;
-}
-
-/// TODO. Needs cleanup.
-bool kdisk_load_filter_sets(const std::string &sourceFilename)
-{
-    std::vector<filter_set_s*> filterSets;
-
-    if (sourceFilename.empty())
-    {
-        INFO(("No filter set file defined, skipping."));
-        return true;
-    }
-
-    QList<QStringList> rowData = csv_parse_c(QString::fromStdString(sourceFilename)).contents();
-    if (rowData.isEmpty())
-    {
-        goto fail;
-    }
-
-    // Each mode is saved as a block of rows, starting with a 3-element row defining
-    // the mode's resolution, followed by several 2-element rows defining the various
-    // video and color parameters for the resolution.
-    for (int row = 0; row < rowData.count();)
-    {
-        filter_set_s *set = new filter_set_s;
-
-        if ((rowData[row].count() != 5) ||
-            (rowData[row].at(0) != "inout"))
-        {
-            NBENE(("Expected a 5-parameter 'inout' statement to begin a filter set block."));
-            goto fail;
-        }
-        set->inRes.w = rowData[row].at(1).toUInt();
-        set->inRes.h = rowData[row].at(2).toUInt();
-        set->outRes.w = rowData[row].at(3).toUInt();
-        set->outRes.h = rowData[row].at(4).toUInt();
-
-        set->activation = 0;
-        if (set->inRes.w == 0 && set->inRes.h == 0 &&
-            set->outRes.w == 0 && set->outRes.h == 0)
-        {
-            set->activation |= filter_set_s::activation_e::all;
-        }
-        else
-        {
-            if (set->inRes.w != 0 && set->inRes.h != 0) set->activation |= filter_set_s::activation_e::in;
-            if (set->outRes.w != 0 && set->outRes.h != 0) set->activation |= filter_set_s::activation_e::out;
-        }
-
-        #define verify_first_element_on_row_is(name) if (rowData[row].at(0) != name)\
-                                                     {\
-                                                        NBENE(("Error while loading filter set file: expected '%s' but got '%s'.",\
-                                                               name, rowData[row].at(0).toStdString().c_str()));\
-                                                        goto fail;\
-                                                     }
-
-        row++;
-        if (rowData[row].at(0) != "enabled") // Legacy support, 'description' was pushed in front of 'enabled' in later revisions.
-        {
-            verify_first_element_on_row_is("description");
-            set->description = rowData[row].at(1).toStdString();
-
-            row++;
-        }
-        else
-        {
-            set->description = "";
-        }
-
-        verify_first_element_on_row_is("enabled");
-        set->isEnabled = rowData[row].at(1).toInt();
-
-        row++;
-        verify_first_element_on_row_is("scaler");
-        set->scaler = ks_scaler_for_name_string(rowData[row].at(1).toStdString());
-
-        // Takes in a proposed UUID string and returns a valid version of it. Provides backwards-
-        // compatibility with older versions of VCS, which saved filters by name rather than by
-        // UUID.
-        const auto uuid_string = [](const QString proposedString)->std::string
-        {
-            // Replace legacy VCS filter names with their corresponding UUIDs.
-            if (proposedString == "Delta Histogram") return "fc85a109-c57a-4317-994f-786652231773";
-            if (proposedString == "Unique Count")    return "badb0129-f48c-4253-a66f-b0ec94e225a0";
-            if (proposedString == "Unsharp Mask")    return "03847778-bb9c-4e8c-96d5-0c10335c4f34";
-            if (proposedString == "Blur")            return "a5426f2e-b060-48a9-adf8-1646a2d3bd41";
-            if (proposedString == "Decimate")        return "eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03";
-            if (proposedString == "Denoise")         return "94adffac-be42-43ac-9839-9cc53a6d615c";
-            if (proposedString == "Denoise (NLM)")   return "e31d5ee3-f5df-4e7c-81b8-227fc39cbe76";
-            if (proposedString == "Sharpen")         return "1c25bbb1-dbf4-4a03-93a1-adf24b311070";
-            if (proposedString == "Median")          return "de60017c-afe5-4e5e-99ca-aca5756da0e8";
-            if (proposedString == "Crop")            return "2448cf4a-112d-4d70-9fc1-b3e9176b6684";
-            if (proposedString == "Flip")            return "80a3ac29-fcec-4ae0-ad9e-bbd8667cc680";
-            if (proposedString == "Rotate")          return "140c514d-a4b0-4882-abc6-b4e9e1ff4451";
-
-            // Otherwise, we'll assume the string is already a valid UUID.
-            return proposedString.toStdString();
-        };
-
-        row++;
-        verify_first_element_on_row_is("preFilters");
-        const uint numPreFilters = rowData[row].at(1).toUInt();
-        for (uint i = 0; i < numPreFilters; i++)
-        {
-            row++;
-            verify_first_element_on_row_is("pre");
-
-            filter_s filter;
-
-            filter.uuid = uuid_string(rowData[row].at(1));
-            filter.name = kf_filter_name_for_uuid(filter.uuid);
-
-            const uint numParams = rowData[row].at(2).toUInt();
-            if (numPreFilters >= FILTER_DATA_LENGTH)
-            {
-                NBENE(("Too many parameters specified for a filter."));
-                goto fail;
-            }
-
-            for (uint p = 0; p < numParams; p++)
-            {
-                uint datum = rowData[row].at(3 + p).toInt();
-                if (datum > 255)
-                {
-                    NBENE(("A filter parameter had a value outside of the range allowed (0..255)."));
-                    goto fail;
-                }
-                filter.data[p] = datum;
-            }
-
-            set->preFilters.push_back(filter);
-        }
-
-        /// TODO. Code duplication.
-        row++;
-        verify_first_element_on_row_is("postFilters");
-        const uint numPostFilters = rowData[row].at(1).toUInt();
-        for (uint i = 0; i < numPostFilters; i++)
-        {
-            row++;
-            verify_first_element_on_row_is("post");
-
-            filter_s filter;
-
-            filter.uuid = uuid_string(rowData[row].at(1));
-            filter.name = kf_filter_name_for_uuid(filter.uuid);
-
-            const uint numParams = rowData[row].at(2).toUInt();
-            if (numPreFilters >= FILTER_DATA_LENGTH)
-            {
-                NBENE(("Too many parameters specified for a filter."));
-                goto fail;
-            }
-
-            for (uint p = 0; p < numParams; p++)
-            {
-                uint datum = rowData[row].at(3 + p).toInt();
-                if (datum > 255)
-                {
-                    NBENE(("A filter parameter had a value outside of the range allowed (0..255)."));
-                    goto fail;
-                }
-                filter.data[p] = datum;
-            }
-
-            set->postFilters.push_back(filter);
-        }
-
-        #undef verify_first_element_on_row_is
-
-        row++;
-
-        filterSets.push_back(set);
-    }
-
-    kf_clear_filters();
-    for (auto *const set: filterSets) kf_add_filter_set(set);
-
-    kpropagate_loaded_filter_sets_from_disk(filterSets, sourceFilename);
-
-    return true;
-
-    fail:
-    kd_show_headless_error_message("Data was not loaded",
-                                   "An error was encountered while loading filter "
-                                   "sets. No data was loaded.\n\nMore "
-                                   "information about the error may be found in the terminal.");
-    return false;
-}
-
 bool kdisk_load_aliases(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
@@ -593,8 +253,8 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
         {
             outFile << "id,{" << QString::fromStdString(kf_filter_id_for_type(node->associatedFilter->metaData.type)) << "}\n";
 
-            outFile << "parameterData," << FILTER_DATA_LENGTH;
-            for (unsigned i = 0; i < FILTER_DATA_LENGTH; i++)
+            outFile << "parameterData," << FILTER_PARAMETER_ARRAY_LENGTH;
+            for (unsigned i = 0; i < FILTER_PARAMETER_ARRAY_LENGTH; i++)
             {
                 outFile << QString(",%1").arg(node->associatedFilter->parameterData[i]);
             }
@@ -650,82 +310,168 @@ bool kdisk_load_filter_graph(const QString &sourceFilename)
 {
     std::vector<FilterGraphNode*> nodes;
 
-    #define verify_first_element_on_row_is(name) if (rowData[row].at(0) != name)\
-                                                 {\
-                                                    NBENE(("Error while loading filter graph file: expected '%s' but got '%s'.",\
-                                                           name, rowData[row].at(0).toStdString().c_str()));\
-                                                    goto fail;\
-                                                 }
-
-    QList<QStringList> rowData = csv_parse_c(sourceFilename).contents();
-
     kd_clear_filter_graph();
 
-    // Load the data.
+    // Load from a legacy (prior to VCS v1.5) filters file.
+    if (QFileInfo(sourceFilename).suffix() == "vcs-filtersets")
     {
-        unsigned row = 0;
+        // Used to position successive nodes horizontally.
+        int nodeXOffset = 0;
+        int nodeYOffset = 0;
+        unsigned tallestNode = 0;
 
-        verify_first_element_on_row_is("fileType");
-        //const QString fileType = rowData[row].at(1);
+        u8 *const filterParamsTmp = new u8[FILTER_PARAMETER_ARRAY_LENGTH];
+        const std::vector<legacy14_filter_set_s*> legacyFiltersets = kdisk_legacy14_load_filter_sets(sourceFilename.toStdString());
 
-        row++;
-        verify_first_element_on_row_is("fileVersion");
-        //const QString fileVersion = rowData[row].at(1);
-
-        row++;
-        verify_first_element_on_row_is("filterCount");
-        const unsigned numFilters = rowData[row].at(1).toUInt();
-
-        // Load the filter data.
-        for (unsigned i = 0; i < numFilters; i++)
+        const auto add_node = [&](const filter_type_enum_e type, const u8 *const params)
         {
-            row++;
-            verify_first_element_on_row_is("id");
-            const filter_type_enum_e filterType = kf_filter_type_for_id(rowData[row].at(1).toStdString());
-
-            row++;
-            verify_first_element_on_row_is("parameterData");
-            const unsigned numParameters = rowData[row].at(1).toUInt();
-
-            std::vector<u8> params;
-            params.reserve(numParameters);
-            for (unsigned p = 0; p < numParameters; p++)
-            {
-                params.push_back(rowData[row].at(2+p).toUInt());
-            }
-
-            const auto newNode = kd_add_filter_graph_node(filterType, (const u8*)params.data());
+            FilterGraphNode *const newNode = kd_add_filter_graph_node(type, params);
+            newNode->setPos(nodeXOffset, nodeYOffset);
             nodes.push_back(newNode);
+
+            nodeXOffset += (newNode->width + 50);
+
+            if (newNode->height > tallestNode)
+            {
+                tallestNode = newNode->height;
+            }
+
+            return;
+        };
+
+        for (const legacy14_filter_set_s *const filterSet: legacyFiltersets)
+        {
+            // Create the filter nodes.
+            {
+                // Add the input gate node.
+                {
+                    memset(filterParamsTmp, 0, FILTER_PARAMETER_ARRAY_LENGTH);
+                    *(u16*)&(filterParamsTmp[0]) = filterSet->inRes.w;
+                    *(u16*)&(filterParamsTmp[2]) = filterSet->inRes.h;
+                    add_node(filter_type_enum_e::input_gate, filterParamsTmp);
+                }
+
+                // Add the regular filter nodes.
+                {
+                    for (const legacy14_filter_s &filter: filterSet->preFilters)
+                    {
+                        add_node(kf_filter_type_for_id(filter.uuid), filter.data);
+                    }
+
+                    for (const legacy14_filter_s &filter: filterSet->postFilters)
+                    {
+                        add_node(kf_filter_type_for_id(filter.uuid), filter.data);
+                    }
+                }
+
+                // Add the output gate node.
+                {
+                    memset(filterParamsTmp, 0, FILTER_PARAMETER_ARRAY_LENGTH);
+                    *(u16*)&(filterParamsTmp[0]) = filterSet->outRes.w;
+                    *(u16*)&(filterParamsTmp[2]) = filterSet->outRes.h;
+                    add_node(filter_type_enum_e::output_gate, filterParamsTmp);
+                }
+            }
+
+            // Connect the filter nodes.
+            {
+                for (unsigned i = 0; i < (nodes.size() - 1); i++)
+                {
+                    auto sourceEdge = nodes.at(i)->output_edge();
+                    auto targetEdge = nodes.at(i+1)->input_edge();
+
+                    k_assert((sourceEdge && targetEdge), "A filter node is missing a required edge.");
+
+                    sourceEdge->connect_to(targetEdge);
+                }
+            }
+
+            nodes.clear();
+
+            nodeYOffset += (tallestNode + 50);
+            nodeXOffset = 0;
         }
 
-        // Load the node data.
-        row++;
-        verify_first_element_on_row_is("nodeCount");
-        const unsigned nodeCount = rowData[row].at(1).toUInt();
+        delete [] filterParamsTmp;
+    }
+    // Load from a normal filters file.
+    else
+    {
+        #define verify_first_element_on_row_is(name) if (rowData[row].at(0) != name)\
+                                                     {\
+                                                        NBENE(("Error while loading filter graph file: expected '%s' but got '%s'.",\
+                                                               name, rowData[row].at(0).toStdString().c_str()));\
+                                                        goto fail;\
+                                                     }
 
-        for (unsigned i = 0; i < nodeCount; i++)
+        QList<QStringList> rowData = csv_parse_c(sourceFilename).contents();
+
+        // Load the data.
         {
-            row++;
-            verify_first_element_on_row_is("scenePosition");
-            nodes.at(i)->setPos(QPointF(rowData[row].at(1).toDouble(), rowData[row].at(2).toDouble()));
+            unsigned row = 0;
+
+            verify_first_element_on_row_is("fileType");
+            //const QString fileType = rowData[row].at(1);
 
             row++;
-            verify_first_element_on_row_is("connections");
-            const unsigned numConnections = rowData[row].at(1).toUInt();
+            verify_first_element_on_row_is("fileVersion");
+            //const QString fileVersion = rowData[row].at(1);
 
-            for (unsigned p = 0; p < numConnections; p++)
+            row++;
+            verify_first_element_on_row_is("filterCount");
+            const unsigned numFilters = rowData[row].at(1).toUInt();
+
+            // Load the filter data.
+            for (unsigned i = 0; i < numFilters; i++)
             {
-                node_edge_s *const sourceEdge = nodes.at(i)->output_edge();
-                node_edge_s *const targetEdge = nodes.at(rowData[row].at(2+p).toUInt())->input_edge();
+                row++;
+                verify_first_element_on_row_is("id");
+                const filter_type_enum_e filterType = kf_filter_type_for_id(rowData[row].at(1).toStdString());
 
-                k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
+                row++;
+                verify_first_element_on_row_is("parameterData");
+                const unsigned numParameters = rowData[row].at(1).toUInt();
 
-                sourceEdge->connect_to(targetEdge);
+                std::vector<u8> params;
+                params.reserve(numParameters);
+                for (unsigned p = 0; p < numParameters; p++)
+                {
+                    params.push_back(rowData[row].at(2+p).toUInt());
+                }
+
+                const auto newNode = kd_add_filter_graph_node(filterType, (const u8*)params.data());
+                nodes.push_back(newNode);
+            }
+
+            // Load the node data.
+            row++;
+            verify_first_element_on_row_is("nodeCount");
+            const unsigned nodeCount = rowData[row].at(1).toUInt();
+
+            for (unsigned i = 0; i < nodeCount; i++)
+            {
+                row++;
+                verify_first_element_on_row_is("scenePosition");
+                nodes.at(i)->setPos(QPointF(rowData[row].at(1).toDouble(), rowData[row].at(2).toDouble()));
+
+                row++;
+                verify_first_element_on_row_is("connections");
+                const unsigned numConnections = rowData[row].at(1).toUInt();
+
+                for (unsigned p = 0; p < numConnections; p++)
+                {
+                    node_edge_s *const sourceEdge = nodes.at(i)->output_edge();
+                    node_edge_s *const targetEdge = nodes.at(rowData[row].at(2+p).toUInt())->input_edge();
+
+                    k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
+
+                    sourceEdge->connect_to(targetEdge);
+                }
             }
         }
-    }
 
-    #undef verify_first_element_on_row_is
+        #undef verify_first_element_on_row_is
+    }
 
     return true;
 

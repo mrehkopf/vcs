@@ -10,6 +10,7 @@
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/dialogs/filters_dialog_nodes.h"
 #include "common/globals.h"
+#include "filter/filter.h"
 
 InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphicsView(parent)
 {

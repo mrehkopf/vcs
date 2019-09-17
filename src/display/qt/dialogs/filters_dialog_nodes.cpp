@@ -2,6 +2,7 @@
 #include <QDebug>
 #include "display/qt/dialogs/filters_dialog_nodes.h"
 #include "common/globals.h"
+#include "filter/filter.h"
 
 QRectF FilterNode::boundingRect(void) const
 {
@@ -208,4 +209,18 @@ node_edge_s* OutputGateNode::input_edge(void)
     k_assert((inputEdge.direction == node_edge_s::direction_e::in), "Unexpected type of input edge.");
 
     return &inputEdge;
+}
+
+FilterGraphNode::FilterGraphNode(const QString title,
+                                 const unsigned width,
+                                 const unsigned height) : InteractibleNodeGraphNode(title, width, height)
+{
+    return;
+}
+
+FilterGraphNode::~FilterGraphNode()
+{
+    kf_delete_filter_instance(this->associatedFilter);
+
+    return;
 }

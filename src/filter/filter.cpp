@@ -19,6 +19,7 @@
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "filter/filter.h"
+#include "filter/filter_legacy.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/imgproc/imgproc.hpp>
@@ -92,7 +93,7 @@ static const std::unordered_map<std::string, const filter_meta_s> KNOWN_FILTER_T
     {"be8443e2-4355-40fd-aded-63cebcbfb8ce", {"Output gate",       filter_type_enum_e::output_gate,            nullptr                    }},
 };
 
-static std::vector<filter_set_s*> FILTER_SETS;
+static std::vector<legacy14_filter_set_s*> FILTER_SETS;
 
 // The index in the list of filter sets of the set which was most recently used.
 // Generally, this will be the filter set that matches the current input/output
@@ -225,6 +226,19 @@ const filter_c* kf_create_new_filter_instance(const char *const id)
     return filter;
 }
 
+void kf_delete_filter_instance(const filter_c *const filter)
+{
+    const auto entry = std::find(FILTER_POOL.begin(), FILTER_POOL.end(), filter);
+
+    if (entry != FILTER_POOL.end())
+    {
+        delete (*entry);
+        FILTER_POOL.erase(entry);
+    }
+
+    return;
+}
+
 const filter_c* kf_create_new_filter_instance(const filter_type_enum_e type,
                                               const u8 *const initialParameterValues)
 {
@@ -324,7 +338,7 @@ void kf_release_filters(void)
     return;
 }
 
-void kf_add_filter_set(filter_set_s *const newSet)
+void kf_add_filter_set(legacy14_filter_set_s *const newSet)
 {
     FILTER_SETS.push_back(newSet);
 
@@ -352,7 +366,7 @@ void kf_remove_filter_set(const uint idx)
     return;
 }
 
-const std::vector<filter_set_s*>& kf_filter_sets(void)
+const std::vector<legacy14_filter_set_s*>& kf_filter_sets(void)
 {
     return FILTER_SETS;
 }
@@ -913,7 +927,7 @@ int kf_current_filter_set_idx(void)
 // Returns a pointer to the filter set which the current input/output capture
 // resolutions activate, or nullptr if no such match exists or if filtering is
 // altogether disabled.
-const filter_set_s* kf_current_filter_set(void)
+const legacy14_filter_set_s* kf_current_filter_set(void)
 {
     if (!FILTERING_ENABLED) return nullptr;
 
@@ -928,12 +942,12 @@ const filter_set_s* kf_current_filter_set(void)
 
         if (!FILTER_SETS.at(i)->isEnabled) continue;
 
-        if (FILTER_SETS.at(i)->activation & filter_set_s::activation_e::all)
+        if (FILTER_SETS.at(i)->activation & legacy14_filter_set_s::activation_e::all)
         {
             return FILTER_SETS.at(i);
         }
-        else if ((FILTER_SETS.at(i)->activation & filter_set_s::activation_e::in) &&
-                 (FILTER_SETS.at(i)->activation & filter_set_s::activation_e::out))
+        else if ((FILTER_SETS.at(i)->activation & legacy14_filter_set_s::activation_e::in) &&
+                 (FILTER_SETS.at(i)->activation & legacy14_filter_set_s::activation_e::out))
         {
             if (inputRes.w == FILTER_SETS.at(i)->inRes.w &&
                 inputRes.h == FILTER_SETS.at(i)->inRes.h &&
@@ -943,7 +957,7 @@ const filter_set_s* kf_current_filter_set(void)
                 return FILTER_SETS.at(i);
             }
         }
-        else if (FILTER_SETS.at(i)->activation & filter_set_s::activation_e::in)
+        else if (FILTER_SETS.at(i)->activation & legacy14_filter_set_s::activation_e::in)
         {
             if (inputRes.w == FILTER_SETS.at(i)->inRes.w &&
                 inputRes.h == FILTER_SETS.at(i)->inRes.h)
@@ -964,7 +978,7 @@ void kf_apply_pre_filters(u8 *const pixels, const resolution_s &r)
 
     if (!FILTERING_ENABLED) return;
 
-    const filter_set_s *const filterSet = kf_current_filter_set();
+    const legacy14_filter_set_s *const filterSet = kf_current_filter_set();
     if (filterSet == nullptr) return;
 
     for (auto &f: filterSet->preFilters)
@@ -983,7 +997,7 @@ void kf_apply_post_filters(u8 *const pixels, const resolution_s &r)
 
     if (!FILTERING_ENABLED) return;
 
-    const filter_set_s *const filterSet = kf_current_filter_set();
+    const legacy14_filter_set_s *const filterSet = kf_current_filter_set();
     if (filterSet == nullptr) return;
 
     for (auto &f: filterSet->postFilters)
@@ -1003,7 +1017,7 @@ void kf_initialize_filters(void)
 
 filter_c::filter_c(const std::string &id, const u8 *initialParameterValues) :
     metaData(KNOWN_FILTER_TYPES.at(id)),
-    parameterData(heap_bytes_s<u8>(FILTER_DATA_LENGTH, "Filter parameter data")),
+    parameterData(heap_bytes_s<u8>(FILTER_PARAMETER_ARRAY_LENGTH, "Filter parameter data")),
     guiWidget(new_gui_widget(initialParameterValues))
 {
     return;

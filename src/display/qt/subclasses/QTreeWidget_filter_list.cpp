@@ -15,6 +15,7 @@
 #include "display/qt/dialogs/filter_dialogs.h"
 #include "display/qt/utility.h"
 #include "filter/filter.h"
+#include "filter/filter_legacy.h"
 #include "common/memory.h"
 
 FilterListTreeWidget::FilterListTreeWidget(QWidget *parent) : QTreeWidget(parent)
@@ -48,7 +49,7 @@ FilterListTreeWidget::FilterListTreeWidget(QWidget *parent) : QTreeWidget(parent
     {
         // Assume that this signal being emitted means a new item (filter) has
         // been dropped on the list; so initialize a new filter entry accordingly.
-        filterData[item] = (u8*)kmem_allocate(FILTER_DATA_LENGTH, "Post-filter data");
+        filterData[item] = (u8*)kmem_allocate(FILTER_PARAMETER_ARRAY_LENGTH, "Post-filter data");
         const auto uuid = kf_filter_uuid_for_name(item->text(0).toStdString());
         kf_filter_dialog_for_uuid(uuid)->insert_default_params(filterData[item]);
 
@@ -74,14 +75,14 @@ FilterListTreeWidget::~FilterListTreeWidget()
 }
 
 // Returns a list of the filters corresponding to the items in this list.
-std::vector<filter_s> FilterListTreeWidget::filters(void)
+std::vector<legacy14_filter_s> FilterListTreeWidget::filters(void)
 {
-    std::vector<filter_s> filterList;
+    std::vector<legacy14_filter_s> filterList;
 
     const auto items = this->findItems("*", Qt::MatchWildcard);
     for (auto *item: items)
     {
-        filter_s f;
+        legacy14_filter_s f;
 
         f.name = item->text(0).toStdString();
         f.uuid = kf_filter_uuid_for_name(f.name);
@@ -92,7 +93,7 @@ std::vector<filter_s> FilterListTreeWidget::filters(void)
             continue;
         }
 
-        memcpy(f.data, filterData[item], FILTER_DATA_LENGTH);
+        memcpy(f.data, filterData[item], FILTER_PARAMETER_ARRAY_LENGTH);
 
         filterList.push_back(f);
     }
@@ -101,7 +102,7 @@ std::vector<filter_s> FilterListTreeWidget::filters(void)
 }
 
 // Convert the given filters into list items, and assign them as this list's items.
-void FilterListTreeWidget::set_filters(const std::vector<filter_s> &filters)
+void FilterListTreeWidget::set_filters(const std::vector<legacy14_filter_s> &filters)
 {
     this->clear();
 
@@ -113,8 +114,8 @@ void FilterListTreeWidget::set_filters(const std::vector<filter_s> &filters)
 
         item->setText(0, QString::fromStdString(filter.name));
 
-        filterData[item] = (u8*)kmem_allocate(FILTER_DATA_LENGTH, "Filter set data");
-        memcpy(filterData[item], filter.data, FILTER_DATA_LENGTH);
+        filterData[item] = (u8*)kmem_allocate(FILTER_PARAMETER_ARRAY_LENGTH, "Filter set data");
+        memcpy(filterData[item], filter.data, FILTER_PARAMETER_ARRAY_LENGTH);
 
         this->addTopLevelItem(item);
     }

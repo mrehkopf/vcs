@@ -20,6 +20,7 @@
 #include "filter/filter.h"
 #include "common/memory.h"
 #include "common/disk.h"
+#include "common/disk_legacy.h"
 
 extern std::mutex INPUT_OUTPUT_MUTEX;
 
@@ -141,7 +142,7 @@ static capture_event_e process_next_capture_event(void)
 static void load_user_data(void)
 {
     kdisk_load_video_mode_params(kcom_params_file_name());
-    kdisk_load_filter_sets(kcom_filters_file_name());
+    kdisk_legacy14_load_filter_sets(kcom_filters_file_name());
     kdisk_load_aliases(kcom_alias_file_name());
 
     return;

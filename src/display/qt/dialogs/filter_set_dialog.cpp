@@ -15,7 +15,7 @@
 #include "scaler/scaler.h"
 #include "ui_filter_set_dialog.h"
 
-FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent, const bool allowApplyButton) :
+FilterSetDialog::FilterSetDialog(legacy14_filter_set_s *const filterSet, QWidget *parent, const bool allowApplyButton) :
     QDialog(parent),
     ui(new Ui::FilterSetDialog),
     filterSet(filterSet)
@@ -58,23 +58,23 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
         // user-definable GUI state at the time of this call.
         auto current_filter_set = [=]
         {
-            filter_set_s c;
+            legacy14_filter_set_s c;
 
             c.isEnabled = filterSet->isEnabled;
             c.description = filterSet->description;
             c.scaler = ks_scaler_for_name_string(ui->comboBox_scaler->currentText().toStdString());
-            c.activation = filter_set_s::activation_e::none;
+            c.activation = legacy14_filter_set_s::activation_e::none;
             c.preFilters = ui->treeWidget_preFilters->filters();
             c.postFilters = ui->treeWidget_postFilters->filters();
 
             if (ui->radioButton_conditionAlways->isChecked())
             {
-                c.activation |= filter_set_s::activation_e::all;
+                c.activation |= legacy14_filter_set_s::activation_e::all;
             }
             else
             {
-                if (ui->radioButton_conditionInput->isChecked()) c.activation |= filter_set_s::activation_e::in;
-                if (ui->checkBox_conditionOutput->isChecked()) c.activation |= filter_set_s::activation_e::out;
+                if (ui->radioButton_conditionInput->isChecked()) c.activation |= legacy14_filter_set_s::activation_e::in;
+                if (ui->checkBox_conditionOutput->isChecked()) c.activation |= legacy14_filter_set_s::activation_e::out;
             }
 
             c.inRes.w = ui->spinBox_inputX->value();
@@ -153,12 +153,12 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
         {
             // Activation type.
             {
-                if (filterSet->activation & filter_set_s::activation_e::all)
+                if (filterSet->activation & legacy14_filter_set_s::activation_e::all)
                 {
                     ui->radioButton_conditionAlways->setChecked(true);
                 }
-                else if ((filterSet->activation & filter_set_s::activation_e::in) &&
-                         (filterSet->activation & filter_set_s::activation_e::out))
+                else if ((filterSet->activation & legacy14_filter_set_s::activation_e::in) &&
+                         (filterSet->activation & legacy14_filter_set_s::activation_e::out))
                 {
                     ui->radioButton_conditionInput->setChecked(true);
                     ui->checkBox_conditionOutput->setChecked(true);
@@ -169,14 +169,14 @@ FilterSetDialog::FilterSetDialog(filter_set_s *const filterSet, QWidget *parent,
                 }
                 else
                 {
-                    if (filterSet->activation & filter_set_s::activation_e::in)
+                    if (filterSet->activation & legacy14_filter_set_s::activation_e::in)
                     {
                         ui->radioButton_conditionInput->setChecked(true);
                         ui->spinBox_inputX->setValue(filterSet->inRes.w);
                         ui->spinBox_inputY->setValue(filterSet->inRes.h);
                     }
 
-                    if (filterSet->activation & filter_set_s::activation_e::out)
+                    if (filterSet->activation & legacy14_filter_set_s::activation_e::out)
                     {
                         ui->checkBox_conditionOutput->setChecked(true);
                         ui->spinBox_inputX->setValue(filterSet->outRes.w);

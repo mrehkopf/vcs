@@ -69,7 +69,7 @@ struct filter_dlg_crop_s : public filter_dlg_s
 
     void insert_default_params(u8 *const paramData) const override
     {
-        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+        memset(paramData, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
         *(u16*)&(paramData[OFFS_X]) = 0;
         *(u16*)&(paramData[OFFS_Y]) = 0;
@@ -142,7 +142,7 @@ struct filter_dlg_flip_s : public filter_dlg_s
 
     void insert_default_params(u8 *const paramData) const override
     {
-        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+        memset(paramData, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
         return;
     }
@@ -182,7 +182,7 @@ struct filter_dlg_rotate_s : public filter_dlg_s
 
     void insert_default_params(u8 *const paramData) const override
     {
-        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+        memset(paramData, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
         // The scale value gets divided by 100 when used.
         *(i16*)&(paramData[OFFS_SCALE]) = 100;
@@ -234,7 +234,7 @@ struct filter_dlg_median_s : public filter_dlg_s
 
     void insert_default_params(u8 *const paramData) const override
     {
-        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+        memset(paramData, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
         paramData[OFFS_KERNEL_SIZE] = 3;
 
         return;
@@ -274,7 +274,7 @@ struct filter_dlg_blur_s : public filter_dlg_s
 
     void insert_default_params(u8 *const paramData) const override
     {
-        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+        memset(paramData, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
         paramData[OFFS_KERNEL_SIZE] = 10;
         paramData[OFFS_TYPE] = FILTER_TYPE_GAUSSIAN;
 
@@ -326,7 +326,7 @@ struct filter_dlg_denoise_s : public filter_dlg_s
 
     void insert_default_params(u8 *const paramData) const override
     {
-        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+        memset(paramData, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
         paramData[OFFS_THRESHOLD] = 5;
 
         return;
@@ -367,7 +367,7 @@ struct filter_dlg_denoise_nlm_s : public filter_dlg_s
     // Initialize paramData to its default values for this filter.
     void insert_default_params(u8 *const paramData) const override
     {
-        memset(paramData, 0, FILTER_DATA_LENGTH);
+        memset(paramData, 0, FILTER_PARAMETER_ARRAY_LENGTH);
         paramData[OFFS_H] = 10;
         paramData[OFFS_H_COLOR] = 10;
         paramData[OFFS_TEMPLATE_WINDOW_SIZE] = 7;
@@ -426,7 +426,7 @@ struct filter_dlg_sharpen_s : public filter_dlg_s
 
     void insert_default_params(u8 *const paramData) const
     {
-        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+        memset(paramData, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
         return;
     }
@@ -460,7 +460,7 @@ struct filter_dlg_unsharpmask_s : public filter_dlg_s
 
     void insert_default_params(u8 *const paramData) const override
     {
-        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+        memset(paramData, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
         paramData[OFFS_STRENGTH] = 50;
         paramData[OFFS_RADIUS] = 10;
 
@@ -510,7 +510,7 @@ struct filter_dlg_decimate_s : public filter_dlg_s
 
     void insert_default_params(u8 *const paramData) const override
     {
-        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+        memset(paramData, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
         paramData[OFFS_FACTOR] = 2;
         paramData[OFFS_TYPE] = FILTER_TYPE_AVERAGE;
 
@@ -560,7 +560,7 @@ struct filter_dlg_deltahistogram_s : public filter_dlg_s
 
     void insert_default_params(u8 *const paramData) const
     {
-        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+        memset(paramData, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
 
         return;
     }
@@ -594,7 +594,7 @@ struct filter_dlg_uniquecount_s : public filter_dlg_s
 
     void insert_default_params(u8 *const paramData) const override
     {
-        memset(paramData, 0, sizeof(u8) * FILTER_DATA_LENGTH);
+        memset(paramData, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
         paramData[OFFS_THRESHOLD] = 20;
         paramData[OFFS_CORNER] = 0;
 
