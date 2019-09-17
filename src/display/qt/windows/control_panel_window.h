@@ -19,7 +19,7 @@ class VideoAndColorDialog;
 class FilterGraphNode;
 class QTreeWidgetItem;
 class AntiTearDialog;
-class FiltersDialog;
+class FilterGraphDialog;
 class AliasDialog;
 
 enum class filter_type_enum_e;
@@ -111,7 +111,7 @@ private:
 
     VideoAndColorDialog *videocolorDlg = nullptr;
     AntiTearDialog *antitearDlg = nullptr;
-    FiltersDialog *filterGraphDlg = nullptr;
+    FilterGraphDialog *filterGraphDlg = nullptr;
     AliasDialog *aliasDlg = nullptr;
 
     ControlPanelAboutWidget *aboutWidget = nullptr;

@@ -11,7 +11,7 @@
 #include <QString>
 #include <QDebug>
 #include <QFile>
-#include "display/qt/subclasses/InteractibleNodeGraphNode_filters_dialog_nodes.h"
+#include "display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h"
 #include "display/qt/widgets/filter_widgets.h"
 #include "common/file_writer.h"
 #include "common/propagate.h"
@@ -24,7 +24,7 @@
 #include "common/csv.h"
 
 bool kdisk_save_video_mode_params(const std::vector<video_mode_params_s> &modeParams,
-                            const QString &targetFilename)
+                                  const QString &targetFilename)
 {
     file_writer_c outFile(targetFilename);
 

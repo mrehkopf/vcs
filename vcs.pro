@@ -85,13 +85,13 @@ SOURCES += \
     src/display/qt/widgets/control_panel_output_widget.cpp \
     src/display/qt/widgets/control_panel_input_widget.cpp \
     src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.cpp \
-    src/display/qt/dialogs/filters_dialog.cpp \
     src/display/qt/widgets/filter_widgets.cpp \
     src/display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.cpp \
     src/display/qt/subclasses/QGraphicsScene_interactible_node_graph.cpp \
     src/display/qt/subclasses/QGraphicsView_interactible_node_graph_view.cpp \
     src/common/disk_legacy.cpp \
-    src/display/qt/subclasses/InteractibleNodeGraphNode_filters_dialog_nodes.cpp
+    src/display/qt/dialogs/filter_graph_dialog.cpp \
+    src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -125,7 +125,6 @@ HEADERS += \
     src/display/qt/widgets/control_panel_output_widget.h \
     src/display/qt/widgets/control_panel_input_widget.h \
     src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.h \
-    src/display/qt/dialogs/filters_dialog.h \
     src/display/qt/widgets/filter_widgets.h \
     src/display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h \
     src/display/qt/subclasses/QGraphicsScene_interactible_node_graph.h \
@@ -133,7 +132,8 @@ HEADERS += \
     src/filter/filter_legacy.h \
     src/common/disk_legacy.h \
     src/common/file_writer.h \
-    src/display/qt/subclasses/InteractibleNodeGraphNode_filters_dialog_nodes.h
+    src/display/qt/dialogs/filter_graph_dialog.h \
+    src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h
 
 FORMS += \
     src/display/qt/windows/ui/control_panel_window.ui \
@@ -147,7 +147,7 @@ FORMS += \
     src/display/qt/widgets/ui/control_panel_record_widget.ui \
     src/display/qt/widgets/ui/control_panel_output_widget.ui \
     src/display/qt/widgets/ui/control_panel_input_widget.ui \
-    src/display/qt/dialogs/ui/filters_dialog.ui
+    src/display/qt/dialogs/ui/filter_graph_dialog.ui
 
 # C++. For GCC/Clang/MinGW.
 QMAKE_CXXFLAGS += -g

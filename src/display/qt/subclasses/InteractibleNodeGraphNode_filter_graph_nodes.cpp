@@ -1,6 +1,6 @@
 #include <QPainter>
 #include <QDebug>
-#include "display/qt/subclasses/InteractibleNodeGraphNode_filters_dialog_nodes.h"
+#include "display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h"
 #include "common/globals.h"
 #include "filter/filter.h"
 

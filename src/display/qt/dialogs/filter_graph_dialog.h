@@ -1,5 +1,5 @@
-#ifndef FILTERS_DIALOG_H
-#define FILTERS_DIALOG_H
+#ifndef FILTER_GRAPH_DIALOG_H_
+#define FILTER_GRAPH_DIALOG_H_
 
 #include <QDialog>
 #include "filter/filter.h"
@@ -9,16 +9,16 @@ class FilterGraphNode;
 class QMenuBar;
 
 namespace Ui {
-class FiltersDialog;
+class FilterGraphDialog;
 }
 
-class FiltersDialog : public QDialog
+class FilterGraphDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit FiltersDialog(QWidget *parent = 0);
-    ~FiltersDialog();
+    explicit FilterGraphDialog(QWidget *parent = 0);
+    ~FilterGraphDialog();
 
     void recalculate_filter_chains(void);
 
@@ -33,7 +33,7 @@ private:
     void save_filters(void);
     void load_filters(void);
 
-    Ui::FiltersDialog *ui;
+    Ui::FilterGraphDialog *ui;
     QMenuBar *menubar = nullptr;
     InteractibleNodeGraph *graphicsScene = nullptr;
 

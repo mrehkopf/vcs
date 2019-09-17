@@ -4,17 +4,17 @@
 #include <QMenuBar>
 #include <QTimer>
 #include <functional>
-#include "display/qt/subclasses/InteractibleNodeGraphNode_filters_dialog_nodes.h"
+#include "display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h"
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
-#include "display/qt/dialogs/filters_dialog.h"
+#include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/widgets/filter_widgets.h"
 #include "common/disk.h"
-#include "ui_filters_dialog.h"
+#include "ui_filter_graph_dialog.h"
 
-FiltersDialog::FiltersDialog(QWidget *parent) :
+FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::FiltersDialog)
+    ui(new Ui::FilterGraphDialog)
 {
     ui->setupUi(this);
 
@@ -137,14 +137,14 @@ FiltersDialog::FiltersDialog(QWidget *parent) :
     return;
 }
 
-FiltersDialog::~FiltersDialog()
+FilterGraphDialog::~FilterGraphDialog()
 {
     delete ui;
 
     return;
 }
 
-void FiltersDialog::reset_graph(void)
+void FilterGraphDialog::reset_graph(void)
 {
     if (QMessageBox::question(this,
                               "Graph reset",
@@ -156,7 +156,7 @@ void FiltersDialog::reset_graph(void)
     return;
 }
 
-void FiltersDialog::load_filters(void)
+void FilterGraphDialog::load_filters(void)
 {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     "Select a file containing the filter graph to be loaded", "",
@@ -176,7 +176,7 @@ void FiltersDialog::load_filters(void)
     return;
 }
 
-void FiltersDialog::save_filters(void)
+void FilterGraphDialog::save_filters(void)
 {
     QString filename = QFileDialog::getSaveFileName(this,
                                                     "Select a file to save the filter graph into", "",
@@ -214,8 +214,8 @@ void FiltersDialog::save_filters(void)
 
 // Adds a new instance of the given filter type into the node graph. Returns a
 // pointer to the new node.
-FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type,
-                                                const u8 *const initialParameterValues)
+FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_enum_e type,
+                                                    const u8 *const initialParameterValues)
 {
     const filter_c *const newFilter = kf_create_new_filter_instance(type, initialParameterValues);
     const unsigned filterWidgetWidth = (newFilter->guiWidget->widget->width() + 20);
@@ -270,7 +270,7 @@ FilterGraphNode* FiltersDialog::add_filter_node(const filter_type_enum_e type,
 // filters that run from an input gate through one or more filters into an output
 // gate. The chains will then be submitted to the filter handler for use in applying
 // the filters to captured frames.
-void FiltersDialog::recalculate_filter_chains(void)
+void FilterGraphDialog::recalculate_filter_chains(void)
 {
     kf_remove_all_filter_chains();
 
@@ -316,7 +316,7 @@ void FiltersDialog::recalculate_filter_chains(void)
     return;
 }
 
-void FiltersDialog::clear_filter_graph(void)
+void FilterGraphDialog::clear_filter_graph(void)
 {
     kf_remove_all_filter_chains();
     this->graphicsScene->reset_scene();
@@ -326,8 +326,8 @@ void FiltersDialog::clear_filter_graph(void)
     return;
 }
 
-FilterGraphNode* FiltersDialog::add_filter_graph_node(const filter_type_enum_e &filterType,
-                                                      const u8 *const initialParameterValues)
+FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const filter_type_enum_e &filterType,
+                                                          const u8 *const initialParameterValues)
 {
     return add_filter_node(filterType, initialParameterValues);
 }

@@ -21,9 +21,9 @@
 #include "display/qt/widgets/control_panel_about_widget.h"
 #include "display/qt/dialogs/video_and_color_dialog.h"
 #include "display/qt/windows/control_panel_window.h"
+#include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/dialogs/resolution_dialog.h"
 #include "display/qt/dialogs/anti_tear_dialog.h"
-#include "display/qt/dialogs/filters_dialog.h"
 #include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
@@ -51,7 +51,7 @@ ControlPanel::ControlPanel(QWidget *parent) :
     aliasDlg = new AliasDialog;
     videocolorDlg = new VideoAndColorDialog;
     antitearDlg = new AntiTearDialog;
-    filterGraphDlg = new FiltersDialog;
+    filterGraphDlg = new FilterGraphDialog;
 
     // Set up the contents of the 'About' tab.
     {

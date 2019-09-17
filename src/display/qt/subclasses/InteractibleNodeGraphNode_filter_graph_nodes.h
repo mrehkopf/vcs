@@ -1,5 +1,5 @@
-#ifndef FILTERS_DIALOG_NODES_H
-#define FILTERS_DIALOG_NODES_H
+#ifndef FILTER_GRAPH_NODES_H_
+#define FILTER_GRAPH_NODES_H_
 
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 
