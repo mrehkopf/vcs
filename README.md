@@ -337,20 +337,27 @@ While developing VCS, I've been compiling it with GCC 5.4 on Linux and MinGW 5.3
 
 ## How-to
 
-**Adding a frame filter.** Frame filters allow captured frames' pixel data to be modified in particular ways before being displayed on screen. A filter might, for instance, apply blur, cropping, or rotation to each frame. Adding a new filter to VCS is fairly easy, and the process is described below.
+### Adding a frame filter
 
-A filter consists of a `filter function`, and a `filter dialog`. The filter function applies the filter to the frame's pixel data, and the filter dialog is a GUI element that lets the user specify values for any parameters the filter might take &ndash; like radius for a blur filter.
+Frame filters allow captured frames' pixel data to be modified before being displayed on-screen. A filter might, for instance, blur, crop, and/or rotate the frames.
 
-The filter function is to be defined in [src/filter/filter.cpp](src/filter/filter.cpp). There, you will also find all of VCS's other filters. Looking at that source file, you can see the following pattern:
+In-code, a filter consists of a `function` and a `widget`. The filter function applies the filter to a given frame's pixel data; and the filter widget is a GUI element that lets the user modify the filter's parameters &ndash; like the radius of a blur filter.
+
+Adding a new filter to VCS is fairly straightforward; the process is described below.
+
+#### Defining the filter function
+The filter function is to be defined in [src/filter/filter.cpp](src/filter/filter.cpp) and its header. Looking at that source file, you can see the following pattern:
 ```
 // Pre-declare the filter function.
-static void filter_func_NAME(FILTER_FUNC_PARAMS);
+static void filter_func_NAME(...);
 
-// Add the filter to VCS's list of known filters.
-static const std::map ... FILTERS =
+// Make VCS aware of the filter's existence.
+static const std::unordered_map ... KNOWN_FILTER_TYPES =
+{
     ...
-    {"UUID", {filter_func_NAME, []{ static filter_dlg_NAME_s f; return &f;}()}},
+    {"UUID", {"NAME", filter_type_enum_e::ENUMERATOR, FUNCTION}},
     ...
+};
 
 // Define the filter function.
 static void filter_func_NAME(FILTER_FUNC_PARAMS)
@@ -360,6 +367,28 @@ static void filter_func_NAME(FILTER_FUNC_PARAMS)
     // Perform the filtering.
     ...
 }
+
+// Tie the filter function to its filter widget.
+filter_widget_s *filter_c::new_gui_widget(...)
+{
+    ...
+    switch (this->metaData.type)
+    {
+        case filter_type_enum_e::ENUMERATOR: return new filter_widget_NAME_s(...);
+    }
+    ...
+}
+```
+
+And in the header file:
+```
+// Enumerate the filter.
+enum class filter_type_enum_e
+{
+    ...
+    ENUMERATOR,
+    ...
+};
 ```
 
 The filter function's parameter list macro `FILTER_FUNC_PARAMS` expands to
@@ -368,7 +397,7 @@ u8 *const pixels, const resolution_s *const r, const u8 *const params
 ```
 where `pixels` is a one-dimensional array of 32-bit color values (8 bits each for BGRA), `params` is an array providing the filter's parameter values, and `r` is the frame's resolution, giving the size of the `pixels` array.
 
-The following simple filter function uses OpenCV to set each pixel in the frame to a light blue color. (Note that you should encase any code that uses OpenCV in a `#if USE_OPENCV` directive.)
+The following simple sample filter function uses OpenCV to set each pixel in the frame to a light blue color. (Note that you should encase any code that uses OpenCV in a `#if USE_OPENCV` block.)
 ```
 static void filter_func_blue(FILTER_FUNC_PARAMS)
 {
@@ -381,58 +410,72 @@ static void filter_func_blue(FILTER_FUNC_PARAMS)
 }
 ```
 
-You can have a look at the existing filter functions in [src/filter/filter.cpp](src/filter/filter.cpp) to get a feel for how the filter function can be operated.
+You can peruse the existing filter functions in [src/filter/filter.cpp](src/filter/filter.cpp) to get a feel for how the filter function can be operated.
 
-The filter dialog is to be defined in [src/display/qt/dialogs/filter_dialogs.h](src/display/qt/dialogs/filter_dialogs.h), where you can also find the dialogs of VCS's other filters. Each dialog is defined as a separate struct inheriting from the dialog base `filter_dlc_s`. A filter can have no more or less than one dialog.
+#### Filter widget
+The filter widget is to be defined in [src/display/qt/widgets/filter_widgets.cpp](src/display/qt/widgets/filter_widgets.cpp) and the associated header. Each widget is defined as a struct subclassing `filter_widget_s`.
 
-The following is a minimal filter dialog:
+The following is a minimal widget example for a filter with one user-adjustable parameter (radius).
 
 ```
-struct filter_dlg_NAME_s : public filter_dlg_s
+struct filter_widget_NAME_s : public filter_widget_s
 {
-    filter_dlg_NAME_s() :
-        filter_dlg_s("DISPLAY_NAME") {}
+    enum data_offset_e { OFFS_RADIUS = 0 };
 
-    // Offsets in the paramData array of the various parameters' values.
-    enum data_offset_e { OFFS_X = 0 };
-
-    // Initialize paramData to its default values for this filter.
-    void insert_default_params(u8 *const paramData) const override
+    filter_widget_NAME_s(u8 *const parameterArray, const u8 *const initialParameterValues) :
+        filter_widget_s(filter_type_enum_e::ENUMERATOR, parameterArray, initialParameterValues)
     {
-        memset(paramData, 0, FILTER_DATA_LENGTH);
-        paramData[OFFS_X] = 15;
+        if (!initialParameterValues) this->reset_parameter_data();
+        create_widget();
+        return;
     }
 
-    void poll_user_for_params(u8 *const paramData, QWidget *const parent = nullptr) const override
+    void reset_parameter_data(void) override
     {
-        QDialog d(parent, QDialog().windowFlags() & ~Qt::WindowContextHelpButtonHint);
-        d.setWindowTitle(QString::fromStdString(filterName));
-        d.setMinimumWidth(dlgMinWidth);
+        k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
 
-        // Add the dialog's widgets. We'll let the user specify
-        // a value in the range 0..255 for a parameter called X.
+        memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
+
+        // Set the parameter's default value.
+        this->parameterArray[OFFS_RADIUS] = 5;
+
+        return;
+    }
+
+private:
+    Q_OBJECT
+    
+    void create_widget(void) override
+    {
+        // Create a frame that will group together the widget's contents.
+        QFrame *frame = new QFrame();
+        frame->setMinimumWidth(this->minWidth);
+
+        // Create a set of UI controls for the user to adjust the filter's parameter.
+        QLabel *label = new QLabel("Radius:", frame);
+        QSpinBox *spin = new QSpinBox(frame);
+        radiusSpin->setRange(0, 99);
+        radiusSpin->setValue(this->parameterArray[OFFS_RADIUS]);
+
+        QFormLayout *l = new QFormLayout(frame);
+        l->addRow(label, spin);
+
+        // Make the parameter's value change as the user operates the associated UI controls.
+        connect(spin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
         {
-            QLabel xLabel("X:");
+            k_assert(this->parameterArray, "Expected non-null filter data.");
+            this->parameterArray[OFFS_RADIUS] = newValue;
+        });
 
-            QSpinBox xSpin;
-            xSpin.setRange(0, 255);
-            xSpin.setValue(paramData[OFFS_X]);
+        frame->adjustSize();
+        this->widget = frame;
 
-            QFormLayout layout;
-            layout.addRow(&xLabel, &xSpin);
-            d.setLayout(&layout);
-        }
-
-        // Display the dialog (blocking).
-        d.exec();
-
-        // Update paramData with values provided by the user.
-        paramData[OFFS_X] = xSpin.value();
+        return;
     }
-}
+};
 ```
 
-When the user asks for access to the filter's parameters, VCS will call `poll_user_for_params()`. The function constructs and displays a dialog containing GUI elements with which the user can modify the filter's parameters. Once the user has finished doing so, the function saves the parameter values into the `paramData` byte array, which will later be sent to the filter function as its `params` array.
+You can look around [src/display/qt/widgets/filter_widgets.h](src/display/qt/widgets/filter_widgets.h) and the associated source file for concrete examples of VCS's filter widgets.
 
 # Project status
 VCS is currently in post-1.0, having come out of beta in 2018. Development is sporadic.
