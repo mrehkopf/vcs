@@ -159,7 +159,10 @@ void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
         const unsigned inputGateWidth = *(u16*)&(filterChain.front()->parameterData[0]);
         const unsigned inputGateHeight = *(u16*)&(filterChain.front()->parameterData[2]);
 
-        if ((r.w != inputGateWidth) || (r.h != inputGateHeight))
+        // A gate size of 0 in either dimension means pass all values. Otherwise, the
+        // value must match the corresponding size of the frame for the chain's filters
+        // to be applied.
+        if ((inputGateWidth && r.w != inputGateWidth) || (inputGateHeight && r.h != inputGateHeight))
         {
             continue;
         }
@@ -168,7 +171,7 @@ void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
         const unsigned outputGateHeight = *(u16*)&(filterChain.back()->parameterData[2]);
         const resolution_s outputRes = ks_output_resolution();
 
-        if ((outputRes.w != outputGateWidth) || (outputRes.h != outputGateHeight))
+        if ((outputGateWidth && outputRes.w != outputGateWidth) || (outputGateHeight && outputRes.h != outputGateHeight))
         {
             continue;
         }
