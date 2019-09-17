@@ -23,7 +23,7 @@
 #include "common/disk_legacy.h"
 #include "common/csv.h"
 
-bool kdisk_save_mode_params(const std::vector<video_mode_params_s> &modeParams,
+bool kdisk_save_video_mode_params(const std::vector<video_mode_params_s> &modeParams,
                             const QString &targetFilename)
 {
     file_writer_c outFile(targetFilename);
@@ -306,14 +306,14 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
     return false;
 }
 
-bool kdisk_load_filter_graph(const QString &sourceFilename)
+bool kdisk_load_filter_graph(const std::string &sourceFilename)
 {
     std::vector<FilterGraphNode*> nodes;
 
     kd_clear_filter_graph();
 
     // Load from a legacy (prior to VCS v1.5) filters file.
-    if (QFileInfo(sourceFilename).suffix() == "vcs-filtersets")
+    if (QFileInfo(QString::fromStdString(sourceFilename)).suffix() == "vcs-filtersets")
     {
         // Used to position successive nodes horizontally.
         int nodeXOffset = 0;
@@ -321,7 +321,7 @@ bool kdisk_load_filter_graph(const QString &sourceFilename)
         unsigned tallestNode = 0;
 
         u8 *const filterParamsTmp = new u8[FILTER_PARAMETER_ARRAY_LENGTH];
-        const std::vector<legacy14_filter_set_s*> legacyFiltersets = kdisk_legacy14_load_filter_sets(sourceFilename.toStdString());
+        const std::vector<legacy14_filter_set_s*> legacyFiltersets = kdisk_legacy14_load_filter_sets(sourceFilename);
 
         const auto add_node = [&](const filter_type_enum_e type, const u8 *const params)
         {
@@ -404,7 +404,7 @@ bool kdisk_load_filter_graph(const QString &sourceFilename)
                                                         goto fail;\
                                                      }
 
-        QList<QStringList> rowData = csv_parse_c(sourceFilename).contents();
+        QList<QStringList> rowData = csv_parse_c(QString::fromStdString(sourceFilename)).contents();
 
         // Load the data.
         {

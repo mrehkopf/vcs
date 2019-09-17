@@ -14,12 +14,10 @@
 #include <cmath>
 #include <map>
 #include "display/qt/widgets/filter_widgets.h"
-#include "display/qt/dialogs/filter_dialogs.h"
 #include "display/display.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "filter/filter.h"
-#include "filter/filter_legacy.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/imgproc/imgproc.hpp>
@@ -31,12 +29,12 @@ static bool FILTERING_ENABLED = false;
 
 // Note: all filter functions expect the input pixels to be in 32-bit color.
 static void filter_func_blur(FILTER_FUNC_PARAMS);
-static void filter_func_uniquecount(FILTER_FUNC_PARAMS);
-static void filter_func_unsharpmask(FILTER_FUNC_PARAMS);
-static void filter_func_deltahistogram(FILTER_FUNC_PARAMS);
+static void filter_func_unique_count(FILTER_FUNC_PARAMS);
+static void filter_func_unsharp_mask(FILTER_FUNC_PARAMS);
+static void filter_func_delta_histogram(FILTER_FUNC_PARAMS);
 static void filter_func_decimate(FILTER_FUNC_PARAMS);
-static void filter_func_denoise(FILTER_FUNC_PARAMS);
-static void filter_func_denoise_nlm(FILTER_FUNC_PARAMS);
+static void filter_func_denoise_temporal(FILTER_FUNC_PARAMS);
+static void filter_func_denoise_nonlocal_means(FILTER_FUNC_PARAMS);
 static void filter_func_sharpen(FILTER_FUNC_PARAMS);
 static void filter_func_median(FILTER_FUNC_PARAMS);
 static void filter_func_crop(FILTER_FUNC_PARAMS);
@@ -48,57 +46,35 @@ static void filter_func_rotate(FILTER_FUNC_PARAMS);
 #define VALIDATE_FILTER_INPUT  k_assert(r->bpp == 32, "This filter expects 32-bit source color.");\
                                if (pixels == nullptr || params == nullptr || r == nullptr) return;
 
-// Establish a list of all the filters which the user can apply. For each filter,
-// assign a pointer to the function which applies that filter to a given array of
-// pixels, and a pointer to a user-facing GUI dialog with which the user can adjust
-// the filter's parameters.
+// All filter types available to the user.
 //
 // Note: Each filter is identified by a UUID string. A UUID must be unique to a filter.
 // The UUID of a filter must never be changed - a filter must remain identifiable with
 // its initially-set UUID.
 //
-static const std::map<std::string, std::pair<filter_function_t, filter_dlg_s*>> FILTERS =
-       {{"fc85a109-c57a-4317-994f-786652231773", {filter_func_deltahistogram, []{ static filter_dlg_deltahistogram_s f; return &f; }()}},
-        {"badb0129-f48c-4253-a66f-b0ec94e225a0", {filter_func_uniquecount,    []{ static filter_dlg_uniquecount_s f; return &f;    }()}},
-        {"03847778-bb9c-4e8c-96d5-0c10335c4f34", {filter_func_unsharpmask,    []{ static filter_dlg_unsharpmask_s f; return &f;    }()}},
-        {"a5426f2e-b060-48a9-adf8-1646a2d3bd41", {filter_func_blur,           []{ static filter_dlg_blur_s f; return &f;           }()}},
-        {"eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03", {filter_func_decimate,       []{ static filter_dlg_decimate_s f; return &f;       }()}},
-        {"94adffac-be42-43ac-9839-9cc53a6d615c", {filter_func_denoise,        []{ static filter_dlg_denoise_s f; return &f;        }()}},
-        {"e31d5ee3-f5df-4e7c-81b8-227fc39cbe76", {filter_func_denoise_nlm,    []{ static filter_dlg_denoise_nlm_s f; return &f;    }()}},
-        {"1c25bbb1-dbf4-4a03-93a1-adf24b311070", {filter_func_sharpen,        []{ static filter_dlg_sharpen_s f; return &f;        }()}},
-        {"de60017c-afe5-4e5e-99ca-aca5756da0e8", {filter_func_median,         []{ static filter_dlg_median_s f; return &f;         }()}},
-        {"2448cf4a-112d-4d70-9fc1-b3e9176b6684", {filter_func_crop,           []{ static filter_dlg_crop_s f; return &f;           }()}},
-        {"80a3ac29-fcec-4ae0-ad9e-bbd8667cc680", {filter_func_flip,           []{ static filter_dlg_flip_s f; return &f;           }()}},
-        {"140c514d-a4b0-4882-abc6-b4e9e1ff4451", {filter_func_rotate,         []{ static filter_dlg_rotate_s f; return &f;         }()}}};
-
-// All filter types available for use.
-/// NOTE: This is intended for use by the new node graph-based filters dialog that
-/// is currently being worked on but is not yet finalized.
 static const std::unordered_map<std::string, const filter_meta_s> KNOWN_FILTER_TYPES =
 {
-    {"a5426f2e-b060-48a9-adf8-1646a2d3bd41", {"Blur",              filter_type_enum_e::blur,                   filter_func_blur           }},
-    {"fc85a109-c57a-4317-994f-786652231773", {"Delta histogram",   filter_type_enum_e::delta_histogram,        filter_func_deltahistogram }},
-    {"badb0129-f48c-4253-a66f-b0ec94e225a0", {"Unique count",      filter_type_enum_e::unique_count,           filter_func_uniquecount    }},
-    {"03847778-bb9c-4e8c-96d5-0c10335c4f34", {"Unsharp mask",      filter_type_enum_e::unsharp_mask,           filter_func_unsharpmask    }},
-    {"eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03", {"Decimate",          filter_type_enum_e::decimate,               filter_func_decimate       }},
-    {"94adffac-be42-43ac-9839-9cc53a6d615c", {"Denoise, temporal", filter_type_enum_e::denoise_temporal,       filter_func_denoise        }},
-    {"e31d5ee3-f5df-4e7c-81b8-227fc39cbe76", {"Denoise, NLM",      filter_type_enum_e::denoise_nonlocal_means, filter_func_denoise_nlm    }},
-    {"1c25bbb1-dbf4-4a03-93a1-adf24b311070", {"Sharpen",           filter_type_enum_e::sharpen,                filter_func_sharpen        }},
-    {"de60017c-afe5-4e5e-99ca-aca5756da0e8", {"Median",            filter_type_enum_e::median,                 filter_func_median         }},
-    {"2448cf4a-112d-4d70-9fc1-b3e9176b6684", {"Crop",              filter_type_enum_e::crop,                   filter_func_crop           }},
-    {"80a3ac29-fcec-4ae0-ad9e-bbd8667cc680", {"Flip",              filter_type_enum_e::flip,                   filter_func_flip           }},
-    {"140c514d-a4b0-4882-abc6-b4e9e1ff4451", {"Rotate",            filter_type_enum_e::rotate,                 filter_func_rotate         }},
+    {"a5426f2e-b060-48a9-adf8-1646a2d3bd41", {"Blur",              filter_type_enum_e::blur,                   filter_func_blur                   }},
+    {"fc85a109-c57a-4317-994f-786652231773", {"Delta histogram",   filter_type_enum_e::delta_histogram,        filter_func_delta_histogram        }},
+    {"badb0129-f48c-4253-a66f-b0ec94e225a0", {"Unique count",      filter_type_enum_e::unique_count,           filter_func_unique_count           }},
+    {"03847778-bb9c-4e8c-96d5-0c10335c4f34", {"Unsharp mask",      filter_type_enum_e::unsharp_mask,           filter_func_unsharp_mask           }},
+    {"eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03", {"Decimate",          filter_type_enum_e::decimate,               filter_func_decimate               }},
+    {"94adffac-be42-43ac-9839-9cc53a6d615c", {"Denoise, temporal", filter_type_enum_e::denoise_temporal,       filter_func_denoise_temporal       }},
+    {"e31d5ee3-f5df-4e7c-81b8-227fc39cbe76", {"Denoise, NLM",      filter_type_enum_e::denoise_nonlocal_means, filter_func_denoise_nonlocal_means }},
+    {"1c25bbb1-dbf4-4a03-93a1-adf24b311070", {"Sharpen",           filter_type_enum_e::sharpen,                filter_func_sharpen                }},
+    {"de60017c-afe5-4e5e-99ca-aca5756da0e8", {"Median",            filter_type_enum_e::median,                 filter_func_median                 }},
+    {"2448cf4a-112d-4d70-9fc1-b3e9176b6684", {"Crop",              filter_type_enum_e::crop,                   filter_func_crop                   }},
+    {"80a3ac29-fcec-4ae0-ad9e-bbd8667cc680", {"Flip",              filter_type_enum_e::flip,                   filter_func_flip                   }},
+    {"140c514d-a4b0-4882-abc6-b4e9e1ff4451", {"Rotate",            filter_type_enum_e::rotate,                 filter_func_rotate                 }},
 
-    {"136deb34-ac79-46b1-a09c-d57dcfaa84ad", {"Input gate",        filter_type_enum_e::input_gate,             nullptr                    }},
-    {"be8443e2-4355-40fd-aded-63cebcbfb8ce", {"Output gate",       filter_type_enum_e::output_gate,            nullptr                    }},
+    {"136deb34-ac79-46b1-a09c-d57dcfaa84ad", {"Input gate",        filter_type_enum_e::input_gate,             nullptr                            }},
+    {"be8443e2-4355-40fd-aded-63cebcbfb8ce", {"Output gate",       filter_type_enum_e::output_gate,            nullptr                            }},
 };
-
-static std::vector<legacy14_filter_set_s*> FILTER_SETS;
 
 // The index in the list of filter sets of the set which was most recently used.
 // Generally, this will be the filter set that matches the current input/output
 // resolution.
-static int MOST_RECENT_FILTER_SET_IDX = -1;
+static int MOST_RECENT_FILTER_CHAIN_IDX = -1;
 
 // All filters expect 32-bit color, i.e. 4 channels.
 const uint NUM_COLOR_CHANNELS = (32 / 8);
@@ -124,6 +100,11 @@ std::string kf_filter_name_for_type(const filter_type_enum_e type)
     k_assert(0, "Unable to find a name for the given filter type.");
 
     return "(unknown)";
+}
+
+std::string kf_filter_name_for_id(const std::string id)
+{
+    return kf_filter_name_for_type(kf_filter_type_for_id(id));
 }
 
 filter_type_enum_e kf_filter_type_for_id(const std::string id)
@@ -154,8 +135,10 @@ void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
 
     k_assert((r.bpp == 32), "Filters can only be applied to 32-bit pixel data.");
 
-    for (const auto filterChain: FILTER_CHAINS)
+    for (unsigned i = 0; i < FILTER_CHAINS.size(); i++)
     {
+        const auto &filterChain = FILTER_CHAINS[i];
+
         const unsigned inputGateWidth = *(u16*)&(filterChain.front()->parameterData[0]);
         const unsigned inputGateHeight = *(u16*)&(filterChain.front()->parameterData[2]);
 
@@ -178,10 +161,12 @@ void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
 
         // The gate filters are expected to be #first and #last, while the actual
         // applicable filters are the ones in-between.
-        for (unsigned i = 1; i < (filterChain.size() - 1); i++)
+        for (unsigned c = 1; c < (filterChain.size() - 1); c++)
         {
-            filterChain[i]->metaData.apply(pixels, &r, filterChain[i]->parameterData.ptr());
+            filterChain[c]->metaData.apply(pixels, &r, filterChain[c]->parameterData.ptr());
         }
+
+        MOST_RECENT_FILTER_CHAIN_IDX = i;
 
         return;
     }
@@ -216,6 +201,7 @@ void kf_add_filter_chain(std::vector<const filter_c*> newChain)
 void kf_remove_all_filter_chains(void)
 {
     FILTER_CHAINS.clear();
+    MOST_RECENT_FILTER_CHAIN_IDX = -1;
 
     return;
 }
@@ -276,62 +262,11 @@ void kf_delete_filter(const filter_c *const filter)
     return;
 }
 
-// Returns a list of the UUIDs of all user-facing filters.
-//
-std::vector<std::string> kf_filter_uuid_list(void)
-{
-    std::vector<std::string> list;
-    for (auto &f: FILTERS)
-    {
-        list.push_back(f.first);
-    }
-
-    return list;
-}
-
-static void clear_filter_sets_list(void)
-{
-    for (auto set: FILTER_SETS)
-    {
-        delete set;
-    }
-
-    FILTER_SETS.clear();
-    MOST_RECENT_FILTER_SET_IDX = -1;
-
-    return;
-}
-
-// Returns the display name of the filter identified by the given UUID.
-//
-std::string kf_filter_name_for_uuid(const std::string uuid)
-{
-    return FILTERS.at(uuid).second->name();
-}
-
-void kf_clear_filters(void)
-{
-    clear_filter_sets_list();
-
-    return;
-}
-
-void kf_set_filter_set_enabled(const uint idx, const bool isEnabled)
-{
-    FILTER_SETS.at(idx)->isEnabled = isEnabled;
-    return;
-}
-
-const scaling_filter_s* kf_current_filter_set_scaler(void)
-{
-    return ((kf_current_filter_set() == nullptr)? nullptr : kf_current_filter_set()->scaler);
-}
-
 void kf_release_filters(void)
 {
     DEBUG(("Releasing custom filtering."));
 
-    clear_filter_sets_list();
+    MOST_RECENT_FILTER_CHAIN_IDX = -1;
 
     for (auto filter: FILTER_POOL)
     {
@@ -341,52 +276,19 @@ void kf_release_filters(void)
     return;
 }
 
-void kf_add_filter_set(legacy14_filter_set_s *const newSet)
-{
-    FILTER_SETS.push_back(newSet);
-
-    return;
-}
-
-void kf_filter_set_swap_upward(const uint idx)
-{
-    if (idx <= 0) return;
-    std::swap(FILTER_SETS.at(idx), FILTER_SETS.at(idx-1));
-}
-
-void kf_filter_set_swap_downward(const uint idx)
-{
-    if (idx >= (FILTER_SETS.size() - 1)) return;
-    std::swap(FILTER_SETS.at(idx), FILTER_SETS.at(idx+1));
-}
-
-void kf_remove_filter_set(const uint idx)
-{
-    k_assert((idx < FILTER_SETS.size()), "Attempting to remove a filter set out of bounds.");
-
-    FILTER_SETS.erase(FILTER_SETS.begin() + idx);
-
-    return;
-}
-
-const std::vector<legacy14_filter_set_s*>& kf_filter_sets(void)
-{
-    return FILTER_SETS;
-}
-
 // Counts the number of unique frames per second, i.e. frames in which the pixels
 // change between frames by less than a set threshold (which is to account for
 // analog capture artefacts).
 //
-static void filter_func_uniquecount(FILTER_FUNC_PARAMS)
+static void filter_func_unique_count(FILTER_FUNC_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
     static heap_bytes_s<u8> prevPixels(MAX_FRAME_SIZE, "Unique count filter buffer");
 
-    const u8 threshold = params[filter_dlg_uniquecount_s::OFFS_THRESHOLD];
-    const u8 corner = params[filter_dlg_uniquecount_s::OFFS_CORNER];
+    const u8 threshold = params[filter_widget_unique_count_s::OFFS_THRESHOLD];
+    const u8 corner = params[filter_widget_unique_count_s::OFFS_CORNER];
 
     static u32 uniqueFramesProcessed = 0;
     static u32 uniqueFramesPerSecond = 0;
@@ -447,15 +349,15 @@ static void filter_func_uniquecount(FILTER_FUNC_PARAMS)
 
 // Non-local means denoising. Slow.
 //
-static void filter_func_denoise_nlm(FILTER_FUNC_PARAMS)
+static void filter_func_denoise_nonlocal_means(FILTER_FUNC_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
     #if USE_OPENCV
-        const u8 h = params[filter_dlg_denoise_nlm_s::OFFS_H];
-        const u8 hColor = params[filter_dlg_denoise_nlm_s::OFFS_H_COLOR];
-        const u8 templateWindowSize = params[filter_dlg_denoise_nlm_s::OFFS_TEMPLATE_WINDOW_SIZE];
-        const u8 searchWindowSize = params[filter_dlg_denoise_nlm_s::OFFS_SEARCH_WINDOW_SIZE];
+        const u8 h = params[filter_widget_denoise_nonlocal_means_s::OFFS_H];
+        const u8 hColor = params[filter_widget_denoise_nonlocal_means_s::OFFS_H_COLOR];
+        const u8 templateWindowSize = params[filter_widget_denoise_nonlocal_means_s::OFFS_TEMPLATE_WINDOW_SIZE];
+        const u8 searchWindowSize = params[filter_widget_denoise_nonlocal_means_s::OFFS_SEARCH_WINDOW_SIZE];
 
         cv::Mat input = cv::Mat(r->h, r->w, CV_8UC4, pixels);
         cv::fastNlMeansDenoisingColored(input, input, h, hColor, templateWindowSize, searchWindowSize);
@@ -467,12 +369,12 @@ static void filter_func_denoise_nlm(FILTER_FUNC_PARAMS)
 // Reduce temporal image noise by requiring that pixels between frames vary by at least
 // a threshold value before being updated on screen.
 //
-static void filter_func_denoise(FILTER_FUNC_PARAMS)
+static void filter_func_denoise_temporal(FILTER_FUNC_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    const u8 threshold = params[filter_dlg_denoise_s::OFFS_THRESHOLD];
+    const u8 threshold = params[filter_widget_denoise_temporal_s::OFFS_THRESHOLD];
     static heap_bytes_s<u8> prevPixels(MAX_FRAME_SIZE, "Denoising filter buffer");
 
     for (uint i = 0; i < (r->h * r->w); i++)
@@ -501,7 +403,7 @@ static void filter_func_denoise(FILTER_FUNC_PARAMS)
 
 // Draws a histogram by color value of the number of pixels changed between frames.
 //
-static void filter_func_deltahistogram(FILTER_FUNC_PARAMS)
+static void filter_func_delta_histogram(FILTER_FUNC_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
@@ -561,14 +463,14 @@ static void filter_func_deltahistogram(FILTER_FUNC_PARAMS)
     return;
 }
 
-static void filter_func_unsharpmask(FILTER_FUNC_PARAMS)
+static void filter_func_unsharp_mask(FILTER_FUNC_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
     static heap_bytes_s<u8> TMP_BUF(MAX_FRAME_SIZE, "Unsharp mask buffer");
-    const real str = params[filter_dlg_unsharpmask_s::OFFS_STRENGTH] / 100.0;
-    const real rad = params[filter_dlg_unsharpmask_s::OFFS_RADIUS] / 10.0;
+    const real str = params[filter_widget_unsharp_mask_s::OFFS_STRENGTH] / 100.0;
+    const real rad = params[filter_widget_unsharp_mask_s::OFFS_RADIUS] / 10.0;
 
     cv::Mat tmp = cv::Mat(r->h, r->w, CV_8UC4, TMP_BUF.ptr());
     cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
@@ -603,8 +505,8 @@ static void filter_func_decimate(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    const u8 factor = params[filter_dlg_decimate_s::OFFS_FACTOR];
-    const u8 type = params[filter_dlg_decimate_s::OFFS_TYPE];
+    const u8 factor = params[filter_widget_decimate_s::OFFS_FACTOR];
+    const u8 type = params[filter_widget_decimate_s::OFFS_TYPE];
 
     for (u32 y = 0; y < r->h; y += factor)
     {
@@ -612,7 +514,7 @@ static void filter_func_decimate(FILTER_FUNC_PARAMS)
         {
             int ar = 0, ag = 0, ab = 0;
 
-            if (type == filter_dlg_decimate_s::FILTER_TYPE_AVERAGE)
+            if (type == filter_widget_decimate_s::FILTER_TYPE_AVERAGE)
             {
                 for (int yd = 0; yd < factor; yd++)
                 {
@@ -629,7 +531,7 @@ static void filter_func_decimate(FILTER_FUNC_PARAMS)
                 ag /= (factor * factor);
                 ab /= (factor * factor);
             }
-            else if (type == filter_dlg_decimate_s::FILTER_TYPE_NEAREST)
+            else if (type == filter_widget_decimate_s::FILTER_TYPE_NEAREST)
             {
                 const u32 idx = (x + y * r->w) * NUM_COLOR_CHANNELS;
 
@@ -663,14 +565,14 @@ static void filter_func_crop(FILTER_FUNC_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
-    uint x = *(u16*)&(params[filter_dlg_crop_s::OFFS_X]);
-    uint y = *(u16*)&(params[filter_dlg_crop_s::OFFS_Y]);
-    uint w = *(u16*)&(params[filter_dlg_crop_s::OFFS_WIDTH]);
-    uint h = *(u16*)&(params[filter_dlg_crop_s::OFFS_HEIGHT]);
+    uint x = *(u16*)&(params[filter_widget_crop_s::OFFS_X]);
+    uint y = *(u16*)&(params[filter_widget_crop_s::OFFS_Y]);
+    uint w = *(u16*)&(params[filter_widget_crop_s::OFFS_WIDTH]);
+    uint h = *(u16*)&(params[filter_widget_crop_s::OFFS_HEIGHT]);
 
     #ifdef USE_OPENCV
         int scaler = -1;
-        switch (params[filter_dlg_crop_s::OFFS_SCALER])
+        switch (params[filter_widget_crop_s::OFFS_SCALER])
         {
             case 0: scaler = cv::INTER_LINEAR; break;
             case 1: scaler = cv::INTER_NEAREST; break;
@@ -712,7 +614,7 @@ static void filter_func_flip(FILTER_FUNC_PARAMS)
     static heap_bytes_s<u8> scratch(MAX_FRAME_SIZE, "Flip filter scratch buffer");
 
     // 0 = vertical, 1 = horizontal, -1 = both.
-    const uint axis = ((params[filter_dlg_flip_s::OFFS_AXIS] == 2)? -1 : params[filter_dlg_flip_s::OFFS_AXIS]);
+    const uint axis = ((params[filter_widget_flip_s::OFFS_AXIS] == 2)? -1 : params[filter_widget_flip_s::OFFS_AXIS]);
 
     #ifdef USE_OPENCV
         cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
@@ -733,8 +635,8 @@ static void filter_func_rotate(FILTER_FUNC_PARAMS)
 
     static heap_bytes_s<u8> scratch(MAX_FRAME_SIZE, "Rotate filter scratch buffer");
 
-    const double angle = (*(i16*)&(params[filter_dlg_rotate_s::OFFS_ROT]) / 10.0);
-    const double scale = (*(i16*)&(params[filter_dlg_rotate_s::OFFS_SCALE]) / 100.0);
+    const double angle = (*(i16*)&(params[filter_widget_rotate_s::OFFS_ROT]) / 10.0);
+    const double scale = (*(i16*)&(params[filter_widget_rotate_s::OFFS_SCALE]) / 100.0);
 
     #ifdef USE_OPENCV
         cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
@@ -756,7 +658,7 @@ static void filter_func_median(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    const u8 kernelS = params[filter_dlg_median_s::OFFS_KERNEL_SIZE];
+    const u8 kernelS = params[filter_widget_median_s::OFFS_KERNEL_SIZE];
 
     cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
     cv::medianBlur(output, output, kernelS);
@@ -770,11 +672,11 @@ static void filter_func_blur(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    const real kernelS = (params[filter_dlg_blur_s::OFFS_KERNEL_SIZE] / 10.0);
+    const real kernelS = (params[filter_widget_blur_s::OFFS_KERNEL_SIZE] / 10.0);
 
     cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
 
-    if (params[filter_dlg_blur_s::OFFS_TYPE] == filter_dlg_blur_s::FILTER_TYPE_GAUSSIAN)
+    if (params[filter_widget_blur_s::OFFS_TYPE] == filter_widget_blur_s::FILTER_TYPE_GAUSSIAN)
     {
         cv::GaussianBlur(output, output, cv::Size(0, 0), kernelS);
     }
@@ -788,58 +690,9 @@ static void filter_func_blur(FILTER_FUNC_PARAMS)
     return;
 }
 
-bool kf_filter_exists(const std::string &name)
-{
-    // If we reach the end of the functions list before finding one by the given
-    // name, the entry doesn't exist.
-    const bool exists = (FILTERS.find(name) != FILTERS.end());
-
-    return exists;
-}
-
-const filter_dlg_s* kf_filter_dialog_for_uuid(const std::string &uuid)
-{
-    return FILTERS.at(uuid).second;
-}
-
-// Returns a pointer to the filter function that corresponds to the given filter
-// UUID.
-//
-filter_function_t kf_filter_function_ptr_for_uuid(const std::string &uuid)
-{
-    return FILTERS.at(uuid).first;
-}
-
-// Returns the filter UUID corresponding to the given filter name. If no such name
-// could be found among the filters, an empty string will be returned.
-//
-std::string kf_filter_uuid_for_name(const std::string &name)
-{
-    for (const auto filter: FILTERS)
-    {
-        const auto uuid = filter.first;
-
-        if (kf_filter_name_for_uuid(uuid) == name)
-        {
-            return uuid;
-        }
-    }
-
-    return "";
-}
-
 void kf_set_filtering_enabled(const bool enabled)
 {
     FILTERING_ENABLED = enabled;
-
-    return;
-}
-
-static void apply_filter(const std::string &uuid, FILTER_FUNC_PARAMS)
-{
-    filter_function_t applyFn = kf_filter_function_ptr_for_uuid(uuid);
-
-    applyFn(pixels, r, params);
 
     return;
 }
@@ -922,93 +775,9 @@ std::vector<int> kf_find_capture_alignment(u8 *const pixels, const resolution_s 
             (top? top : -bottom)};
 }
 
-int kf_current_filter_set_idx(void)
+int kf_current_filter_chain_idx(void)
 {
-    return MOST_RECENT_FILTER_SET_IDX;
-}
-
-// Returns a pointer to the filter set which the current input/output capture
-// resolutions activate, or nullptr if no such match exists or if filtering is
-// altogether disabled.
-const legacy14_filter_set_s* kf_current_filter_set(void)
-{
-    if (!FILTERING_ENABLED) return nullptr;
-
-    const resolution_s inputRes = kc_hardware().status.capture_resolution();
-    const resolution_s outputRes = ks_output_resolution();
-
-    // Find the first filter set in our list of filter sets that fits the given
-    // input and/or output resolution(s). If non are found, we return null.
-    for (size_t i = 0; i < FILTER_SETS.size(); i++)
-    {
-        MOST_RECENT_FILTER_SET_IDX = i;
-
-        if (!FILTER_SETS.at(i)->isEnabled) continue;
-
-        if (FILTER_SETS.at(i)->activation & legacy14_filter_set_s::activation_e::all)
-        {
-            return FILTER_SETS.at(i);
-        }
-        else if ((FILTER_SETS.at(i)->activation & legacy14_filter_set_s::activation_e::in) &&
-                 (FILTER_SETS.at(i)->activation & legacy14_filter_set_s::activation_e::out))
-        {
-            if (inputRes.w == FILTER_SETS.at(i)->inRes.w &&
-                inputRes.h == FILTER_SETS.at(i)->inRes.h &&
-                outputRes.w == FILTER_SETS.at(i)->outRes.w &&
-                outputRes.h == FILTER_SETS.at(i)->outRes.h)
-            {
-                return FILTER_SETS.at(i);
-            }
-        }
-        else if (FILTER_SETS.at(i)->activation & legacy14_filter_set_s::activation_e::in)
-        {
-            if (inputRes.w == FILTER_SETS.at(i)->inRes.w &&
-                inputRes.h == FILTER_SETS.at(i)->inRes.h)
-            {
-                return FILTER_SETS.at(i);
-            }
-        }
-    }
-
-    MOST_RECENT_FILTER_SET_IDX = -1;
-    return nullptr;
-}
-
-void kf_apply_pre_filters(u8 *const pixels, const resolution_s &r)
-{
-    k_assert(r.bpp == 32,
-             "The pre-filterer was given a frame with an unexpected bit depth.");
-
-    if (!FILTERING_ENABLED) return;
-
-    const legacy14_filter_set_s *const filterSet = kf_current_filter_set();
-    if (filterSet == nullptr) return;
-
-    for (auto &f: filterSet->preFilters)
-    {
-        apply_filter(f.uuid, pixels, &r, f.data);
-    }
-
-    return;
-}
-
-/// TODO. Code duplication - merge this with the function to apply pre-filters.
-void kf_apply_post_filters(u8 *const pixels, const resolution_s &r)
-{
-    k_assert(r.bpp == 32,
-             "The post-filterer was given a frame with an unexpected bit depth.");
-
-    if (!FILTERING_ENABLED) return;
-
-    const legacy14_filter_set_s *const filterSet = kf_current_filter_set();
-    if (filterSet == nullptr) return;
-
-    for (auto &f: filterSet->postFilters)
-    {
-        apply_filter(f.uuid, pixels, &r, f.data);
-    }
-
-    return;
+    return MOST_RECENT_FILTER_CHAIN_IDX;
 }
 
 void kf_initialize_filters(void)

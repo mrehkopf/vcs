@@ -551,7 +551,6 @@ void ks_scale_frame(const captured_frame_s &frame)
 
     // Apply filtering, and scale the frame.
     {
-        kf_apply_pre_filters(pixelData, frameRes);
         kf_apply_filter_chain(pixelData, frameRes);
 
         // If no need to scale, just copy the data over.
@@ -565,12 +564,8 @@ void ks_scale_frame(const captured_frame_s &frame)
         {
             const scaling_filter_s *scaler;
 
-            if (kf_current_filter_set_scaler() != nullptr)
-            {
-                scaler = kf_current_filter_set_scaler();
-            }
-            else if (frameRes.w < outputRes.w ||
-                     frameRes.h < outputRes.h)
+            if ((frameRes.w < outputRes.w) ||
+                (frameRes.h < outputRes.h))
             {
                 scaler = UPSCALE_FILTER;
             }
@@ -586,20 +581,14 @@ void ks_scale_frame(const captured_frame_s &frame)
                 outputRes = frameRes;
                 memcpy(OUTPUT_BUFFER.ptr(), pixelData, OUTPUT_BUFFER.up_to(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
             }
-            else scaler->scale(pixelData, frameRes, outputRes);
+            else
+            {
+                scaler->scale(pixelData, frameRes, outputRes);
+            }
         }
-
-        kf_apply_post_filters(OUTPUT_BUFFER.ptr(), outputRes);
     }
 
     LATEST_OUTPUT_SIZE = outputRes;
-
-    static int currentFilterSetIdx = ~0;
-    if (currentFilterSetIdx != kf_current_filter_set_idx())
-    {
-        kd_update_filter_set_index();
-        currentFilterSetIdx = kf_current_filter_set_idx();
-    }
 
     done:
     return;

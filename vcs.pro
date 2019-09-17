@@ -76,13 +76,10 @@ SOURCES += \
     src/filter/anti_tear.cpp \
     src/display/qt/persistent_settings.cpp \
     src/common/memory.cpp \
-    src/display/qt/dialogs/filter_set_dialog.cpp \
-    src/display/qt/dialogs/filter_sets_list_dialog.cpp \
     src/record/record.cpp \
     src/common/propagate.cpp \
     src/common/disk.cpp \
     src/capture/alias.cpp \
-    src/display/qt/subclasses/QTreeWidget_filter_list.cpp \
     src/display/qt/widgets/control_panel_about_widget.cpp \
     src/display/qt/widgets/control_panel_record_widget.cpp \
     src/display/qt/widgets/control_panel_output_widget.cpp \
@@ -114,19 +111,15 @@ HEADERS += \
     src/display/qt/dialogs/anti_tear_dialog.h \
     src/filter/filter.h \
     src/common/command_line.h \
-    src/display/qt/dialogs/filter_dialogs.h \
     src/display/qt/persistent_settings.h \
     src/display/qt/utility.h \
     src/common/csv.h \
     src/common/memory.h \
     src/common/memory_interface.h \
-    src/display/qt/dialogs/filter_set_dialog.h \
-    src/display/qt/dialogs/filter_sets_list_dialog.h \
     src/record/record.h \
     src/common/propagate.h \
     src/common/disk.h \
     src/capture/alias.h \
-    src/display/qt/subclasses/QTreeWidget_filter_list.h \
     src/display/qt/widgets/control_panel_about_widget.h \
     src/display/qt/widgets/control_panel_record_widget.h \
     src/display/qt/widgets/control_panel_output_widget.h \
@@ -150,8 +143,6 @@ FORMS += \
     src/display/qt/dialogs/ui/resolution_dialog.ui \
     src/display/qt/dialogs/ui/alias_dialog.ui \
     src/display/qt/dialogs/ui/anti_tear_dialog.ui \
-    src/display/qt/dialogs/ui/filter_set_dialog.ui \
-    src/display/qt/dialogs/ui/filter_sets_list_dialog.ui \
     src/display/qt/widgets/ui/control_panel_about_widget.ui \
     src/display/qt/widgets/ui/control_panel_record_widget.ui \
     src/display/qt/widgets/ui/control_panel_output_widget.ui \

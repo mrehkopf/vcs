@@ -93,26 +93,6 @@ void kd_set_video_settings_filename(const std::string &filename)
     return;
 }
 
-void kd_update_filter_set_index(void)
-{
-    if (WINDOW != nullptr)
-    {
-        WINDOW->update_filter_set_idx();
-    }
-
-    return;
-}
-
-void kd_update_filter_sets_list(void)
-{
-    if (WINDOW != nullptr)
-    {
-        WINDOW->update_filter_sets_list();
-    }
-
-    return;
-}
-
 void kd_update_video_mode_params(void)
 {
     if (WINDOW != nullptr)

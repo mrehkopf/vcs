@@ -19,7 +19,6 @@
 #include "display/qt/widgets/control_panel_output_widget.h"
 #include "display/qt/widgets/control_panel_input_widget.h"
 #include "display/qt/widgets/control_panel_about_widget.h"
-#include "display/qt/dialogs/filter_sets_list_dialog.h"
 #include "display/qt/dialogs/video_and_color_dialog.h"
 #include "display/qt/windows/control_panel_window.h"
 #include "display/qt/dialogs/resolution_dialog.h"
@@ -52,8 +51,7 @@ ControlPanel::ControlPanel(QWidget *parent) :
     aliasDlg = new AliasDialog;
     videocolorDlg = new VideoAndColorDialog;
     antitearDlg = new AntiTearDialog;
-    filterSetsDlg = new FilterSetsListDialog;
-    filtersDlg = new FiltersDialog;
+    filterGraphDlg = new FiltersDialog;
 
     // Set up the contents of the 'About' tab.
     {
@@ -99,10 +97,10 @@ ControlPanel::ControlPanel(QWidget *parent) :
             this->open_antitear_dialog();
         });
 
-        connect(outputWidget, &ControlPanelOutputWidget::open_filter_sets_dialog,
+        connect(outputWidget, &ControlPanelOutputWidget::open_filter_graph_dialog,
                         this, [this]
         {
-            this->open_filter_sets_dialog();
+            this->open_filter_graph_dialog();
         });
 
         connect(outputWidget, &ControlPanelOutputWidget::open_overlay_dialog,
@@ -115,9 +113,6 @@ ControlPanel::ControlPanel(QWidget *parent) :
                         this, [this](const bool state)
         {
             kf_set_filtering_enabled(state);
-
-            k_assert(filterSetsDlg != nullptr, "");
-            filterSetsDlg->signal_filtering_enabled(state);
         });
 
         connect(outputWidget, &ControlPanelOutputWidget::set_renderer,
@@ -176,11 +171,8 @@ ControlPanel::~ControlPanel()
     delete antitearDlg;
     antitearDlg = nullptr;
 
-    delete filterSetsDlg;
-    filterSetsDlg = nullptr;
-
-    delete filtersDlg;
-    filtersDlg = nullptr;
+    delete filterGraphDlg;
+    filterGraphDlg = nullptr;
 
     return;
 }
@@ -241,8 +233,8 @@ void ControlPanel::closeEvent(QCloseEvent *event)
         k_assert(antitearDlg != nullptr, "");
         antitearDlg->close();
 
-        k_assert(filterSetsDlg != nullptr, "");
-        filterSetsDlg->close();
+        k_assert(filterGraphDlg != nullptr, "");
+        filterGraphDlg->close();
     }
 
     return;
@@ -282,8 +274,8 @@ void ControlPanel::notify_of_new_alias(const mode_alias_s a)
 
 void ControlPanel::clear_filter_graph(void)
 {
-    k_assert(filtersDlg != nullptr, "");
-    filtersDlg->clear_filter_graph();
+    k_assert(filterGraphDlg != nullptr, "");
+    filterGraphDlg->clear_filter_graph();
 
     return;
 }
@@ -291,8 +283,8 @@ void ControlPanel::clear_filter_graph(void)
 FilterGraphNode* ControlPanel::add_filter_graph_node(const filter_type_enum_e &filterType,
                                                      const u8 *const initialParameterValues)
 {
-    k_assert(filtersDlg != nullptr, "");
-    return filtersDlg->add_filter_graph_node(filterType, initialParameterValues);
+    k_assert(filterGraphDlg != nullptr, "");
+    return filterGraphDlg->add_filter_graph_node(filterType, initialParameterValues);
 }
 
 void ControlPanel::notify_of_new_mode_settings_source_file(const QString &filename)
@@ -336,22 +328,6 @@ void ControlPanel::set_capture_info_as_receiving_signal()
 void ControlPanel::update_output_resolution_info(void)
 {
     outputWidget->update_output_resolution_info();
-
-    return;
-}
-
-void ControlPanel::update_filter_set_idx(void)
-{
-    k_assert(filterSetsDlg != nullptr, "");
-    filterSetsDlg->update_filter_set_idx();
-
-    return;
-}
-
-void ControlPanel::update_filter_sets_list(void)
-{
-    k_assert(filterSetsDlg != nullptr, "");
-    filterSetsDlg->update_filter_sets_list();
 
     return;
 }
@@ -463,24 +439,12 @@ void ControlPanel::toggle_overlay(void)
     return;
 }
 
-void ControlPanel::open_filter_sets_dialog(void)
+void ControlPanel::open_filter_graph_dialog(void)
 {
-    // While working on the new filters dialog, allow the 'secret' combination
-    // of Shift + click to open the (currently unfinished) dialog.
-    if (QGuiApplication::keyboardModifiers() & Qt::ShiftModifier)
-    {
-        k_assert(filtersDlg != nullptr, "");
-        filtersDlg->show();
-        filtersDlg->activateWindow();
-        filtersDlg->raise();
-    }
-    else
-    {
-        k_assert(filterSetsDlg != nullptr, "");
-        filterSetsDlg->show();
-        filterSetsDlg->activateWindow();
-        filterSetsDlg->raise();
-    }
+    k_assert(filterGraphDlg != nullptr, "");
+    filterGraphDlg->show();
+    filterGraphDlg->activateWindow();
+    filterGraphDlg->raise();
 
     return;
 }

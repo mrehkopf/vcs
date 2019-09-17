@@ -55,7 +55,7 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
 
                 break;
             }
-            case 'f':   // Location of the filter set file.
+            case 'f':   // Location of the filter graph file.
             {
                 FILTERS_FILE_NAME = optarg;
 

@@ -168,7 +168,7 @@ void FiltersDialog::load_filters(void)
         return;
     }
 
-    kdisk_load_filter_graph(filename);
+    kdisk_load_filter_graph(filename.toStdString());
 
     // Make sure all the connecting lines between the nodes are correctly positioned.
     this->graphicsScene->update_scene_connections();

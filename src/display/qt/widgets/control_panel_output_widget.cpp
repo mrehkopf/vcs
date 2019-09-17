@@ -75,7 +75,7 @@ ControlPanelOutputWidget::ControlPanelOutputWidget(QWidget *parent) :
                 [this]{ emit open_antitear_dialog(); });
 
         connect(ui->pushButton_configureFiltering, &QPushButton::clicked, this,
-                [this]{ emit open_filter_sets_dialog(); });
+                [this]{ emit open_filter_graph_dialog(); });
 
         connect(ui->pushButton_editOverlay, &QPushButton::clicked, this, [this]
                 { emit open_overlay_dialog(); });

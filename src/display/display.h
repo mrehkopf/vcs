@@ -67,14 +67,6 @@ void kd_update_recording_metainfo(void);
 // and update the GUI accordingly.
 void kd_update_video_mode_params(void);
 
-// The current filter set index has changed. Poll its current value, and update
-// the GUI accordingly.
-void kd_update_filter_set_index(void);
-
-// The current filter sets have been altered in some way. If the GUI has a means
-// to display information about them, poll their status and update the GUI accordingly.
-void kd_update_filter_sets_list(void);
-
 // Aspects of the capture signal have changed. If the GUI has a means to display
 // information about it, poll its status and update the GUI accordingly.
 void kd_update_capture_signal_info(void);

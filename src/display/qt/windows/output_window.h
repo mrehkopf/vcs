@@ -66,8 +66,6 @@ public:
 
     void signal_new_mode_settings_source_file(const std::string &filename);
 
-    void update_filter_set_idx(void);
-
     void set_opengl_enabled(const bool enabled);
 
     void refresh(void);
@@ -77,8 +75,6 @@ public:
     void update_recording_metainfo(void);
 
     void update_video_mode_params(void);
-
-    void update_filter_sets_list(void);
 
     bool apply_programwide_styling(const QString &filename);
 

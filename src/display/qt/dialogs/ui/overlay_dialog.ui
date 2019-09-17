@@ -47,7 +47,7 @@
       <number>15</number>
      </property>
      <property name="placeholderText">
-      <string>Enter your overlay text here...</string>
+      <string>Enter your overlay text here</string>
      </property>
     </widget>
    </item>

@@ -38,7 +38,7 @@ signals:
     void open_antitear_dialog(void);
 
     // Ask the control panel to open the filter sets dialog.
-    void open_filter_sets_dialog(void);
+    void open_filter_graph_dialog(void);
 
     // Ask the control panel to open the overlay dialog.
     void open_overlay_dialog(void);

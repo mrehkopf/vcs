@@ -395,7 +395,7 @@ void VideoAndColorDialog::save_settings(void)
         filename.append(".vcs-video");
     }
 
-    if (kdisk_save_mode_params(kc_mode_params(), filename))
+    if (kdisk_save_video_mode_params(kc_mode_params(), filename))
     {
         remove_unsaved_changes_flag();
     }

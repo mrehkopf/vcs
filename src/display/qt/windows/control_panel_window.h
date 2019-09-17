@@ -63,13 +63,11 @@ public:
 
     void notify_of_new_mode_settings_source_file(const QString &filename);
 
-    void update_filter_set_idx(void);
-
     void open_video_adjust_dialog(void);
 
     void open_antitear_dialog(void);
 
-    void open_filter_sets_dialog(void);
+    void open_filter_graph_dialog(void);
 
     void open_alias_dialog(void);
 
@@ -80,8 +78,6 @@ public:
     void activate_capture_res_button(const uint buttonIdx);
 
     void update_video_mode_params(void);
-
-    void update_filter_sets_list(void);
 
     bool is_overlay_enabled(void);
 
@@ -113,10 +109,9 @@ private:
 
     void update_tab_widths();
 
-    FilterSetsListDialog *filterSetsDlg = nullptr;
     VideoAndColorDialog *videocolorDlg = nullptr;
     AntiTearDialog *antitearDlg = nullptr;
-    FiltersDialog *filtersDlg = nullptr;
+    FiltersDialog *filterGraphDlg = nullptr;
     AliasDialog *aliasDlg = nullptr;
 
     ControlPanelAboutWidget *aboutWidget = nullptr;

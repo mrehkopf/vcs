@@ -11,10 +11,7 @@
 #include "display/display.h"
 #include "common/globals.h"
 
-struct scaling_filter_s;
 struct filter_widget_s;
-struct legacy14_filter_set_s;
-struct filter_dlg_s;
 
 // The signature of the function of a filter which applies that function to the
 // given pixels.
@@ -81,6 +78,8 @@ void kf_remove_all_filter_chains(void);
 
 std::string kf_filter_name_for_type(const filter_type_enum_e type);
 
+std::string kf_filter_name_for_id(const std::string id);
+
 std::string kf_filter_id_for_type(const filter_type_enum_e type);
 
 filter_type_enum_e kf_filter_type_for_id(const std::string id);
@@ -94,46 +93,10 @@ const filter_c* kf_create_new_filter_instance(const filter_type_enum_e type, con
 
 void kf_delete_filter_instance(const filter_c *const filter);
 
-std::vector<std::string> kf_filter_uuid_list(void);
-
-void kf_clear_filters(void);
-
-std::string kf_filter_name_for_uuid(const std::string uuid);
-
-void kf_set_filter_set_enabled(const uint idx, const bool isEnabled);
-
-void kf_add_filter_set(legacy14_filter_set_s *const newSet);
-
-void kf_filter_set_swap_upward(const uint idx);
-
-void kf_filter_set_swap_downward(const uint idx);
-
-void kf_remove_filter_set(const uint idx);
-
-const std::vector<legacy14_filter_set_s*>& kf_filter_sets(void);
-
-const scaling_filter_s* kf_current_filter_set_scaler(void);
-
 void kf_release_filters(void);
 
 void kf_set_filtering_enabled(const bool enabled);
 
-const legacy14_filter_set_s* kf_current_filter_set(void);
-
 std::vector<int> kf_find_capture_alignment(u8 *const pixels, const resolution_s &r);
-
-int kf_current_filter_set_idx(void);
-
-void kf_apply_pre_filters(u8 *const pixels, const resolution_s &r);
-
-void kf_apply_post_filters(u8 *const pixels, const resolution_s &r);
-
-filter_function_t kf_filter_function_ptr_for_uuid(const std::string &name);
-
-std::string kf_filter_uuid_for_name(const std::string &name);
-
-const filter_dlg_s *kf_filter_dialog_for_uuid(const std::string &name);
-
-bool kf_filter_exists(const std::string &name);
 
 #endif

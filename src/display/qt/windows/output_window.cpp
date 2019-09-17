@@ -553,7 +553,7 @@ void MainWindow::set_keyboard_shortcuts()
 
     connect(keyboardShortcut("ctrl+v"), &QShortcut::activated, [this]{this->controlPanel->open_video_adjust_dialog();});
     connect(keyboardShortcut("ctrl+a"), &QShortcut::activated, [this]{this->controlPanel->open_antitear_dialog();});
-    connect(keyboardShortcut("ctrl+f"), &QShortcut::activated, [this]{this->controlPanel->open_filter_sets_dialog();});
+    connect(keyboardShortcut("ctrl+f"), &QShortcut::activated, [this]{this->controlPanel->open_filter_graph_dialog();});
     connect(keyboardShortcut("ctrl+o"), &QShortcut::activated, [this]{this->controlPanel->toggle_overlay();});
 
     return;
@@ -671,22 +671,6 @@ void MainWindow::update_output_framerate(const u32 fps,
 
     k_assert(controlPanel != nullptr, "");
     controlPanel->update_output_framerate(fps, missedFrames);
-
-    return;
-}
-
-void MainWindow::update_filter_set_idx(void)
-{
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->update_filter_set_idx();
-
-    return;
-}
-
-void MainWindow::update_filter_sets_list(void)
-{
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->update_filter_sets_list();
 
     return;
 }

@@ -7,79 +7,9 @@
 #include "common/disk.h"
 #include "common/csv.h"
 
-bool kdisk_legacy14_save_filter_sets(const std::vector<legacy14_filter_set_s*> &filterSets,
-                                     const QString &targetFilename)
-{
-    file_writer_c outFile(targetFilename);
-
-    for (const auto *set: filterSets)
-    {
-        // Save the resolutions.
-        {
-            // Encode the filter set's activation in the resolution values, where 0
-            // means the set activates for all resolutions.
-            resolution_s inRes = set->inRes, outRes = set->outRes;
-            if (set->activation & legacy14_filter_set_s::activation_e::all)
-            {
-                inRes = {0, 0};
-                outRes = {0, 0};
-            }
-            else
-            {
-                if (!(set->activation & legacy14_filter_set_s::activation_e::in)) inRes = {0, 0};
-                if (!(set->activation & legacy14_filter_set_s::activation_e::out)) outRes = {0, 0};
-            }
-
-            outFile << "inout,"
-                    << inRes.w << "," << inRes.h << ","
-                    << outRes.w << "," << outRes.h << "\n";
-        }
-
-        outFile << "description,{" << QString::fromStdString(set->description) << "}\n";
-        outFile << "enabled," << set->isEnabled << "\n";
-        outFile << "scaler,{" << QString::fromStdString(set->scaler->name) << "}\n";
-
-        // Save the filters.
-        auto save_filter_data = [&](std::vector<legacy14_filter_s> filters, const QString &filterType)
-        {
-            for (auto &filter: filters)
-            {
-                outFile << filterType << ",{" << QString::fromStdString(filter.uuid) << "}," << FILTER_PARAMETER_ARRAY_LENGTH;
-                for (uint q = 0; q < FILTER_PARAMETER_ARRAY_LENGTH; q++)
-                {
-                    outFile << "," << (u8)filter.data[q];
-                }
-                outFile << "\n";
-            }
-        };
-        outFile << "preFilters," << set->preFilters.size() << "\n";
-        save_filter_data(set->preFilters, "pre");
-
-        outFile << "postFilters," << set->postFilters.size() << "\n";
-        save_filter_data(set->postFilters, "post");
-
-        outFile << "\n";
-    }
-
-    if (!outFile.is_valid() ||
-        !outFile.save_and_close())
-    {
-        NBENE(("Failed to write filter sets to file."));
-        goto fail;
-    }
-
-    kpropagate_saved_filter_sets_to_disk(filterSets, targetFilename.toStdString());
-
-    return true;
-
-    fail:
-    kd_show_headless_error_message("Data was not saved",
-                                   "An error was encountered while preparing the filter "
-                                   "sets for saving. No data was saved. \n\nMore "
-                                   "information about the error may be found in the terminal.");
-    return false;
-}
-
+// Loads data from legacy VCS v1.4 filter set files. Returns as a vector the
+// filter sets loaded; or an empty vector if loading failed (or if the source
+// contained no filter sets).
 /// TODO. Needs cleanup.
 std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::string &sourceFilename)
 {
@@ -188,7 +118,7 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
             legacy14_filter_s filter;
 
             filter.uuid = uuid_string(rowData[row].at(1));
-            filter.name = kf_filter_name_for_uuid(filter.uuid);
+            filter.name = kf_filter_name_for_id(filter.uuid);
 
             const uint numParams = rowData[row].at(2).toUInt();
             if (numPreFilters >= FILTER_PARAMETER_ARRAY_LENGTH)
@@ -223,7 +153,7 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
             legacy14_filter_s filter;
 
             filter.uuid = uuid_string(rowData[row].at(1));
-            filter.name = kf_filter_name_for_uuid(filter.uuid);
+            filter.name = kf_filter_name_for_id(filter.uuid);
 
             const uint numParams = rowData[row].at(2).toUInt();
             if (numPreFilters >= FILTER_PARAMETER_ARRAY_LENGTH)
@@ -253,17 +183,8 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
         filterSets.push_back(set);
     }
 
-    kf_clear_filters();
-    for (auto *const set: filterSets) kf_add_filter_set(set);
-
-    kpropagate_loaded_filter_sets_from_disk(filterSets, sourceFilename);
-
     return filterSets;
 
     fail:
-    kd_show_headless_error_message("Data was not loaded",
-                                   "An error was encountered while loading filter "
-                                   "sets. No data was loaded.\n\nMore "
-                                   "information about the error may be found in the terminal.");
     return {};
 }
