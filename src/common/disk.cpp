@@ -310,6 +310,12 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
 
 bool kdisk_load_filter_graph(const std::string &sourceFilename)
 {
+    if (sourceFilename.empty())
+    {
+        INFO(("No filter graph file defined, skipping."));
+        return true;
+    }
+
     std::vector<FilterGraphNode*> nodes;
 
     kd_clear_filter_graph();
@@ -399,14 +405,19 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
     // Load from a normal filters file.
     else
     {
-        #define verify_first_element_on_row_is(name) if (rowData[row].at(0) != name)\
+        #define verify_first_element_on_row_is(name) if (rowData.at(row).at(0) != name)\
                                                      {\
                                                         NBENE(("Error while loading filter graph file: expected '%s' but got '%s'.",\
-                                                               name, rowData[row].at(0).toStdString().c_str()));\
+                                                               name, rowData.at(row).at(0).toStdString().c_str()));\
                                                         goto fail;\
                                                      }
 
         QList<QStringList> rowData = csv_parse_c(QString::fromStdString(sourceFilename)).contents();
+
+        if (!rowData.length())
+        {
+            goto fail;
+        }
 
         // Load the data.
         {
