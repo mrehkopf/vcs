@@ -34,16 +34,16 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
     {
         legacy14_filter_set_s *set = new legacy14_filter_set_s;
 
-        if ((rowData[row].count() != 5) ||
-            (rowData[row].at(0) != "inout"))
+        if ((rowData.at(row).count() != 5) ||
+            (rowData.at(row).at(0) != "inout"))
         {
             NBENE(("Expected a 5-parameter 'inout' statement to begin a filter set block."));
             goto fail;
         }
-        set->inRes.w = rowData[row].at(1).toUInt();
-        set->inRes.h = rowData[row].at(2).toUInt();
-        set->outRes.w = rowData[row].at(3).toUInt();
-        set->outRes.h = rowData[row].at(4).toUInt();
+        set->inRes.w = rowData.at(row).at(1).toUInt();
+        set->inRes.h = rowData.at(row).at(2).toUInt();
+        set->outRes.w = rowData.at(row).at(3).toUInt();
+        set->outRes.h = rowData.at(row).at(4).toUInt();
 
         set->activation = 0;
         if (set->inRes.w == 0 && set->inRes.h == 0 &&
@@ -57,18 +57,25 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
             if (set->outRes.w != 0 && set->outRes.h != 0) set->activation |= legacy14_filter_set_s::activation_e::out;
         }
 
-        #define verify_first_element_on_row_is(name) if (rowData[row].at(0) != name)\
+        #define verify_first_element_on_row_is(name) if ((int)row >= rowData.length())\
                                                      {\
-                                                        NBENE(("Error while loading filter set file: expected '%s' but got '%s'.",\
-                                                               name, rowData[row].at(0).toStdString().c_str()));\
+                                                         NBENE(("Error while loading the filter set file: expected '%s' on line "\
+                                                                "#%d but found the data out of range.", name, (row+1)));\
+                                                         goto fail;\
+                                                     }\
+                                                     else if (rowData.at(row).at(0) != name)\
+                                                     {\
+                                                        NBENE(("Error while loading filter set file: expected '%s' on line "\
+                                                               "#%d but found '%s' instead.",\
+                                                               name, (row+1), rowData.at(row).at(0).toStdString().c_str()));\
                                                         goto fail;\
                                                      }
 
         row++;
-        if (rowData[row].at(0) != "enabled") // Legacy support, 'description' was pushed in front of 'enabled' in later revisions.
+        if (rowData.at(row).at(0) != "enabled") // Legacy support, 'description' was pushed in front of 'enabled' in later revisions.
         {
             verify_first_element_on_row_is("description");
-            set->description = rowData[row].at(1).toStdString();
+            set->description = rowData.at(row).at(1).toStdString();
 
             row++;
         }
@@ -78,11 +85,11 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
         }
 
         verify_first_element_on_row_is("enabled");
-        set->isEnabled = rowData[row].at(1).toInt();
+        set->isEnabled = rowData.at(row).at(1).toInt();
 
         row++;
         verify_first_element_on_row_is("scaler");
-        set->scaler = ks_scaler_for_name_string(rowData[row].at(1).toStdString());
+        set->scaler = ks_scaler_for_name_string(rowData.at(row).at(1).toStdString());
 
         // Takes in a proposed UUID string and returns a valid version of it. Provides backwards-
         // compatibility with older versions of VCS, which saved filters by name rather than by
@@ -109,7 +116,7 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
 
         row++;
         verify_first_element_on_row_is("preFilters");
-        const uint numPreFilters = rowData[row].at(1).toUInt();
+        const uint numPreFilters = rowData.at(row).at(1).toUInt();
         for (uint i = 0; i < numPreFilters; i++)
         {
             row++;
@@ -117,10 +124,10 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
 
             legacy14_filter_s filter;
 
-            filter.uuid = uuid_string(rowData[row].at(1));
+            filter.uuid = uuid_string(rowData.at(row).at(1));
             filter.name = kf_filter_name_for_id(filter.uuid);
 
-            const uint numParams = rowData[row].at(2).toUInt();
+            const uint numParams = rowData.at(row).at(2).toUInt();
             if (numPreFilters >= FILTER_PARAMETER_ARRAY_LENGTH)
             {
                 NBENE(("Too many parameters specified for a filter."));
@@ -129,7 +136,7 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
 
             for (uint p = 0; p < numParams; p++)
             {
-                uint datum = rowData[row].at(3 + p).toInt();
+                uint datum = rowData.at(row).at(3 + p).toInt();
                 if (datum > 255)
                 {
                     NBENE(("A filter parameter had a value outside of the range allowed (0..255)."));
@@ -144,7 +151,7 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
         /// TODO. Code duplication.
         row++;
         verify_first_element_on_row_is("postFilters");
-        const uint numPostFilters = rowData[row].at(1).toUInt();
+        const uint numPostFilters = rowData.at(row).at(1).toUInt();
         for (uint i = 0; i < numPostFilters; i++)
         {
             row++;
@@ -152,10 +159,10 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
 
             legacy14_filter_s filter;
 
-            filter.uuid = uuid_string(rowData[row].at(1));
+            filter.uuid = uuid_string(rowData.at(row).at(1));
             filter.name = kf_filter_name_for_id(filter.uuid);
 
-            const uint numParams = rowData[row].at(2).toUInt();
+            const uint numParams = rowData.at(row).at(2).toUInt();
             if (numPreFilters >= FILTER_PARAMETER_ARRAY_LENGTH)
             {
                 NBENE(("Too many parameters specified for a filter."));
@@ -164,7 +171,7 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
 
             for (uint p = 0; p < numParams; p++)
             {
-                uint datum = rowData[row].at(3 + p).toInt();
+                uint datum = rowData.at(row).at(3 + p).toInt();
                 if (datum > 255)
                 {
                     NBENE(("A filter parameter had a value outside of the range allowed (0..255)."));

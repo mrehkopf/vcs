@@ -79,9 +79,11 @@ bool kdisk_load_video_mode_params(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
     {
-        DEBUG(("No mode settings file defined, skipping."));
+        INFO(("No mode settings file defined, skipping."));
         return true;
     }
+
+    INFO(("Loading video mode parameters from %s...", sourceFilename.c_str()));
 
     std::vector<video_mode_params_s> videoModeParams;
 
@@ -92,25 +94,30 @@ bool kdisk_load_video_mode_params(const std::string &sourceFilename)
     // video and color parameters for the resolution.
     for (int i = 0; i < paramRows.count();)
     {
-        if ((paramRows[i].count() != 3) ||
-            (paramRows[i].at(0) != "resolution"))
+        if ((paramRows.at(i).count() != 3) ||
+            (paramRows.at(i).at(0) != "resolution"))
         {
             NBENE(("Expected a 3-parameter 'resolution' statement to begin a mode params block."));
             goto fail;
         }
 
         video_mode_params_s p;
-        p.r.w = paramRows[i].at(1).toUInt();
-        p.r.h = paramRows[i].at(2).toUInt();
+        p.r.w = paramRows.at(i).at(1).toUInt();
+        p.r.h = paramRows.at(i).at(2).toUInt();
 
         i++;    // Move to the next row to start fetching the params for this resolution.
 
         auto get_param = [&](const QString &name)->QString
                          {
-                             if (paramRows[i].at(0) != name)
+                             if ((int)i >= paramRows.length())
+                             {
+                                 NBENE(("Error while loading video parameters: expected '%s' but found the data out of range.", name));
+                                 throw 0;
+                             }
+                             else if (paramRows.at(i).at(0) != name)
                              {
                                  NBENE(("Error while loading video parameters: expected '%s' but got '%s'.",
-                                        name.toLatin1().constData(), paramRows[i].at(0).toLatin1().constData()));
+                                        name.toLatin1().constData(), paramRows.at(i).at(0).toLatin1().constData()));
                                  throw 0;
                              }
                              return paramRows[i++].at(1);
@@ -162,9 +169,11 @@ bool kdisk_load_aliases(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
     {
-        DEBUG(("No alias file defined, skipping."));
+        INFO(("No alias file defined, skipping."));
         return true;
     }
+
+    INFO(("Loading aliases from %s...", sourceFilename.c_str()));
 
     std::vector<mode_alias_s> aliases;
 
@@ -290,9 +299,9 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
         }
     }
 
-    // Save graph optins.
+    // Save graph options.
     {
-        outFile << "graphOptions," << graphOptions.size() << "\n";
+        outFile << "graphOptionsCount," << graphOptions.size() << "\n";
 
         for (const filter_graph_option_s &option: graphOptions)
         {
@@ -326,6 +335,8 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
         INFO(("No filter graph file defined, skipping."));
         return true;
     }
+
+    INFO(("Loading filter graph data from %s...", sourceFilename.c_str()));
 
     std::vector<FilterGraphNode*> nodes;
     std::vector<filter_graph_option_s> graphOptions;
@@ -417,10 +428,17 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
     // Load from a normal filters file.
     else
     {
-        #define verify_first_element_on_row_is(name) if (rowData.at(row).at(0) != name)\
+        #define verify_first_element_on_row_is(name) if ((int)row >= rowData.length())\
                                                      {\
-                                                        NBENE(("Error while loading filter graph file: expected '%s' but got '%s'.",\
-                                                               name, rowData.at(row).at(0).toStdString().c_str()));\
+                                                         NBENE(("Error while loading the filter graph file: expected '%s' on line "\
+                                                                "#%d but found the data out of range.", name, (row+1)));\
+                                                         goto fail;\
+                                                     }\
+                                                     else if (rowData.at(row).at(0) != name)\
+                                                     {\
+                                                        NBENE(("Error while loading filter graph file: expected '%s' on line "\
+                                                               "#%d but found '%s' instead.",\
+                                                               name, (row+1), rowData.at(row).at(0).toStdString().c_str()));\
                                                         goto fail;\
                                                      }
 
@@ -436,32 +454,32 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
             unsigned row = 0;
 
             verify_first_element_on_row_is("fileType");
-            //const QString fileType = rowData[row].at(1);
+            //const QString fileType = rowData.at(row).at(1);
 
             row++;
             verify_first_element_on_row_is("fileVersion");
-            //const QString fileVersion = rowData[row].at(1);
+            //const QString fileVersion = rowData.at(row).at(1);
 
             row++;
             verify_first_element_on_row_is("filterCount");
-            const unsigned numFilters = rowData[row].at(1).toUInt();
+            const unsigned numFilters = rowData.at(row).at(1).toUInt();
 
             // Load the filter data.
             for (unsigned i = 0; i < numFilters; i++)
             {
                 row++;
                 verify_first_element_on_row_is("id");
-                const filter_type_enum_e filterType = kf_filter_type_for_id(rowData[row].at(1).toStdString());
+                const filter_type_enum_e filterType = kf_filter_type_for_id(rowData.at(row).at(1).toStdString());
 
                 row++;
                 verify_first_element_on_row_is("parameterData");
-                const unsigned numParameters = rowData[row].at(1).toUInt();
+                const unsigned numParameters = rowData.at(row).at(1).toUInt();
 
                 std::vector<u8> params;
                 params.reserve(numParameters);
                 for (unsigned p = 0; p < numParameters; p++)
                 {
-                    params.push_back(rowData[row].at(2+p).toUInt());
+                    params.push_back(rowData.at(row).at(2+p).toUInt());
                 }
 
                 const auto newNode = kd_add_filter_graph_node(filterType, (const u8*)params.data());
@@ -472,22 +490,22 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
             {
                 row++;
                 verify_first_element_on_row_is("nodeCount");
-                const unsigned nodeCount = rowData[row].at(1).toUInt();
+                const unsigned nodeCount = rowData.at(row).at(1).toUInt();
 
                 for (unsigned i = 0; i < nodeCount; i++)
                 {
                     row++;
                     verify_first_element_on_row_is("scenePosition");
-                    nodes.at(i)->setPos(QPointF(rowData[row].at(1).toDouble(), rowData[row].at(2).toDouble()));
+                    nodes.at(i)->setPos(QPointF(rowData.at(row).at(1).toDouble(), rowData.at(row).at(2).toDouble()));
 
                     row++;
                     verify_first_element_on_row_is("connections");
-                    const unsigned numConnections = rowData[row].at(1).toUInt();
+                    const unsigned numConnections = rowData.at(row).at(1).toUInt();
 
                     for (unsigned p = 0; p < numConnections; p++)
                     {
                         node_edge_s *const sourceEdge = nodes.at(i)->output_edge();
-                        node_edge_s *const targetEdge = nodes.at(rowData[row].at(2+p).toUInt())->input_edge();
+                        node_edge_s *const targetEdge = nodes.at(rowData.at(row).at(2+p).toUInt())->input_edge();
 
                         k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
 
@@ -500,7 +518,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
             {
                 row++;
                 verify_first_element_on_row_is("graphOptionsCount");
-                const unsigned graphOptionsCount = rowData[row].at(1).toUInt();
+                const unsigned graphOptionsCount = rowData.at(row).at(1).toUInt();
 
                 for (unsigned i = 0; i < graphOptionsCount; i++)
                 {
@@ -518,6 +536,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
     return true;
 
     fail:
+    kd_clear_filter_graph();
     kd_show_headless_error_message("Data was not loaded",
                                    "An error was encountered while loading the filter graph. No data was "
                                    "loaded.\n\nMore information about the error may be found in "
