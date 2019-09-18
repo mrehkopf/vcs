@@ -233,7 +233,7 @@ void ControlPanelOutputWidget::restore_persistent_settings(void)
 
 void ControlPanelOutputWidget::set_output_size_controls_enabled(const bool state)
 {
-    ui->frame_outputOverrides->setEnabled(state);
+    ui->groupBox_outputOverrides->setEnabled(state);
 
     return;
 }

@@ -310,7 +310,10 @@
     </widget>
    </item>
    <item>
-    <widget class="QFrame" name="frame_outputOverrides">
+    <widget class="QGroupBox" name="groupBox_outputOverrides">
+     <property name="title">
+      <string>Scaler overrides</string>
+     </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_12">

@@ -489,12 +489,15 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_14" stretch="0,0">
        <item>
-        <widget class="QFrame" name="frame_3">
+        <widget class="QGroupBox" name="groupBox_3">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Meta</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <property name="leftMargin">
