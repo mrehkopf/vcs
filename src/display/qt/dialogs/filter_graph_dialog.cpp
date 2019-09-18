@@ -98,7 +98,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
     // Create and configure the graphics scene.
     {
         this->graphicsScene = new InteractibleNodeGraph(this);
-        this->graphicsScene->setBackgroundBrush(QBrush("#353535"));
+        this->graphicsScene->setBackgroundBrush(QBrush("#404040"));
 
         ui->graphicsView->setScene(this->graphicsScene);
 
@@ -125,14 +125,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         });
     }
 
-    // For temporary testing purposes, add some placeholder nodes into the graphics scene.
-    {
-        auto inputGateNode = this->add_filter_node(filter_type_enum_e::input_gate);
-        auto outputGateNode = this->add_filter_node(filter_type_enum_e::output_gate);
-
-        inputGateNode->moveBy(-200, 0);
-        outputGateNode->moveBy(200, 0);
-    }
+    this->reset_graph(true);
 
     return;
 }
@@ -144,9 +137,10 @@ FilterGraphDialog::~FilterGraphDialog()
     return;
 }
 
-void FilterGraphDialog::reset_graph(void)
+void FilterGraphDialog::reset_graph(const bool autoAccept)
 {
-    if (QMessageBox::question(this,
+    if (autoAccept ||
+        QMessageBox::question(this,
                               "Create a new graph?",
                               "Any unsaved changes in the current graph will be lost. Continue?") == QMessageBox::Yes)
     {

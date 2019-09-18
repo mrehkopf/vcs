@@ -33,7 +33,7 @@ public:
     void refresh_filter_graph(void);
 
 private:
-    void reset_graph(void);
+    void reset_graph(const bool autoAccept = false);
     void save_filters(void);
     void load_filters(void);
 
