@@ -16,10 +16,10 @@ class ControlPanelAboutWidget;
 class ControlPanelInputWidget;
 class FilterSetsListDialog;
 class VideoAndColorDialog;
+class FilterGraphDialog;
 class FilterGraphNode;
 class QTreeWidgetItem;
 class AntiTearDialog;
-class FilterGraphDialog;
 class AliasDialog;
 
 enum class filter_type_enum_e;

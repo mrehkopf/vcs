@@ -99,6 +99,9 @@ VCS interfaces with the Qt framework, copyright (c) The Qt Company; the RGBEasy 
            <layout class="QHBoxLayout" name="horizontalLayout_26">
             <item>
              <widget class="QLabel" name="label_4">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="text">
                <string>Custom interface styling:</string>
               </property>
@@ -106,6 +109,9 @@ VCS interfaces with the Qt framework, copyright (c) The Qt Company; the RGBEasy 
             </item>
             <item>
              <widget class="QComboBox" name="comboBox_customInterfaceStyling">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>

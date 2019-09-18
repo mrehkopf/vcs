@@ -83,7 +83,10 @@ ControlPanelAboutWidget::~ControlPanelAboutWidget()
 {
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_APP, "custom_styling", ui->comboBox_customInterfaceStyling->currentText());
+        // Custom interface styling is disabled for now.
+        #if 0
+            kpers_set_value(INI_GROUP_APP, "custom_styling", ui->comboBox_customInterfaceStyling->currentText());
+        #endif
     }
 
     delete ui;
@@ -93,8 +96,11 @@ ControlPanelAboutWidget::~ControlPanelAboutWidget()
 
 void ControlPanelAboutWidget::restore_persistent_settings(void)
 {
-    set_qcombobox_idx_c(ui->comboBox_customInterfaceStyling)
-                       .by_string(kpers_value_of(INI_GROUP_APP, "custom_styling", "Disabled").toString());
+    // Custom interface styling is disabled for now.
+    #if 0
+        set_qcombobox_idx_c(ui->comboBox_customInterfaceStyling)
+                            .by_string(kpers_value_of(INI_GROUP_APP, "custom_styling", "Disabled").toString());
+    #endif
 
     return;
 }

@@ -48,7 +48,7 @@ private:
 
     // The dialog's title, without any additional information that may be appended,
     // like the name of the file from which the dialog's current data was loaded.
-    const QString dialogBaseTitle = "VCS - Filter graph";
+    const QString dialogBaseTitle = "VCS - Filter Graph";
 };
 
 #endif
