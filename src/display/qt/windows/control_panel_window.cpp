@@ -439,10 +439,10 @@ void ControlPanel::toggle_overlay(void)
     return;
 }
 
-void ControlPanel::refresh_filter_graph(void)
+void ControlPanel::set_filter_graph_source_filename(const std::string &sourceFilename)
 {
     k_assert(filterGraphDlg != nullptr, "");
-    filterGraphDlg->refresh_filter_graph();
+    filterGraphDlg->set_filter_graph_source_filename(sourceFilename);
 
     return;
 }

@@ -103,11 +103,11 @@ void kd_update_video_mode_params(void)
     return;
 }
 
-void kd_refresh_filter_graph(void)
+void kd_set_filter_graph_source_filename(const std::string &sourceFilename)
 {
     if (WINDOW != nullptr)
     {
-        WINDOW->refresh_filter_graph();
+        WINDOW->set_filter_graph_source_filename(sourceFilename);
     }
 
     return;

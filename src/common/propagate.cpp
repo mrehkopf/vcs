@@ -69,6 +69,15 @@ void kpropagate_saved_mode_params_to_disk(const std::vector<video_mode_params_s>
     return;
 }
 
+void kpropagate_saved_filter_graph_to_disk(const std::string &targetFilename)
+{
+    INFO(("Saved filter graph to disk."));
+
+    kd_set_filter_graph_source_filename(targetFilename);
+
+    return;
+}
+
 void kpropagate_saved_aliases_to_disk(const std::vector<mode_alias_s> &aliases,
                                       const std::string &targetFilename)
 {
@@ -95,9 +104,7 @@ void kpropagate_loaded_aliases_from_disk(const std::vector<mode_alias_s> &aliase
 
 void kpropagate_loaded_filter_graph_from_disk(const std::string &sourceFilename)
 {
-    // Kludge fix for the filter graph not repainting itself properly when new nodes
-    // are loaded in. Let's just force it to do so.
-    kd_refresh_filter_graph();
+    kd_set_filter_graph_source_filename(sourceFilename);
 
     (void)sourceFilename;
 

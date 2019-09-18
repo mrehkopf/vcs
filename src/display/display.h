@@ -48,7 +48,7 @@ void kd_release_output_window(void);
 
 void kd_clear_filter_graph(void);
 
-void kd_refresh_filter_graph(void);
+void kd_set_filter_graph_source_filename(const std::string &sourceFilename);
 
 FilterGraphNode* kd_add_filter_graph_node(const filter_type_enum_e &filterType, const u8 *const initialParameterValues);
 

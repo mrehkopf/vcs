@@ -18,7 +18,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Filter graph");
+    this->setWindowTitle(this->dialogBaseTitle);
     this->setWindowFlags(Qt::Window);
 
     // Create the dialog's menu bar.
@@ -29,7 +29,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         {
             QMenu *fileMenu = new QMenu("File", this);
 
-            connect(fileMenu->addAction("Reset graph"), &QAction::triggered, this, [=]{this->reset_graph();});
+            connect(fileMenu->addAction("New graph"), &QAction::triggered, this, [=]{this->reset_graph();});
             connect(fileMenu->addAction("Load graph..."), &QAction::triggered, this, [=]{this->load_filters();});
             fileMenu->addSeparator();
             connect(fileMenu->addAction("Save graph..."), &QAction::triggered, this, [=]{this->save_filters();});
@@ -147,8 +147,8 @@ FilterGraphDialog::~FilterGraphDialog()
 void FilterGraphDialog::reset_graph(void)
 {
     if (QMessageBox::question(this,
-                              "Graph reset",
-                              "Really remove all nodes from the graph?") == QMessageBox::Yes)
+                              "Create a new graph?",
+                              "Any unsaved changes in the current graph will be lost. Continue?") == QMessageBox::Yes)
     {
         this->clear_filter_graph();
     }
@@ -320,13 +320,9 @@ void FilterGraphDialog::clear_filter_graph(void)
     this->inputGateNodes.clear();
     this->numNodesAdded = 0;
 
-    return;
-}
+    this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg("Unsaved graph"));
 
-FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const filter_type_enum_e &filterType,
-                                                          const u8 *const initialParameterValues)
-{
-    return add_filter_node(filterType, initialParameterValues);
+    return;
 }
 
 void FilterGraphDialog::refresh_filter_graph(void)
@@ -334,4 +330,24 @@ void FilterGraphDialog::refresh_filter_graph(void)
     this->graphicsScene->update_scene_connections();
 
     return;
+}
+
+
+void FilterGraphDialog::set_filter_graph_source_filename(const std::string &sourceFilename)
+{
+    const QString baseFilename = QFileInfo(sourceFilename.c_str()).fileName();
+
+    this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg(baseFilename));
+
+    // Kludge fix for the filter graph not repainting itself properly when new nodes
+    // are loaded in. Let's just force it to do so.
+    this->refresh_filter_graph();
+
+    return;
+}
+
+FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const filter_type_enum_e &filterType,
+                                                          const u8 *const initialParameterValues)
+{
+    return add_filter_node(filterType, initialParameterValues);
 }

@@ -691,10 +691,10 @@ void MainWindow::update_capture_signal_info(void)
     return;
 }
 
-void MainWindow::refresh_filter_graph(void)
+void MainWindow::set_filter_graph_source_filename(const std::string &sourceFilename)
 {
     k_assert(controlPanel != nullptr, "");
-    controlPanel->refresh_filter_graph();
+    controlPanel->set_filter_graph_source_filename(sourceFilename);
 
     return;
 }

@@ -28,6 +28,8 @@ public:
 
     FilterGraphNode* add_filter_node(const filter_type_enum_e type, const u8 *const initialParameterValues = nullptr);
 
+    void set_filter_graph_source_filename(const std::string &sourceFilename);
+
     void refresh_filter_graph(void);
 
 private:
@@ -43,6 +45,10 @@ private:
     std::vector<FilterGraphNode*> inputGateNodes;
 
     unsigned numNodesAdded = 0;
+
+    // The dialog's title, without any additional information that may be appended,
+    // like the name of the file from which the dialog's current data was loaded.
+    const QString dialogBaseTitle = "VCS - Filter graph";
 };
 
 #endif

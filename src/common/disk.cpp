@@ -296,6 +296,8 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
         goto fail;
     }
 
+    kpropagate_saved_filter_graph_to_disk(targetFilename.toStdString());
+
     return true;
 
     fail:
