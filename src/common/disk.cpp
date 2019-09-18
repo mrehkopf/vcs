@@ -338,7 +338,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
 
     INFO(("Loading filter graph data from %s...", sourceFilename.c_str()));
 
-    std::vector<FilterGraphNode*> nodes;
+    std::vector<FilterGraphNode*> graphodes;
     std::vector<filter_graph_option_s> graphOptions;
 
     kd_clear_filter_graph();
@@ -358,7 +358,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
         {
             FilterGraphNode *const newNode = kd_add_filter_graph_node(type, params);
             newNode->setPos(nodeXOffset, nodeYOffset);
-            nodes.push_back(newNode);
+            graphodes.push_back(newNode);
 
             nodeXOffset += (newNode->width + 50);
 
@@ -406,10 +406,10 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
 
             // Connect the filter nodes.
             {
-                for (unsigned i = 0; i < (nodes.size() - 1); i++)
+                for (unsigned i = 0; i < (graphodes.size() - 1); i++)
                 {
-                    auto sourceEdge = nodes.at(i)->output_edge();
-                    auto targetEdge = nodes.at(i+1)->input_edge();
+                    auto sourceEdge = graphodes.at(i)->output_edge();
+                    auto targetEdge = graphodes.at(i+1)->input_edge();
 
                     k_assert((sourceEdge && targetEdge), "A filter node is missing a required edge.");
 
@@ -417,7 +417,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
                 }
             }
 
-            nodes.clear();
+            graphodes.clear();
 
             nodeYOffset += (tallestNode + 50);
             nodeXOffset = 0;
@@ -483,7 +483,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
                 }
 
                 const auto newNode = kd_add_filter_graph_node(filterType, (const u8*)params.data());
-                nodes.push_back(newNode);
+                graphodes.push_back(newNode);
             }
 
             // Load the node data.
@@ -496,7 +496,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
                 {
                     row++;
                     verify_first_element_on_row_is("scenePosition");
-                    nodes.at(i)->setPos(QPointF(rowData.at(row).at(1).toDouble(), rowData.at(row).at(2).toDouble()));
+                    graphodes.at(i)->setPos(QPointF(rowData.at(row).at(1).toDouble(), rowData.at(row).at(2).toDouble()));
 
                     row++;
                     verify_first_element_on_row_is("connections");
@@ -504,8 +504,8 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
 
                     for (unsigned p = 0; p < numConnections; p++)
                     {
-                        node_edge_s *const sourceEdge = nodes.at(i)->output_edge();
-                        node_edge_s *const targetEdge = nodes.at(rowData.at(row).at(2+p).toUInt())->input_edge();
+                        node_edge_s *const sourceEdge = graphodes.at(i)->output_edge();
+                        node_edge_s *const targetEdge = graphodes.at(rowData.at(row).at(2+p).toUInt())->input_edge();
 
                         k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
 
@@ -531,7 +531,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
         #undef verify_first_element_on_row_is
     }
 
-    kpropagate_loaded_filter_graph_from_disk(nodes, graphOptions, sourceFilename);
+    kpropagate_loaded_filter_graph_from_disk(graphodes, graphOptions, sourceFilename);
 
     return true;
 

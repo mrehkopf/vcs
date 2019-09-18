@@ -71,11 +71,6 @@ static const std::unordered_map<std::string, const filter_meta_s> KNOWN_FILTER_T
     {"be8443e2-4355-40fd-aded-63cebcbfb8ce", {"Output gate",       filter_type_enum_e::output_gate,            nullptr                            }},
 };
 
-// The index in the list of filter sets of the set which was most recently used.
-// Generally, this will be the filter set that matches the current input/output
-// resolution.
-static int MOST_RECENT_FILTER_CHAIN_IDX = -1;
-
 // All filters expect 32-bit color, i.e. 4 channels.
 const uint NUM_COLOR_CHANNELS = (32 / 8);
 
@@ -86,6 +81,11 @@ static std::vector<filter_c*> FILTER_POOL;
 // and ending with an output gate. These chains will be used to filter incoming
 // frames.
 static std::vector<std::vector<const filter_c*>> FILTER_CHAINS;
+
+// The index in the list of filter chains of the chain that was most recently used.
+// Generally, this will be the filter chain that matches the current input/output
+// resolution.
+static int MOST_RECENT_FILTER_CHAIN_IDX = -1;
 
 std::string kf_filter_name_for_type(const filter_type_enum_e type)
 {
@@ -135,6 +135,28 @@ void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
 
     k_assert((r.bpp == 32), "Filters can only be applied to 32-bit pixel data.");
 
+    std::pair<const std::vector<const filter_c*>*, unsigned> partialMatch = {nullptr, 0};
+    std::pair<const std::vector<const filter_c*>*, unsigned> openMatch = {nullptr, 0};
+    const resolution_s outputRes = ks_output_resolution();
+
+    static const auto apply_chain = [=](const std::vector<const filter_c*> &chain, const unsigned idx)
+    {
+        // The gate filters are expected to be #first and #last, while the actual
+        // applicable filters are the ones in-between.
+        for (unsigned c = 1; c < (chain.size() - 1); c++)
+        {
+            chain[c]->metaData.apply(pixels, &r, chain[c]->parameterData.ptr());
+        }
+
+        MOST_RECENT_FILTER_CHAIN_IDX = idx;
+
+        return;
+    };
+
+    // Apply the first filter chain, if any, whose input and output resolution matches
+    // those of the frame and the current scaler. If no such chain is found, we'll secondarily
+    // apply a matching partially or fully open chain (a chain being open if its input or
+    // output node's resolution contains one or more 0 values).
     for (unsigned i = 0; i < FILTER_CHAINS.size(); i++)
     {
         const auto &filterChain = FILTER_CHAINS[i];
@@ -142,33 +164,43 @@ void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
         const unsigned inputGateWidth = *(u16*)&(filterChain.front()->parameterData[0]);
         const unsigned inputGateHeight = *(u16*)&(filterChain.front()->parameterData[2]);
 
-        // A gate size of 0 in either dimension means pass all values. Otherwise, the
-        // value must match the corresponding size of the frame for the chain's filters
-        // to be applied.
-        if ((inputGateWidth && r.w != inputGateWidth) || (inputGateHeight && r.h != inputGateHeight))
-        {
-            continue;
-        }
-
         const unsigned outputGateWidth = *(u16*)&(filterChain.back()->parameterData[0]);
         const unsigned outputGateHeight = *(u16*)&(filterChain.back()->parameterData[2]);
-        const resolution_s outputRes = ks_output_resolution();
 
-        if ((outputGateWidth && outputRes.w != outputGateWidth) || (outputGateHeight && outputRes.h != outputGateHeight))
+        // A gate size of 0 in either dimension means pass all values. Otherwise, the
+        // value must match the corresponding size of the frame or output.
+        if (!inputGateWidth &&
+            !inputGateHeight &&
+            !outputGateWidth &&
+            !outputGateHeight)
         {
-            continue;
+            openMatch = {&filterChain, i};
         }
-
-        // The gate filters are expected to be #first and #last, while the actual
-        // applicable filters are the ones in-between.
-        for (unsigned c = 1; c < (filterChain.size() - 1); c++)
+        else if ((!inputGateWidth || inputGateWidth == r.w) &&
+                 (!inputGateHeight || inputGateHeight == r.h) &&
+                 (!outputGateWidth || outputGateWidth == outputRes.w) &&
+                 (!outputGateHeight || outputGateHeight == outputRes.h))
         {
-            filterChain[c]->metaData.apply(pixels, &r, filterChain[c]->parameterData.ptr());
+            partialMatch = {&filterChain, i};
         }
+        else if ((r.w == inputGateWidth) &&
+                 (r.h == inputGateHeight) &&
+                 (outputRes.w == outputGateWidth) &&
+                 (outputRes.h == outputGateHeight))
+        {
+            apply_chain(filterChain, i);
 
-        MOST_RECENT_FILTER_CHAIN_IDX = i;
+            return;
+        }
+    }
 
-        return;
+    if (partialMatch.first)
+    {
+        apply_chain(*partialMatch.first, partialMatch.second);
+    }
+    else if (openMatch.first)
+    {
+        apply_chain(*openMatch.first, openMatch.second);
     }
 
     return;
