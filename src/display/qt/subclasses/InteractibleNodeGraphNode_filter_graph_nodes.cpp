@@ -103,7 +103,7 @@ void InputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
             // Body background.
             painter->setPen(QColor("black"));
             painter->setBrush(QBrush(QColor(QColor(125, 75, 120))));
-            painter->drawRoundedRect(0, 0, this->width, this->height, 0, 0);
+            painter->drawRoundedRect(0, 0, this->width, this->height, 10, 10);
         }
 
         // Connection points (edges).
@@ -169,7 +169,7 @@ void OutputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
             // Body background.
             painter->setPen(QColor("black"));
             painter->setBrush(QBrush(QColor(QColor(100, 75, 125))));
-            painter->drawRoundedRect(0, 0, this->width, this->height, 0, 0);
+            painter->drawRoundedRect(0, 0, this->width, this->height, 10, 10);
         }
 
         // Connection points (edges).

@@ -113,6 +113,16 @@ void kd_set_filter_graph_source_filename(const std::string &sourceFilename)
     return;
 }
 
+void kd_set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions)
+{
+    if (WINDOW != nullptr)
+    {
+        WINDOW->set_filter_graph_options(graphOptions);
+    }
+
+    return;
+}
+
 void kd_update_capture_signal_info(void)
 {
     if (WINDOW != nullptr)

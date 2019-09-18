@@ -4,6 +4,9 @@
 #include <vector>
 #include <string>
 
+class FilterGraphNode;
+
+struct filter_graph_option_s;
 struct video_mode_params_s;
 struct mode_alias_s;
 struct resolution_s;
@@ -19,7 +22,9 @@ void kpropagate_saved_filter_graph_to_disk(const std::string &targetFilename);
 void kpropagate_saved_mode_params_to_disk(const std::vector<video_mode_params_s> &modeParams, const std::string &targetFilename);
 void kpropagate_saved_aliases_to_disk(const std::vector<mode_alias_s> &aliases, const std::string &targetFilename);
 
-void kpropagate_loaded_filter_graph_from_disk(const std::string &sourceFilename);
+void kpropagate_loaded_filter_graph_from_disk(const std::vector<FilterGraphNode*> &nodes,
+                                              const std::vector<filter_graph_option_s> &graphOptions,
+                                              const std::string &sourceFilename);
 void kpropagate_loaded_mode_params_from_disk(const std::vector<video_mode_params_s> &modeParams, const std::string &sourceFilename);
 void kpropagate_loaded_aliases_from_disk(const std::vector<mode_alias_s> &aliases, const std::string &sourceFilename);
 

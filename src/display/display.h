@@ -42,6 +42,22 @@ struct resolution_s
     }
 };
 
+// An option about a given property about the GUI's filter graph. This might be
+// related to, for instance, the styling of some aspect of the graph or the like.
+struct filter_graph_option_s
+{
+    std::string propertyName;
+    int value;
+
+    filter_graph_option_s(const std::string propertyName, const int value)
+    {
+        this->propertyName = propertyName;
+        this->value = value;
+
+        return;
+    }
+};
+
 // Create/destroy the output window.
 void kd_acquire_output_window(void);
 void kd_release_output_window(void);
@@ -49,6 +65,8 @@ void kd_release_output_window(void);
 void kd_clear_filter_graph(void);
 
 void kd_set_filter_graph_source_filename(const std::string &sourceFilename);
+
+void kd_set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);
 
 FilterGraphNode* kd_add_filter_graph_node(const filter_type_enum_e &filterType, const u8 *const initialParameterValues);
 

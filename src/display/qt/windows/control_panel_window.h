@@ -24,6 +24,7 @@ class AliasDialog;
 
 enum class filter_type_enum_e;
 
+struct filter_graph_option_s;
 struct capture_signal_s;
 struct resolution_s;
 struct mode_alias_s;
@@ -90,6 +91,8 @@ public:
     FilterGraphNode* add_filter_graph_node(const filter_type_enum_e &filterType, const u8 * const initialParameterValues);
 
     void set_filter_graph_source_filename(const std::string &sourceFilename);
+
+    void set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);
 
 signals:
     void new_programwide_style_file(const QString &filename);

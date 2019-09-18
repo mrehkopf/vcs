@@ -198,7 +198,12 @@ void FilterGraphDialog::save_filters(void)
         }
     }
 
-    kdisk_save_filter_graph(filterNodes, filename);
+    std::vector<filter_graph_option_s> graphOptions;
+    {
+        /// TODO.
+    }
+
+    kdisk_save_filter_graph(filterNodes, graphOptions, filename);
 
     return;
 }
@@ -339,6 +344,17 @@ void FilterGraphDialog::set_filter_graph_source_filename(const std::string &sour
 
     return;
 }
+
+void FilterGraphDialog::set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions)
+{
+    for (const filter_graph_option_s &option: graphOptions)
+    {
+        /// TODO.
+    }
+
+    return;
+}
+
 
 FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const filter_type_enum_e &filterType,
                                                           const u8 *const initialParameterValues)

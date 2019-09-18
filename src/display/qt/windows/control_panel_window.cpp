@@ -340,6 +340,14 @@ void ControlPanel::update_video_mode_params(void)
     return;
 }
 
+void ControlPanel::set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions)
+{
+    k_assert(filterGraphDlg != nullptr, "");
+    filterGraphDlg->set_filter_graph_options(graphOptions);
+
+    return;
+}
+
 void ControlPanel::update_capture_signal_info(void)
 {
     if (kc_no_signal())

@@ -238,6 +238,7 @@ bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
 }
 
 bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
+                             std::vector<filter_graph_option_s> &graphOptions,
                              const QString &targetFilename)
 {
     file_writer_c outFile(targetFilename);
@@ -289,6 +290,16 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
         }
     }
 
+    // Save graph optins.
+    {
+        outFile << "graphOptions," << graphOptions.size() << "\n";
+
+        for (const filter_graph_option_s &option: graphOptions)
+        {
+            outFile << QString::fromStdString(option.propertyName) << "," << (int)option.value << "\n";
+        }
+    }
+
     if (!outFile.is_valid() ||
         !outFile.save_and_close())
     {
@@ -317,6 +328,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
     }
 
     std::vector<FilterGraphNode*> nodes;
+    std::vector<filter_graph_option_s> graphOptions;
 
     kd_clear_filter_graph();
 
@@ -457,28 +469,43 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
             }
 
             // Load the node data.
-            row++;
-            verify_first_element_on_row_is("nodeCount");
-            const unsigned nodeCount = rowData[row].at(1).toUInt();
-
-            for (unsigned i = 0; i < nodeCount; i++)
             {
                 row++;
-                verify_first_element_on_row_is("scenePosition");
-                nodes.at(i)->setPos(QPointF(rowData[row].at(1).toDouble(), rowData[row].at(2).toDouble()));
+                verify_first_element_on_row_is("nodeCount");
+                const unsigned nodeCount = rowData[row].at(1).toUInt();
 
-                row++;
-                verify_first_element_on_row_is("connections");
-                const unsigned numConnections = rowData[row].at(1).toUInt();
-
-                for (unsigned p = 0; p < numConnections; p++)
+                for (unsigned i = 0; i < nodeCount; i++)
                 {
-                    node_edge_s *const sourceEdge = nodes.at(i)->output_edge();
-                    node_edge_s *const targetEdge = nodes.at(rowData[row].at(2+p).toUInt())->input_edge();
+                    row++;
+                    verify_first_element_on_row_is("scenePosition");
+                    nodes.at(i)->setPos(QPointF(rowData[row].at(1).toDouble(), rowData[row].at(2).toDouble()));
 
-                    k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
+                    row++;
+                    verify_first_element_on_row_is("connections");
+                    const unsigned numConnections = rowData[row].at(1).toUInt();
 
-                    sourceEdge->connect_to(targetEdge);
+                    for (unsigned p = 0; p < numConnections; p++)
+                    {
+                        node_edge_s *const sourceEdge = nodes.at(i)->output_edge();
+                        node_edge_s *const targetEdge = nodes.at(rowData[row].at(2+p).toUInt())->input_edge();
+
+                        k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
+
+                        sourceEdge->connect_to(targetEdge);
+                    }
+                }
+            }
+
+            // Load the graph options.
+            {
+                row++;
+                verify_first_element_on_row_is("graphOptionsCount");
+                const unsigned graphOptionsCount = rowData[row].at(1).toUInt();
+
+                for (unsigned i = 0; i < graphOptionsCount; i++)
+                {
+                    row++;
+                    graphOptions.push_back(filter_graph_option_s(rowData.at(row).at(0).toStdString(), rowData.at(row).at(1).toInt()));
                 }
             }
         }
@@ -486,7 +513,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
         #undef verify_first_element_on_row_is
     }
 
-    kpropagate_loaded_filter_graph_from_disk(sourceFilename);
+    kpropagate_loaded_filter_graph_from_disk(nodes, graphOptions, sourceFilename);
 
     return true;
 

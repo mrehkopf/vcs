@@ -102,11 +102,16 @@ void kpropagate_loaded_aliases_from_disk(const std::vector<mode_alias_s> &aliase
     return;
 }
 
-void kpropagate_loaded_filter_graph_from_disk(const std::string &sourceFilename)
+void kpropagate_loaded_filter_graph_from_disk(const std::vector<FilterGraphNode*> &nodes,
+                                              const std::vector<filter_graph_option_s> &graphOptions,
+                                              const std::string &sourceFilename)
 {
     kd_set_filter_graph_source_filename(sourceFilename);
 
+    kd_set_filter_graph_options(graphOptions);
+
     (void)sourceFilename;
+    (void)nodes;
 
     return;
 }

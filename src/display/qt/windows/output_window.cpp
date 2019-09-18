@@ -691,6 +691,14 @@ void MainWindow::update_capture_signal_info(void)
     return;
 }
 
+void MainWindow::set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions)
+{
+    k_assert(controlPanel != nullptr, "");
+    controlPanel->set_filter_graph_options(graphOptions);
+
+    return;
+}
+
 void MainWindow::set_filter_graph_source_filename(const std::string &sourceFilename)
 {
     k_assert(controlPanel != nullptr, "");

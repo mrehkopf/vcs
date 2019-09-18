@@ -86,6 +86,8 @@ public:
 
     void set_filter_graph_source_filename(const std::string &sourceFilename);
 
+    void set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);
+
 private slots:
     void toggle_window_border(void);
 
