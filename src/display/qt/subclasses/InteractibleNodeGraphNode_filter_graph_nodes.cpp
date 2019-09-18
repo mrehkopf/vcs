@@ -1,3 +1,4 @@
+#include <QStyleOptionGraphicsItem>
 #include <QPainter>
 #include <QDebug>
 #include "display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h"
@@ -26,7 +27,7 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         // Background.
         {
             // Body background.
-            painter->setPen(QColor("black"));
+            painter->setPen(QColor((option->state & QStyle::State_Selected)? "cyan" : "black"));
             painter->setBrush(QBrush(QColor(QColor(90, 90, 90))));
             painter->drawRoundedRect(0, 0, this->width, this->height, 0, 0);
         }
@@ -101,7 +102,7 @@ void InputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         // Background.
         {
             // Body background.
-            painter->setPen(QColor("black"));
+            painter->setPen(QColor((option->state & QStyle::State_Selected)? "cyan" : "black"));
             painter->setBrush(QBrush(QColor(QColor(125, 75, 120))));
             painter->drawRoundedRect(0, 0, this->width, this->height, 10, 10);
         }
@@ -167,7 +168,7 @@ void OutputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
         // Background.
         {
             // Body background.
-            painter->setPen(QColor("black"));
+            painter->setPen(QColor((option->state & QStyle::State_Selected)? "cyan" : "black"));
             painter->setBrush(QBrush(QColor(QColor(100, 75, 125))));
             painter->drawRoundedRect(0, 0, this->width, this->height, 10, 10);
         }

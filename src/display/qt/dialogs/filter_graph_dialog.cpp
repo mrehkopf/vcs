@@ -230,7 +230,7 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_enum_e typ
     }
 
     newNode->associatedFilter = newFilter;
-    newNode->setFlags(newNode->flags() | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges);
+    newNode->setFlags(newNode->flags() | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsSelectable);
     this->graphicsScene->addItem(newNode);
 
     QGraphicsProxyWidget* nodeWidgetProxy = new QGraphicsProxyWidget(newNode);
@@ -350,6 +350,8 @@ void FilterGraphDialog::set_filter_graph_options(const std::vector<filter_graph_
     for (const filter_graph_option_s &option: graphOptions)
     {
         /// TODO.
+
+        (void)option;
     }
 
     return;
