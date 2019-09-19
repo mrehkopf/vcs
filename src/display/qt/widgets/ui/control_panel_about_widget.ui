@@ -141,7 +141,7 @@ VCS interfaces with the Qt framework, copyright (c) The Qt Company; the RGBEasy 
           <bool>true</bool>
          </property>
          <property name="title">
-          <string>Capture device: Unknown</string>
+          <string>Your capture device: Unknown</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

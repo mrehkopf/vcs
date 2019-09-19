@@ -21,7 +21,6 @@ InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphic
     }
 
     this->setRenderHints(QPainter::Antialiasing);
-    this->setDragMode(QGraphicsView::RubberBandDrag);
 
     return;
 }
@@ -65,6 +64,18 @@ void InteractibleNodeGraphView::mousePressEvent(QMouseEvent *event)
                 // Don't allow the event to propagate further.
                 return;
             }
+        }
+    }
+    else if (event->button() == Qt::LeftButton)
+    {
+        // Only allow rubberband-dragging when the user clicks on the scene's background.
+        if (this->scene()->itemAt(this->mapToScene(event->pos()), QTransform()))
+        {
+            this->setDragMode(QGraphicsView::NoDrag);
+        }
+        else
+        {
+            this->setDragMode(QGraphicsView::RubberBandDrag);
         }
     }
 
