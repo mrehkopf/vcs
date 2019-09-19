@@ -21,6 +21,7 @@ InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphic
     }
 
     this->setRenderHints(QPainter::Antialiasing);
+    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
     return;
 }
