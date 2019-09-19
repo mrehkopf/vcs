@@ -29,7 +29,7 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
             // Body background.
             painter->setPen(QColor((option->state & QStyle::State_Selected)? "white" : "black"));
             painter->setBrush(QBrush(QColor(QColor(90, 90, 90))));
-            painter->drawRoundedRect(0, 0, this->width, this->height, 0, 0);
+            painter->drawRoundedRect(0, 0, this->width, this->height, 10, 10);
         }
 
         // Connection points (edges).
