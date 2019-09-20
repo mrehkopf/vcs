@@ -24,7 +24,7 @@ ControlPanelAboutWidget::ControlPanelAboutWidget(QWidget *parent) :
     // Poll the capture hardware to fill the information matrix about the
     // hardware's capabilities.
     {
-        ui->groupBox_captureDeviceInfo->setTitle("Capture device: " + QString::fromStdString(kc_hardware().meta.model_name()));
+        ui->groupBox_captureDeviceInfo->setTitle("Your capture device: " + QString::fromStdString(kc_hardware().meta.model_name()));
 
         const resolution_s &minres = kc_hardware().meta.minimum_capture_resolution();
         const resolution_s &maxres = kc_hardware().meta.maximum_capture_resolution();
