@@ -31,7 +31,7 @@ The VisionAV range of cards should also work, albeit without their audio capture
 In general, if you know that your card supports Datapath's RGBEasy API, it should be able to function with VCS.
 
 # How to use VCS
-_Coming_
+*This section is work-in-progress.*
 
 ## Setting up
 Assuming you've installed the drivers for your capture hardware, and unpacked the binary distribution of VCS (linked to, above) into a folder, getting VCS going is simply a matter of running its `vcs.exe` executable.
@@ -97,7 +97,7 @@ The `Input` tab lets you view and control the parameters related to the capture 
 
 If your capture hardware has multiple input channels, you can switch between them using the drop-down selector at the top of the `Input` tab. (The screenshot was taken with capture disabled, so the selector is showing no text; but normally you'd see it displaying "Channel #1" or the like.)
 
-![](images/screenshots/v1.4.1/control-panel-input.png)
+![](images/screenshots/v1.5.1/control-panel-input.png)
 
 **Signal.** The type of input signal currently being received by the capture hardware.
 
@@ -116,7 +116,7 @@ If your capture hardware has multiple input channels, you can switch between the
 ### Output tab
 The `Output` tab lets you view and control the parameters related to VCS's output of captured frames.
 
-![](images/screenshots/v1.4.1/control-panel-output.png)
+![](images/screenshots/v1.5.1/control-panel-output.png)
 
 **Renderer.** Set the type of rendering VCS uses to draw captured frames onto the [output window](#the-output-window). The _software_ renderer should be the most compatible option. The _OpenGL_ renderer may offer e.g. compatibility with adaptive synchronization technologies.
 - The _OpenGL_ renderer may not work in Windows XP.
@@ -133,11 +133,7 @@ per second. The pipeline consists of the following stages: a frame being receive
 
 **Anti-tear.** Enable automatic removal of image tears from captured frames. Tearing can result, for instance, when the capture source is displaying a non-v-synced application: capturing DOS games often results in torn frames, as does capturing games in general whose FPS is less than or more than the refresh rate. The anti-tearing will not work in all cases &ndash; for instance, when the capture source's application is redrawing its screen at a rate higher than the refresh rate, e.g. at more than 60 FPS. You can find more information about anti-tearing in the [Anti-tearing](#anti-tearing) subsection.
 
-![](images/screenshots/v1.4.1/anti-tear-dialog.png)
-
 **Overlay.** Create a message to be overlaid on the [output window](#the-output-window) during capture. You can enter custom text or images, choose from several variables that update in real-time, and apply styling with HTML and CSS. Note that the overlay will only be shown while a signal is being received from the capture hardware.
-
-![](images/screenshots/v1.4.1/overlay-dialog.png)
 
 **Resolution (adjustable).** Set a custom output resolution, i.e. the resolution to which all captured frames will be scaled prior to being displayed in the [output window](#the-output-window).
 
@@ -161,7 +157,7 @@ On the `Record` tab, you can tell VCS record captured frames &ndash; as they are
 - The output size cannot be changed while recording video. All frames will be scaled &ndash; with padding as needed to maintain their aspect ratios &ndash; to fit the video's resolution.
 - The overlay will not be recorded.
 
-![](images/screenshots/v1.4.1/control-panel-record.png)
+![](images/screenshots/v1.5.1/control-panel-record.png)
 
 The built-in recording functionality in VCS outputs videos in the H.264 format using the x264 codec, which is capable of producing a very good (virtually lossless) image quality at reasonable file sizes.
 
@@ -187,27 +183,20 @@ Before being able to record video with VCS, you need to install the [x264vfw](ht
 ### About tab
 The `About` tab provides metainformation about VCS; and also contains details about the underlying capture hardware, like its maximum capture resolution, driver and firmware versions, etc.
 
-![](images/screenshots/v1.4.1/control-panel-about.png)
-
 ## Custom filters
-_Coming_
+*Coming.*
 
-![](images/screenshots/v1.4.1/filter-sets-list-dialog.png)
-![](images/screenshots/v1.4.1/filter-set-dialog.png)
-
-(While this section awaits being written, a few words are in order about how to operate the filter dialogs. To add filters to a new filter set [second image, above], drag them from the "Filters available" list into either the "Pre-scaling filters" list or the "Post-scaling filters" list, depending on whether you want the filter to be applied before or after the frame has been scaled. To remove a filter from either of the two aforementioned list, click on the item while holding the Ctrl key. To edit the attributes of a filter once you've dragged it into either list, double-click on it. To edit a filter set's description [see first image, above], double-click its "Description" field and type in the desired text.)
+![](images/screenshots/v1.5.1/filter-graph-dialog.png)
 
 ## Alias resolutions
-_Coming_
-
-![](images/screenshots/v1.4.1/alias-dialog.png)
+*Coming.*
 
 ## Anti-tearing
 Under some circumstances, like when capturing DOS games, you may find that the captured frames contain tearing artefacts. This is most likely caused by the capture hardware having sampled an incompletely drawn frame from the source signal &ndash; for instance, due to the source not syncing its rendering to its refresh rate. A tear, then, results as the visible edge between the incompletely drawn new frame, and the still partially visible previous frame.
 
 VCS comes with some facilities for reducing tearing artefacts. You can enable anti-tearing from the control panel's `Output` tab, by marking the `Anti-tear` check-box.
 
-![](images/screenshots/v1.4.1/control-panel-output.png)
+![](images/screenshots/v1.5.1/control-panel-output.png)
 
 Anti-tearing in VCS works by accumulating the incoming frame data from the capture hardware into an off-screen frame buffer, and displaying the buffer's contents in the output window only once all of the frame's data has been accumulated.
 
@@ -216,8 +205,6 @@ Noise inherent in analog capture causes some uncertainty, however, about which p
 The accuracy with which the anti-tearing system can tell apart noise from legit changes between frames has a strong impact on the extent to which the system can remove tears. Currently, the system attempts this by sliding a horizontal sampling window along two adjacent frames' pixels, and comparing the sums of the pixel values within that window. If the sums differ by more than a given threshold, the entire row of pixels is condered new and accumulated into the frame buffer.
 
 You can view and adjust the relevant parameters of this operation by clicking the `Settings...` button next to the `Anti-tear` check-box on the control panel's `Output` tab. Depending on what you're capturing, you may find that the default values work well enough; but in other cases, you may have better results by trying different values.
-
-![](images/screenshots/v1.4.1/anti-tear-dialog.png)
 
 **Range offsets.** Set the vertical range inside which the anti-tearing accumulates frame data. Static content, like a game's UI bars at the top or bottom of the screen, can completely throw off the system, and need to be excluded from consideration. The anti-tearing will ignore the first _up_ pixel rows and the last _down_ pixel rows in each frame. You can enable `Visualization` to see the values of _up_ and _down_ as corresponding vertical lines in the output window, allowing you to more easily align them with the content.
 
