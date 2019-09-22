@@ -129,7 +129,7 @@ per second. The pipeline consists of the following stages: a frame being receive
 
 **Latency.** If the capture card sends VCS a new frame before VCS has finished processing the previous one, the new frame will be ignored, and this will display "Dropping frames". Otherwise, all frames sent by the capture card are being processed and displayed by VCS in a timely manner, and this shows "No problem".
 
-**Filters.** Create sets of image filters to be applied to incoming frames. You can find more information about custom filtering in the [Custom filters](#custom-filters) subsection.
+**Filters.** Create a chain of image filters to be applied to incoming frames. You can find out more about filters in the [Custom frame filters](#custom-frame-filters) subsection.
 
 **Anti-tear.** Enable automatic removal of image tears from captured frames. Tearing can result, for instance, when the capture source is displaying a non-v-synced application: capturing DOS games often results in torn frames, as does capturing games in general whose FPS is less than or more than the refresh rate. The anti-tearing will not work in all cases &ndash; for instance, when the capture source's application is redrawing its screen at a rate higher than the refresh rate, e.g. at more than 60 FPS. You can find more information about anti-tearing in the [Anti-tearing](#anti-tearing) subsection.
 
@@ -183,10 +183,20 @@ Before being able to record video with VCS, you need to install the [x264vfw](ht
 ### About tab
 The `About` tab provides metainformation about VCS; and also contains details about the underlying capture hardware, like its maximum capture resolution, driver and firmware versions, etc.
 
-## Custom filters
-*Coming.*
+## Custom frame filters
+Since version 1.5.1, VCS has included a powerful new tool for configuring frame filters: the filter graph. It allows you to chain together one or more filters and to customize their parameters in real-time.
+
+To open the filter graph dialog, either press Ctrl + F, or locate the filters' `Configure...` button on the control panel's `Output` tab.
 
 ![](images/screenshots/v1.5.1/filter-graph-dialog.png)
+
+The filter graph is made up of nodes that can be connected in a chain. There are three kinds of nodes: `input gate` (purple-ish), `output gate` (violet-ish), and `filter` (gray). Each node also includes GUI controls for adjusting the filter's parameters.
+
+The input and output gates determine the resolutions for which the connected filters will be applied. For instance, if you set an input gate's width and height to 640 and 480, and the width and height of an output gate to 1920 and 1080, any filters you connect between these two nodes will be applied when the size of the output window is 1920 x 1080 and the original resolution of the frames (i.e. the capture resolution) is 640 x 480. You can also use the value 0 for a gate's width and/or height to allow VCS to match any value to that dimension: an input gate with a width and height of 0, for instance, will apply the connected filters to frames of all capture resolutions, provided that they also meet the resolution specified for the output gate. A filter graph can have multiple chains of these input-filter-output combos, and VCS will select the most suitable one (or none) given the current capture and output resolutions.
+
+Note that, when deciding which of multiple filter chains to use, VCS will prefer more specific chains over more general ones. This means that if you have e.g. an input gate whose width and height are 0, and another input gate whose width and height are 640 and 480, the latter will be used when the capture resolution is exactly 640 x 480, and the former otherwise. Likewise, if your input gates are 0 x 0 and 640 x 0, the former will be applied for capture resolutions of *any* x *any*, except for 640 x *any*, where the latter chain will apply - except if you also have a third input gate of 640 x 480, in which case that will be used when the capture resolution is exactly 640 x 480.
+
+To connect two nodes, click and drag with the left mouse button from one node's output edge (square) to another's input edge (circle), or vice versa. A node can be connected to as many other nodes as you like. To disconnect a node from another, right-click on the node's output edge, and select the other node from the list that pops up. To remove a node itself from the graph, right-click on the node and select to remove it. To add nodes to the graph, select `Add` from the dialog's menu bar.
 
 ## Alias resolutions
 *Coming.*
@@ -246,7 +256,7 @@ F11 ..................... Toggle fullscreen mode on/off.
 
 Ctrl + A ................ Open the anti-tear dialog.
 
-Ctrl + F ................ Open the filter sets dialog.
+Ctrl + F ................ Open the filter graph dialog.
 
 Ctrl + V ................ Open the video settings dialog.
 
@@ -266,9 +276,9 @@ Optionally, you can pass one or more of following command-line arguments to VCS:
                           up. Capture parameter files typically have the .vcsm
                           or .vcs-video suffix.
 
--f <path + filename> .... Load custom filter sets from the given file on start-
-                          up. Filter set files typically have the .vcsf or
-                          .vcs-filterset suffix.
+-f <path + filename> .... Load a custom filter graph from the given file on
+                          start- up. Filter graph files typically have the .vcs-
+                          filter-graph suffix.
 
 -a <path + filename> .... Load alias resolutions from the given file on start-
                           up. Alias resolution files typically have the .vcsa
