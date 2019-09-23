@@ -40,7 +40,7 @@
         <x>0</x>
         <y>0</y>
         <width>578</width>
-        <height>584</height>
+        <height>601</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -84,11 +84,11 @@
            <widget class="QLabel" name="label_newVersionNotice">
             <property name="font">
              <font>
-              <italic>true</italic>
+              <italic>false</italic>
              </font>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A new version is available. See &lt;a href=&quot;https://www.github.com/leikareipa/vcs/releases/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;the changelog&lt;/span&gt;&lt;/a&gt; on GitHub.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A newer version of VCS is available. See &lt;a href=&quot;https://www.github.com/leikareipa/vcs/releases/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;the changelog&lt;/span&gt;&lt;/a&gt; on GitHub for more details.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
