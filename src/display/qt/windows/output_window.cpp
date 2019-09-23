@@ -169,6 +169,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 if (isNewVersionAvailable)
                 {
+                    INFO(("A newer version of VCS is available."));
+
                     if (this->controlPanel)
                     {
                         this->controlPanel->notify_of_new_program_version();
