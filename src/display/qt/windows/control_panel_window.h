@@ -94,6 +94,8 @@ public:
 
     void set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);
 
+    void notify_of_new_program_version(void);
+
 signals:
     void new_programwide_style_file(const QString &filename);
 

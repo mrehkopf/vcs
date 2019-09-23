@@ -19,6 +19,9 @@ ControlPanelAboutWidget::ControlPanelAboutWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // We'll set this label visible only when there's a new version of VCS available.
+    ui->label_newVersionNotice->setVisible(false);
+
     ui->groupBox_aboutVCS->setTitle("VCS " + QString(PROGRAM_VERSION_STRING));
 
     // Poll the capture hardware to fill the information matrix about the
@@ -110,4 +113,12 @@ void ControlPanelAboutWidget::restore_persistent_settings(void)
 bool ControlPanelAboutWidget::is_custom_program_styling_enabled(void)
 {
     return (ui->comboBox_customInterfaceStyling->currentText().toLower() != "disabled");
+}
+
+
+void ControlPanelAboutWidget::notify_of_new_program_version(void)
+{
+    ui->label_newVersionNotice->setVisible(true);
+
+    return;
 }

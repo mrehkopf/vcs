@@ -367,7 +367,14 @@ void ControlPanel::update_capture_signal_info(void)
     return;
 }
 
-void ControlPanel::clear_known_aliases()
+void ControlPanel::notify_of_new_program_version(void)
+{
+    aboutWidget->notify_of_new_program_version();
+
+    return;
+}
+
+void ControlPanel::clear_known_aliases(void)
 {
     k_assert(aliasDlg != nullptr, "");
     aliasDlg->clear_known_aliases();

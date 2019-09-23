@@ -9,6 +9,9 @@
  *
  */
 
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QElapsedTimer>
 #include <QTextDocument>
 #include <QElapsedTimer>
@@ -154,6 +157,33 @@ MainWindow::MainWindow(QWidget *parent) :
     this->move(0, 0);
     this->activateWindow();
     this->raise();
+
+    // Check to see if there are updates available for VCS.
+    {
+        QNetworkAccessManager *network = new QNetworkAccessManager(this);
+        connect(network, &QNetworkAccessManager::finished, [=](QNetworkReply *reply)
+        {
+            if (reply->error() == QNetworkReply::NoError)
+            {
+                bool isNewVersionAvailable = reply->readAll().trimmed().toInt();
+
+                if (isNewVersionAvailable)
+                {
+                    if (this->controlPanel)
+                    {
+                        this->controlPanel->notify_of_new_program_version();
+                    }
+                }
+            }
+            else
+            {
+                /// TODO. Handle the error.
+                return;
+            }
+        });
+
+        network->get(QNetworkRequest(QUrl(QString("http://www.tarpeeksihyvaesoft.com/vcs/is_newer_version_available.php?uv=%1").arg(PROGRAM_VERSION_STRING))));
+    }
 
     return;
 }

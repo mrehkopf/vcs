@@ -19,6 +19,8 @@ public:
 
     void restore_persistent_settings(void);
 
+    void notify_of_new_program_version(void);
+
 signals:
     void new_programwide_style_file(const QString &filename);
 
