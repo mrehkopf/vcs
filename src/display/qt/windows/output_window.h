@@ -15,6 +15,7 @@ class VideoAndColorDialog;
 class FilterGraphDialog;
 class AntiTearDialog;
 class OverlayDialog;
+class RecordDialog;
 class ControlPanel;
 class AliasDialog;
 class AboutDialog;
@@ -102,6 +103,8 @@ public:
 
     void open_about_dialog(void);
 
+    void open_record_dialog(void);
+
 private slots:
     void toggle_window_border(void);
 
@@ -128,6 +131,7 @@ private:
     VideoAndColorDialog *videoDlg = nullptr;
     FilterGraphDialog *filterGraphDlg = nullptr;
     AntiTearDialog *antitearDlg = nullptr;
+    RecordDialog *recordDlg = nullptr;
     AliasDialog *aliasDlg = nullptr;
     AboutDialog *aboutDlg = nullptr;
 

@@ -33,6 +33,7 @@
 #include "display/qt/dialogs/resolution_dialog.h"
 #include "display/qt/dialogs/anti_tear_dialog.h"
 #include "display/qt/dialogs/overlay_dialog.h"
+#include "display/qt/dialogs/record_dialog.h"
 #include "display/qt/windows/output_window.h"
 #include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/dialogs/about_dialog.h"
@@ -109,6 +110,7 @@ MainWindow::MainWindow(QWidget *parent) :
         videoDlg = new VideoAndColorDialog;
         aliasDlg = new AliasDialog;
         aboutDlg = new AboutDialog;
+        recordDlg = new RecordDialog;
     }
 
     // Apply program styling.
@@ -243,8 +245,8 @@ MainWindow::MainWindow(QWidget *parent) :
             fileMenu->addSeparator();
             fileMenu->addMenu(aspectRatio);
             fileMenu->addSeparator();
+            connect(fileMenu->addAction("Record..."), &QAction::triggered, this, [=]{this->open_record_dialog();});
             connect(fileMenu->addAction("Overlay..."), &QAction::triggered, this, [=]{this->open_overlay_dialog();});
-            connect(fileMenu->addAction("Recording..."), &QAction::triggered, this, [=]{});
             connect(fileMenu->addAction("Resolution..."), &QAction::triggered, this, [=]{});
             connect(fileMenu->addAction("Filter graph..."), &QAction::triggered, this, [=]{this->open_filter_graph_dialog();});
             connect(fileMenu->addAction("Anti-tearing..."), &QAction::triggered, this, [=]{this->open_antitear_dialog();});
@@ -349,6 +351,9 @@ MainWindow::~MainWindow()
     delete aboutDlg;
     aboutDlg = nullptr;
 
+    delete recordDlg;
+    recordDlg = nullptr;
+
     return;
 }
 
@@ -390,6 +395,16 @@ void MainWindow::open_overlay_dialog(void)
     this->overlayDlg->show();
     this->overlayDlg->activateWindow();
     this->overlayDlg->raise();
+
+    return;
+}
+
+void MainWindow::open_record_dialog(void)
+{
+    k_assert(this->recordDlg != nullptr, "");
+    this->recordDlg->show();
+    this->recordDlg->activateWindow();
+    this->recordDlg->raise();
 
     return;
 }
@@ -821,16 +836,16 @@ void MainWindow::set_keyboard_shortcuts()
 
 void MainWindow::signal_new_known_alias(const mode_alias_s a)
 {
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->notify_of_new_alias(a);
+    k_assert(this->aliasDlg != nullptr, "");
+    aliasDlg->receive_new_alias(a);
 
     return;
 }
 
 void MainWindow::clear_filter_graph(void)
 {
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->clear_filter_graph();
+    k_assert(this->filterGraphDlg != nullptr, "");
+    filterGraphDlg->clear_filter_graph();
 
     return;
 }
@@ -838,8 +853,8 @@ void MainWindow::clear_filter_graph(void)
 FilterGraphNode* MainWindow::add_filter_graph_node(const filter_type_enum_e &filterType,
                                                    const u8 *const initialParameterValues)
 {
-    k_assert(controlPanel != nullptr, "");
-    return controlPanel->add_filter_graph_node(filterType, initialParameterValues);
+    k_assert(this->filterGraphDlg != nullptr, "");
+    return this->filterGraphDlg->add_filter_graph_node(filterType, initialParameterValues);
 }
 
 void MainWindow::signal_new_mode_settings_source_file(const std::string &filename)
@@ -893,16 +908,16 @@ void MainWindow::set_capture_info_as_no_signal()
 {
     update_window_title();
 
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->set_capture_info_as_no_signal();
+    k_assert(this->videoDlg != nullptr, "");
+    this->videoDlg->set_controls_enabled(false);
 
     return;
 }
 
 void MainWindow::set_capture_info_as_receiving_signal()
 {
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->set_capture_info_as_receiving_signal();
+    k_assert(this->videoDlg != nullptr, "");
+    this->videoDlg->set_controls_enabled(true);
 
     return;
 }
@@ -919,48 +934,54 @@ void MainWindow::update_output_framerate(const u32 fps,
 
     update_window_title();
 
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->update_output_framerate(fps, missedFrames);
+    (void)missedFrames;
 
     return;
 }
 
 void MainWindow::update_video_mode_params(void)
 {
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->update_video_mode_params();
+    k_assert(this->videoDlg != nullptr, "");
+    this->videoDlg->update_controls();
 
     return;
 }
 
 void MainWindow::update_capture_signal_info(void)
 {
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->update_capture_signal_info();
+    if (kc_no_signal())
+    {
+        DEBUG(("Was asked to update GUI input info while there was no signal."));
+    }
+    else
+    {
+        k_assert(this->videoDlg != nullptr, "");
+        this->videoDlg->notify_of_new_capture_signal();
+    }
 
     return;
 }
 
 void MainWindow::set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions)
 {
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->set_filter_graph_options(graphOptions);
+    k_assert(this->filterGraphDlg != nullptr, "");
+    this->filterGraphDlg->set_filter_graph_options(graphOptions);
 
     return;
 }
 
 void MainWindow::set_filter_graph_source_filename(const std::string &sourceFilename)
 {
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->set_filter_graph_source_filename(sourceFilename);
+    k_assert(this->filterGraphDlg != nullptr, "");
+    this->filterGraphDlg->set_filter_graph_source_filename(sourceFilename);
 
     return;
 }
 
 void MainWindow::update_recording_metainfo(void)
 {
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->update_recording_metainfo();
+    k_assert(this->recordDlg != nullptr, "");
+    this->recordDlg->update_recording_metainfo();
 
     return;
 }
@@ -976,8 +997,8 @@ void MainWindow::update_gui_state()
 
 void MainWindow::clear_known_aliases()
 {
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->clear_known_aliases();
+    k_assert(this->aliasDlg != nullptr, "");
+    this->aliasDlg->clear_known_aliases();
 
     return;
 }
@@ -990,9 +1011,6 @@ void MainWindow::update_window_size()
     overlayDlg->set_overlay_max_width(r.w);
 
     update_window_title();
-
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->update_output_resolution_info();
 
     return;
 }
@@ -1076,8 +1094,9 @@ void MainWindow::ShowMessageBox_Error(const QString msg)
 
 void MainWindow::add_gui_log_entry(const log_entry_s e)
 {
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->add_gui_log_entry(e);
+    /// GUI logging is currently not implemented.
+
+    (void)e;
 
     return;
 }
