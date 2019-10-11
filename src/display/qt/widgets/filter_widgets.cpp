@@ -104,7 +104,8 @@ void filter_widget_rotate_s::create_widget(void)
     QLabel *scaleLabel = new QLabel("Scale:", frame);
     QDoubleSpinBox *scaleSpin = new QDoubleSpinBox(frame);
     scaleSpin->setDecimals(2);
-    scaleSpin->setRange(0, 20);
+    scaleSpin->setRange(0.01, 20);
+    scaleSpin->setSingleStep(0.1);
     scaleSpin->setValue((*(i16*)&(this->parameterArray[OFFS_SCALE])) / 100.0);
 
     QFormLayout *l = new QFormLayout(frame);
