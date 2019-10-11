@@ -158,7 +158,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->activateWindow();
     this->raise();
 
-    // Check to see if there are updates available for VCS.
+    // Check over the network whether there are updates available for VCS.
     {
         QNetworkAccessManager *network = new QNetworkAccessManager(this);
         connect(network, &QNetworkAccessManager::finished, [=](QNetworkReply *reply)
@@ -184,7 +184,12 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
 
-        network->get(QNetworkRequest(QUrl(QString("http://www.tarpeeksihyvaesoft.com/vcs/is_newer_version_available.php?uv=%1").arg(PROGRAM_VERSION_STRING))));
+        // Make the request.
+        if (!DEV_VERSION)
+        {
+            const QString url = QString("http://www.tarpeeksihyvaesoft.com/vcs/is_newer_version_available.php?uv=%1").arg(PROGRAM_VERSION_STRING);
+            network->get(QNetworkRequest(QUrl(url)));
+        }
     }
 
     return;

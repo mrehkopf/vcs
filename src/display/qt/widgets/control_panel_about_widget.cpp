@@ -24,6 +24,11 @@ ControlPanelAboutWidget::ControlPanelAboutWidget(QWidget *parent) :
 
     ui->groupBox_aboutVCS->setTitle("VCS " + QString(PROGRAM_VERSION_STRING));
 
+    if (DEV_VERSION)
+    {
+        ui->groupBox_aboutVCS->setTitle(ui->groupBox_aboutVCS->title() + "-dev");
+    }
+
     // Poll the capture hardware to fill the information matrix about the
     // hardware's capabilities.
     {
