@@ -64,7 +64,7 @@ public:
 
     void clear_known_aliases(void);
 
-    void show_overlay_dialog(void);
+    void open_overlay_dialog(void);
 
     void measure_framerate(void);
 

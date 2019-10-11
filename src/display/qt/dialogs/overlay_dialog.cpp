@@ -29,7 +29,7 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Overlay Editor");
+    this->setWindowTitle("VCS - Overlay");
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -182,4 +182,9 @@ void OverlayDialog::add_image_to_overlay(void)
     insert_text_into_overlay_editor("<img src=\"" + filename + "\">");
 
     return;
+}
+
+bool OverlayDialog::is_overlay_enabled(void)
+{
+    return ui->groupBox_overlayEnabled->isChecked();
 }

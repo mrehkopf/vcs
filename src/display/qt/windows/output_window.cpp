@@ -241,7 +241,7 @@ MainWindow::MainWindow(QWidget *parent) :
             fileMenu->addSeparator();
             fileMenu->addMenu(aspectRatio);
             fileMenu->addSeparator();
-            connect(fileMenu->addAction("Overlay..."), &QAction::triggered, this, [=]{this->show_overlay_dialog();});
+            connect(fileMenu->addAction("Overlay..."), &QAction::triggered, this, [=]{this->open_overlay_dialog();});
             connect(fileMenu->addAction("Recording..."), &QAction::triggered, this, [=]{});
             connect(fileMenu->addAction("Resolution..."), &QAction::triggered, this, [=]{});
             connect(fileMenu->addAction("Filter graph..."), &QAction::triggered, this, [=]{this->open_filter_graph_dialog();});
@@ -566,7 +566,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     if (event->button() == Qt::MidButton)
     {
         // If the capture window is pressed with the middle mouse button, show the overlay dialog.
-        show_overlay_dialog();
+        open_overlay_dialog();
     }
 
     return;
@@ -592,7 +592,7 @@ QImage MainWindow::overlay_image(void)
 {
     if (!kc_no_signal() &&
         overlayDlg != nullptr &&
-        controlPanel->is_overlay_enabled())
+        overlayDlg->is_overlay_enabled())
     {
         return overlayDlg->overlay_as_qimage();
     }
@@ -957,7 +957,7 @@ void MainWindow::clear_known_aliases()
     return;
 }
 
-void MainWindow::show_overlay_dialog()
+void MainWindow::open_overlay_dialog()
 {
     k_assert(overlayDlg != nullptr, "");
     overlayDlg->show();

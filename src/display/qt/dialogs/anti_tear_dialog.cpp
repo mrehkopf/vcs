@@ -51,9 +51,12 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
         connect(ui->spinBox_stepSize, OVERLOAD_INT(&QSpinBox::valueChanged), this,
                 [this]{ kat_set_step_size(ui->spinBox_stepSize->value()); });
 
+        connect(ui->groupBox_antiTearingEnabled, &QGroupBox::toggled, this,
+                [this](const bool isEnabled){ kat_set_anti_tear_enabled(isEnabled);});
+
         #undef OVERLOAD_INT
 
-        auto restore_default_settings = [this]
+        const auto restore_default_settings = [this]
         {
             const anti_tear_options_s defaults = kat_default_settings();
 
@@ -70,7 +73,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
         connect(ui->pushButton_resetDefaults, &QPushButton::clicked, this,
                 [=]{ restore_default_settings(); });
 
-        auto update_visualization_options = [this]
+        const auto update_visualization_options = [this]
         {
             kat_set_visualization(ui->groupBox_visualization->isChecked(),
                                   ui->checkBox_visualizeTear->isChecked(),

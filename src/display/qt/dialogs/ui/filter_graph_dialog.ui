@@ -13,24 +13,21 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="InteractibleNodeGraphView" name="graphicsView"/>
+    <widget class="QGroupBox" name="groupBox_filterGraphEnabled">
+     <property name="title">
+      <string>Enabled</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="InteractibleNodeGraphView" name="graphicsView"/>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>

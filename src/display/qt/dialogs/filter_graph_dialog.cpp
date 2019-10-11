@@ -95,6 +95,16 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         this->layout()->setMenuBar(menubar);
     }
 
+    // Connect the GUI controls to consequences for changing their values.
+    {
+        connect(ui->groupBox_filterGraphEnabled, &QGroupBox::toggled, this,
+                [=](const bool isEnabled)
+                {
+                    kf_set_filtering_enabled(isEnabled);
+                    this->menubar->setEnabled(isEnabled);
+                });
+    }
+
     // Create and configure the graphics scene.
     {
         this->graphicsScene = new InteractibleNodeGraph(this);
