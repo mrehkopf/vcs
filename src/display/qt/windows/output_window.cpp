@@ -213,6 +213,46 @@ MainWindow::MainWindow(QWidget *parent) :
                 connect(software, &QAction::triggered, this, [=]{this->set_opengl_enabled(false);});
             }
 
+            QMenu *upscaler = new QMenu("Upscaler", this);
+            {
+                QActionGroup *group = new QActionGroup(this);
+
+                const std::vector<std::string> scalerNames = ks_list_of_scaling_filter_names();
+                k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
+
+                for (const auto &scalerName: scalerNames)
+                {
+                    QAction *scaler = new QAction(QString::fromStdString(scalerName), this);
+                    scaler->setActionGroup(group);
+                    scaler->setCheckable(true);
+                    upscaler->addAction(scaler);
+
+                    connect(scaler, &QAction::triggered, this, [=]{ks_set_upscaling_filter(scalerName);});
+                }
+
+                upscaler->actions().at(0)->setChecked(true);
+            }
+
+            QMenu *downscaler = new QMenu("Downscaler", this);
+            {
+                QActionGroup *group = new QActionGroup(this);
+
+                const std::vector<std::string> scalerNames = ks_list_of_scaling_filter_names();
+                k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
+
+                for (const auto &scalerName: scalerNames)
+                {
+                    QAction *scaler = new QAction(QString::fromStdString(scalerName), this);
+                    scaler->setActionGroup(group);
+                    scaler->setCheckable(true);
+                    downscaler->addAction(scaler);
+
+                    connect(scaler, &QAction::triggered, this, [=]{ks_set_upscaling_filter(scalerName);});
+                }
+
+                downscaler->actions().at(0)->setChecked(true);
+            }
+
             QMenu *aspectRatio = new QMenu("Aspect ratio", this);
             {
                 QActionGroup *group = new QActionGroup(this);
@@ -244,6 +284,9 @@ MainWindow::MainWindow(QWidget *parent) :
             fileMenu->addMenu(renderer);
             fileMenu->addSeparator();
             fileMenu->addMenu(aspectRatio);
+            fileMenu->addSeparator();
+            fileMenu->addMenu(upscaler);
+            fileMenu->addMenu(downscaler);
             fileMenu->addSeparator();
             connect(fileMenu->addAction("Record..."), &QAction::triggered, this, [=]{this->open_record_dialog();});
             connect(fileMenu->addAction("Overlay..."), &QAction::triggered, this, [=]{this->open_overlay_dialog();});
