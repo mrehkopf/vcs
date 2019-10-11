@@ -17,7 +17,7 @@
 #include <stdexcept>
 #include <cassert>
 
-const char PROGRAM_NAME[] = "\"VCS\" by Tarpeeksi Hyvae Soft";
+const char PROGRAM_NAME[] = "VCS";
 const char PROGRAM_VERSION_STRING[] = "1.5.2";
 
 // If this build is a developmental (non-stable) version.

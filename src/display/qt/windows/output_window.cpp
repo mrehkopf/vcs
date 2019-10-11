@@ -60,11 +60,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Set up a layout for the central widget now, so we can add the OpenGL
+    // Set up a layout for the central widget, so we can add the OpenGL
     // render surface to it when OpenGL is enabled.
     QVBoxLayout *const mainLayout = new QVBoxLayout(ui->centralwidget);
     mainLayout->setMargin(0);
     mainLayout->setSpacing(0);
+
+    ui->menuBar->setVisible(false);
 
     // Set up the control panel window.
     {
@@ -131,6 +133,135 @@ MainWindow::MainWindow(QWidget *parent) :
         if (controlPanel && controlPanel->custom_program_styling_enabled())
         {
             apply_programwide_styling(":/res/stylesheets/appstyle-gray.qss");
+        }
+    }
+
+    // Create the window's menu bar.
+    {
+        // File...
+        {
+            QMenu *fileMenu = new QMenu("File", this);
+
+            connect(fileMenu->addAction("Exit"), &QAction::triggered, this, [=]{});
+
+            ui->menuBar->addMenu(fileMenu);
+        }
+
+        // Input...
+        {
+            QMenu *fileMenu = new QMenu("Input", this);
+
+            QMenu *channel = new QMenu("Channel", this);
+            for (int i = 0; i < kc_hardware().meta.num_capture_inputs(); i++)
+            {
+                connect(channel->addAction(QString("#%1").arg(i)), &QAction::triggered, this, [=]{});
+            }
+
+            QMenu *colorDepth = new QMenu("Color depth", this);
+            {
+                QActionGroup *group = new QActionGroup(this);
+
+                QAction *c24 = new QAction("24-bit (888)", this);
+                c24->setActionGroup(group);
+                c24->setCheckable(true);
+                c24->setChecked(true);
+                colorDepth->addAction(c24);
+
+                QAction *c16 = new QAction("16-bit (565)", this);
+                c16->setActionGroup(group);
+                c16->setCheckable(true);
+                colorDepth->addAction(c16);
+
+                QAction *c15 = new QAction("15-bit (555)", this);
+                c15->setActionGroup(group);
+                c15->setCheckable(true);
+                colorDepth->addAction(c15);
+
+                connect(c24, &QAction::triggered, this, [=]{});
+                connect(c16, &QAction::triggered, this, [=]{});
+                connect(c15, &QAction::triggered, this, [=]{});
+            }
+
+            fileMenu->addMenu(channel);
+            fileMenu->addSeparator();
+            fileMenu->addMenu(colorDepth);
+            fileMenu->addSeparator();
+            connect(fileMenu->addAction("Video..."), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("Aliases..."), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("Resolution..."), &QAction::triggered, this, [=]{});
+
+            ui->menuBar->addMenu(fileMenu);
+        }
+
+        // Output...
+        {
+            QMenu *fileMenu = new QMenu("Output", this);
+
+            QMenu *renderer = new QMenu("Renderer", this);
+            {
+                QActionGroup *group = new QActionGroup(this);
+
+                QAction *opengl = new QAction("OpenGL", this);
+                opengl->setActionGroup(group);
+                opengl->setCheckable(true);
+                renderer->addAction(opengl);
+
+                QAction *software = new QAction("Software", this);
+                software->setActionGroup(group);
+                software->setCheckable(true);
+                software->setChecked(true);
+                renderer->addAction(software);
+
+                connect(opengl, &QAction::triggered, this, [=]{});
+                connect(software, &QAction::triggered, this, [=]{});
+            }
+
+            QMenu *aspectRatio = new QMenu("Aspect ratio", this);
+            {
+                QActionGroup *group = new QActionGroup(this);
+
+                QAction *native = new QAction("Frame native", this);
+                native->setActionGroup(group);
+                native->setCheckable(true);
+                native->setChecked(true);
+                aspectRatio->addAction(native);
+                aspectRatio->addSeparator();
+
+                QAction *always43 = new QAction("Always 4:3", this);
+                always43->setActionGroup(group);
+                always43->setCheckable(true);
+                aspectRatio->addAction(always43);
+
+                QAction *traditional43 = new QAction("Traditional 4:3", this);
+                traditional43->setActionGroup(group);
+                traditional43->setCheckable(true);
+                aspectRatio->addAction(traditional43);
+
+                connect(native, &QAction::triggered, this, [=]{});
+                connect(traditional43, &QAction::triggered, this, [=]{});
+                connect(always43, &QAction::triggered, this, [=]{});
+            }
+
+            fileMenu->addMenu(renderer);
+            fileMenu->addSeparator();
+            fileMenu->addMenu(aspectRatio);
+            fileMenu->addSeparator();
+            connect(fileMenu->addAction("Overlay..."), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("Recording..."), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("Resolution..."), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("Filter graph..."), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("Anti-tearing..."), &QAction::triggered, this, [=]{});
+
+            ui->menuBar->addMenu(fileMenu);
+        }
+
+        // Help...
+        {
+            QMenu *fileMenu = new QMenu("Help", this);
+
+            connect(fileMenu->addAction("About..."), &QAction::triggered, this, [=]{});
+
+            ui->menuBar->addMenu(fileMenu);
         }
     }
 
@@ -312,9 +443,23 @@ void MainWindow::closeEvent(QCloseEvent*)
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
     // Toggle the window border on/off.
-    if (event->button() == Qt::LeftButton )
+    if (event->button() == Qt::LeftButton)
     {
         toggle_window_border();
+    }
+
+    return;
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if ((event->key() == Qt::Key_Alt) && !event->isAutoRepeat())
+    {
+        ui->menuBar->setVisible(!ui->menuBar->isVisible());
+    }
+    else
+    {
+        MainWindow::keyPressEvent(event);
     }
 
     return;
@@ -359,6 +504,8 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     {
         PREV_MOUSE_POS = event->globalPos();
     }
+
+    ui->menuBar->setVisible(false);
 
     return;
 }
