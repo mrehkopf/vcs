@@ -27,7 +27,7 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         // Background.
         {
             // Body background.
-            painter->setPen(QPen(QColor("black"), 1, ((option->state & QStyle::State_Selected)? Qt::DashLine : Qt::SolidLine)));
+            painter->setPen(QPen(QColor("black"), 1, ((option->state & QStyle::State_Selected)? Qt::SolidLine : Qt::DashLine)));
             painter->setBrush(QBrush(QColor(QColor(90, 90, 90))));
             painter->drawRoundedRect(0, 0, this->width, this->height, 9, 9);
         }
@@ -102,7 +102,7 @@ void InputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         // Background.
         {
             // Body background.
-            painter->setPen(QPen(QColor("black"), 1, ((option->state & QStyle::State_Selected)? Qt::DashLine : Qt::SolidLine)));
+            painter->setPen(QPen(QColor("black"), 1, ((option->state & QStyle::State_Selected)? Qt::SolidLine : Qt::DashLine)));
             painter->setBrush(QBrush(QColor(QColor(125, 75, 120))));
             painter->drawRoundedRect(0, 0, this->width, this->height, 9, 9);
         }
@@ -168,7 +168,7 @@ void OutputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
         // Background.
         {
             // Body background.
-            painter->setPen(QPen(QColor("black"), 1, ((option->state & QStyle::State_Selected)? Qt::DashLine : Qt::SolidLine)));
+            painter->setPen(QPen(QColor("black"), 1, ((option->state & QStyle::State_Selected)? Qt::SolidLine : Qt::DashLine)));
             painter->setBrush(QBrush(QColor(QColor(100, 75, 125))));
             painter->drawRoundedRect(0, 0, this->width, this->height, 9, 9);
         }

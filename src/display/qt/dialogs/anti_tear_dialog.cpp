@@ -21,7 +21,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Anti-Tearing");
+    this->setWindowTitle("VCS - Anti-tearing");
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
