@@ -27,6 +27,7 @@
 #include <QLabel>
 #include <cmath>
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
+#include "display/qt/dialogs/output_resolution_dialog.h"
 #include "display/qt/dialogs/video_and_color_dialog.h"
 #include "display/qt/windows/control_panel_window.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
@@ -37,6 +38,7 @@
 #include "display/qt/windows/output_window.h"
 #include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/dialogs/about_dialog.h"
+#include "common/propagate.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
 #include "common/globals.h"
@@ -104,6 +106,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Set up dialogs.
     {
+        outputResolutionDlg = new OutputResolutionDialog;
         filterGraphDlg = new FilterGraphDialog;
         antitearDlg = new AntiTearDialog;
         overlayDlg = new OverlayDialog;
@@ -183,9 +186,19 @@ MainWindow::MainWindow(QWidget *parent) :
             fileMenu->addSeparator();
             fileMenu->addMenu(colorDepth);
             fileMenu->addSeparator();
+
             connect(fileMenu->addAction("Video..."), &QAction::triggered, this, [=]{this->open_video_dialog();});
             connect(fileMenu->addAction("Aliases..."), &QAction::triggered, this, [=]{this->open_alias_dialog();});
-            connect(fileMenu->addAction("Resolution..."), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("Resolution..."), &QAction::triggered, this, [=]
+            {
+                resolution_s inRes = kc_hardware().status.capture_resolution();
+
+                if (ResolutionDialog("Set input resolution", &inRes, this).exec() == QDialog::Accepted)
+                {
+                    DEBUG(("Received a request via the GUI to set the input resolution to %u x %u.", inRes.w, inRes.h));
+                    kpropagate_forced_capture_resolution(inRes);
+                }
+            });
 
             ui->menuBar->addMenu(fileMenu);
         }
@@ -288,9 +301,10 @@ MainWindow::MainWindow(QWidget *parent) :
             fileMenu->addMenu(upscaler);
             fileMenu->addMenu(downscaler);
             fileMenu->addSeparator();
+
             connect(fileMenu->addAction("Record..."), &QAction::triggered, this, [=]{this->open_record_dialog();});
             connect(fileMenu->addAction("Overlay..."), &QAction::triggered, this, [=]{this->open_overlay_dialog();});
-            connect(fileMenu->addAction("Resolution..."), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("Resolution..."), &QAction::triggered, this, [=]{this->open_output_resolution_dialog();});
             connect(fileMenu->addAction("Filter graph..."), &QAction::triggered, this, [=]{this->open_filter_graph_dialog();});
             connect(fileMenu->addAction("Anti-tearing..."), &QAction::triggered, this, [=]{this->open_antitear_dialog();});
 
@@ -397,6 +411,9 @@ MainWindow::~MainWindow()
     delete recordDlg;
     recordDlg = nullptr;
 
+    delete outputResolutionDlg;
+    outputResolutionDlg = nullptr;
+
     return;
 }
 
@@ -418,6 +435,16 @@ void MainWindow::open_filter_graph_dialog(void)
     this->filterGraphDlg->show();
     this->filterGraphDlg->activateWindow();
     this->filterGraphDlg->raise();
+
+    return;
+}
+
+void MainWindow::open_output_resolution_dialog(void)
+{
+    k_assert(this->outputResolutionDlg != nullptr, "");
+    this->outputResolutionDlg->show();
+    this->outputResolutionDlg->activateWindow();
+    this->outputResolutionDlg->raise();
 
     return;
 }
@@ -658,14 +685,23 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
     if ((controlPanel != nullptr) &&
-        controlPanel->is_mouse_wheel_scaling_allowed())
+        this->is_mouse_wheel_scaling_allowed())
     {
         // Adjust the size of the capture window with the mouse scroll wheel.
         const int dir = (event->angleDelta().y() < 0)? 1 : -1;
-        controlPanel->adjust_output_scaling(dir);
+        this->outputResolutionDlg->adjust_output_scaling(dir);
     }
 
     return;
+}
+
+// Returns true if the user is allowed to scale the output resolution by using the
+// mouse wheel over the capture window.
+//
+bool MainWindow::is_mouse_wheel_scaling_allowed(void)
+{
+    return (!kd_is_fullscreen() && // On my virtual machine, at least, wheel scaling while in full-screen messes up the full-screen mode.
+            !krecord_is_recording());
 }
 
 // Returns the current overlay as a QImage, or a null QImage if the overlay
@@ -902,8 +938,8 @@ FilterGraphNode* MainWindow::add_filter_graph_node(const filter_type_enum_e &fil
 
 void MainWindow::signal_new_mode_settings_source_file(const std::string &filename)
 {
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->notify_of_new_mode_settings_source_file(QString::fromStdString(filename));
+    k_assert(this->videoDlg != nullptr, "");
+    this->videoDlg->receive_new_mode_settings_filename(QString::fromStdString(filename));
 
     return;
 }
@@ -926,8 +962,9 @@ void MainWindow::update_window_title()
     {
         const resolution_s inRes = kc_hardware().status.capture_resolution();
         const resolution_s outRes = ks_output_resolution();
+        const int relativeScale = round((outRes.h / (real)inRes.h) * 100);
 
-        scaleString = QString(" scaled to %1 x %2").arg(outRes.w).arg(outRes.h);
+        scaleString = QString(" scaled to %1 x %2 (~%3%)").arg(outRes.w).arg(outRes.h).arg(relativeScale);
 
         if (kc_are_frames_being_missed())
         {

@@ -11,6 +11,7 @@
 #include "display/display.h"
 #include "common/globals.h"
 
+class OutputResolutionDialog;
 class VideoAndColorDialog;
 class FilterGraphDialog;
 class AntiTearDialog;
@@ -105,6 +106,10 @@ public:
 
     void open_record_dialog(void);
 
+    void open_output_resolution_dialog(void);
+
+    bool is_mouse_wheel_scaling_allowed(void);
+
 private slots:
     void toggle_window_border(void);
 
@@ -128,6 +133,7 @@ private:
     ControlPanel *controlPanel = nullptr;
     OverlayDialog *overlayDlg = nullptr;
 
+    OutputResolutionDialog *outputResolutionDlg = nullptr;
     VideoAndColorDialog *videoDlg = nullptr;
     FilterGraphDialog *filterGraphDlg = nullptr;
     AntiTearDialog *antitearDlg = nullptr;

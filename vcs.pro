@@ -93,7 +93,8 @@ SOURCES += \
     src/display/qt/dialogs/filter_graph_dialog.cpp \
     src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.cpp \
     src/display/qt/dialogs/about_dialog.cpp \
-    src/display/qt/dialogs/record_dialog.cpp
+    src/display/qt/dialogs/record_dialog.cpp \
+    src/display/qt/dialogs/output_resolution_dialog.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -137,7 +138,8 @@ HEADERS += \
     src/display/qt/dialogs/filter_graph_dialog.h \
     src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h \
     src/display/qt/dialogs/about_dialog.h \
-    src/display/qt/dialogs/record_dialog.h
+    src/display/qt/dialogs/record_dialog.h \
+    src/display/qt/dialogs/output_resolution_dialog.h
 
 FORMS += \
     src/display/qt/windows/ui/control_panel_window.ui \
@@ -153,7 +155,8 @@ FORMS += \
     src/display/qt/widgets/ui/control_panel_input_widget.ui \
     src/display/qt/dialogs/ui/filter_graph_dialog.ui \
     src/display/qt/dialogs/ui/about_dialog.ui \
-    src/display/qt/dialogs/ui/record_dialog.ui
+    src/display/qt/dialogs/ui/record_dialog.ui \
+    src/display/qt/dialogs/ui/output_resolution_dialog.ui
 
 # C++. For GCC/Clang/MinGW.
 QMAKE_CXXFLAGS += -g
