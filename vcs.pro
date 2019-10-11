@@ -56,7 +56,8 @@ UI_DIR = generated_files
 INCLUDEPATH += $$PWD/src/ \
                $$PWD/src/display/qt/subclasses/
 
-RESOURCES += src/display/qt/res.qrc
+RESOURCES += \
+    src/display/qt/res.qrc
 
 SOURCES += \
     src/display/qt/windows/output_window.cpp \

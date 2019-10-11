@@ -80,12 +80,6 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         controlPanel = new ControlPanel;
 
-        connect(controlPanel, &ControlPanel::new_programwide_style_file,
-                        this, [this](const QString &filename)
-        {
-            apply_programwide_styling(filename);
-        });
-
         connect(controlPanel, &ControlPanel::update_output_window_title,
                         this, [this]
         {
@@ -116,32 +110,23 @@ MainWindow::MainWindow(QWidget *parent) :
         recordDlg = new RecordDialog;
     }
 
-    // Apply program styling.
-    {
-        qApp->setWindowIcon(QIcon(":/res/images/icons/appicon.ico"));
-
-        if (controlPanel && controlPanel->custom_program_styling_enabled())
-        {
-            apply_programwide_styling(":/res/stylesheets/appstyle-gray.qss");
-        }
-    }
-
     // Create the window's menu bar.
     {
         // File...
         {
-            QMenu *fileMenu = new QMenu("File", this);
+            QMenu *menu = new QMenu("File", this);
 
-            connect(fileMenu->addAction("Exit"), &QAction::triggered, this, [=]{this->close();});
+            connect(menu->addAction("Exit"), &QAction::triggered, this, [=]{this->close();});
 
-            ui->menuBar->addMenu(fileMenu);
+            ui->menuBar->addMenu(menu);
+            this->addActions(menu->actions());
         }
 
         // Input...
         {
-            QMenu *fileMenu = new QMenu("Input", this);
+            QMenu *menu = new QMenu("Input", this);
 
-            QMenu *channel = new QMenu("Channel", this);
+            QMenu *channel = new QMenu("Capture channel", this);
             {
                 QActionGroup *group = new QActionGroup(this);
 
@@ -182,14 +167,23 @@ MainWindow::MainWindow(QWidget *parent) :
                 connect(c15, &QAction::triggered, this, [=]{kc_set_input_color_depth(15);});
             }
 
-            fileMenu->addMenu(channel);
-            fileMenu->addSeparator();
-            fileMenu->addMenu(colorDepth);
-            fileMenu->addSeparator();
+            menu->addMenu(colorDepth);
+            menu->addSeparator();
+            menu->addMenu(channel);
+            menu->addSeparator();
 
-            connect(fileMenu->addAction("Video..."), &QAction::triggered, this, [=]{this->open_video_dialog();});
-            connect(fileMenu->addAction("Aliases..."), &QAction::triggered, this, [=]{this->open_alias_dialog();});
-            connect(fileMenu->addAction("Resolution..."), &QAction::triggered, this, [=]
+            QAction *video = new QAction("Video...", this);
+            video->setShortcut(QKeySequence("ctrl+v"));
+            menu->addAction(video);
+
+            connect(menu->addAction("Aliases..."), &QAction::triggered, this, [=]{this->open_alias_dialog();});
+
+            QAction *resolution = new QAction("Resolution...", this);
+            resolution->setShortcut(QKeySequence("ctrl+i"));
+            menu->addAction(resolution);
+
+            connect(video, &QAction::triggered, this, [=]{this->open_video_dialog();});
+            connect(resolution, &QAction::triggered, this, [=]
             {
                 resolution_s inRes = kc_hardware().status.capture_resolution();
 
@@ -200,12 +194,13 @@ MainWindow::MainWindow(QWidget *parent) :
                 }
             });
 
-            ui->menuBar->addMenu(fileMenu);
+            ui->menuBar->addMenu(menu);
+            this->addActions(menu->actions());
         }
 
         // Output...
         {
-            QMenu *fileMenu = new QMenu("Output", this);
+            QMenu *menu = new QMenu("Output", this);
 
             QMenu *renderer = new QMenu("Renderer", this);
             {
@@ -294,30 +289,41 @@ MainWindow::MainWindow(QWidget *parent) :
                         [=]{ks_set_forced_aspect_enabled(true); ks_set_aspect_mode(aspect_mode_e::always_4_3);});
             }
 
-            fileMenu->addMenu(renderer);
-            fileMenu->addSeparator();
-            fileMenu->addMenu(aspectRatio);
-            fileMenu->addSeparator();
-            fileMenu->addMenu(upscaler);
-            fileMenu->addMenu(downscaler);
-            fileMenu->addSeparator();
+            menu->addMenu(renderer);
+            menu->addSeparator();
+            menu->addMenu(aspectRatio);
+            menu->addSeparator();
+            menu->addMenu(upscaler);
+            menu->addMenu(downscaler);
+            menu->addSeparator();
 
-            connect(fileMenu->addAction("Record..."), &QAction::triggered, this, [=]{this->open_record_dialog();});
-            connect(fileMenu->addAction("Overlay..."), &QAction::triggered, this, [=]{this->open_overlay_dialog();});
-            connect(fileMenu->addAction("Resolution..."), &QAction::triggered, this, [=]{this->open_output_resolution_dialog();});
-            connect(fileMenu->addAction("Filter graph..."), &QAction::triggered, this, [=]{this->open_filter_graph_dialog();});
-            connect(fileMenu->addAction("Anti-tearing..."), &QAction::triggered, this, [=]{this->open_antitear_dialog();});
+            connect(menu->addAction("Record..."), &QAction::triggered, this, [=]{this->open_record_dialog();});
+            connect(menu->addAction("Overlay..."), &QAction::triggered, this, [=]{this->open_overlay_dialog();});
 
-            ui->menuBar->addMenu(fileMenu);
+            QAction *resolution = new QAction("Resolution...", this);
+            resolution->setShortcut(QKeySequence("ctrl+o"));
+            menu->addAction(resolution);
+            connect(resolution, &QAction::triggered, this, [=]{this->open_output_resolution_dialog();});
+
+            QAction *filter = new QAction("Filter graph...", this);
+            filter->setShortcut(QKeySequence("ctrl+f"));
+            menu->addAction(filter);
+            connect(filter, &QAction::triggered, this, [=]{this->open_filter_graph_dialog();});
+
+            connect(menu->addAction("Anti-tearing..."), &QAction::triggered, this, [=]{this->open_antitear_dialog();});
+
+            ui->menuBar->addMenu(menu);
+            this->addActions(menu->actions());
         }
 
         // Help...
         {
-            QMenu *fileMenu = new QMenu("Help", this);
+            QMenu *menu = new QMenu("Help", this);
 
-            connect(fileMenu->addAction("About..."), &QAction::triggered, this, [=]{this->open_about_dialog();});
+            connect(menu->addAction("About..."), &QAction::triggered, this, [=]{this->open_about_dialog();});
 
-            ui->menuBar->addMenu(fileMenu);
+            ui->menuBar->addMenu(menu);
+            this->addActions(menu->actions());
         }
     }
 
@@ -507,38 +513,6 @@ void MainWindow::open_antitear_dialog(void)
     this->antitearDlg->raise();
 
     return;
-}
-
-// Loads a QSS stylesheet from the given file, and assigns it to the entire
-// program. Returns true if the file was successfully opened; false otherwise;
-// will not signal whether actually assigning the stylesheet succeeded or not.
-bool MainWindow::apply_programwide_styling(const QString &filename)
-{
-    // Take an empty filename to mean that all custom stylings should be removed.
-    if (filename.isEmpty())
-    {
-        qApp->setStyleSheet("");
-
-        return true;
-    }
-
-    // Apply the given style, prepended by an OS-specific font style.
-    QFile styleFile(filename);
-    #if _WIN32
-        QFile defaultFontStyleFile(":/res/stylesheets/font-windows.qss");
-    #else
-        QFile defaultFontStyleFile(":/res/stylesheets/font-linux.qss");
-    #endif
-    if (styleFile.open(QIODevice::ReadOnly) &&
-        defaultFontStyleFile.open(QIODevice::ReadOnly))
-    {
-        qApp->setStyleSheet(QString("%1 %2").arg(QString(defaultFontStyleFile.readAll()))
-                                            .arg(QString(styleFile.readAll())));
-
-        return true;
-    }
-
-    return false;
 }
 
 void MainWindow::refresh(void)
@@ -904,11 +878,6 @@ void MainWindow::set_keyboard_shortcuts()
     });
 
     connect(keyboardShortcut("f5"), &QShortcut::activated, []{if (!kc_no_signal()) ALIGN_CAPTURE = true;});
-
-    connect(keyboardShortcut("ctrl+v"), &QShortcut::activated, [this]{this->controlPanel->open_video_adjust_dialog();});
-    connect(keyboardShortcut("ctrl+a"), &QShortcut::activated, [this]{this->controlPanel->open_antitear_dialog();});
-    connect(keyboardShortcut("ctrl+f"), &QShortcut::activated, [this]{this->controlPanel->open_filter_graph_dialog();});
-    connect(keyboardShortcut("ctrl+o"), &QShortcut::activated, [this]{this->controlPanel->toggle_overlay();});
 
     return;
 }

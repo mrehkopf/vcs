@@ -82,8 +82,6 @@ public:
 
     void update_video_mode_params(void);
 
-    bool apply_programwide_styling(const QString &filename);
-
     uint output_framerate(void);
 
     void clear_filter_graph(void);

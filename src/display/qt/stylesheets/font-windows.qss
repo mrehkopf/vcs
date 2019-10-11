@@ -1,7 +1,0 @@
-/* VCS's default program-wide font style; intended for Windows targets.*/
-
-*
-{
-    font-family: "Ubuntu"; /*Assumes that the non-standard Ubuntu font is provided with VCS.*/
-    font-size: 10pt;
-}

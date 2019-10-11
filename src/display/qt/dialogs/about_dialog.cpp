@@ -63,14 +63,6 @@ AboutDialog::AboutDialog(QWidget *parent) :
 
 AboutDialog::~AboutDialog()
 {
-    // Save persistent settings.
-    {
-        // Custom interface styling is disabled for now.
-        #if 0
-            kpers_set_value(INI_GROUP_APP, "custom_styling", ui->comboBox_customInterfaceStyling->currentText());
-        #endif
-    }
-
     delete ui;
 
     return;
