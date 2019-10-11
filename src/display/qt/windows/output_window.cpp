@@ -843,18 +843,8 @@ void MainWindow::update_window_title()
     {
         const resolution_s inRes = kc_hardware().status.capture_resolution();
         const resolution_s outRes = ks_output_resolution();
-        const int size = round((outRes.h / (real)inRes.h) * 100);
 
-        // Estimate the % by which the input image is scaled up/down.
-        if ((inRes.w == outRes.w) &&
-            (inRes.h == outRes.h))
-        {
-            scaleString = QString(" scaled to %1%").arg(size);
-        }
-        else
-        {
-            scaleString = QString(" scaled to ~%1%").arg(size);
-        }
+        scaleString = QString(" scaled to %1 x %2").arg(outRes.w).arg(outRes.h);
 
         if (kc_are_frames_being_missed())
         {
