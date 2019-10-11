@@ -11,8 +11,12 @@
 #include "display/display.h"
 #include "common/globals.h"
 
+class VideoAndColorDialog;
+class FilterGraphDialog;
+class AntiTearDialog;
 class OverlayDialog;
 class ControlPanel;
+class AliasDialog;
 class PerfDialog;
 
 struct capture_signal_s;
@@ -88,6 +92,14 @@ public:
 
     void set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);
 
+    void open_filter_graph_dialog(void);
+
+    void open_antitear_dialog(void);
+
+    void open_video_dialog(void);
+
+    void open_alias_dialog(void);
+
 private slots:
     void toggle_window_border(void);
 
@@ -110,6 +122,11 @@ private:
 
     ControlPanel *controlPanel = nullptr;
     OverlayDialog *overlayDlg = nullptr;
+
+    VideoAndColorDialog *videoDlg = nullptr;
+    FilterGraphDialog *filterGraphDlg = nullptr;
+    AntiTearDialog *antitearDlg = nullptr;
+    AliasDialog *aliasDlg = nullptr;
 
     // Set to true when the user has selected to close the
     // main window.

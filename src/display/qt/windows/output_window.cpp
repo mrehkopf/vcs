@@ -27,10 +27,14 @@
 #include <QLabel>
 #include <cmath>
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
+#include "display/qt/dialogs/video_and_color_dialog.h"
 #include "display/qt/windows/control_panel_window.h"
+#include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/dialogs/resolution_dialog.h"
+#include "display/qt/dialogs/anti_tear_dialog.h"
 #include "display/qt/dialogs/overlay_dialog.h"
 #include "display/qt/windows/output_window.h"
+#include "display/qt/dialogs/alias_dialog.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
 #include "common/globals.h"
@@ -78,12 +82,6 @@ MainWindow::MainWindow(QWidget *parent) :
             apply_programwide_styling(filename);
         });
 
-        connect(controlPanel, &ControlPanel::open_overlay_dialog,
-                        this, [this]
-        {
-            show_overlay_dialog();
-        });
-
         connect(controlPanel, &ControlPanel::update_output_window_title,
                         this, [this]
         {
@@ -96,34 +94,19 @@ MainWindow::MainWindow(QWidget *parent) :
             update_window_size();
         });
 
-        connect(controlPanel, &ControlPanel::set_renderer,
-                        this, [this](const QString &rendererName)
-        {
-            if (rendererName == "Software")
-            {
-                INFO(("Renderer: software."));
-                set_opengl_enabled(false);
-            }
-            else if (rendererName == "OpenGL")
-            {
-                INFO(("Renderer: OpenGL."));
-                set_opengl_enabled(true);
-            }
-            else
-            {
-                k_assert(0, "Unknown renderer type.");
-            }
-        });
-
         // Note: the relevant signals and slots should be connected, above, before
         // asking to restore persistent settings, so that any settings that rely
         // on emitting signals back take proper effect.
         controlPanel->restore_persistent_settings();
     }
 
-    // Set up the overlay dialog.
+    // Set up dialogs.
     {
+        filterGraphDlg = new FilterGraphDialog;
+        antitearDlg = new AntiTearDialog;
         overlayDlg = new OverlayDialog;
+        videoDlg = new VideoAndColorDialog;
+        aliasDlg = new AliasDialog;
     }
 
     // Apply program styling.
@@ -142,7 +125,7 @@ MainWindow::MainWindow(QWidget *parent) :
         {
             QMenu *fileMenu = new QMenu("File", this);
 
-            connect(fileMenu->addAction("Exit"), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("Exit"), &QAction::triggered, this, [=]{this->close();});
 
             ui->menuBar->addMenu(fileMenu);
         }
@@ -152,9 +135,19 @@ MainWindow::MainWindow(QWidget *parent) :
             QMenu *fileMenu = new QMenu("Input", this);
 
             QMenu *channel = new QMenu("Channel", this);
-            for (int i = 0; i < kc_hardware().meta.num_capture_inputs(); i++)
             {
-                connect(channel->addAction(QString("#%1").arg(i)), &QAction::triggered, this, [=]{});
+                QActionGroup *group = new QActionGroup(this);
+
+                for (int i = 0; i < kc_hardware().meta.num_capture_inputs(); i++)
+                {
+                    QAction *inputChannel = new QAction(QString::number(i+1), this);
+                    inputChannel->setActionGroup(group);
+                    inputChannel->setCheckable(true);
+                    if (i == 0) inputChannel->setChecked(true);
+                    channel->addAction(inputChannel);
+
+                    connect(inputChannel, &QAction::triggered, this, [=]{kc_set_input_channel(i);});
+                }
             }
 
             QMenu *colorDepth = new QMenu("Color depth", this);
@@ -177,17 +170,17 @@ MainWindow::MainWindow(QWidget *parent) :
                 c15->setCheckable(true);
                 colorDepth->addAction(c15);
 
-                connect(c24, &QAction::triggered, this, [=]{});
-                connect(c16, &QAction::triggered, this, [=]{});
-                connect(c15, &QAction::triggered, this, [=]{});
+                connect(c24, &QAction::triggered, this, [=]{kc_set_input_color_depth(24);});
+                connect(c16, &QAction::triggered, this, [=]{kc_set_input_color_depth(16);});
+                connect(c15, &QAction::triggered, this, [=]{kc_set_input_color_depth(15);});
             }
 
             fileMenu->addMenu(channel);
             fileMenu->addSeparator();
             fileMenu->addMenu(colorDepth);
             fileMenu->addSeparator();
-            connect(fileMenu->addAction("Video..."), &QAction::triggered, this, [=]{});
-            connect(fileMenu->addAction("Aliases..."), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("Video..."), &QAction::triggered, this, [=]{this->open_video_dialog();});
+            connect(fileMenu->addAction("Aliases..."), &QAction::triggered, this, [=]{this->open_alias_dialog();});
             connect(fileMenu->addAction("Resolution..."), &QAction::triggered, this, [=]{});
 
             ui->menuBar->addMenu(fileMenu);
@@ -212,20 +205,19 @@ MainWindow::MainWindow(QWidget *parent) :
                 software->setChecked(true);
                 renderer->addAction(software);
 
-                connect(opengl, &QAction::triggered, this, [=]{});
-                connect(software, &QAction::triggered, this, [=]{});
+                connect(opengl, &QAction::triggered, this, [=]{this->set_opengl_enabled(true);});
+                connect(software, &QAction::triggered, this, [=]{this->set_opengl_enabled(false);});
             }
 
             QMenu *aspectRatio = new QMenu("Aspect ratio", this);
             {
                 QActionGroup *group = new QActionGroup(this);
 
-                QAction *native = new QAction("Frame native", this);
+                QAction *native = new QAction("Frame", this);
                 native->setActionGroup(group);
                 native->setCheckable(true);
                 native->setChecked(true);
                 aspectRatio->addAction(native);
-                aspectRatio->addSeparator();
 
                 QAction *always43 = new QAction("Always 4:3", this);
                 always43->setActionGroup(group);
@@ -237,20 +229,23 @@ MainWindow::MainWindow(QWidget *parent) :
                 traditional43->setCheckable(true);
                 aspectRatio->addAction(traditional43);
 
-                connect(native, &QAction::triggered, this, [=]{});
-                connect(traditional43, &QAction::triggered, this, [=]{});
-                connect(always43, &QAction::triggered, this, [=]{});
+                connect(native, &QAction::triggered, this,
+                        [=]{ks_set_forced_aspect_enabled(false); ks_set_aspect_mode(aspect_mode_e::native);});
+                connect(traditional43, &QAction::triggered, this,
+                        [=]{ks_set_forced_aspect_enabled(true); ks_set_aspect_mode(aspect_mode_e::traditional_4_3);});
+                connect(always43, &QAction::triggered, this,
+                        [=]{ks_set_forced_aspect_enabled(true); ks_set_aspect_mode(aspect_mode_e::always_4_3);});
             }
 
             fileMenu->addMenu(renderer);
             fileMenu->addSeparator();
             fileMenu->addMenu(aspectRatio);
             fileMenu->addSeparator();
-            connect(fileMenu->addAction("Overlay..."), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("Overlay..."), &QAction::triggered, this, [=]{this->show_overlay_dialog();});
             connect(fileMenu->addAction("Recording..."), &QAction::triggered, this, [=]{});
             connect(fileMenu->addAction("Resolution..."), &QAction::triggered, this, [=]{});
-            connect(fileMenu->addAction("Filter graph..."), &QAction::triggered, this, [=]{});
-            connect(fileMenu->addAction("Anti-tearing..."), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("Filter graph..."), &QAction::triggered, this, [=]{this->open_filter_graph_dialog();});
+            connect(fileMenu->addAction("Anti-tearing..."), &QAction::triggered, this, [=]{this->open_antitear_dialog();});
 
             ui->menuBar->addMenu(fileMenu);
         }
@@ -337,6 +332,18 @@ MainWindow::~MainWindow()
     delete overlayDlg;
     overlayDlg = nullptr;
 
+    delete filterGraphDlg;
+    filterGraphDlg = nullptr;
+
+    delete antitearDlg;
+    antitearDlg = nullptr;
+
+    delete videoDlg;
+    videoDlg = nullptr;
+
+    delete aliasDlg;
+    aliasDlg = nullptr;
+
     return;
 }
 
@@ -350,6 +357,46 @@ bool MainWindow::load_font(const QString &filename)
     }
 
     return true;
+}
+
+void MainWindow::open_filter_graph_dialog(void)
+{
+    k_assert(this->filterGraphDlg != nullptr, "");
+    this->filterGraphDlg->show();
+    this->filterGraphDlg->activateWindow();
+    this->filterGraphDlg->raise();
+
+    return;
+}
+
+void MainWindow::open_video_dialog(void)
+{
+    k_assert(this->videoDlg != nullptr, "");
+    this->videoDlg->show();
+    this->videoDlg->activateWindow();
+    this->videoDlg->raise();
+
+    return;
+}
+
+void MainWindow::open_alias_dialog(void)
+{
+    k_assert(this->aliasDlg != nullptr, "");
+    this->aliasDlg->show();
+    this->aliasDlg->activateWindow();
+    this->aliasDlg->raise();
+
+    return;
+}
+
+void MainWindow::open_antitear_dialog(void)
+{
+    k_assert(this->antitearDlg != nullptr, "");
+    this->antitearDlg->show();
+    this->antitearDlg->activateWindow();
+    this->antitearDlg->raise();
+
+    return;
 }
 
 // Loads a QSS stylesheet from the given file, and assigns it to the entire
@@ -399,6 +446,8 @@ void MainWindow::set_opengl_enabled(const bool enabled)
 {
     if (enabled)
     {
+        INFO(("Renderer: OpenGL."));
+
         k_assert((OGL_SURFACE == nullptr), "Can't doubly enable OpenGL.");
 
         OGL_SURFACE = new OGLWidget(std::bind(&MainWindow::overlay_image, this), this);
@@ -419,6 +468,8 @@ void MainWindow::set_opengl_enabled(const bool enabled)
     }
     else
     {
+        INFO(("Renderer: Software."));
+
         ui->centralwidget->layout()->removeWidget(OGL_SURFACE);
         delete OGL_SURFACE;
         OGL_SURFACE = nullptr;
@@ -459,7 +510,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
     else
     {
-        MainWindow::keyPressEvent(event);
+        QWidget::keyPressEvent(event);
     }
 
     return;

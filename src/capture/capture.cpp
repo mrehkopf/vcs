@@ -1058,9 +1058,13 @@ resolution_s capture_hardware_s::metainfo_s::maximum_capture_resolution() const
 
 int capture_hardware_s::metainfo_s::num_capture_inputs() const
 {
+#if USE_RGBEASY_API
     unsigned long numInputs = 0;
     if (!apicall_succeeds(RGBGetNumberOfInputs(&numInputs))) return -1;
     return numInputs;
+#else
+    return 2;
+#endif
 }
 
 bool capture_hardware_s::metainfo_s::is_dma_enabled() const
