@@ -35,6 +35,7 @@
 #include "display/qt/dialogs/overlay_dialog.h"
 #include "display/qt/windows/output_window.h"
 #include "display/qt/dialogs/alias_dialog.h"
+#include "display/qt/dialogs/about_dialog.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
 #include "common/globals.h"
@@ -107,6 +108,7 @@ MainWindow::MainWindow(QWidget *parent) :
         overlayDlg = new OverlayDialog;
         videoDlg = new VideoAndColorDialog;
         aliasDlg = new AliasDialog;
+        aboutDlg = new AboutDialog;
     }
 
     // Apply program styling.
@@ -254,7 +256,7 @@ MainWindow::MainWindow(QWidget *parent) :
         {
             QMenu *fileMenu = new QMenu("Help", this);
 
-            connect(fileMenu->addAction("About..."), &QAction::triggered, this, [=]{});
+            connect(fileMenu->addAction("About..."), &QAction::triggered, this, [=]{this->open_about_dialog();});
 
             ui->menuBar->addMenu(fileMenu);
         }
@@ -297,9 +299,9 @@ MainWindow::MainWindow(QWidget *parent) :
                 {
                     INFO(("A newer version of VCS is available."));
 
-                    if (this->controlPanel)
+                    if (this->aboutDlg)
                     {
-                        this->controlPanel->notify_of_new_program_version();
+                        this->aboutDlg->notify_of_new_program_version();
                     }
                 }
             }
@@ -344,6 +346,9 @@ MainWindow::~MainWindow()
     delete aliasDlg;
     aliasDlg = nullptr;
 
+    delete aboutDlg;
+    aboutDlg = nullptr;
+
     return;
 }
 
@@ -375,6 +380,26 @@ void MainWindow::open_video_dialog(void)
     this->videoDlg->show();
     this->videoDlg->activateWindow();
     this->videoDlg->raise();
+
+    return;
+}
+
+void MainWindow::open_overlay_dialog(void)
+{
+    k_assert(this->overlayDlg != nullptr, "");
+    this->overlayDlg->show();
+    this->overlayDlg->activateWindow();
+    this->overlayDlg->raise();
+
+    return;
+}
+
+void MainWindow::open_about_dialog(void)
+{
+    k_assert(this->aboutDlg != nullptr, "");
+    this->aboutDlg->show();
+    this->aboutDlg->activateWindow();
+    this->aboutDlg->raise();
 
     return;
 }
@@ -953,16 +978,6 @@ void MainWindow::clear_known_aliases()
 {
     k_assert(controlPanel != nullptr, "");
     controlPanel->clear_known_aliases();
-
-    return;
-}
-
-void MainWindow::open_overlay_dialog()
-{
-    k_assert(overlayDlg != nullptr, "");
-    overlayDlg->show();
-    overlayDlg->activateWindow();
-    overlayDlg->raise();
 
     return;
 }

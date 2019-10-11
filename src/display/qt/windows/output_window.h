@@ -17,7 +17,7 @@ class AntiTearDialog;
 class OverlayDialog;
 class ControlPanel;
 class AliasDialog;
-class PerfDialog;
+class AboutDialog;
 
 struct capture_signal_s;
 struct mode_alias_s;
@@ -100,6 +100,8 @@ public:
 
     void open_alias_dialog(void);
 
+    void open_about_dialog(void);
+
 private slots:
     void toggle_window_border(void);
 
@@ -127,6 +129,7 @@ private:
     FilterGraphDialog *filterGraphDlg = nullptr;
     AntiTearDialog *antitearDlg = nullptr;
     AliasDialog *aliasDlg = nullptr;
+    AboutDialog *aboutDlg = nullptr;
 
     // Set to true when the user has selected to close the
     // main window.

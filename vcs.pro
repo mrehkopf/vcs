@@ -91,7 +91,8 @@ SOURCES += \
     src/display/qt/subclasses/QGraphicsView_interactible_node_graph_view.cpp \
     src/common/disk_legacy.cpp \
     src/display/qt/dialogs/filter_graph_dialog.cpp \
-    src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.cpp
+    src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.cpp \
+    src/display/qt/dialogs/about_dialog.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -133,7 +134,8 @@ HEADERS += \
     src/common/disk_legacy.h \
     src/common/file_writer.h \
     src/display/qt/dialogs/filter_graph_dialog.h \
-    src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h
+    src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h \
+    src/display/qt/dialogs/about_dialog.h
 
 FORMS += \
     src/display/qt/windows/ui/control_panel_window.ui \
@@ -147,7 +149,8 @@ FORMS += \
     src/display/qt/widgets/ui/control_panel_record_widget.ui \
     src/display/qt/widgets/ui/control_panel_output_widget.ui \
     src/display/qt/widgets/ui/control_panel_input_widget.ui \
-    src/display/qt/dialogs/ui/filter_graph_dialog.ui
+    src/display/qt/dialogs/ui/filter_graph_dialog.ui \
+    src/display/qt/dialogs/ui/about_dialog.ui
 
 # C++. For GCC/Clang/MinGW.
 QMAKE_CXXFLAGS += -g
