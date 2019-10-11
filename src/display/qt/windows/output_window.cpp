@@ -28,6 +28,7 @@
 #include <cmath>
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
 #include "display/qt/dialogs/output_resolution_dialog.h"
+#include "display/qt/dialogs/input_resolution_dialog.h"
 #include "display/qt/dialogs/video_and_color_dialog.h"
 #include "display/qt/windows/control_panel_window.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
@@ -101,6 +102,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Set up dialogs.
     {
         outputResolutionDlg = new OutputResolutionDialog;
+        inputResolutionDlg = new InputResolutionDialog;
         filterGraphDlg = new FilterGraphDialog;
         antitearDlg = new AntiTearDialog;
         overlayDlg = new OverlayDialog;
@@ -183,16 +185,7 @@ MainWindow::MainWindow(QWidget *parent) :
             menu->addAction(resolution);
 
             connect(video, &QAction::triggered, this, [=]{this->open_video_dialog();});
-            connect(resolution, &QAction::triggered, this, [=]
-            {
-                resolution_s inRes = kc_hardware().status.capture_resolution();
-
-                if (ResolutionDialog("Set input resolution", &inRes, this).exec() == QDialog::Accepted)
-                {
-                    DEBUG(("Received a request via the GUI to set the input resolution to %u x %u.", inRes.w, inRes.h));
-                    kpropagate_forced_capture_resolution(inRes);
-                }
-            });
+            connect(resolution, &QAction::triggered, this, [=]{this->open_input_resolution_dialog();});
 
             ui->menuBar->addMenu(menu);
             this->addActions(menu->actions());
@@ -420,6 +413,9 @@ MainWindow::~MainWindow()
     delete outputResolutionDlg;
     outputResolutionDlg = nullptr;
 
+    delete inputResolutionDlg;
+    inputResolutionDlg = nullptr;
+
     return;
 }
 
@@ -451,6 +447,16 @@ void MainWindow::open_output_resolution_dialog(void)
     this->outputResolutionDlg->show();
     this->outputResolutionDlg->activateWindow();
     this->outputResolutionDlg->raise();
+
+    return;
+}
+
+void MainWindow::open_input_resolution_dialog(void)
+{
+    k_assert(this->inputResolutionDlg != nullptr, "");
+    this->inputResolutionDlg->show();
+    this->inputResolutionDlg->activateWindow();
+    this->inputResolutionDlg->raise();
 
     return;
 }
@@ -854,10 +860,11 @@ void MainWindow::set_keyboard_shortcuts()
     };
 
     // Assign ctrl + numeral key 1-9 to the input resolution force buttons.
+    k_assert(this->inputResolutionDlg != nullptr, "");
     for (uint i = 1; i <= 9; i++)
     {
         connect(keyboardShortcut(QString("ctrl+%1").arg(QString::number(i)).toStdString()),
-                &QShortcut::activated, [=]{this->controlPanel->activate_capture_res_button(i);});
+                &QShortcut::activated, [=]{this->inputResolutionDlg->activate_capture_res_button(i);});
     }
 
     // Assign alt + arrow keys to move the capture input alignment horizontally and vertically.
