@@ -18,7 +18,7 @@ InputResolutionDialog::InputResolutionDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Input resolution");
+    this->setWindowTitle("VCS - Capture resolution");
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);

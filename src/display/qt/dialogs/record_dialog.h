@@ -17,10 +17,7 @@ public:
 
     void update_recording_metainfo(void);
 
-signals:
-    void recording_started(void);
-
-    void recording_stopped(void);
+    void set_recording_controls_enabled(const bool areEnabled);
 
 private:
     bool apply_x264_registry_settings(void);

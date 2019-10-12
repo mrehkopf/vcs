@@ -911,6 +911,14 @@ void MainWindow::clear_filter_graph(void)
     return;
 }
 
+void MainWindow::disable_output_size_controls(const bool areDisabled)
+{
+    k_assert(this->outputResolutionDlg != nullptr, "");
+    outputResolutionDlg->disable_output_size_controls(areDisabled);
+
+    return;
+}
+
 FilterGraphNode* MainWindow::add_filter_graph_node(const filter_type_enum_e &filterType,
                                                    const u8 *const initialParameterValues)
 {
@@ -922,6 +930,14 @@ void MainWindow::signal_new_mode_settings_source_file(const std::string &filenam
 {
     k_assert(this->videoDlg != nullptr, "");
     this->videoDlg->receive_new_mode_settings_filename(QString::fromStdString(filename));
+
+    return;
+}
+
+void MainWindow::set_recording_is_active(const bool isActive)
+{
+    k_assert(this->recordDlg != nullptr, "");
+    this->recordDlg->set_recording_controls_enabled(isActive);
 
     return;
 }

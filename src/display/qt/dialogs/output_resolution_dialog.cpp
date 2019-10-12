@@ -16,6 +16,8 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+    disable_output_size_controls(false);
+
     // Connect the GUI controls to consequences for changing their values.
     {
         // Returns true if the given checkbox is in a proper checked state. Returns
@@ -128,6 +130,16 @@ void OutputResolutionDialog::adjust_output_scaling(const int dir)
     }
 
     ui->spinBox_outputScale->setValue(curValue + (stepSize * dir));
+
+    return;
+}
+
+void OutputResolutionDialog::disable_output_size_controls(const bool areDisabled)
+{
+    ui->frame_outputResolutionControls->setDisabled(areDisabled);
+
+    ui->label_notice->setText(areDisabled? "<b>Note:</b> The output resolution is currently fixed."
+                                         : "These controls alter the size of the output window.");
 
     return;
 }

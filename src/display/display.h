@@ -62,6 +62,9 @@ struct filter_graph_option_s
 void kd_acquire_output_window(void);
 void kd_release_output_window(void);
 
+// Enable/disable GUI controls for changing the size of the output window.
+void kd_disable_output_size_controls(const bool areDisabled);
+
 void kd_clear_filter_graph(void);
 
 void kd_set_filter_graph_source_filename(const std::string &sourceFilename);
@@ -75,13 +78,19 @@ FilterGraphNode* kd_add_filter_graph_node(const filter_type_enum_e &filterType, 
 // it into the output window.
 void kd_redraw_output_window(void);
 
+// Video recording of output frames has begun or ended. Update the GUI's state
+// accordingly.
+void kd_set_video_recording_is_active(const bool isActive);
+
+void kd_update_output_window_title(void);
+
 // The size of the output frame has changed. Poll its current size, and resize
 // the output window accordingly.
 void kd_update_output_window_size(void);
 
 // Information about the current video recording has changed (e.g. recording has
 // started or stopped). Poll its currents status, and update the GUI accordingly.
-void kd_update_recording_metainfo(void);
+void kd_update_video_recording_metainfo(void);
 
 // The current capture video parameters have changed. Poll their current values,
 // and update the GUI accordingly.

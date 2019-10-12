@@ -42,6 +42,42 @@ void kpropagate_news_of_new_capture_video_mode(void)
     return;
 }
 
+// Recording of output frames into a video file has begun. This message should be
+// propagated only when the recording has started anew; so e.g. resuming from a
+// paused state should not propagate this message.
+void kpropagate_news_of_recording_started(void)
+{
+    kd_set_video_recording_is_active(true);
+    kd_update_video_recording_metainfo();
+    kd_update_output_window_title();
+
+    // Disable any GUI functionality that would let the user change the current
+    // output size, since we want to keep the output resolution constant while
+    // recording.
+    kd_disable_output_size_controls(true);
+
+    return;
+}
+
+// Recording of output frames into a video file has ended. Note that suspended states,
+// like the recording being paused, should not propagate this message.
+void kpropagate_news_of_recording_ended(void)
+{
+    kd_disable_output_size_controls(false);
+
+    kd_set_video_recording_is_active(false);
+    kd_update_video_recording_metainfo();
+    kd_update_output_window_title();
+
+    // The output resolution might have changed while we were recording, but
+    // since we also prevent the size of the output window from changing while
+    // recording, we should now - that recording has stopped - tell the window
+    // to update its size to match the current proper output size.
+    kd_update_output_window_size();
+
+    return;
+}
+
 // Call to let the system know that the given mode parameters have been loaded
 // from the given file.
 void kpropagate_loaded_mode_params_from_disk(const std::vector<video_mode_params_s> &modeParams,

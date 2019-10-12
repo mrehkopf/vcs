@@ -14,6 +14,7 @@
 #include <QElapsedTimer>
 #include <QFileInfo>
 #include <QFuture>
+#include "common/propagate.h"
 #include "display/display.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
@@ -292,7 +293,7 @@ bool krecord_start_recording(const char *const filename,
         return false;
     }
 
-    kd_update_recording_metainfo();
+    kpropagate_news_of_recording_started();
 
     return true;
 #endif
@@ -412,7 +413,7 @@ void krecord_record_new_frame(void)
         RECORDING.encoderThread.waitForFinished();
 
         FRAMERATE_ESTIMATE.update(RECORDING.meta.numFrames);
-        kd_update_recording_metainfo();
+        kd_update_video_recording_metainfo();
 
         // Run the encoding in a separate thread.
         const auto frameBuffer = RECORDING.activeFrameBuffer;
@@ -434,7 +435,7 @@ void krecord_stop_recording(void)
     RECORDING.encoderThread.waitForFinished();
     VIDEO_WRITER.release();
 
-    kd_update_recording_metainfo();
+    kpropagate_news_of_recording_ended();
 
     return;
 #endif

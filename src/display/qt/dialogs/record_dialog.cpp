@@ -31,14 +31,15 @@ RecordDialog::RecordDialog(QDialog *parent) :
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    // Disable certain recording features depending on the OS.
+    // Certain features of recording are not available on certain operating systems;
+    // so disable them accordingly.
     {
         // Encoder settings.
         #if _WIN32
             /// At the moment, no changes are needed on Windows.
         #elif __linux__
-            // The x264 settings are hardcoded into OpenCV's libraries
-            // on Linux, so they can't be altered via the VCS GUI.
+            // The x264 settings are hardcoded into OpenCV's libraries on Linux, so
+            // they can't be altered via the VCS GUI.
             ui->frame_recordingCodecSettings->setEnabled(false);
         #else
             #error "Unknown platform."
@@ -48,6 +49,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
         {
             QString containerName;
             #if _WIN32
+                // We'll use the x264vfw encoder on Windows, which outputs into AVI.
                 containerName = "AVI";
             #elif __linux__
                 containerName = "MP4";
@@ -86,30 +88,15 @@ RecordDialog::RecordDialog(QDialog *parent) :
 
             const resolution_s videoResolution = ks_output_resolution();
 
-            if (krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
+            krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
                                         videoResolution.w, videoResolution.h,
                                         ui->spinBox_recordingFramerate->value(),
-                                        ui->checkBox_recordingLinearFrameInsertion->isChecked()))
-            {
-                ui->pushButton_recordingStart->setEnabled(false);
-                ui->pushButton_recordingStop->setEnabled(true);
-                ui->frame_recordingSettings->setEnabled(false);
-                ui->frame_recordingFile->setEnabled(false);
-
-                emit recording_started();
-            }
+                                        ui->checkBox_recordingLinearFrameInsertion->isChecked());
         });
 
         connect(ui->pushButton_recordingStop, &QPushButton::clicked, this, [this]
         {
             krecord_stop_recording();
-
-            ui->pushButton_recordingStart->setEnabled(true);
-            ui->pushButton_recordingStop->setEnabled(false);
-            ui->frame_recordingSettings->setEnabled(true);
-            ui->frame_recordingFile->setEnabled(true);
-
-            emit recording_stopped();
         });
 
         connect(ui->pushButton_recordingSelectFilename, &QPushButton::clicked, this, [this]
@@ -167,6 +154,31 @@ RecordDialog::~RecordDialog()
     }
 
     delete ui;
+
+    return;
+}
+
+// Enables or disables the dialog's GUI controls for changing recording settings,
+// starting/stopping the recording, etc. Note that when the controls are set to
+// disabled, the 'stop recording' button will be enabled - it's assumed that one
+// calls this function to disable the controls as a result of recording having
+// begun.
+void RecordDialog::set_recording_controls_enabled(const bool areEnabled)
+{
+    if (areEnabled)
+    {
+        ui->pushButton_recordingStart->setEnabled(false);
+        ui->pushButton_recordingStop->setEnabled(true);
+        ui->frame_recordingSettings->setEnabled(false);
+        ui->frame_recordingFile->setEnabled(false);
+    }
+    else
+    {
+        ui->pushButton_recordingStart->setEnabled(true);
+        ui->pushButton_recordingStop->setEnabled(false);
+        ui->frame_recordingSettings->setEnabled(true);
+        ui->frame_recordingFile->setEnabled(true);
+    }
 
     return;
 }

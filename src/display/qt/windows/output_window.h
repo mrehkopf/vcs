@@ -110,6 +110,10 @@ public:
 
     void open_input_resolution_dialog(void);
 
+    void disable_output_size_controls(const bool areDisabled);
+
+    void set_recording_is_active(const bool isActive);
+
 private slots:
     void toggle_window_border(void);
 

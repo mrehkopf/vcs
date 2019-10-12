@@ -17,6 +17,8 @@ void kpropagate_news_of_gained_capture_signal(void);
 void kpropagate_news_of_lost_capture_signal(void);
 void kpropagate_news_of_unrecoverable_error(void);
 void kpropagate_news_of_new_captured_frame(void);
+void kpropagate_news_of_recording_started(void);
+void kpropagate_news_of_recording_ended(void);
 
 void kpropagate_saved_filter_graph_to_disk(const std::string &targetFilename);
 void kpropagate_saved_mode_params_to_disk(const std::vector<video_mode_params_s> &modeParams, const std::string &targetFilename);

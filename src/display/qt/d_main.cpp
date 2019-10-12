@@ -42,6 +42,16 @@ void kd_clear_filter_graph(void)
     return;
 }
 
+void kd_disable_output_size_controls(const bool areDisabled)
+{
+    if (WINDOW != nullptr)
+    {
+        WINDOW->disable_output_size_controls(areDisabled);
+    }
+
+    return;
+}
+
 FilterGraphNode* kd_add_filter_graph_node(const filter_type_enum_e &filterType,
                                           const u8 *const initialParameterValues)
 {
@@ -186,7 +196,7 @@ void kd_spin_event_loop(void)
     return;
 }
 
-void kd_update_recording_metainfo(void)
+void kd_update_video_recording_metainfo(void)
 {
     // A recording may still be ongoing when the user requests the program to
     // exit. In that case, we can just ignore this request to update the GUI.
@@ -195,6 +205,26 @@ void kd_update_recording_metainfo(void)
     k_assert(WINDOW != nullptr,
              "Expected the display to have been acquired before accessing it for events processing. ");
     WINDOW->update_recording_metainfo();
+
+    return;
+}
+
+void kd_set_video_recording_is_active(const bool isActive)
+{
+    if (WINDOW != nullptr)
+    {
+        WINDOW->set_recording_is_active(isActive);
+    }
+
+    return;
+}
+
+void kd_update_output_window_title(void)
+{
+    if (WINDOW != nullptr)
+    {
+        WINDOW->update_window_title();
+    }
 
     return;
 }

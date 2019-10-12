@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>349</width>
-    <height>313</height>
+    <width>338</width>
+    <height>326</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -161,17 +161,21 @@
      </layout>
     </widget>
    </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>These controls override the capture resolution.</string>
+     </property>
+    </widget>
+   </item>
   </layout>
-  <zorder>pushButton_inputForce_3</zorder>
-  <zorder>pushButton_inputForce_6</zorder>
-  <zorder>pushButton_inputForce_4</zorder>
-  <zorder>pushButton_inputForce_1</zorder>
-  <zorder>pushButton_inputForce_9</zorder>
-  <zorder>pushButton_inputForce_8</zorder>
-  <zorder>pushButton_inputForce_7</zorder>
-  <zorder>pushButton_inputForce_5</zorder>
-  <zorder>pushButton_inputForce_2</zorder>
-  <zorder>frame_inputForceButtons</zorder>
  </widget>
  <resources/>
  <connections/>
