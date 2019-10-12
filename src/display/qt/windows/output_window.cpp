@@ -600,14 +600,14 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    if ((event->key() == Qt::Key_Alt) && !event->isAutoRepeat())
+    if ((event->key() == Qt::Key_Tab) && !event->isAutoRepeat())
     {
         ui->menuBar->setVisible(!ui->menuBar->isVisible());
+
+        return;
     }
-    else
-    {
-        QWidget::keyPressEvent(event);
-    }
+
+    QWidget::keyPressEvent(event);
 
     return;
 }
