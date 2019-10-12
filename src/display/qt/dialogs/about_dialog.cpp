@@ -4,7 +4,6 @@
  *
  */
 
-#include "display/qt/widgets/control_panel_about_widget.h"
 #include "display/qt/dialogs/about_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"

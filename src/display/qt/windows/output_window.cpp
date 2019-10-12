@@ -30,7 +30,6 @@
 #include "display/qt/dialogs/output_resolution_dialog.h"
 #include "display/qt/dialogs/input_resolution_dialog.h"
 #include "display/qt/dialogs/video_and_color_dialog.h"
-#include "display/qt/windows/control_panel_window.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/dialogs/resolution_dialog.h"
 #include "display/qt/dialogs/anti_tear_dialog.h"
@@ -77,28 +76,6 @@ MainWindow::MainWindow(QWidget *parent) :
     mainLayout->setSpacing(0);
 
     ui->menuBar->setVisible(false);
-
-    // Set up the control panel window.
-    {
-        controlPanel = new ControlPanel;
-
-        connect(controlPanel, &ControlPanel::update_output_window_title,
-                        this, [this]
-        {
-            update_window_title();
-        });
-
-        connect(controlPanel, &ControlPanel::update_output_window_size,
-                        this, [this]
-        {
-            update_window_size();
-        });
-
-        // Note: the relevant signals and slots should be connected, above, before
-        // asking to restore persistent settings, so that any settings that rely
-        // on emitting signals back take proper effect.
-        controlPanel->restore_persistent_settings();
-    }
 
     // Set up dialogs.
     {
@@ -282,7 +259,6 @@ MainWindow::MainWindow(QWidget *parent) :
                 QAction *native = new QAction("Native", this);
                 native->setActionGroup(group);
                 native->setCheckable(true);
-                native->setChecked(true);
                 aspectRatio->addAction(native);
 
                 QAction *always43 = new QAction("Always 4:3", this);
@@ -305,8 +281,8 @@ MainWindow::MainWindow(QWidget *parent) :
                         [=](const bool checked){if (checked) { ks_set_forced_aspect_enabled(true); ks_set_aspect_mode(aspect_mode_e::always_4_3);}});
 
                 if (defaultAspectRatio == "Native") native->setChecked(true);
-                else if (defaultAspectRatio == "Always 4:3") native->setChecked(true);
-                else if (defaultAspectRatio == "Traditional 4:3") native->setChecked(true);
+                else if (defaultAspectRatio == "Always 4:3") always43->setChecked(true);
+                else if (defaultAspectRatio == "Traditional 4:3") traditional43->setChecked(true);
             }
 
             menu->addMenu(renderer);
@@ -352,7 +328,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     update_window_size();
     update_window_title();
-
     set_keyboard_shortcuts();
 
 #ifdef _WIN32
@@ -362,12 +337,6 @@ MainWindow::MainWindow(QWidget *parent) :
     toggle_window_border();
 #endif
 
-    // Locate the control panel in a convenient position on the screen.
-    controlPanel->move(std::min(QGuiApplication::primaryScreen()->availableSize().width() - controlPanel->width(),
-                                this->width() + (this->frameSize() - this->size()).width()), 0);
-    controlPanel->show();
-
-    this->move(0, 0);
     this->activateWindow();
     this->raise();
 
@@ -412,6 +381,18 @@ MainWindow::~MainWindow()
 {
     // Save persistent settings.
     {
+        const QString aspectMode = []()->QString
+        {
+            switch (ks_aspect_mode())
+            {
+                case aspect_mode_e::native: return "Native";
+                case aspect_mode_e::always_4_3: return "Always 4:3";
+                case aspect_mode_e::traditional_4_3: return "Traditional 4:3";
+                default: return "(Unknown)";
+            }
+        }();
+
+        kpers_set_value(INI_GROUP_OUTPUT, "aspect_mode", aspectMode);
         kpers_set_value(INI_GROUP_OUTPUT, "renderer", (OGL_SURFACE? "OpenGL" : "Software"));
         kpers_set_value(INI_GROUP_OUTPUT, "upscaler", QString::fromStdString(ks_upscaling_filter_name()));
         kpers_set_value(INI_GROUP_OUTPUT, "downscaler", QString::fromStdString(ks_downscaling_filter_name()));
@@ -419,9 +400,6 @@ MainWindow::~MainWindow()
 
     delete ui;
     ui = nullptr;
-
-    delete controlPanel;
-    controlPanel = nullptr;
 
     delete overlayDlg;
     overlayDlg = nullptr;
@@ -606,12 +584,6 @@ void MainWindow::closeEvent(QCloseEvent*)
 {
     PROGRAM_EXIT_REQUESTED = 1;
 
-    k_assert(controlPanel != nullptr, "");
-    controlPanel->close();
-
-    k_assert(overlayDlg != nullptr, "");
-    overlayDlg->close();
-
     return;
 }
 
@@ -698,7 +670,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
-    if ((controlPanel != nullptr) &&
+    if ((this->outputResolutionDlg != nullptr) &&
         this->is_mouse_wheel_scaling_allowed())
     {
         // Adjust the size of the capture window with the mouse scroll wheel.

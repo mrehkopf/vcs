@@ -18,7 +18,6 @@ class FilterGraphDialog;
 class AntiTearDialog;
 class OverlayDialog;
 class RecordDialog;
-class ControlPanel;
 class AliasDialog;
 class AboutDialog;
 
@@ -131,14 +130,12 @@ private:
 
     Ui::MainWindow *ui = nullptr;
 
-    ControlPanel *controlPanel = nullptr;
-    OverlayDialog *overlayDlg = nullptr;
-
     OutputResolutionDialog *outputResolutionDlg = nullptr;
     InputResolutionDialog *inputResolutionDlg = nullptr;
     VideoAndColorDialog *videoDlg = nullptr;
     FilterGraphDialog *filterGraphDlg = nullptr;
     AntiTearDialog *antitearDlg = nullptr;
+    OverlayDialog *overlayDlg = nullptr;
     RecordDialog *recordDlg = nullptr;
     AliasDialog *aliasDlg = nullptr;
     AboutDialog *aboutDlg = nullptr;

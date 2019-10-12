@@ -57,6 +57,8 @@ resolution_s ks_resolution_to_aspect(const resolution_s &r);
 
 void ks_set_aspect_mode(const aspect_mode_e mode);
 
+aspect_mode_e ks_aspect_mode(void);
+
 void ks_set_output_scale_override_enabled(const bool state);
 
 void ks_set_output_base_resolution(const resolution_s &r, const bool originatesFromUser);

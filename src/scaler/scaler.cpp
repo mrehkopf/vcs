@@ -72,6 +72,11 @@ void ks_set_aspect_mode(const aspect_mode_e mode)
     return;
 }
 
+aspect_mode_e ks_aspect_mode(void)
+{
+    return ASPECT_MODE;
+}
+
 resolution_s ks_resolution_to_aspect(const resolution_s &r)
 {
     resolution_s a;

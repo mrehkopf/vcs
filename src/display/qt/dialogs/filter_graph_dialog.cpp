@@ -138,7 +138,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
     // Restore persistent settings.
     {
-        ui->groupBox_filterGraphEnabled->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
+        ui->groupBox_filterGraphEnabled->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", false).toBool());
     }
 
     this->reset_graph(true);

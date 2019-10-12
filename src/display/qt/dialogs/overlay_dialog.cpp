@@ -87,7 +87,7 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
     {
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "overlay", size()).toSize());
         ui->plainTextEdit->setPlainText(kpers_value_of(INI_GROUP_OVERLAY, "content", "").toString());
-        ui->groupBox_overlayEnabled->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
+        ui->groupBox_overlayEnabled->setChecked(kpers_value_of(INI_GROUP_OVERLAY, "enabled", false).toBool());
     }
 
     return;
