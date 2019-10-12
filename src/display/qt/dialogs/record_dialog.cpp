@@ -124,6 +124,27 @@ RecordDialog::RecordDialog(QDialog *parent) :
         });
     }
 
+    // Restore persistent settings.
+    {
+        ui->spinBox_recordingFramerate->setValue(kpers_value_of(INI_GROUP_RECORDING, "frame_rate", 60).toUInt());
+        ui->checkBox_recordingLinearFrameInsertion->setChecked(kpers_value_of(INI_GROUP_RECORDING, "linear_sampling", true).toBool());
+
+        #if _WIN32
+            set_qcombobox_idx_c(ui->comboBox_recordingEncoderProfile)
+                               .by_string(kpers_value_of(INI_GROUP_RECORDING, "profile", "High 4:4:4").toString());
+
+            set_qcombobox_idx_c(ui->comboBox_recordingEncoderPixelFormat)
+                               .by_string(kpers_value_of(INI_GROUP_RECORDING, "pixel_format", "RGB").toString());
+
+            set_qcombobox_idx_c(ui->comboBox_recordingEncoderPreset)
+                               .by_string(kpers_value_of(INI_GROUP_RECORDING, "preset", "Superfast").toString());
+
+            ui->spinBox_recordingEncoderCRF->setValue(kpers_value_of(INI_GROUP_RECORDING, "crf", 1).toUInt());
+            ui->checkBox_recordingEncoderZeroLatency->setChecked(kpers_value_of(INI_GROUP_RECORDING, "zero_latency", false).toBool());
+            ui->lineEdit_recordingEncoderArguments->setText(kpers_value_of(INI_GROUP_RECORDING, "command_line", "").toString());
+        #endif
+    }
+
     return;
 }
 
@@ -146,29 +167,6 @@ RecordDialog::~RecordDialog()
     }
 
     delete ui;
-
-    return;
-}
-
-void RecordDialog::restore_persistent_settings(void)
-{
-    ui->spinBox_recordingFramerate->setValue(kpers_value_of(INI_GROUP_RECORDING, "frame_rate", 60).toUInt());
-    ui->checkBox_recordingLinearFrameInsertion->setChecked(kpers_value_of(INI_GROUP_RECORDING, "linear_sampling", true).toBool());
-
-    #if _WIN32
-        set_qcombobox_idx_c(ui->comboBox_recordingEncoderProfile)
-                           .by_string(kpers_value_of(INI_GROUP_RECORDING, "profile", "High 4:4:4").toString());
-
-        set_qcombobox_idx_c(ui->comboBox_recordingEncoderPixelFormat)
-                           .by_string(kpers_value_of(INI_GROUP_RECORDING, "pixel_format", "RGB").toString());
-
-        set_qcombobox_idx_c(ui->comboBox_recordingEncoderPreset)
-                           .by_string(kpers_value_of(INI_GROUP_RECORDING, "preset", "Superfast").toString());
-
-        ui->spinBox_recordingEncoderCRF->setValue(kpers_value_of(INI_GROUP_RECORDING, "crf", 1).toUInt());
-        ui->checkBox_recordingEncoderZeroLatency->setChecked(kpers_value_of(INI_GROUP_RECORDING, "zero_latency", false).toBool());
-        ui->lineEdit_recordingEncoderArguments->setText(kpers_value_of(INI_GROUP_RECORDING, "command_line", "").toString());
-    #endif
 
     return;
 }

@@ -155,8 +155,8 @@ ControlPanel::~ControlPanel()
 {
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_CONTROL_PANEL, "tab", ui->tabWidget->currentIndex());
-        kpers_set_value(INI_GROUP_GEOMETRY, "control_panel", size());
+       // kpers_set_value(INI_GROUP_CONTROL_PANEL, "tab", ui->tabWidget->currentIndex());
+       // kpers_set_value(INI_GROUP_GEOMETRY, "control_panel", size());
     }
 
     delete ui;

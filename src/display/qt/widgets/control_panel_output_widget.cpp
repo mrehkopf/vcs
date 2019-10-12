@@ -185,7 +185,7 @@ ControlPanelOutputWidget::~ControlPanelOutputWidget()
 {
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", ui->checkBox_outputAntiTearEnabled->isChecked());
+       /* kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", ui->checkBox_outputAntiTearEnabled->isChecked());
         kpers_set_value(INI_GROUP_OVERLAY, "enabled", ui->checkBox_outputOverlayEnabled->isChecked());
         kpers_set_value(INI_GROUP_OUTPUT, "upscaler", ui->comboBox_outputUpscaleFilter->currentText());
         kpers_set_value(INI_GROUP_OUTPUT, "downscaler", ui->comboBox_outputDownscaleFilter->currentText());
@@ -196,7 +196,7 @@ ControlPanelOutputWidget::~ControlPanelOutputWidget()
         kpers_set_value(INI_GROUP_OUTPUT, "output_size", QSize(ui->spinBox_outputResX->value(), ui->spinBox_outputResY->value()));
         kpers_set_value(INI_GROUP_OUTPUT, "force_relative_scale", ui->checkBox_forceOutputScale->isChecked());
         kpers_set_value(INI_GROUP_OUTPUT, "relative_scale", ui->spinBox_outputScale->value());
-        kpers_set_value(INI_GROUP_OUTPUT, "renderer", ui->comboBox_renderer->currentText());
+        kpers_set_value(INI_GROUP_OUTPUT, "renderer", ui->comboBox_renderer->currentText());*/
     }
 
     delete ui;

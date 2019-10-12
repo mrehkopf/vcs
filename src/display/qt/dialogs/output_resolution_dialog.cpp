@@ -1,4 +1,5 @@
 #include "display/qt/dialogs/output_resolution_dialog.h"
+#include "display/qt/persistent_settings.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
@@ -85,11 +86,26 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
                 [this]{ ks_set_output_scaling(ui->spinBox_outputScale->value() / 100.0); });
     }
 
+    // Restore persistent settings.
+    ui->checkBox_forceOutputRes->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_output_size", false).toBool());
+    ui->spinBox_outputResX->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().width());
+    ui->spinBox_outputResY->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().height());
+    ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_relative_scale", false).toBool());
+    ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
+
     return;
 }
 
 OutputResolutionDialog::~OutputResolutionDialog()
 {
+    // Save persistent settings.
+    {
+        kpers_set_value(INI_GROUP_OUTPUT, "force_output_size", ui->checkBox_forceOutputRes->isChecked());
+        kpers_set_value(INI_GROUP_OUTPUT, "output_size", QSize(ui->spinBox_outputResX->value(), ui->spinBox_outputResY->value()));
+        kpers_set_value(INI_GROUP_OUTPUT, "force_relative_scale", ui->checkBox_forceOutputScale->isChecked());
+        kpers_set_value(INI_GROUP_OUTPUT, "relative_scale", ui->spinBox_outputScale->value());
+    }
+
     delete ui;
 
     return;

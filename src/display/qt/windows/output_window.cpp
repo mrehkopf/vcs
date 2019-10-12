@@ -39,6 +39,7 @@
 #include "display/qt/windows/output_window.h"
 #include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/dialogs/about_dialog.h"
+#include "display/qt/persistent_settings.h"
 #include "common/propagate.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
@@ -128,7 +129,7 @@ MainWindow::MainWindow(QWidget *parent) :
         {
             QMenu *menu = new QMenu("Input", this);
 
-            QMenu *channel = new QMenu("Capture channel", this);
+            QMenu *channel = new QMenu("Channel", this);
             {
                 QActionGroup *group = new QActionGroup(this);
 
@@ -137,8 +138,12 @@ MainWindow::MainWindow(QWidget *parent) :
                     QAction *inputChannel = new QAction(QString::number(i+1), this);
                     inputChannel->setActionGroup(group);
                     inputChannel->setCheckable(true);
-                    if (i == 0) inputChannel->setChecked(true);
                     channel->addAction(inputChannel);
+
+                    if (i == int(INPUT_CHANNEL_IDX))
+                    {
+                        inputChannel->setChecked(true);
+                    }
 
                     connect(inputChannel, &QAction::triggered, this, [=]{kc_set_input_channel(i);});
                 }
@@ -169,9 +174,9 @@ MainWindow::MainWindow(QWidget *parent) :
                 connect(c15, &QAction::triggered, this, [=]{kc_set_input_color_depth(15);});
             }
 
-            menu->addMenu(colorDepth);
-            menu->addSeparator();
             menu->addMenu(channel);
+            menu->addSeparator();
+            menu->addMenu(colorDepth);
             menu->addSeparator();
 
             QAction *video = new QAction("Video...", this);
@@ -195,6 +200,9 @@ MainWindow::MainWindow(QWidget *parent) :
         {
             QMenu *menu = new QMenu("Output", this);
 
+            const std::vector<std::string> scalerNames = ks_list_of_scaling_filter_names();
+            k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
+
             QMenu *renderer = new QMenu("Renderer", this);
             {
                 QActionGroup *group = new QActionGroup(this);
@@ -207,19 +215,26 @@ MainWindow::MainWindow(QWidget *parent) :
                 QAction *software = new QAction("Software", this);
                 software->setActionGroup(group);
                 software->setCheckable(true);
-                software->setChecked(true);
                 renderer->addAction(software);
 
-                connect(opengl, &QAction::triggered, this, [=]{this->set_opengl_enabled(true);});
-                connect(software, &QAction::triggered, this, [=]{this->set_opengl_enabled(false);});
+                connect(opengl, &QAction::toggled, this, [=](const bool checked){if (checked) this->set_opengl_enabled(true);});
+                connect(software, &QAction::toggled, this, [=](const bool checked){if (checked) this->set_opengl_enabled(false);});
+
+                if (kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString() == "Software")
+                {
+                    software->setChecked(true);
+                }
+                else
+                {
+                    opengl->setChecked(true);
+                }
             }
 
             QMenu *upscaler = new QMenu("Upscaler", this);
             {
                 QActionGroup *group = new QActionGroup(this);
 
-                const std::vector<std::string> scalerNames = ks_list_of_scaling_filter_names();
-                k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
+                const QString defaultUpscalerName = kpers_value_of(INI_GROUP_OUTPUT, "upscaler", "Linear").toString();
 
                 for (const auto &scalerName: scalerNames)
                 {
@@ -228,18 +243,20 @@ MainWindow::MainWindow(QWidget *parent) :
                     scaler->setCheckable(true);
                     upscaler->addAction(scaler);
 
-                    connect(scaler, &QAction::triggered, this, [=]{ks_set_upscaling_filter(scalerName);});
-                }
+                    connect(scaler, &QAction::toggled, this, [=](const bool checked){if (checked) ks_set_upscaling_filter(scalerName);});
 
-                upscaler->actions().at(0)->setChecked(true);
+                    if (QString::fromStdString(scalerName) == defaultUpscalerName)
+                    {
+                        scaler->setChecked(true);
+                    }
+                }
             }
 
             QMenu *downscaler = new QMenu("Downscaler", this);
             {
                 QActionGroup *group = new QActionGroup(this);
 
-                const std::vector<std::string> scalerNames = ks_list_of_scaling_filter_names();
-                k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
+                const QString defaultDownscalerName = kpers_value_of(INI_GROUP_OUTPUT, "downscaler", "Linear").toString();
 
                 for (const auto &scalerName: scalerNames)
                 {
@@ -248,17 +265,21 @@ MainWindow::MainWindow(QWidget *parent) :
                     scaler->setCheckable(true);
                     downscaler->addAction(scaler);
 
-                    connect(scaler, &QAction::triggered, this, [=]{ks_set_upscaling_filter(scalerName);});
-                }
+                    connect(scaler, &QAction::toggled, this, [=](const bool checked){if (checked) ks_set_downscaling_filter(scalerName);});
 
-                downscaler->actions().at(0)->setChecked(true);
+
+                    if (QString::fromStdString(scalerName) == defaultDownscalerName)
+                    {
+                        scaler->setChecked(true);
+                    }
+                }
             }
 
             QMenu *aspectRatio = new QMenu("Aspect ratio", this);
             {
                 QActionGroup *group = new QActionGroup(this);
 
-                QAction *native = new QAction("Frame", this);
+                QAction *native = new QAction("Native", this);
                 native->setActionGroup(group);
                 native->setCheckable(true);
                 native->setChecked(true);
@@ -274,12 +295,18 @@ MainWindow::MainWindow(QWidget *parent) :
                 traditional43->setCheckable(true);
                 aspectRatio->addAction(traditional43);
 
-                connect(native, &QAction::triggered, this,
-                        [=]{ks_set_forced_aspect_enabled(false); ks_set_aspect_mode(aspect_mode_e::native);});
-                connect(traditional43, &QAction::triggered, this,
-                        [=]{ks_set_forced_aspect_enabled(true); ks_set_aspect_mode(aspect_mode_e::traditional_4_3);});
-                connect(always43, &QAction::triggered, this,
-                        [=]{ks_set_forced_aspect_enabled(true); ks_set_aspect_mode(aspect_mode_e::always_4_3);});
+                const QString defaultAspectRatio = kpers_value_of(INI_GROUP_OUTPUT, "aspect_mode", "Native").toString();
+
+                connect(native, &QAction::toggled, this,
+                        [=](const bool checked){if (checked) { ks_set_forced_aspect_enabled(false); ks_set_aspect_mode(aspect_mode_e::native);}});
+                connect(traditional43, &QAction::toggled, this,
+                        [=](const bool checked){if (checked) { ks_set_forced_aspect_enabled(true); ks_set_aspect_mode(aspect_mode_e::traditional_4_3);}});
+                connect(always43, &QAction::toggled, this,
+                        [=](const bool checked){if (checked) { ks_set_forced_aspect_enabled(true); ks_set_aspect_mode(aspect_mode_e::always_4_3);}});
+
+                if (defaultAspectRatio == "Native") native->setChecked(true);
+                else if (defaultAspectRatio == "Always 4:3") native->setChecked(true);
+                else if (defaultAspectRatio == "Traditional 4:3") native->setChecked(true);
             }
 
             menu->addMenu(renderer);
@@ -383,6 +410,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    // Save persistent settings.
+    {
+        kpers_set_value(INI_GROUP_OUTPUT, "renderer", (OGL_SURFACE? "OpenGL" : "Software"));
+        kpers_set_value(INI_GROUP_OUTPUT, "upscaler", QString::fromStdString(ks_upscaling_filter_name()));
+        kpers_set_value(INI_GROUP_OUTPUT, "downscaler", QString::fromStdString(ks_downscaling_filter_name()));
+    }
+
     delete ui;
     ui = nullptr;
 

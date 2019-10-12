@@ -9,6 +9,7 @@
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/widgets/filter_widgets.h"
+#include "display/qt/persistent_settings.h"
 #include "common/disk.h"
 #include "ui_filter_graph_dialog.h"
 
@@ -135,6 +136,11 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         });
     }
 
+    // Restore persistent settings.
+    {
+        ui->groupBox_filterGraphEnabled->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
+    }
+
     this->reset_graph(true);
 
     return;
@@ -142,6 +148,11 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
 FilterGraphDialog::~FilterGraphDialog()
 {
+    // Save persistent settings.
+    {
+        kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", ui->groupBox_filterGraphEnabled->isChecked());
+    }
+
     delete ui;
 
     return;

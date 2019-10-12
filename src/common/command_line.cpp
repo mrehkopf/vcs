@@ -15,7 +15,6 @@
  */
 
 // Which input channel on the capture hardware we want to receive frames from.
-// Note: This value is 1-indexed, so the first channel is 1 instead of 0.
 uint INPUT_CHANNEL_IDX = 1;
 
 // How many frames the capture card should drop between captures.

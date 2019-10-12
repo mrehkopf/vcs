@@ -17,8 +17,6 @@ public:
 
     void update_recording_metainfo(void);
 
-    void restore_persistent_settings(void);
-
 signals:
     void recording_started(void);
 
