@@ -22,11 +22,6 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
     this->setWindowTitle(this->dialogBaseTitle);
     this->setWindowFlags(Qt::Window);
 
-    // Initialize the GUI controls to their default values.
-    {
-        ui->groupBox_filterGraphEnabled->setChecked(false);
-    }
-
     // Create the dialog's menu bar.
     {
         this->menubar = new QMenuBar(this);
@@ -101,10 +96,16 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         this->layout()->setMenuBar(menubar);
     }
 
+    // Initialize the GUI controls to their default values.
+    {
+        ui->groupBox_filterGraphEnabled->setChecked(false);
+        this->menubar->setEnabled(false); // Enabled if filtering is enabled.
+    }
+
     // Create and configure the graphics scene.
     {
         this->graphicsScene = new InteractibleNodeGraph(this);
-        this->graphicsScene->setBackgroundBrush(QBrush("#404040"));
+        this->graphicsScene->setBackgroundBrush(QBrush("#000000"));
 
         ui->graphicsView->setScene(this->graphicsScene);
 
