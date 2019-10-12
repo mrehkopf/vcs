@@ -39,6 +39,7 @@
 #include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/dialogs/about_dialog.h"
 #include "display/qt/persistent_settings.h"
+#include "filter/anti_tear.h"
 #include "common/propagate.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
@@ -293,7 +294,11 @@ MainWindow::MainWindow(QWidget *parent) :
             menu->addMenu(downscaler);
             menu->addSeparator();
 
-            connect(menu->addAction("Record..."), &QAction::triggered, this, [=]{this->open_record_dialog();});
+            QAction *record = new QAction("Record...", this);
+            record->setShortcut(QKeySequence("ctrl+r"));
+            menu->addAction(record);
+            connect(record, &QAction::triggered, this, [=]{this->open_record_dialog();});
+
             connect(menu->addAction("Overlay..."), &QAction::triggered, this, [=]{this->open_overlay_dialog();});
 
             QAction *resolution = new QAction("Resolution...", this);
@@ -306,7 +311,7 @@ MainWindow::MainWindow(QWidget *parent) :
             menu->addAction(filter);
             connect(filter, &QAction::triggered, this, [=]{this->open_filter_graph_dialog();});
 
-            connect(menu->addAction("Anti-tearing..."), &QAction::triggered, this, [=]{this->open_antitear_dialog();});
+            connect(menu->addAction("Anti-tear..."), &QAction::triggered, this, [=]{this->open_antitear_dialog();});
 
             ui->menuBar->addMenu(menu);
             this->addActions(menu->actions());
@@ -942,19 +947,20 @@ void MainWindow::set_recording_is_active(const bool isActive)
     return;
 }
 
-// Updates the window title with the capture's current status.
+// Updates the window title with the current status of capture and that of the program
+// in general.
 //
 void MainWindow::update_window_title()
 {
-    QString scaleString, latencyString, inResString, recordingString;
+    QString title = PROGRAM_NAME;
 
     if (kc_no_signal())
     {
-        latencyString = " - No signal";
+        title = QString("%1 - No signal").arg(PROGRAM_NAME);
     }
     else if (kc_is_invalid_signal())
     {
-        latencyString = " - Invalid signal";
+        title = QString("%1 - Invalid signal").arg(PROGRAM_NAME);
     }
     else
     {
@@ -962,22 +968,23 @@ void MainWindow::update_window_title()
         const resolution_s outRes = ks_output_resolution();
         const int relativeScale = round((outRes.h / (real)inRes.h) * 100);
 
-        scaleString = QString(" scaled to %1 x %2 (~%3%)").arg(outRes.w).arg(outRes.h).arg(relativeScale);
+        QStringList programStatus;
+        if (krecord_is_recording()) programStatus << "R";
+        if (kf_is_filtering_enabled()) programStatus << "F";
+        if (overlayDlg->is_overlay_enabled()) programStatus << "O";
+        if (kat_is_anti_tear_enabled()) programStatus << "A";
 
-        if (kc_are_frames_being_missed())
-        {
-            latencyString = " (dropping frames)";
-        }
-
-        if (krecord_is_recording())
-        {
-            recordingString = "[rec] ";
-        }
-
-        inResString = " - " + QString("%1 x %2").arg(inRes.w).arg(inRes.h);
+        title = QString("%1 - %2%3 x %4 scaled to %5 x %6 (~%7%)")
+                .arg(PROGRAM_NAME)
+                .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join(",")) : "")
+                .arg(inRes.w)
+                .arg(inRes.h)
+                .arg(outRes.w)
+                .arg(outRes.h)
+                .arg(relativeScale);
     }
 
-    this->setWindowTitle(recordingString + QString(PROGRAM_NAME) + inResString + scaleString + latencyString);
+    this->setWindowTitle(title);
 
     return;
 }
@@ -1009,8 +1016,6 @@ void MainWindow::update_output_framerate(const u32 fps,
                                          const bool missedFrames)
 {
     CURRENT_OUTPUT_FRAMERATE = fps;
-
-    update_window_title();
 
     (void)missedFrames;
 

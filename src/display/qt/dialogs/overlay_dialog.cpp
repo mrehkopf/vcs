@@ -36,6 +36,8 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
     // Set the GUI controls to their proper initial values.
     {
+        ui->groupBox_overlayEnabled->setChecked(false);
+
         // Create push button menus for inserting variables into the overlay.
         {
             // Adds an action into the given menu, such that when the action is
@@ -81,6 +83,11 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
             formatting->addAction("Image...", this, SLOT(add_image_to_overlay()));
             ui->pushButton_htmlFormat->setMenu(formatting);
         }
+    }
+
+    // Connect the GUI controls to consequences for changing their values.
+    {
+        connect(ui->groupBox_overlayEnabled, &QGroupBox::toggled, this, [=]{kd_update_output_window_title();});
     }
 
     // Restore persistent settings.

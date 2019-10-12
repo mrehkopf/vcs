@@ -729,6 +729,11 @@ void kf_set_filtering_enabled(const bool enabled)
     return;
 }
 
+bool kf_is_filtering_enabled(void)
+{
+    return FILTERING_ENABLED;
+}
+
 // Find by how many pixels the given image is out of alignment with the
 // edges of the capture screen vertically and horizontally, by counting how
 // many vertical/horizontal columns/rows at the edges of the image contain

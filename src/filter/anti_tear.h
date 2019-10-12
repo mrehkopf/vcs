@@ -50,6 +50,8 @@ u8 *kat_anti_tear(u8 *const pixels, const resolution_s &r);
 
 void kat_set_anti_tear_enabled(const bool state);
 
+bool kat_is_anti_tear_enabled(void);
+
 void kat_set_visualization(const bool visualize, const bool visualizeTear, const bool visualizeRange);
 
 void kat_set_threshold(const u32 t);

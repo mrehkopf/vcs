@@ -97,6 +97,8 @@ void kf_release_filters(void);
 
 void kf_set_filtering_enabled(const bool enabled);
 
+bool kf_is_filtering_enabled(void);
+
 std::vector<int> kf_find_capture_alignment(u8 *const pixels, const resolution_s &r);
 
 #endif

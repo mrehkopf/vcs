@@ -22,6 +22,11 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
     this->setWindowTitle(this->dialogBaseTitle);
     this->setWindowFlags(Qt::Window);
 
+    // Initialize the GUI controls to their default values.
+    {
+        ui->groupBox_filterGraphEnabled->setChecked(false);
+    }
+
     // Create the dialog's menu bar.
     {
         this->menubar = new QMenuBar(this);
@@ -96,16 +101,6 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         this->layout()->setMenuBar(menubar);
     }
 
-    // Connect the GUI controls to consequences for changing their values.
-    {
-        connect(ui->groupBox_filterGraphEnabled, &QGroupBox::toggled, this,
-                [=](const bool isEnabled)
-                {
-                    kf_set_filtering_enabled(isEnabled);
-                    this->menubar->setEnabled(isEnabled);
-                });
-    }
-
     // Create and configure the graphics scene.
     {
         this->graphicsScene = new InteractibleNodeGraph(this);
@@ -136,11 +131,24 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         });
     }
 
+    // Connect the GUI controls to consequences for changing their values.
+    {
+        connect(ui->groupBox_filterGraphEnabled, &QGroupBox::toggled, this,
+                [=](const bool isEnabled)
+                {
+                    kf_set_filtering_enabled(isEnabled);
+                    kd_update_output_window_title();
+                    this->menubar->setEnabled(isEnabled);
+                });
+    }
+
     // Restore persistent settings.
     {
-        ui->groupBox_filterGraphEnabled->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", false).toBool());
+        ui->groupBox_filterGraphEnabled->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", kf_is_filtering_enabled()).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "filter_graph", this->size()).toSize());
     }
+
+    DEBUG(("QWEGSDF %d %d", ui->groupBox_filterGraphEnabled->isChecked(), kf_is_filtering_enabled()));
 
     this->reset_graph(true);
 

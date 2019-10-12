@@ -22,6 +22,8 @@ public:
 
     ~AntiTearDialog();
 
+    bool is_anti_tear_enabled(void);
+
 private:
     Ui::AntiTearDialog *ui;
 };

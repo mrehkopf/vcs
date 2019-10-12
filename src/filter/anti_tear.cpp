@@ -418,6 +418,11 @@ void kat_set_anti_tear_enabled(const bool state)
     return;
 }
 
+bool kat_is_anti_tear_enabled(void)
+{
+    return ANTI_TEARING_ENABLED;
+}
+
 void kat_set_visualization(const bool visualize,
                            const bool visualizeTear,
                            const bool visualizeRange)
