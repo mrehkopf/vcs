@@ -85,9 +85,9 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
     // Restore persistent settings.
     {
-        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "overlay", size()).toSize());
         ui->plainTextEdit->setPlainText(kpers_value_of(INI_GROUP_OVERLAY, "content", "").toString());
         ui->groupBox_overlayEnabled->setChecked(kpers_value_of(INI_GROUP_OVERLAY, "enabled", false).toBool());
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "overlay", this->size()).toSize());
     }
 
     return;
@@ -99,7 +99,7 @@ OverlayDialog::~OverlayDialog()
     {
         kpers_set_value(INI_GROUP_OVERLAY, "enabled", ui->groupBox_overlayEnabled->isChecked());
         kpers_set_value(INI_GROUP_OVERLAY, "content", ui->plainTextEdit->toPlainText());
-        kpers_set_value(INI_GROUP_GEOMETRY, "overlay", size());
+        kpers_set_value(INI_GROUP_GEOMETRY, "overlay", this->size());
     }
 
     delete ui;

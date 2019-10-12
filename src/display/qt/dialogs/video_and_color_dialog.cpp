@@ -147,7 +147,7 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
 
     // Restore persistent settings.
     {
-        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "video_and_color", size()).toSize());
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "video_and_color", this->size()).toSize());
     }
 
     return;
@@ -157,7 +157,7 @@ VideoAndColorDialog::~VideoAndColorDialog()
 {
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_GEOMETRY, "video_and_color", size());
+        kpers_set_value(INI_GROUP_GEOMETRY, "video_and_color", this->size());
     }
 
     delete ui;

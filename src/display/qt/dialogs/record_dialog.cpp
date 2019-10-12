@@ -115,6 +115,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
     {
         ui->spinBox_recordingFramerate->setValue(kpers_value_of(INI_GROUP_RECORDING, "frame_rate", 60).toUInt());
         ui->checkBox_recordingLinearFrameInsertion->setChecked(kpers_value_of(INI_GROUP_RECORDING, "linear_sampling", true).toBool());
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "record", this->size()).toSize());
 
         #if _WIN32
             set_qcombobox_idx_c(ui->comboBox_recordingEncoderProfile)
@@ -141,6 +142,7 @@ RecordDialog::~RecordDialog()
     {
         kpers_set_value(INI_GROUP_RECORDING, "frame_rate", ui->spinBox_recordingFramerate->value());
         kpers_set_value(INI_GROUP_RECORDING, "linear_sampling", ui->checkBox_recordingLinearFrameInsertion->isChecked());
+        kpers_set_value(INI_GROUP_GEOMETRY, "record", this->size());
 
         #if _WIN32
             // Encoder settings. These aren't available to the user on Linux (non-Windows) builds.

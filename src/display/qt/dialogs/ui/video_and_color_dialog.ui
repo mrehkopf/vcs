@@ -43,12 +43,12 @@
         <x>0</x>
         <y>0</y>
         <width>348</width>
-        <height>557</height>
+        <height>575</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
-        <number>0</number>
+        <number>6</number>
        </property>
        <property name="leftMargin">
         <number>0</number>

@@ -80,7 +80,7 @@ AliasDialog::AliasDialog(QWidget *parent) :
 
     // Restore persistent settings.
     {
-        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "aliases", size()).toSize());
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "aliases", this->size()).toSize());
     }
 
     return;
@@ -90,7 +90,7 @@ AliasDialog::~AliasDialog()
 {
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_GEOMETRY, "aliases", size());
+        kpers_set_value(INI_GROUP_GEOMETRY, "aliases", this->size());
     }
 
     delete ui;

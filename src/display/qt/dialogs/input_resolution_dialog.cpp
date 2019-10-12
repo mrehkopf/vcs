@@ -45,11 +45,21 @@ InputResolutionDialog::InputResolutionDialog(QWidget *parent) :
         }
     }
 
+    // Restore persistent settings.
+    {
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "input_resolution", this->size()).toSize());
+    }
+
     return;
 }
 
 InputResolutionDialog::~InputResolutionDialog()
 {
+    // Save persistent settings.
+    {
+        kpers_set_value(INI_GROUP_GEOMETRY, "input_resolution", this->size());
+    }
+
     delete ui;
 
     return;

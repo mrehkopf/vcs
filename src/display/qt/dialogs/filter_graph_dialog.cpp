@@ -139,6 +139,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
     // Restore persistent settings.
     {
         ui->groupBox_filterGraphEnabled->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", false).toBool());
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "filter_graph", this->size()).toSize());
     }
 
     this->reset_graph(true);
@@ -151,6 +152,7 @@ FilterGraphDialog::~FilterGraphDialog()
     // Save persistent settings.
     {
         kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", ui->groupBox_filterGraphEnabled->isChecked());
+        kpers_set_value(INI_GROUP_GEOMETRY, "filter_graph", this->size());
     }
 
     delete ui;

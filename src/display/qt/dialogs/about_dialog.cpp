@@ -57,11 +57,21 @@ AboutDialog::AboutDialog(QWidget *parent) :
         ui->label_supportsSVideoCaptureString->setText(kc_hardware().supports.svideo()? "Yes" : "No");
     }
 
+    // Restore persistent settings.
+    {
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "about", this->size()).toSize());
+    }
+
     return;
 }
 
 AboutDialog::~AboutDialog()
 {
+    // Save persistent settings.
+    {
+        kpers_set_value(INI_GROUP_GEOMETRY, "about", this->size());
+    }
+
     delete ui;
 
     return;

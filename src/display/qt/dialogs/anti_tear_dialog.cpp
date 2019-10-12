@@ -102,7 +102,6 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
         ui->spinBox_matchesReqd->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "matches_reqd", defaults.matchesReqd).toInt());
         ui->spinBox_domainSize->setValue(kpers_value_of(INI_GROUP_ANTI_TEAR, "window_len", defaults.windowLen).toInt());
         ui->groupBox_antiTearingEnabled->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", false).toBool());
-
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "anti_tear", this->size()).toSize());
     }
 

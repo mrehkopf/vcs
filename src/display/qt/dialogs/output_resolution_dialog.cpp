@@ -94,6 +94,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
     ui->spinBox_outputResY->setValue(kpers_value_of(INI_GROUP_OUTPUT, "output_size", QSize(640, 480)).toSize().height());
     ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_relative_scale", false).toBool());
     ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
+    this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "output_resolution", this->size()).toSize());
 
     return;
 }
@@ -106,6 +107,7 @@ OutputResolutionDialog::~OutputResolutionDialog()
         kpers_set_value(INI_GROUP_OUTPUT, "output_size", QSize(ui->spinBox_outputResX->value(), ui->spinBox_outputResY->value()));
         kpers_set_value(INI_GROUP_OUTPUT, "force_relative_scale", ui->checkBox_forceOutputScale->isChecked());
         kpers_set_value(INI_GROUP_OUTPUT, "relative_scale", ui->spinBox_outputScale->value());
+        kpers_set_value(INI_GROUP_GEOMETRY, "output_resolution", this->size());
     }
 
     delete ui;
