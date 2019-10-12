@@ -169,9 +169,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="label_notice">
      <property name="text">
-      <string>These controls override the capture resolution.</string>
+      <string>These controls override the capture device's current capture resolution.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>548</width>
-    <height>310</height>
+    <width>545</width>
+    <height>315</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -118,7 +118,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>274</width>
+             <width>272</width>
              <height>299</height>
             </rect>
            </property>
@@ -693,6 +693,23 @@
       </layout>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_notice">
+     <property name="text">
+      <string>This dialog records output frames into a video file.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
