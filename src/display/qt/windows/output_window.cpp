@@ -301,6 +301,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
             connect(menu->addAction("Overlay..."), &QAction::triggered, this, [=]{this->open_overlay_dialog();});
 
+            connect(menu->addAction("Anti-tear..."), &QAction::triggered, this, [=]{this->open_antitear_dialog();});
+
             QAction *resolution = new QAction("Resolution...", this);
             resolution->setShortcut(QKeySequence("ctrl+o"));
             menu->addAction(resolution);
@@ -310,8 +312,6 @@ MainWindow::MainWindow(QWidget *parent) :
             filter->setShortcut(QKeySequence("ctrl+f"));
             menu->addAction(filter);
             connect(filter, &QAction::triggered, this, [=]{this->open_filter_graph_dialog();});
-
-            connect(menu->addAction("Anti-tear..."), &QAction::triggered, this, [=]{this->open_antitear_dialog();});
 
             ui->menuBar->addMenu(menu);
             this->addActions(menu->actions());

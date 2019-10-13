@@ -27,7 +27,7 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         // Background.
         {
             // Body background.
-            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "orange" : "transparent"), 1, Qt::SolidLine));
+            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "orange" : "black"), 1, Qt::SolidLine));
             painter->setBrush(QBrush(QColor(QColor(90, 90, 90))));
             painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);
         }
@@ -102,7 +102,7 @@ void InputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         // Background.
         {
             // Body background.
-            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "orange" : "transparent"), 1, Qt::SolidLine));
+            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "orange" : "black"), 1, Qt::SolidLine));
             painter->setBrush(QBrush(QColor(QColor(90, 90, 90)), Qt::Dense1Pattern));
             painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);
         }
@@ -168,7 +168,7 @@ void OutputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
         // Background.
         {
             // Body background.
-            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "orange" : "transparent"), 1, Qt::SolidLine));
+            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "orange" : "black"), 1, Qt::SolidLine));
             painter->setBrush(QBrush(QColor(QColor(90, 90, 90)), Qt::Dense1Pattern));
             painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);
         }

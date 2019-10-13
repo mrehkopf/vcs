@@ -24,7 +24,7 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="spacing">
-       <number>9</number>
+       <number>6</number>
       </property>
       <property name="leftMargin">
        <number>0</number>
@@ -117,9 +117,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-59</y>
              <width>272</width>
-             <height>299</height>
+             <height>290</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -133,7 +133,7 @@
              <number>9</number>
             </property>
             <property name="bottomMargin">
-             <number>9</number>
+             <number>0</number>
             </property>
             <item>
              <widget class="QFrame" name="frame_recordingSettings">

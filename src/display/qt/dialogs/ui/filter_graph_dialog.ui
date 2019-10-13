@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QGroupBox" name="groupBox_filterGraphEnabled">
      <property name="title">
@@ -22,9 +22,27 @@
      <property name="checkable">
       <bool>true</bool>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="InteractibleNodeGraphView" name="graphicsView"/>
+       <widget class="QWidget" name="widget_graphicsViewContainer" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="InteractibleNodeGraphView" name="graphicsView"/>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -39,7 +57,7 @@
    <item>
     <widget class="QLabel" name="label_notice">
      <property name="text">
-      <string>This dialog applies filtering to captured frames prior to them being scaled for display.</string>
+      <string>This dialog applies filtering to captured frames.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

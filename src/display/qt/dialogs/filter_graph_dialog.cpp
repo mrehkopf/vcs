@@ -93,7 +93,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             this->menubar->addMenu(helpMenu);
         }
 
-        this->layout()->setMenuBar(menubar);
+        ui->widget_graphicsViewContainer->layout()->setMenuBar(menubar);
     }
 
     // Initialize the GUI controls to their default values.
@@ -148,8 +148,6 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         ui->groupBox_filterGraphEnabled->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", kf_is_filtering_enabled()).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "filter_graph", this->size()).toSize());
     }
-
-    DEBUG(("QWEGSDF %d %d", ui->groupBox_filterGraphEnabled->isChecked(), kf_is_filtering_enabled()));
 
     this->reset_graph(true);
 

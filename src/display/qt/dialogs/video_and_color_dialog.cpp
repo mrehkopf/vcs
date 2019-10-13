@@ -37,7 +37,7 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Video & Color Adjust");
+    this->setWindowTitle("VCS - Video & Color");
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
