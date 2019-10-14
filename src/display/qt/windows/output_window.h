@@ -8,6 +8,7 @@
 #define OUTPUT_WINDOW_H
 
 #include <QMainWindow>
+#include "display/qt/utility.h"
 #include "display/display.h"
 #include "common/globals.h"
 
@@ -118,17 +119,18 @@ private slots:
     void toggle_window_border(void);
 
 private:
+    void mouseDoubleClickEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void changeEvent(QEvent *event);
     void paintEvent(QPaintEvent *);
     void closeEvent(QCloseEvent *);
+    void enterEvent(QEvent *event);
+    void leaveEvent(QEvent *event);
     void wheelEvent(QWheelEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseDoubleClickEvent(QMouseEvent *event);
-    void keyPressEvent(QKeyEvent *event);
-    void changeEvent(QEvent *event);
 
-    void set_keyboard_shortcuts();
+    void set_keyboard_shortcuts(void);
 
     bool load_font(const QString &filename);
 
@@ -143,6 +145,8 @@ private:
     RecordDialog *recordDlg = nullptr;
     AliasDialog *aliasDlg = nullptr;
     AboutDialog *aboutDlg = nullptr;
+
+    mouse_activity_monitor_c mouseActivityMonitor;
 
     // Set to true when the user has selected to close the
     // main window.

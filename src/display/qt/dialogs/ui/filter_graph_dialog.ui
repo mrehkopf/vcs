@@ -57,7 +57,7 @@
    <item>
     <widget class="QLabel" name="label_notice">
      <property name="text">
-      <string>This dialog applies filtering to captured frames.</string>
+      <string>These controls apply image filters to captured frames.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

@@ -28,6 +28,9 @@ OGLWidget::OGLWidget(std::function<QImage()> overlay_as_qimage, QWidget *parent)
 {
     OVERLAY_AS_QIMAGE_F = overlay_as_qimage;
 
+    // Needed for auto-hiding the parent window's menu bar to work.
+    this->setMouseTracking(true);
+
     return;
 }
 

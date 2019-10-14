@@ -81,7 +81,7 @@
    <item>
     <widget class="QLabel" name="label_notice">
      <property name="text">
-      <string>This dialog configures automatic overriding of given input resolutions with the alternate ones specified.</string>
+      <string>This dialog configures automatic overriding of given input resolutions with alternate ones.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

@@ -70,6 +70,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->centralwidget->setMouseTracking(true);
+    ui->centralwidget->setFocusPolicy(Qt::StrongFocus);
+
+    ui->menuBar->setMouseTracking(true);
+    ui->menuBar->setFocusPolicy(Qt::StrongFocus);
+
     // Set up a layout for the central widget, so we can add the OpenGL
     // render surface to it when OpenGL is enabled.
     QVBoxLayout *const mainLayout = new QVBoxLayout(ui->centralwidget);
@@ -326,6 +332,10 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->menuBar->addMenu(menu);
             this->addActions(menu->actions());
         }
+
+        // Ensure that auto-hiding of the menu bar works.
+        connect(this->menuBar(), &QMenuBar::hovered, this, [=]{this->mouseActivityMonitor.report_activity();});
+        connect(this->menuBar(), &QMenuBar::triggered, this, [=]{ui->centralwidget->setFocus(); this->mouseActivityMonitor.report_activity();});
     }
 
     // We intend to repaint the entire window every time we update it, so ask for no automatic fill.
@@ -378,6 +388,20 @@ MainWindow::MainWindow(QWidget *parent) :
             network->get(QNetworkRequest(QUrl(url)));
         }
     }
+
+    connect(&this->mouseActivityMonitor, &mouse_activity_monitor_c::activated, this, [=]
+    {
+        this->menuBar()->setVisible(true);
+    });
+
+    connect(&this->mouseActivityMonitor, &mouse_activity_monitor_c::inactivated, this, [=]
+    {
+        // Hide the menu bar only if the mouse cursor isnät hovering over it at the moment.
+        if (!this->menuBar()->hasFocus())
+        {
+            this->menuBar()->setVisible(false);
+        }
+    });
 
     return;
 }
@@ -592,27 +616,31 @@ void MainWindow::closeEvent(QCloseEvent*)
     return;
 }
 
-void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
+void MainWindow::enterEvent(QEvent *event)
 {
-    // Toggle the window border on/off.
-    if (event->button() == Qt::LeftButton)
+    if (ui->centralwidget->hasFocus())
     {
-        toggle_window_border();
+        this->mouseActivityMonitor.report_activity();
     }
+
+    (void)event;
 
     return;
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *event)
+void MainWindow::leaveEvent(QEvent *event)
 {
-    if ((event->key() == Qt::Key_Tab) && !event->isAutoRepeat())
+    (void)event;
+
+    return;
+}
+
+void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
     {
-        ui->menuBar->setVisible(!ui->menuBar->isVisible());
-
-        return;
+        toggle_window_border();
     }
-
-    QWidget::keyPressEvent(event);
 
     return;
 }
@@ -637,6 +665,11 @@ void MainWindow::changeEvent(QEvent *event)
 static QPoint PREV_MOUSE_POS; /// Temp. Used to track mouse movement delta across frames.
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
+    if (ui->centralwidget->hasFocus())
+    {
+        this->mouseActivityMonitor.report_activity();
+    }
+
     // If the cursor is over the capture window and the left mouse button is being
     // held down, drag the window.
     if (QApplication::mouseButtons() & Qt::LeftButton)
@@ -652,18 +685,20 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
+    this->mouseActivityMonitor.report_activity();
+
     if (event->button() == Qt::LeftButton)
     {
         PREV_MOUSE_POS = event->globalPos();
     }
-
-    ui->menuBar->setVisible(false);
 
     return;
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
+    this->mouseActivityMonitor.report_activity();
+
     if (event->button() == Qt::MidButton)
     {
         // If the capture window is pressed with the middle mouse button, show the overlay dialog.
@@ -858,7 +893,7 @@ void MainWindow::measure_framerate()
     return;
 }
 
-void MainWindow::set_keyboard_shortcuts()
+void MainWindow::set_keyboard_shortcuts(void)
 {
     // Creates a new QShortcut instance assigned to the given QKeySequence-
     // compatible sequence string (e.g. "F1" for the F1 key).

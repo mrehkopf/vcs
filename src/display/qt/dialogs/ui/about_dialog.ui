@@ -14,6 +14,9 @@
    <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QScrollArea" name="scrollArea_about">
      <property name="frameShape">
@@ -27,7 +30,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>556</width>
+        <width>565</width>
         <height>564</height>
        </rect>
       </property>
