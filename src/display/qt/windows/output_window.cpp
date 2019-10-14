@@ -314,9 +314,15 @@ MainWindow::MainWindow(QWidget *parent) :
             menu->addAction(record);
             connect(record, &QAction::triggered, this, [=]{this->open_record_dialog();});
 
-            connect(menu->addAction("Overlay..."), &QAction::triggered, this, [=]{this->open_overlay_dialog();});
+            QAction *overlay = new QAction("Overlay...", this);
+            overlay->setShortcut(QKeySequence("ctrl+l"));
+            menu->addAction(overlay);
+            connect(overlay, &QAction::triggered, this, [=]{this->open_overlay_dialog();});
 
-            connect(menu->addAction("Anti-tear..."), &QAction::triggered, this, [=]{this->open_antitear_dialog();});
+            QAction *antiTear = new QAction("Anti-tear...", this);
+            antiTear->setShortcut(QKeySequence("ctrl+a"));
+            menu->addAction(antiTear);
+            connect(antiTear, &QAction::triggered, this, [=]{this->open_antitear_dialog();});
 
             QAction *resolution = new QAction("Resolution...", this);
             resolution->setShortcut(QKeySequence("ctrl+o"));
