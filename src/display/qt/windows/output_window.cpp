@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->menuBar->setVisible(false);
 
-    // Set up dialogs.
+    // Set up the child dialogs.
     {
         outputResolutionDlg = new OutputResolutionDialog;
         inputResolutionDlg = new InputResolutionDialog;
