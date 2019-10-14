@@ -1075,6 +1075,8 @@ void MainWindow::update_capture_signal_info(void)
 
         k_assert(this->outputResolutionDlg != nullptr, "");
         this->outputResolutionDlg->notify_of_new_capture_signal();
+
+        this->update_window_title();
     }
 
     return;
