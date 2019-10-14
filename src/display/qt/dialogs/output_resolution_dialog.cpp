@@ -145,3 +145,16 @@ void OutputResolutionDialog::disable_output_size_controls(const bool areDisabled
 
     return;
 }
+
+void OutputResolutionDialog::notify_of_new_capture_signal(void)
+{
+    if (!ui->checkBox_forceOutputRes->isChecked())
+    {
+        const capture_signal_s s = kc_hardware().status.signal();
+
+        ui->spinBox_outputResX->setValue(s.r.w);
+        ui->spinBox_outputResY->setValue(s.r.h);
+    }
+
+    return;
+}

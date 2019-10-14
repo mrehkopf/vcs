@@ -1075,6 +1075,9 @@ void MainWindow::update_capture_signal_info(void)
     {
         k_assert(this->videoDlg != nullptr, "");
         this->videoDlg->notify_of_new_capture_signal();
+
+        k_assert(this->outputResolutionDlg != nullptr, "");
+        this->outputResolutionDlg->notify_of_new_capture_signal();
     }
 
     return;

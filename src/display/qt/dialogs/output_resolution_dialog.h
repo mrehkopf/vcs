@@ -19,6 +19,8 @@ public:
 
     void disable_output_size_controls(const bool areDisabled);
 
+    void notify_of_new_capture_signal(void);
+
 private:
     Ui::OutputResolutionDialog *ui;
 };
