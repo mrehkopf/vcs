@@ -99,19 +99,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Create the window's menu bar.
     {
+        std::vector<QMenu*> menus;
+
         // File...
         {
             QMenu *menu = new QMenu("File", this);
+            menus.push_back(menu);
 
             connect(menu->addAction("Exit"), &QAction::triggered, this, [=]{this->close();});
-
-            ui->menuBar->addMenu(menu);
-            this->addActions(menu->actions());
         }
 
         // Input...
         {
             QMenu *menu = new QMenu("Input", this);
+            menus.push_back(menu);
 
             QMenu *channel = new QMenu("Channel", this);
             {
@@ -175,14 +176,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
             connect(video, &QAction::triggered, this, [=]{this->open_video_dialog();});
             connect(resolution, &QAction::triggered, this, [=]{this->open_input_resolution_dialog();});
-
-            ui->menuBar->addMenu(menu);
-            this->addActions(menu->actions());
         }
 
         // Output...
         {
             QMenu *menu = new QMenu("Output", this);
+            menus.push_back(menu);
 
             const std::vector<std::string> scalerNames = ks_list_of_scaling_filter_names();
             k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
@@ -318,24 +317,24 @@ MainWindow::MainWindow(QWidget *parent) :
             filter->setShortcut(QKeySequence("ctrl+f"));
             menu->addAction(filter);
             connect(filter, &QAction::triggered, this, [=]{this->open_filter_graph_dialog();});
-
-            ui->menuBar->addMenu(menu);
-            this->addActions(menu->actions());
         }
 
         // Help...
         {
             QMenu *menu = new QMenu("Help", this);
+            menus.push_back(menu);
 
             connect(menu->addAction("About..."), &QAction::triggered, this, [=]{this->open_about_dialog();});
-
-            ui->menuBar->addMenu(menu);
-            this->addActions(menu->actions());
         }
 
-        // Ensure that auto-hiding of the menu bar works.
+        for (QMenu *const menu: menus)
+        {
+            ui->menuBar->addMenu(menu);
+            this->addActions(menu->actions());
+            connect(menu, &QMenu::aboutToHide, this, [=]{ui->centralwidget->setFocus(); this->mouseActivityMonitor.report_activity();});
+        }
+
         connect(this->menuBar(), &QMenuBar::hovered, this, [=]{this->mouseActivityMonitor.report_activity();});
-        connect(this->menuBar(), &QMenuBar::triggered, this, [=]{ui->centralwidget->setFocus(); this->mouseActivityMonitor.report_activity();});
     }
 
     // We intend to repaint the entire window every time we update it, so ask for no automatic fill.
@@ -686,6 +685,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     this->mouseActivityMonitor.report_activity();
+
+    ui->centralwidget->setFocus();
 
     if (event->button() == Qt::LeftButton)
     {
