@@ -95,6 +95,16 @@ MainWindow::MainWindow(QWidget *parent) :
         aliasDlg = new AliasDialog;
         aboutDlg = new AboutDialog;
         recordDlg = new RecordDialog;
+
+        this->dialogs << outputResolutionDlg
+                      << inputResolutionDlg
+                      << filterGraphDlg
+                      << antitearDlg
+                      << overlayDlg
+                      << videoDlg
+                      << aliasDlg
+                      << aboutDlg
+                      << recordDlg;
     }
 
     // Create the window's menu bar.
@@ -330,8 +340,15 @@ MainWindow::MainWindow(QWidget *parent) :
         for (QMenu *const menu: menus)
         {
             ui->menuBar->addMenu(menu);
-            this->addActions(menu->actions());
             connect(menu, &QMenu::aboutToHide, this, [=]{ui->centralwidget->setFocus(); this->mouseActivityMonitor.report_activity();});
+
+            // Ensure that action shortcuts can be used regardless of which dialog
+            // has focus.
+            this->addActions(menu->actions());
+            for (auto dialog: this->dialogs)
+            {
+                dialog->addActions(menu->actions());
+            }
         }
 
         connect(this->menuBar(), &QMenuBar::hovered, this, [=]{this->mouseActivityMonitor.report_activity();});
@@ -429,32 +446,11 @@ MainWindow::~MainWindow()
     delete ui;
     ui = nullptr;
 
-    delete overlayDlg;
-    overlayDlg = nullptr;
-
-    delete filterGraphDlg;
-    filterGraphDlg = nullptr;
-
-    delete antitearDlg;
-    antitearDlg = nullptr;
-
-    delete videoDlg;
-    videoDlg = nullptr;
-
-    delete aliasDlg;
-    aliasDlg = nullptr;
-
-    delete aboutDlg;
-    aboutDlg = nullptr;
-
-    delete recordDlg;
-    recordDlg = nullptr;
-
-    delete outputResolutionDlg;
-    outputResolutionDlg = nullptr;
-
-    delete inputResolutionDlg;
-    inputResolutionDlg = nullptr;
+    for (auto dialog: this->dialogs)
+    {
+        delete dialog;
+        dialog = nullptr;
+    }
 
     return;
 }

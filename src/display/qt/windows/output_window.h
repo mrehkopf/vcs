@@ -146,6 +146,10 @@ private:
     AliasDialog *aliasDlg = nullptr;
     AboutDialog *aboutDlg = nullptr;
 
+    // A master list of all the dialogs that this window spawns. Will be filled in
+    // when we create the dialog instances.
+    QVector<QDialog*> dialogs;
+
     mouse_activity_monitor_c mouseActivityMonitor;
 
     // Set to true when the user has selected to close the
