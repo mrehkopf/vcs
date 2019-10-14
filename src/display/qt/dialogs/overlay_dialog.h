@@ -30,6 +30,8 @@ public:
 
     bool is_overlay_enabled(void);
 
+    void toggle_overlay(void);
+
 private slots:
     void add_image_to_overlay(void);
 

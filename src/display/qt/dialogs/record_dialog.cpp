@@ -349,3 +349,17 @@ bool RecordDialog::apply_x264_registry_settings(void)
 
     return true;
 }
+
+void RecordDialog::toggle_recording(void)
+{
+    if (krecord_is_recording())
+    {
+        ui->pushButton_recordingStop->click();
+    }
+    else
+    {
+        ui->pushButton_recordingStart->click();
+    }
+
+    return;
+}

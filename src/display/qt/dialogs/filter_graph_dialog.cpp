@@ -393,3 +393,10 @@ FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const filter_type_enum
 {
     return add_filter_node(filterType, initialParameterValues);
 }
+
+void FilterGraphDialog::toggle_filtering(void)
+{
+    ui->groupBox_filterGraphEnabled->setChecked(!ui->groupBox_filterGraphEnabled->isChecked());
+
+    return;
+}

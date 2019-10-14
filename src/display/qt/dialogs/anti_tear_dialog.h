@@ -24,6 +24,8 @@ public:
 
     bool is_anti_tear_enabled(void);
 
+    void toggle_anti_tear(void);
+
 private:
     Ui::AntiTearDialog *ui;
 };

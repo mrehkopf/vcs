@@ -195,3 +195,10 @@ bool OverlayDialog::is_overlay_enabled(void)
 {
     return ui->groupBox_overlayEnabled->isChecked();
 }
+
+void OverlayDialog::toggle_overlay(void)
+{
+    ui->groupBox_overlayEnabled->setChecked(!ui->groupBox_overlayEnabled->isChecked());
+
+    return;
+}

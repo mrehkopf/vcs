@@ -34,6 +34,8 @@ public:
 
     void set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);
 
+    void toggle_filtering(void);
+
 private:
     void reset_graph(const bool autoAccept = false);
     void save_filters(void);

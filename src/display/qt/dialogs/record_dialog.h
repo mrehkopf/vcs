@@ -19,6 +19,8 @@ public:
 
     void set_recording_controls_enabled(const bool areEnabled);
 
+    void toggle_recording(void);
+
 private:
     bool apply_x264_registry_settings(void);
 

@@ -136,3 +136,11 @@ bool AntiTearDialog::is_anti_tear_enabled(void)
 {
     return bool(ui->groupBox_antiTearingEnabled->isChecked());
 }
+
+
+void AntiTearDialog::toggle_anti_tear(void)
+{
+    ui->groupBox_antiTearingEnabled->setChecked(!ui->groupBox_antiTearingEnabled->isChecked());
+
+    return;
+}
