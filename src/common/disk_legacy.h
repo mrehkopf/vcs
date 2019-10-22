@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <string>
+#include <vector>
 
 struct legacy14_filter_set_s;
 

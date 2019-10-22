@@ -111,7 +111,7 @@ bool kdisk_load_video_mode_params(const std::string &sourceFilename)
                          {
                              if ((int)i >= paramRows.length())
                              {
-                                 NBENE(("Error while loading video parameters: expected '%s' but found the data out of range.", name));
+                                 NBENE(("Error while loading video parameters: expected '%s' but found the data out of range.", name.toLatin1().constData()));
                                  throw 0;
                              }
                              else if (paramRows.at(i).at(0) != name)

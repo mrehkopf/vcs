@@ -70,7 +70,7 @@ InputResolutionDialog::~InputResolutionDialog()
 void InputResolutionDialog::parse_capture_resolution_button_press(QWidget *button)
 {
     QStringList sl;
-    resolution_s res = {0, 0};
+    resolution_s res = {0, 0, 0};
 
     k_assert(button->objectName().contains("pushButton"),
              "Expected a button widget, but received something else.");

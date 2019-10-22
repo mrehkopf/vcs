@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <cmath>
 #include "display/qt/widgets/filter_widgets.h"
 
 filter_widget_s::filter_widget_s(const filter_type_enum_e filterType,
