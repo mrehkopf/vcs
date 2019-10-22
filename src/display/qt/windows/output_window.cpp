@@ -1020,7 +1020,7 @@ void MainWindow::update_window_title()
 
         title = QString("%1 - %2%3 x %4 scaled to %5 x %6 (~%7%)")
                 .arg(PROGRAM_NAME)
-                .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join(",")) : "")
+                .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
                 .arg(inRes.w)
                 .arg(inRes.h)
                 .arg(outRes.w)
