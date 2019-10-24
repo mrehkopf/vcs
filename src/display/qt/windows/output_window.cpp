@@ -851,7 +851,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 void MainWindow::measure_framerate()
 {
     static qint64 elapsed = 0, prevElapsed = 0;
-    static u32 peakProcessTime = 0, avgProcessTime;
+    static u32 peakProcessTime = 0, avgProcessTime = 0;
     static u32 numFramesDrawn = 0;
 
     static QElapsedTimer fpsTimer;
@@ -876,7 +876,7 @@ void MainWindow::measure_framerate()
     {
         const int fps = round(1000 / (real(elapsed) / numFramesDrawn));
 
-        UPDATE_LATENCY_AVG = avgProcessTime / numFramesDrawn;
+        UPDATE_LATENCY_AVG = (avgProcessTime / numFramesDrawn);
         UPDATE_LATENCY_PEAK = peakProcessTime;
 
         this->update_output_framerate(fps, kc_are_frames_being_missed());
