@@ -306,7 +306,8 @@ Anti-tearing can be considered an experimental feature of VCS. It works quite we
 ### Filter graph dialog
 The filter graph dialog allows you to create chains of image filters to be applied to captured frames prior to display in the [output window](#output-window).
 
-*(Screenshot to be added.)*
+![](images/screenshots/v1.6.2/filter-graph-dialog.png)\
+*The filter graph dialog, showing controls for creating and modifying filter chains.*
 
 The filter graph is made up of nodes that can be connected together in a chain. These nodes come in three varieties: `input gate`, `output gate`, and `filter`.
 
