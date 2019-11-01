@@ -95,85 +95,69 @@ The output window contains an auto-hiding menu bar, from which you can access th
 
 The menu bar will be displayed when you hover the mouse cursor over the output window; and hidden after a few seconds of mouse inactivity.
 
-The menu bar is divided into four categories: `file`, `input`, `output`, and `about`. The following is a list of the options available.
+The menu bar is divided into four categories: `File`, `Input`, `Output`, and `About`. The following is a list of the options available.
 
-##### File
-*Menu: `file` &rarr; `exit`*
-
+##### Menu bar: File
+`File` &rarr; `Exit`\
 Exit VCS.
 
-##### Input
-*Menu: `input` &rarr; `channel`*
-
+##### Menu bar: Input
+`Input` &rarr; `Channel`\
 Set the hardware capture channel. Depending on the capabilities of your capture hardware, channels #1 through #2 are available.
 
-*Menu: `input` &rarr; `color depth`*
-
+`Input` &rarr; `Color depth`\
 Set the color depth with which frames are captured. This is a hardware-level setting: the capture hardware will convert each frame to this color depth before uploading it to system memory - thus lower color depths consume less bandwidth. Prior to display, VCS will convert the frames to the color depth of the [output window](#output-window).
-
-*Menu: `input` &rarr; `video...`*
-
+ 
+`Input` &rarr; `Video...`\
 Open the [video & color](#video-&-color-dialog) dialog.
 
-*Menu: `input` &rarr; `aliases...`*
-
+`Input` &rarr; `Aliases...`\
 Open the [alias resolutions](#alias-resolutions-dialog) dialog.
 
-*Menu: `input` &rarr; `resolution...`*
-
+`Input` &rarr; `Resolution...`\
 Open the [input resolution](#input-resolution-dialog) dialog.
 
-##### Output
-*Menu: `output` &rarr; `renderer`*
-
+##### Menu bar: Output
+`Output` &rarr; `Renderer`\
 Set the type of rendering VCS uses to draw captured frames onto the [output window](#output-window).
 
-- &rarr; `software`: Most compatible option. Rendering is done on the CPU.
+- &rarr; `Software`: Most compatible option. Rendering is done on the CPU.
 - &rarr; `OpenGL`: Rendering is done on the GPU using OpenGL.
 
 When choosing the renderer, be mindful of the following:
 - The OpenGL renderer might not work in Windows XP.
 - The output window's magnifying glass feature is not available with the OpenGL renderer.
 
-*Menu: `output` &rarr; `aspect ratio`*
-
+`Output` &rarr; `Aspect ratio`\
 Set the aspect ratio to display captured frames in. Letterboxing will be used to achieve the desired ratio.
 
-- &rarr; `native`: Display frames in the full size of the [output window](#output-window), without letterboxing.
-- &rarr; `traditional 4:3`: Use 4:3 aspect ratio for resolutions that historically might have been meant to be displayed as such. These include 720 x 400, 640 x 400, and 320 x 200.
-- &rarr; `always 4:3`: Display all frames in 4:3 aspect ratio.
+- &rarr; `Native`: Display frames in the full size of the [output window](#output-window), without letterboxing.
+- &rarr; `Traditional 4:3`: Use 4:3 aspect ratio for resolutions that historically might have been meant to be displayed as such. These include 720 x 400, 640 x 400, and 320 x 200.
+- &rarr; `Always 4:3`: Display all frames in 4:3 aspect ratio.
 
-*Menu: `output` &rarr; `upscaler`*
-
+`Output` &rarr; `Upscaler`\
 Set the scaler to be used when frames are upscaled to fit the [output window](#output-window).
 
-*Menu: `output` &rarr; `downscaler`*
-
+`Output` &rarr; `Downscaler`\
 Set the scaler to be used when frames are downscaled to fit the [output window](#output-window).
 
-*Menu: `output` &rarr; `record...`*
-
+`Output` &rarr; `Record...`\
 Open the [record](#record-dialog) dialog.
 
-*Menu: `output` &rarr; `overlay...`*
-
+`Output` &rarr; `Overlay...`\
 Open the [overlay](#overlay-dialog) dialog.
 
-*Menu: `output` &rarr; `anti-tear...`*
-
+`Output` &rarr; `Anti-tear...`\
 Open the [anti-tear](#anti-tear-dialog) dialog.
 
-*Menu: `output` &rarr; `resolution...`*
-
+`Output` &rarr; `Resolution...`\
 Open the [output resolution](#output-resolution-dialog) dialog.
 
-*Menu: `output` &rarr; `filter graph`*
-
+`Output` &rarr; `Filter graph`\
 Open the [filter graph](#filter-graph-dialog) dialog.
 
-##### Help
-*Menu: `help` &rarr; `about...`*
-
+##### Menu bar: Help
+`Help` &rarr; `About...`\
 Display information about VCS and the capture hardware.
 
 ## Dialogs
@@ -189,6 +173,8 @@ Contents:
 - [Filter graph dialog](#filter-graph-dialog)
 
 ### Video & color dialog
+To access: Ctrl+V or [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Video...`
+
 The video & color dialog lets you to modify the capture hardware's video parameters.
 
 ![](images/screenshots/v1.6.2/video-color-dialog.png)\
@@ -206,6 +192,8 @@ Previously-saved settings can be restored via `File` &rarr; `Load settings...`.
 *(Coming.)*
 
 ### Record dialog
+To access: Ctrl+R or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Record...`
+
 The record dialog gives you the option to stream captured frames into a video file.
 
 ![](images/screenshots/v1.6.2/record-dialog.png)\
@@ -222,7 +210,6 @@ The recording functionality will write frames as they appear in the [output wind
 To make use of VCS's recording functionality on Windows, you will need to install the 32-bit version of the [x264vfw](https://sourceforge.net/projects/x264vfw/files/x264vfw/44_2851bm_44825/) codec and run its configurator at least once, so that its settings are added into the Windows registry for VCS to find.
 
 #### Recording settings
-
 **Frame rate.** The video's nominal playback rate. Typically, you will want to match this to the capture source's refresh rate, so that e.g. a 60 Hz capture signal is recorded with a frame rate of 60.
 
 **Linear sampling.** Whether VCS is allowed to duplicate and/or skip frames to match the captured frame rate with the video's nominal playback rate. If linear sampling is disabled, captured frames will be inserted into the video as they are received, and are never duplicated or skipped to maintain time-coherency. Disabling linear sampling may result in smoother-looking playback when the capture frame rate is uneven; but enabling it will help prevent time compression in these cases. If you are planning to append the video with an audio track you recorded at the same time, you will most likely want to enable linear sampling or the video may not keep in sync with the audio.
@@ -238,6 +225,8 @@ To make use of VCS's recording functionality on Windows, you will need to instal
 For best image quality regardless of performance and/or file size, set `profile` to "High 4:4:4", `pixel format` to "RGB", `CRF` to 1, and `preset` to "ultrafast". To maintain high image quality but reduce the file size, you can set `preset` to "veryfast" or "faster", and increase `CRF` to 10&ndash;15. For more tips and tricks, you can look up documentation specific to the x264 encoder.
 
 ### Input resolution dialog
+To access: Ctrl+I or [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Resolution...`
+
 The input resolution dialog lets you override the capture hardware's current capture resolution.
 
 ![](images/screenshots/v1.6.2/input-resolution-dialog.png)\
@@ -252,6 +241,8 @@ The dialog's buttons will tell the capture hardware to set a particular input re
 You can change a button's assigned resolution by clicking on it while holding down the Alt key.
 
 ### Output resolution dialog
+To access: Ctrl+O or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Resolution...`
+
 The output resolution dialog lets you resize the output window. This also resizes the frames being displayed in the window.
 
 ![](images/screenshots/v1.6.2/output-resolution-dialog.png)\
@@ -268,6 +259,8 @@ Normally, the size of the [output window](#output-window) will match the capture
 **Relative scale.** Scale the size of the output window up or down by a percentage of its base size. The base size is either the capture resolution, or, if enabled, the override resolution.
 
 ### Overlay dialog
+To access: Ctrl+L or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Overlay...`
+
 The overlay dialog lets you define a message to be overlaid on the [output window](#output-window).
 
 ![](images/screenshots/v1.6.2/overlay-dialog.png)\
@@ -278,6 +271,8 @@ You can combine normal text with pre-set VCS variables and HTML/CSS formatting t
 - Note: The overlay will not be included in videos recorded using VCS's built-in recording functionality (see the [record dialog](#record-dialog)).
 
 ### Anti-tear dialog
+To access: Ctrl+A or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Anti-tear...`
+
 The anti-tear dialog provides functionality to remove tearing from captured frames.
 
 ![](images/screenshots/v1.6.2/antitear-dialog.png)\
@@ -304,6 +299,8 @@ Anti-tearing can be considered an experimental feature of VCS. It works quite we
 **Matches req'd.** Set how many times on a row of pixels the sums of the sampling window need to exceed the threshold for that row of pixels to be considered new data.
 
 ### Filter graph dialog
+To access: Ctrl+F or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Filter graph...`
+
 The filter graph dialog allows you to create chains of image filters to be applied to captured frames prior to display in the [output window](#output-window).
 
 ![](images/screenshots/v1.6.2/filter-graph-dialog.png)\
