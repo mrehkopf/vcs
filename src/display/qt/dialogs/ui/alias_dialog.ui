@@ -64,7 +64,7 @@
        </column>
        <column>
         <property name="text">
-         <string>Force into</string>
+         <string>Override with</string>
         </property>
        </column>
       </widget>
