@@ -189,7 +189,14 @@ If you want your settings to persist after exiting VCS, remember to save them fi
 Previously-saved settings can be restored via `File` &rarr; `Load settings...`.
 
 ### Alias resolutions dialog
-*(Coming.)*
+To access: [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Aliases...`
+
+With the alias resolutions dialog, you can tell VCS to automatically override certain input resolutions.
+
+![](images/screenshots/v1.6.2/alias-resolutions-dialog.png)\
+*The alias resolutions dialog, showing controls for creating and managing aliases.*
+
+For instance, if you find that your capture hardware is incorrectly initializing 640 x 400 as 512 x 488 (or something of that sort), you can define 640 x 400 as an alias of 512 x 488. Now, whenever the capture hardware sets the input resolution to 512 x 488, VCS will instruct it to change it to 640 x 400.
 
 ### Record dialog
 To access: Ctrl+R or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Record...`
