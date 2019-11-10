@@ -88,7 +88,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Source file:</string>
+               <string>Settings file:</string>
               </property>
              </widget>
             </item>
