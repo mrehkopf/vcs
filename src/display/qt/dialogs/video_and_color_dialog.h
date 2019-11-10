@@ -48,6 +48,8 @@ private:
 
     void remove_unsaved_changes_flag(void);
 
+    void update_mode_label(const bool isEnabled);
+
     Ui::VideoAndColorDialog *ui;
 
     QMenuBar *menubar = nullptr;

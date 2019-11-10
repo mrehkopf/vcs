@@ -167,13 +167,13 @@ QString OverlayDialog::parsed_overlay_string(void)
     const auto inRes = kc_hardware().status.capture_resolution();
     const auto outRes = ks_output_resolution();
 
-    parsed.replace("$inputResolution",   QString("%1 x %2").arg(inRes.w).arg(inRes.h));
-    parsed.replace("$outputResolution",  QString("%1 x %2").arg(outRes.w).arg(outRes.h));
-    parsed.replace("$inputHz",    QString::number(kc_hardware().status.signal().refreshRate));
-    parsed.replace("$outputFPS",  QString::number(kd_output_framerate()));
-    parsed.replace("$areFramesDropped",  (kc_are_frames_being_missed()? "Dropping frames" : ""));
-    parsed.replace("$peakLatencyMs",  QString::number(kd_peak_pipeline_latency()));
-    parsed.replace("$averageLatencyMs",  QString::number(kd_average_pipeline_latency()));
+    parsed.replace("$inputResolution", QString("%1 x %2").arg(inRes.w).arg(inRes.h));
+    parsed.replace("$outputResolution", QString("%1 x %2").arg(outRes.w).arg(outRes.h));
+    parsed.replace("$inputHz", QString::number(kc_hardware().status.signal().refreshRate));
+    parsed.replace("$outputFPS", QString::number(kd_output_framerate()));
+    parsed.replace("$areFramesDropped", (kc_are_frames_being_missed()? "Dropping frames" : ""));
+    parsed.replace("$peakLatencyMs", QString::number(kd_peak_pipeline_latency()));
+    parsed.replace("$averageLatencyMs", QString::number(kd_average_pipeline_latency()));
     parsed.replace("$systemTime", QDateTime::currentDateTime().time().toString());
     parsed.replace("$systemDate", QDateTime::currentDateTime().date().toString());
 

@@ -170,6 +170,7 @@ VideoAndColorDialog::~VideoAndColorDialog()
 void VideoAndColorDialog::notify_of_new_capture_signal(void)
 {
     update_controls();
+    update_mode_label(true);
 
     return;
 }
@@ -312,6 +313,27 @@ void VideoAndColorDialog::set_controls_enabled(const bool state)
     ui->groupBox_colorAdjust->setEnabled(state);
     ui->groupBox_videoAdjust->setEnabled(state);
     ui->groupBox_meta->setEnabled(state);
+
+    update_mode_label(state);
+
+    return;
+}
+
+void VideoAndColorDialog::update_mode_label(const bool isEnabled)
+{
+    if (isEnabled)
+    {
+        const auto signal = kc_hardware().status.signal();
+        const QString labelStr = QString("%1 x %2 @ %3 Hz").arg(signal.r.w)
+                                                           .arg(signal.r.h)
+                                                           .arg(signal.refreshRate);
+
+        ui->label_currentInputMode->setText(labelStr);
+    }
+    else
+    {
+        ui->label_currentInputMode->setText("n/a");
+    }
 
     return;
 }
