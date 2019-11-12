@@ -21,7 +21,7 @@
 // All local RGBEASY API callbacks lock this for their duration.
 std::mutex INPUT_OUTPUT_MUTEX;
 
-// Set to true when receiving the first frame after 'no signal'.
+// Set to true upon first receiving a signal after 'no signal'.
 static bool SIGNAL_WOKE_UP = false;
 
 // If set to true, the scaler should skip the next frame we send.
@@ -605,7 +605,7 @@ capture_event_e kc_latest_capture_event(void)
         return capture_event_e::new_frame;
     }
 
-    // If there were no events.
+    // If there were no events that we should notify the caller about.
     return capture_event_e::none;
 }
 

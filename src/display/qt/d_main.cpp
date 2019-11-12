@@ -150,9 +150,9 @@ void kd_set_capture_signal_reception_status(const bool receivingASignal)
     {
         if (receivingASignal)
         {
-            WINDOW->set_capture_info_as_no_signal();
+            WINDOW->set_capture_info_as_receiving_signal();
         }
-        else WINDOW->set_capture_info_as_receiving_signal();
+        else WINDOW->set_capture_info_as_no_signal();
     }
 
     return;

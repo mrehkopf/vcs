@@ -166,7 +166,7 @@ void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int ve
 // The capture hardware received an invalid input signal.
 void kpropagate_news_of_invalid_capture_signal(void)
 {
-    kd_set_capture_signal_reception_status(true);
+    kd_set_capture_signal_reception_status(false);
 
     ks_indicate_invalid_signal();
 
@@ -175,10 +175,10 @@ void kpropagate_news_of_invalid_capture_signal(void)
     return;
 }
 
-// The capture hardware lost its input signal.
+// The capture hardware lost its input signal and thus enters a state of no signal.
 void kpropagate_news_of_lost_capture_signal(void)
 {
-    kd_set_capture_signal_reception_status(true);
+    kd_set_capture_signal_reception_status(false);
 
     ks_indicate_no_signal();
 
@@ -187,10 +187,11 @@ void kpropagate_news_of_lost_capture_signal(void)
     return;
 }
 
-// The capture hardware started receiving an input signal.
+// The capture hardware started receiving an input signal after being in a state
+// of no signal.
 void kpropagate_news_of_gained_capture_signal(void)
 {
-    kd_set_capture_signal_reception_status(false);
+    kd_set_capture_signal_reception_status(true);
 
     return;
 }
