@@ -146,7 +146,7 @@ uint kc_num_missed_frames(void);
 uint kc_input_channel_idx(void);
 uint kc_output_color_depth(void);
 uint kc_input_color_depth(void);
-bool kc_are_frames_being_missed(void);
+bool kc_are_frames_being_dropped(void);
 bool kc_is_capture_active(void);
 bool kc_should_current_frame_be_skipped(void);
 bool kc_is_invalid_signal(void);

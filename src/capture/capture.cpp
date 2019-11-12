@@ -292,7 +292,7 @@ void update_known_video_mode_params(const resolution_s r,
 // Returns true if the capture hardware has been offering frames while the previous
 // frame was still being processed for display.
 //
-bool kc_are_frames_being_missed(void)
+bool kc_are_frames_being_dropped(void)
 {
     return bool(CNT_FRAMES_SKIPPED > 0);
 }

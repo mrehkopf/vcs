@@ -879,7 +879,7 @@ void MainWindow::measure_framerate()
         UPDATE_LATENCY_AVG = (avgProcessTime / numFramesDrawn);
         UPDATE_LATENCY_PEAK = peakProcessTime;
 
-        this->update_output_framerate(fps, kc_are_frames_being_missed());
+        this->update_output_framerate(fps, kc_are_frames_being_dropped());
         kc_reset_missed_frames_count();
 
         numFramesDrawn = 0;
@@ -1018,7 +1018,8 @@ void MainWindow::update_window_title()
         if (overlayDlg->is_overlay_enabled()) programStatus << "O";
         if (kat_is_anti_tear_enabled()) programStatus << "A";
 
-        title = QString("%1 - %2%3 x %4 scaled to %5 x %6 (~%7%)")
+        title = QString("%1%2 - %3%4 x %5 scaled to %6 x %7 (~%8%)")
+                .arg(kc_are_frames_being_dropped()? "{!} " : "")
                 .arg(PROGRAM_NAME)
                 .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
                 .arg(inRes.w)
@@ -1060,6 +1061,10 @@ void MainWindow::update_output_framerate(const u32 fps,
                                          const bool missedFrames)
 {
     CURRENT_OUTPUT_FRAMERATE = fps;
+
+    // We assume that the window title contains information about
+    // the current frame rate, so we'll want to keep it up-to-date.
+    this->update_window_title();
 
     (void)missedFrames;
 
