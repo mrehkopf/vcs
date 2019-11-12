@@ -182,11 +182,13 @@ The video & color dialog lets you to modify the capture hardware's video paramet
 
 Any changes you make to the settings will be sent to the capture hardware in real-time, and are reflected accordingly in the [output window](#output-window).
 
-The settings are specific to the current capture resolution, and will be recalled automatically by VCS whenever that capture resolution is used. Each capture resolution has its own settings; they do not ovewrite each other.
+The settings are specific to the current capture resolution, and will be recalled automatically by VCS whenever that capture resolution is used. For instance, if the current resolution is 640 x 480 and you modify a parameter whose default value is 5 to make it 10, VCS will assign this parameter a value of 10 whenever the resolution is 640 x 480, and 5 otherwise. Following that, if the resolution is 800 x 600 and you now set the parameter to 7, the parameter will be assigned a value of 7 whenever the resolution is 800 x 600, 10 whenever the resolution is 640 x 480, and 5 for any other resolution.
 
-If you want your settings to persist after exiting VCS, remember to save them first. This can be done via `File` &rarr; `Save settings as...`.
+- Note: Settings cannot be defined per refresh rate. Thus, the capture modes 640 x 480 @ 60 Hz and 640 x 480 @ 55 Hz both cause VCS to recall the settings for 640 x 480.
 
-Previously-saved settings can be restored via `File` &rarr; `Load settings...`.
+If you want your settings to persist after you exit VCS, remember to save them first. This can be done via `File` &rarr; `Save settings as...`.
+
+Saved settings can be restored via `File` &rarr; `Load settings...`.
 
 ### Alias resolutions dialog
 To access: [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Aliases...`
