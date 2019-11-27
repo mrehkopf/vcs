@@ -23,9 +23,6 @@ const char PROGRAM_VERSION_STRING[] = "1.6.4";
 // If this build is a developmental (non-stable, non-release) version.
 const bool DEV_VERSION = true;
 
-const uint MAX_INPUT_CHANNELS = 2;  // For now, we only support up to two input channels.
-const uint MAX_FRAME_SKIP = 4;
-
 // The minimum and maximum resolutions we can output to.
 // Note that these also set the limit for the input (from the capture card) resolutions,
 // as they're not allowed to be larger/smaller than the output limits.

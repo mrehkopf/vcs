@@ -86,9 +86,6 @@ static HRGBDLL RGBAPI_HANDLE = 0;
 // Set to 1 if we're currently capturing.
 static bool CAPTURE_IS_ACTIVE = false;
 
-// Set to 1 if the input channel we were requested to use was invalid.
-static bool INPUT_CHANNEL_IS_INVALID = 0;
-
 // Aliases are resolutions that stand in for others; i.e. if 640 x 480 is an alias
 // for 1024 x 768, VCS will ask the capture hardware to switch to 640 x 480 every time
 // the card sets 1024 x 768.
@@ -637,11 +634,22 @@ bool kc_set_frame_dropping(const u32 drop)
 
 bool kc_set_input_channel(const u32 channel)
 {
-    if (channel >= MAX_INPUT_CHANNELS)
+    const int numInputChannels = kc_hardware().meta.num_capture_inputs();
+
+    if (numInputChannels < 0)
     {
+        NBENE(("Encountered an unexpected error while setting the input channel. Aborting the action."));
+
         goto fail;
     }
+    
+    if (channel >= (unsigned)numInputChannels)
+    {
+        INFO(("Was asked to set an input channel that is out of bounds. Ignoring the request."));
 
+        goto fail;
+    }
+    
     if (apicall_succeeds(RGBSetInput(CAPTURE_HANDLE, channel)))
     {
         INFO(("Setting capture input channel to %u.", (channel + 1)));
@@ -777,7 +785,9 @@ void kc_set_video_settings(const capture_video_settings_s v)
 
 bool capture_hardware_s::features_supported_s::component_capture() const
 {
-    for (uint i = 0; i < MAX_INPUT_CHANNELS; i++)
+    const int numInputChannels = kc_hardware().meta.num_capture_inputs();
+
+    for (int i = 0; i < numInputChannels; i++)
     {
         long isSupported = 0;
         if (!apicall_succeeds(RGBInputIsComponentSupported(i, &isSupported))) return false;
@@ -788,8 +798,10 @@ bool capture_hardware_s::features_supported_s::component_capture() const
 
 bool capture_hardware_s::features_supported_s::composite_capture() const
 {
+    const int numInputChannels = kc_hardware().meta.num_capture_inputs();
     long isSupported = 0;
-    for (uint i = 0; i < MAX_INPUT_CHANNELS; i++)
+
+    for (int i = 0; i < numInputChannels; i++)
     {
         if (!apicall_succeeds(RGBInputIsCompositeSupported(i, &isSupported))) return false;
         if (isSupported) return true;
@@ -813,7 +825,9 @@ bool capture_hardware_s::features_supported_s::dma() const
 
 bool capture_hardware_s::features_supported_s::dvi() const
 {
-    for (uint i = 0; i < MAX_INPUT_CHANNELS; i++)
+    const int numInputChannels = kc_hardware().meta.num_capture_inputs();
+
+    for (int i = 0; i < numInputChannels; i++)
     {
         long isSupported = 0;
         if (!apicall_succeeds(RGBInputIsDVISupported(i, &isSupported))) return false;
@@ -824,7 +838,9 @@ bool capture_hardware_s::features_supported_s::dvi() const
 
 bool capture_hardware_s::features_supported_s::svideo() const
 {
-    for (uint i = 0; i < MAX_INPUT_CHANNELS; i++)
+    const int numInputChannels = kc_hardware().meta.num_capture_inputs();
+
+    for (int i = 0; i < numInputChannels; i++)
     {
         long isSupported = 0;
         if (!apicall_succeeds(RGBInputIsSVideoSupported(i, &isSupported))) return false;
@@ -835,7 +851,9 @@ bool capture_hardware_s::features_supported_s::svideo() const
 
 bool capture_hardware_s::features_supported_s::vga() const
 {
-    for (uint i = 0; i < MAX_INPUT_CHANNELS; i++)
+    const int numInputChannels = kc_hardware().meta.num_capture_inputs();
+
+    for (int i = 0; i < numInputChannels; i++)
     {
         long isSupported = 0;
         if (!apicall_succeeds(RGBInputIsVGASupported(i, &isSupported))) return false;
@@ -1178,13 +1196,6 @@ int capture_hardware_s::status_s::frame_rate() const
 bool capture_interface_s::initialize_hardware()
 {
     INFO(("Initializing the capture hardware."));
-
-    if (INPUT_CHANNEL_IDX >= MAX_INPUT_CHANNELS)
-    {
-        NBENE(("The requested input channel %u is out of bounds.", INPUT_CHANNEL_IDX));
-        INPUT_CHANNEL_IS_INVALID = true;
-        goto fail;
-    }
 
     if (!apicall_succeeds(RGBLoad(&RGBAPI_HANDLE)))
     {
