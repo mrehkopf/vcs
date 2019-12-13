@@ -642,14 +642,14 @@ bool kc_set_input_channel(const u32 channel)
 
         goto fail;
     }
-    
+
     if (channel >= (unsigned)numInputChannels)
     {
         INFO(("Was asked to set an input channel that is out of bounds. Ignoring the request."));
 
         goto fail;
     }
-    
+
     if (apicall_succeeds(RGBSetInput(CAPTURE_HANDLE, channel)))
     {
         INFO(("Setting capture input channel to %u.", (channel + 1)));
@@ -871,9 +871,14 @@ bool capture_hardware_s::features_supported_s::yuv() const
 
 std::string capture_hardware_s::metainfo_s::model_name() const
 {
+#ifndef USE_RGBEASY_API
+    return "Null RGBEasy wrapper";
+#endif
+
     const std::string unknownName = "Unknown capture device";
 
     CAPTURECARD card = RGB_CAPTURECARD_DGC103;
+
     if (!apicall_succeeds(RGBGetCaptureCard(&card))) return unknownName;
 
     switch (card)
