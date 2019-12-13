@@ -30,11 +30,19 @@ The VisionAV range of cards should also work, albeit without their audio capture
 
 In general, if you know that your card supports Datapath's RGBEasy API, it should be able to function with VCS.
 
-# Usage
+# User's manual
 Contents:
 - [Setting up](#setting-up)
 - [Output window](#output-window)
     - Interacting with the output window
+        - Magnifying glass
+        - Dragging
+        - Borderless mode
+        - Fullscreen mode
+        - Resizing
+        - Scaling with the mouse wheel
+        - Title bar
+        - Menu bar
 - [Dialogs](#dialogs)
     - Video & color dialog
     - Alias resolutions dialog
@@ -44,14 +52,14 @@ Contents:
     - Anti-tear dialog
     - Filter graph dialog
 - [Mouse and keyboard shortcuts](#mouse-and-keyboard-shortcuts)
-- [Command-line](#command-line)
+- [Command-line arguments](#command-line-arguments)
 
 ## Setting up
 Assuming you've installed the drivers for your capture hardware, as well as unpacked the binary distribution of VCS (linked to, above) into a folder, getting VCS going is simply a matter of running its `vcs.exe` executable.
 
 When you run the executable, two windows will open: a console window, in which notifications about VCS's status will appear during operation; and the [output window](#output-window), in which captured frames are displayed.
 
-- Note: You can launch `vcs.exe` with command-line parameters to automate certain start-up tasks. A list of the command-line options is given in the [command-line](#command-line) section.
+- Note: You can launch `vcs.exe` with command-line parameters to automate certain start-up tasks. A list of the command-line options is given in the [command-line](#command-line-arguments) section.
 
 When running VCS for the first time, the first thing you may want to do is adjust the capture video parameters, like phase, color balance, and so on. These can be set up via the [video & color dialog](#video-&-color-dialog).
 
@@ -89,6 +97,21 @@ By scrolling the mouse wheel over the output window, you can scale the size of t
 - Note: Mouse wheel scaling is not available while recording video.
 
 This is a shortcut for the `relative scale` setting in the [output resolution dialog](#output-resolution-dialog).
+
+#### Title bar
+The output window's title bar displays information about VCS's current state, like the input and output resolutions.
+
+The title bar's text may contain the following elements, in order of appearance from left to right:
+- `{!}`: Shown if captured frames are being dropped (e.g. due to VCS lacking sufficient CPU power to keep up with the capture hardware's output rate).
+- `VCS`: The program's name!
+- `R` `F` `O` `A`: Indicators for whether certain functionality is enabled. Not shown if the corresponding functionality is disabled.
+    - `R` &rarr; Recording to video (see [Record dialog](#record-dialog)).
+    - `F` &rarr; Filtering enabled (see [Filter graph dialog](#filter-graph-dialog)).
+    - `O` &rarr; Overlay enabled (see [Overlay dialog](#overlay-dialog)).
+    - `A` &rarr; Anti-tearing enabled (see [Anti-tear dialog](#anti-tear-dialog)).
+- `640 x 480`: The current input (capture) resolution.
+- `scaled to 704 x 528`: The current output resolution.
+- `(~110%)`: An estimate of the percentage by which the input resolution has been scaled for output.
 
 #### Menu bar
 The output window contains an auto-hiding menu bar, from which you can access the various controls and dialogs of VCS.
@@ -368,7 +391,7 @@ Alt + Shift + Arrows .... Adjust the capture's video position horizontally
                           and vertically.
 ```
 
-## Command-line
+## Command-line arguments
 Optionally, you can pass one or more of following command-line arguments to VCS:
 ```
 -m <path + filename> .... Load capture parameters from the given file on start-
