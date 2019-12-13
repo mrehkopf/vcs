@@ -21,7 +21,7 @@ linux {
 
     # OpenCV 3.2.0.
     contains(DEFINES, USE_OPENCV) {
-        LIBS += -L/usr/local/lib -lopencv_world
+        LIBS += -lopencv_imgproc -lopencv_videoio -lopencv_highgui -lopencv_core -lopencv_photo
     }
 }
 win32 {
