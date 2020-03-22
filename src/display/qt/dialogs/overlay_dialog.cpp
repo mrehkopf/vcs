@@ -17,6 +17,7 @@
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "display/display.h"
+#include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "ui_overlay_dialog.h"
 
@@ -164,12 +165,12 @@ QString OverlayDialog::parsed_overlay_string(void)
     /// TODO. I'm not totally sure how good, performance-wise, it is to poll the
     /// capture hardware every frame. Depends on how the Datapath API caches this
     /// info etc.
-    const auto inRes = kc_hardware().status.capture_resolution();
+    const auto inRes = kc_api().get_resolution();
     const auto outRes = ks_output_resolution();
 
     parsed.replace("$inputResolution", QString("%1 x %2").arg(inRes.w).arg(inRes.h));
     parsed.replace("$outputResolution", QString("%1 x %2").arg(outRes.w).arg(outRes.h));
-    parsed.replace("$inputHz", QString::number(kc_hardware().status.signal().refreshRate));
+    parsed.replace("$inputHz", QString::number(kc_api().get_signal_info().refreshRate));
     parsed.replace("$outputFPS", QString::number(kd_output_framerate()));
     parsed.replace("$areFramesDropped", (kc_are_frames_being_dropped()? "Dropping frames" : ""));
     parsed.replace("$peakLatencyMs", QString::number(kd_peak_pipeline_latency()));

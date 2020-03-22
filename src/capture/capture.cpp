@@ -12,11 +12,19 @@
 #include <cmath>
 #include "common/command_line.h"
 #include "common/propagate.h"
+#include "capture/capture_api_virtual.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
 #include "capture/alias.h"
 #include "common/disk.h"
+
+static capture_api_s *API = new capture_api_virtual_s;
+
+capture_api_s& kc_api(void)
+{
+    return *API;
+}
 
 // All local RGBEASY API callbacks lock this for their duration.
 std::mutex INPUT_OUTPUT_MUTEX;

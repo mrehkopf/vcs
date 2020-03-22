@@ -1,5 +1,6 @@
 #include "display/qt/dialogs/output_resolution_dialog.h"
 #include "display/qt/persistent_settings.h"
+#include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
@@ -55,7 +56,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
 
             if (!is_checked(state))
             {
-                ks_set_output_base_resolution(kc_hardware().status.capture_resolution(), true);
+                ks_set_output_base_resolution(kc_api().get_resolution(), true);
 
                 ui->spinBox_outputResX->setValue(ks_output_base_resolution().w);
                 ui->spinBox_outputResY->setValue(ks_output_base_resolution().h);
@@ -150,7 +151,7 @@ void OutputResolutionDialog::notify_of_new_capture_signal(void)
 {
     if (!ui->checkBox_forceOutputRes->isChecked())
     {
-        const capture_signal_s s = kc_hardware().status.signal();
+        const capture_signal_s s = kc_api().get_signal_info();
 
         ui->spinBox_outputResX->setValue(s.r.w);
         ui->spinBox_outputResY->setValue(s.r.h);

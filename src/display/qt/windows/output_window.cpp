@@ -41,6 +41,7 @@
 #include "display/qt/persistent_settings.h"
 #include "filter/anti_tear.h"
 #include "common/propagate.h"
+#include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
 #include "common/globals.h"
@@ -128,7 +129,7 @@ MainWindow::MainWindow(QWidget *parent) :
             {
                 QActionGroup *group = new QActionGroup(this);
 
-                for (int i = 0; i < kc_hardware().meta.num_capture_inputs(); i++)
+                for (int i = 0; i < kc_api().get_maximum_input_count(); i++)
                 {
                     QAction *inputChannel = new QAction(QString::number(i+1), this);
                     inputChannel->setActionGroup(group);
@@ -1008,7 +1009,7 @@ void MainWindow::update_window_title()
     }
     else
     {
-        const resolution_s inRes = kc_hardware().status.capture_resolution();
+        const resolution_s inRes = kc_api().get_resolution();
         const resolution_s outRes = ks_output_resolution();
         const int relativeScale = round((outRes.h / (real)inRes.h) * 100);
 

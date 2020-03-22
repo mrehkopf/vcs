@@ -29,8 +29,8 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
-        <width>565</width>
+        <y>-231</y>
+        <width>567</width>
         <height>564</height>
        </rect>
       </property>
@@ -135,6 +135,9 @@ VCS interfaces with the Qt framework, copyright (c) The Qt Company; the RGBEasy 
               <property name="font">
                <font/>
               </property>
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
               <property name="text">
                <string>Input channels:</string>
               </property>
@@ -154,7 +157,7 @@ VCS interfaces with the Qt framework, copyright (c) The Qt Company; the RGBEasy 
             <item>
              <widget class="QLabel" name="label_inputResolution">
               <property name="text">
-               <string>Input resolution, minimum:</string>
+               <string>Minimum resolution:</string>
               </property>
              </widget>
             </item>
@@ -172,7 +175,7 @@ VCS interfaces with the Qt framework, copyright (c) The Qt Company; the RGBEasy 
             <item>
              <widget class="QLabel" name="label_inputMaxResolution">
               <property name="text">
-               <string>Input resolution, maximum:</string>
+               <string>Maximum resolution:</string>
               </property>
              </widget>
             </item>

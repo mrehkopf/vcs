@@ -14,6 +14,8 @@
 #include "common/memory.h"
 #include "common/types.h"
 
+struct capture_api_s;
+
 #if USE_RGBEASY_API
     #include <windows.h>
     #include <rgb.h>
@@ -142,6 +144,7 @@ void kc_initialize_capture(void);
 void kc_release_capture(void);
 
 // Public getters.
+capture_api_s& kc_api(void);
 uint kc_num_missed_frames(void);
 uint kc_input_channel_idx(void);
 uint kc_output_color_depth(void);

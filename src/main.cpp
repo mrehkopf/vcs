@@ -12,6 +12,7 @@
 #include "filter/anti_tear.h"
 #include "common/propagate.h"
 #include "capture/capture.h"
+#include "capture/capture_api.h"
 #include "display/display.h"
 #include "common/globals.h"
 #include "capture/alias.h"
@@ -48,6 +49,8 @@ static void cleanup_all(void)
 
 static bool initialize_all(void)
 {
+    kc_api().initialize();
+
     if (!PROGRAM_EXIT_REQUESTED) ks_initialize_scaler();
     if (!PROGRAM_EXIT_REQUESTED) kc_initialize_capture();
     if (!PROGRAM_EXIT_REQUESTED) kat_initialize_anti_tear();
@@ -65,27 +68,9 @@ static bool initialize_all(void)
 
 static capture_event_e process_next_capture_event(void)
 {
-    // Normally, the capture card's output rate limits the program's frame rate;
-    // but if the program is built without capture functionality, the rate needs
-    // to be limited artificially.
-    #if !USE_RGBEASY_API
-        static auto startTime_ = std::chrono::system_clock::now();
-        std::chrono::duration<double> timeDelta_ = (std::chrono::system_clock::now() - startTime_);
-        if (std::chrono::duration_cast<std::chrono::milliseconds>(timeDelta_).count() <= 16)
-        {
-            return capture_event_e::none;
-        }
-        else startTime_ = std::chrono::system_clock::now();
-    #endif
-
     std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
 
-    #if USE_RGBEASY_API
-        const capture_event_e e = kc_latest_capture_event();
-    #else
-        const capture_event_e e = capture_event_e::new_frame;
-        kc_insert_test_image();
-    #endif
+    const capture_event_e e = kc_api().get_latest_capture_event();
 
     switch (e)
     {

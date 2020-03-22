@@ -12,6 +12,7 @@
 #include <cmath>
 #include "filter/anti_tear.h"
 #include "common/propagate.h"
+#include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
@@ -106,7 +107,7 @@ resolution_s ks_output_resolution(void)
         return {r.w, r.h, OUTPUT_BIT_DEPTH};
     }
 
-    resolution_s inRes = kc_hardware().status.capture_resolution();
+    resolution_s inRes = kc_api().get_resolution();
     resolution_s outRes = inRes;
 
     // Base resolution.
@@ -461,8 +462,8 @@ void ks_scale_frame(const captured_frame_s &frame)
     resolution_s frameRes = frame.r; /// Temp hack. May want to modify the .bpp value.
     resolution_s outputRes = ks_output_resolution();
 
-    const resolution_s minres = kc_hardware().meta.minimum_capture_resolution();
-    const resolution_s maxres = kc_hardware().meta.maximum_capture_resolution();
+    const resolution_s minres = kc_api().get_minimum_resolution();
+    const resolution_s maxres = kc_api().get_maximum_resolution();
 
     // Verify that we have a workable frame.
     {

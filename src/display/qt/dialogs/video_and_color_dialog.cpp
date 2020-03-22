@@ -14,6 +14,7 @@
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "display/display.h"
+#include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "common/disk.h"
 #include "ui_video_and_color_dialog.h"
@@ -183,7 +184,7 @@ void VideoAndColorDialog::update_controls(void)
 
     // Current values.
     {
-        const capture_color_settings_s colorParams = kc_hardware().status.color_settings();
+        const capture_color_settings_s colorParams = kc_api().get_color_settings();
 
         ui->spinBox_colorBright->setValue(colorParams.overallBrightness);
         ui->horizontalScrollBar_colorBright->setValue(colorParams.overallBrightness);
@@ -209,7 +210,7 @@ void VideoAndColorDialog::update_controls(void)
         ui->spinBox_colorContrBlue->setValue(colorParams.blueContrast);
         ui->horizontalScrollBar_colorContrBlue->setValue(colorParams.blueContrast);
 
-        const capture_video_settings_s videoParams = kc_hardware().status.video_settings();
+        const capture_video_settings_s videoParams = kc_api().get_video_settings();
 
         ui->spinBox_videoBlackLevel->setValue(videoParams.blackLevel);
         ui->horizontalScrollBar_videoBlackLevel->setValue(videoParams.blackLevel);
@@ -229,8 +230,8 @@ void VideoAndColorDialog::update_controls(void)
 
     // Current valid ranges.
     {
-        const capture_color_settings_s minColorParams = kc_hardware().meta.minimum_color_settings();
-        const capture_color_settings_s maxColorParams = kc_hardware().meta.maximum_color_settings();
+        const capture_color_settings_s minColorParams = kc_api().get_minimum_color_settings();
+        const capture_color_settings_s maxColorParams = kc_api().get_maximum_color_settings();
 
         ui->spinBox_colorBright->setMinimum(minColorParams.overallBrightness);
         ui->spinBox_colorBright->setMaximum(maxColorParams.overallBrightness);
@@ -272,8 +273,8 @@ void VideoAndColorDialog::update_controls(void)
         ui->horizontalScrollBar_colorContrBlue->setMinimum(minColorParams.greenContrast);
         ui->horizontalScrollBar_colorContrBlue->setMaximum(maxColorParams.greenContrast);
 
-        const capture_video_settings_s minVideoParams = kc_hardware().meta.minimum_video_settings();
-        const capture_video_settings_s maxVideoParams = kc_hardware().meta.maximum_video_settings();
+        const capture_video_settings_s minVideoParams = kc_api().get_minimum_video_settings();
+        const capture_video_settings_s maxVideoParams = kc_api().get_maximum_video_settings();
 
         ui->spinBox_videoBlackLevel->setMinimum(minVideoParams.blackLevel);
         ui->spinBox_videoBlackLevel->setMaximum(maxVideoParams.blackLevel);
@@ -323,7 +324,7 @@ void VideoAndColorDialog::update_mode_label(const bool isEnabled)
 {
     if (isEnabled)
     {
-        const auto signal = kc_hardware().status.signal();
+        const auto signal = kc_api().get_signal_info();
         const QString labelStr = QString("%1 x %2 @ %3 Hz").arg(signal.r.w)
                                                            .arg(signal.r.h)
                                                            .arg(signal.refreshRate);

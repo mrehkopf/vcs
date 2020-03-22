@@ -11,6 +11,7 @@
 
 #include <mutex>
 #include "propagate.h"
+#include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
@@ -24,7 +25,7 @@ extern std::mutex INPUT_OUTPUT_MUTEX;
 // A new input video mode (e.g. resolution) has been set.
 void kpropagate_news_of_new_capture_video_mode(void)
 {
-    const capture_signal_s s = kc_hardware().status.signal();
+    const capture_signal_s s = kc_api().get_signal_info();
 
     if (s.wokeUp)
     {
@@ -199,14 +200,14 @@ void kpropagate_news_of_gained_capture_signal(void)
 // The capture hardware has sent us a new captured frame.
 void kpropagate_news_of_new_captured_frame(void)
 {
-    ks_scale_frame(kc_latest_captured_frame());
+    ks_scale_frame(kc_api().get_frame_buffer());
 
     if (krecord_is_recording())
     {
         krecord_record_new_frame();
     }
 
-    kc_mark_current_frame_as_processed();
+    kc_api().mark_frame_buffer_as_processed();
 
     kd_redraw_output_window();
 
@@ -227,8 +228,8 @@ void kpropagate_forced_capture_resolution(const resolution_s &r)
 {
     std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
 
-    const resolution_s min = kc_hardware().meta.minimum_capture_resolution();
-    const resolution_s max = kc_hardware().meta.maximum_capture_resolution();
+    const resolution_s min = kc_api().get_minimum_resolution();
+    const resolution_s max = kc_api().get_maximum_resolution();
 
     if (kc_no_signal())
     {
