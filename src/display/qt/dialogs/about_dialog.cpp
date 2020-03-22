@@ -33,29 +33,38 @@ AboutDialog::AboutDialog(QWidget *parent) :
     // We'll set this label visible only when there's a new version of VCS available.
     ui->label_newVersionNotice->setVisible(false);
 
-    // Poll the capture hardware to fill the information matrix about the
-    // hardware's capabilities.
+    // Fill the feature matrix of the capture device's capabilities.
     {
+        const auto add_feature = [this](const QString featureName, const QString featureValue)
+        {
+            const int rowIdx = ui->tableWidget_captureDeviceFeatures->rowCount();
+
+            ui->tableWidget_captureDeviceFeatures->insertRow(ui->tableWidget_captureDeviceFeatures->rowCount());
+
+            ui->tableWidget_captureDeviceFeatures->setItem(rowIdx, 0, new QTableWidgetItem(featureName));
+            ui->tableWidget_captureDeviceFeatures->setItem(rowIdx, 1, new QTableWidgetItem(featureValue));
+        };
+
         ui->groupBox_captureDeviceInfo->setTitle("Your capture device: " + QString::fromStdString(kc_api().get_device_name()));
+
+        ui->tableWidget_captureDeviceFeatures->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
         const resolution_s &minres = kc_api().get_minimum_resolution();
         const resolution_s &maxres = kc_api().get_maximum_resolution();
 
-        ui->label_inputMinResolutionString->setText(QString("%1 x %2").arg(minres.w).arg(minres.h));
-        ui->label_inputMaxResolutionString->setText(QString("%1 x %2").arg(maxres.w).arg(maxres.h));
-        ui->label_inputChannelsString->setText(QString::number(kc_api().get_maximum_input_count()));
-
-        ui->label_firmwareString->setText(QString::fromStdString(kc_api().get_device_firmware_version()));
-        ui->label_driverString->setText(QString::fromStdString(kc_api().get_device_driver_version()));
-
-        ui->label_supportsDirectDMAString->setText(kc_api().device_supports_dma()? "Yes" : "No");
-        ui->label_supportsDeinterlaceString->setText(kc_api().device_supports_deinterlacing()? "Yes" : "No");
-        ui->label_supportsYUVString->setText(kc_api().device_supports_yuv()? "Yes" : "No");
-        ui->label_supportsVGACaptureString->setText(kc_api().device_supports_vga()? "Yes" : "No");
-        ui->label_supportsDVICaptureString->setText(kc_api().device_supports_dvi()? "Yes" : "No");
-        ui->label_supportsCompositeCaptureString->setText(kc_api().device_supports_composite_capture()? "Yes" : "No");
-        ui->label_supportsComponentCaptureString->setText(kc_api().device_supports_component_capture()? "Yes" : "No");
-        ui->label_supportsSVideoCaptureString->setText(kc_api().device_supports_svideo()? "Yes" : "No");
+        add_feature("Minimum resolution", QString("%1 x %2").arg(minres.w).arg(minres.h));
+        add_feature("Maximum resolution", QString("%1 x %2").arg(maxres.w).arg(maxres.h));
+        add_feature("Firmware version",   QString::fromStdString(kc_api().get_device_firmware_version()));
+        add_feature("Driver version",     QString::fromStdString(kc_api().get_device_driver_version()));
+        add_feature("Capture API",        QString::fromStdString(kc_api().get_api_name()));
+        add_feature("DMA transfer",       (kc_api().device_supports_dma()?               "Supported" : "Not supported"));
+        add_feature("Deinterlacing",      (kc_api().device_supports_deinterlacing()?     "Supported" : "Not supported"));
+        add_feature("YUV encoding",       (kc_api().device_supports_yuv()?               "Supported" : "Not supported"));
+        add_feature("VGA capture",        (kc_api().device_supports_vga()?               "Supported" : "Not supported"));
+        add_feature("DVI capture",        (kc_api().device_supports_dvi()?               "Supported" : "Not supported"));
+        add_feature("Component capture",  (kc_api().device_supports_component_capture()? "Supported" : "Not supported"));
+        add_feature("Composite capture",  (kc_api().device_supports_composite_capture()? "Supported" : "Not supported"));
+        add_feature("S-Video capture",    (kc_api().device_supports_svideo()?            "Supported" : "Not supported"));
     }
 
     // Restore persistent settings.
