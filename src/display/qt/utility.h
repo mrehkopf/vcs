@@ -81,7 +81,7 @@ private:
     // A timer used to detect when the mouse cursor, hovering over the window, has
     // become inactive, i.e. hasn't performed any actions in a set period of time.
     QTimer *inactivityTimer;
-    const unsigned inactivityTimeoutMs = 2500;
+    const unsigned inactivityTimeoutMs = 1500;
 };
 
 // Has the given widget's signals blocked while in the scope of this object, after
