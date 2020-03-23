@@ -17,6 +17,8 @@
 
 struct capture_api_s
 {
+    virtual ~capture_api_s();
+
     // Sets up the API and capture device, and begins capturing.
     virtual bool initialize(void) = 0;
 
@@ -50,8 +52,8 @@ struct capture_api_s
     virtual resolution_s             get_resolution(void)              const = 0;
     virtual resolution_s             get_minimum_resolution(void)      const = 0;
     virtual resolution_s             get_maximum_resolution(void)      const = 0;
-    virtual const captured_frame_s&  get_frame_buffer(void)            const = 0;
-    virtual capture_event_e          get_latest_capture_event(void)    const = 0;
+    virtual const captured_frame_s&  get_frame_buffer(void)            = 0;
+    virtual capture_event_e          get_latest_capture_event(void)    = 0;
     virtual capture_signal_s         get_signal_info(void)             const = 0;
     virtual int                      get_frame_rate(void)              const = 0;
 
@@ -82,11 +84,6 @@ struct capture_api_s
     virtual void apply_new_capture_resolution(void)                                  {                   return;       }
     virtual void reset_missed_frames_count(void)                                     {                   return;       }
     virtual bool set_resolution(const resolution_s &r)                               { (void)r;          return false; }
-
-protected:
-    // Frames sent by the capture hardware will be stored here for processing
-    // in VCS's thread.
-    captured_frame_s frameBuffer;
 };
 
 #endif

@@ -10,6 +10,8 @@
 #ifndef CAPTURE_API_RGBEASY_H
 #define CAPTURE_API_RGBEASY_H
 
+#include "capture/capture_api.h"
+
 #if _WIN32
     #include <windows.h>
     #include <rgb.h>
@@ -18,8 +20,6 @@
 #else
     #include "capture/null_rgbeasy.h"
 #endif
-
-#include "capture/capture_api.h"
 
 struct capture_api_rgbeasy_s : public capture_api_s
 {
@@ -53,8 +53,8 @@ struct capture_api_rgbeasy_s : public capture_api_s
     resolution_s             get_resolution(void)              const override;
     resolution_s             get_minimum_resolution(void)      const override;
     resolution_s             get_maximum_resolution(void)      const override;
-    const captured_frame_s&  get_frame_buffer(void)            const override;
-    capture_event_e          get_latest_capture_event(void)    const override;
+    const captured_frame_s&  get_frame_buffer(void)            override;
+    capture_event_e          get_latest_capture_event(void)    override;
     capture_signal_s         get_signal_info(void)             const override;
     int                      get_frame_rate(void)              const override;
 
@@ -103,18 +103,6 @@ private:
 
     // Converts VCS's pixel format into the RGBEasy pixel format.
     PIXELFORMAT pixel_format_to_rgbeasy_pixel_format(capture_pixel_format_e fmt);
-
-    // Callback functions for the RGBEasy API will call from its own thread.
-    struct rgbeasy_callbacks_s
-    {
-    #if _WIN32
-        void RGBCBKAPI frame_captured(HWND, HRGB, LPBITMAPINFOHEADER frameInfo, void *frameData, ULONG_PTR);
-        void RGBCBKAPI video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO, ULONG_PTR);
-        void RGBCBKAPI invalid_signal(HWND, HRGB, unsigned long horClock, unsigned long verClock, ULONG_PTR captureHandle);
-        void RGBCBKAPI no_signal(HWND, HRGB, ULONG_PTR captureHandle);
-        void RGBCBKAPI error(HWND, HRGB, unsigned long, ULONG_PTR, unsigned long*);
-    #endif
-    } rgbeasyCallbacks;
 };
 
 #endif

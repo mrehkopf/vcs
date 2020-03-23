@@ -20,19 +20,17 @@
 #include "scaler/scaler.h"
 #include "record/record.h"
 
-extern std::mutex INPUT_OUTPUT_MUTEX;
-
 // A new input video mode (e.g. resolution) has been set.
 void kpropagate_news_of_new_capture_video_mode(void)
 {
-    const capture_signal_s s = kc_api().get_signal_info();
+    const capture_signal_s s = kc_capture_api().get_signal_info();
 
     if (s.wokeUp)
     {
         kpropagate_news_of_gained_capture_signal();
     }
 
-    kc_apply_new_capture_resolution();
+    kc_capture_api().apply_new_capture_resolution();
 
     kd_update_capture_signal_info();
 
@@ -84,7 +82,7 @@ void kpropagate_news_of_recording_ended(void)
 void kpropagate_loaded_mode_params_from_disk(const std::vector<video_mode_params_s> &modeParams,
                                              const std::string &sourceFilename)
 {
-    kc_set_mode_params(modeParams);
+    kc_capture_api().set_mode_params(modeParams);
 
     // In case the mode params changed for the current mode, re-initialize it.
     kpropagate_news_of_new_capture_video_mode();
@@ -157,9 +155,9 @@ void kpropagate_loaded_filter_graph_from_disk(const std::vector<FilterGraphNode*
 // adjusted by the given amount.
 void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int verticalDelta)
 {
-    kc_adjust_video_horizontal_offset(horizontalDelta);
+    kc_capture_api().adjust_video_horizontal_offset(horizontalDelta);
 
-    kc_adjust_video_vertical_offset(verticalDelta);
+    kc_capture_api().adjust_video_vertical_offset(verticalDelta);
 
     return;
 }
@@ -200,14 +198,14 @@ void kpropagate_news_of_gained_capture_signal(void)
 // The capture hardware has sent us a new captured frame.
 void kpropagate_news_of_new_captured_frame(void)
 {
-    ks_scale_frame(kc_api().get_frame_buffer());
+    ks_scale_frame(kc_capture_api().get_frame_buffer());
 
     if (krecord_is_recording())
     {
         krecord_record_new_frame();
     }
 
-    kc_api().report_frame_buffer_processing_finished();
+    kc_capture_api().report_frame_buffer_processing_finished();
 
     kd_redraw_output_window();
 
@@ -226,12 +224,10 @@ void kpropagate_news_of_unrecoverable_error(void)
 
 void kpropagate_forced_capture_resolution(const resolution_s &r)
 {
-    std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
+    const resolution_s min = kc_capture_api().get_minimum_resolution();
+    const resolution_s max = kc_capture_api().get_maximum_resolution();
 
-    const resolution_s min = kc_api().get_minimum_resolution();
-    const resolution_s max = kc_api().get_maximum_resolution();
-
-    if (kc_no_signal())
+    if (kc_capture_api().get_no_signal())
     {
         DEBUG(("Was asked to change the input resolution while the capture card was not receiving a signal. Ignoring the request."));
         goto done;
@@ -247,7 +243,7 @@ void kpropagate_forced_capture_resolution(const resolution_s &r)
         goto done;
     }
 
-    if (!kc_set_resolution(r))
+    if (!kc_capture_api().set_resolution(r))
     {
         NBENE(("Failed to set the new input resolution (%u x %u).", r.w, r.h));
         goto done;

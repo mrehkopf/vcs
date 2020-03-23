@@ -1,10 +1,21 @@
 #include <atomic>
+#include <mutex>
 #include <cmath>
 #include "common/globals.h"
 #include "common/propagate.h"
 #include "capture/capture_api_rgbeasy.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
+
+// A mutex to direct access to data between the main thead and the RGBEasy
+// thread. For instance, the RGBEasy thread will lock this while it's
+// uploading frame data, and the main thread will lock this while it's
+// process the frame data.
+std::mutex RGBEASY_CALLBACK_MUTEX;
+
+// Frames sent by the capture hardware will be stored here for processing
+// in VCS's thread.
+captured_frame_s FRAME_BUFFER;
 
 // Set to true upon first receiving a signal after 'no signal'.
 static bool SIGNAL_WOKE_UP = false;
@@ -66,11 +77,130 @@ static HRGBDLL RGBAPI_HANDLE = 0;
 // Set to 1 if we're currently capturing.
 static bool CAPTURE_IS_ACTIVE = false;
 
+// Callback functions for the RGBEasy API, through which the API communicates
+// with VCS.
+#ifdef _WIN32
+    // Called by the capture hardware when a new frame has been captured. The
+    // captured RGBA data is in frameData.
+    void RGBCBKAPI rgbeasy_callback_frame_captured(HWND, HRGB, LPBITMAPINFOHEADER frameInfo, void *frameData, ULONG_PTR)
+    {
+        if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
+        {
+            //ERRORI(("The capture hardware sent in a frame before VCS had finished processing "
+            //        "the previous one. Skipping this new one. (Captured: %u, processed: %u.)",
+            //        CNT_FRAMES_CAPTURED.load(), CNT_FRAMES_PROCESSED.load()));
+            CNT_FRAMES_SKIPPED++;
+            return;
+        }
+
+        std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
+
+        // Ignore new callback events if the user has signaled to quit the program.
+        if (PROGRAM_EXIT_REQUESTED)
+        {
+            goto done;
+        }
+
+        // This could happen e.g. if direct DMA transfer is enabled.
+        if (frameData == nullptr ||
+            frameInfo == nullptr)
+        {
+            goto done;
+        }
+
+        if (FRAME_BUFFER.pixels.is_null())
+        {
+            //ERRORI(("The capture hardware sent in a frame but the frame buffer was uninitialized. "
+            //        "Ignoring the frame."));
+            goto done;
+        }
+
+        if (frameInfo->biBitCount > MAX_BIT_DEPTH)
+        {
+            //ERRORI(("The capture hardware sent in a frame that had an illegal bit depth (%u). "
+            //        "The maximum allowed bit depth is %u.", frameInfo->biBitCount, MAX_BIT_DEPTH));
+            goto done;
+        }
+
+        FRAME_BUFFER.r.w = frameInfo->biWidth;
+        FRAME_BUFFER.r.h = abs(frameInfo->biHeight);
+        FRAME_BUFFER.r.bpp = frameInfo->biBitCount;
+
+        // Copy the frame's data into our local buffer so we can work on it.
+        memcpy(FRAME_BUFFER.pixels.ptr(), (u8*)frameData,
+               FRAME_BUFFER.pixels.up_to(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8)));
+
+        done:
+        CNT_FRAMES_CAPTURED++;
+        return;
+    }
+
+    // Called by the capture hardware when the input video mode changes.
+    void RGBCBKAPI rgbeasy_callback_video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO, ULONG_PTR)
+    {
+        std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
+
+        // Ignore new callback events if the user has signaled to quit the program.
+        if (PROGRAM_EXIT_REQUESTED)
+        {
+            goto done;
+        }
+
+        SIGNAL_WOKE_UP = !RECEIVING_A_SIGNAL;
+        RECEIVED_NEW_VIDEO_MODE = true;
+
+        done:
+        return;
+    }
+
+    // Called by the capture hardware when it's given a signal it can't handle.
+    void RGBCBKAPI rgbeasy_callback_invalid_signal(HWND, HRGB, unsigned long horClock, unsigned long verClock, ULONG_PTR captureHandle)
+    {
+        std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
+
+        // Ignore new callback events if the user has signaled to quit the program.
+        if (PROGRAM_EXIT_REQUESTED)
+        {
+            goto done;
+        }
+
+        // Let the card apply its own no signal handler as well, just in case.
+        RGBInvalidSignal(captureHandle, horClock, verClock);
+
+        SIGNAL_IS_INVALID = true;
+
+    done:
+        return;
+    }
+
+    // Called by the capture hardware when no input signal is present.
+    void RGBCBKAPI rgbeasy_callback_no_signal(HWND, HRGB, ULONG_PTR captureHandle)
+    {
+        std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
+
+        // Let the card apply its own 'no signal' handler as well, just in case.
+        RGBNoSignal(captureHandle);
+
+        SIGNAL_WAS_LOST = true;
+
+        return;
+    }
+
+    void RGBCBKAPI rgbeasy_callback_error(HWND, HRGB, unsigned long, ULONG_PTR, unsigned long*)
+    {
+        std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
+
+        UNRECOVERABLE_CAPTURE_ERROR = true;
+
+        return;
+    }
+#endif
+
 bool capture_api_rgbeasy_s::initialize(void)
 {
     INFO(("Initializing the capture API."));
 
-    this->frameBuffer.pixels.alloc(MAX_FRAME_SIZE);
+    FRAME_BUFFER.pixels.alloc(MAX_FRAME_SIZE);
 
     // Open an input on the capture hardware, and have it start sending in frames.
     {
@@ -96,7 +226,7 @@ bool capture_api_rgbeasy_s::release(void)
 {
     INFO(("Releasing the capture API."));
 
-    this->frameBuffer.pixels.release_memory();
+    FRAME_BUFFER.pixels.release_memory();
 
     if (this->stop_capture() &&
         this->release_hardware())
@@ -152,11 +282,11 @@ bool capture_api_rgbeasy_s::initialize_hardware(void)
         !apicall_succeeded(RGBSetDMADirect(CAPTURE_HANDLE, FALSE)) ||
         !apicall_succeeded(RGBSetPixelFormat(CAPTURE_HANDLE, pixel_format_to_rgbeasy_pixel_format(CAPTURE_PIXEL_FORMAT))) ||
         !apicall_succeeded(RGBUseOutputBuffers(CAPTURE_HANDLE, FALSE)) ||
-        !apicall_succeeded(RGBSetFrameCapturedFn(CAPTURE_HANDLE, rgbeasyCallbacks.frame_captured, 0)) ||
-        !apicall_succeeded(RGBSetModeChangedFn(CAPTURE_HANDLE, rgbeasyCallbacks.video_mode_changed, 0)) ||
-        !apicall_succeeded(RGBSetInvalidSignalFn(CAPTURE_HANDLE, rgbeasyCallbacks.invalid_signal, (ULONG_PTR)&CAPTURE_HANDLE)) ||
-        !apicall_succeeded(RGBSetErrorFn(CAPTURE_HANDLE, rgbeasyCallbacks.error, (ULONG_PTR)&CAPTURE_HANDLE)) ||
-        !apicall_succeeded(RGBSetNoSignalFn(CAPTURE_HANDLE, rgbeasyCallbacks.no_signal, (ULONG_PTR)&CAPTURE_HANDLE)))
+        !apicall_succeeded(RGBSetFrameCapturedFn(CAPTURE_HANDLE, rgbeasy_callback_frame_captured, 0)) ||
+        !apicall_succeeded(RGBSetModeChangedFn(CAPTURE_HANDLE, rgbeasy_callback_video_mode_changed, 0)) ||
+        !apicall_succeeded(RGBSetInvalidSignalFn(CAPTURE_HANDLE, rgbeasy_callback_invalid_signal, (ULONG_PTR)&CAPTURE_HANDLE)) ||
+        !apicall_succeeded(RGBSetErrorFn(CAPTURE_HANDLE, rgbeasy_callback_error, (ULONG_PTR)&CAPTURE_HANDLE)) ||
+        !apicall_succeeded(RGBSetNoSignalFn(CAPTURE_HANDLE, rgbeasy_callback_no_signal, (ULONG_PTR)&CAPTURE_HANDLE)))
     {
         NBENE(("Failed to initialize the capture hardware."));
         goto fail;
@@ -666,9 +796,11 @@ resolution_s capture_api_rgbeasy_s::get_maximum_resolution(void) const
     return r;
 }
 
-const captured_frame_s& capture_api_rgbeasy_s::get_frame_buffer(void) const
+const captured_frame_s& capture_api_rgbeasy_s::get_frame_buffer(void)
 {
-    return this->frameBuffer;
+    RGBEASY_CALLBACK_MUTEX.lock();
+    
+    return FRAME_BUFFER;
 }
 
 // Examine the state of the capture system and decide which has been the most recent
@@ -676,8 +808,10 @@ const captured_frame_s& capture_api_rgbeasy_s::get_frame_buffer(void) const
 //
 /// FIXME: This is a bit of an ugly way to handle things. For instance, the function
 /// is a getter, but also modifies the unit's state.
-capture_event_e capture_api_rgbeasy_s::get_latest_capture_event(void) const
+capture_event_e capture_api_rgbeasy_s::get_latest_capture_event(void)
 {
+    std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
+
     if (UNRECOVERABLE_CAPTURE_ERROR)
     {
         return capture_event_e::unrecoverable_error;
@@ -723,7 +857,7 @@ capture_event_e capture_api_rgbeasy_s::get_latest_capture_event(void) const
 
 capture_signal_s capture_api_rgbeasy_s::get_signal_info(void) const
 {
-    if (kc_no_signal())
+    if (kc_capture_api().get_no_signal())
     {
         NBENE(("Tried to query the capture signal while no signal was being received."));
         return {0};
@@ -779,7 +913,7 @@ bool capture_api_rgbeasy_s::set_mode_parameters_for_resolution(const resolution_
 {
     INFO(("Applying mode parameters for %u x %u.", r.w, r.h));
 
-    video_mode_params_s p = kc_mode_params_for_resolution(r);
+    video_mode_params_s p = kc_capture_api().get_mode_params_for_resolution(r);
 
     // Apply the set of mode parameters for the current input resolution.
     /// TODO. Add error-checking.
@@ -804,7 +938,7 @@ bool capture_api_rgbeasy_s::set_mode_parameters_for_resolution(const resolution_
 
 void capture_api_rgbeasy_s::set_color_settings(const capture_color_settings_s c)
 {
-    if (kc_no_signal())
+    if (kc_capture_api().get_no_signal())
     {
         DEBUG(("Was asked to set capture color params while there was no signal. "
                "Ignoring the request."));
@@ -828,7 +962,7 @@ void capture_api_rgbeasy_s::set_color_settings(const capture_color_settings_s c)
 
 void capture_api_rgbeasy_s::set_video_settings(const capture_video_settings_s v)
 {
-    if (kc_no_signal())
+    if (kc_capture_api().get_no_signal())
     {
         DEBUG(("Was asked to set capture video params while there was no signal. "
                "Ignoring the request."));
@@ -912,7 +1046,9 @@ void capture_api_rgbeasy_s::report_frame_buffer_processing_finished(void)
 
     SKIP_NEXT_NUM_FRAMES -= bool(SKIP_NEXT_NUM_FRAMES);
 
-    this->frameBuffer.processed = true;
+    FRAME_BUFFER.processed = true;
+
+    RGBEASY_CALLBACK_MUTEX.unlock();
 
     return;
 }
@@ -1020,14 +1156,14 @@ void capture_api_rgbeasy_s::apply_new_capture_resolution(void)
     if ((currentRes.w != aliasedRes.w) ||
         (currentRes.h != aliasedRes.h))
     {
-        if (!kc_set_resolution(aliasedRes))
+        if (!kc_capture_api().set_resolution(aliasedRes))
         {
             NBENE(("Failed to apply an alias."));
         }
         else currentRes = aliasedRes;
     }
 
-    kc_set_mode_parameters_for_resolution(currentRes);
+    kc_capture_api().set_mode_parameters_for_resolution(currentRes);
 
     RECEIVED_NEW_VIDEO_MODE = false;
 
@@ -1053,7 +1189,7 @@ bool capture_api_rgbeasy_s::set_resolution(const resolution_s &r)
 
     unsigned long wd = 0, hd = 0;
 
-    const auto currentInputRes = kc_hardware().status.capture_resolution();
+    const auto currentInputRes = kc_capture_api().get_resolution();
     if (r.w == currentInputRes.w &&
         r.h == currentInputRes.h)
     {
@@ -1096,142 +1232,6 @@ bool capture_api_rgbeasy_s::set_resolution(const resolution_s &r)
     fail:
     return false;
 }
-
-// Callback functions for the RGBEasy API, through which the API communicates
-// with VCS.
-#ifdef _WIN32
-    // Called by the capture hardware when a new frame has been captured. The
-    // captured RGBA data is in frameData.
-    void RGBCBKAPI capture_api_rgbeasy_s::rgbeasy_callbacks_s::frame_captured(HWND,
-                                                                              HRGB,
-                                                                              LPBITMAPINFOHEADER frameInfo,
-                                                                              void *frameData,
-                                                                              ULONG_PTR)
-    {
-        if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
-        {
-            //ERRORI(("The capture hardware sent in a frame before VCS had finished processing "
-            //        "the previous one. Skipping this new one. (Captured: %u, processed: %u.)",
-            //        CNT_FRAMES_CAPTURED.load(), CNT_FRAMES_PROCESSED.load()));
-            CNT_FRAMES_SKIPPED++;
-            return;
-        }
-
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        // Ignore new callback events if the user has signaled to quit the program.
-        if (PROGRAM_EXIT_REQUESTED)
-        {
-            goto done;
-        }
-
-        // This could happen e.g. if direct DMA transfer is enabled.
-        if (frameData == nullptr ||
-            frameInfo == nullptr)
-        {
-            goto done;
-        }
-
-        if (this->frameBuffer.pixels.is_null())
-        {
-            //ERRORI(("The capture hardware sent in a frame but the frame buffer was uninitialized. "
-            //        "Ignoring the frame."));
-            goto done;
-        }
-
-        if (frameInfo->biBitCount > MAX_BIT_DEPTH)
-        {
-            //ERRORI(("The capture hardware sent in a frame that had an illegal bit depth (%u). "
-            //        "The maximum allowed bit depth is %u.", frameInfo->biBitCount, MAX_BIT_DEPTH));
-            goto done;
-        }
-
-        this->frameBuffer.r.w = frameInfo->biWidth;
-        this->frameBuffer.r.h = abs(frameInfo->biHeight);
-        this->frameBuffer.r.bpp = frameInfo->biBitCount;
-
-        // Copy the frame's data into our local buffer so we can work on it.
-        memcpy(this->frameBuffer.pixels.ptr(), (u8*)frameData,
-               this->frameBuffer.pixels.up_to(this->frameBuffer.r.w * this->frameBuffer.r.h * (this->frameBuffer.r.bpp / 8)));
-
-        done:
-        CNT_FRAMES_CAPTURED++;
-        return;
-    }
-
-    // Called by the capture hardware when the input video mode changes.
-    void RGBCBKAPI capture_api_rgbeasy_s::rgbeasy_callbacks_s::video_mode_changed(HWND,
-                                                                                  HRGB,
-                                                                                  PRGBMODECHANGEDINFO,
-                                                                                  ULONG_PTR)
-    {
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        // Ignore new callback events if the user has signaled to quit the program.
-        if (PROGRAM_EXIT_REQUESTED)
-        {
-            goto done;
-        }
-
-        SIGNAL_WOKE_UP = !RECEIVING_A_SIGNAL;
-        RECEIVED_NEW_VIDEO_MODE = true;
-
-        done:
-        return;
-    }
-
-    // Called by the capture hardware when it's given a signal it can't handle.
-    void RGBCBKAPI capture_api_rgbeasy_s::rgbeasy_callbacks_s::invalid_signal(HWND,
-                                                                              HRGB,
-                                                                              unsigned long horClock,
-                                                                              unsigned long verClock,
-                                                                              ULONG_PTR captureHandle)
-    {
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        // Ignore new callback events if the user has signaled to quit the program.
-        if (PROGRAM_EXIT_REQUESTED)
-        {
-            goto done;
-        }
-
-        // Let the card apply its own no signal handler as well, just in case.
-        RGBInvalidSignal(captureHandle, horClock, verClock);
-
-        SIGNAL_IS_INVALID = true;
-
-    done:
-        return;
-    }
-
-    // Called by the capture hardware when no input signal is present.
-    void RGBCBKAPI capture_api_rgbeasy_s::rgbeasy_callbacks_s::no_signal(HWND,
-                                                                         HRGB,
-                                                                         ULONG_PTR captureHandle)
-    {
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        // Let the card apply its own 'no signal' handler as well, just in case.
-        RGBNoSignal(captureHandle);
-
-        SIGNAL_WAS_LOST = true;
-
-        return;
-    }
-
-    void RGBCBKAPI capture_api_rgbeasy_s::rgbeasy_callbacks_s::error(HWND,
-                                                                     HRGB,
-                                                                     unsigned long,
-                                                                     ULONG_PTR,
-                                                                     unsigned long*)
-    {
-        std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-        UNRECOVERABLE_CAPTURE_ERROR = true;
-
-        return;
-    }
-#endif
 
 uint capture_api_rgbeasy_s::get_num_missed_frames(void)
 {

@@ -32,12 +32,12 @@ struct capture_api_virtual_s : public capture_api_s
     resolution_s             get_resolution(void)              const override { return this->defaultResolution; }
     resolution_s             get_minimum_resolution(void)      const override { return this->defaultResolution; }
     resolution_s             get_maximum_resolution(void)      const override { return this->defaultResolution; }
-    const captured_frame_s&  get_frame_buffer(void)            const override;
+    const captured_frame_s&  get_frame_buffer(void)            override;
     capture_color_settings_s get_color_settings(void)          const override { return {}; }
     capture_video_settings_s get_video_settings(void)          const override { return {}; }
     capture_signal_s         get_signal_info(void)             const override { return {}; }
     int                      get_frame_rate(void)              const override { return 0; }
-    capture_event_e          get_latest_capture_event(void)    const override;
+    capture_event_e          get_latest_capture_event(void)    override;
 
     // Miscellaneous getters; TODO.
     uint get_num_missed_frames(void)                                         override { return 0;              }
@@ -50,7 +50,7 @@ struct capture_api_virtual_s : public capture_api_s
     bool get_no_signal(void)                                                 override { return false;          }
     capture_pixel_format_e get_pixel_format(void)                            override { return capture_pixel_format_e::RGB_888; }
     const std::vector<video_mode_params_s>& get_mode_params(void)            override { return {};             }
-    video_mode_params_s get_mode_params_for_resolution(const resolution_s r) override { return {};             }
+    video_mode_params_s get_mode_params_for_resolution(const resolution_s r) override { (void)r; return {};    }
 
     // Setters.
     void report_frame_buffer_processing_finished(void) override;
@@ -61,6 +61,8 @@ private:
     // We don't do any actual capturing, so draw an animating pattern in the
     // frame buffer, instead.
     void animate_frame_buffer(void);
+
+    captured_frame_s frameBuffer;
 };
 
 #endif

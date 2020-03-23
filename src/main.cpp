@@ -22,8 +22,6 @@
 #include "common/memory.h"
 #include "common/disk.h"
 
-extern std::mutex INPUT_OUTPUT_MUTEX;
-
 // Set to !0 when we want to exit the program.
 /// TODO. Don't have this global.
 i32 PROGRAM_EXIT_REQUESTED = 0;
@@ -66,9 +64,7 @@ static bool initialize_all(void)
 
 static capture_event_e process_next_capture_event(void)
 {
-    std::lock_guard<std::mutex> lock(INPUT_OUTPUT_MUTEX);
-
-    const capture_event_e e = kc_api().get_latest_capture_event();
+    const capture_event_e e = kc_capture_api().get_latest_capture_event();
 
     switch (e)
     {

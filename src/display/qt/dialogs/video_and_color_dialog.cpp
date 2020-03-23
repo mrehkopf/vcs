@@ -184,7 +184,7 @@ void VideoAndColorDialog::update_controls(void)
 
     // Current values.
     {
-        const capture_color_settings_s colorParams = kc_api().get_color_settings();
+        const capture_color_settings_s colorParams = kc_capture_api().get_color_settings();
 
         ui->spinBox_colorBright->setValue(colorParams.overallBrightness);
         ui->horizontalScrollBar_colorBright->setValue(colorParams.overallBrightness);
@@ -210,7 +210,7 @@ void VideoAndColorDialog::update_controls(void)
         ui->spinBox_colorContrBlue->setValue(colorParams.blueContrast);
         ui->horizontalScrollBar_colorContrBlue->setValue(colorParams.blueContrast);
 
-        const capture_video_settings_s videoParams = kc_api().get_video_settings();
+        const capture_video_settings_s videoParams = kc_capture_api().get_video_settings();
 
         ui->spinBox_videoBlackLevel->setValue(videoParams.blackLevel);
         ui->horizontalScrollBar_videoBlackLevel->setValue(videoParams.blackLevel);
@@ -230,8 +230,8 @@ void VideoAndColorDialog::update_controls(void)
 
     // Current valid ranges.
     {
-        const capture_color_settings_s minColorParams = kc_api().get_minimum_color_settings();
-        const capture_color_settings_s maxColorParams = kc_api().get_maximum_color_settings();
+        const capture_color_settings_s minColorParams = kc_capture_api().get_minimum_color_settings();
+        const capture_color_settings_s maxColorParams = kc_capture_api().get_maximum_color_settings();
 
         ui->spinBox_colorBright->setMinimum(minColorParams.overallBrightness);
         ui->spinBox_colorBright->setMaximum(maxColorParams.overallBrightness);
@@ -273,8 +273,8 @@ void VideoAndColorDialog::update_controls(void)
         ui->horizontalScrollBar_colorContrBlue->setMinimum(minColorParams.greenContrast);
         ui->horizontalScrollBar_colorContrBlue->setMaximum(maxColorParams.greenContrast);
 
-        const capture_video_settings_s minVideoParams = kc_api().get_minimum_video_settings();
-        const capture_video_settings_s maxVideoParams = kc_api().get_maximum_video_settings();
+        const capture_video_settings_s minVideoParams = kc_capture_api().get_minimum_video_settings();
+        const capture_video_settings_s maxVideoParams = kc_capture_api().get_maximum_video_settings();
 
         ui->spinBox_videoBlackLevel->setMinimum(minVideoParams.blackLevel);
         ui->spinBox_videoBlackLevel->setMaximum(maxVideoParams.blackLevel);
@@ -324,7 +324,7 @@ void VideoAndColorDialog::update_mode_label(const bool isEnabled)
 {
     if (isEnabled)
     {
-        const auto signal = kc_api().get_signal_info();
+        const auto signal = kc_capture_api().get_signal_info();
         const QString labelStr = QString("%1 x %2 @ %3 Hz").arg(signal.r.w)
                                                            .arg(signal.r.h)
                                                            .arg(signal.refreshRate);
@@ -362,8 +362,8 @@ void VideoAndColorDialog::broadcast_settings(void)
     currentVideoParams.phase = ui->spinBox_videoPhase->value();
     currentVideoParams.verticalPosition = ui->spinBox_videoVerPos->value();
 
-    kc_set_video_settings(currentVideoParams);
-    kc_set_color_settings(currentColorParams);
+    kc_capture_api().set_video_settings(currentVideoParams);
+    kc_capture_api().set_color_settings(currentColorParams);
 
     flag_unsaved_changes();
 
@@ -418,7 +418,7 @@ void VideoAndColorDialog::save_settings(void)
         filename.append(".vcs-video");
     }
 
-    if (kdisk_save_video_mode_params(kc_mode_params(), filename))
+    if (kdisk_save_video_mode_params(kc_capture_api().get_mode_params(), filename))
     {
         remove_unsaved_changes_flag();
     }

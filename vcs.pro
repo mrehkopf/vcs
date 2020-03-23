@@ -93,7 +93,8 @@ SOURCES += \
     src/display/qt/dialogs/output_resolution_dialog.cpp \
     src/display/qt/dialogs/input_resolution_dialog.cpp \
     src/capture/capture_api_virtual.cpp \
-    src/capture/capture_api_rgbeasy.cpp
+    src/capture/capture_api_rgbeasy.cpp \
+    src/capture/capture_api.cpp
 
 HEADERS += \
     src/common/globals.h \

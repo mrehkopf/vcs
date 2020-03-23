@@ -16,12 +16,12 @@ bool capture_api_virtual_s::release(void)
     return true;
 }
 
-const captured_frame_s &capture_api_virtual_s::get_frame_buffer(void) const
+const captured_frame_s &capture_api_virtual_s::get_frame_buffer(void)
 {
     return this->frameBuffer;
 }
 
-capture_event_e capture_api_virtual_s::get_latest_capture_event(void) const
+capture_event_e capture_api_virtual_s::get_latest_capture_event(void)
 {
     // Normally, the capture card's output rate limits VCS's frame rate;
     // but for the virtual capture device, we'll need to emulate a delay.

@@ -107,7 +107,7 @@ resolution_s ks_output_resolution(void)
         return {r.w, r.h, OUTPUT_BIT_DEPTH};
     }
 
-    resolution_s inRes = kc_api().get_resolution();
+    resolution_s inRes = kc_capture_api().get_resolution();
     resolution_s outRes = inRes;
 
     // Base resolution.
@@ -415,11 +415,11 @@ void s_convert_frame_to_bgra(const captured_frame_s &frame)
                  "Was asked to convert a frame's color depth, but the color conversion buffer "
                  "was null.");
 
-        if (kc_pixel_format() == capture_pixel_format_e::RGB_565)
+        if (kc_capture_api().get_pixel_format() == capture_pixel_format_e::RGB_565)
         {
             conversionType = CV_BGR5652BGRA;
         }
-        else if (kc_pixel_format() == capture_pixel_format_e::RGB_555)
+        else if (kc_capture_api().get_pixel_format() == capture_pixel_format_e::RGB_555)
         {
             conversionType = CV_BGR5552BGRA;
         }
@@ -462,12 +462,12 @@ void ks_scale_frame(const captured_frame_s &frame)
     resolution_s frameRes = frame.r; /// Temp hack. May want to modify the .bpp value.
     resolution_s outputRes = ks_output_resolution();
 
-    const resolution_s minres = kc_api().get_minimum_resolution();
-    const resolution_s maxres = kc_api().get_maximum_resolution();
+    const resolution_s minres = kc_capture_api().get_minimum_resolution();
+    const resolution_s maxres = kc_capture_api().get_maximum_resolution();
 
     // Verify that we have a workable frame.
     {
-        if (kc_should_current_frame_be_skipped())
+        if (kc_capture_api().get_should_current_frame_be_skipped())
         {
             DEBUG(("Skipping a frame, as requested."));
             goto done;

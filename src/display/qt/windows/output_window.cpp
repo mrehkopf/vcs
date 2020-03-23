@@ -129,7 +129,7 @@ MainWindow::MainWindow(QWidget *parent) :
             {
                 QActionGroup *group = new QActionGroup(this);
 
-                for (int i = 0; i < kc_api().get_maximum_input_count(); i++)
+                for (int i = 0; i < kc_capture_api().get_maximum_input_count(); i++)
                 {
                     QAction *inputChannel = new QAction(QString::number(i+1), this);
                     inputChannel->setActionGroup(group);
@@ -141,7 +141,7 @@ MainWindow::MainWindow(QWidget *parent) :
                         inputChannel->setChecked(true);
                     }
 
-                    connect(inputChannel, &QAction::triggered, this, [=]{kc_set_input_channel(i);});
+                    connect(inputChannel, &QAction::triggered, this, [=]{kc_capture_api().set_input_channel(i);});
                 }
             }
 
@@ -165,9 +165,9 @@ MainWindow::MainWindow(QWidget *parent) :
                 c15->setCheckable(true);
                 colorDepth->addAction(c15);
 
-                connect(c24, &QAction::triggered, this, [=]{kc_set_input_color_depth(24);});
-                connect(c16, &QAction::triggered, this, [=]{kc_set_input_color_depth(16);});
-                connect(c15, &QAction::triggered, this, [=]{kc_set_input_color_depth(15);});
+                connect(c24, &QAction::triggered, this, [=]{kc_capture_api().set_input_color_depth(24);});
+                connect(c16, &QAction::triggered, this, [=]{kc_capture_api().set_input_color_depth(16);});
+                connect(c15, &QAction::triggered, this, [=]{kc_capture_api().set_input_color_depth(15);});
             }
 
             menu->addMenu(channel);
@@ -739,7 +739,7 @@ bool MainWindow::is_mouse_wheel_scaling_allowed(void)
 //
 QImage MainWindow::overlay_image(void)
 {
-    if (!kc_no_signal() &&
+    if (!kc_capture_api().get_no_signal() &&
         overlayDlg != nullptr &&
         overlayDlg->is_overlay_enabled())
     {
@@ -784,7 +784,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 
     // Show a magnifying glass effect which blows up part of the captured image.
     static QLabel *magnifyingGlass = nullptr;
-    if (!kc_no_signal() &&
+    if (!kc_capture_api().get_no_signal() &&
         this->isActiveWindow() &&
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
         (QGuiApplication::mouseButtons() & Qt::RightButton))
@@ -880,8 +880,8 @@ void MainWindow::measure_framerate()
         UPDATE_LATENCY_AVG = (avgProcessTime / numFramesDrawn);
         UPDATE_LATENCY_PEAK = peakProcessTime;
 
-        this->update_output_framerate(fps, kc_are_frames_being_dropped());
-        kc_reset_missed_frames_count();
+        this->update_output_framerate(fps, kc_capture_api().get_are_frames_being_dropped());
+        kc_capture_api().reset_missed_frames_count();
 
         numFramesDrawn = 0;
         avgProcessTime = 0;
@@ -918,10 +918,10 @@ void MainWindow::set_keyboard_shortcuts(void)
     }
 
     // Assign alt + arrow keys to move the capture input alignment horizontally and vertically.
-    connect(keyboardShortcut("alt+shift+left"), &QShortcut::activated, []{kc_adjust_video_horizontal_offset(1);});
-    connect(keyboardShortcut("alt+shift+right"), &QShortcut::activated, []{kc_adjust_video_horizontal_offset(-1);});
-    connect(keyboardShortcut("alt+shift+up"), &QShortcut::activated, []{kc_adjust_video_vertical_offset(1);});
-    connect(keyboardShortcut("alt+shift+down"), &QShortcut::activated, []{kc_adjust_video_vertical_offset(-1);});
+    connect(keyboardShortcut("alt+shift+left"), &QShortcut::activated,  []{kc_capture_api().adjust_video_horizontal_offset(1); });
+    connect(keyboardShortcut("alt+shift+right"), &QShortcut::activated, []{kc_capture_api().adjust_video_horizontal_offset(-1);});
+    connect(keyboardShortcut("alt+shift+up"), &QShortcut::activated,    []{kc_capture_api().adjust_video_vertical_offset(1);   });
+    connect(keyboardShortcut("alt+shift+down"), &QShortcut::activated,  []{kc_capture_api().adjust_video_vertical_offset(-1);  });
 
     /// NOTE: Qt's full-screen mode might not work correctly under Linux, depending
     /// on the distro etc.
@@ -934,7 +934,7 @@ void MainWindow::set_keyboard_shortcuts(void)
         else this->showFullScreen();
     });
 
-    connect(keyboardShortcut("f5"), &QShortcut::activated, []{if (!kc_no_signal()) ALIGN_CAPTURE = true;});
+    connect(keyboardShortcut("f5"), &QShortcut::activated, []{if (!kc_capture_api().get_no_signal()) ALIGN_CAPTURE = true;});
 
     // Make Ctrl + Shift + <x> toggle the various dialogs' functionality on/off.
     connect(keyboardShortcut("ctrl+shift+f"), &QShortcut::activated, [=]{this->filterGraphDlg->toggle_filtering();});
@@ -999,17 +999,17 @@ void MainWindow::update_window_title()
 {
     QString title = PROGRAM_NAME;
 
-    if (kc_no_signal())
+    if (kc_capture_api().get_no_signal())
     {
         title = QString("%1 - No signal").arg(PROGRAM_NAME);
     }
-    else if (kc_is_invalid_signal())
+    else if (kc_capture_api().get_is_invalid_signal())
     {
         title = QString("%1 - Invalid signal").arg(PROGRAM_NAME);
     }
     else
     {
-        const resolution_s inRes = kc_api().get_resolution();
+        const resolution_s inRes = kc_capture_api().get_resolution();
         const resolution_s outRes = ks_output_resolution();
         const int relativeScale = round((outRes.h / (real)inRes.h) * 100);
 
@@ -1020,7 +1020,7 @@ void MainWindow::update_window_title()
         if (kat_is_anti_tear_enabled()) programStatus << "A";
 
         title = QString("%1%2 - %3%4 x %5 scaled to %6 x %7 (~%8%)")
-                .arg(kc_are_frames_being_dropped()? "{!} " : "")
+                .arg(kc_capture_api().get_are_frames_being_dropped()? "{!} " : "")
                 .arg(PROGRAM_NAME)
                 .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
                 .arg(inRes.w)
@@ -1082,7 +1082,7 @@ void MainWindow::update_video_mode_params(void)
 
 void MainWindow::update_capture_signal_info(void)
 {
-    if (kc_no_signal())
+    if (kc_capture_api().get_no_signal())
     {
         DEBUG(("Was asked to update GUI input info while there was no signal."));
     }

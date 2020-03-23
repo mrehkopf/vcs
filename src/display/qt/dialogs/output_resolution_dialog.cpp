@@ -56,7 +56,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
 
             if (!is_checked(state))
             {
-                ks_set_output_base_resolution(kc_api().get_resolution(), true);
+                ks_set_output_base_resolution(kc_capture_api().get_resolution(), true);
 
                 ui->spinBox_outputResX->setValue(ks_output_base_resolution().w);
                 ui->spinBox_outputResY->setValue(ks_output_base_resolution().h);
@@ -151,7 +151,7 @@ void OutputResolutionDialog::notify_of_new_capture_signal(void)
 {
     if (!ui->checkBox_forceOutputRes->isChecked())
     {
-        const capture_signal_s s = kc_api().get_signal_info();
+        const capture_signal_s s = kc_capture_api().get_signal_info();
 
         ui->spinBox_outputResX->setValue(s.r.w);
         ui->spinBox_outputResY->setValue(s.r.h);

@@ -602,7 +602,7 @@ u8* kat_anti_tear(u8 *const pixels, const resolution_s &r)
 
 void kat_initialize_anti_tear(void)
 {
-    const resolution_s &maxres = kc_api().get_maximum_resolution();
+    const resolution_s &maxres = kc_capture_api().get_maximum_resolution();
 
     INFO(("Initializing the anti-tear engine for %u x %u max.", maxres.w, maxres.h));
 
