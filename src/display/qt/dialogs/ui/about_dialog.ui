@@ -135,7 +135,7 @@ VCS interfaces with the Qt framework, copyright (c) The Qt Company; the RGBEasy 
             </property>
             <column>
              <property name="text">
-              <string>Feature</string>
+              <string>Property</string>
              </property>
             </column>
             <column>

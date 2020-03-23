@@ -3,7 +3,15 @@
 
 bool capture_api_virtual_s::initialize(void)
 {
+    this->frameBuffer.r = this->defaultResolution;
     this->frameBuffer.pixels.alloc(MAX_FRAME_SIZE);
+
+    return true;
+}
+
+bool capture_api_virtual_s::release(void)
+{
+    this->frameBuffer.pixels.release_memory();
 
     return true;
 }
@@ -32,7 +40,7 @@ capture_event_e capture_api_virtual_s::get_latest_capture_event(void) const
     }
 }
 
-void capture_api_virtual_s::mark_frame_buffer_as_processed(void)
+void capture_api_virtual_s::report_frame_buffer_processing_finished(void)
 {
     this->animate_frame_buffer();
 

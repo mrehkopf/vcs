@@ -7,46 +7,53 @@
  *
  */
 
-#include <string>
+#ifndef CAPTURE_API_VIRTUAL_H
+#define CAPTURE_API_VIRTUAL_H
+
 #include "capture/capture_api.h"
 
 struct capture_api_virtual_s : public capture_api_s
 {
-    capture_api_virtual_s()
-    {
-        this->frameBuffer.r = this->defaultResolution;
-
-        return;
-    }
-
-    virtual bool initialize(void) override;
-    virtual bool start_capture(void) override { return true; };
-    virtual bool stop_capture(void) override { return true; };
+    bool initialize(void) override;
+    bool release(void) override;
 
     // Getters.
-    virtual std::string              get_device_name(void)             const override { return "Virtual VCS capture device"; }
-    virtual std::string              get_api_name(void)                const override { return "Virtual VCS capture API"; }
-    virtual std::string              get_device_driver_version(void)   const override { return "1.0"; };
-    virtual std::string              get_device_firmware_version(void) const override { return "1.0"; }
-    virtual int                      get_maximum_input_count(void)     const override { return 2;  };
-    virtual capture_color_settings_s get_default_color_settings(void)  const override { return capture_color_settings_s{}; };
-    virtual capture_color_settings_s get_minimum_color_settings(void)  const override { return capture_color_settings_s{}; };
-    virtual capture_color_settings_s get_maximum_color_settings(void)  const override { return capture_color_settings_s{}; };
-    virtual capture_video_settings_s get_default_video_settings(void)  const override { return capture_video_settings_s{}; };
-    virtual capture_video_settings_s get_minimum_video_settings(void)  const override { return capture_video_settings_s{}; };
-    virtual capture_video_settings_s get_maximum_video_settings(void)  const override { return capture_video_settings_s{}; };
-    virtual resolution_s             get_resolution(void)              const override { return this->defaultResolution; };
-    virtual resolution_s             get_minimum_resolution(void)      const override { return this->defaultResolution; };
-    virtual resolution_s             get_maximum_resolution(void)      const override { return this->defaultResolution; };
-    virtual const captured_frame_s&  get_frame_buffer(void)            const override;
-    virtual capture_color_settings_s get_color_settings(void)          const override { return {}; };
-    virtual capture_video_settings_s get_video_settings(void)          const override { return {}; };
-    virtual capture_signal_s         get_signal_info(void)             const override { return {}; };
-    virtual int                      get_frame_rate(void)              const override { return 0; };
-    virtual capture_event_e          get_latest_capture_event(void)    const override;
+    std::string              get_device_name(void)             const override { return "Virtual VCS Capture Device"; }
+    std::string              get_api_name(void)                const override { return "Virtual VCS Capture API"; }
+    std::string              get_device_driver_version(void)   const override { return "1.0"; }
+    std::string              get_device_firmware_version(void) const override { return "1.0"; }
+    int                      get_maximum_input_count(void)     const override { return 2; }
+    capture_color_settings_s get_default_color_settings(void)  const override { return capture_color_settings_s{}; }
+    capture_color_settings_s get_minimum_color_settings(void)  const override { return capture_color_settings_s{}; }
+    capture_color_settings_s get_maximum_color_settings(void)  const override { return capture_color_settings_s{}; }
+    capture_video_settings_s get_default_video_settings(void)  const override { return capture_video_settings_s{}; }
+    capture_video_settings_s get_minimum_video_settings(void)  const override { return capture_video_settings_s{}; }
+    capture_video_settings_s get_maximum_video_settings(void)  const override { return capture_video_settings_s{}; }
+    resolution_s             get_resolution(void)              const override { return this->defaultResolution; }
+    resolution_s             get_minimum_resolution(void)      const override { return this->defaultResolution; }
+    resolution_s             get_maximum_resolution(void)      const override { return this->defaultResolution; }
+    const captured_frame_s&  get_frame_buffer(void)            const override;
+    capture_color_settings_s get_color_settings(void)          const override { return {}; }
+    capture_video_settings_s get_video_settings(void)          const override { return {}; }
+    capture_signal_s         get_signal_info(void)             const override { return {}; }
+    int                      get_frame_rate(void)              const override { return 0; }
+    capture_event_e          get_latest_capture_event(void)    const override;
+
+    // Miscellaneous getters; TODO.
+    uint get_num_missed_frames(void)                                         override { return 0;              }
+    uint get_input_channel_idx(void)                                         override { return 0;              }
+    uint get_input_color_depth(void)                                         override { return 0;              }
+    bool get_are_frames_being_dropped(void)                                  override { return false;          }
+    bool get_is_capture_active(void)                                         override { return false;          }
+    bool get_should_current_frame_be_skipped(void)                           override { return false;          }
+    bool get_is_invalid_signal(void)                                         override { return false;          }
+    bool get_no_signal(void)                                                 override { return false;          }
+    capture_pixel_format_e get_pixel_format(void)                            override { return capture_pixel_format_e::RGB_888; }
+    const std::vector<video_mode_params_s>& get_mode_params(void)            override { return {};             }
+    video_mode_params_s get_mode_params_for_resolution(const resolution_s r) override { return {};             }
 
     // Setters.
-    virtual void mark_frame_buffer_as_processed(void) override;
+    void report_frame_buffer_processing_finished(void) override;
 
 private:
     const resolution_s defaultResolution = resolution_s{640, 480, 32};
@@ -55,3 +62,5 @@ private:
     // frame buffer, instead.
     void animate_frame_buffer(void);
 };
+
+#endif

@@ -16,14 +16,12 @@
 
 struct capture_api_s;
 
-#if USE_RGBEASY_API
-    #include <windows.h>
-    #include <rgb.h>
-    #include <rgbapi.h>
-    #include <rgberror.h>
-#else
-    #include "null_rgbeasy.h"
-#endif
+enum class capture_pixel_format_e
+{
+    RGB_555,
+    RGB_565,
+    RGB_888,
+};
 
 enum class capture_event_e
 {
@@ -33,7 +31,10 @@ enum class capture_event_e
     new_frame,
     new_video_mode,
     invalid_signal,
-    unrecoverable_error
+    unrecoverable_error,
+
+    // Total enumerator count; should remain the last item on the list.
+    num_enumerators
 };
 
 struct captured_frame_s
@@ -42,7 +43,8 @@ struct captured_frame_s
 
     heap_bytes_s<u8> pixels;
 
-    // Will be set to true after the frame has been processed (i.e. scaled, filtered, etc.).
+    // Will be set to true after the frame's data has been processed for
+    // display and is no longer needed.
     bool processed = false;
 };
 
@@ -147,14 +149,13 @@ void kc_release_capture(void);
 capture_api_s& kc_api(void);
 uint kc_num_missed_frames(void);
 uint kc_input_channel_idx(void);
-uint kc_output_color_depth(void);
 uint kc_input_color_depth(void);
 bool kc_are_frames_being_dropped(void);
 bool kc_is_capture_active(void);
 bool kc_should_current_frame_be_skipped(void);
 bool kc_is_invalid_signal(void);
 bool kc_no_signal(void);
-PIXELFORMAT kc_pixel_format(void);
+capture_pixel_format_e kc_pixel_format(void);
 const capture_hardware_s& kc_hardware(void);
 capture_event_e kc_latest_capture_event(void);
 const captured_frame_s& kc_latest_captured_frame(void);

@@ -207,7 +207,7 @@ void kpropagate_news_of_new_captured_frame(void)
         krecord_record_new_frame();
     }
 
-    kc_api().mark_frame_buffer_as_processed();
+    kc_api().report_frame_buffer_processing_finished();
 
     kd_redraw_output_window();
 

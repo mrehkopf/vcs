@@ -11,8 +11,8 @@
 #include "common/command_line.h"
 #include "filter/anti_tear.h"
 #include "common/propagate.h"
-#include "capture/capture.h"
 #include "capture/capture_api.h"
+#include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
 #include "capture/alias.h"
@@ -49,8 +49,6 @@ static void cleanup_all(void)
 
 static bool initialize_all(void)
 {
-    kc_api().initialize();
-
     if (!PROGRAM_EXIT_REQUESTED) ks_initialize_scaler();
     if (!PROGRAM_EXIT_REQUESTED) kc_initialize_capture();
     if (!PROGRAM_EXIT_REQUESTED) kat_initialize_anti_tear();

@@ -13,13 +13,22 @@
 #include "common/command_line.h"
 #include "common/propagate.h"
 #include "capture/capture_api_virtual.h"
+#include "capture/capture_api_rgbeasy.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
 #include "capture/alias.h"
-#include "common/disk.h"
 
-static capture_api_s *API = new capture_api_virtual_s;
+#if USE_RGBEASY_API
+    #include <windows.h>
+    #include <rgb.h>
+    #include <rgbapi.h>
+    #include <rgberror.h>
+#else
+    #include "null_rgbeasy.h"
+#endif
+
+static capture_api_s *API = nullptr;
 
 capture_api_s& kc_api(void)
 {
@@ -38,7 +47,7 @@ static u32 SKIP_NEXT_NUM_FRAMES = false;
 static std::vector<video_mode_params_s> KNOWN_MODES;
 
 // The color depth/format in which the capture hardware captures the frames.
-static PIXELFORMAT CAPTURE_PIXEL_FORMAT = RGB_PIXELFORMAT_888;
+static capture_pixel_format_e CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::RGB_888;
 
 // The color depth in which the capture hardware is expected to be sending the
 // frames. This depends on the current pixel format, such that e.g. formats
@@ -344,31 +353,11 @@ const captured_frame_s& kc_latest_captured_frame(void)
 
 void kc_initialize_capture(void)
 {
-    INFO(("Initializing capture."));
+    API = new capture_api_rgbeasy_s;
+    API->initialize();
 
-    FRAME_BUFFER.pixels.alloc(MAX_FRAME_SIZE);
-
-    #ifndef USE_RGBEASY_API
-        FRAME_BUFFER.r = {640, 480, 32};
-
-        INFO(("The RGBEASY API is disabled by code. Skipping capture initialization."));
-        goto done;
-    #endif
-
-    // Open an input on the capture hardware, and have it start sending in frames.
-    {
-        if (!CAPTURE_INTERFACE.initialize_hardware() ||
-            !CAPTURE_INTERFACE.start_capture())
-        {
-            NBENE(("Failed to initialize capture."));
-
-            PROGRAM_EXIT_REQUESTED = 1;
-            goto done;
-        }
-    }
-
-    done:
     kpropagate_news_of_new_capture_video_mode();
+    
     return;
 }
 
@@ -677,12 +666,7 @@ bool kc_set_input_channel(const u32 channel)
     return false;
 }
 
-uint kc_output_color_depth(void)
-{
-    return CAPTURE_OUTPUT_COLOR_DEPTH;
-}
-
-PIXELFORMAT kc_pixel_format(void)
+capture_pixel_format_e kc_pixel_format(void)
 {
     return CAPTURE_PIXEL_FORMAT;
 }
@@ -691,30 +675,28 @@ uint kc_input_color_depth(void)
 {
     switch (CAPTURE_PIXEL_FORMAT)
     {
-        case RGB_PIXELFORMAT_888: return 24;
-        case RGB_PIXELFORMAT_565: return 16;
-        case RGB_PIXELFORMAT_555: return 15;
+        case capture_pixel_format_e::RGB_888: return 24;
+        case capture_pixel_format_e::RGB_565: return 16;
+        case capture_pixel_format_e::RGB_555: return 15;
         default: k_assert(0, "Found an unknown pixel format while being queried for it."); return 0;
     }
 }
 
 bool kc_set_input_color_depth(const u32 bpp)
 {
-    const PIXELFORMAT previousFormat = CAPTURE_PIXEL_FORMAT;
-    const uint previousColorDepth = CAPTURE_OUTPUT_COLOR_DEPTH;
+    const capture_pixel_format_e previousFormat = CAPTURE_PIXEL_FORMAT;
 
     switch (bpp)
     {
-        case 24: CAPTURE_PIXEL_FORMAT = RGB_PIXELFORMAT_888; CAPTURE_OUTPUT_COLOR_DEPTH = 32; break;
-        case 16: CAPTURE_PIXEL_FORMAT = RGB_PIXELFORMAT_565; CAPTURE_OUTPUT_COLOR_DEPTH = 16; break;
-        case 15: CAPTURE_PIXEL_FORMAT = RGB_PIXELFORMAT_555; CAPTURE_OUTPUT_COLOR_DEPTH = 16; break;
+        case 24: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::RGB_888; break;
+        case 16: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::RGB_565; break;
+        case 15: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::RGB_555; break;
         default: k_assert(0, "Was asked to set an unknown pixel format."); break;
     }
 
     if (!apicall_succeeds(RGBSetPixelFormat(CAPTURE_HANDLE, CAPTURE_PIXEL_FORMAT)))
     {
         CAPTURE_PIXEL_FORMAT = previousFormat;
-        CAPTURE_OUTPUT_COLOR_DEPTH = previousColorDepth;
 
         goto fail;
     }
@@ -1120,7 +1102,13 @@ resolution_s capture_hardware_s::status_s::capture_resolution() const
     r.h = 480;
 #endif
 
-    r.bpp = CAPTURE_OUTPUT_COLOR_DEPTH;
+    switch (CAPTURE_PIXEL_FORMAT)
+    {
+        case capture_pixel_format_e::RGB_888: r.bpp = 24; break;
+        case capture_pixel_format_e::RGB_565: r.bpp = 16; break;
+        case capture_pixel_format_e::RGB_555: r.bpp = 15; break;
+        default: k_assert(0, "Unknown capture pixel format."); break;
+    }
 
     return r;
 }

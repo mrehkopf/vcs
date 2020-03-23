@@ -92,7 +92,8 @@ SOURCES += \
     src/display/qt/dialogs/record_dialog.cpp \
     src/display/qt/dialogs/output_resolution_dialog.cpp \
     src/display/qt/dialogs/input_resolution_dialog.cpp \
-    src/capture/capture_api_virtual.cpp
+    src/capture/capture_api_virtual.cpp \
+    src/capture/capture_api_rgbeasy.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -135,7 +136,8 @@ HEADERS += \
     src/display/qt/dialogs/output_resolution_dialog.h \
     src/display/qt/dialogs/input_resolution_dialog.h \
     src/capture/capture_api.h \
-    src/capture/capture_api_virtual.h
+    src/capture/capture_api_virtual.h \
+    src/capture/capture_api_rgbeasy.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \

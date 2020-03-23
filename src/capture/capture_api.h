@@ -7,6 +7,9 @@
  *
  */
 
+#ifndef CAPTURE_API_H
+#define CAPTURE_API_H
+
 #include <string>
 #include "common/globals.h"
 #include "display/display.h"
@@ -14,9 +17,11 @@
 
 struct capture_api_s
 {
-    virtual bool initialize(void)    = 0;
-    virtual bool start_capture(void) = 0;
-    virtual bool stop_capture(void)  = 0;
+    // Sets up the API and capture device, and begins capturing.
+    virtual bool initialize(void) = 0;
+
+    // Stop capturing, deallocates the API, and releases the capture device.
+    virtual bool release(void) = 0;
 
     // Capture device/API capabilities.
     virtual bool device_supports_component_capture(void) const { return false; }
@@ -50,23 +55,38 @@ struct capture_api_s
     virtual capture_signal_s         get_signal_info(void)             const = 0;
     virtual int                      get_frame_rate(void)              const = 0;
 
+    // Miscellaneous getters; TODO.
+    virtual uint get_num_missed_frames(void)                                         = 0;
+    virtual uint get_input_channel_idx(void)                                         = 0;
+    virtual uint get_input_color_depth(void)                                         = 0;
+    virtual bool get_are_frames_being_dropped(void)                                  = 0;
+    virtual bool get_is_capture_active(void)                                         = 0;
+    virtual bool get_should_current_frame_be_skipped(void)                           = 0;
+    virtual bool get_is_invalid_signal(void)                                         = 0;
+    virtual bool get_no_signal(void)                                                 = 0;
+    virtual capture_pixel_format_e get_pixel_format(void)                            = 0;
+    virtual const std::vector<video_mode_params_s>& get_mode_params(void)            = 0;
+    virtual video_mode_params_s get_mode_params_for_resolution(const resolution_s r) = 0;
+
     // Setters.
-    virtual void set_mode_params(const std::vector<video_mode_params_s> &modeParams) { (void)modeParams; return;       };
-    virtual bool set_mode_parameters_for_resolution(const resolution_s r)            { (void)r;          return false; };
-    virtual void set_color_settings(const capture_color_settings_s c)                { (void)c;          return;       };
-    virtual void set_video_settings(const capture_video_settings_s v)                { (void)v;          return;       };
-    virtual bool adjust_video_horizontal_offset(const int delta)                     { (void)delta;      return false; };
-    virtual bool adjust_video_vertical_offset(const int delta)                       { (void)delta;      return false; };
-    virtual void mark_frame_buffer_as_processed(void)                                {                   return;       };
-    virtual bool set_color_depth(const resolution_s r)                               { (void)r;          return false; };
-    virtual bool set_input_channel(const u32 channel)                                { (void)channel;    return false; };
-    virtual bool set_input_color_depth(const u32 bpp)                                { (void)bpp;        return false; };
-    virtual bool set_frame_dropping(const u32 drop)                                  { (void)drop;       return false; };
-    virtual void apply_new_capture_resolution(void)                                  {                   return;       };
-    virtual void reset_missed_frames_count(void)                                     {                   return;       };
+    virtual void set_mode_params(const std::vector<video_mode_params_s> &modeParams) { (void)modeParams; return;       }
+    virtual bool set_mode_parameters_for_resolution(const resolution_s r)            { (void)r;          return false; }
+    virtual void set_color_settings(const capture_color_settings_s c)                { (void)c;          return;       }
+    virtual void set_video_settings(const capture_video_settings_s v)                { (void)v;          return;       }
+    virtual bool adjust_video_horizontal_offset(const int delta)                     { (void)delta;      return false; }
+    virtual bool adjust_video_vertical_offset(const int delta)                       { (void)delta;      return false; }
+    virtual void report_frame_buffer_processing_finished(void)                       {                   return;       }
+    virtual bool set_input_channel(const unsigned channel)                           { (void)channel;    return false; }
+    virtual bool set_input_color_depth(const unsigned bpp)                           { (void)bpp;        return false; }
+    virtual bool set_frame_dropping(const unsigned drop)                             { (void)drop;       return false; }
+    virtual void apply_new_capture_resolution(void)                                  {                   return;       }
+    virtual void reset_missed_frames_count(void)                                     {                   return;       }
+    virtual bool set_resolution(const resolution_s &r)                               { (void)r;          return false; }
 
 protected:
     // Frames sent by the capture hardware will be stored here for processing
     // in VCS's thread.
     captured_frame_s frameBuffer;
 };
+
+#endif

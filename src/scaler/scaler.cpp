@@ -415,15 +415,15 @@ void s_convert_frame_to_bgra(const captured_frame_s &frame)
                  "Was asked to convert a frame's color depth, but the color conversion buffer "
                  "was null.");
 
-        if (kc_pixel_format() == RGB_PIXELFORMAT_565)
+        if (kc_pixel_format() == capture_pixel_format_e::RGB_565)
         {
             conversionType = CV_BGR5652BGRA;
         }
-        else if (kc_pixel_format() == RGB_PIXELFORMAT_555)
+        else if (kc_pixel_format() == capture_pixel_format_e::RGB_555)
         {
             conversionType = CV_BGR5552BGRA;
         }
-        else // The third pixel format we recognize is RGB_PIXELFORMAT_888; it should never need this conversion, as it arrives in BGRA.
+        else // The third pixel format we recognize is RGB_888; it should never need this conversion, as it arrives in BGRA.
         {
             // k_assert(0, "Was asked to scale a frame from an unknown pixel format.");
              NBENE(("Detected an unknown output pixel format (depth: %u) while converting a frame to BGRA. Attempting to guess its type...",
@@ -488,12 +488,6 @@ void ks_scale_frame(const captured_frame_s &frame)
         else if (pixelData == nullptr)
         {
             NBENE(("Was asked to scale a null frame. Ignoring it."));
-            goto done;
-        }
-        else if (frame.r.bpp != kc_output_color_depth())
-        {
-            NBENE(("Was asked to scale a frame whose bit depth (%u bits) differed from the expected (%u bits). Ignoring it.",
-                   frame.r.bpp, kc_output_color_depth()));
             goto done;
         }
         else if (frame.r.bpp > MAX_OUTPUT_BPP)

@@ -67,4 +67,3 @@ extern i32 PROGRAM_EXIT_REQUESTED;
 extern unsigned int INPUT_CHANNEL_IDX;
 
 #endif
-
