@@ -29,14 +29,14 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-104</y>
+        <y>-2</y>
         <width>567</width>
-        <height>437</height>
+        <height>355</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_8">
        <property name="spacing">
-        <number>6</number>
+        <number>9</number>
        </property>
        <property name="leftMargin">
         <number>0</number>
@@ -79,7 +79,7 @@
              </font>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A newer version of VCS is available. See &lt;a href=&quot;https://www.github.com/leikareipa/vcs/releases/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;the changelog&lt;/span&gt;&lt;/a&gt; on GitHub for more details.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A newer version of VCS is available. See &lt;a href=&quot;https://www.github.com/leikareipa/vcs/releases/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;the changelog&lt;/span&gt;&lt;/a&gt; for more details.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -92,9 +92,7 @@
           <item>
            <widget class="QLabel" name="label_17">
             <property name="text">
-             <string>A third-party capture utility for certain Datapath capture cards. Neither associated with nor endorsed by Datapath. Copyright (c) 2017-2019 Tarpeeksi Hyvae Soft.
-
-VCS interfaces with the Qt framework, copyright (c) The Qt Company; the RGBEasy API, copyright (c) Datapath Ltd; and the OpenCV library, copyright (c) OpenCV team. Find out more in the VCS readme.</string>
+             <string>VCS is a third-party capture utility for certain Datapath capture cards; not associated with nor endorsed by Datapath. Copyright (c) 2017-2020 Tarpeeksi Hyvae Soft.</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -113,7 +111,7 @@ VCS interfaces with the Qt framework, copyright (c) The Qt Company; the RGBEasy 
           <bool>true</bool>
          </property>
          <property name="title">
-          <string>Your capture device: Unknown</string>
+          <string>Capture device: Unknown</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -133,6 +131,18 @@ VCS interfaces with the Qt framework, copyright (c) The Qt Company; the RGBEasy 
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
+            <property name="verticalScrollMode">
+             <enum>QAbstractItemView::ScrollPerPixel</enum>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+            <attribute name="verticalHeaderDefaultSectionSize">
+             <number>28</number>
+            </attribute>
+            <attribute name="verticalHeaderMinimumSectionSize">
+             <number>28</number>
+            </attribute>
             <column>
              <property name="text">
               <string>Property</string>

@@ -45,26 +45,27 @@ AboutDialog::AboutDialog(QWidget *parent) :
             ui->tableWidget_captureDeviceFeatures->setItem(rowIdx, 1, new QTableWidgetItem(featureValue));
         };
 
-        ui->groupBox_captureDeviceInfo->setTitle("Your capture device: " + QString::fromStdString(kc_api().get_device_name()));
+        ui->groupBox_captureDeviceInfo->setTitle("Capture device: " + QString::fromStdString(kc_capture_api().get_device_name()));
 
         ui->tableWidget_captureDeviceFeatures->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+        ui->tableWidget_captureDeviceFeatures->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-        const resolution_s &minres = kc_api().get_minimum_resolution();
-        const resolution_s &maxres = kc_api().get_maximum_resolution();
+        const resolution_s &minres = kc_capture_api().get_minimum_resolution();
+        const resolution_s &maxres = kc_capture_api().get_maximum_resolution();
 
         add_feature("Minimum resolution", QString("%1 x %2").arg(minres.w).arg(minres.h));
         add_feature("Maximum resolution", QString("%1 x %2").arg(maxres.w).arg(maxres.h));
-        add_feature("Firmware version",   QString::fromStdString(kc_api().get_device_firmware_version()));
-        add_feature("Driver version",     QString::fromStdString(kc_api().get_device_driver_version()));
-        add_feature("Capture API",        QString::fromStdString(kc_api().get_api_name()));
-        add_feature("DMA transfer",       (kc_api().device_supports_dma()?               "Supported" : "Not supported"));
-        add_feature("Deinterlacing",      (kc_api().device_supports_deinterlacing()?     "Supported" : "Not supported"));
-        add_feature("YUV encoding",       (kc_api().device_supports_yuv()?               "Supported" : "Not supported"));
-        add_feature("VGA capture",        (kc_api().device_supports_vga()?               "Supported" : "Not supported"));
-        add_feature("DVI capture",        (kc_api().device_supports_dvi()?               "Supported" : "Not supported"));
-        add_feature("Component capture",  (kc_api().device_supports_component_capture()? "Supported" : "Not supported"));
-        add_feature("Composite capture",  (kc_api().device_supports_composite_capture()? "Supported" : "Not supported"));
-        add_feature("S-Video capture",    (kc_api().device_supports_svideo()?            "Supported" : "Not supported"));
+        add_feature("Firmware version",   QString::fromStdString(kc_capture_api().get_device_firmware_version()));
+        add_feature("Driver version",     QString::fromStdString(kc_capture_api().get_device_driver_version()));
+        add_feature("Capture API",        QString::fromStdString(kc_capture_api().get_api_name()));
+        add_feature("DMA transfer",       (kc_capture_api().device_supports_dma()?               "Supported" : "Not supported"));
+        add_feature("Deinterlacing",      (kc_capture_api().device_supports_deinterlacing()?     "Supported" : "Not supported"));
+        add_feature("YUV encoding",       (kc_capture_api().device_supports_yuv()?               "Supported" : "Not supported"));
+        add_feature("VGA capture",        (kc_capture_api().device_supports_vga()?               "Supported" : "Not supported"));
+        add_feature("DVI capture",        (kc_capture_api().device_supports_dvi()?               "Supported" : "Not supported"));
+        add_feature("Component capture",  (kc_capture_api().device_supports_component_capture()? "Supported" : "Not supported"));
+        add_feature("Composite capture",  (kc_capture_api().device_supports_composite_capture()? "Supported" : "Not supported"));
+        add_feature("S-Video capture",    (kc_capture_api().device_supports_svideo()?            "Supported" : "Not supported"));
     }
 
     // Restore persistent settings.
