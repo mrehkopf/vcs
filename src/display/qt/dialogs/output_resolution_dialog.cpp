@@ -151,7 +151,7 @@ void OutputResolutionDialog::notify_of_new_capture_signal(void)
 {
     if (!ui->checkBox_forceOutputRes->isChecked())
     {
-        const capture_signal_s s = kc_capture_api().get_signal_info();
+        const signal_info_s s = kc_capture_api().get_signal_info();
 
         ui->spinBox_outputResX->setValue(s.r.w);
         ui->spinBox_outputResY->setValue(s.r.h);

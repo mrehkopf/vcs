@@ -8,9 +8,9 @@
 #include <thread>
 #include <mutex>
 #include "display/qt/windows/output_window.h"
-#include "common/command_line.h"
+#include "common/command_line/command_line.h"
 #include "filter/anti_tear.h"
-#include "common/propagate.h"
+#include "common/propagate/propagate.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "display/display.h"
@@ -19,8 +19,8 @@
 #include "record/record.h"
 #include "scaler/scaler.h"
 #include "filter/filter.h"
-#include "common/memory.h"
-#include "common/disk.h"
+#include "common/memory/memory.h"
+#include "common/disk/disk.h"
 
 // Set to !0 when we want to exit the program.
 /// TODO. Don't have this global.
@@ -99,17 +99,9 @@ static capture_event_e process_next_capture_event(void)
 
             break;
         }
-        case capture_event_e::none:
-        {
-            /// TODO. Technically we might loop until we get an event other than
-            /// none, but for now we just move on.
-
-            break;
-        }
-
         default:
         {
-            k_assert(0, "Unrecognized capture event.");
+            k_assert(0, "Unhandled capture event.");
         }
     }
 

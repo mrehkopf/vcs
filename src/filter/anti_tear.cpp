@@ -14,8 +14,8 @@
 #include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "common/globals.h"
-#include "common/memory.h"
-#include "common/csv.h"
+#include "common/memory/memory.h"
+#include "common/disk/csv.h"
 
 /*
  * TODOS:

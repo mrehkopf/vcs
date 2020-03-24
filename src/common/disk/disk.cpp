@@ -13,15 +13,15 @@
 #include <QFile>
 #include "display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h"
 #include "display/qt/widgets/filter_widgets.h"
-#include "common/file_writer.h"
-#include "common/propagate.h"
+#include "common/disk/file_writer.h"
+#include "common/propagate/propagate.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
 #include "filter/filter.h"
 #include "filter/filter_legacy.h"
-#include "common/disk.h"
-#include "common/disk_legacy.h"
-#include "common/csv.h"
+#include "common/disk/disk.h"
+#include "common/disk/disk_legacy.h"
+#include "common/disk/csv.h"
 
 bool kdisk_save_video_signal_parameters(const std::vector<video_signal_parameters_s> &params,
                                         const QString &targetFilename)

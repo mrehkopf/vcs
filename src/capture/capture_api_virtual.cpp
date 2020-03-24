@@ -30,7 +30,7 @@ capture_event_e capture_api_virtual_s::pop_capture_event_queue(void)
 
     if (std::chrono::duration_cast<std::chrono::milliseconds>(timeDelta).count() <= 16)
     {
-        return capture_event_e::none;
+        return capture_event_e::sleep;
     }
     else
     {

@@ -7,7 +7,7 @@
 #ifndef FILTER_H_
 #define FILTER_H_
 
-#include "common/memory_interface.h"
+#include "common/memory/memory_interface.h"
 #include "display/display.h"
 #include "common/globals.h"
 

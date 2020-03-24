@@ -11,12 +11,12 @@
 #include <vector>
 #include <cmath>
 #include "filter/anti_tear.h"
-#include "common/propagate.h"
+#include "common/propagate/propagate.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
-#include "common/memory.h"
+#include "common/memory/memory.h"
 #include "filter/filter.h"
 #include "record/record.h"
 #include "scaler/scaler.h"

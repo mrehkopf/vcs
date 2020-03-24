@@ -11,7 +11,7 @@
  */
 
 #include <vector>
-#include "common/propagate.h"
+#include "common/propagate/propagate.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "common/globals.h"

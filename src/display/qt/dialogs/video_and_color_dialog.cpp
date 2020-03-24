@@ -16,7 +16,7 @@
 #include "display/display.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"
-#include "common/disk.h"
+#include "common/disk/disk.h"
 #include "ui_video_and_color_dialog.h"
 
 /*

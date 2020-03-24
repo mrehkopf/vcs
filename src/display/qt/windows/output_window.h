@@ -22,7 +22,7 @@ class RecordDialog;
 class AliasDialog;
 class AboutDialog;
 
-struct capture_signal_s;
+struct signal_info_s;
 struct mode_alias_s;
 
 namespace Ui {

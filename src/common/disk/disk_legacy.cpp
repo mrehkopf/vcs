@@ -1,11 +1,11 @@
-#include "common/disk_legacy.h"
-#include "common/file_writer.h"
-#include "common/propagate.h"
+#include "common/propagate/propagate.h"
+#include "common/disk/disk_legacy.h"
+#include "common/disk/file_writer.h"
+#include "common/disk/disk.h"
+#include "common/disk/csv.h"
 #include "capture/capture.h"
 #include "filter/filter.h"
 #include "filter/filter_legacy.h"
-#include "common/disk.h"
-#include "common/csv.h"
 
 // Loads data from legacy VCS v1.4 filter set files. Returns as a vector the
 // filter sets loaded; or an empty vector if loading failed (or if the source

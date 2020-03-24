@@ -1,7 +1,7 @@
 #include <atomic>
 #include <cmath>
 #include "common/globals.h"
-#include "common/propagate.h"
+#include "common/propagate/propagate.h"
 #include "capture/capture_api_rgbeasy.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
@@ -811,7 +811,7 @@ capture_event_e capture_api_rgbeasy_s::pop_capture_event_queue(void)
     return capture_event_e::sleep;
 }
 
-capture_signal_s capture_api_rgbeasy_s::get_signal_info(void) const
+signal_info_s capture_api_rgbeasy_s::get_signal_info(void) const
 {
     if (kc_capture_api().no_signal())
     {
@@ -819,7 +819,7 @@ capture_signal_s capture_api_rgbeasy_s::get_signal_info(void) const
         return {0};
     }
 
-    capture_signal_s s = {0};
+    signal_info_s s = {0};
 
     RGBMODEINFO mi = {0};
     mi.Size = sizeof(mi);

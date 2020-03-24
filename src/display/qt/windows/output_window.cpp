@@ -40,7 +40,7 @@
 #include "display/qt/dialogs/about_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "filter/anti_tear.h"
-#include "common/propagate.h"
+#include "common/propagate/propagate.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "capture/alias.h"

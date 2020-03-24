@@ -11,7 +11,7 @@
 #include "display/display.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
-#include "common/memory.h"
+#include "common/memory/memory.h"
 #include "common/types.h"
 
 struct capture_api_s;
@@ -29,7 +29,6 @@ enum class capture_pixel_format_e
 
 enum class capture_event_e
 {
-    none,
     sleep,
     no_signal,
     new_frame,
@@ -52,7 +51,7 @@ struct captured_frame_s
     bool processed = false;
 };
 
-struct capture_signal_s
+struct signal_info_s
 {
     resolution_s r;
     int refreshRate;

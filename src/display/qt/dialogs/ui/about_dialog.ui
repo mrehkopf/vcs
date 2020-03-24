@@ -166,7 +166,7 @@
             </attribute>
             <column>
              <property name="text">
-              <string>Device feature</string>
+              <string>Device property</string>
              </property>
             </column>
             <column>

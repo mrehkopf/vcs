@@ -11,7 +11,7 @@
 #include <stdarg.h>
 #include "display/display.h"
 #include "common/globals.h"
-#include "common/log.h"
+#include "common/log/log.h"
 
 // Set to false to ignore any log events submitted.
 static bool LOGGING_ENABLED = true;

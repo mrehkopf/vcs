@@ -8,7 +8,7 @@
 #define HEAP_MEM_H
 
 #include "common/globals.h"
-#include "common/memory.h"
+#include "common/memory/memory.h"
 #include "common/types.h"
 
 /*

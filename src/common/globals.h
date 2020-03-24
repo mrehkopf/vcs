@@ -9,7 +9,7 @@
 
 #include "display/display.h"
 #include "common/types.h"
-#include "common/log.h"
+#include "common/log/log.h"
 
 #ifdef NDEBUG
     #error "NDEBUG disables assertions. Assertions are required by design."

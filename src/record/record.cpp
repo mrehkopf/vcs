@@ -14,11 +14,11 @@
 #include <QElapsedTimer>
 #include <QFileInfo>
 #include <QFuture>
-#include "common/propagate.h"
+#include "common/propagate/propagate.h"
 #include "display/display.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
-#include "common/memory.h"
+#include "common/memory/memory.h"
 #include "record/record.h"
 
 #ifdef USE_OPENCV

@@ -27,10 +27,10 @@ struct capture_api_virtual_s : public capture_api_s
     resolution_s get_resolution(void) const override             { return this->defaultResolution; }
     resolution_s get_minimum_resolution(void) const override     { return this->defaultResolution; }
     resolution_s get_maximum_resolution(void) const override     { return this->defaultResolution; }
-    capture_signal_s get_signal_info(void) const override        { return {}; }
+    signal_info_s get_signal_info(void) const override           { return {}; }
     uint get_missed_frames_count(void) const override            { return 0;  }
     uint get_input_channel_idx(void) const override              { return 0;  }
-    uint get_color_depth(void) const override                    { return 0;  }
+    uint get_color_depth(void) const override                    { return (unsigned)this->defaultResolution.bpp;  }
     bool are_frames_being_dropped(void) const override           { return false; }
     bool is_capture_active(void) const override                  { return false; }
     bool should_current_frame_be_skipped(void) const override    { return false; }

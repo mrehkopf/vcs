@@ -6,7 +6,7 @@
  *
  */
 
-#include "common/propagate.h"
+#include "common/propagate/propagate.h"
 #include "capture/capture_api_virtual.h"
 #include "capture/capture_api_rgbeasy.h"
 #include "capture/capture.h"

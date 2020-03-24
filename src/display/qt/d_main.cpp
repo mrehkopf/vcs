@@ -15,7 +15,7 @@
 #include "common/globals.h"
 #include "filter/filter.h"
 #include "capture/alias.h"
-#include "common/log.h"
+#include "common/log/log.h"
 
 // Qt wants a QApplication object around for the GUI to function.
 namespace app_n

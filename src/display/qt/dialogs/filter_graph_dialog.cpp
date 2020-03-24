@@ -10,7 +10,7 @@
 #include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/widgets/filter_widgets.h"
 #include "display/qt/persistent_settings.h"
-#include "common/disk.h"
+#include "common/disk/disk.h"
 #include "ui_filter_graph_dialog.h"
 
 FilterGraphDialog::FilterGraphDialog(QWidget *parent) :

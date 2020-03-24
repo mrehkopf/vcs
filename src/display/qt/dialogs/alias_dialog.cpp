@@ -17,7 +17,7 @@
 #include "display/display.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
-#include "common/disk.h"
+#include "common/disk/disk.h"
 #include "ui_alias_dialog.h"
 
 // Custom Qt::ItemDataRole values.

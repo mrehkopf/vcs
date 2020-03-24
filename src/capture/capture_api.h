@@ -49,16 +49,16 @@ struct capture_api_s
     virtual resolution_s              get_resolution(void)                      const = 0;
     virtual resolution_s              get_minimum_resolution(void)              const = 0;
     virtual resolution_s              get_maximum_resolution(void)              const = 0;
-    virtual capture_signal_s          get_signal_info(void)                     const = 0;
+    virtual signal_info_s             get_signal_info(void)                     const = 0;
     virtual uint                      get_missed_frames_count(void)             const = 0;
     virtual uint                      get_input_channel_idx(void)               const = 0;
     virtual uint                      get_color_depth(void)                     const = 0;
+    virtual capture_pixel_format_e    get_pixel_format(void)                    const = 0;
     virtual bool                      are_frames_being_dropped(void)            const = 0;
     virtual bool                      is_capture_active(void)                   const = 0;
     virtual bool                      should_current_frame_be_skipped(void)     const = 0;
     virtual bool                      is_signal_invalid(void)                   const = 0;
     virtual bool                      no_signal(void)                           const = 0;
-    virtual capture_pixel_format_e    get_pixel_format(void)                    const = 0;
     virtual const std::vector<video_signal_parameters_s>& get_mode_params(void) const = 0;
 
     // Setters.

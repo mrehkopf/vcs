@@ -8,7 +8,7 @@
 #include "display/qt/dialogs/resolution_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
-#include "common/propagate.h"
+#include "common/propagate/propagate.h"
 #include "capture/capture.h"
 #include "ui_input_resolution_dialog.h"
 
