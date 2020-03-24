@@ -29,14 +29,14 @@ struct capture_api_virtual_s : public capture_api_s
     resolution_s get_maximum_resolution(void) const override     { return this->defaultResolution; }
     capture_signal_s get_signal_info(void) const override        { return {}; }
     uint get_missed_frames_count(void) const override            { return 0;  }
-    uint get_current_input_channel_idx(void) const override      { return 0;  }
+    uint get_input_channel_idx(void) const override              { return 0;  }
     uint get_color_depth(void) const override                    { return 0;  }
     bool are_frames_being_dropped(void) const override           { return false; }
     bool is_capture_active(void) const override                  { return false; }
     bool should_current_frame_be_skipped(void) const override    { return false; }
     bool is_signal_invalid(void) const override                  { return false; }
     bool no_signal(void) const override                          { return false; }
-    capturePixelFormat_e get_pixel_format(void) const override   { return capturePixelFormat_e::rgb_888; }
+    capture_pixel_format_e get_pixel_format(void) const override { return capture_pixel_format_e::rgb_888; }
     const std::vector<video_signal_parameters_s>& get_mode_params(void) const override { return {}; }
     capture_event_e pop_capture_event_queue(void) override;
     const captured_frame_s& reserve_frame_buffer(void) override;

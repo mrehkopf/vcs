@@ -54,25 +54,25 @@ struct capture_api_rgbeasy_s : public capture_api_s
     resolution_s get_maximum_resolution(void) const override;
     capture_signal_s get_signal_info(void) const override;
     uint get_missed_frames_count(void) const override;
-    uint get_current_input_channel_idx(void) const override;
+    uint get_input_channel_idx(void) const override;
     uint get_color_depth(void) const override;
     bool are_frames_being_dropped(void) const override;
     bool is_capture_active(void) const override;
     bool should_current_frame_be_skipped(void) const override;
     bool is_signal_invalid(void) const override;
     bool no_signal(void) const override;
-    capturePixelFormat_e get_pixel_format(void) const override;
+    capture_pixel_format_e get_pixel_format(void) const override;
     const std::vector<video_signal_parameters_s>& get_mode_params(void) const override;
     const captured_frame_s& reserve_frame_buffer(void) override;
     void unreserve_frame_buffer(void) override;
     capture_event_e pop_capture_event_queue(void) override;
-    void set_mode_params(const std::vector<video_signal_parameters_s> &modeParams) override;
-    virtual void assign_video_signal_parameters(const video_signal_parameters_s p) override;
+    void assign_video_signal_parameter_sets(const std::vector<video_signal_parameters_s> &modeParams) override;
+    virtual void set_video_signal_parameters(const video_signal_parameters_s p) override;
     bool adjust_horizontal_offset(const int delta) override;
     bool adjust_vertical_offset(const int delta) override;
-    bool set_input_channel(const unsigned channel) override;
-    bool set_input_color_depth(const unsigned bpp) override;
-    bool change_resolution(const resolution_s &r) override;
+    bool set_input_channel(const unsigned idx) override;
+    bool set_color_depth(const unsigned bpp) override;
+    bool set_resolution(const resolution_s &r) override;
     void apply_new_capture_resolution(void) override;
     void reset_missed_frames_count(void) override;
 
@@ -97,7 +97,7 @@ private:
     bool assign_video_signal_params_for_resolution(const resolution_s r);
 
     // Converts VCS's pixel format into the RGBEasy pixel format.
-    PIXELFORMAT pixel_format_to_rgbeasy_pixel_format(capturePixelFormat_e fmt);
+    PIXELFORMAT pixel_format_to_rgbeasy_pixel_format(capture_pixel_format_e fmt);
 
     // A mutex to direct access to data between the main thead and the RGBEasy
     // callback thread. For instance, the RGBEasy thread will lock this while
@@ -112,7 +112,7 @@ private:
     std::vector<video_signal_parameters_s> knownVideoModes;
 
     // The pixel format in which the capture device sends captured frames.
-    capturePixelFormat_e capturePixelFormat = capturePixelFormat_e::rgb_888;
+    capture_pixel_format_e capturePixelFormat = capture_pixel_format_e::rgb_888;
 
     // Set to 1 if we're currently capturing.
     bool captureIsActive = false;

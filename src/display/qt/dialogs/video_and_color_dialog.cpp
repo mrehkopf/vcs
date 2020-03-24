@@ -356,7 +356,7 @@ void VideoAndColorDialog::broadcast_settings(void)
     p.phase = ui->spinBox_videoPhase->value();
     p.verticalPosition = ui->spinBox_videoVerPos->value();
 
-    kc_capture_api().assign_video_signal_parameters(p);
+    kc_capture_api().set_video_signal_parameters(p);
 
     flag_unsaved_changes();
 

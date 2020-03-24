@@ -415,11 +415,11 @@ void s_convert_frame_to_bgra(const captured_frame_s &frame)
                  "Was asked to convert a frame's color depth, but the color conversion buffer "
                  "was null.");
 
-        if (kc_capture_api().get_pixel_format() == capturePixelFormat_e::rgb_565)
+        if (kc_capture_api().get_pixel_format() == capture_pixel_format_e::rgb_565)
         {
             conversionType = CV_BGR5652BGRA;
         }
-        else if (kc_capture_api().get_pixel_format() == capturePixelFormat_e::rgb_555)
+        else if (kc_capture_api().get_pixel_format() == capture_pixel_format_e::rgb_555)
         {
             conversionType = CV_BGR5552BGRA;
         }
@@ -488,6 +488,12 @@ void ks_scale_frame(const captured_frame_s &frame)
         else if (pixelData == nullptr)
         {
             NBENE(("Was asked to scale a null frame. Ignoring it."));
+            goto done;
+        }
+        else if (frame.r.bpp != kc_capture_api().get_color_depth())
+        {
+            NBENE(("Was asked to scale a frame whose bit depth (%u bits) differed from the expected (%u bits). Ignoring it.",
+                   frame.r.bpp, kc_capture_api().get_color_depth()));
             goto done;
         }
         else if (frame.r.bpp > MAX_OUTPUT_BPP)

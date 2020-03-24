@@ -153,7 +153,7 @@ bool kdisk_load_video_signal_parameters(const std::string &sourceFilename)
     std::sort(videoModeParams.begin(), videoModeParams.end(), [](const video_signal_parameters_s &a, const video_signal_parameters_s &b)
                                           { return (a.r.w * a.r.h) < (b.r.w * b.r.h); });
 
-    kpropagate_loaded_mode_params_from_disk(videoModeParams, sourceFilename);
+    kpropagate_loaded_video_signal_parameters_from_disk(videoModeParams, sourceFilename);
 
     return true;
 

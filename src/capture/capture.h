@@ -20,7 +20,7 @@ capture_api_s& kc_capture_api(void);
 void kc_initialize_capture(void);
 void kc_release_capture(void);
 
-enum class capturePixelFormat_e
+enum class capture_pixel_format_e
 {
     rgb_555,
     rgb_565,

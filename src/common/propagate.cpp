@@ -78,25 +78,25 @@ void kpropagate_news_of_recording_ended(void)
 
 // Call to let the system know that the given mode parameters have been loaded
 // from the given file.
-void kpropagate_loaded_mode_params_from_disk(const std::vector<video_signal_parameters_s> &modeParams,
-                                             const std::string &sourceFilename)
+void kpropagate_loaded_video_signal_parameters_from_disk(const std::vector<video_signal_parameters_s> &p,
+                                                         const std::string &sourceFilename)
 {
-    kc_capture_api().set_mode_params(modeParams);
+    kc_capture_api().assign_video_signal_parameter_sets(p);
 
     // In case the mode params changed for the current mode, re-initialize it.
     kpropagate_news_of_new_capture_video_mode();
 
     kd_set_video_settings_filename(sourceFilename);
 
-    INFO(("Loaded %u set(s) of mode params from disk.", modeParams.size()));
+    INFO(("Loaded %u set(s) of mode params from disk.", p.size()));
 
     return;
 }
 
-void kpropagate_saved_video_signal_parameters_to_disk(const std::vector<video_signal_parameters_s> &modeParams,
+void kpropagate_saved_video_signal_parameters_to_disk(const std::vector<video_signal_parameters_s> &p,
                                                       const std::string &targetFilename)
 {
-    INFO(("Saved %u set(s) of mode params to disk.", modeParams.size()));
+    INFO(("Saved %u set(s) of mode params to disk.", p.size()));
 
     kd_set_video_settings_filename(targetFilename);
 
@@ -246,7 +246,7 @@ void kpropagate_forced_capture_resolution(const resolution_s &r)
         goto done;
     }
 
-    if (!kc_capture_api().change_resolution(r))
+    if (!kc_capture_api().set_resolution(r))
     {
         NBENE(("Failed to set the new input resolution (%u x %u).", r.w, r.h));
         goto done;

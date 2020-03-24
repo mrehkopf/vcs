@@ -244,13 +244,13 @@ bool capture_api_rgbeasy_s::release_hardware(void)
     return true;
 }
 
-PIXELFORMAT capture_api_rgbeasy_s::pixel_format_to_rgbeasy_pixel_format(capturePixelFormat_e fmt)
+PIXELFORMAT capture_api_rgbeasy_s::pixel_format_to_rgbeasy_pixel_format(capture_pixel_format_e fmt)
 {
     switch (fmt)
     {
-        case capturePixelFormat_e::rgb_555: return RGB_PIXELFORMAT_555;
-        case capturePixelFormat_e::rgb_565: return RGB_PIXELFORMAT_565;
-        case capturePixelFormat_e::rgb_888: return RGB_PIXELFORMAT_888;
+        case capture_pixel_format_e::rgb_555: return RGB_PIXELFORMAT_555;
+        case capture_pixel_format_e::rgb_565: return RGB_PIXELFORMAT_565;
+        case capture_pixel_format_e::rgb_888: return RGB_PIXELFORMAT_888;
         default: k_assert(0, "Unknown pixel format.");
     }
 }
@@ -728,7 +728,7 @@ resolution_s capture_api_rgbeasy_s::get_resolution(void) const
         k_assert(0, "The capture hardware failed to report its input resolution.");
     }
 
-    r.bpp = (unsigned)this->capturePixelFormat;
+    r.bpp = this->get_color_depth();
 
     return r;
 }
@@ -842,7 +842,7 @@ capture_signal_s capture_api_rgbeasy_s::get_signal_info(void) const
     return s;
 }
 
-void capture_api_rgbeasy_s::set_mode_params(const std::vector<video_signal_parameters_s> &modeParams)
+void capture_api_rgbeasy_s::assign_video_signal_parameter_sets(const std::vector<video_signal_parameters_s> &modeParams)
 {
     this->knownVideoModes = modeParams;
 
@@ -876,7 +876,7 @@ bool capture_api_rgbeasy_s::assign_video_signal_params_for_resolution(const reso
     return true;
 }
 
-void capture_api_rgbeasy_s::assign_video_signal_parameters(const video_signal_parameters_s p)
+void capture_api_rgbeasy_s::set_video_signal_parameters(const video_signal_parameters_s p)
 {
     if (kc_capture_api().no_signal())
     {
@@ -963,7 +963,7 @@ bool capture_api_rgbeasy_s::adjust_vertical_offset(const int delta)
     return true;
 }
 
-bool capture_api_rgbeasy_s::set_input_channel(const unsigned channel)
+bool capture_api_rgbeasy_s::set_input_channel(const unsigned idx)
 {
     const int numInputChannels = this->get_device_max_input_count();
 
@@ -974,22 +974,22 @@ bool capture_api_rgbeasy_s::set_input_channel(const unsigned channel)
         goto fail;
     }
 
-    if (channel >= (unsigned)numInputChannels)
+    if (idx >= (unsigned)numInputChannels)
     {
         INFO(("Was asked to set an input channel that is out of bounds. Ignoring the request."));
 
         goto fail;
     }
 
-    if (apicall_succeeded(RGBSetInput(this->captureHandle, channel)))
+    if (apicall_succeeded(RGBSetInput(this->captureHandle, idx)))
     {
-        INFO(("Setting capture input channel to %u.", (channel + 1)));
+        INFO(("Setting capture input channel to %u.", (idx + 1)));
 
-        INPUT_CHANNEL_IDX = channel;
+        INPUT_CHANNEL_IDX = idx;
     }
     else
     {
-        NBENE(("Failed to set capture input channel to %u.", (channel + 1)));
+        NBENE(("Failed to set capture input channel to %u.", (idx + 1)));
 
         goto fail;
     }
@@ -1000,15 +1000,15 @@ bool capture_api_rgbeasy_s::set_input_channel(const unsigned channel)
     return false;
 }
 
-bool capture_api_rgbeasy_s::set_input_color_depth(const unsigned bpp)
+bool capture_api_rgbeasy_s::set_color_depth(const unsigned bpp)
 {
-    const capturePixelFormat_e previousFormat = this->capturePixelFormat;
+    const capture_pixel_format_e previousFormat = this->capturePixelFormat;
 
     switch (bpp)
     {
-        case 24: this->capturePixelFormat = capturePixelFormat_e::rgb_888; break;
-        case 16: this->capturePixelFormat = capturePixelFormat_e::rgb_565; break;
-        case 15: this->capturePixelFormat = capturePixelFormat_e::rgb_555; break;
+        case 24: this->capturePixelFormat = capture_pixel_format_e::rgb_888; break;
+        case 16: this->capturePixelFormat = capture_pixel_format_e::rgb_565; break;
+        case 15: this->capturePixelFormat = capture_pixel_format_e::rgb_555; break;
         default: k_assert(0, "Was asked to set an unknown pixel format."); break;
     }
 
@@ -1038,7 +1038,7 @@ void capture_api_rgbeasy_s::apply_new_capture_resolution(void)
     if ((resolution.w != aliasedRes.w) ||
         (resolution.h != aliasedRes.h))
     {
-        if (!kc_capture_api().change_resolution(aliasedRes))
+        if (!kc_capture_api().set_resolution(aliasedRes))
         {
             NBENE(("Failed to apply an alias."));
         }
@@ -1059,7 +1059,7 @@ void capture_api_rgbeasy_s::reset_missed_frames_count(void)
     return;
 }
 
-bool capture_api_rgbeasy_s::change_resolution(const resolution_s &r)
+bool capture_api_rgbeasy_s::set_resolution(const resolution_s &r)
 {
     if (!this->captureIsActive)
     {
@@ -1118,7 +1118,7 @@ uint capture_api_rgbeasy_s::get_missed_frames_count(void) const
     return NUM_NEW_FRAME_EVENTS_SKIPPED;
 }
 
-uint capture_api_rgbeasy_s::get_current_input_channel_idx(void) const
+uint capture_api_rgbeasy_s::get_input_channel_idx(void) const
 {
     return INPUT_CHANNEL_IDX;
 }
@@ -1127,9 +1127,9 @@ uint capture_api_rgbeasy_s::get_color_depth(void) const
 {
     switch (this->capturePixelFormat)
     {
-        case capturePixelFormat_e::rgb_888: return 24;
-        case capturePixelFormat_e::rgb_565: return 16;
-        case capturePixelFormat_e::rgb_555: return 15;
+        case capture_pixel_format_e::rgb_888: return 32;
+        case capture_pixel_format_e::rgb_565: return 16;
+        case capture_pixel_format_e::rgb_555: return 16;
         default: k_assert(0, "Unknown capture pixel format."); return 0;
     }
 }
@@ -1159,7 +1159,7 @@ bool capture_api_rgbeasy_s::no_signal(void) const
     return !RECEIVING_A_SIGNAL;
 }
 
-capturePixelFormat_e capture_api_rgbeasy_s::get_pixel_format(void) const
+capture_pixel_format_e capture_api_rgbeasy_s::get_pixel_format(void) const
 {
     return this->capturePixelFormat;
 }

@@ -165,9 +165,9 @@ MainWindow::MainWindow(QWidget *parent) :
                 c15->setCheckable(true);
                 colorDepth->addAction(c15);
 
-                connect(c24, &QAction::triggered, this, [=]{kc_capture_api().set_input_color_depth(24);});
-                connect(c16, &QAction::triggered, this, [=]{kc_capture_api().set_input_color_depth(16);});
-                connect(c15, &QAction::triggered, this, [=]{kc_capture_api().set_input_color_depth(15);});
+                connect(c24, &QAction::triggered, this, [=]{kc_capture_api().set_color_depth(24);});
+                connect(c16, &QAction::triggered, this, [=]{kc_capture_api().set_color_depth(16);});
+                connect(c15, &QAction::triggered, this, [=]{kc_capture_api().set_color_depth(15);});
             }
 
             menu->addMenu(channel);
