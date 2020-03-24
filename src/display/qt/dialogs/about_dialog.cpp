@@ -49,6 +49,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
 
         ui->tableWidget_captureDeviceFeatures->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
         ui->tableWidget_captureDeviceFeatures->setSelectionBehavior(QAbstractItemView::SelectRows);
+        ui->tableWidget_captureDeviceFeatures->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 
         const resolution_s &minres = kc_capture_api().get_minimum_resolution();
         const resolution_s &maxres = kc_capture_api().get_maximum_resolution();

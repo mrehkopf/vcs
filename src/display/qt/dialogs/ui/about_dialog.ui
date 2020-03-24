@@ -29,9 +29,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-2</y>
-        <width>567</width>
-        <height>355</height>
+        <y>0</y>
+        <width>581</width>
+        <height>333</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -92,7 +92,7 @@
           <item>
            <widget class="QLabel" name="label_17">
             <property name="text">
-             <string>VCS is a third-party capture utility for certain Datapath capture cards; not associated with nor endorsed by Datapath. Copyright (c) 2017-2020 Tarpeeksi Hyvae Soft.</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;VCS is a third-party capture utility for certain Datapath capture cards. VCS is not associated with nor endorsed by Datapath.&lt;/p&gt;&lt;p&gt;Copyright (c) 2017-2020 &lt;a href=&quot;https://www.tarpeeksihyvaesoft.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Tarpeeksi Hyvae Soft&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -128,15 +128,36 @@
           </property>
           <item>
            <widget class="QTableWidget" name="tableWidget_captureDeviceFeatures">
+            <property name="sizeAdjustPolicy">
+             <enum>QAbstractScrollArea::AdjustToContents</enum>
+            </property>
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
             </property>
             <property name="verticalScrollMode">
              <enum>QAbstractItemView::ScrollPerPixel</enum>
             </property>
+            <property name="gridStyle">
+             <enum>Qt::NoPen</enum>
+            </property>
             <property name="sortingEnabled">
              <bool>true</bool>
             </property>
+            <property name="cornerButtonEnabled">
+             <bool>false</bool>
+            </property>
+            <attribute name="horizontalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="horizontalHeaderHighlightSections">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="verticalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
             <attribute name="verticalHeaderDefaultSectionSize">
              <number>28</number>
             </attribute>
@@ -145,7 +166,7 @@
             </attribute>
             <column>
              <property name="text">
-              <string>Property</string>
+              <string>Device feature</string>
              </property>
             </column>
             <column>
