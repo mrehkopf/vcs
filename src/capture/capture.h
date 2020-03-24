@@ -22,9 +22,9 @@ void kc_release_capture(void);
 
 enum class capture_pixel_format_e
 {
-    RGB_555,
-    RGB_565,
-    RGB_888,
+    rgb_555,
+    rgb_565,
+    rgb_888,
 };
 
 enum class capture_event_e
@@ -58,7 +58,6 @@ struct capture_signal_s
     int refreshRate;
     bool isInterlaced;
     bool isDigital;
-    bool wokeUp;
 };
 
 struct capture_video_settings_s

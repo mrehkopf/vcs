@@ -25,10 +25,9 @@ void kpropagate_news_of_new_capture_video_mode(void)
 {
     const capture_signal_s s = kc_capture_api().get_signal_info();
 
-    if (s.wokeUp)
-    {
-        kpropagate_news_of_gained_capture_signal();
-    }
+    /// TODO: We only need to do this if this new video mode follows a period of
+    /// no video mode, i.e. no signal.
+    kpropagate_news_of_gained_capture_signal();
 
     kc_capture_api().apply_new_capture_resolution();
 
@@ -198,14 +197,16 @@ void kpropagate_news_of_gained_capture_signal(void)
 // The capture hardware has sent us a new captured frame.
 void kpropagate_news_of_new_captured_frame(void)
 {
-    ks_scale_frame(kc_capture_api().get_frame_buffer());
+    const auto newFrame = kc_capture_api().reserve_frame_buffer();
+
+    ks_scale_frame(newFrame);
 
     if (krecord_is_recording())
     {
         krecord_record_new_frame();
     }
 
-    kc_capture_api().report_frame_buffer_processing_finished();
+    kc_capture_api().unreserve_frame_buffer();
 
     kd_redraw_output_window();
 

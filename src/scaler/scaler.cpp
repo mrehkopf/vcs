@@ -415,11 +415,11 @@ void s_convert_frame_to_bgra(const captured_frame_s &frame)
                  "Was asked to convert a frame's color depth, but the color conversion buffer "
                  "was null.");
 
-        if (kc_capture_api().get_pixel_format() == capture_pixel_format_e::RGB_565)
+        if (kc_capture_api().get_pixel_format() == capture_pixel_format_e::rgb_565)
         {
             conversionType = CV_BGR5652BGRA;
         }
-        else if (kc_capture_api().get_pixel_format() == capture_pixel_format_e::RGB_555)
+        else if (kc_capture_api().get_pixel_format() == capture_pixel_format_e::rgb_555)
         {
             conversionType = CV_BGR5552BGRA;
         }

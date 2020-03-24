@@ -8,25 +8,28 @@
 #include "capture/alias.h"
 
 // A mutex to direct access to data between the main thead and the RGBEasy
-// thread. For instance, the RGBEasy thread will lock this while it's
-// uploading frame data, and the main thread will lock this while it's
-// process the frame data.
-std::mutex RGBEASY_CALLBACK_MUTEX;
+// callback thread. For instance, the RGBEasy thread will lock this while
+// it's uploading frame data, and the main thread will lock this while it's
+// processing said data.
+static std::mutex RGBEASY_CALLBACK_MUTEX;
 
-// Frames sent by the capture hardware will be stored here for processing
-// in VCS's thread.
-captured_frame_s FRAME_BUFFER;
+// Frames sent by the capture hardware will be stored here for processing.
+static captured_frame_s FRAME_BUFFER;
 
-// Set to true upon first receiving a signal after 'no signal'.
-static bool SIGNAL_WOKE_UP = false;
+// The corresponding flag will be set to true when the RGBEasy callback
+// thread notifies us of such an event; and reset back to false when we've
+// handled that event.
+static bool RGBEASY_CAPTURE_EVENT_FLAGS[static_cast<int>(capture_event_e::num_enumerators)] = {false};
 
-// If set to true, the scaler should skip the next frame we send.
+// If > 0, the next n captured frames should be ignored by the rest of VCS.
+// This can be useful e.g. to avoid displaying the one or two garbles frames
+// that may occur when changing video modes.
 static unsigned SKIP_NEXT_NUM_FRAMES = false;
 
 static std::vector<video_mode_params_s> KNOWN_MODES;
 
-// The color depth/format in which the capture hardware captures the frames.
-static capture_pixel_format_e CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::RGB_888;
+// The pixel format in which the capture device sends captured frames.
+static capture_pixel_format_e CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_888;
 
 // The color depth in which the capture hardware is expected to be sending the
 // frames. This depends on the current pixel format, such that e.g. formats
@@ -46,21 +49,8 @@ static std::atomic<unsigned int> CNT_FRAMES_SKIPPED(0);
 // Whether the capture hardware is receiving a signal from its input.
 static std::atomic<bool> RECEIVING_A_SIGNAL(true);
 
-// Will be set to true by the capture hardware callback if the card experiences an
-// unrecoverable error.
-static bool UNRECOVERABLE_CAPTURE_ERROR = false;
-
 // Set to true if the capture signal is invalid.
 static std::atomic<bool> SIGNAL_IS_INVALID(false);
-
-// Will be set to true when the input signal is lost, and back to false once the
-// events processor has acknowledged the loss of signal.
-static bool SIGNAL_WAS_LOST = false;
-
-// Set to true if the capture hardware reports the current signal as invalid. Will be
-// automatically set back to false once the events processor has acknowledged the
-// invalidity of the signal.
-static bool SIGNAL_BECAME_INVALID = false;
 
 // Set to true if the capture hardware's input mode changes.
 static bool RECEIVED_NEW_VIDEO_MODE = false;
@@ -77,12 +67,31 @@ static HRGBDLL RGBAPI_HANDLE = 0;
 // Set to 1 if we're currently capturing.
 static bool CAPTURE_IS_ACTIVE = false;
 
+// Marks the given capture event as having occurred.
+static void push_capture_event(capture_event_e event)
+{
+    RGBEASY_CAPTURE_EVENT_FLAGS[static_cast<int>(event)] = true;
+
+    return;
+}
+
+// Removes the given capture event from the 'queue', and returns its value.
+static bool pop_capture_event(capture_event_e event)
+{
+    const bool eventOccurred = RGBEASY_CAPTURE_EVENT_FLAGS[static_cast<int>(event)];
+    RGBEASY_CAPTURE_EVENT_FLAGS[static_cast<int>(event)] = false;
+
+    return eventOccurred;
+}
+
 // Callback functions for the RGBEasy API, through which the API communicates
-// with VCS.
-#ifdef _WIN32
+// with VCS. RGBEasy isn't supported on platforms other than Windows, hence the
+// #if - on other platforms, we load in empty placeholder functions (elsewhere
+// in the code).
+#if _WIN32
     // Called by the capture hardware when a new frame has been captured. The
     // captured RGBA data is in frameData.
-    void RGBCBKAPI rgbeasy_callback_frame_captured(HWND, HRGB, LPBITMAPINFOHEADER frameInfo, void *frameData, ULONG_PTR)
+    void RGBCBKAPI rgbeasy_callback__frame_captured(HWND, HRGB, LPBITMAPINFOHEADER frameInfo, void *frameData, ULONG_PTR)
     {
         if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
         {
@@ -130,13 +139,15 @@ static bool CAPTURE_IS_ACTIVE = false;
         memcpy(FRAME_BUFFER.pixels.ptr(), (u8*)frameData,
                FRAME_BUFFER.pixels.up_to(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8)));
 
+        push_capture_event(capture_event_e::new_frame);
+
         done:
         CNT_FRAMES_CAPTURED++;
         return;
     }
 
     // Called by the capture hardware when the input video mode changes.
-    void RGBCBKAPI rgbeasy_callback_video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO, ULONG_PTR)
+    void RGBCBKAPI rgbeasy_callback__video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO, ULONG_PTR)
     {
         std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
 
@@ -146,15 +157,14 @@ static bool CAPTURE_IS_ACTIVE = false;
             goto done;
         }
 
-        SIGNAL_WOKE_UP = !RECEIVING_A_SIGNAL;
-        RECEIVED_NEW_VIDEO_MODE = true;
+        push_capture_event(capture_event_e::new_video_mode);
 
         done:
         return;
     }
 
     // Called by the capture hardware when it's given a signal it can't handle.
-    void RGBCBKAPI rgbeasy_callback_invalid_signal(HWND, HRGB, unsigned long horClock, unsigned long verClock, ULONG_PTR captureHandle)
+    void RGBCBKAPI rgbeasy_callback__invalid_signal(HWND, HRGB, unsigned long horClock, unsigned long verClock, ULONG_PTR captureHandle)
     {
         std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
 
@@ -167,30 +177,30 @@ static bool CAPTURE_IS_ACTIVE = false;
         // Let the card apply its own no signal handler as well, just in case.
         RGBInvalidSignal(captureHandle, horClock, verClock);
 
-        SIGNAL_IS_INVALID = true;
+        push_capture_event(capture_event_e::invalid_signal);
 
     done:
         return;
     }
 
     // Called by the capture hardware when no input signal is present.
-    void RGBCBKAPI rgbeasy_callback_no_signal(HWND, HRGB, ULONG_PTR captureHandle)
+    void RGBCBKAPI rgbeasy_callback__no_signal(HWND, HRGB, ULONG_PTR captureHandle)
     {
         std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
 
         // Let the card apply its own 'no signal' handler as well, just in case.
         RGBNoSignal(captureHandle);
 
-        SIGNAL_WAS_LOST = true;
+        push_capture_event(capture_event_e::no_signal);
 
         return;
     }
 
-    void RGBCBKAPI rgbeasy_callback_error(HWND, HRGB, unsigned long, ULONG_PTR, unsigned long*)
+    void RGBCBKAPI rgbeasy_callback__error(HWND, HRGB, unsigned long, ULONG_PTR, unsigned long*)
     {
         std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
 
-        UNRECOVERABLE_CAPTURE_ERROR = true;
+        push_capture_event(capture_event_e::unrecoverable_error);
 
         return;
     }
@@ -260,9 +270,9 @@ PIXELFORMAT capture_api_rgbeasy_s::pixel_format_to_rgbeasy_pixel_format(capture_
 {
     switch (fmt)
     {
-        case capture_pixel_format_e::RGB_555: return RGB_PIXELFORMAT_555;
-        case capture_pixel_format_e::RGB_565: return RGB_PIXELFORMAT_565;
-        case capture_pixel_format_e::RGB_888: return RGB_PIXELFORMAT_888;
+        case capture_pixel_format_e::rgb_555: return RGB_PIXELFORMAT_555;
+        case capture_pixel_format_e::rgb_565: return RGB_PIXELFORMAT_565;
+        case capture_pixel_format_e::rgb_888: return RGB_PIXELFORMAT_888;
         default: k_assert(0, "Unknown pixel format.");
     }
 }
@@ -277,16 +287,16 @@ bool capture_api_rgbeasy_s::initialize_hardware(void)
     }
     else RGBEASY_IS_LOADED = true;
 
-    if (!apicall_succeeded(RGBOpenInput(INPUT_CHANNEL_IDX, &CAPTURE_HANDLE)) ||
-        !apicall_succeeded(RGBSetFrameDropping(CAPTURE_HANDLE, FRAME_SKIP)) ||
-        !apicall_succeeded(RGBSetDMADirect(CAPTURE_HANDLE, FALSE)) ||
-        !apicall_succeeded(RGBSetPixelFormat(CAPTURE_HANDLE, pixel_format_to_rgbeasy_pixel_format(CAPTURE_PIXEL_FORMAT))) ||
-        !apicall_succeeded(RGBUseOutputBuffers(CAPTURE_HANDLE, FALSE)) ||
-        !apicall_succeeded(RGBSetFrameCapturedFn(CAPTURE_HANDLE, rgbeasy_callback_frame_captured, 0)) ||
-        !apicall_succeeded(RGBSetModeChangedFn(CAPTURE_HANDLE, rgbeasy_callback_video_mode_changed, 0)) ||
-        !apicall_succeeded(RGBSetInvalidSignalFn(CAPTURE_HANDLE, rgbeasy_callback_invalid_signal, (ULONG_PTR)&CAPTURE_HANDLE)) ||
-        !apicall_succeeded(RGBSetErrorFn(CAPTURE_HANDLE, rgbeasy_callback_error, (ULONG_PTR)&CAPTURE_HANDLE)) ||
-        !apicall_succeeded(RGBSetNoSignalFn(CAPTURE_HANDLE, rgbeasy_callback_no_signal, (ULONG_PTR)&CAPTURE_HANDLE)))
+    if (!apicall_succeeded(RGBOpenInput(INPUT_CHANNEL_IDX,      &CAPTURE_HANDLE)) ||
+        !apicall_succeeded(RGBSetFrameDropping(CAPTURE_HANDLE,   FRAME_SKIP)) ||
+        !apicall_succeeded(RGBSetDMADirect(CAPTURE_HANDLE,       FALSE)) ||
+        !apicall_succeeded(RGBSetPixelFormat(CAPTURE_HANDLE,     pixel_format_to_rgbeasy_pixel_format(CAPTURE_PIXEL_FORMAT))) ||
+        !apicall_succeeded(RGBUseOutputBuffers(CAPTURE_HANDLE,   FALSE)) ||
+        !apicall_succeeded(RGBSetFrameCapturedFn(CAPTURE_HANDLE, rgbeasy_callback__frame_captured, 0)) ||
+        !apicall_succeeded(RGBSetModeChangedFn(CAPTURE_HANDLE,   rgbeasy_callback__video_mode_changed, 0)) ||
+        !apicall_succeeded(RGBSetInvalidSignalFn(CAPTURE_HANDLE, rgbeasy_callback__invalid_signal, (ULONG_PTR)&CAPTURE_HANDLE)) ||
+        !apicall_succeeded(RGBSetErrorFn(CAPTURE_HANDLE,         rgbeasy_callback__error, (ULONG_PTR)&CAPTURE_HANDLE)) ||
+        !apicall_succeeded(RGBSetNoSignalFn(CAPTURE_HANDLE,      rgbeasy_callback__no_signal, (ULONG_PTR)&CAPTURE_HANDLE)))
     {
         NBENE(("Failed to initialize the capture hardware."));
         goto fail;
@@ -796,63 +806,52 @@ resolution_s capture_api_rgbeasy_s::get_maximum_resolution(void) const
     return r;
 }
 
-const captured_frame_s& capture_api_rgbeasy_s::get_frame_buffer(void)
+const captured_frame_s& capture_api_rgbeasy_s::reserve_frame_buffer(void)
 {
     RGBEASY_CALLBACK_MUTEX.lock();
     
     return FRAME_BUFFER;
 }
 
-// Examine the state of the capture system and decide which has been the most recent
-// capture event.
-//
-/// FIXME: This is a bit of an ugly way to handle things. For instance, the function
-/// is a getter, but also modifies the unit's state.
-capture_event_e capture_api_rgbeasy_s::get_latest_capture_event(void)
+void capture_api_rgbeasy_s::unreserve_frame_buffer(void)
+{
+    CNT_FRAMES_PROCESSED = CNT_FRAMES_CAPTURED.load();
+
+    SKIP_NEXT_NUM_FRAMES -= bool(SKIP_NEXT_NUM_FRAMES);
+
+    FRAME_BUFFER.processed = true;
+
+    RGBEASY_CALLBACK_MUTEX.unlock();
+    
+    return;
+}
+
+capture_event_e capture_api_rgbeasy_s::pop_capture_event_queue(void)
 {
     std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
 
-    if (UNRECOVERABLE_CAPTURE_ERROR)
+    if (pop_capture_event(capture_event_e::unrecoverable_error))
     {
         return capture_event_e::unrecoverable_error;
     }
-    else if (RECEIVED_NEW_VIDEO_MODE)
+    else if (pop_capture_event(capture_event_e::new_video_mode))
     {
-        RECEIVING_A_SIGNAL = true;
-        SIGNAL_IS_INVALID = false;
-
         return capture_event_e::new_video_mode;
     }
-    else if (SIGNAL_WAS_LOST)
+    else if (pop_capture_event(capture_event_e::no_signal))
     {
-        RECEIVING_A_SIGNAL = false;
-        SIGNAL_WAS_LOST = false;
-
         return capture_event_e::no_signal;
     }
-    else if (!RECEIVING_A_SIGNAL)
+    else if (pop_capture_event(capture_event_e::invalid_signal))
     {
-        return capture_event_e::sleep;
-    }
-    else if (SIGNAL_BECAME_INVALID)
-    {
-        RECEIVING_A_SIGNAL = false;
-        SIGNAL_IS_INVALID = true;
-        SIGNAL_BECAME_INVALID = false;
-
         return capture_event_e::invalid_signal;
     }
-    else if (SIGNAL_IS_INVALID)
-    {
-        return capture_event_e::sleep;
-    }
-    else if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
+    else if (pop_capture_event(capture_event_e::new_frame))
     {
         return capture_event_e::new_frame;
     }
 
-    // If there were no events that we should notify the caller about.
-    return capture_event_e::none;
+    return capture_event_e::sleep;
 }
 
 capture_signal_s capture_api_rgbeasy_s::get_signal_info(void) const
@@ -867,8 +866,6 @@ capture_signal_s capture_api_rgbeasy_s::get_signal_info(void) const
 
     RGBMODEINFO mi = {0};
     mi.Size = sizeof(mi);
-
-    s.wokeUp = SIGNAL_WOKE_UP;
 
     if (apicall_succeeded(RGBGetModeInfo(CAPTURE_HANDLE, &mi)))
     {
@@ -1040,19 +1037,6 @@ bool capture_api_rgbeasy_s::adjust_video_vertical_offset(const int delta)
     return true;
 }
 
-void capture_api_rgbeasy_s::report_frame_buffer_processing_finished(void)
-{
-    CNT_FRAMES_PROCESSED = CNT_FRAMES_CAPTURED.load();
-
-    SKIP_NEXT_NUM_FRAMES -= bool(SKIP_NEXT_NUM_FRAMES);
-
-    FRAME_BUFFER.processed = true;
-
-    RGBEASY_CALLBACK_MUTEX.unlock();
-
-    return;
-}
-
 bool capture_api_rgbeasy_s::set_input_channel(const unsigned channel)
 {
     const int numInputChannels = this->get_maximum_input_count();
@@ -1097,9 +1081,9 @@ bool capture_api_rgbeasy_s::set_input_color_depth(const unsigned bpp)
 
     switch (bpp)
     {
-        case 24: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::RGB_888; CAPTURE_OUTPUT_COLOR_DEPTH = 32; break;
-        case 16: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::RGB_565; CAPTURE_OUTPUT_COLOR_DEPTH = 16; break;
-        case 15: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::RGB_555; CAPTURE_OUTPUT_COLOR_DEPTH = 16; break;
+        case 24: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_888; CAPTURE_OUTPUT_COLOR_DEPTH = 32; break;
+        case 16: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_565; CAPTURE_OUTPUT_COLOR_DEPTH = 16; break;
+        case 15: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_555; CAPTURE_OUTPUT_COLOR_DEPTH = 16; break;
         default: k_assert(0, "Was asked to set an unknown pixel format."); break;
     }
 
@@ -1247,9 +1231,9 @@ uint capture_api_rgbeasy_s::get_input_color_depth(void)
 {
     switch (CAPTURE_PIXEL_FORMAT)
     {
-        case capture_pixel_format_e::RGB_888: return 24;
-        case capture_pixel_format_e::RGB_565: return 16;
-        case capture_pixel_format_e::RGB_555: return 15;
+        case capture_pixel_format_e::rgb_888: return 24;
+        case capture_pixel_format_e::rgb_565: return 16;
+        case capture_pixel_format_e::rgb_555: return 15;
         default: k_assert(0, "Unknown capture pixel format."); return 0;
     }
 }

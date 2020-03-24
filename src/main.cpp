@@ -64,7 +64,7 @@ static bool initialize_all(void)
 
 static capture_event_e process_next_capture_event(void)
 {
-    const capture_event_e e = kc_capture_api().get_latest_capture_event();
+    const capture_event_e e = kc_capture_api().pop_capture_event_queue();
 
     switch (e)
     {
@@ -167,7 +167,6 @@ int main(int argc, char *argv[])
     else
     {
         load_user_data();
-        kpropagate_news_of_new_capture_video_mode();
     }
 
     INFO(("Entering the main loop."));

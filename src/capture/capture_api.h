@@ -52,10 +52,9 @@ struct capture_api_s
     virtual resolution_s             get_resolution(void)              const = 0;
     virtual resolution_s             get_minimum_resolution(void)      const = 0;
     virtual resolution_s             get_maximum_resolution(void)      const = 0;
-    virtual const captured_frame_s&  get_frame_buffer(void)            = 0;
-    virtual capture_event_e          get_latest_capture_event(void)    = 0;
     virtual capture_signal_s         get_signal_info(void)             const = 0;
     virtual int                      get_frame_rate(void)              const = 0;
+    virtual capture_event_e          pop_capture_event_queue(void)     = 0;
 
     // Miscellaneous getters; TODO.
     virtual uint get_num_missed_frames(void)                                         = 0;
@@ -77,13 +76,14 @@ struct capture_api_s
     virtual void set_video_settings(const capture_video_settings_s v)                { (void)v;          return;       }
     virtual bool adjust_video_horizontal_offset(const int delta)                     { (void)delta;      return false; }
     virtual bool adjust_video_vertical_offset(const int delta)                       { (void)delta;      return false; }
-    virtual void report_frame_buffer_processing_finished(void)                       {                   return;       }
     virtual bool set_input_channel(const unsigned channel)                           { (void)channel;    return false; }
     virtual bool set_input_color_depth(const unsigned bpp)                           { (void)bpp;        return false; }
     virtual bool set_frame_dropping(const unsigned drop)                             { (void)drop;       return false; }
     virtual void apply_new_capture_resolution(void)                                  {                   return;       }
     virtual void reset_missed_frames_count(void)                                     {                   return;       }
     virtual bool set_resolution(const resolution_s &r)                               { (void)r;          return false; }
+    virtual const captured_frame_s& reserve_frame_buffer(void)                       = 0;
+    virtual void unreserve_frame_buffer(void)                                        = 0;
 };
 
 #endif

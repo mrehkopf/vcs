@@ -53,8 +53,7 @@ struct capture_api_rgbeasy_s : public capture_api_s
     resolution_s             get_resolution(void)              const override;
     resolution_s             get_minimum_resolution(void)      const override;
     resolution_s             get_maximum_resolution(void)      const override;
-    const captured_frame_s&  get_frame_buffer(void)            override;
-    capture_event_e          get_latest_capture_event(void)    override;
+    capture_event_e          pop_capture_event_queue(void)     override;
     capture_signal_s         get_signal_info(void)             const override;
     int                      get_frame_rate(void)              const override;
 
@@ -77,13 +76,14 @@ struct capture_api_rgbeasy_s : public capture_api_s
     void set_video_settings(const capture_video_settings_s v) override;
     bool adjust_video_horizontal_offset(const int delta) override;
     bool adjust_video_vertical_offset(const int delta) override;
-    void report_frame_buffer_processing_finished(void) override;
     bool set_input_channel(const unsigned channel) override;
     bool set_input_color_depth(const unsigned bpp) override;
     bool set_frame_dropping(const unsigned drop) override;
     bool set_resolution(const resolution_s &r) override;
     void apply_new_capture_resolution(void) override;
     void reset_missed_frames_count(void) override;
+    const captured_frame_s& reserve_frame_buffer(void) override;
+    void unreserve_frame_buffer(void) override;
 
 private:
     // Returns true if the given RGBEasy API call return value indicates an error.
