@@ -29,6 +29,7 @@ enum class capture_pixel_format_e
 
 enum class capture_event_e
 {
+    none,
     sleep,
     no_signal,
     new_frame,

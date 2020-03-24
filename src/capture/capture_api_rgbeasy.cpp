@@ -808,7 +808,8 @@ capture_event_e capture_api_rgbeasy_s::pop_capture_event_queue(void)
         return capture_event_e::new_frame;
     }
 
-    return capture_event_e::sleep;
+    // If there were no events we should notify the caller about.
+    return (RECEIVING_A_SIGNAL? capture_event_e::none : capture_event_e::sleep);
 }
 
 signal_info_s capture_api_rgbeasy_s::get_signal_info(void) const

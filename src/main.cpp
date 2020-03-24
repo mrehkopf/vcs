@@ -99,6 +99,13 @@ static capture_event_e process_next_capture_event(void)
 
             break;
         }
+        case capture_event_e::none:
+        {
+            /// TODO. Technically we might loop until we get an event other than
+            /// none, but for now we just move on.
+
+            break;
+        }
         default:
         {
             k_assert(0, "Unhandled capture event.");
