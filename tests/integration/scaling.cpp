@@ -88,7 +88,7 @@ int ktest_integration_scaling(void)
                         f.processed = false;
                         f.r = {x, y, bpp};
 
-                        kc_VALIDATION_set_capture_pixel_format(bpp == 32? RGB_PIXELFORMAT_888 : RGB_PIXELFORMAT_565);
+                        kc_VALIDATION_set_capturePixelFormat(bpp == 32? RGB_PIXELFORMAT_888 : RGB_PIXELFORMAT_565);
                         kc_VALIDATION_set_capture_color_depth(bpp);
                         ks_scale_frame(f);
 
@@ -121,7 +121,7 @@ int ktest_integration_scaling(void)
                 ((u32*)f.pixels.ptr())[i] = p32;
             }
             kc_VALIDATION_set_capture_color_depth(32);
-            kc_VALIDATION_set_capture_pixel_format(RGB_PIXELFORMAT_888);
+            kc_VALIDATION_set_capturePixelFormat(RGB_PIXELFORMAT_888);
             ks_clear_scaler_output_buffer();
             ks_scale_frame(f);
             for (uint i = 0; i < (outres.w * outres.h); i++)
@@ -136,7 +136,7 @@ int ktest_integration_scaling(void)
                 ((u16*)f.pixels.ptr())[i] = p16_565;
             }
             kc_VALIDATION_set_capture_color_depth(16);
-            kc_VALIDATION_set_capture_pixel_format(RGB_PIXELFORMAT_565);
+            kc_VALIDATION_set_capturePixelFormat(RGB_PIXELFORMAT_565);
             ks_clear_scaler_output_buffer();
             ks_scale_frame(f);
             for (uint i = 0; i < (outres.w * outres.h); i++)
@@ -151,7 +151,7 @@ int ktest_integration_scaling(void)
                 ((u16*)f.pixels.ptr())[i] = p16_555;
             }
             kc_VALIDATION_set_capture_color_depth(16);
-            kc_VALIDATION_set_capture_pixel_format(RGB_PIXELFORMAT_555);
+            kc_VALIDATION_set_capturePixelFormat(RGB_PIXELFORMAT_555);
             ks_clear_scaler_output_buffer();
             ks_scale_frame(f);
             for (uint i = 0; i < (outres.w * outres.h); i++)

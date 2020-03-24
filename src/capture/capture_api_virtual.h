@@ -22,7 +22,7 @@ struct capture_api_virtual_s : public capture_api_s
     std::string              get_api_name(void)                const override { return "Virtual VCS Capture API"; }
     std::string              get_device_driver_version(void)   const override { return "1.0"; }
     std::string              get_device_firmware_version(void) const override { return "1.0"; }
-    int                      get_maximum_input_count(void)     const override { return 2; }
+    int                      get_device_max_input_count(void)  const override { return 2; }
     capture_color_settings_s get_default_color_settings(void)  const override { return capture_color_settings_s{}; }
     capture_color_settings_s get_minimum_color_settings(void)  const override { return capture_color_settings_s{}; }
     capture_color_settings_s get_maximum_color_settings(void)  const override { return capture_color_settings_s{}; }
@@ -35,7 +35,6 @@ struct capture_api_virtual_s : public capture_api_s
     capture_color_settings_s get_color_settings(void)          const override { return {}; }
     capture_video_settings_s get_video_settings(void)          const override { return {}; }
     capture_signal_s         get_signal_info(void)             const override { return {}; }
-    int                      get_frame_rate(void)              const override { return 0; }
     capture_event_e          pop_capture_event_queue(void)    override;
 
     // Miscellaneous getters; TODO.
@@ -47,7 +46,7 @@ struct capture_api_virtual_s : public capture_api_s
     bool get_should_current_frame_be_skipped(void)                           override { return false;          }
     bool get_is_invalid_signal(void)                                         override { return false;          }
     bool get_no_signal(void)                                                 override { return false;          }
-    capture_pixel_format_e get_pixel_format(void)                            override { return capture_pixel_format_e::rgb_888; }
+    capturePixelFormat_e get_pixel_format(void)                            override { return capturePixelFormat_e::rgb_888; }
     const std::vector<video_mode_params_s>& get_mode_params(void)            override { return {};             }
     video_mode_params_s get_mode_params_for_resolution(const resolution_s r) override { (void)r; return {};    }
 

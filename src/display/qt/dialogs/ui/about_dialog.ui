@@ -92,7 +92,7 @@
           <item>
            <widget class="QLabel" name="label_17">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;VCS is a third-party capture utility for certain Datapath capture cards. VCS is not associated with nor endorsed by Datapath.&lt;/p&gt;&lt;p&gt;Copyright (c) 2017-2020 &lt;a href=&quot;https://www.tarpeeksihyvaesoft.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Tarpeeksi Hyvae Soft&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;VCS is an open-source capture utility for Datapath's VisionRGB and VisionAV capture cards. VCS is not associated with nor endorsed by Datapath.&lt;/p&gt;&lt;p&gt;Made in Finland by &lt;a href=&quot;https://www.tarpeeksihyvaesoft.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Tarpeeksi Hyvae Soft&lt;/span&gt;&lt;/a&gt;. Uses the Qt framework (c) The Qt Company, and the OpenCV library (c) OpenCV team.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -150,7 +150,7 @@
              <bool>false</bool>
             </property>
             <attribute name="horizontalHeaderVisible">
-             <bool>false</bool>
+             <bool>true</bool>
             </attribute>
             <attribute name="horizontalHeaderHighlightSections">
              <bool>true</bool>

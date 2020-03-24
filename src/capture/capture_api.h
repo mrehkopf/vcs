@@ -19,13 +19,14 @@ struct capture_api_s
 {
     virtual ~capture_api_s();
 
-    // Sets up the API and capture device, and begins capturing.
+    // Initializes the API and the capture device, and tells the device to begin
+    // capturing.
     virtual bool initialize(void) = 0;
 
-    // Stop capturing, deallocates the API, and releases the capture device.
+    // Stops capturing, releases the capture device and deallocates the API.
     virtual bool release(void) = 0;
 
-    // Capture device/API capabilities.
+    // Query capture device/API capabilities.
     virtual bool device_supports_component_capture(void) const { return false; }
     virtual bool device_supports_composite_capture(void) const { return false; }
     virtual bool device_supports_deinterlacing(void)     const { return false; }
@@ -36,11 +37,11 @@ struct capture_api_s
     virtual bool device_supports_yuv(void)               const { return false; }
 
     // Getters.
+    virtual int                      get_device_max_input_count(void)  const = 0;
     virtual std::string              get_device_firmware_version(void) const = 0;
     virtual std::string              get_device_driver_version(void)   const = 0;
     virtual std::string              get_device_name(void)             const = 0;
     virtual std::string              get_api_name(void)                const = 0;
-    virtual int                      get_maximum_input_count(void)     const = 0;
     virtual capture_color_settings_s get_color_settings(void)          const = 0;
     virtual capture_color_settings_s get_default_color_settings(void)  const = 0;
     virtual capture_color_settings_s get_minimum_color_settings(void)  const = 0;
@@ -53,7 +54,6 @@ struct capture_api_s
     virtual resolution_s             get_minimum_resolution(void)      const = 0;
     virtual resolution_s             get_maximum_resolution(void)      const = 0;
     virtual capture_signal_s         get_signal_info(void)             const = 0;
-    virtual int                      get_frame_rate(void)              const = 0;
     virtual capture_event_e          pop_capture_event_queue(void)     = 0;
 
     // Miscellaneous getters; TODO.
@@ -65,7 +65,7 @@ struct capture_api_s
     virtual bool get_should_current_frame_be_skipped(void)                           = 0;
     virtual bool get_is_invalid_signal(void)                                         = 0;
     virtual bool get_no_signal(void)                                                 = 0;
-    virtual capture_pixel_format_e get_pixel_format(void)                            = 0;
+    virtual capturePixelFormat_e get_pixel_format(void)                            = 0;
     virtual const std::vector<video_mode_params_s>& get_mode_params(void)            = 0;
     virtual video_mode_params_s get_mode_params_for_resolution(const resolution_s r) = 0;
 
