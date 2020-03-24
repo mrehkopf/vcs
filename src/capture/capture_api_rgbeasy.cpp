@@ -41,7 +41,7 @@ static capture_pixel_format_e CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb
 static unsigned CAPTURE_OUTPUT_COLOR_DEPTH = 32;
 
 // Whether the capture hardware is receiving a signal from its input.
-static std::atomic<bool> RECEIVING_A_SIGNAL(true);
+static bool RECEIVING_A_SIGNAL = true;
 
 // If the current signal we're receiving is invalid.
 static bool IS_SIGNAL_INVALID = false;
@@ -149,6 +149,7 @@ static bool pop_capture_event(capture_event_e event)
         push_capture_event(capture_event_e::new_video_mode);
 
         IS_SIGNAL_INVALID = false;
+        RECEIVING_A_SIGNAL = true;
 
         done:
         return;
@@ -171,6 +172,7 @@ static bool pop_capture_event(capture_event_e event)
         push_capture_event(capture_event_e::invalid_signal);
 
         IS_SIGNAL_INVALID = true;
+        RECEIVING_A_SIGNAL = false;
 
     done:
         return;
@@ -186,6 +188,8 @@ static bool pop_capture_event(capture_event_e event)
 
         push_capture_event(capture_event_e::no_signal);
 
+        RECEIVING_A_SIGNAL = false;
+
         return;
     }
 
@@ -194,6 +198,8 @@ static bool pop_capture_event(capture_event_e event)
         std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
 
         push_capture_event(capture_event_e::unrecoverable_error);
+
+        RECEIVING_A_SIGNAL = false;
 
         return;
     }
@@ -896,7 +902,7 @@ void capture_api_rgbeasy_s::set_mode_params(const std::vector<video_mode_params_
 
 bool capture_api_rgbeasy_s::set_mode_parameters_for_resolution(const resolution_s r)
 {
-    INFO(("Applying mode parameters for %u x %u.", r.w, r.h));
+    //INFO(("Applying mode parameters for %u x %u.", r.w, r.h));
 
     video_mode_params_s p = kc_capture_api().get_mode_params_for_resolution(r);
 
@@ -1121,25 +1127,25 @@ bool capture_api_rgbeasy_s::set_frame_dropping(const unsigned drop)
 
 void capture_api_rgbeasy_s::apply_new_capture_resolution(void)
 {
-    resolution_s currentRes = this->get_resolution();
-    resolution_s aliasedRes = ka_aliased(currentRes);
+    resolution_s resolution = this->get_resolution();
+    const resolution_s aliasedRes = ka_aliased(resolution);
 
     // If the current resolution has an alias, switch to that.
-    if ((currentRes.w != aliasedRes.w) ||
-        (currentRes.h != aliasedRes.h))
+    if ((resolution.w != aliasedRes.w) ||
+        (resolution.h != aliasedRes.h))
     {
         if (!kc_capture_api().set_resolution(aliasedRes))
         {
             NBENE(("Failed to apply an alias."));
         }
-        else currentRes = aliasedRes;
+        else resolution = aliasedRes;
     }
 
-    kc_capture_api().set_mode_parameters_for_resolution(currentRes);
+    kc_capture_api().set_mode_parameters_for_resolution(resolution);
 
     RECEIVED_NEW_VIDEO_MODE = false;
 
-    INFO(("Capturer reports new input mode: %u x %u.", currentRes.w, currentRes.h));
+    INFO(("New input mode: %u x %u @ %u Hz.", resolution.w, resolution.h, this->get_signal_info().refreshRate));
 
     return;
 }
@@ -1272,7 +1278,8 @@ video_mode_params_s capture_api_rgbeasy_s::get_mode_params_for_resolution(const 
         }
     }
 
-    INFO(("Unknown video mode; returning default parameters."));
+    //INFO(("Unknown video mode; returning default parameters."));
+    
     return {r,
             this->get_default_color_settings(),
             this->get_default_video_settings()};

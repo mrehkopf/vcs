@@ -17,7 +17,7 @@ std::vector<legacy14_filter_set_s*> kdisk_legacy14_load_filter_sets(const std::s
 
     if (sourceFilename.empty())
     {
-        INFO(("No filter set file defined, skipping."));
+        DEBUG(("No filter set file defined, skipping."));
         return {};
     }
 

@@ -176,6 +176,8 @@ void kpropagate_news_of_invalid_capture_signal(void)
 // The capture hardware lost its input signal and thus enters a state of no signal.
 void kpropagate_news_of_lost_capture_signal(void)
 {
+    INFO(("No signal."));
+
     kd_set_capture_signal_reception_status(false);
 
     ks_indicate_no_signal();

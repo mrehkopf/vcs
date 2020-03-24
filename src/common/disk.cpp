@@ -79,11 +79,11 @@ bool kdisk_load_video_mode_params(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
     {
-        INFO(("No mode settings file defined, skipping."));
+        DEBUG(("No mode settings file defined, skipping."));
         return true;
     }
 
-    INFO(("Loading video mode parameters from %s...", sourceFilename.c_str()));
+    DEBUG(("Loading video mode parameters from %s...", sourceFilename.c_str()));
 
     std::vector<video_mode_params_s> videoModeParams;
 
@@ -169,11 +169,11 @@ bool kdisk_load_aliases(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
     {
-        INFO(("No alias file defined, skipping."));
+        DEBUG(("No alias file defined, skipping."));
         return true;
     }
 
-    INFO(("Loading aliases from %s...", sourceFilename.c_str()));
+    DEBUG(("Loading aliases from %s...", sourceFilename.c_str()));
 
     std::vector<mode_alias_s> aliases;
 
@@ -332,11 +332,11 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
     {
-        INFO(("No filter graph file defined, skipping."));
+        DEBUG(("No filter graph file defined, skipping."));
         return true;
     }
 
-    INFO(("Loading filter graph data from %s...", sourceFilename.c_str()));
+    DEBUG(("Loading filter graph data from %s...", sourceFilename.c_str()));
 
     std::vector<FilterGraphNode*> graphodes;
     std::vector<filter_graph_option_s> graphOptions;
