@@ -184,122 +184,117 @@ void VideoAndColorDialog::update_controls(void)
 
     // Current values.
     {
-        const capture_color_settings_s colorParams = kc_capture_api().get_color_settings();
+        const video_signal_parameters_s p = kc_capture_api().get_video_signal_parameters();
 
-        ui->spinBox_colorBright->setValue(colorParams.overallBrightness);
-        ui->horizontalScrollBar_colorBright->setValue(colorParams.overallBrightness);
+        ui->spinBox_colorBright->setValue(p.overallBrightness);
+        ui->horizontalScrollBar_colorBright->setValue(p.overallBrightness);
 
-        ui->spinBox_colorContr->setValue(colorParams.overallContrast);
-        ui->horizontalScrollBar_colorContr->setValue(colorParams.overallContrast);
+        ui->spinBox_colorContr->setValue(p.overallContrast);
+        ui->horizontalScrollBar_colorContr->setValue(p.overallContrast);
 
-        ui->spinBox_colorBrightRed->setValue(colorParams.redBrightness);
-        ui->horizontalScrollBar_colorBrightRed->setValue(colorParams.redBrightness);
+        ui->spinBox_colorBrightRed->setValue(p.redBrightness);
+        ui->horizontalScrollBar_colorBrightRed->setValue(p.redBrightness);
 
-        ui->spinBox_colorContrRed->setValue(colorParams.redContrast);
-        ui->horizontalScrollBar_colorContrRed->setValue(colorParams.redContrast);
+        ui->spinBox_colorContrRed->setValue(p.redContrast);
+        ui->horizontalScrollBar_colorContrRed->setValue(p.redContrast);
 
-        ui->spinBox_colorBrightGreen->setValue(colorParams.greenBrightness);
-        ui->horizontalScrollBar_colorBrightGreen->setValue(colorParams.greenBrightness);
+        ui->spinBox_colorBrightGreen->setValue(p.greenBrightness);
+        ui->horizontalScrollBar_colorBrightGreen->setValue(p.greenBrightness);
 
-        ui->spinBox_colorContrGreen->setValue(colorParams.greenContrast);
-        ui->horizontalScrollBar_colorContrGreen->setValue(colorParams.greenContrast);
+        ui->spinBox_colorContrGreen->setValue(p.greenContrast);
+        ui->horizontalScrollBar_colorContrGreen->setValue(p.greenContrast);
 
-        ui->spinBox_colorBrightBlue->setValue(colorParams.blueBrightness);
-        ui->horizontalScrollBar_colorBrightBlue->setValue(colorParams.blueBrightness);
+        ui->spinBox_colorBrightBlue->setValue(p.blueBrightness);
+        ui->horizontalScrollBar_colorBrightBlue->setValue(p.blueBrightness);
 
-        ui->spinBox_colorContrBlue->setValue(colorParams.blueContrast);
-        ui->horizontalScrollBar_colorContrBlue->setValue(colorParams.blueContrast);
+        ui->spinBox_colorContrBlue->setValue(p.blueContrast);
+        ui->horizontalScrollBar_colorContrBlue->setValue(p.blueContrast);
 
-        const capture_video_settings_s videoParams = kc_capture_api().get_video_settings();
+        ui->spinBox_videoBlackLevel->setValue(p.blackLevel);
+        ui->horizontalScrollBar_videoBlackLevel->setValue(p.blackLevel);
 
-        ui->spinBox_videoBlackLevel->setValue(videoParams.blackLevel);
-        ui->horizontalScrollBar_videoBlackLevel->setValue(videoParams.blackLevel);
+        ui->spinBox_videoHorPos->setValue(p.horizontalPosition);
+        ui->horizontalScrollBar_videoHorPos->setValue(p.horizontalPosition);
 
-        ui->spinBox_videoHorPos->setValue(videoParams.horizontalPosition);
-        ui->horizontalScrollBar_videoHorPos->setValue(videoParams.horizontalPosition);
+        ui->spinBox_videoHorSize->setValue(p.horizontalScale);
+        ui->horizontalScrollBar_videoHorSize->setValue(p.horizontalScale);
 
-        ui->spinBox_videoHorSize->setValue(videoParams.horizontalScale);
-        ui->horizontalScrollBar_videoHorSize->setValue(videoParams.horizontalScale);
+        ui->spinBox_videoPhase->setValue(p.phase);
+        ui->horizontalScrollBar_videoPhase->setValue(p.phase);
 
-        ui->spinBox_videoPhase->setValue(videoParams.phase);
-        ui->horizontalScrollBar_videoPhase->setValue(videoParams.phase);
-
-        ui->spinBox_videoVerPos->setValue(videoParams.verticalPosition);
-        ui->horizontalScrollBar_videoVerPos->setValue(videoParams.verticalPosition);
+        ui->spinBox_videoVerPos->setValue(p.verticalPosition);
+        ui->horizontalScrollBar_videoVerPos->setValue(p.verticalPosition);
     }
 
     // Current valid ranges.
     {
-        const capture_color_settings_s minColorParams = kc_capture_api().get_minimum_color_settings();
-        const capture_color_settings_s maxColorParams = kc_capture_api().get_maximum_color_settings();
+        const video_signal_parameters_s min = kc_capture_api().get_minimum_video_signal_parameters();
+        const video_signal_parameters_s max = kc_capture_api().get_maximum_video_signal_parameters();
 
-        ui->spinBox_colorBright->setMinimum(minColorParams.overallBrightness);
-        ui->spinBox_colorBright->setMaximum(maxColorParams.overallBrightness);
-        ui->horizontalScrollBar_colorBright->setMinimum(minColorParams.overallBrightness);
-        ui->horizontalScrollBar_colorBright->setMaximum(maxColorParams.overallBrightness);
+        ui->spinBox_colorBright->setMinimum(min.overallBrightness);
+        ui->spinBox_colorBright->setMaximum(max.overallBrightness);
+        ui->horizontalScrollBar_colorBright->setMinimum(min.overallBrightness);
+        ui->horizontalScrollBar_colorBright->setMaximum(max.overallBrightness);
 
-        ui->spinBox_colorContr->setMinimum(minColorParams.overallContrast);
-        ui->spinBox_colorContr->setMaximum(maxColorParams.overallContrast);
-        ui->horizontalScrollBar_colorContr->setMinimum(minColorParams.overallContrast);
-        ui->horizontalScrollBar_colorContr->setMaximum(maxColorParams.overallContrast);
+        ui->spinBox_colorContr->setMinimum(min.overallContrast);
+        ui->spinBox_colorContr->setMaximum(max.overallContrast);
+        ui->horizontalScrollBar_colorContr->setMinimum(min.overallContrast);
+        ui->horizontalScrollBar_colorContr->setMaximum(max.overallContrast);
 
-        ui->spinBox_colorBrightRed->setMinimum(minColorParams.redBrightness);
-        ui->spinBox_colorBrightRed->setMaximum(maxColorParams.redBrightness);
-        ui->horizontalScrollBar_colorBrightRed->setMinimum(minColorParams.redBrightness);
-        ui->horizontalScrollBar_colorBrightRed->setMaximum(maxColorParams.redBrightness);
+        ui->spinBox_colorBrightRed->setMinimum(min.redBrightness);
+        ui->spinBox_colorBrightRed->setMaximum(max.redBrightness);
+        ui->horizontalScrollBar_colorBrightRed->setMinimum(min.redBrightness);
+        ui->horizontalScrollBar_colorBrightRed->setMaximum(max.redBrightness);
 
-        ui->spinBox_colorContrRed->setMinimum(minColorParams.redContrast);
-        ui->spinBox_colorContrRed->setMaximum(maxColorParams.redContrast);
-        ui->horizontalScrollBar_colorContrRed->setMinimum(minColorParams.redContrast);
-        ui->horizontalScrollBar_colorContrRed->setMaximum(maxColorParams.redContrast);
+        ui->spinBox_colorContrRed->setMinimum(min.redContrast);
+        ui->spinBox_colorContrRed->setMaximum(max.redContrast);
+        ui->horizontalScrollBar_colorContrRed->setMinimum(min.redContrast);
+        ui->horizontalScrollBar_colorContrRed->setMaximum(max.redContrast);
 
-        ui->spinBox_colorBrightGreen->setMinimum(minColorParams.blueBrightness);
-        ui->spinBox_colorBrightGreen->setMaximum(maxColorParams.blueBrightness);
-        ui->horizontalScrollBar_colorBrightGreen->setMinimum(minColorParams.blueBrightness);
-        ui->horizontalScrollBar_colorBrightGreen->setMaximum(maxColorParams.blueBrightness);
+        ui->spinBox_colorBrightGreen->setMinimum(min.blueBrightness);
+        ui->spinBox_colorBrightGreen->setMaximum(max.blueBrightness);
+        ui->horizontalScrollBar_colorBrightGreen->setMinimum(min.blueBrightness);
+        ui->horizontalScrollBar_colorBrightGreen->setMaximum(max.blueBrightness);
 
-        ui->spinBox_colorContrGreen->setMinimum(minColorParams.blueContrast);
-        ui->spinBox_colorContrGreen->setMaximum(maxColorParams.blueContrast);
-        ui->horizontalScrollBar_colorContrGreen->setMinimum(minColorParams.blueContrast);
-        ui->horizontalScrollBar_colorContrGreen->setMaximum(maxColorParams.blueContrast);
+        ui->spinBox_colorContrGreen->setMinimum(min.blueContrast);
+        ui->spinBox_colorContrGreen->setMaximum(max.blueContrast);
+        ui->horizontalScrollBar_colorContrGreen->setMinimum(min.blueContrast);
+        ui->horizontalScrollBar_colorContrGreen->setMaximum(max.blueContrast);
 
-        ui->spinBox_colorBrightBlue->setMinimum(minColorParams.greenBrightness);
-        ui->spinBox_colorBrightBlue->setMaximum(maxColorParams.greenBrightness);
-        ui->horizontalScrollBar_colorBrightBlue->setMinimum(minColorParams.greenBrightness);
-        ui->horizontalScrollBar_colorBrightBlue->setMaximum(maxColorParams.greenBrightness);
+        ui->spinBox_colorBrightBlue->setMinimum(min.greenBrightness);
+        ui->spinBox_colorBrightBlue->setMaximum(max.greenBrightness);
+        ui->horizontalScrollBar_colorBrightBlue->setMinimum(min.greenBrightness);
+        ui->horizontalScrollBar_colorBrightBlue->setMaximum(max.greenBrightness);
 
-        ui->spinBox_colorContrBlue->setMinimum(minColorParams.greenContrast);
-        ui->spinBox_colorContrBlue->setMaximum(maxColorParams.greenContrast);
-        ui->horizontalScrollBar_colorContrBlue->setMinimum(minColorParams.greenContrast);
-        ui->horizontalScrollBar_colorContrBlue->setMaximum(maxColorParams.greenContrast);
+        ui->spinBox_colorContrBlue->setMinimum(min.greenContrast);
+        ui->spinBox_colorContrBlue->setMaximum(max.greenContrast);
+        ui->horizontalScrollBar_colorContrBlue->setMinimum(min.greenContrast);
+        ui->horizontalScrollBar_colorContrBlue->setMaximum(max.greenContrast);
 
-        const capture_video_settings_s minVideoParams = kc_capture_api().get_minimum_video_settings();
-        const capture_video_settings_s maxVideoParams = kc_capture_api().get_maximum_video_settings();
+        ui->spinBox_videoBlackLevel->setMinimum(min.blackLevel);
+        ui->spinBox_videoBlackLevel->setMaximum(max.blackLevel);
+        ui->horizontalScrollBar_videoBlackLevel->setMinimum(min.blackLevel);
+        ui->horizontalScrollBar_videoBlackLevel->setMaximum(max.blackLevel);
 
-        ui->spinBox_videoBlackLevel->setMinimum(minVideoParams.blackLevel);
-        ui->spinBox_videoBlackLevel->setMaximum(maxVideoParams.blackLevel);
-        ui->horizontalScrollBar_videoBlackLevel->setMinimum(minVideoParams.blackLevel);
-        ui->horizontalScrollBar_videoBlackLevel->setMaximum(maxVideoParams.blackLevel);
+        ui->spinBox_videoHorPos->setMinimum(min.horizontalPosition);
+        ui->spinBox_videoHorPos->setMaximum(max.horizontalPosition);
+        ui->horizontalScrollBar_videoHorPos->setMinimum(min.horizontalPosition);
+        ui->horizontalScrollBar_videoHorPos->setMaximum(max.horizontalPosition);
 
-        ui->spinBox_videoHorPos->setMinimum(minVideoParams.horizontalPosition);
-        ui->spinBox_videoHorPos->setMaximum(maxVideoParams.horizontalPosition);
-        ui->horizontalScrollBar_videoHorPos->setMinimum(minVideoParams.horizontalPosition);
-        ui->horizontalScrollBar_videoHorPos->setMaximum(maxVideoParams.horizontalPosition);
+        ui->spinBox_videoHorSize->setMinimum(min.horizontalScale);
+        ui->spinBox_videoHorSize->setMaximum(max.horizontalScale);
+        ui->horizontalScrollBar_videoHorSize->setMinimum(min.horizontalScale);
+        ui->horizontalScrollBar_videoHorSize->setMaximum(max.horizontalScale);
 
-        ui->spinBox_videoHorSize->setMinimum(minVideoParams.horizontalScale);
-        ui->spinBox_videoHorSize->setMaximum(maxVideoParams.horizontalScale);
-        ui->horizontalScrollBar_videoHorSize->setMinimum(minVideoParams.horizontalScale);
-        ui->horizontalScrollBar_videoHorSize->setMaximum(maxVideoParams.horizontalScale);
+        ui->spinBox_videoPhase->setMinimum(min.phase);
+        ui->spinBox_videoPhase->setMaximum(max.phase);
+        ui->horizontalScrollBar_videoPhase->setMinimum(min.phase);
+        ui->horizontalScrollBar_videoPhase->setMaximum(max.phase);
 
-        ui->spinBox_videoPhase->setMinimum(minVideoParams.phase);
-        ui->spinBox_videoPhase->setMaximum(maxVideoParams.phase);
-        ui->horizontalScrollBar_videoPhase->setMinimum(minVideoParams.phase);
-        ui->horizontalScrollBar_videoPhase->setMaximum(maxVideoParams.phase);
-
-        ui->spinBox_videoVerPos->setMinimum(minVideoParams.verticalPosition);
-        ui->spinBox_videoVerPos->setMaximum(maxVideoParams.verticalPosition);
-        ui->horizontalScrollBar_videoVerPos->setMinimum(minVideoParams.verticalPosition);
-        ui->horizontalScrollBar_videoVerPos->setMaximum(maxVideoParams.verticalPosition);
+        ui->spinBox_videoVerPos->setMinimum(min.verticalPosition);
+        ui->spinBox_videoVerPos->setMaximum(max.verticalPosition);
+        ui->horizontalScrollBar_videoVerPos->setMinimum(min.verticalPosition);
+        ui->horizontalScrollBar_videoVerPos->setMaximum(max.verticalPosition);
     }
 
     CONTROLS_LIVE_UPDATE = true;
@@ -345,25 +340,23 @@ void VideoAndColorDialog::broadcast_settings(void)
 {
     if (!CONTROLS_LIVE_UPDATE) return;
 
-    capture_color_settings_s currentColorParams;
-    currentColorParams.overallBrightness = ui->spinBox_colorBright->value();
-    currentColorParams.overallContrast = ui->spinBox_colorContr->value();
-    currentColorParams.redBrightness = ui->spinBox_colorBrightRed->value();
-    currentColorParams.redContrast = ui->spinBox_colorContrRed->value();
-    currentColorParams.greenBrightness = ui->spinBox_colorBrightGreen->value();
-    currentColorParams.greenContrast = ui->spinBox_colorContrGreen->value();
-    currentColorParams.blueBrightness = ui->spinBox_colorBrightBlue->value();
-    currentColorParams.blueContrast = ui->spinBox_colorContrBlue->value();
+    video_signal_parameters_s p;
 
-    capture_video_settings_s currentVideoParams;
-    currentVideoParams.blackLevel = ui->spinBox_videoBlackLevel->value();
-    currentVideoParams.horizontalPosition = ui->spinBox_videoHorPos->value();
-    currentVideoParams.horizontalScale = ui->spinBox_videoHorSize->value();
-    currentVideoParams.phase = ui->spinBox_videoPhase->value();
-    currentVideoParams.verticalPosition = ui->spinBox_videoVerPos->value();
+    p.overallBrightness = ui->spinBox_colorBright->value();
+    p.overallContrast = ui->spinBox_colorContr->value();
+    p.redBrightness = ui->spinBox_colorBrightRed->value();
+    p.redContrast = ui->spinBox_colorContrRed->value();
+    p.greenBrightness = ui->spinBox_colorBrightGreen->value();
+    p.greenContrast = ui->spinBox_colorContrGreen->value();
+    p.blueBrightness = ui->spinBox_colorBrightBlue->value();
+    p.blueContrast = ui->spinBox_colorContrBlue->value();
+    p.blackLevel = ui->spinBox_videoBlackLevel->value();
+    p.horizontalPosition = ui->spinBox_videoHorPos->value();
+    p.horizontalScale = ui->spinBox_videoHorSize->value();
+    p.phase = ui->spinBox_videoPhase->value();
+    p.verticalPosition = ui->spinBox_videoVerPos->value();
 
-    kc_capture_api().set_video_settings(currentVideoParams);
-    kc_capture_api().set_color_settings(currentColorParams);
+    kc_capture_api().assign_video_signal_parameters(p);
 
     flag_unsaved_changes();
 
@@ -418,7 +411,7 @@ void VideoAndColorDialog::save_settings(void)
         filename.append(".vcs-video");
     }
 
-    if (kdisk_save_video_mode_params(kc_capture_api().get_mode_params(), filename))
+    if (kdisk_save_video_signal_parameters(kc_capture_api().get_mode_params(), filename))
     {
         remove_unsaved_changes_flag();
     }
@@ -434,7 +427,7 @@ void VideoAndColorDialog::load_settings(void)
 
     if (filename.isEmpty()) return;
 
-    if (kdisk_load_video_mode_params(filename.toStdString()))
+    if (kdisk_load_video_signal_parameters(filename.toStdString()))
     {
         remove_unsaved_changes_flag();
     }

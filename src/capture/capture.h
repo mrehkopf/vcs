@@ -60,17 +60,11 @@ struct capture_signal_s
     bool isDigital;
 };
 
-struct capture_video_settings_s
+// Capture video parameters for a given resolution.
+struct video_signal_parameters_s
 {
-    unsigned long horizontalScale;
-    long horizontalPosition;
-    long verticalPosition;
-    long phase;
-    long blackLevel;
-};
+    resolution_s r;
 
-struct capture_color_settings_s
-{
     long overallBrightness;
     long overallContrast;
 
@@ -82,15 +76,12 @@ struct capture_color_settings_s
 
     long blueBrightness;
     long blueContrast;
-};
 
-// For each input mode (i.e. resolution), the set of parameters that the user
-// has defined.
-struct video_mode_params_s
-{
-    resolution_s r;
-    capture_color_settings_s color;
-    capture_video_settings_s video;
+    unsigned long horizontalScale;
+    long horizontalPosition;
+    long verticalPosition;
+    long phase;
+    long blackLevel;
 };
 
 #endif

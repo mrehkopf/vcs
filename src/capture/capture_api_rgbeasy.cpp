@@ -348,11 +348,11 @@ bool capture_api_rgbeasy_s::stop_capture(void)
     return false;
 }
 
-void capture_api_rgbeasy_s::update_known_video_mode_params(const resolution_s r,
-                                                           const capture_color_settings_s *const c,
-                                                           const capture_video_settings_s *const v)
+void capture_api_rgbeasy_s::update_known_video_signal_parameters(const resolution_s r,
+                                                                 const video_signal_parameters_s &p)
 {
-    uint idx;
+    unsigned idx = 0;
+
     for (idx = 0; idx < this->knownVideoModes.size(); idx++)
     {
         if (this->knownVideoModes[idx].r.w == r.w &&
@@ -363,14 +363,16 @@ void capture_api_rgbeasy_s::update_known_video_mode_params(const resolution_s r,
     }
 
     // If the mode doesn't already exist, add it.
-    this->knownVideoModes.push_back({r,
-                           this->get_default_color_settings(),
-                           this->get_default_video_settings()});
+    {
+        auto defaultParams = this->get_default_video_signal_parameters();
+        defaultParams.r = r;
+
+        this->knownVideoModes.push_back(defaultParams);
+    }
 
     mode_exists:
     // Update the existing mode with the new parameters.
-    if (c != nullptr) this->knownVideoModes[idx].color = *c;
-    if (v != nullptr) this->knownVideoModes[idx].video = *v;
+    this->knownVideoModes[idx] = p;
 
     return;
 }
@@ -620,18 +622,23 @@ int capture_api_rgbeasy_s::get_device_max_input_count(void) const
     return numInputs;
 }
 
-capture_color_settings_s capture_api_rgbeasy_s::get_color_settings(void) const
+video_signal_parameters_s capture_api_rgbeasy_s::get_video_signal_parameters(void) const
 {
-    capture_color_settings_s p = {0};
+    video_signal_parameters_s p = {0};
 
-    if (!apicall_succeeded(RGBGetBrightness(this->captureHandle, &p.overallBrightness)) ||
-        !apicall_succeeded(RGBGetContrast(this->captureHandle, &p.overallContrast)) ||
+    if (!apicall_succeeded(RGBGetPhase(this->captureHandle,         &p.phase)) ||
+        !apicall_succeeded(RGBGetBlackLevel(this->captureHandle,    &p.blackLevel)) ||
+        !apicall_succeeded(RGBGetHorPosition(this->captureHandle,   &p.horizontalPosition)) ||
+        !apicall_succeeded(RGBGetVerPosition(this->captureHandle,   &p.verticalPosition)) ||
+        !apicall_succeeded(RGBGetHorScale(this->captureHandle,      &p.horizontalScale)) ||
+        !apicall_succeeded(RGBGetBrightness(this->captureHandle,    &p.overallBrightness)) ||
+        !apicall_succeeded(RGBGetContrast(this->captureHandle,      &p.overallContrast)) ||
         !apicall_succeeded(RGBGetColourBalance(this->captureHandle, &p.redBrightness,
-                                                              &p.greenBrightness,
-                                                              &p.blueBrightness,
-                                                              &p.redContrast,
-                                                              &p.greenContrast,
-                                                              &p.blueContrast)))
+                                                                    &p.greenBrightness,
+                                                                    &p.blueBrightness,
+                                                                    &p.redContrast,
+                                                                    &p.greenContrast,
+                                                                    &p.blueContrast)))
     {
         return {0};
     }
@@ -639,18 +646,23 @@ capture_color_settings_s capture_api_rgbeasy_s::get_color_settings(void) const
     return p;
 }
 
-capture_color_settings_s capture_api_rgbeasy_s::get_default_color_settings(void) const
+video_signal_parameters_s capture_api_rgbeasy_s::get_default_video_signal_parameters(void) const
 {
-    capture_color_settings_s p = {0};
+    video_signal_parameters_s p = {0};
 
-    if (!apicall_succeeded(RGBGetBrightnessDefault(this->captureHandle, &p.overallBrightness)) ||
-        !apicall_succeeded(RGBGetContrastDefault(this->captureHandle, &p.overallContrast)) ||
+    if (!apicall_succeeded(RGBGetPhaseDefault(this->captureHandle,         &p.phase)) ||
+        !apicall_succeeded(RGBGetBlackLevelDefault(this->captureHandle,    &p.blackLevel)) ||
+        !apicall_succeeded(RGBGetHorPositionDefault(this->captureHandle,   &p.horizontalPosition)) ||
+        !apicall_succeeded(RGBGetVerPositionDefault(this->captureHandle,   &p.verticalPosition)) ||
+        !apicall_succeeded(RGBGetHorScaleDefault(this->captureHandle,      &p.horizontalScale)) ||
+        !apicall_succeeded(RGBGetBrightnessDefault(this->captureHandle,    &p.overallBrightness)) ||
+        !apicall_succeeded(RGBGetContrastDefault(this->captureHandle,      &p.overallContrast)) ||
         !apicall_succeeded(RGBGetColourBalanceDefault(this->captureHandle, &p.redBrightness,
-                                                                     &p.greenBrightness,
-                                                                     &p.blueBrightness,
-                                                                     &p.redContrast,
-                                                                     &p.greenContrast,
-                                                                     &p.blueContrast)))
+                                                                           &p.greenBrightness,
+                                                                           &p.blueBrightness,
+                                                                           &p.redContrast,
+                                                                           &p.greenContrast,
+                                                                           &p.blueContrast)))
     {
         return {0};
     }
@@ -658,18 +670,23 @@ capture_color_settings_s capture_api_rgbeasy_s::get_default_color_settings(void)
     return p;
 }
 
-capture_color_settings_s capture_api_rgbeasy_s::get_minimum_color_settings(void) const
+video_signal_parameters_s capture_api_rgbeasy_s::get_minimum_video_signal_parameters(void) const
 {
-    capture_color_settings_s p = {0};
+    video_signal_parameters_s p = {0};
 
-    if (!apicall_succeeded(RGBGetBrightnessMinimum(this->captureHandle, &p.overallBrightness)) ||
-        !apicall_succeeded(RGBGetContrastMinimum(this->captureHandle, &p.overallContrast)) ||
+    if (!apicall_succeeded(RGBGetPhaseMinimum(this->captureHandle,         &p.phase)) ||
+        !apicall_succeeded(RGBGetBlackLevelMinimum(this->captureHandle,    &p.blackLevel)) ||
+        !apicall_succeeded(RGBGetHorPositionMinimum(this->captureHandle,   &p.horizontalPosition)) ||
+        !apicall_succeeded(RGBGetVerPositionMinimum(this->captureHandle,   &p.verticalPosition)) ||
+        !apicall_succeeded(RGBGetHorScaleMinimum(this->captureHandle,      &p.horizontalScale)) ||
+        !apicall_succeeded(RGBGetBrightnessMinimum(this->captureHandle,    &p.overallBrightness)) ||
+        !apicall_succeeded(RGBGetContrastMinimum(this->captureHandle,      &p.overallContrast)) ||
         !apicall_succeeded(RGBGetColourBalanceMinimum(this->captureHandle, &p.redBrightness,
-                                                                     &p.greenBrightness,
-                                                                     &p.blueBrightness,
-                                                                     &p.redContrast,
-                                                                     &p.greenContrast,
-                                                                     &p.blueContrast)))
+                                                                           &p.greenBrightness,
+                                                                           &p.blueBrightness,
+                                                                           &p.redContrast,
+                                                                           &p.greenContrast,
+                                                                           &p.blueContrast)))
     {
         return {0};
     }
@@ -677,82 +694,23 @@ capture_color_settings_s capture_api_rgbeasy_s::get_minimum_color_settings(void)
     return p;
 }
 
-capture_color_settings_s capture_api_rgbeasy_s::get_maximum_color_settings(void) const
+video_signal_parameters_s capture_api_rgbeasy_s::get_maximum_video_signal_parameters(void) const
 {
-    capture_color_settings_s p = {0};
+    video_signal_parameters_s p = {0};
 
-    if (!apicall_succeeded(RGBGetBrightnessMaximum(this->captureHandle, &p.overallBrightness)) ||
-        !apicall_succeeded(RGBGetContrastMaximum(this->captureHandle, &p.overallContrast)) ||
+    if (!apicall_succeeded(RGBGetPhaseMaximum(this->captureHandle,         &p.phase)) ||
+        !apicall_succeeded(RGBGetBlackLevelMaximum(this->captureHandle,    &p.blackLevel)) ||
+        !apicall_succeeded(RGBGetHorPositionMaximum(this->captureHandle,   &p.horizontalPosition)) ||
+        !apicall_succeeded(RGBGetVerPositionMaximum(this->captureHandle,   &p.verticalPosition)) ||
+        !apicall_succeeded(RGBGetHorScaleMaximum(this->captureHandle,      &p.horizontalScale)) ||
+        !apicall_succeeded(RGBGetBrightnessMaximum(this->captureHandle,    &p.overallBrightness)) ||
+        !apicall_succeeded(RGBGetContrastMaximum(this->captureHandle,      &p.overallContrast)) ||
         !apicall_succeeded(RGBGetColourBalanceMaximum(this->captureHandle, &p.redBrightness,
-                                                                     &p.greenBrightness,
-                                                                     &p.blueBrightness,
-                                                                     &p.redContrast,
-                                                                     &p.greenContrast,
-                                                                     &p.blueContrast)))
-    {
-        return {0};
-    }
-
-    return p;
-}
-
-capture_video_settings_s capture_api_rgbeasy_s::get_video_settings(void) const
-{
-    capture_video_settings_s p = {0};
-
-    if (!apicall_succeeded(RGBGetPhase(this->captureHandle, &p.phase)) ||
-        !apicall_succeeded(RGBGetBlackLevel(this->captureHandle, &p.blackLevel)) ||
-        !apicall_succeeded(RGBGetHorPosition(this->captureHandle, &p.horizontalPosition)) ||
-        !apicall_succeeded(RGBGetVerPosition(this->captureHandle, &p.verticalPosition)) ||
-        !apicall_succeeded(RGBGetHorScale(this->captureHandle, &p.horizontalScale)))
-    {
-        return {0};
-    }
-
-    return p;
-}
-
-capture_video_settings_s capture_api_rgbeasy_s::get_default_video_settings(void) const
-{
-    capture_video_settings_s p = {0};
-
-    if (!apicall_succeeded(RGBGetPhaseDefault(this->captureHandle, &p.phase)) ||
-        !apicall_succeeded(RGBGetBlackLevelDefault(this->captureHandle, &p.blackLevel)) ||
-        !apicall_succeeded(RGBGetHorPositionDefault(this->captureHandle, &p.horizontalPosition)) ||
-        !apicall_succeeded(RGBGetVerPositionDefault(this->captureHandle, &p.verticalPosition)) ||
-        !apicall_succeeded(RGBGetHorScaleDefault(this->captureHandle, &p.horizontalScale)))
-    {
-        return {0};
-    }
-
-    return p;
-}
-
-capture_video_settings_s capture_api_rgbeasy_s::get_minimum_video_settings(void) const
-{
-    capture_video_settings_s p = {0};
-
-    if (!apicall_succeeded(RGBGetPhaseMinimum(this->captureHandle, &p.phase)) ||
-        !apicall_succeeded(RGBGetBlackLevelMinimum(this->captureHandle, &p.blackLevel)) ||
-        !apicall_succeeded(RGBGetHorPositionMinimum(this->captureHandle, &p.horizontalPosition)) ||
-        !apicall_succeeded(RGBGetVerPositionMinimum(this->captureHandle, &p.verticalPosition)) ||
-        !apicall_succeeded(RGBGetHorScaleMinimum(this->captureHandle, &p.horizontalScale)))
-    {
-        return {0};
-    }
-
-    return p;
-}
-
-capture_video_settings_s capture_api_rgbeasy_s::get_maximum_video_settings(void) const
-{
-    capture_video_settings_s p = {0};
-
-    if (!apicall_succeeded(RGBGetPhaseMaximum(this->captureHandle, &p.phase)) ||
-        !apicall_succeeded(RGBGetBlackLevelMaximum(this->captureHandle, &p.blackLevel)) ||
-        !apicall_succeeded(RGBGetHorPositionMaximum(this->captureHandle, &p.horizontalPosition)) ||
-        !apicall_succeeded(RGBGetVerPositionMaximum(this->captureHandle, &p.verticalPosition)) ||
-        !apicall_succeeded(RGBGetHorScaleMaximum(this->captureHandle, &p.horizontalScale)))
+                                                                           &p.greenBrightness,
+                                                                           &p.blueBrightness,
+                                                                           &p.redContrast,
+                                                                           &p.greenContrast,
+                                                                           &p.blueContrast)))
     {
         return {0};
     }
@@ -855,7 +813,7 @@ capture_event_e capture_api_rgbeasy_s::pop_capture_event_queue(void)
 
 capture_signal_s capture_api_rgbeasy_s::get_signal_info(void) const
 {
-    if (kc_capture_api().get_no_signal())
+    if (kc_capture_api().no_signal())
     {
         NBENE(("Tried to query the capture signal while no signal was being received."));
         return {0};
@@ -884,85 +842,70 @@ capture_signal_s capture_api_rgbeasy_s::get_signal_info(void) const
     return s;
 }
 
-void capture_api_rgbeasy_s::set_mode_params(const std::vector<video_mode_params_s> &modeParams)
+void capture_api_rgbeasy_s::set_mode_params(const std::vector<video_signal_parameters_s> &modeParams)
 {
     this->knownVideoModes = modeParams;
 
     return;
 }
 
-bool capture_api_rgbeasy_s::set_mode_parameters_for_resolution(const resolution_s r)
+bool capture_api_rgbeasy_s::assign_video_signal_params_for_resolution(const resolution_s r)
 {
     //INFO(("Applying mode parameters for %u x %u.", r.w, r.h));
 
-    video_mode_params_s p = kc_capture_api().get_mode_params_for_resolution(r);
+    video_signal_parameters_s p = this->get_video_signal_parameters_for_resolution(r);
 
-    // Apply the set of mode parameters for the current input resolution.
+    // Apply the parameters to the current input signal.
     /// TODO. Add error-checking.
-    RGBSetPhase(this->captureHandle,         p.video.phase);
-    RGBSetBlackLevel(this->captureHandle,    p.video.blackLevel);
-    RGBSetHorScale(this->captureHandle,      p.video.horizontalScale);
-    RGBSetHorPosition(this->captureHandle,   p.video.horizontalPosition);
-    RGBSetVerPosition(this->captureHandle,   p.video.verticalPosition);
-    RGBSetBrightness(this->captureHandle,    p.color.overallBrightness);
-    RGBSetContrast(this->captureHandle,      p.color.overallContrast);
-    RGBSetColourBalance(this->captureHandle, p.color.redBrightness,
-                                        p.color.greenBrightness,
-                                        p.color.blueBrightness,
-                                        p.color.redContrast,
-                                        p.color.greenContrast,
-                                        p.color.blueContrast);
+    RGBSetPhase(this->captureHandle,         p.phase);
+    RGBSetBlackLevel(this->captureHandle,    p.blackLevel);
+    RGBSetHorScale(this->captureHandle,      p.horizontalScale);
+    RGBSetHorPosition(this->captureHandle,   p.horizontalPosition);
+    RGBSetVerPosition(this->captureHandle,   p.verticalPosition);
+    RGBSetBrightness(this->captureHandle,    p.overallBrightness);
+    RGBSetContrast(this->captureHandle,      p.overallContrast);
+    RGBSetColourBalance(this->captureHandle, p.redBrightness,
+                                             p.greenBrightness,
+                                             p.blueBrightness,
+                                             p.redContrast,
+                                             p.greenContrast,
+                                             p.blueContrast);
 
     (void)p;
 
     return true;
 }
 
-void capture_api_rgbeasy_s::set_color_settings(const capture_color_settings_s c)
+void capture_api_rgbeasy_s::assign_video_signal_parameters(const video_signal_parameters_s p)
 {
-    if (kc_capture_api().get_no_signal())
-    {
-        DEBUG(("Was asked to set capture color params while there was no signal. "
-               "Ignoring the request."));
-
-        return;
-    }
-
-    RGBSetBrightness(this->captureHandle, c.overallBrightness);
-    RGBSetContrast(this->captureHandle, c.overallContrast);
-    RGBSetColourBalance(this->captureHandle, c.redBrightness,
-                                        c.greenBrightness,
-                                        c.blueBrightness,
-                                        c.redContrast,
-                                        c.greenContrast,
-                                        c.blueContrast);
-
-    update_known_video_mode_params(this->get_resolution(), &c, nullptr);
-
-    return;
-}
-
-void capture_api_rgbeasy_s::set_video_settings(const capture_video_settings_s v)
-{
-    if (kc_capture_api().get_no_signal())
+    if (kc_capture_api().no_signal())
     {
         DEBUG(("Was asked to set capture video params while there was no signal. "
                "Ignoring the request."));
+
         return;
     }
 
-    RGBSetPhase(this->captureHandle, v.phase);
-    RGBSetBlackLevel(this->captureHandle, v.blackLevel);
-    RGBSetHorPosition(this->captureHandle, v.horizontalPosition);
-    RGBSetHorScale(this->captureHandle, v.horizontalScale);
-    RGBSetVerPosition(this->captureHandle, v.verticalPosition);
+    RGBSetPhase(this->captureHandle,         p.phase);
+    RGBSetBlackLevel(this->captureHandle,    p.blackLevel);
+    RGBSetHorPosition(this->captureHandle,   p.horizontalPosition);
+    RGBSetHorScale(this->captureHandle,      p.horizontalScale);
+    RGBSetVerPosition(this->captureHandle,   p.verticalPosition);
+    RGBSetBrightness(this->captureHandle,    p.overallBrightness);
+    RGBSetContrast(this->captureHandle,      p.overallContrast);
+    RGBSetColourBalance(this->captureHandle, p.redBrightness,
+                                             p.greenBrightness,
+                                             p.blueBrightness,
+                                             p.redContrast,
+                                             p.greenContrast,
+                                             p.blueContrast);
 
-    update_known_video_mode_params(this->get_resolution(), nullptr, &v);
+    update_known_video_signal_parameters(this->get_resolution(), p);
 
     return;
 }
 
-bool capture_api_rgbeasy_s::adjust_video_horizontal_offset(const int delta)
+bool capture_api_rgbeasy_s::adjust_horizontal_offset(const int delta)
 {
     if (!delta)
     {
@@ -974,9 +917,9 @@ bool capture_api_rgbeasy_s::adjust_video_horizontal_offset(const int delta)
         return false;
     }
 
-    const long newPos = (this->get_video_settings().horizontalPosition + delta);
-    if (newPos < this->get_minimum_video_settings().horizontalPosition ||
-        newPos > this->get_maximum_video_settings().horizontalPosition)
+    const long newPos = (this->get_video_signal_parameters().horizontalPosition + delta);
+    if (newPos < this->get_minimum_video_signal_parameters().horizontalPosition ||
+        newPos > this->get_maximum_video_signal_parameters().horizontalPosition)
     {
         return false;
     }
@@ -985,8 +928,7 @@ bool capture_api_rgbeasy_s::adjust_video_horizontal_offset(const int delta)
     {
         // Assume that this was a user-requested change, and as such that it
         // should affect the user's custom mode parameter settings.
-        const auto currentVideoParams = this->get_video_settings();
-        update_known_video_mode_params(this->get_resolution(), nullptr, &currentVideoParams);
+        update_known_video_signal_parameters(this->get_resolution(), this->get_video_signal_parameters());
 
         kd_update_video_mode_params();
     }
@@ -994,14 +936,14 @@ bool capture_api_rgbeasy_s::adjust_video_horizontal_offset(const int delta)
     return true;
 }
 
-bool capture_api_rgbeasy_s::adjust_video_vertical_offset(const int delta)
+bool capture_api_rgbeasy_s::adjust_vertical_offset(const int delta)
 {
     if (!delta) return true;
     if (!RECEIVING_A_SIGNAL) return false;
 
-    const long newPos = (this->get_video_settings().verticalPosition + delta);
-    if (newPos < std::max(2, (int)this->get_minimum_video_settings().verticalPosition) ||
-        newPos > this->get_maximum_video_settings().verticalPosition)
+    const long newPos = (this->get_video_signal_parameters().verticalPosition + delta);
+    if (newPos < std::max(2, (int)this->get_minimum_video_signal_parameters().verticalPosition) ||
+        newPos > this->get_maximum_video_signal_parameters().verticalPosition)
     {
         // ^ Testing for < 2 along with < MIN_VIDEO_PARAMS.verPos, since on my
         // VisionRGB-PRO2, MIN_VIDEO_PARAMS.verPos gives a value less than 2,
@@ -1013,8 +955,7 @@ bool capture_api_rgbeasy_s::adjust_video_vertical_offset(const int delta)
     {
         // Assume that this was a user-requested change, and as such that it
         // should affect the user's custom mode parameter settings.
-        const auto currentVideoParams = this->get_video_settings();
-        update_known_video_mode_params(this->get_resolution(), nullptr, &currentVideoParams);
+        update_known_video_signal_parameters(this->get_resolution(), this->get_video_signal_parameters());
 
         kd_update_video_mode_params();
     }
@@ -1088,32 +1029,6 @@ bool capture_api_rgbeasy_s::set_input_color_depth(const unsigned bpp)
     return false;
 }
 
-bool capture_api_rgbeasy_s::set_frame_dropping(const unsigned drop)
-{
-    // Sanity check.
-    k_assert(drop < 100, "Odd frame drop number.");
-
-    if (apicall_succeeded(RGBSetFrameDropping(this->captureHandle, drop)))
-    {
-        INFO(("Setting frame drop to %u.", drop));
-
-        FRAME_SKIP = drop;
-
-        goto success;
-    }
-    else
-    {
-        NBENE(("Failed to set frame drop to %u.", drop));
-        goto fail;
-    }
-
-    success:
-    return true;
-
-    fail:
-    return false;
-}
-
 void capture_api_rgbeasy_s::apply_new_capture_resolution(void)
 {
     resolution_s resolution = this->get_resolution();
@@ -1123,16 +1038,16 @@ void capture_api_rgbeasy_s::apply_new_capture_resolution(void)
     if ((resolution.w != aliasedRes.w) ||
         (resolution.h != aliasedRes.h))
     {
-        if (!kc_capture_api().set_resolution(aliasedRes))
+        if (!kc_capture_api().change_resolution(aliasedRes))
         {
             NBENE(("Failed to apply an alias."));
         }
         else resolution = aliasedRes;
     }
 
-    kc_capture_api().set_mode_parameters_for_resolution(resolution);
+    this->assign_video_signal_params_for_resolution(resolution);
 
-    INFO(("New input mode: %u x %u @ %u Hz.", resolution.w, resolution.h, this->get_signal_info().refreshRate));
+    INFO(("New video mode: %u x %u @ %u Hz.", resolution.w, resolution.h, this->get_signal_info().refreshRate));
 
     return;
 }
@@ -1144,7 +1059,7 @@ void capture_api_rgbeasy_s::reset_missed_frames_count(void)
     return;
 }
 
-bool capture_api_rgbeasy_s::set_resolution(const resolution_s &r)
+bool capture_api_rgbeasy_s::change_resolution(const resolution_s &r)
 {
     if (!this->captureIsActive)
     {
@@ -1198,17 +1113,17 @@ bool capture_api_rgbeasy_s::set_resolution(const resolution_s &r)
     return false;
 }
 
-uint capture_api_rgbeasy_s::get_num_missed_frames(void)
+uint capture_api_rgbeasy_s::get_missed_frames_count(void) const
 {
     return NUM_NEW_FRAME_EVENTS_SKIPPED;
 }
 
-uint capture_api_rgbeasy_s::get_input_channel_idx(void)
+uint capture_api_rgbeasy_s::get_current_input_channel_idx(void) const
 {
     return INPUT_CHANNEL_IDX;
 }
 
-uint capture_api_rgbeasy_s::get_input_color_depth(void)
+uint capture_api_rgbeasy_s::get_color_depth(void) const
 {
     switch (this->capturePixelFormat)
     {
@@ -1219,42 +1134,42 @@ uint capture_api_rgbeasy_s::get_input_color_depth(void)
     }
 }
 
-bool capture_api_rgbeasy_s::get_are_frames_being_dropped(void)
+bool capture_api_rgbeasy_s::are_frames_being_dropped(void) const
 {
     return bool(NUM_NEW_FRAME_EVENTS_SKIPPED > 0);
 }
 
-bool capture_api_rgbeasy_s::get_is_capture_active(void)
+bool capture_api_rgbeasy_s::is_capture_active(void) const
 {
     return this->captureIsActive;
 }
 
-bool capture_api_rgbeasy_s::get_should_current_frame_be_skipped(void)
+bool capture_api_rgbeasy_s::should_current_frame_be_skipped(void) const
 {
     return bool(this->skipNextNumFrames > 0);
 }
 
-bool capture_api_rgbeasy_s::get_is_invalid_signal(void)
+bool capture_api_rgbeasy_s::is_signal_invalid(void) const
 {
     return IS_SIGNAL_INVALID;
 }
 
-bool capture_api_rgbeasy_s::get_no_signal(void)
+bool capture_api_rgbeasy_s::no_signal(void) const
 {
     return !RECEIVING_A_SIGNAL;
 }
 
-capturePixelFormat_e capture_api_rgbeasy_s::get_pixel_format(void)
+capturePixelFormat_e capture_api_rgbeasy_s::get_pixel_format(void) const
 {
     return this->capturePixelFormat;
 }
 
-const std::vector<video_mode_params_s>& capture_api_rgbeasy_s::get_mode_params(void)
+const std::vector<video_signal_parameters_s>& capture_api_rgbeasy_s::get_mode_params(void) const
 {
     return this->knownVideoModes;
 }
 
-video_mode_params_s capture_api_rgbeasy_s::get_mode_params_for_resolution(const resolution_s r)
+video_signal_parameters_s capture_api_rgbeasy_s::get_video_signal_parameters_for_resolution(const resolution_s r) const
 {
     for (const auto &m: this->knownVideoModes)
     {
@@ -1267,7 +1182,8 @@ video_mode_params_s capture_api_rgbeasy_s::get_mode_params_for_resolution(const 
 
     //INFO(("Unknown video mode; returning default parameters."));
     
-    return {r,
-            this->get_default_color_settings(),
-            this->get_default_video_settings()};
+    auto defaultParams = this->get_default_video_signal_parameters();
+    defaultParams.r = r;
+
+    return defaultParams;
 }

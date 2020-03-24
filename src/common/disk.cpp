@@ -23,34 +23,34 @@
 #include "common/disk_legacy.h"
 #include "common/csv.h"
 
-bool kdisk_save_video_mode_params(const std::vector<video_mode_params_s> &modeParams,
-                                  const QString &targetFilename)
+bool kdisk_save_video_signal_parameters(const std::vector<video_signal_parameters_s> &params,
+                                        const QString &targetFilename)
 {
     file_writer_c outFile(targetFilename);
 
     // Each mode params block consists of two values specifying the resolution
     // followed by a set of string-value pairs for the different parameters.
-    for (const auto &m: modeParams)
+    for (const auto &p: params)
     {
         // Resolution.
-        outFile << "resolution," << m.r.w << "," << m.r.h << "\n";
+        outFile << "resolution," << p.r.w << "," << p.r.h << "\n";
 
         // Video params.
-        outFile << "vPos," << m.video.verticalPosition << "\n"
-                << "hPos," << m.video.horizontalPosition << "\n"
-                << "hScale," << m.video.horizontalScale << "\n"
-                << "phase," << m.video.phase << "\n"
-                << "bLevel," << m.video.blackLevel << "\n";
+        outFile << "vPos,"   << p.verticalPosition << "\n"
+                << "hPos,"   << p.horizontalPosition << "\n"
+                << "hScale," << p.horizontalScale << "\n"
+                << "phase,"  << p.phase << "\n"
+                << "bLevel," << p.blackLevel << "\n";
 
         // Color params.
-        outFile << "bright," << m.color.overallBrightness << "\n"
-                << "contr," << m.color.overallContrast << "\n"
-                << "redBr," << m.color.redBrightness << "\n"
-                << "redCn," << m.color.redContrast << "\n"
-                << "greenBr," << m.color.greenBrightness << "\n"
-                << "greenCn," << m.color.greenContrast << "\n"
-                << "blueBr," << m.color.blueBrightness << "\n"
-                << "blueCn," << m.color.blueContrast << "\n";
+        outFile << "bright,"  << p.overallBrightness << "\n"
+                << "contr,"   << p.overallContrast << "\n"
+                << "redBr,"   << p.redBrightness << "\n"
+                << "redCn,"   << p.redContrast << "\n"
+                << "greenBr," << p.greenBrightness << "\n"
+                << "greenCn," << p.greenContrast << "\n"
+                << "blueBr,"  << p.blueBrightness << "\n"
+                << "blueCn,"  << p.blueContrast << "\n";
 
         // Separate the next block.
         outFile << "\n";
@@ -63,7 +63,7 @@ bool kdisk_save_video_mode_params(const std::vector<video_mode_params_s> &modePa
         goto fail;
     }
 
-    kpropagate_saved_mode_params_to_disk(modeParams, targetFilename.toStdString());
+    kpropagate_saved_video_signal_parameters_to_disk(params, targetFilename.toStdString());
 
     return true;
 
@@ -75,7 +75,7 @@ bool kdisk_save_video_mode_params(const std::vector<video_mode_params_s> &modePa
     return false;
 }
 
-bool kdisk_load_video_mode_params(const std::string &sourceFilename)
+bool kdisk_load_video_signal_parameters(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
     {
@@ -85,7 +85,7 @@ bool kdisk_load_video_mode_params(const std::string &sourceFilename)
 
     DEBUG(("Loading video mode parameters from %s...", sourceFilename.c_str()));
 
-    std::vector<video_mode_params_s> videoModeParams;
+    std::vector<video_signal_parameters_s> videoModeParams;
 
     QList<QStringList> paramRows = csv_parse_c(QString::fromStdString(sourceFilename)).contents();
 
@@ -101,7 +101,7 @@ bool kdisk_load_video_mode_params(const std::string &sourceFilename)
             goto fail;
         }
 
-        video_mode_params_s p;
+        video_signal_parameters_s p;
         p.r.w = paramRows.at(i).at(1).toUInt();
         p.r.h = paramRows.at(i).at(2).toUInt();
 
@@ -126,19 +126,19 @@ bool kdisk_load_video_mode_params(const std::string &sourceFilename)
         {
             // Note: the order in which the params are fetched is fixed to the
             // order in which they were saved.
-            p.video.verticalPosition = get_param("vPos").toInt();
-            p.video.horizontalPosition = get_param("hPos").toInt();
-            p.video.horizontalScale = get_param("hScale").toInt();
-            p.video.phase = get_param("phase").toInt();
-            p.video.blackLevel = get_param("bLevel").toInt();
-            p.color.overallBrightness = get_param("bright").toInt();
-            p.color.overallContrast = get_param("contr").toInt();
-            p.color.redBrightness = get_param("redBr").toInt();
-            p.color.redContrast = get_param("redCn").toInt();
-            p.color.greenBrightness = get_param("greenBr").toInt();
-            p.color.greenContrast = get_param("greenCn").toInt();
-            p.color.blueBrightness = get_param("blueBr").toInt();
-            p.color.blueContrast = get_param("blueCn").toInt();
+            p.verticalPosition   = get_param("vPos").toInt();
+            p.horizontalPosition = get_param("hPos").toInt();
+            p.horizontalScale    = get_param("hScale").toUInt();
+            p.phase              = get_param("phase").toInt();
+            p.blackLevel         = get_param("bLevel").toInt();
+            p.overallBrightness  = get_param("bright").toInt();
+            p.overallContrast    = get_param("contr").toInt();
+            p.redBrightness      = get_param("redBr").toInt();
+            p.redContrast        = get_param("redCn").toInt();
+            p.greenBrightness    = get_param("greenBr").toInt();
+            p.greenContrast      = get_param("greenCn").toInt();
+            p.blueBrightness     = get_param("blueBr").toInt();
+            p.blueContrast       = get_param("blueCn").toInt();
         }
         catch (int)
         {
@@ -150,7 +150,7 @@ bool kdisk_load_video_mode_params(const std::string &sourceFilename)
     }
 
     // Sort the modes so they'll display more nicely in the GUI.
-    std::sort(videoModeParams.begin(), videoModeParams.end(), [](const video_mode_params_s &a, const video_mode_params_s &b)
+    std::sort(videoModeParams.begin(), videoModeParams.end(), [](const video_signal_parameters_s &a, const video_signal_parameters_s &b)
                                           { return (a.r.w * a.r.h) < (b.r.w * b.r.h); });
 
     kpropagate_loaded_mode_params_from_disk(videoModeParams, sourceFilename);

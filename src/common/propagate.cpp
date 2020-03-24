@@ -78,7 +78,7 @@ void kpropagate_news_of_recording_ended(void)
 
 // Call to let the system know that the given mode parameters have been loaded
 // from the given file.
-void kpropagate_loaded_mode_params_from_disk(const std::vector<video_mode_params_s> &modeParams,
+void kpropagate_loaded_mode_params_from_disk(const std::vector<video_signal_parameters_s> &modeParams,
                                              const std::string &sourceFilename)
 {
     kc_capture_api().set_mode_params(modeParams);
@@ -93,8 +93,8 @@ void kpropagate_loaded_mode_params_from_disk(const std::vector<video_mode_params
     return;
 }
 
-void kpropagate_saved_mode_params_to_disk(const std::vector<video_mode_params_s> &modeParams,
-                                          const std::string &targetFilename)
+void kpropagate_saved_video_signal_parameters_to_disk(const std::vector<video_signal_parameters_s> &modeParams,
+                                                      const std::string &targetFilename)
 {
     INFO(("Saved %u set(s) of mode params to disk.", modeParams.size()));
 
@@ -154,9 +154,9 @@ void kpropagate_loaded_filter_graph_from_disk(const std::vector<FilterGraphNode*
 // adjusted by the given amount.
 void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int verticalDelta)
 {
-    kc_capture_api().adjust_video_horizontal_offset(horizontalDelta);
+    kc_capture_api().adjust_horizontal_offset(horizontalDelta);
 
-    kc_capture_api().adjust_video_vertical_offset(verticalDelta);
+    kc_capture_api().adjust_vertical_offset(verticalDelta);
 
     return;
 }
@@ -230,7 +230,7 @@ void kpropagate_forced_capture_resolution(const resolution_s &r)
     const resolution_s min = kc_capture_api().get_minimum_resolution();
     const resolution_s max = kc_capture_api().get_maximum_resolution();
 
-    if (kc_capture_api().get_no_signal())
+    if (kc_capture_api().no_signal())
     {
         DEBUG(("Was asked to change the input resolution while the capture card was not receiving a signal. Ignoring the request."));
         goto done;
@@ -246,7 +246,7 @@ void kpropagate_forced_capture_resolution(const resolution_s &r)
         goto done;
     }
 
-    if (!kc_capture_api().set_resolution(r))
+    if (!kc_capture_api().change_resolution(r))
     {
         NBENE(("Failed to set the new input resolution (%u x %u).", r.w, r.h));
         goto done;

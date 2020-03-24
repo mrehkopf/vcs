@@ -467,7 +467,7 @@ void ks_scale_frame(const captured_frame_s &frame)
 
     // Verify that we have a workable frame.
     {
-        if (kc_capture_api().get_should_current_frame_be_skipped())
+        if (kc_capture_api().should_current_frame_be_skipped())
         {
             DEBUG(("Skipping a frame, as requested."));
             goto done;
