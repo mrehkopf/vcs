@@ -24,7 +24,11 @@ static bool RGBEASY_CAPTURE_EVENT_FLAGS[static_cast<int>(capture_event_e::num_en
 // If > 0, the next n captured frames should be ignored by the rest of VCS.
 // This can be useful e.g. to avoid displaying the one or two garbles frames
 // that may occur when changing video modes.
-static unsigned SKIP_NEXT_NUM_FRAMES = false;
+static unsigned SKIP_NEXT_NUM_FRAMES = 0;
+
+// The number of frames the capture hardware has sent which VCS was too busy to
+// receive and so which we had to skip.
+static std::atomic<unsigned int> NUM_NEW_FRAME_EVENTS_SKIPPED(0);
 
 static std::vector<video_mode_params_s> KNOWN_MODES;
 
@@ -36,30 +40,17 @@ static capture_pixel_format_e CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb
 // 555 and 565 are probably sent as 16-bit, and 888 as 32-bit.
 static unsigned CAPTURE_OUTPUT_COLOR_DEPTH = 32;
 
-// Used to keep track of whether we have new frames to be processed (i.e. if the
-// current count of captured frames doesn't equal the number of processed frames).
-// Doesn't matter if these counters wrap around.
-static std::atomic<unsigned int> CNT_FRAMES_PROCESSED(0);
-static std::atomic<unsigned int> CNT_FRAMES_CAPTURED(0);
-
-// The number of frames the capture hardware has sent which VCS was too busy to
-// receive and had to skip. Call kc_reset_missed_frames_count() to reset it.
-static std::atomic<unsigned int> CNT_FRAMES_SKIPPED(0);
-
 // Whether the capture hardware is receiving a signal from its input.
 static std::atomic<bool> RECEIVING_A_SIGNAL(true);
 
-// Set to true if the capture signal is invalid.
-static std::atomic<bool> SIGNAL_IS_INVALID(false);
+// If the current signal we're receiving is invalid.
+static bool IS_SIGNAL_INVALID = false;
 
 // Set to true if the capture hardware's input mode changes.
 static bool RECEIVED_NEW_VIDEO_MODE = false;
 
 // The maximum image depth that the capturer can handle.
 static const unsigned MAX_BIT_DEPTH = 32;
-
-// Set to 1 if we've acquired access to the RGBEASY API.
-static bool RGBEASY_IS_LOADED = 0;
 
 static HRGB CAPTURE_HANDLE = 0;
 static HRGBDLL RGBAPI_HANDLE = 0;
@@ -93,16 +84,14 @@ static bool pop_capture_event(capture_event_e event)
     // captured RGBA data is in frameData.
     void RGBCBKAPI rgbeasy_callback__frame_captured(HWND, HRGB, LPBITMAPINFOHEADER frameInfo, void *frameData, ULONG_PTR)
     {
-        if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
+        // If the hardware is sending us a new frame while we're still unfinished
+        // with processing the previous frame. In that case, we'll need to skip
+        // this new frame.
+        if (!RGBEASY_CALLBACK_MUTEX.try_lock())
         {
-            //ERRORI(("The capture hardware sent in a frame before VCS had finished processing "
-            //        "the previous one. Skipping this new one. (Captured: %u, processed: %u.)",
-            //        CNT_FRAMES_CAPTURED.load(), CNT_FRAMES_PROCESSED.load()));
-            CNT_FRAMES_SKIPPED++;
+            NUM_NEW_FRAME_EVENTS_SKIPPED++;
             return;
         }
-
-        std::lock_guard<std::mutex> lock(RGBEASY_CALLBACK_MUTEX);
 
         // Ignore new callback events if the user has signaled to quit the program.
         if (PROGRAM_EXIT_REQUESTED)
@@ -142,7 +131,7 @@ static bool pop_capture_event(capture_event_e event)
         push_capture_event(capture_event_e::new_frame);
 
         done:
-        CNT_FRAMES_CAPTURED++;
+        RGBEASY_CALLBACK_MUTEX.unlock();
         return;
     }
 
@@ -158,6 +147,8 @@ static bool pop_capture_event(capture_event_e event)
         }
 
         push_capture_event(capture_event_e::new_video_mode);
+
+        IS_SIGNAL_INVALID = false;
 
         done:
         return;
@@ -178,6 +169,8 @@ static bool pop_capture_event(capture_event_e event)
         RGBInvalidSignal(captureHandle, horClock, verClock);
 
         push_capture_event(capture_event_e::invalid_signal);
+
+        IS_SIGNAL_INVALID = true;
 
     done:
         return;
@@ -261,8 +254,6 @@ bool capture_api_rgbeasy_s::release_hardware(void)
         return false;
     }
 
-    RGBEASY_IS_LOADED = false;
-
     return true;
 }
 
@@ -285,7 +276,6 @@ bool capture_api_rgbeasy_s::initialize_hardware(void)
     {
         goto fail;
     }
-    else RGBEASY_IS_LOADED = true;
 
     if (!apicall_succeeded(RGBOpenInput(INPUT_CHANNEL_IDX,      &CAPTURE_HANDLE)) ||
         !apicall_succeeded(RGBSetFrameDropping(CAPTURE_HANDLE,   FRAME_SKIP)) ||
@@ -416,7 +406,7 @@ bool capture_api_rgbeasy_s::device_supports_component_capture(void) const
     for (int i = 0; i < numInputChannels; i++)
     {
         long isSupported = 0;
-        
+
         if (!apicall_succeeded(RGBInputIsComponentSupported(i, &isSupported)))
         {
             return false;
@@ -455,7 +445,7 @@ bool capture_api_rgbeasy_s::device_supports_composite_capture(void) const
 bool capture_api_rgbeasy_s::device_supports_deinterlacing(void) const
 {
     long isSupported = 0;
-    
+
     if (!apicall_succeeded(RGBIsDeinterlaceSupported(&isSupported)))
     {
         return false;
@@ -471,12 +461,12 @@ bool capture_api_rgbeasy_s::device_supports_svideo(void) const
     for (int i = 0; i < numInputChannels; i++)
     {
         long isSupported = 0;
-        
+
         if (!apicall_succeeded(RGBInputIsSVideoSupported(i, &isSupported)))
         {
             return false;
         }
-        
+
         if (isSupported)
         {
             return true;
@@ -489,12 +479,12 @@ bool capture_api_rgbeasy_s::device_supports_svideo(void) const
 bool capture_api_rgbeasy_s::device_supports_dma(void) const
 {
     long isSupported = 0;
-    
+
     if (!apicall_succeeded(RGBIsDirectDMASupported(&isSupported)))
     {
         return false;
     }
-    
+
     return bool(isSupported);
 }
 
@@ -527,12 +517,12 @@ bool capture_api_rgbeasy_s::device_supports_vga(void) const
     for (int i = 0; i < numInputChannels; i++)
     {
         long isSupported = 0;
-        
+
         if (!apicall_succeeded(RGBInputIsVGASupported(i, &isSupported)))
         {
             return false;
         }
-        
+
         if (isSupported)
         {
             return true;
@@ -809,20 +799,18 @@ resolution_s capture_api_rgbeasy_s::get_maximum_resolution(void) const
 const captured_frame_s& capture_api_rgbeasy_s::reserve_frame_buffer(void)
 {
     RGBEASY_CALLBACK_MUTEX.lock();
-    
+
     return FRAME_BUFFER;
 }
 
 void capture_api_rgbeasy_s::unreserve_frame_buffer(void)
 {
-    CNT_FRAMES_PROCESSED = CNT_FRAMES_CAPTURED.load();
-
     SKIP_NEXT_NUM_FRAMES -= bool(SKIP_NEXT_NUM_FRAMES);
 
     FRAME_BUFFER.processed = true;
 
     RGBEASY_CALLBACK_MUTEX.unlock();
-    
+
     return;
 }
 
@@ -1158,7 +1146,7 @@ void capture_api_rgbeasy_s::apply_new_capture_resolution(void)
 
 void capture_api_rgbeasy_s::reset_missed_frames_count(void)
 {
-    CNT_FRAMES_SKIPPED = 0;
+    NUM_NEW_FRAME_EVENTS_SKIPPED = 0;
 
     return;
 }
@@ -1219,7 +1207,7 @@ bool capture_api_rgbeasy_s::set_resolution(const resolution_s &r)
 
 uint capture_api_rgbeasy_s::get_num_missed_frames(void)
 {
-    return CNT_FRAMES_SKIPPED;
+    return NUM_NEW_FRAME_EVENTS_SKIPPED;
 }
 
 uint capture_api_rgbeasy_s::get_input_channel_idx(void)
@@ -1240,7 +1228,7 @@ uint capture_api_rgbeasy_s::get_input_color_depth(void)
 
 bool capture_api_rgbeasy_s::get_are_frames_being_dropped(void)
 {
-    return bool(CNT_FRAMES_SKIPPED > 0);
+    return bool(NUM_NEW_FRAME_EVENTS_SKIPPED > 0);
 }
 
 bool capture_api_rgbeasy_s::get_is_capture_active(void)
@@ -1255,7 +1243,7 @@ bool capture_api_rgbeasy_s::get_should_current_frame_be_skipped(void)
 
 bool capture_api_rgbeasy_s::get_is_invalid_signal(void)
 {
-    return SIGNAL_IS_INVALID;
+    return IS_SIGNAL_INVALID;
 }
 
 bool capture_api_rgbeasy_s::get_no_signal(void)
