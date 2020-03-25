@@ -95,7 +95,8 @@ SOURCES += \
     src/capture/capture_api_virtual.cpp \
     src/capture/capture_api_rgbeasy.cpp \
     src/capture/capture_api.cpp \
-    src/capture/video_parameters.cpp
+    src/capture/video_parameters.cpp \
+    src/display/qt/subclasses/QTableWidget_property_table.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -140,7 +141,9 @@ HEADERS += \
     src/capture/capture_api.h \
     src/capture/capture_api_virtual.h \
     src/capture/capture_api_rgbeasy.h \
-    src/capture/video_parameters.h
+    src/capture/video_parameters.h \
+    src/display/display.h \
+    src/display/qt/subclasses/QTableWidget_property_table.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \
