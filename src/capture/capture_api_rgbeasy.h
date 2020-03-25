@@ -57,11 +57,9 @@ struct capture_api_rgbeasy_s : public capture_api_s
     bool has_invalid_signal(void) const override;
     bool has_no_signal(void) const override;
     capture_pixel_format_e get_pixel_format(void) const override;
-    const std::vector<video_signal_parameters_s>& get_mode_params(void) const override;
-    const captured_frame_s& get_frame_buffer(void) override;
+    const captured_frame_s& get_frame_buffer(void) const override;
     void mark_frame_buffer_as_processed(void) override;
     capture_event_e pop_capture_event_queue(void) override;
-    void assign_video_signal_parameter_sets(const std::vector<video_signal_parameters_s> &modeParams) override;
     virtual void set_video_signal_parameters(const video_signal_parameters_s p) override;
     bool adjust_horizontal_offset(const int delta) override;
     bool adjust_vertical_offset(const int delta) override;
@@ -97,8 +95,6 @@ private:
     HRGB captureHandle = 0;
 
     HRGBDLL rgbAPIHandle = 0;
-
-    std::vector<video_signal_parameters_s> knownVideoModes;
 
     // The pixel format in which the capture device sends captured frames.
     capture_pixel_format_e capturePixelFormat = capture_pixel_format_e::rgb_888;

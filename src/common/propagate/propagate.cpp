@@ -12,6 +12,7 @@
 #include <mutex>
 #include "propagate.h"
 #include "capture/capture_api.h"
+#include "capture/video_parameters.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
@@ -76,17 +77,17 @@ void kpropagate_news_of_recording_ended(void)
 
 // Call to let the system know that the given mode parameters have been loaded
 // from the given file.
-void kpropagate_loaded_video_signal_parameters_from_disk(const std::vector<video_signal_parameters_s> &p,
+void kpropagate_loaded_video_signal_parameters_from_disk(const std::vector<video_signal_parameters_s> &paramSets,
                                                          const std::string &sourceFilename)
 {
-    kc_capture_api().assign_video_signal_parameter_sets(p);
+    kvideoparam_assign_parameter_sets(paramSets);
 
     // In case the mode params changed for the current mode, re-initialize it.
     kpropagate_news_of_new_capture_video_mode();
 
     kd_set_video_settings_filename(sourceFilename);
 
-    INFO(("Loaded %u set(s) of mode params from disk.", p.size()));
+    INFO(("Loaded %u set(s) of mode params from disk.", paramSets.size()));
 
     return;
 }

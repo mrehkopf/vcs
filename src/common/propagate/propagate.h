@@ -27,7 +27,7 @@ void kpropagate_saved_aliases_to_disk(const std::vector<mode_alias_s> &aliases, 
 void kpropagate_loaded_filter_graph_from_disk(const std::vector<FilterGraphNode*> &nodes,
                                               const std::vector<filter_graph_option_s> &graphOptions,
                                               const std::string &sourceFilename);
-void kpropagate_loaded_video_signal_parameters_from_disk(const std::vector<video_signal_parameters_s> &p, const std::string &sourceFilename);
+void kpropagate_loaded_video_signal_parameters_from_disk(const std::vector<video_signal_parameters_s> &paramSets, const std::string &sourceFilename);
 void kpropagate_loaded_aliases_from_disk(const std::vector<mode_alias_s> &aliases, const std::string &sourceFilename);
 
 void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int verticalDelta);

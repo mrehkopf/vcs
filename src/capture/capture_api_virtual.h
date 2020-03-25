@@ -35,9 +35,8 @@ struct capture_api_virtual_s : public capture_api_s
     bool has_invalid_signal(void) const override                 { return false; }
     bool has_no_signal(void) const override                      { return false; }
     capture_pixel_format_e get_pixel_format(void) const override { return capture_pixel_format_e::rgb_888; }
-    const std::vector<video_signal_parameters_s>& get_mode_params(void) const override { return {}; }
     capture_event_e pop_capture_event_queue(void) override;
-    const captured_frame_s& get_frame_buffer(void) override;
+    const captured_frame_s& get_frame_buffer(void) const override;
     void mark_frame_buffer_as_processed(void) override;
 
 private:

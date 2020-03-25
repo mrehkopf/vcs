@@ -58,13 +58,11 @@ struct capture_api_s
     virtual bool                      has_invalid_signal(void)                  const = 0;
     virtual bool                      has_no_signal(void)                       const = 0;
     virtual bool                      is_capturing(void)                        const = 0;
-    virtual const std::vector<video_signal_parameters_s>& get_mode_params(void) const = 0;
+    virtual const captured_frame_s&   get_frame_buffer(void)                    const = 0;
 
     // Setters.
-    virtual const captured_frame_s& get_frame_buffer(void)                                         = 0;
     virtual void                    mark_frame_buffer_as_processed(void)                           = 0;
     virtual capture_event_e         pop_capture_event_queue(void)                                  = 0;
-    virtual void                    assign_video_signal_parameter_sets(const std::vector<video_signal_parameters_s> &p) { (void)p; return; }
     virtual void                    set_video_signal_parameters(const video_signal_parameters_s p) { (void)p;      return;       }
     virtual bool                    adjust_horizontal_offset(const int delta)                      { (void)delta;  return false; }
     virtual bool                    adjust_vertical_offset(const int delta)                        { (void)delta;  return false; }

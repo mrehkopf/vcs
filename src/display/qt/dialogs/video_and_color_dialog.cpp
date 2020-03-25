@@ -15,6 +15,7 @@
 #include "display/qt/utility.h"
 #include "display/display.h"
 #include "capture/capture_api.h"
+#include "capture/video_parameters.h"
 #include "capture/capture.h"
 #include "common/disk/disk.h"
 #include "ui_video_and_color_dialog.h"
@@ -413,7 +414,7 @@ void VideoAndColorDialog::save_settings(void)
         filename.append(".vcs-video");
     }
 
-    if (kdisk_save_video_signal_parameters(kc_capture_api().get_mode_params(), filename))
+    if (kdisk_save_video_signal_parameters(kvideoparam_all_parameter_sets(), filename))
     {
         remove_unsaved_changes_flag();
     }

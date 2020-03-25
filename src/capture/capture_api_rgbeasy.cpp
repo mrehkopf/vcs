@@ -3,6 +3,7 @@
 #include "common/globals.h"
 #include "common/propagate/propagate.h"
 #include "capture/capture_api_rgbeasy.h"
+#include "capture/video_parameters.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
 
@@ -347,35 +348,6 @@ bool capture_api_rgbeasy_s::stop_capture(void)
 
     fail:
     return false;
-}
-
-void capture_api_rgbeasy_s::update_known_video_signal_parameters(const resolution_s r,
-                                                                 const video_signal_parameters_s &p)
-{
-    unsigned idx = 0;
-
-    for (idx = 0; idx < this->knownVideoModes.size(); idx++)
-    {
-        if (this->knownVideoModes[idx].r.w == r.w &&
-            this->knownVideoModes[idx].r.h == r.h)
-        {
-            goto mode_exists;
-        }
-    }
-
-    // If the mode doesn't already exist, add it.
-    {
-        auto defaultParams = this->get_default_video_signal_parameters();
-        defaultParams.r = r;
-
-        this->knownVideoModes.push_back(defaultParams);
-    }
-
-    mode_exists:
-    // Update the existing mode with the new parameters.
-    this->knownVideoModes[idx] = p;
-
-    return;
 }
 
 bool capture_api_rgbeasy_s::apicall_succeeded(long callReturnValue) const
@@ -747,7 +719,7 @@ resolution_s capture_api_rgbeasy_s::get_maximum_resolution(void) const
     return r;
 }
 
-const captured_frame_s& capture_api_rgbeasy_s::get_frame_buffer(void)
+const captured_frame_s& capture_api_rgbeasy_s::get_frame_buffer(void) const
 {
     return FRAME_BUFFER;
 }
@@ -809,18 +781,11 @@ unsigned capture_api_rgbeasy_s::get_refresh_rate(void) const
     }
 }
 
-void capture_api_rgbeasy_s::assign_video_signal_parameter_sets(const std::vector<video_signal_parameters_s> &modeParams)
-{
-    this->knownVideoModes = modeParams;
-
-    return;
-}
-
 bool capture_api_rgbeasy_s::assign_video_signal_params_for_resolution(const resolution_s r)
 {
     //INFO(("Applying mode parameters for %u x %u.", r.w, r.h));
 
-    video_signal_parameters_s p = this->get_video_signal_parameters_for_resolution(r);
+    video_signal_parameters_s p = kvideoparam_parameters_for_resolution(r);
 
     // Apply the parameters to the current input signal.
     /// TODO. Add error-checking.
@@ -867,7 +832,7 @@ void capture_api_rgbeasy_s::set_video_signal_parameters(const video_signal_param
                                              p.greenContrast,
                                              p.blueContrast);
 
-    update_known_video_signal_parameters(this->get_resolution(), p);
+    kvideoparam_update_parameters_for_resolution(this->get_resolution(), p);
 
     return;
 }
@@ -895,7 +860,7 @@ bool capture_api_rgbeasy_s::adjust_horizontal_offset(const int delta)
     {
         // Assume that this was a user-requested change, and as such that it
         // should affect the user's custom mode parameter settings.
-        update_known_video_signal_parameters(this->get_resolution(), this->get_video_signal_parameters());
+        kvideoparam_update_parameters_for_resolution(this->get_resolution(), this->get_video_signal_parameters());
 
         kd_update_video_mode_params();
     }
@@ -922,7 +887,7 @@ bool capture_api_rgbeasy_s::adjust_vertical_offset(const int delta)
     {
         // Assume that this was a user-requested change, and as such that it
         // should affect the user's custom mode parameter settings.
-        update_known_video_signal_parameters(this->get_resolution(), this->get_video_signal_parameters());
+        kvideoparam_update_parameters_for_resolution(this->get_resolution(), this->get_video_signal_parameters());
 
         kd_update_video_mode_params();
     }
@@ -1112,28 +1077,4 @@ bool capture_api_rgbeasy_s::has_no_signal(void) const
 capture_pixel_format_e capture_api_rgbeasy_s::get_pixel_format(void) const
 {
     return this->capturePixelFormat;
-}
-
-const std::vector<video_signal_parameters_s>& capture_api_rgbeasy_s::get_mode_params(void) const
-{
-    return this->knownVideoModes;
-}
-
-video_signal_parameters_s capture_api_rgbeasy_s::get_video_signal_parameters_for_resolution(const resolution_s r) const
-{
-    for (const auto &m: this->knownVideoModes)
-    {
-        if (m.r.w == r.w &&
-            m.r.h == r.h)
-        {
-            return m;
-        }
-    }
-
-    //INFO(("Unknown video mode; returning default parameters."));
-    
-    auto defaultParams = this->get_default_video_signal_parameters();
-    defaultParams.r = r;
-
-    return defaultParams;
 }

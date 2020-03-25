@@ -16,7 +16,7 @@ bool capture_api_virtual_s::release(void)
     return true;
 }
 
-const captured_frame_s &capture_api_virtual_s::get_frame_buffer(void)
+const captured_frame_s &capture_api_virtual_s::get_frame_buffer(void) const
 {
     return this->frameBuffer;
 }
