@@ -15,6 +15,8 @@ PropertyTable::PropertyTable(QWidget *parent) : QTableWidget(parent)
     this->setHorizontalHeaderItem(0, new QTableWidgetItem("Property"));
     this->setHorizontalHeaderItem(1, new QTableWidgetItem("Value"));
 
+    this->setGridStyle(Qt::NoPen);
+
     this->horizontalHeader()->hide();
     this->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 

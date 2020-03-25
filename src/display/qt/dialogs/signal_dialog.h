@@ -4,15 +4,15 @@
  *
  */
 
-#ifndef VIDEO_AND_COLOR_DIALOG_H
-#define VIDEO_AND_COLOR_DIALOG_H
+#ifndef SIGNAL_DIALOG_H
+#define SIGNAL_DIALOG_H
 
 #include <QDialog>
 
 class QMenuBar;
 
 namespace Ui {
-class VideoAndColorDialog;
+class SignalDialog;
 }
 
 struct capture_video_settings_s;
@@ -20,13 +20,13 @@ struct capture_color_settings_s;
 struct signal_info_s;
 struct resolution_s;
 
-class VideoAndColorDialog : public QDialog
+class SignalDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit VideoAndColorDialog(QWidget *parent = 0);
-    ~VideoAndColorDialog();
+    explicit SignalDialog(QWidget *parent = 0);
+    ~SignalDialog();
 
     void notify_of_new_capture_signal(void);
 
@@ -50,7 +50,7 @@ private:
 
     void update_information_table(const bool isReceivingSignal);
 
-    Ui::VideoAndColorDialog *ui;
+    Ui::SignalDialog *ui;
 
     QMenuBar *menubar = nullptr;
 };

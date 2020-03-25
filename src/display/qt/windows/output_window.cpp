@@ -29,7 +29,7 @@
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
 #include "display/qt/dialogs/output_resolution_dialog.h"
 #include "display/qt/dialogs/input_resolution_dialog.h"
-#include "display/qt/dialogs/video_and_color_dialog.h"
+#include "display/qt/dialogs/signal_dialog.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/dialogs/resolution_dialog.h"
 #include "display/qt/dialogs/anti_tear_dialog.h"
@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
         filterGraphDlg = new FilterGraphDialog;
         antitearDlg = new AntiTearDialog;
         overlayDlg = new OverlayDialog;
-        videoDlg = new VideoAndColorDialog;
+        signalDlg = new SignalDialog;
         aliasDlg = new AliasDialog;
         aboutDlg = new AboutDialog;
         recordDlg = new RecordDialog;
@@ -102,7 +102,7 @@ MainWindow::MainWindow(QWidget *parent) :
                       << filterGraphDlg
                       << antitearDlg
                       << overlayDlg
-                      << videoDlg
+                      << signalDlg
                       << aliasDlg
                       << aboutDlg
                       << recordDlg;
@@ -175,9 +175,9 @@ MainWindow::MainWindow(QWidget *parent) :
             menu->addMenu(colorDepth);
             menu->addSeparator();
 
-            QAction *video = new QAction("Video...", this);
-            video->setShortcut(QKeySequence("ctrl+v"));
-            menu->addAction(video);
+            QAction *signal = new QAction("Signal...", this);
+            signal->setShortcut(QKeySequence("ctrl+s"));
+            menu->addAction(signal);
 
             connect(menu->addAction("Aliases..."), &QAction::triggered, this, [=]{this->open_alias_dialog();});
 
@@ -185,7 +185,7 @@ MainWindow::MainWindow(QWidget *parent) :
             resolution->setShortcut(QKeySequence("ctrl+i"));
             menu->addAction(resolution);
 
-            connect(video, &QAction::triggered, this, [=]{this->open_video_dialog();});
+            connect(signal, &QAction::triggered, this, [=]{this->open_video_dialog();});
             connect(resolution, &QAction::triggered, this, [=]{this->open_input_resolution_dialog();});
         }
 
@@ -506,10 +506,10 @@ void MainWindow::open_input_resolution_dialog(void)
 
 void MainWindow::open_video_dialog(void)
 {
-    k_assert(this->videoDlg != nullptr, "");
-    this->videoDlg->show();
-    this->videoDlg->activateWindow();
-    this->videoDlg->raise();
+    k_assert(this->signalDlg != nullptr, "");
+    this->signalDlg->show();
+    this->signalDlg->activateWindow();
+    this->signalDlg->raise();
 
     return;
 }
@@ -978,8 +978,8 @@ FilterGraphNode* MainWindow::add_filter_graph_node(const filter_type_enum_e &fil
 
 void MainWindow::signal_new_mode_settings_source_file(const std::string &filename)
 {
-    k_assert(this->videoDlg != nullptr, "");
-    this->videoDlg->receive_new_mode_settings_filename(QString::fromStdString(filename));
+    k_assert(this->signalDlg != nullptr, "");
+    this->signalDlg->receive_new_mode_settings_filename(QString::fromStdString(filename));
 
     return;
 }
@@ -1039,16 +1039,16 @@ void MainWindow::set_capture_info_as_no_signal()
 {
     update_window_title();
 
-    k_assert(this->videoDlg != nullptr, "");
-    this->videoDlg->set_controls_enabled(false);
+    k_assert(this->signalDlg != nullptr, "");
+    this->signalDlg->set_controls_enabled(false);
 
     return;
 }
 
 void MainWindow::set_capture_info_as_receiving_signal()
 {
-    k_assert(this->videoDlg != nullptr, "");
-    this->videoDlg->set_controls_enabled(true);
+    k_assert(this->signalDlg != nullptr, "");
+    this->signalDlg->set_controls_enabled(true);
 
     return;
 }
@@ -1074,8 +1074,8 @@ void MainWindow::update_output_framerate(const u32 fps,
 
 void MainWindow::update_video_mode_params(void)
 {
-    k_assert(this->videoDlg != nullptr, "");
-    this->videoDlg->update_controls();
+    k_assert(this->signalDlg != nullptr, "");
+    this->signalDlg->update_controls();
 
     return;
 }
@@ -1088,8 +1088,8 @@ void MainWindow::update_capture_signal_info(void)
     }
     else
     {
-        k_assert(this->videoDlg != nullptr, "");
-        this->videoDlg->notify_of_new_capture_signal();
+        k_assert(this->signalDlg != nullptr, "");
+        this->signalDlg->notify_of_new_capture_signal();
 
         k_assert(this->outputResolutionDlg != nullptr, "");
         this->outputResolutionDlg->notify_of_new_capture_signal();

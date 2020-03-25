@@ -63,7 +63,6 @@ SOURCES += \
     src/display/qt/windows/output_window.cpp \
     src/display/qt/dialogs/resolution_dialog.cpp \
     src/display/qt/d_main.cpp \
-    src/display/qt/dialogs/video_and_color_dialog.cpp \
     src/display/qt/dialogs/overlay_dialog.cpp \
     src/display/qt/dialogs/alias_dialog.cpp \
     src/display/qt/dialogs/anti_tear_dialog.cpp \
@@ -96,7 +95,8 @@ SOURCES += \
     src/capture/capture_api_rgbeasy.cpp \
     src/capture/capture_api.cpp \
     src/capture/video_parameters.cpp \
-    src/display/qt/subclasses/QTableWidget_property_table.cpp
+    src/display/qt/subclasses/QTableWidget_property_table.cpp \
+    src/display/qt/dialogs/signal_dialog.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -108,7 +108,6 @@ HEADERS += \
     src/capture/capture.h \
     src/display/display.h \
     src/common/log/log.h \
-    src/display/qt/dialogs/video_and_color_dialog.h \
     src/display/qt/dialogs/overlay_dialog.h \
     src/display/qt/dialogs/alias_dialog.h \
     src/filter/anti_tear.h \
@@ -143,11 +142,11 @@ HEADERS += \
     src/capture/capture_api_rgbeasy.h \
     src/capture/video_parameters.h \
     src/display/display.h \
-    src/display/qt/subclasses/QTableWidget_property_table.h
+    src/display/qt/subclasses/QTableWidget_property_table.h \
+    src/display/qt/dialogs/signal_dialog.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \
-    src/display/qt/dialogs/ui/video_and_color_dialog.ui \
     src/display/qt/dialogs/ui/overlay_dialog.ui \
     src/display/qt/dialogs/ui/resolution_dialog.ui \
     src/display/qt/dialogs/ui/alias_dialog.ui \
@@ -156,7 +155,8 @@ FORMS += \
     src/display/qt/dialogs/ui/about_dialog.ui \
     src/display/qt/dialogs/ui/record_dialog.ui \
     src/display/qt/dialogs/ui/output_resolution_dialog.ui \
-    src/display/qt/dialogs/ui/input_resolution_dialog.ui
+    src/display/qt/dialogs/ui/input_resolution_dialog.ui \
+    src/display/qt/dialogs/ui/signal_dialog.ui
 
 # C++. For GCC/Clang/MinGW.
 QMAKE_CXXFLAGS += -g

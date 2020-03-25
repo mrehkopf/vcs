@@ -10,13 +10,14 @@
 #include <QElapsedTimer>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QFileInfo>
 #include <QToolBar>
 #include <QMenuBar>
 #include <QDebug>
 #include <QTimer>
 #include <QTime>
 #include "display/qt/subclasses/QTableWidget_property_table.h"
-#include "display/qt/dialogs/video_and_color_dialog.h"
+#include "display/qt/dialogs/signal_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "display/display.h"
@@ -24,7 +25,7 @@
 #include "capture/video_parameters.h"
 #include "capture/capture.h"
 #include "common/disk/disk.h"
-#include "ui_video_and_color_dialog.h"
+#include "ui_signal_dialog.h"
 
 /*
  * TODOS:
@@ -39,15 +40,15 @@
 // Set this variable to false to disable real-time updates.
 static bool CONTROLS_LIVE_UPDATE = true;
 
-static const QString BASE_WINDOW_TITLE = "VCS - Video & Color";
+static const QString BASE_WINDOW_TITLE = "VCS - Signal";
 
 // Used to keep track of how long we've had a particular video mode set.
 static QElapsedTimer VIDEO_MODE_UPTIME;
 static QTimer VIDEO_MODE_UPTIME_UPDATE;
 
-VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
+SignalDialog::SignalDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::VideoAndColorDialog)
+    ui(new Ui::SignalDialog)
 {
     ui->setupUi(this);
 
@@ -60,9 +61,9 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
     {
         // Initialize the table of information.
         {
-            ui->tableWidget_propertyTable->modify_property("Resolution", "None");
-            ui->tableWidget_propertyTable->modify_property("Refresh rate", "None");
-            ui->tableWidget_propertyTable->modify_property("Uptime", "None");
+            ui->tableWidget_propertyTable->modify_property("Uptime", "");
+            ui->tableWidget_propertyTable->modify_property("Resolution", "");
+            ui->tableWidget_propertyTable->modify_property("Refresh rate", "");
         }
 
         // Start timers to keep track of the video mode's uptime.
@@ -90,9 +91,9 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
             {
                 QMenu *fileMenu = new QMenu("File", this);
 
-                fileMenu->addAction("Load settings...", this, SLOT(load_settings()));
+                fileMenu->addAction("Load parameters...", this, SLOT(load_settings()));
                 fileMenu->addSeparator();
-                fileMenu->addAction("Save settings as...", this, SLOT(save_settings()));
+                fileMenu->addAction("Save parameters as...", this, SLOT(save_settings()));
 
                 menubar->addMenu(fileMenu);
             }
@@ -157,7 +158,7 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
                                     (QSpinBox*)spinbox, &QSpinBox::setValue);
 
                             connect((QSpinBox*)spinbox, OVERLOAD_INT(&QSpinBox::valueChanged),
-                                    this, &VideoAndColorDialog::broadcast_settings);
+                                    this, &SignalDialog::broadcast_settings);
 
                             #undef OVERLOAD_INT
 
@@ -179,22 +180,23 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
             connect_spinboxes_to_their_sliders(ui->groupBox_videoAdjust);
 
             update_controls();
+            set_controls_enabled(true);
         }
     }
 
     // Restore persistent settings.
     {
-        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "video_and_color", this->size()).toSize());
+        this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "signal", this->size()).toSize());
     }
 
     return;
 }
 
-VideoAndColorDialog::~VideoAndColorDialog()
+SignalDialog::~SignalDialog()
 {
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_GEOMETRY, "video_and_color", this->size());
+        kpers_set_value(INI_GROUP_GEOMETRY, "signal", this->size());
     }
 
     delete ui;
@@ -204,8 +206,9 @@ VideoAndColorDialog::~VideoAndColorDialog()
 }
 
 // Called to inform the dialog that a new capture signal has been received.
-void VideoAndColorDialog::notify_of_new_capture_signal(void)
+void SignalDialog::notify_of_new_capture_signal(void)
 {
+    VIDEO_MODE_UPTIME.restart();
     update_controls();
     update_information_table(true);
 
@@ -214,7 +217,7 @@ void VideoAndColorDialog::notify_of_new_capture_signal(void)
 
 // Called to ask the dialog to poll the capture hardware for its current video
 // and color settings.
-void VideoAndColorDialog::update_controls(void)
+void SignalDialog::update_controls(void)
 {
     CONTROLS_LIVE_UPDATE = false;
 
@@ -340,24 +343,26 @@ void VideoAndColorDialog::update_controls(void)
     return;
 }
 
-void VideoAndColorDialog::set_controls_enabled(const bool state)
+void SignalDialog::set_controls_enabled(const bool state)
 {
+    // Note: At the time of this writing, this function gets called only
+    // to notify the dialog that the input signal has been lost (state ==
+    // false) or gained (state == true).
+    VIDEO_MODE_UPTIME.restart();
     ui->groupBox_videoAdjust->setEnabled(state);
-    ui->groupBox_meta->setEnabled(state);
-
     update_information_table(state);
 
     return;
 }
 
-void VideoAndColorDialog::update_information_table(const bool isReceivingSignal)
+void SignalDialog::update_information_table(const bool isReceivingSignal)
 {
     if (isReceivingSignal)
     {
         const resolution_s resolution = kc_capture_api().get_resolution();
         const unsigned refreshRate = kc_capture_api().get_refresh_rate();
 
-        ui->tableWidget_propertyTable->modify_property("Refresh rate", QString::number(refreshRate));
+        ui->tableWidget_propertyTable->modify_property("Refresh rate", QString("%1 Hz").arg(QString::number(refreshRate)));
         ui->tableWidget_propertyTable->modify_property("Resolution", QString("%1 x %2").arg(resolution.w)
                                                                                        .arg(resolution.h));
     }
@@ -372,7 +377,7 @@ void VideoAndColorDialog::update_information_table(const bool isReceivingSignal)
 
 // Tally up all the current video and color settings from the GUI, and ask the
 // capture card to adopt them.
-void VideoAndColorDialog::broadcast_settings(void)
+void SignalDialog::broadcast_settings(void)
 {
     if (!CONTROLS_LIVE_UPDATE) return;
 
@@ -401,8 +406,11 @@ void VideoAndColorDialog::broadcast_settings(void)
 
 // Activates a user-facing visual indication that there are unsaved changes in
 // the dialog.
-void VideoAndColorDialog::flag_unsaved_changes(void)
+void SignalDialog::flag_unsaved_changes(void)
 {
+    /// Disabled for now.
+    return;
+
     if (!this->windowTitle().startsWith("*"))
     {
         this->setWindowTitle(this->windowTitle().prepend("*"));
@@ -413,7 +421,7 @@ void VideoAndColorDialog::flag_unsaved_changes(void)
 
 // Deactivates the user-facing visual indication that there are unsaved changes
 // in the dialog.
-void VideoAndColorDialog::remove_unsaved_changes_flag(void)
+void SignalDialog::remove_unsaved_changes_flag(void)
 {
     if (this->windowTitle().startsWith("*"))
     {
@@ -424,18 +432,18 @@ void VideoAndColorDialog::remove_unsaved_changes_flag(void)
 }
 
 // Called to inform the dialog of a new source file for video and color parameters.
-void VideoAndColorDialog::receive_new_mode_settings_filename(const QString &filename)
+void SignalDialog::receive_new_mode_settings_filename(const QString &filename)
 {
     const QString newWindowTitle = QString("%1%2 - %3").arg(this->windowTitle().startsWith("*")? "*" : "")
                                                        .arg(BASE_WINDOW_TITLE)
-                                                       .arg(filename);
+                                                       .arg(QFileInfo(filename).fileName());
 
     this->setWindowTitle(newWindowTitle);
 
     return;
 }
 
-void VideoAndColorDialog::save_settings(void)
+void SignalDialog::save_settings(void)
 {
     QString filename = QFileDialog::getSaveFileName(this,
                                                     "Save video and color settings as...", "",
@@ -456,7 +464,7 @@ void VideoAndColorDialog::save_settings(void)
     return;
 }
 
-void VideoAndColorDialog::load_settings(void)
+void SignalDialog::load_settings(void)
 {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     "Load video and color settings from...", "",

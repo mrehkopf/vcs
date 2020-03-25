@@ -14,11 +14,11 @@
 
 class OutputResolutionDialog;
 class InputResolutionDialog;
-class VideoAndColorDialog;
 class FilterGraphDialog;
 class AntiTearDialog;
 class OverlayDialog;
 class RecordDialog;
+class SignalDialog;
 class AliasDialog;
 class AboutDialog;
 
@@ -138,7 +138,7 @@ private:
 
     OutputResolutionDialog *outputResolutionDlg = nullptr;
     InputResolutionDialog *inputResolutionDlg = nullptr;
-    VideoAndColorDialog *videoDlg = nullptr;
+    SignalDialog *signalDlg = nullptr;
     FilterGraphDialog *filterGraphDlg = nullptr;
     AntiTearDialog *antitearDlg = nullptr;
     OverlayDialog *overlayDlg = nullptr;
