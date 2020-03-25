@@ -756,8 +756,6 @@ void capture_api_rgbeasy_s::mark_frame_buffer_as_processed(void)
 {
     CNT_FRAMES_PROCESSED = CNT_FRAMES_CAPTURED.load();
 
-    this->skipNextNumFrames -= bool(this->skipNextNumFrames);
-
     FRAME_BUFFER.processed = true;
 
     return;
@@ -998,10 +996,6 @@ bool capture_api_rgbeasy_s::set_color_depth(const unsigned bpp)
         goto fail;
     }
 
-    // Ignore the next frame to avoid displaying some visual corruption from
-    // switching the bit depth.
-    this->skipNextNumFrames += 1;
-
     return true;
 
     fail:
@@ -1083,9 +1077,6 @@ bool capture_api_rgbeasy_s::set_resolution(const resolution_s &r)
         goto fail;
     }
 
-    // Avoid garbage in the frame buffer while the resolution changes.
-    this->skipNextNumFrames += 2;
-
     return true;
 
     fail:
@@ -1121,11 +1112,6 @@ bool capture_api_rgbeasy_s::are_frames_being_dropped(void) const
 bool capture_api_rgbeasy_s::is_capturing(void) const
 {
     return this->captureIsActive;
-}
-
-bool capture_api_rgbeasy_s::should_current_frame_be_skipped(void) const
-{
-    return bool(this->skipNextNumFrames > 0);
 }
 
 bool capture_api_rgbeasy_s::has_invalid_signal(void) const

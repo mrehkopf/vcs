@@ -467,12 +467,7 @@ void ks_scale_frame(const captured_frame_s &frame)
 
     // Verify that we have a workable frame.
     {
-        if (kc_capture_api().should_current_frame_be_skipped())
-        {
-            DEBUG(("Skipping a frame, as requested."));
-            goto done;
-        }
-        else if (frame.r.bpp != 16 && frame.r.bpp != 24 && frame.r.bpp != 32)
+        if (frame.r.bpp != 16 && frame.r.bpp != 24 && frame.r.bpp != 32)
         {
             NBENE(("Was asked to scale a frame with an incompatible bit depth (%u). Ignoring it.",
                     frame.r.bpp));

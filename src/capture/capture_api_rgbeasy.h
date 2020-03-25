@@ -55,7 +55,6 @@ struct capture_api_rgbeasy_s : public capture_api_s
     uint get_color_depth(void) const override;
     bool are_frames_being_dropped(void) const override;
     bool is_capturing(void) const override;
-    bool should_current_frame_be_skipped(void) const override;
     bool has_invalid_signal(void) const override;
     bool has_no_signal(void) const override;
     capture_pixel_format_e get_pixel_format(void) const override;
@@ -112,11 +111,6 @@ private:
     // thread notifies us of such an event; and reset back to false when we've
     // handled that event.
     bool rgbeasyCaptureEventFlags[static_cast<int>(capture_event_e::num_enumerators)] = {false};
-
-    // If > 0, the next n captured frames should be ignored by the rest of VCS.
-    // This can be useful e.g. to avoid displaying the one or two garbles frames
-    // that may occur when changing video modes.
-    unsigned skipNextNumFrames = 0;
 };
 
 #endif
