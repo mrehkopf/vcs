@@ -6,6 +6,9 @@
 #include "capture/capture.h"
 #include "capture/alias.h"
 
+static std::atomic<unsigned int> CNT_FRAMES_PROCESSED(0);
+static std::atomic<unsigned int> CNT_FRAMES_CAPTURED(0);
+
 // Frames sent by the capture hardware will be stored here for processing.
 static captured_frame_s FRAME_BUFFER;
 
@@ -55,11 +58,13 @@ namespace rgbeasy_callbacks_n
         // If the hardware is sending us a new frame while we're still unfinished
         // with processing the previous frame. In that case, we'll need to skip
         // this new frame.
-        if (!thisPtr->try_to_lock_rgbeasy_mutex())
+        if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
         {
             NUM_NEW_FRAME_EVENTS_SKIPPED++;
             return;
         }
+
+        std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
 
         // Ignore new callback events if the user has signaled to quit the program.
         if (PROGRAM_EXIT_REQUESTED)
@@ -99,7 +104,7 @@ namespace rgbeasy_callbacks_n
         thisPtr->push_capture_event(capture_event_e::new_frame);
 
         done:
-        thisPtr->unlock_rgbeasy_mutex();
+        CNT_FRAMES_CAPTURED++;
         return;
     }
 
@@ -108,7 +113,7 @@ namespace rgbeasy_callbacks_n
     {
         const auto thisPtr = reinterpret_cast<capture_api_rgbeasy_s*>(_thisPtr);
 
-        thisPtr->lock_rgbeasy_mutex();
+        std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
 
         // Ignore new callback events if the user has signaled to quit the program.
         if (PROGRAM_EXIT_REQUESTED)
@@ -122,7 +127,6 @@ namespace rgbeasy_callbacks_n
         RECEIVING_A_SIGNAL = true;
 
         done:
-        thisPtr->unlock_rgbeasy_mutex();
         return;
     }
 
@@ -131,7 +135,7 @@ namespace rgbeasy_callbacks_n
     {
         const auto thisPtr = reinterpret_cast<capture_api_rgbeasy_s*>(_thisPtr);
 
-        thisPtr->lock_rgbeasy_mutex();
+        std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
 
         // Ignore new callback events if the user has signaled to quit the program.
         if (PROGRAM_EXIT_REQUESTED)
@@ -148,7 +152,6 @@ namespace rgbeasy_callbacks_n
         RECEIVING_A_SIGNAL = false;
 
         done:
-        thisPtr->unlock_rgbeasy_mutex();
         return;
     }
 
@@ -157,7 +160,7 @@ namespace rgbeasy_callbacks_n
     {
         const auto thisPtr = reinterpret_cast<capture_api_rgbeasy_s*>(_thisPtr);
 
-        thisPtr->lock_rgbeasy_mutex();
+        std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
 
         // Let the card apply its own 'no signal' handler as well, just in case.
         RGBNoSignal(thisPtr->rgbeasy_capture_handle());
@@ -166,7 +169,6 @@ namespace rgbeasy_callbacks_n
 
         RECEIVING_A_SIGNAL = false;
 
-        thisPtr->unlock_rgbeasy_mutex();
         return;
     }
 
@@ -174,13 +176,12 @@ namespace rgbeasy_callbacks_n
     {
         const auto thisPtr = reinterpret_cast<capture_api_rgbeasy_s*>(_thisPtr);
 
-        thisPtr->lock_rgbeasy_mutex();
+        std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
 
         thisPtr->push_capture_event(capture_event_e::unrecoverable_error);
 
         RECEIVING_A_SIGNAL = false;
 
-        thisPtr->unlock_rgbeasy_mutex();
         return;
     }
 #endif
@@ -533,25 +534,6 @@ bool capture_api_rgbeasy_s::device_supports_yuv(void) const
     return bool(isSupported);
 }
 
-void capture_api_rgbeasy_s::lock_rgbeasy_mutex(void)
-{
-    this->rgbeasyCallbackMutex.lock();
-
-    return;
-}
-
-bool capture_api_rgbeasy_s::try_to_lock_rgbeasy_mutex(void)
-{
-    return this->rgbeasyCallbackMutex.try_lock();
-}
-
-void capture_api_rgbeasy_s::unlock_rgbeasy_mutex(void)
-{
-    this->rgbeasyCallbackMutex.unlock();
-
-    return;
-}
-
 HRGB capture_api_rgbeasy_s::rgbeasy_capture_handle(void)
 {
     return this->captureHandle;
@@ -765,28 +747,24 @@ resolution_s capture_api_rgbeasy_s::get_maximum_resolution(void) const
     return r;
 }
 
-const captured_frame_s& capture_api_rgbeasy_s::reserve_frame_buffer(void)
+const captured_frame_s& capture_api_rgbeasy_s::get_frame_buffer(void)
 {
-    rgbeasyCallbackMutex.lock();
-
     return FRAME_BUFFER;
 }
 
-void capture_api_rgbeasy_s::unreserve_frame_buffer(void)
+void capture_api_rgbeasy_s::mark_frame_buffer_as_processed(void)
 {
+    CNT_FRAMES_PROCESSED = CNT_FRAMES_CAPTURED.load();
+
     this->skipNextNumFrames -= bool(this->skipNextNumFrames);
 
     FRAME_BUFFER.processed = true;
-
-    rgbeasyCallbackMutex.unlock();
 
     return;
 }
 
 capture_event_e capture_api_rgbeasy_s::pop_capture_event_queue(void)
 {
-    std::lock_guard<std::mutex> lock(rgbeasyCallbackMutex);
-
     if (pop_capture_event(capture_event_e::unrecoverable_error))
     {
         return capture_event_e::unrecoverable_error;
@@ -814,7 +792,7 @@ capture_event_e capture_api_rgbeasy_s::pop_capture_event_queue(void)
 
 signal_info_s capture_api_rgbeasy_s::get_signal_info(void) const
 {
-    if (kc_capture_api().no_signal())
+    if (this->has_no_signal())
     {
         NBENE(("Tried to query the capture signal while no signal was being received."));
         return {0};
@@ -879,7 +857,7 @@ bool capture_api_rgbeasy_s::assign_video_signal_params_for_resolution(const reso
 
 void capture_api_rgbeasy_s::set_video_signal_parameters(const video_signal_parameters_s p)
 {
-    if (kc_capture_api().no_signal())
+    if (this->has_no_signal())
     {
         DEBUG(("Was asked to set capture video params while there was no signal. "
                "Ignoring the request."));
@@ -1039,7 +1017,7 @@ void capture_api_rgbeasy_s::apply_new_capture_resolution(void)
     if ((resolution.w != aliasedRes.w) ||
         (resolution.h != aliasedRes.h))
     {
-        if (!kc_capture_api().set_resolution(aliasedRes))
+        if (!this->set_resolution(aliasedRes))
         {
             NBENE(("Failed to apply an alias."));
         }
@@ -1070,7 +1048,7 @@ bool capture_api_rgbeasy_s::set_resolution(const resolution_s &r)
 
     unsigned long wd = 0, hd = 0;
 
-    const auto currentInputRes = kc_capture_api().get_resolution();
+    const auto currentInputRes = this->get_resolution();
     if (r.w == currentInputRes.w &&
         r.h == currentInputRes.h)
     {
@@ -1140,7 +1118,7 @@ bool capture_api_rgbeasy_s::are_frames_being_dropped(void) const
     return bool(NUM_NEW_FRAME_EVENTS_SKIPPED > 0);
 }
 
-bool capture_api_rgbeasy_s::is_capture_active(void) const
+bool capture_api_rgbeasy_s::is_capturing(void) const
 {
     return this->captureIsActive;
 }
@@ -1150,12 +1128,12 @@ bool capture_api_rgbeasy_s::should_current_frame_be_skipped(void) const
     return bool(this->skipNextNumFrames > 0);
 }
 
-bool capture_api_rgbeasy_s::is_signal_invalid(void) const
+bool capture_api_rgbeasy_s::has_invalid_signal(void) const
 {
     return IS_SIGNAL_INVALID;
 }
 
-bool capture_api_rgbeasy_s::no_signal(void) const
+bool capture_api_rgbeasy_s::has_no_signal(void) const
 {
     return !RECEIVING_A_SIGNAL;
 }

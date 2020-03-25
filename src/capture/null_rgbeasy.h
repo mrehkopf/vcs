@@ -23,6 +23,7 @@
 #endif
 
 // Functions.
+#define RGBGetCaptureState(...)             NULL_RGBEASY_FUNCTION("RGBGetCaptureState")
 #define RGBSetErrorFn(...)                  NULL_RGBEASY_FUNCTION("RGBSetErrorFn")
 #define RGBGetOutputSize(...)               NULL_RGBEASY_FUNCTION("RGBGetOutputSize")
 #define RGBSetFrameCapturedFn(...)          NULL_RGBEASY_FUNCTION("RGBSetFrameCapturedFn")

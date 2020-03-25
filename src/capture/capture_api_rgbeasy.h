@@ -23,9 +23,6 @@
 struct capture_api_rgbeasy_s : public capture_api_s
 {
     // Convenience getters for the RGBEasy thread to call.
-    void lock_rgbeasy_mutex(void);
-    bool try_to_lock_rgbeasy_mutex(void);
-    void unlock_rgbeasy_mutex(void);
     HRGB rgbeasy_capture_handle(void);
     void push_capture_event(capture_event_e event);
 
@@ -57,14 +54,14 @@ struct capture_api_rgbeasy_s : public capture_api_s
     uint get_input_channel_idx(void) const override;
     uint get_color_depth(void) const override;
     bool are_frames_being_dropped(void) const override;
-    bool is_capture_active(void) const override;
+    bool is_capturing(void) const override;
     bool should_current_frame_be_skipped(void) const override;
-    bool is_signal_invalid(void) const override;
-    bool no_signal(void) const override;
+    bool has_invalid_signal(void) const override;
+    bool has_no_signal(void) const override;
     capture_pixel_format_e get_pixel_format(void) const override;
     const std::vector<video_signal_parameters_s>& get_mode_params(void) const override;
-    const captured_frame_s& reserve_frame_buffer(void) override;
-    void unreserve_frame_buffer(void) override;
+    const captured_frame_s& get_frame_buffer(void) override;
+    void mark_frame_buffer_as_processed(void) override;
     capture_event_e pop_capture_event_queue(void) override;
     void assign_video_signal_parameter_sets(const std::vector<video_signal_parameters_s> &modeParams) override;
     virtual void set_video_signal_parameters(const video_signal_parameters_s p) override;
@@ -98,13 +95,7 @@ private:
 
     // Converts VCS's pixel format into the RGBEasy pixel format.
     PIXELFORMAT pixel_format_to_rgbeasy_pixel_format(capture_pixel_format_e fmt);
-
-    // A mutex to direct access to data between the main thead and the RGBEasy
-    // callback thread. For instance, the RGBEasy thread will lock this while
-    // it's uploading frame data, and the main thread will lock this while it's
-    // processing said data.
-    std::mutex rgbeasyCallbackMutex;
-
+    
     HRGB captureHandle = 0;
 
     HRGBDLL rgbAPIHandle = 0;

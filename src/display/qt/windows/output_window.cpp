@@ -739,7 +739,7 @@ bool MainWindow::is_mouse_wheel_scaling_allowed(void)
 //
 QImage MainWindow::overlay_image(void)
 {
-    if (!kc_capture_api().no_signal() &&
+    if (!kc_capture_api().has_no_signal() &&
         overlayDlg != nullptr &&
         overlayDlg->is_overlay_enabled())
     {
@@ -784,7 +784,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 
     // Show a magnifying glass effect which blows up part of the captured image.
     static QLabel *magnifyingGlass = nullptr;
-    if (!kc_capture_api().no_signal() &&
+    if (!kc_capture_api().has_no_signal() &&
         this->isActiveWindow() &&
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
         (QGuiApplication::mouseButtons() & Qt::RightButton))
@@ -934,7 +934,7 @@ void MainWindow::set_keyboard_shortcuts(void)
         else this->showFullScreen();
     });
 
-    connect(keyboardShortcut("f5"), &QShortcut::activated, []{if (!kc_capture_api().no_signal()) ALIGN_CAPTURE = true;});
+    connect(keyboardShortcut("f5"), &QShortcut::activated, []{if (!kc_capture_api().has_no_signal()) ALIGN_CAPTURE = true;});
 
     // Make Ctrl + Shift + <x> toggle the various dialogs' functionality on/off.
     connect(keyboardShortcut("ctrl+shift+f"), &QShortcut::activated, [=]{this->filterGraphDlg->toggle_filtering();});
@@ -999,11 +999,11 @@ void MainWindow::update_window_title()
 {
     QString title = PROGRAM_NAME;
 
-    if (kc_capture_api().no_signal())
+    if (kc_capture_api().has_no_signal())
     {
         title = QString("%1 - No signal").arg(PROGRAM_NAME);
     }
-    else if (kc_capture_api().is_signal_invalid())
+    else if (kc_capture_api().has_invalid_signal())
     {
         title = QString("%1 - Invalid signal").arg(PROGRAM_NAME);
     }
@@ -1082,7 +1082,7 @@ void MainWindow::update_video_mode_params(void)
 
 void MainWindow::update_capture_signal_info(void)
 {
-    if (kc_capture_api().no_signal())
+    if (kc_capture_api().has_no_signal())
     {
         DEBUG(("Was asked to update GUI input info while there was no signal."));
     }

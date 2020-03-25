@@ -64,6 +64,8 @@ static bool initialize_all(void)
 
 static capture_event_e process_next_capture_event(void)
 {
+    std::lock_guard<std::mutex> lock(kc_capture_api().captureMutex);
+
     const capture_event_e e = kc_capture_api().pop_capture_event_queue();
 
     switch (e)

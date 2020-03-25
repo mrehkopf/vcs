@@ -199,16 +199,14 @@ void kpropagate_news_of_gained_capture_signal(void)
 // The capture hardware has sent us a new captured frame.
 void kpropagate_news_of_new_captured_frame(void)
 {
-    const auto newFrame = kc_capture_api().reserve_frame_buffer();
-
-    ks_scale_frame(newFrame);
+    ks_scale_frame(kc_capture_api().get_frame_buffer());
 
     if (krecord_is_recording())
     {
         krecord_record_new_frame();
     }
 
-    kc_capture_api().unreserve_frame_buffer();
+    kc_capture_api().mark_frame_buffer_as_processed();
 
     kd_redraw_output_window();
 
@@ -230,7 +228,7 @@ void kpropagate_forced_capture_resolution(const resolution_s &r)
     const resolution_s min = kc_capture_api().get_minimum_resolution();
     const resolution_s max = kc_capture_api().get_maximum_resolution();
 
-    if (kc_capture_api().no_signal())
+    if (kc_capture_api().has_no_signal())
     {
         DEBUG(("Was asked to change the input resolution while the capture card was not receiving a signal. Ignoring the request."));
         goto done;

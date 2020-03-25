@@ -16,7 +16,7 @@ bool capture_api_virtual_s::release(void)
     return true;
 }
 
-const captured_frame_s &capture_api_virtual_s::reserve_frame_buffer(void)
+const captured_frame_s &capture_api_virtual_s::get_frame_buffer(void)
 {
     return this->frameBuffer;
 }
@@ -40,7 +40,7 @@ capture_event_e capture_api_virtual_s::pop_capture_event_queue(void)
     }
 }
 
-void capture_api_virtual_s::unreserve_frame_buffer(void)
+void capture_api_virtual_s::mark_frame_buffer_as_processed(void)
 {
     this->animate_frame_buffer();
 

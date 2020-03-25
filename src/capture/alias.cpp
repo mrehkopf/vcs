@@ -69,7 +69,11 @@ void ka_set_aliases(const std::vector<mode_alias_s> &aliases)
 {
     ALIASES = aliases;
 
-    if (!kc_capture_api().no_signal())
+    if (kc_capture_api().has_no_signal())
+    {
+        return;
+    }
+    else
     {
         // If one of the aliases matches the current input resolution, change the
         // resolution accordingly.

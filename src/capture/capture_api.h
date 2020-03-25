@@ -11,6 +11,7 @@
 #define CAPTURE_API_H
 
 #include <string>
+#include <mutex>
 #include "common/globals.h"
 #include "display/display.h"
 #include "capture/capture.h"
@@ -55,15 +56,15 @@ struct capture_api_s
     virtual uint                      get_color_depth(void)                     const = 0;
     virtual capture_pixel_format_e    get_pixel_format(void)                    const = 0;
     virtual bool                      are_frames_being_dropped(void)            const = 0;
-    virtual bool                      is_capture_active(void)                   const = 0;
     virtual bool                      should_current_frame_be_skipped(void)     const = 0;
-    virtual bool                      is_signal_invalid(void)                   const = 0;
-    virtual bool                      no_signal(void)                           const = 0;
+    virtual bool                      has_invalid_signal(void)                  const = 0;
+    virtual bool                      has_no_signal(void)                       const = 0;
+    virtual bool                      is_capturing(void)                        const = 0;
     virtual const std::vector<video_signal_parameters_s>& get_mode_params(void) const = 0;
 
     // Setters.
-    virtual const captured_frame_s& reserve_frame_buffer(void)                                     = 0;
-    virtual void                    unreserve_frame_buffer(void)                                   = 0;
+    virtual const captured_frame_s& get_frame_buffer(void)                                         = 0;
+    virtual void                    mark_frame_buffer_as_processed(void)                           = 0;
     virtual capture_event_e         pop_capture_event_queue(void)                                  = 0;
     virtual void                    assign_video_signal_parameter_sets(const std::vector<video_signal_parameters_s> &p) { (void)p; return; }
     virtual void                    set_video_signal_parameters(const video_signal_parameters_s p) { (void)p;      return;       }
@@ -74,6 +75,11 @@ struct capture_api_s
     virtual void                    apply_new_capture_resolution(void)                             {               return;       }
     virtual void                    reset_missed_frames_count(void)                                {               return;       }
     virtual bool                    set_resolution(const resolution_s &r)                          { (void)r;      return false; }
+
+    // If the capture API runs in a separate thread that modifies the API's
+    // state, that thread should lock this mutex while about it; and the main
+    // VCS thread will also lock this when accessing that state.
+    std::mutex captureMutex;
 };
 
 #endif
