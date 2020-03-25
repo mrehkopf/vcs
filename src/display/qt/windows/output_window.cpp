@@ -880,7 +880,7 @@ void MainWindow::measure_framerate()
         UPDATE_LATENCY_AVG = (avgProcessTime / numFramesDrawn);
         UPDATE_LATENCY_PEAK = peakProcessTime;
 
-        this->update_output_framerate(fps, kc_capture_api().are_frames_being_dropped());
+        this->update_output_framerate(fps, kc_capture_api().get_missed_frames_count());
         kc_capture_api().reset_missed_frames_count();
 
         numFramesDrawn = 0;
@@ -1020,7 +1020,7 @@ void MainWindow::update_window_title()
         if (kat_is_anti_tear_enabled()) programStatus << "A";
 
         title = QString("%1%2 - %3%4 x %5 scaled to %6 x %7 (~%8%)")
-                .arg(kc_capture_api().are_frames_being_dropped()? "{!} " : "")
+                .arg((kc_capture_api().get_missed_frames_count() > 0)? "{!} " : "")
                 .arg(PROGRAM_NAME)
                 .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
                 .arg(inRes.w)

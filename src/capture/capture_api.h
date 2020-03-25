@@ -55,7 +55,6 @@ struct capture_api_s
     virtual unsigned                  get_refresh_rate(void)                    const = 0;
     virtual uint                      get_color_depth(void)                     const = 0;
     virtual capture_pixel_format_e    get_pixel_format(void)                    const = 0;
-    virtual bool                      are_frames_being_dropped(void)            const = 0;
     virtual bool                      has_invalid_signal(void)                  const = 0;
     virtual bool                      has_no_signal(void)                       const = 0;
     virtual bool                      is_capturing(void)                        const = 0;

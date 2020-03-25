@@ -1094,11 +1094,6 @@ uint capture_api_rgbeasy_s::get_color_depth(void) const
     }
 }
 
-bool capture_api_rgbeasy_s::are_frames_being_dropped(void) const
-{
-    return bool(NUM_NEW_FRAME_EVENTS_SKIPPED > 0);
-}
-
 bool capture_api_rgbeasy_s::is_capturing(void) const
 {
     return this->captureIsActive;

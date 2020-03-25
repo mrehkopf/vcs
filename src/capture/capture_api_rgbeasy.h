@@ -53,7 +53,6 @@ struct capture_api_rgbeasy_s : public capture_api_s
     uint get_missed_frames_count(void) const override;
     uint get_input_channel_idx(void) const override;
     uint get_color_depth(void) const override;
-    bool are_frames_being_dropped(void) const override;
     bool is_capturing(void) const override;
     bool has_invalid_signal(void) const override;
     bool has_no_signal(void) const override;
