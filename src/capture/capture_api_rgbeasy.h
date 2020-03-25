@@ -96,9 +96,6 @@ private:
 
     HRGBDLL rgbAPIHandle = 0;
 
-    // The pixel format in which the capture device sends captured frames.
-    capture_pixel_format_e capturePixelFormat = capture_pixel_format_e::rgb_888;
-
     // Set to 1 if we're currently capturing.
     bool captureIsActive = false;
 

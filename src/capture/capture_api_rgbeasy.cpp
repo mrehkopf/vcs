@@ -10,6 +10,9 @@
 static std::atomic<unsigned int> CNT_FRAMES_PROCESSED(0);
 static std::atomic<unsigned int> CNT_FRAMES_CAPTURED(0);
 
+// The pixel format in which the capture device sends captured frames.
+static capture_pixel_format_e CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_888;
+
 // Frames sent by the capture hardware will be stored here for processing.
 static captured_frame_s FRAME_BUFFER;
 
@@ -97,6 +100,7 @@ namespace rgbeasy_callbacks_n
         FRAME_BUFFER.r.w = frameInfo->biWidth;
         FRAME_BUFFER.r.h = abs(frameInfo->biHeight);
         FRAME_BUFFER.r.bpp = frameInfo->biBitCount;
+        FRAME_BUFFER.pixelFormat = CAPTURE_PIXEL_FORMAT;
 
         // Copy the frame's data into our local buffer so we can work on it.
         memcpy(FRAME_BUFFER.pixels.ptr(), (u8*)frameData,
@@ -269,7 +273,7 @@ bool capture_api_rgbeasy_s::initialize_hardware(void)
     if (!apicall_succeeded(RGBOpenInput(INPUT_CHANNEL_IDX,      &this->captureHandle)) ||
         !apicall_succeeded(RGBSetFrameDropping(this->captureHandle,   FRAME_SKIP)) ||
         !apicall_succeeded(RGBSetDMADirect(this->captureHandle,       FALSE)) ||
-        !apicall_succeeded(RGBSetPixelFormat(this->captureHandle,     pixel_format_to_rgbeasy_pixel_format(this->capturePixelFormat))) ||
+        !apicall_succeeded(RGBSetPixelFormat(this->captureHandle,     pixel_format_to_rgbeasy_pixel_format(CAPTURE_PIXEL_FORMAT))) ||
         !apicall_succeeded(RGBUseOutputBuffers(this->captureHandle,   FALSE)) ||
         !apicall_succeeded(RGBSetFrameCapturedFn(this->captureHandle, rgbeasy_callbacks_n::frame_captured,     (ULONG_PTR)this)) ||
         !apicall_succeeded(RGBSetModeChangedFn(this->captureHandle,   rgbeasy_callbacks_n::video_mode_changed, (ULONG_PTR)this)) ||
@@ -934,19 +938,19 @@ bool capture_api_rgbeasy_s::set_input_channel(const unsigned idx)
 
 bool capture_api_rgbeasy_s::set_color_depth(const unsigned bpp)
 {
-    const capture_pixel_format_e previousFormat = this->capturePixelFormat;
+    const capture_pixel_format_e previousFormat = CAPTURE_PIXEL_FORMAT;
 
     switch (bpp)
     {
-        case 24: this->capturePixelFormat = capture_pixel_format_e::rgb_888; break;
-        case 16: this->capturePixelFormat = capture_pixel_format_e::rgb_565; break;
-        case 15: this->capturePixelFormat = capture_pixel_format_e::rgb_555; break;
+        case 24: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_888; break;
+        case 16: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_565; break;
+        case 15: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_555; break;
         default: k_assert(0, "Was asked to set an unknown pixel format."); break;
     }
 
-    if (!apicall_succeeded(RGBSetPixelFormat(this->captureHandle, pixel_format_to_rgbeasy_pixel_format(this->capturePixelFormat))))
+    if (!apicall_succeeded(RGBSetPixelFormat(this->captureHandle, pixel_format_to_rgbeasy_pixel_format(CAPTURE_PIXEL_FORMAT))))
     {
-        this->capturePixelFormat = previousFormat;
+        CAPTURE_PIXEL_FORMAT = previousFormat;
 
         goto fail;
     }
@@ -1050,7 +1054,7 @@ uint capture_api_rgbeasy_s::get_input_channel_idx(void) const
 
 uint capture_api_rgbeasy_s::get_color_depth(void) const
 {
-    switch (this->capturePixelFormat)
+    switch (CAPTURE_PIXEL_FORMAT)
     {
         case capture_pixel_format_e::rgb_888: return 32;
         case capture_pixel_format_e::rgb_565: return 16;
@@ -1076,5 +1080,5 @@ bool capture_api_rgbeasy_s::has_no_signal(void) const
 
 capture_pixel_format_e capture_api_rgbeasy_s::get_pixel_format(void) const
 {
-    return this->capturePixelFormat;
+    return CAPTURE_PIXEL_FORMAT;
 }

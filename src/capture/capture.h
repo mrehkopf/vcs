@@ -44,6 +44,7 @@ enum class capture_event_e
 struct captured_frame_s
 {
     resolution_s r;
+    capture_pixel_format_e pixelFormat;
 
     heap_bytes_s<u8> pixels;
 

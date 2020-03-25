@@ -400,10 +400,15 @@ void ks_release_scaler(void)
     return;
 }
 
-// Converts the given frame to BGRA format.
-//
+// Converts the given non-BGRA frame into the BGRA format.
 void s_convert_frame_to_bgra(const captured_frame_s &frame)
 {
+    // RGB888 frames are already stored in BGRA format.
+    if (frame.pixelFormat == capture_pixel_format_e::rgb_888)
+    {
+        return;
+    }
+
     #ifdef USE_OPENCV
         u32 conversionType = 0;
         const u32 numColorChan = (frame.r.bpp / 8);
@@ -415,19 +420,18 @@ void s_convert_frame_to_bgra(const captured_frame_s &frame)
                  "Was asked to convert a frame's color depth, but the color conversion buffer "
                  "was null.");
 
-        if (kc_capture_api().get_pixel_format() == capture_pixel_format_e::rgb_565)
+        if (frame.pixelFormat == capture_pixel_format_e::rgb_565)
         {
             conversionType = CV_BGR5652BGRA;
         }
-        else if (kc_capture_api().get_pixel_format() == capture_pixel_format_e::rgb_555)
+        else if (frame.pixelFormat == capture_pixel_format_e::rgb_555)
         {
             conversionType = CV_BGR5552BGRA;
         }
-        else // The third pixel format we recognize is RGB_888; it should never need this conversion, as it arrives in BGRA.
+        else // Unknown type, try to guesstimate it.
         {
-            // k_assert(0, "Was asked to scale a frame from an unknown pixel format.");
-             NBENE(("Detected an unknown output pixel format (depth: %u) while converting a frame to BGRA. Attempting to guess its type...",
-                    frame.r.bpp));
+            NBENE(("Detected an unknown output pixel format (depth: %u) while converting a frame to BGRA. Attempting to guess its type...",
+                   frame.r.bpp));
 
             if (frame.r.bpp == 32)
             {
@@ -485,10 +489,9 @@ void ks_scale_frame(const captured_frame_s &frame)
             NBENE(("Was asked to scale a null frame. Ignoring it."));
             goto done;
         }
-        else if (frame.r.bpp != kc_capture_api().get_color_depth())
+        else if (frame.pixelFormat != kc_capture_api().get_pixel_format())
         {
-            NBENE(("Was asked to scale a frame whose bit depth (%u bits) differed from the expected (%u bits). Ignoring it.",
-                   frame.r.bpp, kc_capture_api().get_color_depth()));
+            NBENE(("Was asked to scale a frame whose pixel format differed from the expected. Ignoring it."));
             goto done;
         }
         else if (frame.r.bpp > MAX_OUTPUT_BPP)
