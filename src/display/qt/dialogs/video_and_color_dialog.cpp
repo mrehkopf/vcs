@@ -319,10 +319,12 @@ void VideoAndColorDialog::update_mode_label(const bool isEnabled)
 {
     if (isEnabled)
     {
-        const auto signal = kc_capture_api().get_signal_info();
-        const QString labelStr = QString("%1 x %2 @ %3 Hz").arg(signal.r.w)
-                                                           .arg(signal.r.h)
-                                                           .arg(signal.refreshRate);
+        const resolution_s resolution = kc_capture_api().get_resolution();
+        const unsigned refreshRate = kc_capture_api().get_refresh_rate();
+
+        const QString labelStr = QString("%1 x %2 @ %3 Hz").arg(resolution.w)
+                                                           .arg(resolution.h)
+                                                           .arg(refreshRate);
 
         ui->label_currentInputMode->setText(labelStr);
     }

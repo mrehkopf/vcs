@@ -23,8 +23,6 @@
 // A new input video mode (e.g. resolution) has been set.
 void kpropagate_news_of_new_capture_video_mode(void)
 {
-    const signal_info_s s = kc_capture_api().get_signal_info();
-
     /// TODO: We only need to do this if this new video mode follows a period of
     /// no video mode, i.e. no signal.
     kpropagate_news_of_gained_capture_signal();
@@ -33,7 +31,7 @@ void kpropagate_news_of_new_capture_video_mode(void)
 
     kd_update_capture_signal_info();
 
-    ks_set_output_base_resolution(s.r, false);
+    ks_set_output_base_resolution(kc_capture_api().get_resolution(), false);
 
     kd_redraw_output_window();
 

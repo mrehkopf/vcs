@@ -788,7 +788,7 @@ capture_event_e capture_api_rgbeasy_s::pop_capture_event_queue(void)
     return (RECEIVING_A_SIGNAL? capture_event_e::none : capture_event_e::sleep);
 }
 
-signal_info_s capture_api_rgbeasy_s::get_signal_info(void) const
+unsigned capture_api_rgbeasy_s::get_refresh_rate(void) const
 {
     if (this->has_no_signal())
     {
@@ -796,27 +796,17 @@ signal_info_s capture_api_rgbeasy_s::get_signal_info(void) const
         return {0};
     }
 
-    signal_info_s s = {0};
-
     RGBMODEINFO mi = {0};
     mi.Size = sizeof(mi);
 
     if (apicall_succeeded(RGBGetModeInfo(this->captureHandle, &mi)))
     {
-        s.isInterlaced = mi.BInterlaced;
-        s.isDigital = mi.BDVI;
-        s.refreshRate = round(mi.RefreshRate / 1000.0);
+        return round(mi.RefreshRate / 1000.0);
     }
     else
     {
-        s.isInterlaced = 0;
-        s.isDigital = false;
-        s.refreshRate = 0;
+        return 0;
     }
-
-    s.r = this->get_resolution();
-
-    return s;
 }
 
 void capture_api_rgbeasy_s::assign_video_signal_parameter_sets(const std::vector<video_signal_parameters_s> &modeParams)
@@ -1020,7 +1010,7 @@ void capture_api_rgbeasy_s::apply_new_capture_resolution(void)
 
     this->assign_video_signal_params_for_resolution(resolution);
 
-    INFO(("New video mode: %u x %u @ %u Hz.", resolution.w, resolution.h, this->get_signal_info().refreshRate));
+    INFO(("New video mode: %u x %u @ %u Hz.", resolution.w, resolution.h, this->get_refresh_rate()));
 
     return;
 }

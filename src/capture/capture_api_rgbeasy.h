@@ -49,7 +49,7 @@ struct capture_api_rgbeasy_s : public capture_api_s
     resolution_s get_resolution(void) const override;
     resolution_s get_minimum_resolution(void) const override;
     resolution_s get_maximum_resolution(void) const override;
-    signal_info_s get_signal_info(void) const override;
+    unsigned get_refresh_rate(void) const override;
     uint get_missed_frames_count(void) const override;
     uint get_input_channel_idx(void) const override;
     uint get_color_depth(void) const override;

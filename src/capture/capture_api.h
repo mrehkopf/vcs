@@ -50,9 +50,9 @@ struct capture_api_s
     virtual resolution_s              get_resolution(void)                      const = 0;
     virtual resolution_s              get_minimum_resolution(void)              const = 0;
     virtual resolution_s              get_maximum_resolution(void)              const = 0;
-    virtual signal_info_s             get_signal_info(void)                     const = 0;
     virtual uint                      get_missed_frames_count(void)             const = 0;
     virtual uint                      get_input_channel_idx(void)               const = 0;
+    virtual unsigned                  get_refresh_rate(void)                    const = 0;
     virtual uint                      get_color_depth(void)                     const = 0;
     virtual capture_pixel_format_e    get_pixel_format(void)                    const = 0;
     virtual bool                      are_frames_being_dropped(void)            const = 0;
