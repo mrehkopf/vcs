@@ -85,7 +85,7 @@ static capture_event_e process_next_capture_event(void)
             kpropagate_news_of_new_capture_video_mode();
             break;
         }
-        case capture_event_e::no_signal:
+        case capture_event_e::signal_lost:
         {
             kpropagate_news_of_lost_capture_signal();
             break;

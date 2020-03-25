@@ -31,7 +31,7 @@ enum class capture_event_e
 {
     none,
     sleep,
-    no_signal,
+    signal_lost,
     new_frame,
     new_video_mode,
     invalid_signal,

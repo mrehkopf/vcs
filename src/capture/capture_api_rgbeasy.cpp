@@ -155,8 +155,8 @@ namespace rgbeasy_callbacks_n
         return;
     }
 
-    // Called by the capture hardware when no input signal is present.
-    void RGBCBKAPI no_signal(HWND, HRGB, ULONG_PTR _thisPtr)
+    // Called by the capture hardware when the input signal is lost.
+    void RGBCBKAPI lost_signal(HWND, HRGB, ULONG_PTR _thisPtr)
     {
         const auto thisPtr = reinterpret_cast<capture_api_rgbeasy_s*>(_thisPtr);
 
@@ -165,7 +165,7 @@ namespace rgbeasy_callbacks_n
         // Let the card apply its own 'no signal' handler as well, just in case.
         RGBNoSignal(thisPtr->rgbeasy_capture_handle());
 
-        thisPtr->push_capture_event(capture_event_e::no_signal);
+        thisPtr->push_capture_event(capture_event_e::signal_lost);
 
         RECEIVING_A_SIGNAL = false;
 
@@ -274,7 +274,7 @@ bool capture_api_rgbeasy_s::initialize_hardware(void)
         !apicall_succeeded(RGBSetModeChangedFn(this->captureHandle,   rgbeasy_callbacks_n::video_mode_changed, (ULONG_PTR)this)) ||
         !apicall_succeeded(RGBSetInvalidSignalFn(this->captureHandle, rgbeasy_callbacks_n::invalid_signal,     (ULONG_PTR)this)) ||
         !apicall_succeeded(RGBSetErrorFn(this->captureHandle,         rgbeasy_callbacks_n::error,              (ULONG_PTR)this)) ||
-        !apicall_succeeded(RGBSetNoSignalFn(this->captureHandle,      rgbeasy_callbacks_n::no_signal,          (ULONG_PTR)this)))
+        !apicall_succeeded(RGBSetNoSignalFn(this->captureHandle,      rgbeasy_callbacks_n::lost_signal,        (ULONG_PTR)this)))
     {
         NBENE(("Failed to initialize the capture hardware."));
         goto fail;
@@ -771,9 +771,9 @@ capture_event_e capture_api_rgbeasy_s::pop_capture_event_queue(void)
     {
         return capture_event_e::new_video_mode;
     }
-    else if (pop_capture_event(capture_event_e::no_signal))
+    else if (pop_capture_event(capture_event_e::signal_lost))
     {
-        return capture_event_e::no_signal;
+        return capture_event_e::signal_lost;
     }
     else if (pop_capture_event(capture_event_e::invalid_signal))
     {
