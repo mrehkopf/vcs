@@ -68,7 +68,6 @@ struct capture_api_s
     virtual bool            adjust_vertical_offset(const int delta)                        { (void)delta; return false; }
     virtual bool            set_input_channel(const unsigned idx)                          { (void)idx;   return false; }
     virtual bool            set_pixel_format(const capture_pixel_format_e pf)              { (void)pf;    return false; }
-    virtual void            apply_new_capture_resolution(void)                             {              return;       }
     virtual void            reset_missed_frames_count(void)                                {              return;       }
     virtual bool            set_resolution(const resolution_s &r)                          { (void)r;     return false; }
 

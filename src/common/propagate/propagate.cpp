@@ -28,11 +28,32 @@ void kpropagate_news_of_new_capture_video_mode(void)
     /// no video mode, i.e. no signal.
     kpropagate_news_of_gained_capture_signal();
 
-    kc_capture_api().apply_new_capture_resolution();
+    resolution_s resolution = kc_capture_api().get_resolution();
+    const unsigned refreshRate = kc_capture_api().get_refresh_rate();
+
+    INFO(("New video mode: %u x %u @ %u Hz.", resolution.w, resolution.h, refreshRate));
+
+    if (ka_has_alias(resolution))
+    {
+        const resolution_s aliasResolution = ka_aliased(resolution);
+
+        if (kc_capture_api().set_resolution(aliasResolution))
+        {
+            resolution = aliasResolution;
+
+            INFO((" -> Aliased to %u x %u.", aliasResolution.w, aliasResolution.h));
+        }
+        else
+        {
+            INFO((" -> This mode has an alias, but it could not be set."));
+        }
+    }
+
+    kc_capture_api().set_video_signal_parameters(kvideoparam_parameters_for_resolution(resolution));
 
     kd_update_capture_signal_info();
 
-    ks_set_output_base_resolution(kc_capture_api().get_resolution(), false);
+    ks_set_output_base_resolution(resolution, false);
 
     kd_redraw_output_window();
 

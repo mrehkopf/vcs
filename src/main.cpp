@@ -28,7 +28,7 @@ i32 PROGRAM_EXIT_REQUESTED = 0;
 
 static void cleanup_all(void)
 {
-    INFO(("Received orders to exit. Initiating cleanup."));
+    DEBUG(("Received orders to exit. Initiating cleanup."));
 
     kd_release_output_window();
     ks_release_scaler();
@@ -41,7 +41,7 @@ static void cleanup_all(void)
     // Call this last.
     kmem_deallocate_memory_cache();
 
-    INFO(("Cleanup is done. Ready to exit."));
+    INFO(("Ready to exit."));
     return;
 }
 

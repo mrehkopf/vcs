@@ -66,7 +66,6 @@ struct capture_api_rgbeasy_s : public capture_api_s
     bool set_input_channel(const unsigned idx) override;
     bool set_pixel_format(const capture_pixel_format_e pf) override;
     bool set_resolution(const resolution_s &r) override;
-    void apply_new_capture_resolution(void) override;
     void reset_missed_frames_count(void) override;
 
 private:

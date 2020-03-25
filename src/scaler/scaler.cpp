@@ -391,7 +391,7 @@ void ks_initialize_scaler(void)
 
 void ks_release_scaler(void)
 {
-    INFO(("Releasing the scaler."));
+    DEBUG(("Releasing the scaler."));
 
     COLORCONV_BUFFER.release_memory();
     OUTPUT_BUFFER.release_memory();

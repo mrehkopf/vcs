@@ -220,14 +220,14 @@ bool capture_api_rgbeasy_s::initialize(void)
 
 bool capture_api_rgbeasy_s::release(void)
 {
-    INFO(("Releasing the capture API."));
+    DEBUG(("Releasing the capture API."));
 
     FRAME_BUFFER.pixels.release_memory();
 
     if (this->stop_capture() &&
         this->release_hardware())
     {
-        INFO(("The capture API has been released."));
+        DEBUG(("The capture API has been released."));
 
         return true;
     }
@@ -341,7 +341,7 @@ bool capture_api_rgbeasy_s::stop_capture(void)
 
     this->captureIsActive = false;
 
-    INFO(("Restoring default callback handlers."));
+    DEBUG(("Restoring default callback handlers."));
     RGBSetFrameCapturedFn(this->captureHandle, NULL, 0);
     RGBSetModeChangedFn(this->captureHandle, NULL, 0);
     RGBSetInvalidSignalFn(this->captureHandle, NULL, 0);
@@ -787,8 +787,6 @@ unsigned capture_api_rgbeasy_s::get_refresh_rate(void) const
 
 bool capture_api_rgbeasy_s::assign_video_signal_params_for_resolution(const resolution_s r)
 {
-    //INFO(("Applying mode parameters for %u x %u.", r.w, r.h));
-
     video_signal_parameters_s p = kvideoparam_parameters_for_resolution(r);
 
     // Apply the parameters to the current input signal.
@@ -948,29 +946,6 @@ bool capture_api_rgbeasy_s::set_pixel_format(const capture_pixel_format_e pf)
     return false;
 }
 
-void capture_api_rgbeasy_s::apply_new_capture_resolution(void)
-{
-    resolution_s resolution = this->get_resolution();
-    const resolution_s aliasedRes = ka_aliased(resolution);
-
-    // If the current resolution has an alias, switch to that.
-    if ((resolution.w != aliasedRes.w) ||
-        (resolution.h != aliasedRes.h))
-    {
-        if (!this->set_resolution(aliasedRes))
-        {
-            NBENE(("Failed to apply an alias."));
-        }
-        else resolution = aliasedRes;
-    }
-
-    this->assign_video_signal_params_for_resolution(resolution);
-
-    INFO(("New video mode: %u x %u @ %u Hz.", resolution.w, resolution.h, this->get_refresh_rate()));
-
-    return;
-}
-
 void capture_api_rgbeasy_s::reset_missed_frames_count(void)
 {
     NUM_NEW_FRAME_EVENTS_SKIPPED = 0;
@@ -1010,7 +985,7 @@ bool capture_api_rgbeasy_s::set_resolution(const resolution_s &r)
         !apicall_succeeded(RGBSetOutputSize(this->captureHandle, (unsigned long)r.w, (unsigned long)r.h)))
     {
         NBENE(("The capture hardware could not properly initialize the new input resolution (%u x %u).",
-                r.w, r.h));
+               r.w, r.h));
         goto fail;
     }
 

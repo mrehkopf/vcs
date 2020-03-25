@@ -1,12 +1,7 @@
 /*
- * 2018 Tarpeeksi Hyvae Soft /
- * VCS capture aliases
- *
- * An alias is a resolution pair, 'from' and 'to', where any time the capture hardware
- * initializes the capture to the 'from' input resolution, VCS should tell the hardware
- * to set 'to' as the resolution, instead. This is useful in certain cases where the
- * hardware is consistently initializing the wrong input resolution and you want to
- * automate the process of correcting it.
+ * 2018 Tarpeeksi Hyvae Soft
+ * 
+ * Software: VCS
  *
  */
 
@@ -17,9 +12,13 @@
 #include "common/globals.h"
 #include "capture/alias.h"
 
+// A list of all the aliases we know of.
 static std::vector<mode_alias_s> ALIASES;
 
-int ka_index_of_alias_resolution(const resolution_s r)
+// Returns the index in the list of known aliases the alias whose source
+// resolution matches the given resolution; or -1 is no such alias is
+// found.
+static int alias_index_of_source_resolution(const resolution_s &r)
 {
     for (size_t i = 0; i < ALIASES.size(); i++)
     {
@@ -34,19 +33,27 @@ int ka_index_of_alias_resolution(const resolution_s r)
     return -1;
 }
 
-// See if there isn't an alias resolution for the given resolution.
-// If there is, will return that. Otherwise, returns the resolution
-// that was passed in.
-//
+bool ka_has_alias(const resolution_s &r)
+{
+    // Note: If there's no alias for the given resolution, this function
+    // returns the same resolution.
+    const resolution_s alias = ka_aliased(r);
+
+    return bool((r.w != alias.w) || (r.h != alias.h));
+}
+
 resolution_s ka_aliased(const resolution_s &r)
 {
-    const int aliasIdx = ka_index_of_alias_resolution(r);
-    if (aliasIdx >= 0) return ALIASES.at(aliasIdx).to;
+    const int aliasIdx = alias_index_of_source_resolution(r);
+
+    if (aliasIdx >= 0)
+    {
+        return ALIASES.at(aliasIdx).to;
+    }
 
     return r;
 }
 
-// Lets the gui know which aliases we've got loaded.
 void ka_broadcast_aliases_to_gui(void)
 {
     DEBUG(("Broadcasting %u alias set(s) to the GUI.", ALIASES.size()));

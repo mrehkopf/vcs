@@ -632,7 +632,7 @@ const anti_tear_options_s& kat_default_settings(void)
 
 void kat_release_anti_tear(void)
 {
-    INFO(("Releasing the anti-tear engine."));
+    DEBUG(("Releasing the anti-tear engine."));
 
     BACK_BUFFER_STORAGE.release_memory();
     PREV_FRAME.release_memory();
