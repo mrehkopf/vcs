@@ -936,28 +936,15 @@ bool capture_api_rgbeasy_s::set_input_channel(const unsigned idx)
     return false;
 }
 
-bool capture_api_rgbeasy_s::set_color_depth(const unsigned bpp)
+bool capture_api_rgbeasy_s::set_pixel_format(const capture_pixel_format_e pf)
 {
-    const capture_pixel_format_e previousFormat = CAPTURE_PIXEL_FORMAT;
-
-    switch (bpp)
+    if (apicall_succeeded(RGBSetPixelFormat(this->captureHandle, pixel_format_to_rgbeasy_pixel_format(pf))))
     {
-        case 24: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_888; break;
-        case 16: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_565; break;
-        case 15: CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_555; break;
-        default: k_assert(0, "Was asked to set an unknown pixel format."); break;
+        CAPTURE_PIXEL_FORMAT = pf;
+        
+        return true;
     }
 
-    if (!apicall_succeeded(RGBSetPixelFormat(this->captureHandle, pixel_format_to_rgbeasy_pixel_format(CAPTURE_PIXEL_FORMAT))))
-    {
-        CAPTURE_PIXEL_FORMAT = previousFormat;
-
-        goto fail;
-    }
-
-    return true;
-
-    fail:
     return false;
 }
 
