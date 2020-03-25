@@ -48,7 +48,7 @@ private:
 
     void remove_unsaved_changes_flag(void);
 
-    void update_mode_label(const bool isEnabled);
+    void update_information_table(const bool isReceivingSignal);
 
     Ui::VideoAndColorDialog *ui;
 

@@ -31,7 +31,7 @@
         <x>0</x>
         <y>0</y>
         <width>359</width>
-        <height>612</height>
+        <height>760</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -52,57 +52,18 @@
        </property>
        <item>
         <widget class="QGroupBox" name="groupBox_meta">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
-          <string>Information</string>
+          <string>Video mode information</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QLabel" name="label_14">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Mode:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_currentInputMode">
-              <property name="text">
-               <string>Unknown</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QLabel" name="label_15">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Settings file:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_settingsFilename">
-              <property name="text">
-               <string>n/a</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <widget class="PropertyTable" name="tableWidget_propertyTable"/>
           </item>
          </layout>
         </widget>
@@ -110,7 +71,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_videoAdjust">
          <property name="title">
-          <string>Parameters</string>
+          <string>Video mode parameters</string>
          </property>
          <layout class="QGridLayout" name="gridLayout" columnstretch="3,0,0,0,0">
           <property name="leftMargin">
@@ -927,6 +888,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PropertyTable</class>
+   <extends>QTableWidget</extends>
+   <header>QTableWidget_property_table.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

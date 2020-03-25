@@ -7,11 +7,15 @@
  *
  */
 
+#include <QElapsedTimer>
 #include <QFileDialog>
 #include <QPushButton>
 #include <QToolBar>
 #include <QMenuBar>
 #include <QDebug>
+#include <QTimer>
+#include <QTime>
+#include "display/qt/subclasses/QTableWidget_property_table.h"
 #include "display/qt/dialogs/video_and_color_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
@@ -35,19 +39,49 @@
 // Set this variable to false to disable real-time updates.
 static bool CONTROLS_LIVE_UPDATE = true;
 
+static const QString BASE_WINDOW_TITLE = "VCS - Video & Color";
+
+// Used to keep track of how long we've had a particular video mode set.
+static QElapsedTimer VIDEO_MODE_UPTIME;
+static QTimer VIDEO_MODE_UPTIME_UPDATE;
+
 VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::VideoAndColorDialog)
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Video & Color");
+    this->setWindowTitle(BASE_WINDOW_TITLE);
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     // Set the GUI controls to their proper initial values.
     {
+        // Initialize the table of information.
+        {
+            ui->tableWidget_propertyTable->modify_property("Resolution", "None");
+            ui->tableWidget_propertyTable->modify_property("Refresh rate", "None");
+            ui->tableWidget_propertyTable->modify_property("Uptime", "None");
+        }
+
+        // Start timers to keep track of the video mode's uptime.
+        {
+            VIDEO_MODE_UPTIME.start();
+            VIDEO_MODE_UPTIME_UPDATE.start(1000);
+
+            connect(&VIDEO_MODE_UPTIME_UPDATE, &QTimer::timeout, [this]
+            {
+                const unsigned seconds = unsigned(VIDEO_MODE_UPTIME.elapsed() / 1000);
+                const unsigned minutes = (seconds / 60);
+                const unsigned hours   = (minutes / 60);
+
+                ui->tableWidget_propertyTable->modify_property("Uptime", QString("%1:%2:%3").arg(QString::number(hours).rightJustified(2, '0'))
+                                                                                            .arg(QString::number(minutes % 60).rightJustified(2, '0'))
+                                                                                            .arg(QString::number(seconds % 60).rightJustified(2, '0')));
+            });
+        }
+
         // Create the dialog's menu bar.
         {
             this->menubar = new QMenuBar(this);
@@ -173,7 +207,7 @@ VideoAndColorDialog::~VideoAndColorDialog()
 void VideoAndColorDialog::notify_of_new_capture_signal(void)
 {
     update_controls();
-    update_mode_label(true);
+    update_information_table(true);
 
     return;
 }
@@ -311,27 +345,26 @@ void VideoAndColorDialog::set_controls_enabled(const bool state)
     ui->groupBox_videoAdjust->setEnabled(state);
     ui->groupBox_meta->setEnabled(state);
 
-    update_mode_label(state);
+    update_information_table(state);
 
     return;
 }
 
-void VideoAndColorDialog::update_mode_label(const bool isEnabled)
+void VideoAndColorDialog::update_information_table(const bool isReceivingSignal)
 {
-    if (isEnabled)
+    if (isReceivingSignal)
     {
         const resolution_s resolution = kc_capture_api().get_resolution();
         const unsigned refreshRate = kc_capture_api().get_refresh_rate();
 
-        const QString labelStr = QString("%1 x %2 @ %3 Hz").arg(resolution.w)
-                                                           .arg(resolution.h)
-                                                           .arg(refreshRate);
-
-        ui->label_currentInputMode->setText(labelStr);
+        ui->tableWidget_propertyTable->modify_property("Refresh rate", QString::number(refreshRate));
+        ui->tableWidget_propertyTable->modify_property("Resolution", QString("%1 x %2").arg(resolution.w)
+                                                                                       .arg(resolution.h));
     }
     else
     {
-        ui->label_currentInputMode->setText("n/a");
+        ui->tableWidget_propertyTable->modify_property("Resolution", "No signal");
+        ui->tableWidget_propertyTable->modify_property("Refresh rate", "No signal");
     }
 
     return;
@@ -393,10 +426,11 @@ void VideoAndColorDialog::remove_unsaved_changes_flag(void)
 // Called to inform the dialog of a new source file for video and color parameters.
 void VideoAndColorDialog::receive_new_mode_settings_filename(const QString &filename)
 {
-    const QString shortName = QFileInfo(filename).fileName();
+    const QString newWindowTitle = QString("%1%2 - %3").arg(this->windowTitle().startsWith("*")? "*" : "")
+                                                       .arg(BASE_WINDOW_TITLE)
+                                                       .arg(filename);
 
-    ui->label_settingsFilename->setText(shortName); /// TODO: Elide the filename if it's too long to fit into the label.
-    ui->label_settingsFilename->setToolTip(filename);
+    this->setWindowTitle(newWindowTitle);
 
     return;
 }
