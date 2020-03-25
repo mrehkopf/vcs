@@ -8,6 +8,8 @@
  */
 
 #include <QFileDialog>
+#include <QPushButton>
+#include <QToolBar>
 #include <QMenuBar>
 #include <QDebug>
 #include "display/qt/dialogs/video_and_color_dialog.h"
@@ -141,7 +143,6 @@ VideoAndColorDialog::VideoAndColorDialog(QWidget *parent) :
             };
 
             connect_spinboxes_to_their_sliders(ui->groupBox_videoAdjust);
-            connect_spinboxes_to_their_sliders(ui->groupBox_colorAdjust);
 
             update_controls();
         }
@@ -307,7 +308,6 @@ void VideoAndColorDialog::update_controls(void)
 
 void VideoAndColorDialog::set_controls_enabled(const bool state)
 {
-    ui->groupBox_colorAdjust->setEnabled(state);
     ui->groupBox_videoAdjust->setEnabled(state);
     ui->groupBox_meta->setEnabled(state);
 
