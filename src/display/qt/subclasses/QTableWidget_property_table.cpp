@@ -21,8 +21,8 @@ PropertyTable::PropertyTable(QWidget *parent) : QTableWidget(parent)
     this->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     this->verticalHeader()->hide();
-    this->verticalHeader()->setDefaultSectionSize(28);
-    this->verticalHeader()->setMinimumSectionSize(28);
+    this->verticalHeader()->setDefaultSectionSize(25);
+    this->verticalHeader()->setMinimumSectionSize(25);
 
     this->setAlternatingRowColors(true);
     this->setEditTriggers(QAbstractItemView::NoEditTriggers);

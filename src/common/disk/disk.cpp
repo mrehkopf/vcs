@@ -201,11 +201,6 @@ bool kdisk_load_aliases(const std::string &sourceFilename)
 
     kpropagate_loaded_aliases_from_disk(aliases, sourceFilename);
 
-    // Signal a new input mode to force the program to re-evaluate the mode
-    // parameters, in case one of the newly-loaded aliases applies to the
-    // current mode.
-    kpropagate_news_of_new_capture_video_mode();
-
     return true;
 
     fail:

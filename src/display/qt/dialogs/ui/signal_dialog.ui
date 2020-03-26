@@ -29,9 +29,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-83</y>
+        <y>-303</y>
         <width>359</width>
-        <height>708</height>
+        <height>699</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -74,7 +74,7 @@
           <string>Signal parameters</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="12" column="0">
+          <item row="11" column="0">
            <widget class="QLabel" name="label_10">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -84,7 +84,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -96,7 +96,7 @@
             </property>
            </widget>
           </item>
-          <item row="13" column="0">
+          <item row="12" column="0">
            <widget class="QLabel" name="label_13">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -106,7 +106,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -118,7 +118,7 @@
             </property>
            </widget>
           </item>
-          <item row="12" column="1">
+          <item row="11" column="1">
            <widget class="QSpinBox" name="spinBox_colorBrightBlue">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -147,7 +147,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -156,7 +156,7 @@
             </property>
            </widget>
           </item>
-          <item row="10" column="2" colspan="2">
+          <item row="9" column="2" colspan="2">
            <widget class="QScrollBar" name="horizontalScrollBar_colorBrightGreen">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -169,7 +169,7 @@
             </property>
            </widget>
           </item>
-          <item row="10" column="0">
+          <item row="9" column="0">
            <widget class="QLabel" name="label_9">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -179,7 +179,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -214,7 +214,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -236,7 +236,7 @@
             </property>
            </widget>
           </item>
-          <item row="11" column="0">
+          <item row="10" column="0">
            <widget class="QLabel" name="label_12">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -246,7 +246,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -296,7 +296,7 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="0">
+          <item row="5" column="0">
            <widget class="QLabel" name="label_6">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -306,7 +306,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -328,7 +328,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -337,7 +337,7 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="1">
+          <item row="6" column="1">
            <widget class="QSpinBox" name="spinBox_colorContr">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -375,7 +375,7 @@
             </property>
            </widget>
           </item>
-          <item row="10" column="1">
+          <item row="9" column="1">
            <widget class="QSpinBox" name="spinBox_colorBrightGreen">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -413,7 +413,7 @@
             </property>
            </widget>
           </item>
-          <item row="9" column="2" colspan="2">
+          <item row="8" column="2" colspan="2">
            <widget class="QScrollBar" name="horizontalScrollBar_colorContrRed">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -426,7 +426,7 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="1">
+          <item row="7" column="1">
            <widget class="QSpinBox" name="spinBox_colorBrightRed">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -445,7 +445,7 @@
             </property>
            </widget>
           </item>
-          <item row="13" column="2" colspan="2">
+          <item row="12" column="2" colspan="2">
            <widget class="QScrollBar" name="horizontalScrollBar_colorContrBlue">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -458,7 +458,7 @@
             </property>
            </widget>
           </item>
-          <item row="9" column="0">
+          <item row="8" column="0">
            <widget class="QLabel" name="label_11">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -468,7 +468,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -480,7 +480,7 @@
             </property>
            </widget>
           </item>
-          <item row="11" column="1">
+          <item row="10" column="1">
            <widget class="QSpinBox" name="spinBox_colorContrGreen">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -499,7 +499,7 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="0">
+          <item row="7" column="0">
            <widget class="QLabel" name="label_8">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -509,7 +509,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -521,7 +521,7 @@
             </property>
            </widget>
           </item>
-          <item row="12" column="2" colspan="2">
+          <item row="11" column="2" colspan="2">
            <widget class="QScrollBar" name="horizontalScrollBar_colorBrightBlue">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -534,7 +534,7 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="2" colspan="2">
+          <item row="5" column="2" colspan="2">
            <widget class="QScrollBar" name="horizontalScrollBar_colorBright">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -563,7 +563,7 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
+          <item row="5" column="1">
            <widget class="QSpinBox" name="spinBox_colorBright">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -582,7 +582,7 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="2" colspan="2">
+          <item row="7" column="2" colspan="2">
            <widget class="QScrollBar" name="horizontalScrollBar_colorBrightRed">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -605,7 +605,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -614,7 +614,7 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="0">
+          <item row="6" column="0">
            <widget class="QLabel" name="label_7">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -624,7 +624,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -636,7 +636,7 @@
             </property>
            </widget>
           </item>
-          <item row="9" column="1">
+          <item row="8" column="1">
            <widget class="QSpinBox" name="spinBox_colorContrRed">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -674,7 +674,7 @@
             </property>
            </widget>
           </item>
-          <item row="13" column="1">
+          <item row="12" column="1">
            <widget class="QSpinBox" name="spinBox_colorContrBlue">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -703,7 +703,7 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>0</height>
              </size>
             </property>
@@ -712,7 +712,7 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="2" colspan="2">
+          <item row="6" column="2" colspan="2">
            <widget class="QScrollBar" name="horizontalScrollBar_colorContr">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -725,7 +725,7 @@
             </property>
            </widget>
           </item>
-          <item row="11" column="2" colspan="2">
+          <item row="10" column="2" colspan="2">
            <widget class="QScrollBar" name="horizontalScrollBar_colorContrGreen">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -759,13 +759,6 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0" colspan="4">
-           <widget class="Line" name="line_2">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>

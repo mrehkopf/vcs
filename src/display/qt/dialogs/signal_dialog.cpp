@@ -77,9 +77,16 @@ SignalDialog::SignalDialog(QWidget *parent) :
                 const unsigned minutes = (seconds / 60);
                 const unsigned hours   = (minutes / 60);
 
-                ui->tableWidget_propertyTable->modify_property("Uptime", QString("%1:%2:%3").arg(QString::number(hours).rightJustified(2, '0'))
-                                                                                            .arg(QString::number(minutes % 60).rightJustified(2, '0'))
-                                                                                            .arg(QString::number(seconds % 60).rightJustified(2, '0')));
+                if (kc_capture_api().has_no_signal())
+                {
+                    ui->tableWidget_propertyTable->modify_property("Uptime", "00:00:00");
+                }
+                else
+                {
+                    ui->tableWidget_propertyTable->modify_property("Uptime", QString("%1:%2:%3").arg(QString::number(hours).rightJustified(2, '0'))
+                                                                                                .arg(QString::number(minutes % 60).rightJustified(2, '0'))
+                                                                                                .arg(QString::number(seconds % 60).rightJustified(2, '0')));
+                }
             });
         }
 
@@ -338,7 +345,6 @@ void SignalDialog::set_controls_enabled(const bool state)
     // Note: At the time of this writing, this function gets called only
     // to notify the dialog that the input signal has been lost (state ==
     // false) or gained (state == true).
-    VIDEO_MODE_UPTIME.restart();
     ui->groupBox_videoAdjust->setEnabled(state);
     update_information_table(state);
 
