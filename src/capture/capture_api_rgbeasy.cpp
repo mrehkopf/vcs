@@ -810,7 +810,7 @@ bool capture_api_rgbeasy_s::assign_video_signal_params_for_resolution(const reso
     return true;
 }
 
-void capture_api_rgbeasy_s::set_video_signal_parameters(const video_signal_parameters_s p)
+void capture_api_rgbeasy_s::set_video_signal_parameters(const video_signal_parameters_s &p)
 {
     if (this->has_no_signal())
     {

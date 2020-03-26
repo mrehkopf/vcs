@@ -7,12 +7,6 @@ DEFINES += USE_RGBEASY_API
 # Enable non-critical asserts. May perform slower, but will e.g. look to guard against buffer overflow in memory access.
 #DEFINES += ENFORCE_OPTIONAL_ASSERTS
 
-# For now, disable the RGBEASY API while doing a validation run, to simplify things.
-# Once the validatiom system is a bit better fleshed out, this should not be needed.
-contains(DEFINES, VALIDATION_RUN) {
-    DEFINES -= USE_RGBEASY_API
-}
-
 # Specific configurations for the current platform.
 linux {
     # I can't test capture functionality under Linux (my card doesn't support it),

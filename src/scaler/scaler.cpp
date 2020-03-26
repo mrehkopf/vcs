@@ -755,10 +755,3 @@ void ks_set_downscaling_filter(const std::string &name)
 
     return;
 }
-
-#ifdef VALIDATION_RUN
-    const u8* ks_VALIDATION_raw_output_buffer_ptr(void)
-    {
-        return OUTPUT_BUFFER.ptr();
-    }
-#endif

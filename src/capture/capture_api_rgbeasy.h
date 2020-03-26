@@ -60,7 +60,7 @@ struct capture_api_rgbeasy_s : public capture_api_s
     const captured_frame_s& get_frame_buffer(void) const override;
     void mark_frame_buffer_as_processed(void) override;
     capture_event_e pop_capture_event_queue(void) override;
-    virtual void set_video_signal_parameters(const video_signal_parameters_s p) override;
+    virtual void set_video_signal_parameters(const video_signal_parameters_s &p) override;
     bool adjust_horizontal_offset(const int delta) override;
     bool adjust_vertical_offset(const int delta) override;
     bool set_input_channel(const unsigned idx) override;

@@ -127,7 +127,6 @@ static void load_user_data(void)
     return;
 }
 
-#ifndef VALIDATION_RUN
 int main(int argc, char *argv[])
 {
     printf("VCS %s\n---------+\n", PROGRAM_VERSION_STRING);
@@ -186,4 +185,3 @@ int main(int argc, char *argv[])
     cleanup_all();
     return EXIT_SUCCESS;
 }
-#endif

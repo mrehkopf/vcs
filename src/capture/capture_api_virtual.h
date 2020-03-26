@@ -30,7 +30,7 @@ struct capture_api_virtual_s : public capture_api_s
     unsigned get_refresh_rate(void) const override               { return {}; }
     uint get_missed_frames_count(void) const override            { return 0;  }
     uint get_input_channel_idx(void) const override              { return 0;  }
-    uint get_color_depth(void) const override                    { return (unsigned)this->defaultResolution.bpp;  }
+    uint get_color_depth(void) const override                    { return (unsigned)this->defaultResolution.bpp; }
     bool is_capturing(void) const override                       { return false; }
     bool has_invalid_signal(void) const override                 { return false; }
     bool has_no_signal(void) const override                      { return false; }

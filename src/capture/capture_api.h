@@ -61,15 +61,15 @@ struct capture_api_s
     virtual const captured_frame_s&   get_frame_buffer(void)                    const = 0;
 
     // Setters.
-    virtual void            mark_frame_buffer_as_processed(void)                           = 0;
-    virtual capture_event_e pop_capture_event_queue(void)                                  = 0;
-    virtual void            set_video_signal_parameters(const video_signal_parameters_s p) { (void)p;     return;       }
-    virtual bool            adjust_horizontal_offset(const int delta)                      { (void)delta; return false; }
-    virtual bool            adjust_vertical_offset(const int delta)                        { (void)delta; return false; }
-    virtual bool            set_input_channel(const unsigned idx)                          { (void)idx;   return false; }
-    virtual bool            set_pixel_format(const capture_pixel_format_e pf)              { (void)pf;    return false; }
-    virtual void            reset_missed_frames_count(void)                                {              return;       }
-    virtual bool            set_resolution(const resolution_s &r)                          { (void)r;     return false; }
+    virtual void            mark_frame_buffer_as_processed(void)                            { return;                       }
+    virtual capture_event_e pop_capture_event_queue(void)                                   { return capture_event_e::none; }
+    virtual void            set_video_signal_parameters(const video_signal_parameters_s &p) { (void)p;     return;          }
+    virtual bool            adjust_horizontal_offset(const int delta)                       { (void)delta; return false;    }
+    virtual bool            adjust_vertical_offset(const int delta)                         { (void)delta; return false;    }
+    virtual bool            set_input_channel(const unsigned idx)                           { (void)idx;   return false;    }
+    virtual bool            set_pixel_format(const capture_pixel_format_e pf)               { (void)pf;    return false;    }
+    virtual void            reset_missed_frames_count(void)                                 { return;                       }
+    virtual bool            set_resolution(const resolution_s &r)                           { (void)r;     return false;    }
 
     // If the capture API runs in a separate thread that modifies the API's
     // state, that thread should lock this mutex while about it; and the main
