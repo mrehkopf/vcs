@@ -106,6 +106,7 @@ void kpropagate_loaded_video_signal_parameters_from_disk(const std::vector<video
     // In case we loaded in parameters for the current resolution.
     kc_capture_api().set_video_signal_parameters(kvideoparam_parameters_for_resolution(kc_capture_api().get_resolution()));
 
+    kd_update_video_mode_params();
     kd_set_video_settings_filename(sourceFilename);
 
     INFO(("Loaded %u set(s) of mode params from disk.", paramSets.size()));
