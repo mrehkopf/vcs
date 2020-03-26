@@ -168,6 +168,12 @@ int main(int argc, char *argv[])
     else
     {
         load_user_data();
+
+        // Hack. Force the GUI to update itself on the current capture
+        // parameters. This is needed if the user didn't ask for any
+        // parameters to be loaded from disk, which would then call this
+        // function automatically.
+        kd_update_video_mode_params();
     }
 
     INFO(("Entering the main loop."));
