@@ -83,16 +83,6 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             this->menubar->addMenu(addMenu);
         }
 
-        // Help...
-        {
-            QMenu *helpMenu = new QMenu("Help", this);
-
-            helpMenu->addAction("About...");
-            helpMenu->actions().at(0)->setEnabled(false); /// TODO: Add the actual help.
-
-            this->menubar->addMenu(helpMenu);
-        }
-
         ui->widget_graphicsViewContainer->layout()->setMenuBar(menubar);
     }
 

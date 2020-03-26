@@ -65,16 +65,6 @@ AliasDialog::AliasDialog(QWidget *parent) :
             menubar->addMenu(fileMenu);
         }
 
-        // Help...
-        {
-            QMenu *fileMenu = new QMenu("Help", this);
-
-            fileMenu->addAction("About...");
-            fileMenu->actions().at(0)->setEnabled(false); /// TODO: Add proper help stuff.
-
-            menubar->addMenu(fileMenu);
-        }
-
         this->layout()->setMenuBar(menubar);
     }
 

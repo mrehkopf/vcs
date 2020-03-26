@@ -61,7 +61,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
     {
         // Initialize the table of information.
         {
-            ui->tableWidget_propertyTable->modify_property("Uptime", "");
+            ui->tableWidget_propertyTable->modify_property("Uptime", "00:00:00");
             ui->tableWidget_propertyTable->modify_property("Resolution", "");
             ui->tableWidget_propertyTable->modify_property("Refresh rate", "");
         }
@@ -94,16 +94,6 @@ SignalDialog::SignalDialog(QWidget *parent) :
                 fileMenu->addAction("Load parameters...", this, SLOT(load_settings()));
                 fileMenu->addSeparator();
                 fileMenu->addAction("Save parameters as...", this, SLOT(save_settings()));
-
-                menubar->addMenu(fileMenu);
-            }
-
-            // Help...
-            {
-                QMenu *fileMenu = new QMenu("Help", this);
-
-                fileMenu->addAction("About...");
-                fileMenu->actions().at(0)->setEnabled(false); /// FIXME: Add proper help stuff.
 
                 menubar->addMenu(fileMenu);
             }
@@ -436,7 +426,7 @@ void SignalDialog::receive_new_mode_settings_filename(const QString &filename)
 {
     const QString newWindowTitle = QString("%1%2 - %3").arg(this->windowTitle().startsWith("*")? "*" : "")
                                                        .arg(BASE_WINDOW_TITLE)
-                                                       .arg(QFileInfo(filename).fileName());
+                                                       .arg(QFileInfo(filename).baseName());
 
     this->setWindowTitle(newWindowTitle);
 
