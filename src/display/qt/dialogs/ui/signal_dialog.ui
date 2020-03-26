@@ -29,7 +29,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-303</y>
+        <y>0</y>
         <width>359</width>
         <height>699</height>
        </rect>
@@ -818,7 +818,7 @@
       <item>
        <widget class="QLabel" name="label_notice">
         <property name="text">
-         <string>These controls define how the capture device interprets the captured signal.</string>
+         <string>These controls influence how the capture device interprets the captured signal.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>

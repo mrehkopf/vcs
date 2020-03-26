@@ -45,7 +45,6 @@ void kvideoparam_assign_parameter_sets(const std::vector<video_signal_parameters
     return;
 }
 
-
 void kvideoparam_update_parameters_for_resolution(const resolution_s r,
                                                   const video_signal_parameters_s &newParams)
 {
