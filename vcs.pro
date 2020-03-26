@@ -1,31 +1,23 @@
 # Comment out to disable OpenCV. You'll have no filtering or scaler, but you also don't need to provide the dependencies.
 DEFINES += USE_OPENCV
 
-# Comment out to disable capture functionality. Useful for testing the program where a capture card isn't present.
-DEFINES += USE_RGBEASY_API
-
 # Enable non-critical asserts. May perform slower, but will e.g. look to guard against buffer overflow in memory access.
 #DEFINES += ENFORCE_OPTIONAL_ASSERTS
 
-# Specific configurations for the current platform.
 linux {
-    # I can't test capture functionality under Linux (my card doesn't support it),
-    # so I'll have to disable it, by default.
-    DEFINES -= USE_RGBEASY_API
+    DEFINES += CAPTURE_API_VIRTUAL # TODO: Support Video4Linux as the default capture API on Linux.
 
-    # OpenCV 3.2.0.
     contains(DEFINES, USE_OPENCV) {
         LIBS += -lopencv_imgproc -lopencv_videoio -lopencv_highgui -lopencv_core -lopencv_photo
     }
 }
-win32 {
-    # The RGBEASY API.
-    contains(DEFINES, USE_RGBEASY_API) {
-        INCLUDEPATH += "C:/Program Files (x86)/Vision RGB-PRO/SDK/RGBEASY/INCLUDE"
-        LIBS += "C:/Program Files (x86)/Vision RGB-PRO/SDK/RGBEASY/LIB/RGBEASY.lib"
-    }
 
-    # OpenCV 3.2.0.
+win32 {
+    DEFINES += CAPTURE_API_RGBEASY
+    
+    INCLUDEPATH += "C:/Program Files (x86)/Vision RGB-PRO/SDK/RGBEASY/INCLUDE"
+    LIBS += "C:/Program Files (x86)/Vision RGB-PRO/SDK/RGBEASY/LIB/RGBEASY.lib"
+
     contains(DEFINES, USE_OPENCV) {
         INCLUDEPATH += "C:/Program Files (x86)/OpenCV/3.2.0/include"
         LIBS += -L"C:/Program Files (x86)/OpenCV/3.2.0/bin/mingw"

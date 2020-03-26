@@ -1,9 +1,11 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
- *
+ * 
  * Software: VCS
  *
  */
+
+#ifdef CAPTURE_API_RGBEASY
 
 #ifndef CAPTURE_API_RGBEASY_H
 #define CAPTURE_API_RGBEASY_H
@@ -103,5 +105,7 @@ private:
     // handled that event.
     bool rgbeasyCaptureEventFlags[static_cast<int>(capture_event_e::num_enumerators)] = {false};
 };
+
+#endif
 
 #endif

@@ -15,12 +15,21 @@ static capture_api_s *API = nullptr;
 
 capture_api_s& kc_capture_api(void)
 {
+    k_assert(API, "Attempting to fetch the capture API prior to its initialization.");
+    
     return *API;
 }
 
 void kc_initialize_capture(void)
 {
-    API = new capture_api_rgbeasy_s;
+    API =
+    #ifdef CAPTURE_API_VIRTUAL
+        new capture_api_virtual_s;
+    #elif CAPTURE_API_RGBEASY
+        new capture_api_rgbeasy_s;
+    #else
+        #error "Unknown capture API."
+    #endif
 
     API->initialize();
 

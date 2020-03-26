@@ -5,6 +5,8 @@
  *
  */
 
+#ifdef CAPTURE_API_VIRTUAL
+
 #ifndef CAPTURE_API_VIRTUAL_H
 #define CAPTURE_API_VIRTUAL_H
 
@@ -34,7 +36,7 @@ struct capture_api_virtual_s : public capture_api_s
     bool is_capturing(void) const override                       { return false; }
     bool has_invalid_signal(void) const override                 { return false; }
     bool has_no_signal(void) const override                      { return false; }
-    capture_pixel_format_e get_pixel_format(void) const override { return capture_pixel_format_e::rgb_888; }
+    capture_pixel_format_e get_pixel_format(void) const override { return this->defaultPixelFormat; }
     capture_event_e pop_capture_event_queue(void) override;
     const captured_frame_s& get_frame_buffer(void) const override;
     void mark_frame_buffer_as_processed(void) override;
@@ -42,11 +44,15 @@ struct capture_api_virtual_s : public capture_api_s
 private:
     const resolution_s defaultResolution = resolution_s{640, 480, 32};
 
+    const capture_pixel_format_e defaultPixelFormat = capture_pixel_format_e::rgb_888;
+
     // We don't do any actual capturing, so draw an animating pattern in the
     // frame buffer, instead.
     void animate_frame_buffer(void);
 
     captured_frame_s frameBuffer;
 };
+
+#endif
 
 #endif

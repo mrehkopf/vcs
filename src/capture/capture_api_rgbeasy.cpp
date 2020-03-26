@@ -1,3 +1,12 @@
+/*
+ * 2020 Tarpeeksi Hyvae Soft
+ * 
+ * Software: VCS
+ *
+ */
+
+#ifdef CAPTURE_API_RGBEASY
+
 #include <atomic>
 #include <cmath>
 #include "common/globals.h"
@@ -1044,3 +1053,5 @@ capture_pixel_format_e capture_api_rgbeasy_s::get_pixel_format(void) const
 {
     return CAPTURE_PIXEL_FORMAT;
 }
+
+#endif

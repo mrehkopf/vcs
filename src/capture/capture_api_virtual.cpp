@@ -1,9 +1,19 @@
+/*
+ * 2020 Tarpeeksi Hyvae Soft
+ * 
+ * Software: VCS
+ *
+ */
+
+#ifdef CAPTURE_API_VIRTUAL
+
 #include <chrono>
 #include "capture/capture_api_virtual.h"
 
 bool capture_api_virtual_s::initialize(void)
 {
     this->frameBuffer.r = this->defaultResolution;
+    this->frameBuffer.pixelFormat = this->defaultPixelFormat;
     this->frameBuffer.pixels.alloc(MAX_FRAME_SIZE);
 
     return true;
@@ -67,3 +77,5 @@ void capture_api_virtual_s::animate_frame_buffer(void)
 
     return;
 }
+
+#endif
