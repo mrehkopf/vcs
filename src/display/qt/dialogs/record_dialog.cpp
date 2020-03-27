@@ -34,17 +34,6 @@ RecordDialog::RecordDialog(QDialog *parent) :
     // Certain features of recording are not available on certain operating systems;
     // so disable them accordingly.
     {
-        // Encoder settings.
-        #if _WIN32
-            /// At the moment, no changes are needed on Windows.
-        #elif __linux__
-            // The x264 settings are hardcoded into OpenCV's libraries on Linux, so
-            // they can't be altered via the VCS GUI.
-            ui->frame_recordingCodecSettings->setEnabled(false);
-        #else
-            #error "Unknown platform."
-        #endif
-
         // Video container.
         {
             QString containerName;
@@ -89,9 +78,9 @@ RecordDialog::RecordDialog(QDialog *parent) :
             const resolution_s videoResolution = ks_output_resolution();
 
             krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
-                                        videoResolution.w, videoResolution.h,
-                                        ui->spinBox_recordingFramerate->value(),
-                                        ui->checkBox_recordingLinearFrameInsertion->isChecked());
+                                    videoResolution.w, videoResolution.h,
+                                    ui->spinBox_recordingFramerate->value(),
+                                    ui->checkBox_recordingLinearFrameInsertion->isChecked());
         });
 
         connect(ui->pushButton_recordingStop, &QPushButton::clicked, this, [this]
@@ -174,15 +163,17 @@ void RecordDialog::set_recording_controls_enabled(const bool areEnabled)
     {
         ui->pushButton_recordingStart->setEnabled(false);
         ui->pushButton_recordingStop->setEnabled(true);
-        ui->frame_recordingSettings->setEnabled(false);
-        ui->frame_recordingFile->setEnabled(false);
+        ui->groupBox_recordingSettings->setEnabled(false);
+        ui->lineEdit_recordingFilename->setEnabled(false);
+        ui->pushButton_recordingSelectFilename->setEnabled(false);
     }
     else
     {
         ui->pushButton_recordingStart->setEnabled(true);
         ui->pushButton_recordingStop->setEnabled(false);
-        ui->frame_recordingSettings->setEnabled(true);
-        ui->frame_recordingFile->setEnabled(true);
+        ui->groupBox_recordingSettings->setEnabled(true);
+        ui->lineEdit_recordingFilename->setEnabled(true);
+        ui->pushButton_recordingSelectFilename->setEnabled(true);
     }
 
     return;
