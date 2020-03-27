@@ -737,13 +737,13 @@ const captured_frame_s& capture_api_rgbeasy_s::get_frame_buffer(void) const
     return FRAME_BUFFER;
 }
 
-void capture_api_rgbeasy_s::mark_frame_buffer_as_processed(void)
+bool capture_api_rgbeasy_s::mark_frame_buffer_as_processed(void)
 {
     CNT_FRAMES_PROCESSED = CNT_FRAMES_CAPTURED.load();
 
     FRAME_BUFFER.processed = true;
 
-    return;
+    return true;
 }
 
 capture_event_e capture_api_rgbeasy_s::pop_capture_event_queue(void)
@@ -819,16 +819,17 @@ bool capture_api_rgbeasy_s::assign_video_signal_params_for_resolution(const reso
     return true;
 }
 
-void capture_api_rgbeasy_s::set_video_signal_parameters(const video_signal_parameters_s &p)
+bool capture_api_rgbeasy_s::set_video_signal_parameters(const video_signal_parameters_s &p)
 {
     if (this->has_no_signal())
     {
         DEBUG(("Was asked to set capture video params while there was no signal. "
                "Ignoring the request."));
 
-        return;
+        return true;
     }
 
+    /// TODO: Add error checking.
     RGBSetPhase(this->captureHandle,         p.phase);
     RGBSetBlackLevel(this->captureHandle,    p.blackLevel);
     RGBSetHorPosition(this->captureHandle,   p.horizontalPosition);
@@ -845,7 +846,7 @@ void capture_api_rgbeasy_s::set_video_signal_parameters(const video_signal_param
 
     kvideoparam_update_parameters_for_resolution(this->get_resolution(), p);
 
-    return;
+    return true;
 }
 
 bool capture_api_rgbeasy_s::adjust_horizontal_offset(const int delta)
@@ -955,11 +956,11 @@ bool capture_api_rgbeasy_s::set_pixel_format(const capture_pixel_format_e pf)
     return false;
 }
 
-void capture_api_rgbeasy_s::reset_missed_frames_count(void)
+bool capture_api_rgbeasy_s::reset_missed_frames_count(void)
 {
     NUM_NEW_FRAME_EVENTS_SKIPPED = 0;
 
-    return;
+    return true;
 }
 
 bool capture_api_rgbeasy_s::set_resolution(const resolution_s &r)

@@ -39,7 +39,7 @@ struct capture_api_virtual_s : public capture_api_s
     capture_pixel_format_e get_pixel_format(void) const override { return this->defaultPixelFormat; }
     capture_event_e pop_capture_event_queue(void) override;
     const captured_frame_s& get_frame_buffer(void) const override;
-    void mark_frame_buffer_as_processed(void) override;
+    bool mark_frame_buffer_as_processed(void) override;
 
 private:
     const resolution_s defaultResolution = resolution_s{640, 480, 32};

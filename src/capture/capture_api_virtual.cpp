@@ -50,11 +50,11 @@ capture_event_e capture_api_virtual_s::pop_capture_event_queue(void)
     }
 }
 
-void capture_api_virtual_s::mark_frame_buffer_as_processed(void)
+bool capture_api_virtual_s::mark_frame_buffer_as_processed(void)
 {
     this->animate_frame_buffer();
 
-    return;
+    return true;
 }
 
 void capture_api_virtual_s::animate_frame_buffer(void)

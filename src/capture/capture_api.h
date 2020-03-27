@@ -149,8 +149,9 @@ struct capture_api_s
      */
 
     // Used by the VCS thread to notify the API that VCS has finished processing
-    // the most recent frame it obtained from get_frame_buffer().
-    virtual void mark_frame_buffer_as_processed(void) { return; }
+    // the most recent frame it obtained from get_frame_buffer(). Returns true
+    // on success; false otherwise.
+    virtual bool mark_frame_buffer_as_processed(void) { return false; }
 
     // Returns the type of what the API considers the most recent and/or most
     // relevant capture event. Capture events that are never returned by this
@@ -159,8 +160,9 @@ struct capture_api_s
     // also result in the API modifying its event queue to remove that event.
     virtual capture_event_e pop_capture_event_queue(void) { return capture_event_e::none; }
 
-    // Ask the device to adopt the given video signal parameters.
-    virtual void set_video_signal_parameters(const video_signal_parameters_s &p) { (void)p; return; }
+    // Ask the device to adopt the given video signal parameters. Returns true
+    // on success; false otherwise.
+    virtual bool set_video_signal_parameters(const video_signal_parameters_s &p) { (void)p; return true; }
 
     // Ask the device to adjust the horizontal offset in its current video
     // signal parameters by the given delta. Returns true on success; false
@@ -184,7 +186,8 @@ struct capture_api_s
     virtual bool set_resolution(const resolution_s &r) { (void)r; return false; }
 
     // Ask the API to reset its count of missed frames (cf. get_missed_frames_count()).
-    virtual void reset_missed_frames_count(void) { return; }
+    // Returns true on success; false otherwise.
+    virtual bool reset_missed_frames_count(void) { return false; }
 
     // If the capture API runs in a separate thread that modifies the API's
     // state, that thread should lock this mutex while about it; and the main

@@ -60,15 +60,15 @@ struct capture_api_rgbeasy_s : public capture_api_s
     bool has_no_signal(void) const override;
     capture_pixel_format_e get_pixel_format(void) const override;
     const captured_frame_s& get_frame_buffer(void) const override;
-    void mark_frame_buffer_as_processed(void) override;
+    bool mark_frame_buffer_as_processed(void) override;
     capture_event_e pop_capture_event_queue(void) override;
-    virtual void set_video_signal_parameters(const video_signal_parameters_s &p) override;
+    virtual bool set_video_signal_parameters(const video_signal_parameters_s &p) override;
     bool adjust_horizontal_offset(const int delta) override;
     bool adjust_vertical_offset(const int delta) override;
     bool set_input_channel(const unsigned idx) override;
     bool set_pixel_format(const capture_pixel_format_e pf) override;
     bool set_resolution(const resolution_s &r) override;
-    void reset_missed_frames_count(void) override;
+    bool reset_missed_frames_count(void) override;
 
 private:
     // Returns true if the given RGBEasy API call return value indicates an error.
