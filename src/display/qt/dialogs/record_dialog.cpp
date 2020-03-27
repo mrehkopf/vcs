@@ -133,6 +133,9 @@ RecordDialog::RecordDialog(QDialog *parent) :
         #endif
     }
 
+    // Reset the metainfo values to their defaults.
+    update_recording_metainfo();
+
     return;
 }
 
@@ -189,10 +192,21 @@ void RecordDialog::update_recording_metainfo(void)
 {
     if (krecord_is_recording())
     {
+        const uint totalDuration = (((1000.0/krecord_playback_framerate()) * krecord_num_frames_recorded()) / 1000);
+        const uint seconds = totalDuration % 60;
+        const uint minutes = totalDuration / 60;
+        const uint hours = minutes / 60;
+        ui->tableWidget_status->modify_property("Duration", QString("%1:%2:%3").arg(QString::number(hours).rightJustified(2, '0'))
+                                                                               .arg(QString::number(minutes).rightJustified(2, '0'))
+                                                                               .arg(QString::number(seconds).rightJustified(2, '0')));
+
+        ui->tableWidget_status->modify_property("Resolution", QString("%1 x %2").arg(krecord_video_resolution().w)
+                                                                                .arg(krecord_video_resolution().h));
+
         const uint fileBytesize = QFileInfo(krecord_video_filename().c_str()).size();
         {
             double size = fileBytesize;
-            QString suffix = "byte(s)";
+            QString suffix = "B";
 
             if (size > 1024*1024*1024)
             {
@@ -210,46 +224,20 @@ void RecordDialog::update_recording_metainfo(void)
                 suffix = "KB";
             }
 
-            ui->label_recordingMetaFileSize->setEnabled(true);
-            ui->label_recordingMetaFileSize->setText(QString("%1 %2").arg(QString::number(size, 'f', 2)).arg(suffix));
+            ui->tableWidget_status->modify_property("File size", QString("%1 %2").arg(QString::number(size, 'f', 2)).arg(suffix));
         }
 
-        ui->label_recordingMetaFramerate->setEnabled(true);
-        ui->label_recordingMetaFramerate->setText(QString::number(krecord_recording_framerate(), 'f', 2));
+        ui->tableWidget_status->modify_property("Input FPS", QString::number(krecord_recording_framerate(), 'f', 2));
 
-        ui->label_recordingMetaTargetFramerate->setEnabled(true);
-        ui->label_recordingMetaTargetFramerate->setText(QString::number(krecord_playback_framerate()));
-
-        const resolution_s resolution = krecord_video_resolution();
-        ui->label_recordingMetaResolution->setEnabled(true);
-        ui->label_recordingMetaResolution->setText(QString("%1 x %2").arg(resolution.w)
-                                                                     .arg(resolution.h));
-
-        const uint totalDuration = (((1000.0/krecord_playback_framerate()) * krecord_num_frames_recorded()) / 1000);
-        const uint seconds = totalDuration % 60;
-        const uint minutes = totalDuration / 60;
-        const uint hours = minutes / 60;
-        ui->label_recordingMetaDuration->setEnabled(true);
-        ui->label_recordingMetaDuration->setText(QString("%1:%2:%3").arg(QString::number(hours).rightJustified(2, '0'))
-                                                                    .arg(QString::number(minutes).rightJustified(2, '0'))
-                                                                    .arg(QString::number(seconds).rightJustified(2, '0')));
+        ui->tableWidget_status->modify_property("Target FPS", QString::number(krecord_playback_framerate()));
     }
     else
     {
-        ui->label_recordingMetaResolution->setText("n/a");
-        ui->label_recordingMetaResolution->setEnabled(false);
-
-        ui->label_recordingMetaDuration->setText("n/a");
-        ui->label_recordingMetaDuration->setEnabled(false);
-
-        ui->label_recordingMetaFileSize->setText("n/a");
-        ui->label_recordingMetaFileSize->setEnabled(false);
-
-        ui->label_recordingMetaFramerate->setText("n/a");
-        ui->label_recordingMetaFramerate->setEnabled(false);
-
-        ui->label_recordingMetaTargetFramerate->setText("n/a");
-        ui->label_recordingMetaTargetFramerate->setEnabled(false);
+        ui->tableWidget_status->modify_property("Duration", "-");
+        ui->tableWidget_status->modify_property("Resolution", "-");
+        ui->tableWidget_status->modify_property("File size", "-");
+        ui->tableWidget_status->modify_property("Input FPS", "-");
+        ui->tableWidget_status->modify_property("Target FPS", "-");
     }
 
     return;
