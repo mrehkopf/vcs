@@ -74,6 +74,8 @@ private:
     // Returns true if the given RGBEasy API call return value indicates an error.
     bool apicall_succeeded(long callReturnValue) const;
 
+    resolution_s get_resolution_from_api(void);
+
     void update_known_video_signal_parameters(const resolution_s r, const video_signal_parameters_s &p);
 
     video_signal_parameters_s get_video_signal_parameters_for_resolution(const resolution_s r) const;

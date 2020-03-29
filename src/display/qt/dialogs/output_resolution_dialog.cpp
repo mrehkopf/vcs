@@ -58,6 +58,8 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
             {
                 ks_set_output_base_resolution(kc_capture_api().get_resolution(), true);
 
+                kd_update_output_window_size();
+
                 ui->spinBox_outputResX->setValue(ks_output_base_resolution().w);
                 ui->spinBox_outputResY->setValue(ks_output_base_resolution().h);
             }
@@ -72,6 +74,8 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
                                     (uint)ui->spinBox_outputResY->value(), 0};
 
             ks_set_output_base_resolution(r, true);
+
+            kd_update_output_window_size();
         });
 
         connect(ui->spinBox_outputResY, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this,
@@ -83,6 +87,8 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
                                     (uint)ui->spinBox_outputResY->value(), 0};
 
             ks_set_output_base_resolution(r, true);
+
+            kd_update_output_window_size();
         });
 
         connect(ui->spinBox_outputScale, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this,

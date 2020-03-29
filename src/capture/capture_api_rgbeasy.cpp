@@ -35,6 +35,9 @@ static bool RECEIVING_A_SIGNAL = true;
 // If the current signal we're receiving is invalid.
 static bool IS_SIGNAL_INVALID = false;
 
+// The current input resolution.
+static resolution_s CAPTURE_RESOLUTION = {640, 480, 32};
+
 // The maximum image depth that the capturer can handle.
 static const unsigned MAX_BIT_DEPTH = 32;
 
@@ -685,7 +688,7 @@ video_signal_parameters_s capture_api_rgbeasy_s::get_maximum_video_signal_parame
     return p;
 }
 
-resolution_s capture_api_rgbeasy_s::get_resolution(void) const
+resolution_s capture_api_rgbeasy_s::get_resolution_from_api(void)
 {
     resolution_s r = {640, 480, 32};
 
@@ -698,6 +701,11 @@ resolution_s capture_api_rgbeasy_s::get_resolution(void) const
     r.bpp = this->get_color_depth();
 
     return r;
+}
+
+resolution_s capture_api_rgbeasy_s::get_resolution(void) const
+{
+    return CAPTURE_RESOLUTION;
 }
 
 resolution_s capture_api_rgbeasy_s::get_minimum_resolution(void) const
@@ -754,6 +762,8 @@ capture_event_e capture_api_rgbeasy_s::pop_capture_event_queue(void)
     }
     else if (pop_capture_event(capture_event_e::new_video_mode))
     {
+        CAPTURE_RESOLUTION = this->get_resolution_from_api();
+
         return capture_event_e::new_video_mode;
     }
     else if (pop_capture_event(capture_event_e::signal_lost))
@@ -1007,6 +1017,8 @@ bool capture_api_rgbeasy_s::set_resolution(const resolution_s &r)
         NBENE(("The capture hardware failed to set the desired resolution."));
         goto fail;
     }
+
+    CAPTURE_RESOLUTION = this->get_resolution_from_api();
 
     return true;
 

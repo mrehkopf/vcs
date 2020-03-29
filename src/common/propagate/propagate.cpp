@@ -55,6 +55,10 @@ void kpropagate_news_of_new_capture_video_mode(void)
 
     ks_set_output_base_resolution(resolution, false);
 
+    kd_update_output_window_size();
+
+    kd_update_output_window_title();
+
     kd_redraw_output_window();
 
     return;

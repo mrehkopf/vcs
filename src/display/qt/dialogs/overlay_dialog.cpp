@@ -162,9 +162,6 @@ QString OverlayDialog::parsed_overlay_string(void)
 {
     QString parsed = ui->plainTextEdit->toPlainText();
 
-    /// TODO. I'm not totally sure how good, performance-wise, it is to poll the
-    /// capture hardware every frame. Depends on how the Datapath API caches this
-    /// info etc.
     const auto inRes = kc_capture_api().get_resolution();
     const auto outRes = ks_output_resolution();
 
