@@ -61,15 +61,15 @@ SignalDialog::SignalDialog(QWidget *parent) :
     {
         // Initialize the table of information.
         {
-            ui->tableWidget_propertyTable->modify_property("Uptime", "00:00:00");
             ui->tableWidget_propertyTable->modify_property("Resolution", "");
             ui->tableWidget_propertyTable->modify_property("Refresh rate", "");
+            ui->tableWidget_propertyTable->modify_property("Uptime", "00:00:00");
         }
 
         // Start timers to keep track of the video mode's uptime.
         {
             VIDEO_MODE_UPTIME.start();
-            VIDEO_MODE_UPTIME_UPDATE.start(1000);
+            VIDEO_MODE_UPTIME_UPDATE.start(4000);
 
             connect(&VIDEO_MODE_UPTIME_UPDATE, &QTimer::timeout, [this]
             {
