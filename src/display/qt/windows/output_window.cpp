@@ -1011,7 +1011,7 @@ void MainWindow::update_window_title()
     {
         const resolution_s inRes = kc_capture_api().get_resolution();
         const resolution_s outRes = ks_output_resolution();
-        const int relativeScale = round((outRes.h / (real)inRes.h) * 100);
+        const int relativeScale = round((outRes.h / (real)inRes.h) * 100); /// FIXME: Doesn't notice if only the width is modified.
 
         QStringList programStatus;
         if (krecord_is_recording()) programStatus << "R";

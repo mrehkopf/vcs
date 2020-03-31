@@ -69,7 +69,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
         // Start timers to keep track of the video mode's uptime.
         {
             VIDEO_MODE_UPTIME.start();
-            VIDEO_MODE_UPTIME_UPDATE.start(4000);
+            VIDEO_MODE_UPTIME_UPDATE.start(1000);
 
             connect(&VIDEO_MODE_UPTIME_UPDATE, &QTimer::timeout, [this]
             {
