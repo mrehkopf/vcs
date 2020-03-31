@@ -95,7 +95,7 @@ void klog_log_error(const char *const msg, ...)
 {
     va_list args;
     va_start(args, msg);
-        log("N.B.", msg, args);
+        log("Error", msg, args);
     va_end(args);
 
     return;

@@ -57,7 +57,7 @@ struct capture_api_s
     // The number of operable input channels on this device that the API can
     // make use of. The number is expected to reflect consecutive inputs from
     // #1 to n, where n is the value returned.
-    virtual int get_device_max_input_count(void) const = 0;
+    virtual int get_device_maximum_input_count(void) const = 0;
 
     // A string that describes the device's firmware version. This won't be for
     // any practical use, just for displaying in the GUI and that kind of thing.
@@ -112,6 +112,7 @@ struct capture_api_s
 
     // Get the refresh rate, in Hz, of the current capture signal.
     virtual unsigned get_refresh_rate(void) const = 0;
+    virtual double get_refresh_rate_exact(void) const = 0;
 
     // Get the color depth, in bits, of the frames the API currently expects
     // to output via get_frame_buffer(). For instance, for RGB888 this might be

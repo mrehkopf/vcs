@@ -29,9 +29,8 @@ void kpropagate_news_of_new_capture_video_mode(void)
     kpropagate_news_of_gained_capture_signal();
 
     resolution_s resolution = kc_capture_api().get_resolution();
-    const unsigned refreshRate = kc_capture_api().get_refresh_rate();
 
-    INFO(("New video mode: %u x %u @ %u Hz.", resolution.w, resolution.h, refreshRate));
+    INFO(("New video mode: %u x %u @ %f Hz.", resolution.w, resolution.h, kc_capture_api().get_refresh_rate_exact()));
 
     if (ka_has_alias(resolution))
     {

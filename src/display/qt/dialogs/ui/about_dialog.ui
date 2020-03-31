@@ -92,7 +92,7 @@
           <item>
            <widget class="QLabel" name="label_17">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;VCS is a third-party open-source capture utility for Datapath's VisionRGB and VisionAV capture devices. VCS is not associated with nor endorsed by Datapath.&lt;/p&gt;&lt;p&gt;Made in Finland by &lt;a href=&quot;https://www.tarpeeksihyvaesoft.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Tarpeeksi Hyvae Soft&lt;/span&gt;&lt;/a&gt;. Uses the Qt UI framework (c) The Qt Company, and the OpenCV image processing library (c) OpenCV team.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;VCS is a third-party open-source capture utility for Datapath's VisionRGB and VisionAV capture devices. VCS is not associated with nor endorsed by Datapath.&lt;/p&gt;&lt;p&gt;Made in Finland by Tarpeeksi Hyvae Soft. Uses the Qt UI framework (c) The Qt Company, and the OpenCV image processing library (c) OpenCV team.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

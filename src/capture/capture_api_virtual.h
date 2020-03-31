@@ -29,9 +29,10 @@ struct capture_api_virtual_s : public capture_api_s
     resolution_s get_resolution(void) const override             { return this->defaultResolution; }
     resolution_s get_minimum_resolution(void) const override     { return this->defaultResolution; }
     resolution_s get_maximum_resolution(void) const override     { return this->defaultResolution; }
-    unsigned get_refresh_rate(void) const override               { return {}; }
-    uint get_missed_frames_count(void) const override            { return 0;  }
-    uint get_input_channel_idx(void) const override              { return 0;  }
+    unsigned get_refresh_rate(void) const override               { return 0; }
+    double get_refresh_rate_exact(void) const override           { return 0; }
+    uint get_missed_frames_count(void) const override            { return 0; }
+    uint get_input_channel_idx(void) const override              { return 0; }
     uint get_color_depth(void) const override                    { return (unsigned)this->defaultResolution.bpp; }
     bool is_capturing(void) const override                       { return false; }
     bool has_invalid_signal(void) const override                 { return false; }

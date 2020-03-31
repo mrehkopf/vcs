@@ -5,7 +5,13 @@ DEFINES += USE_OPENCV
 #DEFINES += ENFORCE_OPTIONAL_ASSERTS
 
 linux {
-    DEFINES += CAPTURE_API_VIRTUAL # TODO: Support Video4Linux as the default capture API on Linux.
+    DEFINES += CAPTURE_API_VIDEO4LINUX
+
+    # The base path for Datapath's Linux Vision driver header files. These are
+    # bundled with the driver downloadable from Datapath's website. The files
+    # are expected to be in a visionrgb subdirectory of this path e.g.
+    # .../visionrg/include/rgb133control.h..
+    INCLUDEPATH += $$(HOME)/sdk/
 
     contains(DEFINES, USE_OPENCV) {
         LIBS += -lopencv_imgproc -lopencv_videoio -lopencv_highgui -lopencv_core -lopencv_photo
@@ -82,7 +88,8 @@ SOURCES += \
     src/capture/capture_api.cpp \
     src/capture/video_parameters.cpp \
     src/display/qt/subclasses/QTableWidget_property_table.cpp \
-    src/display/qt/dialogs/signal_dialog.cpp
+    src/display/qt/dialogs/signal_dialog.cpp \
+    src/capture/capture_api_video4linux.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -129,7 +136,8 @@ HEADERS += \
     src/capture/video_parameters.h \
     src/display/display.h \
     src/display/qt/subclasses/QTableWidget_property_table.h \
-    src/display/qt/dialogs/signal_dialog.h
+    src/display/qt/dialogs/signal_dialog.h \
+    src/capture/capture_api_video4linux.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \

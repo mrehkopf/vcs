@@ -276,7 +276,7 @@ void kd_redraw_output_window(void)
 {
     if (WINDOW == nullptr)
     {
-        NBENE(("Expected the display to have been acquired before accessing it for redraw. "
+        DEBUG(("Expected the display to have been acquired before accessing it for redraw. "
                "Ignoring this call."));
     }
     else

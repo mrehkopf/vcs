@@ -9,6 +9,7 @@
 #include "common/propagate/propagate.h"
 #include "capture/capture_api_virtual.h"
 #include "capture/capture_api_rgbeasy.h"
+#include "capture/capture_api_video4linux.h"
 #include "capture/capture.h"
 
 static capture_api_s *API = nullptr;
@@ -27,6 +28,8 @@ void kc_initialize_capture(void)
         new capture_api_virtual_s;
     #elif CAPTURE_API_RGBEASY
         new capture_api_rgbeasy_s;
+    #elif CAPTURE_API_VIDEO4LINUX
+        new capture_api_video4linux_s;
     #else
         #error "Unknown capture API."
     #endif
@@ -40,6 +43,8 @@ void kc_initialize_capture(void)
 
 void kc_release_capture(void)
 {
+    DEBUG(("Releasing the capture API."));
+
     API->release();
 
     delete API;

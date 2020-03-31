@@ -23,6 +23,11 @@
  *
  */
 
+// How many bytes to pre-allocate for the memory cache. Note that the cache
+// currently has no ability to grow itself, so this amount must be sufficient
+// for the whole of the program's execution.
+static uint MEMORY_CACHE_SIZE = 1024/*MB*/ * 1024 * 1024;
+
 // The memory manager isn't prepared for multithreading, so discourage its use in
 // that context. We'll grab the id of whatever thread initializes this, and later
 // bail if any other thread requests operations of the manager.
@@ -41,7 +46,6 @@ struct mem_allocation_s
 static int TOTAL_BYTES_ALLOCATED = 0;
 static int TOTAL_BYTES_RELEASED = 0;
 
-static uint MEMORY_CACHE_SIZE = 1024/*MB*/ * 1024 * 1024;   // In bytes.
 static u8 *MEMORY_CACHE = NULL;
 static u8 *NEXT_FREE = NULL;    // A pointer to the next free byte in the memory cache (allocations from the cache are made sequentially).
 

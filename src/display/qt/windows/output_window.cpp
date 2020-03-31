@@ -129,7 +129,7 @@ MainWindow::MainWindow(QWidget *parent) :
             {
                 QActionGroup *group = new QActionGroup(this);
 
-                for (int i = 0; i < kc_capture_api().get_device_max_input_count(); i++)
+                for (int i = 0; i < kc_capture_api().get_device_maximum_input_count(); i++)
                 {
                     QAction *inputChannel = new QAction(QString::number(i+1), this);
                     inputChannel->setActionGroup(group);
