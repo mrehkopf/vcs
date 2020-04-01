@@ -1,22 +1,23 @@
 /*
- * 2018 Tarpeeksi Hyvae Soft /
- * VCS
+ * 2018, 2020 Tarpeeksi Hyvae Soft
+ * 
+ * Software: VCS
  *
  */
 
 #ifndef FILTER_H_
 #define FILTER_H_
 
+#include <functional>
 #include "common/memory/memory_interface.h"
 #include "display/display.h"
 #include "common/globals.h"
 
 struct filter_widget_s;
 
-// The signature of the function of a filter which applies that function to the
-// given pixels.
+// The parameters accepted by a filter's apply function (the function that
+// applies a filter's processing onto the target pixels).
 #define FILTER_FUNC_PARAMS u8 *const pixels, const resolution_s *const r, const u8 *const params
-typedef void(*filter_function_t)(FILTER_FUNC_PARAMS);
 
 enum class filter_type_enum_e
 {
@@ -37,7 +38,8 @@ enum class filter_type_enum_e
     output_gate,
 };
 
-// A concrete instance of a filter.
+// An image filter - applies a pre-set effect (blur, sharpening, etc.) onto
+// the pixels of a captured frame.
 class filter_c
 {
 public:
@@ -53,7 +55,7 @@ public:
         filter_type_enum_e type;
 
         // A function that applies the filter's processing to a frame's pixels.
-        filter_function_t apply;
+        std::function<void(FILTER_FUNC_PARAMS)> apply;
     };
 
     const filter_metadata_s &metaData;
@@ -67,6 +69,7 @@ public:
     filter_widget_s *const guiWidget;
 
 private:
+    // Creates and returns an instance of a GUI widget for this filter.
     filter_widget_s* new_gui_widget(const u8 *const initialParameterValues = nullptr);
 };
 
