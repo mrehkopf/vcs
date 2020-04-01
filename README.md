@@ -458,105 +458,102 @@ While developing VCS, I've been compiling it with GCC 5.4 on Linux and MinGW 5.3
 
 ### Adding a frame filter
 
-Frame filters allow captured frames' pixel data to be modified before being displayed on-screen. A filter might, for instance, blur, crop, and/or rotate the frames.
+Frame filters modify captured frames' pixel data before the frames are displayed on-screen. With these filters, the user can add real-time effects like blur, crop, or rotation - or something more exotic like a frame rate counter, which keeps track of pixel changes across frames to count how many unique frames per second are being captured.
 
-In-code, a filter consists of a `function` and a `widget`. The filter function applies the filter to a given frame's pixel data; and the filter widget is a GUI element that lets the user modify the filter's parameters &ndash; like the radius of a blur filter.
+Coding a custom filter for VCS involves three steps: (1) [creating a function that applies the filter to incoming frames' pixels](#creating-the-filter-function), (2) [defining a GUI widget with which the user can interact with the filter](#defining-the-filters-gui-widget), and (3) [making VCS aware of the filter's existence](#making-vcs-aware-of-the-filter). The steps are described in more detail, below.
 
-Adding a new filter to VCS is fairly straightforward; the process is described below.
+#### Creating the filter function
+Each filter must have a function that applies the filter's processing (blurring, sharpening, or whatever you have in mind) to captured pixel data. These functions are defined in [src/filter/filter_funcs.cpp](src/filter/filter_funcs.cpp) and declared in [src/filter/filter_funcs.h](src/filter/filter_funcs.h).
 
-#### Defining the filter function
-The filter function is to be defined in [src/filter/filter.cpp](src/filter/filter.cpp) and its header. Looking at that source file, you can see the following pattern:
-```
-// Pre-declare the filter function.
-static void filter_func_NAME(...);
+For example, a simple filter function - let's call it `filter_func_solid_fill()` - that makes all pixels in the frame a certain color could be defined in [src/filter/filter_funcs.cpp](src/filter/filter_funcs.cpp) like so:
 
-// Make VCS aware of the filter's existence.
-static const std::unordered_map ... KNOWN_FILTER_TYPES =
-{
-    ...
-    {"UUID", {"NAME", filter_type_enum_e::ENUMERATOR, FUNCTION}},
-    ...
-};
-
-// Define the filter function.
-static void filter_func_NAME(FILTER_FUNC_PARAMS)
+```cpp
+void filter_func_solid_fill(FILTER_FUNC_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
-    // Perform the filtering.
-    ...
-}
-
-// Tie the filter function to its filter widget.
-filter_widget_s *filter_c::create_gui_widget(...)
-{
-    ...
-    switch (this->metaData.type)
-    {
-        case filter_type_enum_e::ENUMERATOR: return new filter_widget_NAME_s(...);
-    }
-    ...
-}
-```
-
-And in the header file:
-```
-// Enumerate the filter.
-enum class filter_type_enum_e
-{
-    ...
-    ENUMERATOR,
-    ...
-};
-```
-
-The filter function's parameter list macro `FILTER_FUNC_PARAMS` expands to
-```
-u8 *const pixels, const resolution_s *const r, const u8 *const params
-```
-where `pixels` is a one-dimensional array of 32-bit color values (8 bits each for BGRA), `params` is an array providing the filter's parameter values, and `r` is the frame's resolution, giving the size of the `pixels` array.
-
-The following simple sample filter function uses OpenCV to set each pixel in the frame to a light blue color. (Note that you should encase any code that uses OpenCV in a `#if USE_OPENCV` block.)
-```
-static void filter_func_blue(FILTER_FUNC_PARAMS)
-{
-    VALIDATE_FILTER_INPUT
+    const u8 red = params[filter_widget_solid_fill_s::OFFS_RED];
+    const u8 green = params[filter_widget_solid_fill_s::OFFS_GREEN];
+    const u8 blue = params[filter_widget_solid_fill_s::OFFS_BLUE];
 
     #if USE_OPENCV
         cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
-        output = cv::Scalar(255, 150, 0, 255);
+        output = cv::Scalar(blue, green, red, 255);
+    #else
+        for (unsigned y = 0; y < r->h; y++)
+        {
+            for (unsigned x = 0; x < r->w; x++)
+            {
+                const unsigned pixelIdx = ((x + y * r->w) * 4);
+
+                pixels[pixelIdx + 0] = blue;
+                pixels[pixelIdx + 1] = green;
+                pixels[pixelIdx + 2] = red;
+                pixels[pixelIdx + 3] = 255;
+            }
+        }
     #endif
+
+    return;
 }
 ```
 
-You can peruse the existing filter functions in [src/filter/filter.cpp](src/filter/filter.cpp) to get a feel for how the filter function can be operated.
+The function's `FILTER_FUNC_PARAMS` parameter list is a #define which expands to:
 
-#### Filter widget
-The filter widget is to be defined in [src/display/qt/widgets/filter_widgets.cpp](src/display/qt/widgets/filter_widgets.cpp) and the associated header. Each widget is defined as a struct subclassing `filter_widget_s`.
-
-The following is a minimal widget example for a filter with one user-adjustable parameter (radius).
-
+```cpp
+u8 *const pixels,
+const resolution_s *const r,
+const u8 *const params
 ```
-struct filter_widget_NAME_s : public filter_widget_s
-{
-    enum data_offset_e { OFFS_RADIUS = 0 };
+Here, `pixels` is a one-dimensional array of 32-bit color values (8 bits each for BGRA), `params` is an array providing the filter's parameter values (e.g. radius for a blur filter), and `r` is the resolution of the pixel buffer represented by `pixels`.
 
-    filter_widget_NAME_s(u8 *const parameterArray, const u8 *const initialParameterValues) :
-        filter_widget_s(filter_type_enum_e::ENUMERATOR, parameterArray, initialParameterValues)
+What `filter_func_solid_fill()` is doing, then, is iterating over all of the frame's pixels to modify their individual color values. It does this using OpenCV if VCS has been compiled with OpenCV support; and via a normal loop otherwise. You don't have to use OpenCV in a filter function, but if you do, encase any OpenCV methods, parameters, and such in an `#if USE_OPENCV` preprocessor conditional, so that the code compiles even when OpenCV is disabled.
+
+Don't forget to declare the filter function in [src/filter/filter_funcs.h](src/filter/filter_funcs.h):
+
+```cpp
+void filter_func_solid_fill(FILTER_FUNC_PARAMS);
+```
+
+If you're wondering where the magic `filter_widget_solid_fill_s::` values in `filter_func_solid_fill()` come from, read on! (Hint: they come from the filter's GUI widget and so are ultimately set by the user.)
+
+#### Defining the filter's GUI widget
+Each filter must be accompanied by a GUI widget that provides the user a way to interact with the widget in the [Filter graph dialog](#filter-graph-dialog).
+
+Filter widgets are defined in [src/display/qt/widgets/filter_widgets.cpp](src/display/qt/widgets/filter_widgets.cpp) and declared in [src/display/qt/widgets/filter_widgets.h](src/display/qt/widgets/filter_widgets.h). Each widget is a struct subclassing `filter_widget_s`.
+
+The following is what might be the corresponding widget definition for our sample `filter_func_solid_fill()` filter function. The widget provides the user with controls to define which color the filter function should fill the frame's pixels with.
+
+```cpp
+struct filter_widget_solid_fill_s : public filter_widget_s
+{
+    // Byte offsets in the filter's parameter array of the individual
+    // parameters. Each parameter in this filter takes up one byte; those
+    // parameters being the fill color's red, green, and blue values.
+    // The red value is thus in this->parameterArray[0], the green value
+    // in this->parameterArray[1], etc.
+    enum data_offset_e { OFFS_RED = 0, OFFS_GREEN = 1, OFFS_BLUE = 2 };
+
+    filter_widget_solid_fill_s(u8 *const parameterArray,
+                               const u8 *const initialParameterValues) :
+        filter_widget_s(filter_type_enum_e::solid_fill,
+                        parameterArray,
+                        initialParameterValues)
     {
         if (!initialParameterValues) this->reset_parameter_data();
         create_widget();
         return;
     }
 
+    // Give the filter's parameters default starting values.
     void reset_parameter_data(void) override
     {
-        k_assert(this->parameterArray, "Expected non-null pointer to filter data.");
+        memset(this->parameterArray, 0, FILTER_PARAMETER_ARRAY_LENGTH);
 
-        memset(this->parameterArray, 0, sizeof(u8) * FILTER_PARAMETER_ARRAY_LENGTH);
-
-        // Set the parameter's default value.
-        this->parameterArray[OFFS_RADIUS] = 5;
+        // Default to a light blue color.
+        this->parameterArray[OFFS_RED] = 0;
+        this->parameterArray[OFFS_GREEN] = 150;
+        this->parameterArray[OFFS_BLUE] = 255;
 
         return;
     }
@@ -566,25 +563,55 @@ private:
     
     void create_widget(void) override
     {
-        // Create a frame that will group together the widget's contents.
+        // Create a frame that will group together the widget's
+        // contents.
         QFrame *frame = new QFrame();
         frame->setMinimumWidth(this->minWidth);
 
-        // Create a set of UI controls for the user to adjust the filter's parameter.
-        QLabel *label = new QLabel("Radius:", frame);
-        QSpinBox *spin = new QSpinBox(frame);
-        radiusSpin->setRange(0, 99);
-        radiusSpin->setValue(this->parameterArray[OFFS_RADIUS]);
+        // Create a set of UI controls for the user to adjust the
+        // filter's parameters.
+        QLabel *labelRed = new QLabel("Red:", frame);
+        QSpinBox *spinRed = new QSpinBox(frame);
+        spinRed->setRange(0, 255);
+        spinRed->setValue(this->parameterArray[OFFS_RED]);
+
+        QLabel *labelGreen = new QLabel("Green:", frame);
+        QSpinBox *spinGreen = new QSpinBox(frame);
+        spinGreen->setRange(0, 255);
+        spinGreen->setValue(this->parameterArray[OFFS_GREEN]);
+
+        QLabel *labelBlue = new QLabel("Blue:", frame);
+        QSpinBox *spinBlue = new QSpinBox(frame);
+        spinBlue->setRange(0, 255);
+        spinBlue->setValue(this->parameterArray[OFFS_BLUE]);
 
         QFormLayout *l = new QFormLayout(frame);
-        l->addRow(label, spin);
+        l->addRow(labelRed, spinRed);
+        l->addRow(labelGreen, spinGreen);
+        l->addRow(labelBlue, spinBlue);
 
-        // Make the parameter's value change as the user operates the associated UI controls.
-        connect(spin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
+        // Make the filter's parameter values update as the user
+        // operates the controls. Changes will be reflected in the
+        // captured frames in real-time.
         {
-            k_assert(this->parameterArray, "Expected non-null filter data.");
-            this->parameterArray[OFFS_RADIUS] = newValue;
-        });
+            connect(spinRed, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            [this](const int newValue)
+            {
+                this->parameterArray[OFFS_RED] = newValue;
+            });
+
+            connect(spinGreen, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            [this](const int newValue)
+            {
+                this->parameterArray[OFFS_GREEN] = newValue;
+            });
+
+            connect(spinBlue, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            [this](const int newValue)
+            {
+                this->parameterArray[OFFS_BLUE] = newValue;
+            });
+        }
 
         frame->adjustSize();
         this->widget = frame;
@@ -594,7 +621,51 @@ private:
 };
 ```
 
-You can look around [src/display/qt/widgets/filter_widgets.h](src/display/qt/widgets/filter_widgets.h) and the associated source file for concrete examples of VCS's filter widgets.
+You can look around [src/display/qt/widgets/filter_widgets.h](src/display/qt/widgets/filter_widgets.h) for more examples of how VCS's filters are implementing their GUI widgets.
+
+#### Making VCS aware of the filter
+Once the filter function and GUI widget have been created, all that's left to do is to let VCS know that the filter exists - which will also make the filter available to the user in the [Filter graph dialog](#filter-graph-dialog).
+
+To make VCS recognize our sample solid fill filter, we'll need to append [src/filter/filter.cpp](src/filter/filter.cpp) and [src/filter/filter.h](src/filter/filter.h) with the following:
+
+```cpp
+// In filter.h:
+
+// Find the filter_type_enum_e enumerator, and add an entry
+// for this filter (we'll call it 'solid_fill').
+enum class filter_type_enum_e
+{
+    ...
+    solid_fill
+};
+```
+
+```cpp
+// In filter.cpp:
+
+// Find the KNOWN_FILTER_TYPES map, and add the filter there. Note: you'll
+// need to generate a unique UUID (e.g. 03847778-bb9c-4e8c-96d5-0c10335c4f34)
+// for the filter.
+static const std::unordered_map ... KNOWN_FILTER_TYPES =
+{
+    ...
+    {"UUID", {"Solid fill", filter_type_enum_e::solid_fill, filter_func_solid_fill}}
+};
+
+// Find the filter_c::create_gui_widget() function, and connect
+// the filter function to its filter widget.
+filter_widget_s *filter_c::create_gui_widget(...)
+{
+    ...
+    switch (this->metaData.type)
+    {
+        case filter_type_enum_e::solid_fill: return new filter_widget_solid_fill_s(arguments);
+    }
+    ...
+}
+```
+
+Now if you compile and run VCS, the "Solid fill" filter should be available as an option in the [Filter graph dialog](#filter-graph-dialog)!
 
 # Project status
 VCS is currently in post-1.0, having come out of beta in 2018. Development is sporadic.
