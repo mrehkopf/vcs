@@ -488,7 +488,7 @@ static void filter_func_NAME(FILTER_FUNC_PARAMS)
 }
 
 // Tie the filter function to its filter widget.
-filter_widget_s *filter_c::new_gui_widget(...)
+filter_widget_s *filter_c::create_gui_widget(...)
 {
     ...
     switch (this->metaData.type)

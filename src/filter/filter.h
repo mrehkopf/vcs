@@ -70,7 +70,7 @@ public:
 
 private:
     // Creates and returns an instance of a GUI widget for this filter.
-    filter_widget_s* new_gui_widget(const u8 *const initialParameterValues = nullptr);
+    filter_widget_s* create_gui_widget(const u8 *const initialParameterValues = nullptr);
 };
 
 void kf_initialize_filters(void);

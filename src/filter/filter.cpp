@@ -827,7 +827,7 @@ void kf_initialize_filters(void)
 filter_c::filter_c(const std::string &id, const u8 *initialParameterValues) :
     metaData(KNOWN_FILTER_TYPES.at(id)),
     parameterData(heap_bytes_s<u8>(FILTER_PARAMETER_ARRAY_LENGTH, "Filter parameter data")),
-    guiWidget(new_gui_widget(initialParameterValues))
+    guiWidget(create_gui_widget(initialParameterValues))
 {
     return;
 }
@@ -840,7 +840,7 @@ filter_c::~filter_c()
     return;
 }
 
-filter_widget_s *filter_c::new_gui_widget(const u8 *const initialParameterValues)
+filter_widget_s *filter_c::create_gui_widget(const u8 *const initialParameterValues)
 {
     u8 *const paramArray = this->parameterData.ptr();
 
