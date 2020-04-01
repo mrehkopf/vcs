@@ -52,7 +52,7 @@ static void filter_func_rotate(FILTER_FUNC_PARAMS);
 // The UUID of a filter must never be changed - a filter must remain identifiable with
 // its initially-set UUID.
 //
-static const std::unordered_map<std::string, const filter_meta_s> KNOWN_FILTER_TYPES =
+static const std::unordered_map<std::string, const filter_c::filter_metadata_s> KNOWN_FILTER_TYPES =
 {
     {"a5426f2e-b060-48a9-adf8-1646a2d3bd41", {"Blur",              filter_type_enum_e::blur,                   filter_func_blur                   }},
     {"fc85a109-c57a-4317-994f-786652231773", {"Delta histogram",   filter_type_enum_e::delta_histogram,        filter_func_delta_histogram        }},
@@ -206,9 +206,9 @@ void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
     return;
 }
 
-std::vector<const filter_meta_s*> kf_known_filter_types(void)
+std::vector<const filter_c::filter_metadata_s*> kf_known_filter_types(void)
 {
-    std::vector<const filter_meta_s*> filtersMetadata;
+    std::vector<const filter_c::filter_metadata_s*> filtersMetadata;
 
     for (const auto &filter: KNOWN_FILTER_TYPES)
     {

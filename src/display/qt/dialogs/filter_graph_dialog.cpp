@@ -44,9 +44,9 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
             // Insert the names of all available filter types.
             {
-                std::vector<const filter_meta_s*> knownFilterTypes = kf_known_filter_types();
+                std::vector<const filter_c::filter_metadata_s*> knownFilterTypes = kf_known_filter_types();
 
-                std::sort(knownFilterTypes.begin(), knownFilterTypes.end(), [](const filter_meta_s *a, const filter_meta_s *b)
+                std::sort(knownFilterTypes.begin(), knownFilterTypes.end(), [](const filter_c::filter_metadata_s *a, const filter_c::filter_metadata_s *b)
                 {
                     return a->name < b->name;
                 });

@@ -37,18 +37,6 @@ enum class filter_type_enum_e
     output_gate,
 };
 
-struct filter_meta_s
-{
-    // The filter's user-facing display name; e.g. "Blur" for a blur filter. This
-    // will be shown in the GUI.
-    std::string name;
-
-    filter_type_enum_e type;
-
-    // A function used to apply this filter to a pixel buffer (frame).
-    filter_function_t apply;
-};
-
 // A concrete instance of a filter.
 class filter_c
 {
@@ -56,13 +44,25 @@ public:
     filter_c(const std::string &id, const u8 *initialParameterValues = nullptr);
     ~filter_c();
 
-    const filter_meta_s& metaData;
+    struct filter_metadata_s
+    {
+        // The filter's user-facing display name; e.g. "Blur" for a blur filter. This
+        // will be shown in the GUI.
+        std::string name;
+
+        filter_type_enum_e type;
+
+        // A function that applies the filter's processing to a frame's pixels.
+        filter_function_t apply;
+    };
+
+    const filter_metadata_s &metaData;
 
     // An array containing the filter's parameter values; like radius for a blur
     // filter.
     heap_bytes_s<u8> parameterData;
 
-    // A GUI-displayable widget containing e.g. user-interactible controls for
+    // The filter's GUI widget, which provides the user with visual controls for
     // adjusting the filter's parameters.
     filter_widget_s *const guiWidget;
 
@@ -86,7 +86,7 @@ filter_type_enum_e kf_filter_type_for_id(const std::string id);
 
 void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r);
 
-std::vector<const filter_meta_s*> kf_known_filter_types(void);
+std::vector<const filter_c::filter_metadata_s*> kf_known_filter_types(void);
 
 const filter_c* kf_create_new_filter_instance(const char *const id);
 const filter_c* kf_create_new_filter_instance(const filter_type_enum_e type, const u8 *const initialParameterValues = nullptr);
