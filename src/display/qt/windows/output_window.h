@@ -158,6 +158,9 @@ private:
 
     // Set to true if the program failed to initialize the capture card.
     bool captureInitFail = false;
+
+    // A user-definable custom title for the output window.
+    QString windowTitleOverride = "";
 };
 
 #endif

@@ -16,6 +16,7 @@
 #include <QTextDocument>
 #include <QElapsedTimer>
 #include <QFontDatabase>
+#include <QInputDialog>
 #include <QVBoxLayout>
 #include <QTreeWidget>
 #include <QMessageBox>
@@ -118,6 +119,27 @@ MainWindow::MainWindow(QWidget *parent) :
             menus.push_back(menu);
 
             connect(menu->addAction("Exit"), &QAction::triggered, this, [=]{this->close();});
+        }
+
+        // Window...
+        {
+            QMenu *menu = new QMenu("Window", this);
+            menus.push_back(menu);
+
+            connect(menu->addAction("Custom title..."), &QAction::triggered, this, [=]
+            {
+                const QString newTitle = QInputDialog::getText(this,
+                                                               "VCS - Enter a custom window title",
+                                                               "Title (empty to restore default):",
+                                                               QLineEdit::Normal,
+                                                               this->windowTitleOverride);
+
+                if (!newTitle.isNull())
+                {
+                    this->windowTitleOverride = newTitle;
+                    this->update_window_title();
+                }
+            });
         }
 
         // Input...
@@ -1001,14 +1023,17 @@ void MainWindow::update_window_title()
 
     if (kc_capture_api().has_no_signal())
     {
-        title = QString("%1 - No signal").arg(PROGRAM_NAME);
+        title = QString("%1 - No signal").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
     }
     else if (kc_capture_api().has_invalid_signal())
     {
-        title = QString("%1 - Invalid signal").arg(PROGRAM_NAME);
+        title = QString("%1 - Invalid signal").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
     }
     else
     {
+        // A symbol shown in the title if VCS is currently dropping frames.
+        const QString missedFramesMarker = "{!}";
+
         const resolution_s inRes = kc_capture_api().get_resolution();
         const resolution_s outRes = ks_output_resolution();
         const int relativeScale = round((outRes.h / (real)inRes.h) * 100); /// FIXME: Doesn't notice if only the width is modified.
@@ -1019,15 +1044,24 @@ void MainWindow::update_window_title()
         if (overlayDlg->is_overlay_enabled()) programStatus << "O";
         if (kat_is_anti_tear_enabled()) programStatus << "A";
 
-        title = QString("%1%2 - %3%4 x %5 scaled to %6 x %7 (~%8%)")
-                .arg((kc_capture_api().get_missed_frames_count() > 0)? "{!} " : "")
-                .arg(PROGRAM_NAME)
-                .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
-                .arg(inRes.w)
-                .arg(inRes.h)
-                .arg(outRes.w)
-                .arg(outRes.h)
-                .arg(relativeScale);
+        if (!this->windowTitleOverride.isEmpty())
+        {
+            title = QString("%1%2")
+                    .arg((kc_capture_api().get_missed_frames_count() > 0)? (missedFramesMarker + " ") : "")
+                    .arg(this->windowTitleOverride);
+        }
+        else
+        {
+            title = QString("%1%2 - %3%4 x %5 scaled to %6 x %7 (~%8%)")
+                    .arg((kc_capture_api().get_missed_frames_count() > 0)? (missedFramesMarker + " ") : "")
+                    .arg(PROGRAM_NAME)
+                    .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
+                    .arg(inRes.w)
+                    .arg(inRes.h)
+                    .arg(outRes.w)
+                    .arg(outRes.h)
+                    .arg(relativeScale);
+        }
     }
 
     this->setWindowTitle(title);

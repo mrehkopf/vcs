@@ -25,8 +25,8 @@
 #include <visionrgb/include/rgb133control.h>
 #include <visionrgb/include/rgb133v4l2.h>
 
-static std::atomic<unsigned int> CNT_FRAMES_PROCESSED(0);
-static std::atomic<unsigned int> CNT_FRAMES_CAPTURED(0);
+static std::atomic<unsigned int> NUM_FRAMES_PROCESSED(0);
+static std::atomic<unsigned int> NUM_FRAMES_CAPTURED(0);
 
 // The number of frames the capture hardware has sent which VCS was too busy to
 // receive and so which we had to skip.
@@ -444,7 +444,7 @@ static void capture_function(capture_api_video4linux_s *const thisPtr)
 
                 // If the hardware is sending us a new frame while we're still unfinished
                 // processing the previous frame, we'll skip this new frame.
-                if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
+                if (NUM_FRAMES_CAPTURED != NUM_FRAMES_PROCESSED)
                 {
                     NUM_NEW_FRAME_EVENTS_SKIPPED++;
                 }
@@ -459,7 +459,7 @@ static void capture_function(capture_api_video4linux_s *const thisPtr)
                     memcpy(FRAME_BUFFER.pixels.ptr(), (char*)buf.m.userptr,
                            FRAME_BUFFER.pixels.up_to(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8)));
 
-                    CNT_FRAMES_CAPTURED++;
+                    NUM_FRAMES_CAPTURED++;
                     push_capture_event(capture_event_e::new_frame);
                 }
 
@@ -860,7 +860,7 @@ const captured_frame_s& capture_api_video4linux_s::get_frame_buffer(void) const
 
 bool capture_api_video4linux_s::mark_frame_buffer_as_processed(void)
 {
-    CNT_FRAMES_PROCESSED = CNT_FRAMES_CAPTURED.load();
+    NUM_FRAMES_PROCESSED = NUM_FRAMES_CAPTURED.load();
 
     FRAME_BUFFER.processed = true;
 
