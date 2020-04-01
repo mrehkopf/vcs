@@ -18,10 +18,10 @@ struct capture_api_virtual_s : public capture_api_s
     bool initialize(void) override;
     bool release(void) override;
     std::string get_device_name(void) const override             { return "Virtual VCS Capture Device"; }
-    std::string get_api_name(void) const override                { return "Virtual VCS Capture API"; }
+    std::string get_api_name(void) const override                { return "Virtual VCS Capture API";    }
     std::string get_device_driver_version(void) const override   { return "1.0"; }
     std::string get_device_firmware_version(void) const override { return "1.0"; }
-    int get_device_max_input_count(void) const override          { return 2; }
+    int get_device_maximum_input_count(void) const override      { return 2;     }
     video_signal_parameters_s get_video_signal_parameters(void) const override         { return video_signal_parameters_s{}; }
     video_signal_parameters_s get_default_video_signal_parameters(void) const override { return video_signal_parameters_s{}; }
     video_signal_parameters_s get_minimum_video_signal_parameters(void) const override { return video_signal_parameters_s{}; }
