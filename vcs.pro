@@ -89,7 +89,8 @@ SOURCES += \
     src/capture/video_parameters.cpp \
     src/display/qt/subclasses/QTableWidget_property_table.cpp \
     src/display/qt/dialogs/signal_dialog.cpp \
-    src/capture/capture_api_video4linux.cpp
+    src/capture/capture_api_video4linux.cpp \
+    src/filter/filter_funcs.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -137,7 +138,8 @@ HEADERS += \
     src/display/display.h \
     src/display/qt/subclasses/QTableWidget_property_table.h \
     src/display/qt/dialogs/signal_dialog.h \
-    src/capture/capture_api_video4linux.h
+    src/capture/capture_api_video4linux.h \
+    src/filter/filter_funcs.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \

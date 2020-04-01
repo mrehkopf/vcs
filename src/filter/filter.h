@@ -12,12 +12,9 @@
 #include "common/memory/memory_interface.h"
 #include "display/display.h"
 #include "common/globals.h"
+#include "filter/filter_funcs.h"
 
 struct filter_widget_s;
-
-// The parameters accepted by a filter's apply function (the function that
-// applies a filter's processing onto the target pixels).
-#define FILTER_FUNC_PARAMS u8 *const pixels, const resolution_s *const r, const u8 *const params
 
 enum class filter_type_enum_e
 {
