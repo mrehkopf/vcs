@@ -70,6 +70,7 @@ struct capture_back_buffer_s
     heap_bytes_s<u8>& page(const unsigned idx)
     {
         k_assert((idx < this->numPages), "Accessing back buffer pages out of bounds.");
+
         return this->pages[idx];
     }
 
@@ -206,14 +207,25 @@ static bool pop_capture_event(capture_event_e event)
     return eventOccurred;
 }
 
+// Converts VCS's pixel format enumerator into Video4Linux's pixel format identifier.
+static u32 pixel_format_to_v4l_pixel_format(capture_pixel_format_e fmt)
+{
+    switch (fmt)
+    {
+        case capture_pixel_format_e::rgb_555: return V4L2_PIX_FMT_RGB555;
+        case capture_pixel_format_e::rgb_565: return V4L2_PIX_FMT_RGB565;
+        case capture_pixel_format_e::rgb_888: return V4L2_PIX_FMT_RGB32;
+        default: k_assert(0, "Unknown pixel format."); return V4L2_PIX_FMT_RGB32;
+    }
+}
+
 static bool capture_apicall(const unsigned long request, void *data)
 {
     const int retVal = ioctl(CAPTURE_HANDLE, request, data);
 
     if (retVal < 0)
     {
-         NBENE(("An apicall (request %d) failed (error %d).", request, retVal));
-
+        NBENE(("An apicall (request %d) failed (error %d).", request, retVal));
         return false;
     }
 
@@ -228,7 +240,6 @@ static bool stream_off(void)
     if (!capture_apicall(VIDIOC_STREAMOFF, &bufType))
     {
         NBENE(("Couldn't stop the capture stream."));
-
         return false;
     }
 
@@ -243,7 +254,6 @@ static bool stream_on(void)
     if (!capture_apicall(VIDIOC_STREAMON, &bufType))
     {
         NBENE(("Couldn't start the capture stream."));
-
         return false;
     }
 
@@ -264,7 +274,6 @@ bool capture_api_video4linux_s::unqueue_capture_buffers(void)
         if (!capture_apicall(VIDIOC_REQBUFS, &buf))
         {
             NBENE(("Failed to unqueue capture buffers (error %d).", errno));
-
             goto fail;
         }
     }
@@ -295,7 +304,7 @@ bool capture_api_video4linux_s::enqueue_capture_buffers(void)
 
         format.fmt.pix.width = maxCaptureResolution.w;
         format.fmt.pix.height = maxCaptureResolution.h;
-        format.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB32;
+        format.fmt.pix.pixelformat = pixel_format_to_v4l_pixel_format(CAPTURE_PIXEL_FORMAT);
         format.fmt.pix.field = V4L2_FIELD_NONE;
 
         if (!capture_apicall(VIDIOC_S_FMT, &format) ||
@@ -307,7 +316,7 @@ bool capture_api_video4linux_s::enqueue_capture_buffers(void)
 
         if ((format.fmt.pix.width != maxCaptureResolution.w) ||
             (format.fmt.pix.height != maxCaptureResolution.h) ||
-            (format.fmt.pix.pixelformat != V4L2_PIX_FMT_RGB32))
+            (format.fmt.pix.pixelformat != pixel_format_to_v4l_pixel_format(CAPTURE_PIXEL_FORMAT)))
         {
             NBENE(("Failed to initialize the current capture format for enqueuing capture buffers (error %d).", errno));
             goto fail;
@@ -326,7 +335,6 @@ bool capture_api_video4linux_s::enqueue_capture_buffers(void)
         if (!capture_apicall(VIDIOC_REQBUFS, &buf))
         {
             NBENE(("User pointer streaming couldn't be initialized (error %d).", errno));
-
             goto fail;
         }
     }
@@ -345,7 +353,6 @@ bool capture_api_video4linux_s::enqueue_capture_buffers(void)
         if (!capture_apicall(VIDIOC_QBUF, &buf))
         {
             NBENE(("Failed to enqueue capture buffers (failed on buffer #%d).", (i + 1)));
-
             goto fail;
         }
     }
@@ -453,7 +460,8 @@ static void capture_function(capture_api_video4linux_s *const thisPtr)
                     std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
 
                     FRAME_BUFFER.r = CAPTURE_RESOLUTION;
-                    FRAME_BUFFER.pixelFormat = CAPTURE_PIXEL_FORMAT; /// TODO: Set correct pixel format.
+                    FRAME_BUFFER.r.bpp = ((CAPTURE_PIXEL_FORMAT == capture_pixel_format_e::rgb_888)? 32 : 16);
+                    FRAME_BUFFER.pixelFormat = CAPTURE_PIXEL_FORMAT;
 
                     // Copy the frame's data into our local buffer so we can work on it.
                     memcpy(FRAME_BUFFER.pixels.ptr(), (char*)buf.m.userptr,
@@ -556,6 +564,11 @@ bool capture_api_video4linux_s::has_invalid_signal() const
 bool capture_api_video4linux_s::has_no_signal() const
 {
     return NO_SIGNAL;
+}
+
+capture_pixel_format_e capture_api_video4linux_s::get_pixel_format() const
+{
+    return CAPTURE_PIXEL_FORMAT;
 }
 
 resolution_s capture_api_video4linux_s::get_source_resolution(void) const

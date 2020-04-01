@@ -37,7 +37,7 @@ struct capture_api_video4linux_s : public capture_api_s
     bool is_capturing(void) const override                       { return true; }
     bool has_invalid_signal(void) const override;
     bool has_no_signal(void) const override;
-    capture_pixel_format_e get_pixel_format(void) const override { return capture_pixel_format_e::rgb_888; }
+    capture_pixel_format_e get_pixel_format(void) const override;
     const captured_frame_s& get_frame_buffer(void) const override;
 
     capture_event_e pop_capture_event_queue(void) override;

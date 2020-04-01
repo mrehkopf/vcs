@@ -269,7 +269,7 @@ PIXELFORMAT capture_api_rgbeasy_s::pixel_format_to_rgbeasy_pixel_format(capture_
         case capture_pixel_format_e::rgb_555: return RGB_PIXELFORMAT_555;
         case capture_pixel_format_e::rgb_565: return RGB_PIXELFORMAT_565;
         case capture_pixel_format_e::rgb_888: return RGB_PIXELFORMAT_888;
-        default: k_assert(0, "Unknown pixel format.");
+        default: k_assert(0, "Unknown pixel format."); return RGB_PIXELFORMAT_888;
     }
 }
 

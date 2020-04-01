@@ -171,25 +171,27 @@ MainWindow::MainWindow(QWidget *parent) :
             {
                 QActionGroup *group = new QActionGroup(this);
 
-                QAction *c24 = new QAction("24-bit (888)", this);
+                QAction *c24 = new QAction("24-bit (RGB-888)", this);
                 c24->setActionGroup(group);
                 c24->setCheckable(true);
                 c24->setChecked(true);
                 colorDepth->addAction(c24);
 
-                QAction *c16 = new QAction("16-bit (565)", this);
+#ifndef __linux__ // On Linux, we don't support setting any other color depth than RGB888.
+                QAction *c16 = new QAction("16-bit (RGB-565)", this);
                 c16->setActionGroup(group);
                 c16->setCheckable(true);
                 colorDepth->addAction(c16);
 
-                QAction *c15 = new QAction("15-bit (555)", this);
+                QAction *c15 = new QAction("15-bit (RGB-555)", this);
                 c15->setActionGroup(group);
                 c15->setCheckable(true);
                 colorDepth->addAction(c15);
 
-                connect(c24, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_888);});
                 connect(c16, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_565);});
                 connect(c15, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_555);});
+#endif
+                connect(c24, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_888);});
             }
 
             menu->addMenu(channel);
