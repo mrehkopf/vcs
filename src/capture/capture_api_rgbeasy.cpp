@@ -1,6 +1,6 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
- * 
+ *
  * Software: VCS
  *
  */
@@ -379,7 +379,7 @@ bool capture_api_rgbeasy_s::apicall_succeeded(long callReturnValue) const
 
 bool capture_api_rgbeasy_s::device_supports_component_capture(void) const
 {
-    const int numInputChannels = this->get_device_max_input_count();
+    const int numInputChannels = this->get_device_maximum_input_count();
 
     for (int i = 0; i < numInputChannels; i++)
     {
@@ -401,7 +401,7 @@ bool capture_api_rgbeasy_s::device_supports_component_capture(void) const
 
 bool capture_api_rgbeasy_s::device_supports_composite_capture(void) const
 {
-    const int numInputChannels = this->get_device_max_input_count();
+    const int numInputChannels = this->get_device_maximum_input_count();
     long isSupported = 0;
 
     for (int i = 0; i < numInputChannels; i++)
@@ -434,7 +434,7 @@ bool capture_api_rgbeasy_s::device_supports_deinterlacing(void) const
 
 bool capture_api_rgbeasy_s::device_supports_svideo(void) const
 {
-    const int numInputChannels = this->get_device_max_input_count();
+    const int numInputChannels = this->get_device_maximum_input_count();
 
     for (int i = 0; i < numInputChannels; i++)
     {
@@ -468,7 +468,7 @@ bool capture_api_rgbeasy_s::device_supports_dma(void) const
 
 bool capture_api_rgbeasy_s::device_supports_dvi(void) const
 {
-    const int numInputChannels = this->get_device_max_input_count();
+    const int numInputChannels = this->get_device_maximum_input_count();
 
     for (int i = 0; i < numInputChannels; i++)
     {
@@ -490,7 +490,7 @@ bool capture_api_rgbeasy_s::device_supports_dvi(void) const
 
 bool capture_api_rgbeasy_s::device_supports_vga(void) const
 {
-    const int numInputChannels = this->get_device_max_input_count();
+    const int numInputChannels = this->get_device_maximum_input_count();
 
     for (int i = 0; i < numInputChannels; i++)
     {
@@ -580,7 +580,7 @@ std::string capture_api_rgbeasy_s::get_api_name(void) const
     return "RGBEasy";
 }
 
-int capture_api_rgbeasy_s::get_device_max_input_count(void) const
+int capture_api_rgbeasy_s::get_device_maximum_input_count(void) const
 {
     unsigned long numInputs = 0;
 
@@ -788,7 +788,7 @@ unsigned capture_api_rgbeasy_s::get_refresh_rate(void) const
     return round(this->get_refresh_rate_exact());
 }
 
-unsigned capture_api_rgbeasy_s::get_refresh_rate_exact(void) const
+double capture_api_rgbeasy_s::get_refresh_rate_exact(void) const
 {
     if (this->has_no_signal())
     {
@@ -924,7 +924,7 @@ bool capture_api_rgbeasy_s::adjust_vertical_offset(const int delta)
 
 bool capture_api_rgbeasy_s::set_input_channel(const unsigned idx)
 {
-    const int numInputChannels = this->get_device_max_input_count();
+    const int numInputChannels = this->get_device_maximum_input_count();
 
     if (numInputChannels < 0)
     {
@@ -964,7 +964,7 @@ bool capture_api_rgbeasy_s::set_pixel_format(const capture_pixel_format_e pf)
     if (apicall_succeeded(RGBSetPixelFormat(this->captureHandle, pixel_format_to_rgbeasy_pixel_format(pf))))
     {
         CAPTURE_PIXEL_FORMAT = pf;
-        
+
         return true;
     }
 

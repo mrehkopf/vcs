@@ -1,6 +1,6 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
- * 
+ *
  * Software: VCS
  *
  */
@@ -42,8 +42,8 @@ struct capture_api_rgbeasy_s : public capture_api_s
     std::string get_device_firmware_version(void) const override;
     std::string get_device_driver_version(void) const override;
     std::string get_device_name(void) const override;
-    std::string  get_api_name(void) const override;
-    int get_device_max_input_count(void)  const override;
+    std::string get_api_name(void) const override;
+    int get_device_maximum_input_count(void) const override;
     video_signal_parameters_s get_video_signal_parameters(void) const override;
     video_signal_parameters_s get_default_video_signal_parameters(void) const override;
     video_signal_parameters_s get_minimum_video_signal_parameters(void) const override;
@@ -52,6 +52,7 @@ struct capture_api_rgbeasy_s : public capture_api_s
     resolution_s get_minimum_resolution(void) const override;
     resolution_s get_maximum_resolution(void) const override;
     unsigned get_refresh_rate(void) const override;
+    double get_refresh_rate_exact(void) const override;
     uint get_missed_frames_count(void) const override;
     uint get_input_channel_idx(void) const override;
     uint get_color_depth(void) const override;
@@ -94,7 +95,7 @@ private:
 
     // Converts VCS's pixel format into the RGBEasy pixel format.
     PIXELFORMAT pixel_format_to_rgbeasy_pixel_format(capture_pixel_format_e fmt);
-    
+
     HRGB captureHandle = 0;
 
     HRGBDLL rgbAPIHandle = 0;
