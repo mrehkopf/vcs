@@ -138,12 +138,38 @@ void InteractibleNodeGraphView::populate_node_click_menu(InteractibleNodeGraphNo
     this->nodeClickMenu->addAction(node->title);
     this->nodeClickMenu->actions().at(0)->setEnabled(false);
 
-    this->nodeClickMenu->addSeparator();
-
-    connect(this->nodeClickMenu->addAction("Remove this node"), &QAction::triggered, this, [=]
+    // Add options to change the node's color.
+    if (!node->background_color_list().empty())
     {
-        dynamic_cast<InteractibleNodeGraph*>(this->scene())->remove_node(node);
-    });
+        this->nodeClickMenu->addSeparator();
+
+        QMenu *colorMenu = new QMenu("Background color", this->nodeClickMenu);
+
+        QActionGroup *colorGroup = new QActionGroup(colorMenu);
+        colorGroup->setExclusive(true);
+
+        for (const auto &color : node->background_color_list())
+        {
+            QAction *colorAction = new QAction(color, colorMenu);
+            colorAction->setCheckable(true);
+            colorAction->setChecked(color == node->current_background_color_name());
+            colorAction->setActionGroup(colorGroup);
+            connect(colorAction, &QAction::triggered, this, [=]{ node->set_background_color(color); });
+            colorMenu->addAction(colorAction);
+        }
+
+        this->nodeClickMenu->addMenu(colorMenu);
+    }
+
+    // Add the option to delete this node.
+    {
+        this->nodeClickMenu->addSeparator();
+
+        connect(this->nodeClickMenu->addAction("Remove this node"), &QAction::triggered, this, [=]
+        {
+            dynamic_cast<InteractibleNodeGraph*>(this->scene())->remove_node(node);
+        });
+    }
 
     return;
 }

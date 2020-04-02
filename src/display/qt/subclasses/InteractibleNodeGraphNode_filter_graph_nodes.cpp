@@ -26,9 +26,21 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
         // Background.
         {
-            // Body background.
+            QColor backgroundColor = ([this, option]()->QColor
+            {
+                  const int alpha = ((option->state & QStyle::State_Selected)? 210 : 170);
+
+                  if      (this->backgroundColor == "Cyan")    return QColor(90, 190, 190, alpha);
+                  else if (this->backgroundColor == "Red")     return QColor(190, 90, 90, alpha);
+                  else if (this->backgroundColor == "Green")   return QColor(90, 190, 90, alpha);
+                  else if (this->backgroundColor == "Blue")    return QColor(90, 90, 190, alpha);
+                  else if (this->backgroundColor == "Yellow")  return QColor(190, 190, 90, alpha);
+                  else if (this->backgroundColor == "Magenta") return QColor(190, 90, 190, alpha);
+                  else                                         return QColor(90, 190, 190, alpha);
+            })();
+
             painter->setPen(QPen(QColor("black"), 1, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor(90, 190, 190, (option->state & QStyle::State_Selected)? 210 : 170)));
+            painter->setBrush(QBrush(backgroundColor));
             painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);
         }
 
@@ -94,7 +106,6 @@ void InputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
         // Background.
         {
-            // Body background.
             painter->setPen(QPen(QColor("black"), 1, Qt::SolidLine));
             painter->setBrush(QBrush(QColor(90, 90, 90, (option->state & QStyle::State_Selected)? 175 : 125)));
             painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);
@@ -153,7 +164,6 @@ void OutputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
 
         // Background.
         {
-            // Body background.
             painter->setPen(QPen(QColor("black"), 1, Qt::SolidLine));
             painter->setBrush(QBrush(QColor(90, 90, 90, (option->state & QStyle::State_Selected)? 175 : 125)));
             painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);

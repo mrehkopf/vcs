@@ -248,7 +248,7 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
     file_writer_c outFile(targetFilename);
 
     outFile << "fileType,{VCS filter graph}\n"
-            << "fileVersion,a\n";
+            << "fileVersion,b\n";
 
     // Save filter information.
     {
@@ -273,7 +273,13 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
 
         for (FilterGraphNode *const node: nodes)
         {
+            // How many individual parameters (like scenePosition, backgroundColor, etc.)
+            // we'll save.
+            outFile << "nodeParameterCount," << 3 << "\n";
+
             outFile << "scenePosition," << QString("%1,%2").arg(node->pos().x()).arg(node->pos().y()) << "\n";
+
+            outFile << "backgroundColor," << node->current_background_color_name() << "\n";
 
             outFile << "connections,";
             if (node->output_edge())
@@ -333,7 +339,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
 
     DEBUG(("Loading filter graph data from %s...", sourceFilename.c_str()));
 
-    std::vector<FilterGraphNode*> graphodes;
+    std::vector<FilterGraphNode*> graphNodes;
     std::vector<filter_graph_option_s> graphOptions;
 
     kd_clear_filter_graph();
@@ -353,7 +359,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
         {
             FilterGraphNode *const newNode = kd_add_filter_graph_node(type, params);
             newNode->setPos(nodeXOffset, nodeYOffset);
-            graphodes.push_back(newNode);
+            graphNodes.push_back(newNode);
 
             nodeXOffset += (newNode->width + 50);
 
@@ -401,10 +407,10 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
 
             // Connect the filter nodes.
             {
-                for (unsigned i = 0; i < (graphodes.size() - 1); i++)
+                for (unsigned i = 0; i < (graphNodes.size() - 1); i++)
                 {
-                    auto sourceEdge = graphodes.at(i)->output_edge();
-                    auto targetEdge = graphodes.at(i+1)->input_edge();
+                    auto sourceEdge = graphNodes.at(i)->output_edge();
+                    auto targetEdge = graphNodes.at(i+1)->input_edge();
 
                     k_assert((sourceEdge && targetEdge), "A filter node is missing a required edge.");
 
@@ -412,7 +418,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
                 }
             }
 
-            graphodes.clear();
+            graphNodes.clear();
 
             nodeYOffset += (tallestNode + 50);
             nodeXOffset = 0;
@@ -453,7 +459,12 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
 
             row++;
             verify_first_element_on_row_is("fileVersion");
-            //const QString fileVersion = rowData.at(row).at(1);
+            const QString fileVersion = rowData.at(row).at(1);
+            if (QList<QString>{"a", "b"}.indexOf(fileVersion) < 0)
+            {
+                kd_show_headless_error_message("", "Unsupported graph file format.");
+                return false;
+            }
 
             row++;
             verify_first_element_on_row_is("filterCount");
@@ -478,7 +489,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
                 }
 
                 const auto newNode = kd_add_filter_graph_node(filterType, (const u8*)params.data());
-                graphodes.push_back(newNode);
+                graphNodes.push_back(newNode);
             }
 
             // Load the node data.
@@ -489,22 +500,65 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
 
                 for (unsigned i = 0; i < nodeCount; i++)
                 {
-                    row++;
-                    verify_first_element_on_row_is("scenePosition");
-                    graphodes.at(i)->setPos(QPointF(rowData.at(row).at(1).toDouble(), rowData.at(row).at(2).toDouble()));
-
-                    row++;
-                    verify_first_element_on_row_is("connections");
-                    const unsigned numConnections = rowData.at(row).at(1).toUInt();
-
-                    for (unsigned p = 0; p < numConnections; p++)
+                    if (fileVersion == "a")
                     {
-                        node_edge_s *const sourceEdge = graphodes.at(i)->output_edge();
-                        node_edge_s *const targetEdge = graphodes.at(rowData.at(row).at(2+p).toUInt())->input_edge();
+                        row++;
+                        verify_first_element_on_row_is("scenePosition");
+                        graphNodes.at(i)->setPos(QPointF(rowData.at(row).at(1).toDouble(), rowData.at(row).at(2).toDouble()));
 
-                        k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
+                        row++;
+                        verify_first_element_on_row_is("connections");
+                        const unsigned numConnections = rowData.at(row).at(1).toUInt();
 
-                        sourceEdge->connect_to(targetEdge);
+                        for (unsigned p = 0; p < numConnections; p++)
+                        {
+                            node_edge_s *const sourceEdge = graphNodes.at(i)->output_edge();
+                            node_edge_s *const targetEdge = graphNodes.at(rowData.at(row).at(2+p).toUInt())->input_edge();
+
+                            k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
+
+                            sourceEdge->connect_to(targetEdge);
+                        }
+                    }
+                    /// TODO: Reduce code repetition.
+                    else if (fileVersion == "b")
+                    {
+                        row++;
+                        verify_first_element_on_row_is("nodeParameterCount");
+                        const unsigned nodeParamCount = rowData.at(row).at(1).toInt();
+
+                        for (unsigned p = 0; p < nodeParamCount; p++)
+                        {
+                            row++;
+                            const auto paramName = rowData.at(row).at(0);
+
+                            if (paramName == "scenePosition")
+                            {
+                                graphNodes.at(i)->setPos(QPointF(rowData.at(row).at(1).toDouble(), rowData.at(row).at(2).toDouble()));
+                            }
+                            else if (paramName == "connections")
+                            {
+                                const unsigned numConnections = rowData.at(row).at(1).toUInt();
+
+                                for (unsigned c = 0; c < numConnections; c++)
+                                {
+                                    node_edge_s *const sourceEdge = graphNodes.at(i)->output_edge();
+                                    node_edge_s *const targetEdge = graphNodes.at(rowData.at(row).at(2+c).toUInt())->input_edge();
+
+                                    k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
+
+                                    sourceEdge->connect_to(targetEdge);
+                                }
+                            }
+                            else if (paramName == "backgroundColor")
+                            {
+                                graphNodes.at(i)->set_background_color(rowData.at(row).at(1));
+                            }
+                            else
+                            {
+                                NBENE(("Encountered an unknown filter graph node parameter name. Ignoring it."));
+                            }
+                        }
                     }
                 }
             }
@@ -526,7 +580,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
         #undef verify_first_element_on_row_is
     }
 
-    kpropagate_loaded_filter_graph_from_disk(graphodes, graphOptions, sourceFilename);
+    kpropagate_loaded_filter_graph_from_disk(graphNodes, graphOptions, sourceFilename);
 
     return true;
 

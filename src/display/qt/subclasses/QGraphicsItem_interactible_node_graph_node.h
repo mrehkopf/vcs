@@ -81,6 +81,9 @@ public:
 
     node_edge_s* intersected_edge(const QPointF &point);
     void disconnect_all_edges(void);
+    void set_background_color(const QString colorName);
+    const QList<QString>& background_color_list(void);
+    const QString& current_background_color_name(void);
 
     const unsigned width;
     const unsigned height;
@@ -88,6 +91,15 @@ public:
 
 protected:
     std::vector<node_edge_s> edges;
+
+    // A list of the node background colors we support. Note: You shouldn't
+    // delete or change the names of any of the items on this list. But
+    // you can add more.
+    const QList<QString> backgroundColorList = {
+        "Blue", "Cyan", "Green", "Magenta", "Red", "Yellow",
+    };
+
+    QString backgroundColor = this->backgroundColorList.at(1);
 
 private:
 };

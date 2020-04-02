@@ -206,8 +206,7 @@ void FilterGraphDialog::save_filters(void)
 
     std::vector<FilterGraphNode*> filterNodes;
     {
-        const QList<QGraphicsItem*> sceneNodes = this->graphicsScene->items();
-        for (auto node: sceneNodes)
+        for (auto node: this->graphicsScene->items())
         {
             const auto filterNode = dynamic_cast<FilterGraphNode*>(node);
 
