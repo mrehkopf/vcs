@@ -83,7 +83,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             this->menubar->addMenu(addMenu);
         }
 
-        ui->widget_graphicsViewContainer->layout()->setMenuBar(menubar);
+        this->layout()->setMenuBar(menubar);
     }
 
     // Initialize the GUI controls to their default values.
@@ -95,7 +95,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
     // Create and configure the graphics scene.
     {
         this->graphicsScene = new InteractibleNodeGraph(this);
-        this->graphicsScene->setBackgroundBrush(QBrush("#000000"));
+        this->graphicsScene->setBackgroundBrush(QBrush("gray"));
 
         ui->graphicsView->setScene(this->graphicsScene);
 

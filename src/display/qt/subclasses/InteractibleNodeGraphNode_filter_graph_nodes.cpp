@@ -27,26 +27,19 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         // Background.
         {
             // Body background.
-            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "orange" : "black"), 1, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor(QColor(90, 90, 90))));
+            painter->setPen(QPen(QColor("black"), 1, Qt::SolidLine));
+            painter->setBrush(QBrush(QColor(90, 190, 190, (option->state & QStyle::State_Selected)? 210 : 170)));
             painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);
         }
 
         // Connection points (edges).
         {
-            painter->setPen(QColor("transparent"));
-            painter->setBrush(QBrush(QColor("orange")));
+            painter->setPen(QColor("white"));
+            painter->setBrush(QBrush(QColor("lightgray")));
 
             for (const auto &edge: this->edges)
             {
-                if (edge.direction == node_edge_s::direction_e::out)
-                {
-                    painter->drawRoundedRect(edge.rect, 2, 2);
-                }
-                else
-                {
-                    painter->drawEllipse(edge.rect);
-                }
+                painter->drawRoundedRect(edge.rect, 2, 2);
             }
         }
     }
@@ -102,26 +95,19 @@ void InputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         // Background.
         {
             // Body background.
-            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "orange" : "black"), 1, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor(QColor(90, 90, 90)), Qt::Dense1Pattern));
+            painter->setPen(QPen(QColor("black"), 1, Qt::SolidLine));
+            painter->setBrush(QBrush(QColor(90, 90, 90, (option->state & QStyle::State_Selected)? 175 : 125)));
             painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);
         }
 
         // Connection points (edges).
         {
-            painter->setPen(QColor("transparent"));
-            painter->setBrush(QBrush(QColor("orange")));
+            painter->setPen(QColor("white"));
+            painter->setBrush(QBrush(QColor("lightgray")));
 
             for (const auto &edge: this->edges)
             {
-                if (edge.direction == node_edge_s::direction_e::out)
-                {
-                    painter->drawRoundedRect(edge.rect, 2, 2);
-                }
-                else
-                {
-                    painter->drawEllipse(edge.rect);
-                }
+                painter->drawRoundedRect(edge.rect, 2, 2);
             }
         }
     }
@@ -168,26 +154,19 @@ void OutputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
         // Background.
         {
             // Body background.
-            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "orange" : "black"), 1, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor(QColor(90, 90, 90)), Qt::Dense1Pattern));
+            painter->setPen(QPen(QColor("black"), 1, Qt::SolidLine));
+            painter->setBrush(QBrush(QColor(90, 90, 90, (option->state & QStyle::State_Selected)? 175 : 125)));
             painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);
         }
 
         // Connection points (edges).
         {
-            painter->setPen(QColor("transparent"));
-            painter->setBrush(QBrush(QColor("orange")));
+            painter->setPen(QColor("white"));
+            painter->setBrush(QBrush(QColor("lightgray")));
 
             for (const auto &edge: this->edges)
             {
-                if (edge.direction == node_edge_s::direction_e::out)
-                {
-                    painter->drawRoundedRect(edge.rect, 2, 2);
-                }
-                else
-                {
-                    painter->drawEllipse(edge.rect);
-                }
+                painter->drawRoundedRect(edge.rect, 2, 2);
             }
         }
     }
