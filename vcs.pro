@@ -10,7 +10,7 @@ linux {
     # The base path for Datapath's Linux Vision driver header files. These are
     # bundled with the driver downloadable from Datapath's website. The files
     # are expected to be in a visionrgb subdirectory of this path e.g.
-    # .../visionrgb/include/rgb133control.h..
+    # .../visionrgb/include/rgb133control.h.
     INCLUDEPATH += $$(HOME)/sdk/
 
     contains(DEFINES, USE_OPENCV) {
