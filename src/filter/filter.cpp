@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <cstring>
 #include <vector>
-#include <ctime>
 #include <cmath>
 #include <map>
 #include "display/qt/widgets/filter_widgets.h"

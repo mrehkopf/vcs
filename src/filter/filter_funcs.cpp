@@ -5,6 +5,7 @@
  *
  */
 
+#include <ctime>
 #include "common/globals.h"
 #include "display/qt/widgets/filter_widgets.h"
 #include "filter/filter_funcs.h"
