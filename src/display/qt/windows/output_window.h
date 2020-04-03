@@ -121,6 +121,10 @@ signals:
     void entered_fullscreen(void);
     void left_fullscreen(void);
 
+    // Emitted when the window border is toggled.
+    void border_hidden(void);
+    void border_revealed(void);
+
 private slots:
     void toggle_window_border(void);
 

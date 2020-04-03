@@ -143,8 +143,25 @@ MainWindow::MainWindow(QWidget *parent) :
                 software->setCheckable(true);
                 rendererMenu->addAction(software);
 
-                connect(opengl, &QAction::toggled, this, [=](const bool checked){if (checked) this->set_opengl_enabled(true);});
-                connect(software, &QAction::toggled, this, [=](const bool checked){if (checked) this->set_opengl_enabled(false);});
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    rendererMenu->setEnabled(false);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    rendererMenu->setEnabled(true);
+                });
+
+                connect(opengl, &QAction::triggered, this, [=]
+                {
+                    this->set_opengl_enabled(true);
+                });
+
+                connect(software, &QAction::triggered, this, [=]
+                {
+                    this->set_opengl_enabled(false);
+                });
 
                 if (kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString() == "Software")
                 {
@@ -163,6 +180,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 QMenu *positionMenu = new QMenu("Position", this);
 
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    positionMenu->setEnabled(false);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    positionMenu->setEnabled(true);
+                });
+
                 connect(positionMenu->addAction("Center"), &QAction::triggered, this, [=]
                 {
                     this->move(this->pos() + (QGuiApplication::primaryScreen()->geometry().center() - this->geometry().center()));
@@ -180,7 +207,9 @@ MainWindow::MainWindow(QWidget *parent) :
             }
 
             {
-                connect(menu->addAction("Custom title..."), &QAction::triggered, this, [=]
+                QAction *customTitle = new QAction("Custom title...", this);
+
+                connect(customTitle, &QAction::triggered, this, [=]
                 {
                     const QString newTitle = QInputDialog::getText(this,
                                                                    "VCS - Enter a custom window title",
@@ -194,6 +223,18 @@ MainWindow::MainWindow(QWidget *parent) :
                         this->update_window_title();
                     }
                 });
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    customTitle->setEnabled(false);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    customTitle->setEnabled(true);
+                });
+
+                menu->addAction(customTitle);
             }
 
             {
@@ -204,6 +245,26 @@ MainWindow::MainWindow(QWidget *parent) :
                 showBorder->setCheckable(true);
                 showBorder->setChecked(this->window_has_border());
                 showBorder->setShortcut(QKeySequence("f1"));
+
+                connect(this, &MainWindow::border_hidden, this, [=]
+                {
+                    showBorder->setChecked(false);
+                });
+
+                connect(this, &MainWindow::border_revealed, this, [=]
+                {
+                    showBorder->setChecked(true);
+                });
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    showBorder->setEnabled(false);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    showBorder->setEnabled(true);
+                });
 
                 connect(showBorder, &QAction::triggered, this, [this]
                 {
@@ -1258,6 +1319,11 @@ bool MainWindow::window_has_border()
 
 void MainWindow::toggle_window_border()
 {
+    if (this->isFullScreen())
+    {
+        return;
+    }
+
     const Qt::WindowFlags borderlessFlags = (Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 
     // Show the border.
@@ -1267,6 +1333,8 @@ void MainWindow::toggle_window_border()
         this->show();
 
         update_window_size();
+
+        emit this->border_revealed();
     }
     // Hide the border.
     else
@@ -1275,6 +1343,8 @@ void MainWindow::toggle_window_border()
         this->show();
 
         update_window_size();
+
+        emit this->border_hidden();
     }
 }
 
