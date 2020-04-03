@@ -180,8 +180,6 @@ MainWindow::MainWindow(QWidget *parent) :
             }
 
             {
-                menu->addSeparator();
-
                 connect(menu->addAction("Custom title..."), &QAction::triggered, this, [=]
                 {
                     const QString newTitle = QInputDialog::getText(this,
@@ -213,6 +211,40 @@ MainWindow::MainWindow(QWidget *parent) :
                 });
 
                 menu->addAction(showBorder);
+            }
+
+            {
+                menu->addSeparator();
+
+                QAction *fullscreen = new QAction("Fullscreen", this);
+
+                fullscreen->setCheckable(true);
+                fullscreen->setChecked(this->isFullScreen());
+                fullscreen->setShortcut(QKeySequence("f11"));
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    fullscreen->setChecked(true);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    fullscreen->setChecked(false);
+                });
+
+                connect(fullscreen, &QAction::triggered, this, [this]
+                {
+                    if (this->isFullScreen())
+                    {
+                        this->showNormal();
+                    }
+                    else
+                    {
+                        this->showFullScreen();
+                    }
+                });
+
+                menu->addAction(fullscreen);
             }
         }
 
@@ -725,9 +757,14 @@ void MainWindow::changeEvent(QEvent *event)
         /// mode and back, not every time the window's state changes.
         if (this->windowState() & Qt::WindowFullScreen)
         {
+            emit this->entered_fullscreen();
             this->setCursor(QCursor(Qt::BlankCursor));
         }
-        else this->unsetCursor();
+        else
+        {
+            emit this->left_fullscreen();
+            this->unsetCursor();
+        }
     }
 
     QWidget::changeEvent(event);
@@ -983,20 +1020,6 @@ void MainWindow::set_keyboard_shortcuts(void)
     connect(keyboardShortcut("alt+shift+right"), &QShortcut::activated, []{kc_capture_api().adjust_horizontal_offset(-1);});
     connect(keyboardShortcut("alt+shift+up"), &QShortcut::activated,    []{kc_capture_api().adjust_vertical_offset(1);   });
     connect(keyboardShortcut("alt+shift+down"), &QShortcut::activated,  []{kc_capture_api().adjust_vertical_offset(-1);  });
-
-    /// NOTE: Qt's full-screen mode might not work correctly under Linux, depending
-    /// on the distro etc.
-    connect(keyboardShortcut("f11"), &QShortcut::activated, [this]
-    {
-        if (this->isFullScreen())
-        {
-            this->showNormal();
-        }
-        else
-        {
-            this->showFullScreen();
-        }
-    });
 
     connect(keyboardShortcut("f5"), &QShortcut::activated, []{if (!kc_capture_api().has_no_signal()) ALIGN_CAPTURE = true;});
 

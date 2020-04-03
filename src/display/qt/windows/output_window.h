@@ -117,6 +117,10 @@ public:
 
     void set_recording_is_active(const bool isActive);
 
+signals:
+    void entered_fullscreen(void);
+    void left_fullscreen(void);
+
 private slots:
     void toggle_window_border(void);
 
