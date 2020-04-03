@@ -140,6 +140,22 @@ MainWindow::MainWindow(QWidget *parent) :
                     this->update_window_title();
                 }
             });
+
+            menu->addSeparator();
+
+            {
+                QAction *showBorder = new QAction("Show border", this);
+
+                showBorder->setCheckable(true);
+                showBorder->setChecked(this->window_has_border());
+
+                connect(showBorder, &QAction::triggered, this, [this]
+                {
+                    this->toggle_window_border();
+                });
+
+                menu->addAction(showBorder);
+            }
         }
 
         // Input...
@@ -177,20 +193,21 @@ MainWindow::MainWindow(QWidget *parent) :
                 c24->setChecked(true);
                 colorDepth->addAction(c24);
 
-#ifndef __linux__ // On Linux, we don't support setting any other color depth than RGB888.
-                QAction *c16 = new QAction("16-bit (RGB-565)", this);
-                c16->setActionGroup(group);
-                c16->setCheckable(true);
-                colorDepth->addAction(c16);
+                // Note: on Linux, we don't currently support any other capture color depth than RGB888.
+                #ifndef __linux__
+                    QAction *c16 = new QAction("16-bit (RGB-565)", this);
+                    c16->setActionGroup(group);
+                    c16->setCheckable(true);
+                    colorDepth->addAction(c16);
 
-                QAction *c15 = new QAction("15-bit (RGB-555)", this);
-                c15->setActionGroup(group);
-                c15->setCheckable(true);
-                colorDepth->addAction(c15);
+                    QAction *c15 = new QAction("15-bit (RGB-555)", this);
+                    c15->setActionGroup(group);
+                    c15->setCheckable(true);
+                    colorDepth->addAction(c15);
 
-                connect(c16, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_565);});
-                connect(c15, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_555);});
-#endif
+                    connect(c16, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_565);});
+                    connect(c15, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_555);});
+                #endif
                 connect(c24, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_888);});
             }
 
