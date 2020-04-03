@@ -63,6 +63,41 @@ RecordDialog::RecordDialog(QDialog *parent) :
 
             ui->comboBox_recordingEncoding->addItem(encoderName);
         }
+
+        // Disable recording settings not available in Linux. (To customize them,
+        // you'll need to edit the relevant OpenCV source code and recompile it;
+        // e.g. https://www.researchgate.net/post/Is_it_possible_to_set_the_lossfree_option_for_the_X264_codec_in_OpenCV).
+        {
+            #if __linux__
+                ui->comboBox_recordingEncoderProfile->setVisible(false);
+                ui->comboBox_recordingEncoderPixelFormat->setVisible(false);
+                ui->comboBox_recordingEncoderProfile->setVisible(false);
+                ui->comboBox_recordingEncoderPreset->setVisible(false);
+                ui->lineEdit_recordingEncoderArguments->setVisible(false);
+                ui->spinBox_recordingEncoderCRF->setVisible(false);
+                ui->checkBox_recordingEncoderZeroLatency->setVisible(false);
+
+                ui->label_22->setVisible(false);
+                ui->label_15->setVisible(false);
+                ui->label_24->setVisible(false);
+                ui->label_23->setVisible(false);
+                ui->label_27->setVisible(false);
+
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->label_22);
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->label_15);
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->label_24);
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->label_23);
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->label_27);
+
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->comboBox_recordingEncoderProfile);
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->comboBox_recordingEncoderPixelFormat);
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->comboBox_recordingEncoderProfile);
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->comboBox_recordingEncoderPreset);
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->lineEdit_recordingEncoderArguments);
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->spinBox_recordingEncoderCRF);
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->checkBox_recordingEncoderZeroLatency);
+            #endif
+        }
     }
 
     // Connect the GUI controls to consequences for changing their values.
