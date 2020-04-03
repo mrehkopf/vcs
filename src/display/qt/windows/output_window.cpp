@@ -168,7 +168,10 @@ MainWindow::MainWindow(QWidget *parent) :
                     this->move(this->pos() + (QGuiApplication::primaryScreen()->geometry().center() - this->geometry().center()));
                 });
 
-                connect(positionMenu->addAction("Top left"), &QAction::triggered, this, [=]
+                QAction *topLeft = new QAction("Top left", this);
+                topLeft->setShortcut(QKeySequence("f2"));
+                positionMenu->addAction(topLeft);
+                connect(topLeft, &QAction::triggered, this, [=]
                 {
                     this->move(0, 0);
                 });
@@ -202,6 +205,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 showBorder->setCheckable(true);
                 showBorder->setChecked(this->window_has_border());
+                showBorder->setShortcut(QKeySequence("f1"));
 
                 connect(showBorder, &QAction::triggered, this, [this]
                 {
@@ -988,7 +992,10 @@ void MainWindow::set_keyboard_shortcuts(void)
         {
             this->showNormal();
         }
-        else this->showFullScreen();
+        else
+        {
+            this->showFullScreen();
+        }
     });
 
     connect(keyboardShortcut("f5"), &QShortcut::activated, []{if (!kc_capture_api().has_no_signal()) ALIGN_CAPTURE = true;});
