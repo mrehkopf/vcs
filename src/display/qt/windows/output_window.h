@@ -43,12 +43,6 @@ public:
     // Returns true if the window has a border.
     bool window_has_border(void);
 
-    u32 ShowMessageBox_Query(const QString title, const QString msg);
-
-    void ShowMessageBox_Information(const QString msg);
-
-    void ShowMessageBox_Error(const QString msg);
-
     void add_gui_log_entry(const log_entry_s e);
 
     void update_capture_signal_info(void);

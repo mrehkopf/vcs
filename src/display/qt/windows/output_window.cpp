@@ -1196,14 +1196,16 @@ bool MainWindow::window_has_border()
 
 void MainWindow::toggle_window_border()
 {
-    if (!window_has_border()) // Show the border.
+    // Show the border.
+    if (!window_has_border())
     {
         this->setWindowFlags(windowFlags() & ~(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint));
         this->show();
 
         update_window_size();
     }
-    else // Hide the border.
+    // Hide the border.
+    else
     {
         this->move(0, 0);
 
@@ -1212,58 +1214,6 @@ void MainWindow::toggle_window_border()
 
         update_window_size();
     }
-}
-
-// Displays to the user a message box that asks them to either Ok or Cancel the
-// given proposal. The return value will give the Qt code for the button button
-// the user pressed.
-//
-u32 MainWindow::ShowMessageBox_Query(const QString title, const QString msg)
-{
-    QMessageBox mb(this);
-    mb.setWindowTitle(title);
-    mb.setText(msg);
-    mb.setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
-    mb.setIcon(QMessageBox::Information);
-    mb.setDefaultButton(QMessageBox::Ok);
-
-    u32 ret = mb.exec();
-
-    return ret;
-}
-
-// Displays to the user a message box that relays to them the given informational
-// message. For errors, use the error version of this function.
-//
-void MainWindow::ShowMessageBox_Information(const QString msg)
-{
-    QMessageBox mb(this);
-    mb.setWindowTitle("VCS had this to say");
-    mb.setText(msg);
-    mb.setStandardButtons(QMessageBox::Ok);
-    mb.setIcon(QMessageBox::Information);
-    mb.setDefaultButton(QMessageBox::Ok);
-
-    mb.exec();
-
-    return;
-}
-
-// Displays to the user a message box that relays to them the given error
-// message.
-//
-void MainWindow::ShowMessageBox_Error(const QString msg)
-{
-    QMessageBox mb(this);
-    mb.setWindowTitle("VCS says nope");
-    mb.setText(msg);
-    mb.setStandardButtons(QMessageBox::Ok);
-    mb.setIcon(QMessageBox::Critical);
-    mb.setDefaultButton(QMessageBox::Ok);
-
-    mb.exec();
-
-    return;
 }
 
 void MainWindow::add_gui_log_entry(const log_entry_s e)
