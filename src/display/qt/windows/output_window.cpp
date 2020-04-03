@@ -1212,8 +1212,6 @@ void MainWindow::toggle_window_border()
     // Hide the border.
     else
     {
-        this->move(0, 0);
-
         this->setWindowFlags(this->windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         this->show();
 
