@@ -128,24 +128,44 @@ MainWindow::MainWindow(QWidget *parent) :
             QMenu *menu = new QMenu("Window", this);
             menus.push_back(menu);
 
-            connect(menu->addAction("Custom title..."), &QAction::triggered, this, [=]
             {
-                const QString newTitle = QInputDialog::getText(this,
-                                                               "VCS - Enter a custom window title",
-                                                               "Title (empty to restore default):",
-                                                               QLineEdit::Normal,
-                                                               this->windowTitleOverride);
+                QMenu *positionMenu = new QMenu("Position", this);
 
-                if (!newTitle.isNull())
+                connect(positionMenu->addAction("Center"), &QAction::triggered, this, [=]
                 {
-                    this->windowTitleOverride = newTitle;
-                    this->update_window_title();
-                }
-            });
+                    this->move(this->pos() + (QGuiApplication::primaryScreen()->geometry().center() - this->geometry().center()));
+                });
 
-            menu->addSeparator();
+                connect(positionMenu->addAction("Top left"), &QAction::triggered, this, [=]
+                {
+                    this->move(0, 0);
+                });
+
+                menu->addMenu(positionMenu);
+            }
 
             {
+                menu->addSeparator();
+
+                connect(menu->addAction("Custom title..."), &QAction::triggered, this, [=]
+                {
+                    const QString newTitle = QInputDialog::getText(this,
+                                                                   "VCS - Enter a custom window title",
+                                                                   "Title (empty to restore default):",
+                                                                   QLineEdit::Normal,
+                                                                   this->windowTitleOverride);
+
+                    if (!newTitle.isNull())
+                    {
+                        this->windowTitleOverride = newTitle;
+                        this->update_window_title();
+                    }
+                });
+            }
+
+            {
+                menu->addSeparator();
+
                 QAction *showBorder = new QAction("Show border", this);
 
                 showBorder->setCheckable(true);
