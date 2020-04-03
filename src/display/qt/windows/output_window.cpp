@@ -486,7 +486,6 @@ MainWindow::~MainWindow()
     return;
 }
 
-// Load the font pointed to by the given filename, and make it available to the program.
 bool MainWindow::load_font(const QString &filename)
 {
     if (QFontDatabase::addApplicationFont(filename) == -1)
@@ -749,18 +748,12 @@ void MainWindow::wheelEvent(QWheelEvent *event)
     return;
 }
 
-// Returns true if the user is allowed to scale the output resolution by using the
-// mouse wheel over the capture window.
-//
 bool MainWindow::is_mouse_wheel_scaling_allowed(void)
 {
     return (!kd_is_fullscreen() && // On my virtual machine, at least, wheel scaling while in full-screen messes up the full-screen mode.
             !krecord_is_recording());
 }
 
-// Returns the current overlay as a QImage, or a null QImage if the overlay
-// should not be shown at this time.
-//
 QImage MainWindow::overlay_image(void)
 {
     if (!kc_capture_api().has_no_signal() &&
@@ -871,8 +864,6 @@ void MainWindow::paintEvent(QPaintEvent *)
     return;
 }
 
-// Call this once per frame and it'll derive the current frame rate.
-//
 void MainWindow::measure_framerate()
 {
     static qint64 elapsed = 0, prevElapsed = 0;
@@ -1016,9 +1007,6 @@ void MainWindow::set_recording_is_active(const bool isActive)
     return;
 }
 
-// Updates the window title with the current status of capture and that of the program
-// in general.
-//
 void MainWindow::update_window_title()
 {
     QString title = PROGRAM_NAME;

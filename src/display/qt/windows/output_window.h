@@ -55,6 +55,8 @@ public:
 
     void update_window_size(void);
 
+    // Updates the window title with the current status of capture and that of the program
+    // in general.
     void update_window_title(void);
 
     void signal_new_known_alias(const mode_alias_s a);
@@ -63,6 +65,8 @@ public:
 
     void open_overlay_dialog(void);
 
+    // Call this once per frame to allow the output window to estimate the
+    // current frame rate.
     void measure_framerate(void);
 
     void signal_new_mode_settings_source_file(const std::string &filename);
@@ -71,6 +75,8 @@ public:
 
     void refresh(void);
 
+    // Returns the current overlay as a QImage, or a null QImage if the overlay
+    // should not be shown at this time.
     QImage overlay_image(void);
 
     void update_recording_metainfo(void);
@@ -101,6 +107,8 @@ public:
 
     void open_output_resolution_dialog(void);
 
+    // Returns true if the user is allowed to scale the output resolution by using the
+    // mouse wheel over the capture window.
     bool is_mouse_wheel_scaling_allowed(void);
 
     void open_input_resolution_dialog(void);
@@ -126,6 +134,7 @@ private:
 
     void set_keyboard_shortcuts(void);
 
+    // Load the font pointed to by the given filename, and make it available to the program.
     bool load_font(const QString &filename);
 
     Ui::MainWindow *ui = nullptr;
