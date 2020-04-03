@@ -779,8 +779,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     }
 
     // If the cursor is over the capture window and the left mouse button is being
-    // held down, drag the window.
-    if (QApplication::mouseButtons() & Qt::LeftButton)
+    // held down, drag the window. Note: We disable dragging in fullscreen mode,
+    // since really you shouldn't be able to drag a fullscreen window.
+    if ((QApplication::mouseButtons() & Qt::LeftButton) &&
+        !this->isFullScreen())
     {
         QPoint delta = (event->globalPos() - PREV_MOUSE_POS);
         this->move(pos() + delta);
