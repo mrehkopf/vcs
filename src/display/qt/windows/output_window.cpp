@@ -129,6 +129,38 @@ MainWindow::MainWindow(QWidget *parent) :
             menus.push_back(menu);
 
             {
+                QMenu *rendererMenu = new QMenu("Renderer", this);
+
+                QActionGroup *group = new QActionGroup(this);
+
+                QAction *opengl = new QAction("OpenGL", this);
+                opengl->setActionGroup(group);
+                opengl->setCheckable(true);
+                rendererMenu->addAction(opengl);
+
+                QAction *software = new QAction("Software", this);
+                software->setActionGroup(group);
+                software->setCheckable(true);
+                rendererMenu->addAction(software);
+
+                connect(opengl, &QAction::toggled, this, [=](const bool checked){if (checked) this->set_opengl_enabled(true);});
+                connect(software, &QAction::toggled, this, [=](const bool checked){if (checked) this->set_opengl_enabled(false);});
+
+                if (kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString() == "Software")
+                {
+                    software->setChecked(true);
+                }
+                else
+                {
+                    opengl->setChecked(true);
+                }
+
+                menu->addMenu(rendererMenu);
+            }
+
+            {
+                menu->addSeparator();
+
                 QMenu *positionMenu = new QMenu("Position", this);
 
                 connect(positionMenu->addAction("Center"), &QAction::triggered, this, [=]
@@ -260,33 +292,6 @@ MainWindow::MainWindow(QWidget *parent) :
             const std::vector<std::string> scalerNames = ks_list_of_scaling_filter_names();
             k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
 
-            QMenu *renderer = new QMenu("Renderer", this);
-            {
-                QActionGroup *group = new QActionGroup(this);
-
-                QAction *opengl = new QAction("OpenGL", this);
-                opengl->setActionGroup(group);
-                opengl->setCheckable(true);
-                renderer->addAction(opengl);
-
-                QAction *software = new QAction("Software", this);
-                software->setActionGroup(group);
-                software->setCheckable(true);
-                renderer->addAction(software);
-
-                connect(opengl, &QAction::toggled, this, [=](const bool checked){if (checked) this->set_opengl_enabled(true);});
-                connect(software, &QAction::toggled, this, [=](const bool checked){if (checked) this->set_opengl_enabled(false);});
-
-                if (kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString() == "Software")
-                {
-                    software->setChecked(true);
-                }
-                else
-                {
-                    opengl->setChecked(true);
-                }
-            }
-
             QMenu *upscaler = new QMenu("Upscaler", this);
             {
                 QActionGroup *group = new QActionGroup(this);
@@ -365,8 +370,6 @@ MainWindow::MainWindow(QWidget *parent) :
                 else if (defaultAspectRatio == "Traditional 4:3") traditional43->setChecked(true);
             }
 
-            menu->addMenu(renderer);
-            menu->addSeparator();
             menu->addMenu(aspectRatio);
             menu->addSeparator();
             menu->addMenu(upscaler);
