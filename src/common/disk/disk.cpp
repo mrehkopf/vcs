@@ -14,6 +14,7 @@
 #include "display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h"
 #include "display/qt/widgets/filter_widgets.h"
 #include "common/disk/file_writer.h"
+#include "common/disk/file_writer_filter_graph.h"
 #include "common/propagate/propagate.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
@@ -24,7 +25,7 @@
 #include "common/disk/csv.h"
 
 bool kdisk_save_video_signal_parameters(const std::vector<video_signal_parameters_s> &params,
-                                        const QString &targetFilename)
+                                        const std::string &targetFilename)
 {
     file_writer_c outFile(targetFilename);
 
@@ -63,7 +64,7 @@ bool kdisk_save_video_signal_parameters(const std::vector<video_signal_parameter
         goto fail;
     }
 
-    kpropagate_saved_video_signal_parameters_to_disk(params, targetFilename.toStdString());
+    kpropagate_saved_video_signal_parameters_to_disk(params, targetFilename);
 
     return true;
 
@@ -212,7 +213,7 @@ bool kdisk_load_aliases(const std::string &sourceFilename)
 }
 
 bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
-                        const QString &targetFilename)
+                        const std::string &targetFilename)
 {
     file_writer_c outFile(targetFilename);
 
@@ -229,7 +230,7 @@ bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
         goto fail;
     }
 
-    kpropagate_saved_aliases_to_disk(aliases, targetFilename.toStdString());
+    kpropagate_saved_aliases_to_disk(aliases, targetFilename);
 
     return true;
 
@@ -243,81 +244,14 @@ bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
 
 bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
                              std::vector<filter_graph_option_s> &graphOptions,
-                             const QString &targetFilename)
+                             const std::string &targetFilename)
 {
-    file_writer_c outFile(targetFilename);
-
-    outFile << "fileType,{VCS filter graph}\n"
-            << "fileVersion,b\n";
-
-    // Save filter information.
+    if (!file_writer::filter_graph::version_b::write(targetFilename, nodes, graphOptions))
     {
-        outFile << "filterCount," << nodes.size() << "\n";
-
-        for (FilterGraphNode *const node: nodes)
-        {
-            outFile << "id,{" << QString::fromStdString(kf_filter_id_for_type(node->associatedFilter->metaData.type)) << "}\n";
-
-            outFile << "parameterData," << FILTER_PARAMETER_ARRAY_LENGTH;
-            for (unsigned i = 0; i < FILTER_PARAMETER_ARRAY_LENGTH; i++)
-            {
-                outFile << QString(",%1").arg(node->associatedFilter->parameterData[i]);
-            }
-            outFile << "\n";
-        }
-    }
-
-    // Save node information.
-    {
-        outFile << "nodeCount," << nodes.size() << "\n";
-
-        for (FilterGraphNode *const node: nodes)
-        {
-            // How many individual parameters (like scenePosition, backgroundColor, etc.)
-            // we'll save.
-            outFile << "nodeParameterCount," << 3 << "\n";
-
-            outFile << "scenePosition," << QString("%1,%2").arg(node->pos().x()).arg(node->pos().y()) << "\n";
-
-            outFile << "backgroundColor," << node->current_background_color_name() << "\n";
-
-            outFile << "connections,";
-            if (node->output_edge())
-            {
-                outFile << node->output_edge()->connectedTo.size();
-                for (const node_edge_s *const connection: node->output_edge()->connectedTo)
-                {
-                    const auto nodeIt = std::find(nodes.begin(), nodes.end(), connection->parentNode);
-                    k_assert((nodeIt != nodes.end()), "Cannot find the target node of a connection.");
-                    outFile << QString(",%1").arg(std::distance(nodes.begin(), nodeIt));
-                }
-                outFile << "\n";
-            }
-            else
-            {
-                outFile << "0\n";
-            }
-        }
-    }
-
-    // Save graph options.
-    {
-        outFile << "graphOptionsCount," << graphOptions.size() << "\n";
-
-        for (const filter_graph_option_s &option: graphOptions)
-        {
-            outFile << QString::fromStdString(option.propertyName) << "," << (int)option.value << "\n";
-        }
-    }
-
-    if (!outFile.is_valid() ||
-        !outFile.save_and_close())
-    {
-        NBENE(("Failed to write aliases to file."));
         goto fail;
     }
 
-    kpropagate_saved_filter_graph_to_disk(targetFilename.toStdString());
+    kpropagate_saved_filter_graph_to_disk(targetFilename);
 
     return true;
 

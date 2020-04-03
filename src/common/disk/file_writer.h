@@ -10,8 +10,8 @@
 class file_writer_c
 {
 public:
-    file_writer_c(QString filename) :
-        targetFilename(filename),
+    file_writer_c(std::string filename) :
+        targetFilename(QString::fromStdString(filename)),
         tempFilename(targetFilename + ".temporary")
     {
         file.setFileName(tempFilename);

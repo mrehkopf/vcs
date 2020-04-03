@@ -452,7 +452,7 @@ void SignalDialog::save_settings(void)
         filename.append(".vcs-video");
     }
 
-    if (kdisk_save_video_signal_parameters(kvideoparam_all_parameter_sets(), filename))
+    if (kdisk_save_video_signal_parameters(kvideoparam_all_parameter_sets(), filename.toStdString()))
     {
         remove_unsaved_changes_flag();
     }

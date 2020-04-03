@@ -222,7 +222,7 @@ void FilterGraphDialog::save_filters(void)
         /// TODO.
     }
 
-    kdisk_save_filter_graph(filterNodes, graphOptions, filename);
+    kdisk_save_filter_graph(filterNodes, graphOptions, filename.toStdString());
 
     return;
 }

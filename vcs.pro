@@ -90,7 +90,8 @@ SOURCES += \
     src/display/qt/subclasses/QTableWidget_property_table.cpp \
     src/display/qt/dialogs/signal_dialog.cpp \
     src/capture/capture_api_video4linux.cpp \
-    src/filter/filter_funcs.cpp
+    src/filter/filter_funcs.cpp \
+    src/common/disk/file_writer_filter_graph_version_b.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -139,7 +140,8 @@ HEADERS += \
     src/display/qt/subclasses/QTableWidget_property_table.h \
     src/display/qt/dialogs/signal_dialog.h \
     src/capture/capture_api_video4linux.h \
-    src/filter/filter_funcs.h
+    src/filter/filter_funcs.h \
+    src/common/disk/file_writer_filter_graph.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \

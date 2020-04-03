@@ -258,7 +258,7 @@ void AliasDialog::save_aliases()
 
     this->broadcast_aliases();
 
-    kdisk_save_aliases(ka_aliases(), filename);
+    kdisk_save_aliases(ka_aliases(), filename.toStdString());
 
     return;
 }
