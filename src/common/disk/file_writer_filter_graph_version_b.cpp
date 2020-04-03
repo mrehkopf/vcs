@@ -6,7 +6,7 @@
  */
 
 #include "common/disk/file_writer_filter_graph.h"
-#include "common/disk/file_writer.h"
+#include "common/disk/file_streamer.h"
 #include "common/globals.h"
 #include "filter/filter.h"
 
@@ -14,7 +14,7 @@ bool file_writer::filter_graph::version_b::write(const std::string &filename,
                                                  const std::vector<FilterGraphNode*> &nodes,
                                                  const std::vector<filter_graph_option_s> &graphOptions)
 {
-    file_writer_c outFile(filename);
+    file_streamer_c outFile(filename);
 
     outFile << "fileType,{VCS filter graph}\n"
             << "fileVersion,b\n";

@@ -1,5 +1,5 @@
-#ifndef FILE_WRITER_H_
-#define FILE_WRITER_H_
+#ifndef FILE_STREAMER_H
+#define FILE_STREAMER_H
 
 #include <QTextStream>
 #include <QString>
@@ -7,10 +7,10 @@
 
 // A wrapper for Qt's file-saving functionality. Streams given strings via the
 // << operator on the object into a file.
-class file_writer_c
+class file_streamer_c
 {
 public:
-    file_writer_c(std::string filename) :
+    file_streamer_c(std::string filename) :
         targetFilename(QString::fromStdString(filename)),
         tempFilename(targetFilename + ".temporary")
     {

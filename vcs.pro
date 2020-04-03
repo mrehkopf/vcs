@@ -125,7 +125,6 @@ HEADERS += \
     src/display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h \
     src/display/qt/subclasses/QGraphicsScene_interactible_node_graph.h \
     src/display/qt/subclasses/QGraphicsView_interactible_node_graph_view.h \
-    src/common/disk/file_writer.h \
     src/display/qt/dialogs/filter_graph_dialog.h \
     src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h \
     src/display/qt/dialogs/about_dialog.h \
@@ -143,7 +142,8 @@ HEADERS += \
     src/filter/filter_funcs.h \
     src/common/disk/file_writer_filter_graph.h \
     src/common/disk/file_reader_filter_graph.h \
-    src/common/disk/file_reader.h
+    src/common/disk/file_reader.h \
+    src/common/disk/file_streamer.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \

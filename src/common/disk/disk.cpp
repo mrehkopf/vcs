@@ -13,7 +13,7 @@
 #include <QFile>
 #include "display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h"
 #include "display/qt/widgets/filter_widgets.h"
-#include "common/disk/file_writer.h"
+#include "common/disk/file_streamer.h"
 #include "common/disk/file_reader.h"
 #include "common/disk/file_reader_filter_graph.h"
 #include "common/disk/file_writer_filter_graph.h"
@@ -27,7 +27,7 @@
 bool kdisk_save_video_signal_parameters(const std::vector<video_signal_parameters_s> &params,
                                         const std::string &targetFilename)
 {
-    file_writer_c outFile(targetFilename);
+    file_streamer_c outFile(targetFilename);
 
     // Each mode params block consists of two values specifying the resolution
     // followed by a set of string-value pairs for the different parameters.
@@ -215,7 +215,7 @@ bool kdisk_load_aliases(const std::string &sourceFilename)
 bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
                         const std::string &targetFilename)
 {
-    file_writer_c outFile(targetFilename);
+    file_streamer_c outFile(targetFilename);
 
     for (const auto &a: aliases)
     {
