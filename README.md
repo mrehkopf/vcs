@@ -403,8 +403,8 @@ Optionally, you can pass one or more of following command-line arguments to VCS:
                           filter-graph suffix.
 
 -a <path + filename> .... Load alias resolutions from the given file on start-
-                          up. Alias resolution files typically have the .vcsa
-                          suffix.
+                          up. Alias resolution files typically have the .vcs-
+                          alias suffix.
 
 -i <input channel> ...... Start capture on the given input channel (1...n). By
                           default, channel #1 will be used.

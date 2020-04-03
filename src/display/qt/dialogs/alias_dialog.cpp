@@ -226,7 +226,7 @@ void AliasDialog::load_aliases()
 {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     "Select the file to load aliases from", "",
-                                                    "Alias files (*.vcsa);;"
+                                                    "Alias files (*.vcs-alias);;"
                                                     "All files(*.*)");
 
     if (filename.isEmpty())
@@ -243,7 +243,7 @@ void AliasDialog::save_aliases()
 {
     QString filename = QFileDialog::getSaveFileName(this,
                                                     "Select the file to save the aliases into", "",
-                                                    "Alias files (*.vcsa);;"
+                                                    "Alias files (*.vcs-alias);;"
                                                     "All files(*.*)");
 
     if (filename.isEmpty())
@@ -253,7 +253,7 @@ void AliasDialog::save_aliases()
 
     if (QFileInfo(filename).suffix().isEmpty())
     {
-        filename += ".vcsa";
+        filename += ".vcs-alias";
     }
 
     this->broadcast_aliases();
