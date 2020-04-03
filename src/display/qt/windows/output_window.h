@@ -164,6 +164,8 @@ private:
 
     // A user-definable custom title for the output window.
     QString windowTitleOverride = "";
+
+    const Qt::WindowFlags defaultWindowFlags = (Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 };
 
 #endif

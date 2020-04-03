@@ -72,6 +72,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->setWindowFlags(this->defaultWindowFlags);
+
     ui->centralwidget->setMouseTracking(true);
     ui->centralwidget->setFocusPolicy(Qt::StrongFocus);
 
@@ -1201,10 +1203,12 @@ bool MainWindow::window_has_border()
 
 void MainWindow::toggle_window_border()
 {
+    const Qt::WindowFlags borderlessFlags = (Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+
     // Show the border.
     if (!window_has_border())
     {
-        this->setWindowFlags(windowFlags() & ~(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint));
+        this->setWindowFlags(this->defaultWindowFlags & ~borderlessFlags);
         this->show();
 
         update_window_size();
@@ -1212,7 +1216,7 @@ void MainWindow::toggle_window_border()
     // Hide the border.
     else
     {
-        this->setWindowFlags(this->windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+        this->setWindowFlags(Qt::FramelessWindowHint | borderlessFlags);
         this->show();
 
         update_window_size();
