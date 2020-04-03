@@ -93,7 +93,9 @@ SOURCES += \
     src/common/disk/file_writer_filter_graph_version_b.cpp \
     src/common/disk/file_reader.cpp \
     src/common/disk/file_reader_filter_graph_version_b.cpp \
-    src/common/disk/file_reader_filter_graph_version_a.cpp
+    src/common/disk/file_reader_filter_graph_version_a.cpp \
+    src/common/disk/file_writer_aliases_version_a.cpp \
+    src/common/disk/file_reader_aliases_version_a.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -143,7 +145,8 @@ HEADERS += \
     src/common/disk/file_writer_filter_graph.h \
     src/common/disk/file_reader_filter_graph.h \
     src/common/disk/file_reader.h \
-    src/common/disk/file_streamer.h
+    src/common/disk/file_streamer.h \
+    src/common/disk/file_writer_aliases.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \

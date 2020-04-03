@@ -56,7 +56,7 @@ resolution_s ka_aliased(const resolution_s &r)
 
 void ka_broadcast_aliases_to_gui(void)
 {
-    DEBUG(("Broadcasting %u alias set(s) to the GUI.", ALIASES.size()));
+    DEBUG(("Broadcasting %u alias(es) to the GUI.", ALIASES.size()));
 
     kd_clear_aliases();
     for (const auto &a: ALIASES)

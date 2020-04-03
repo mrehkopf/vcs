@@ -47,11 +47,7 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
         row++;
         FAIL_IF_FIRST_CELL_IS_NOT("fileVersion");
         const QString fileVersion = rowData.at(row).at(1);
-        if (QList<QString>{"a", "b"}.indexOf(fileVersion) < 0)
-        {
-            kd_show_headless_error_message("", "Unsupported graph file format.");
-            return false;
-        }
+        k_assert((fileVersion == "a"), "Mismatched file version for reading.");
 
         row++;
         FAIL_IF_FIRST_CELL_IS_NOT("filterCount");

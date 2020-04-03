@@ -153,7 +153,7 @@ void kpropagate_loaded_aliases_from_disk(const std::vector<mode_alias_s> &aliase
 
     ka_broadcast_aliases_to_gui();
 
-    INFO(("Loaded %u alias set(s) from disk.", aliases.size()));
+    INFO(("Loaded %u alias(es) from disk.", aliases.size()));
 
     (void)sourceFilename;
 

@@ -17,6 +17,8 @@
 #include "common/disk/file_reader.h"
 #include "common/disk/file_reader_filter_graph.h"
 #include "common/disk/file_writer_filter_graph.h"
+#include "common/disk/file_writer_aliases.h"
+#include "common/disk/file_reader_aliases.h"
 #include "common/propagate/propagate.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
@@ -174,31 +176,29 @@ bool kdisk_load_aliases(const std::string &sourceFilename)
         return true;
     }
 
-    DEBUG(("Loading aliases from %s...", sourceFilename.c_str()));
+    const std::string fileVersion = file_reader::file_version(sourceFilename);
 
     std::vector<mode_alias_s> aliases;
 
-    QList<QStringList> rowData = csv_parse_c(QString::fromStdString(sourceFilename)).contents();
-    for (const auto &row: rowData)
+    if (fileVersion == "a")
     {
-        if (row.count() != 4)
+        if (!file_reader::aliases::version_a::read(sourceFilename, &aliases))
         {
-            NBENE(("Expected a 4-parameter row in the alias file."));
+            DEBUG(("No alias file defined, skipping."));
             goto fail;
         }
-
-        mode_alias_s a;
-        a.from.w = row.at(0).toUInt();
-        a.from.h = row.at(1).toUInt();
-        a.to.w = row.at(2).toUInt();
-        a.to.h = row.at(3).toUInt();
-
-        aliases.push_back(a);
+    }
+    else
+    {
+        NBENE(("Unsupported alias file format."));
+        goto fail;
     }
 
-    // Sort the parameters so they display more nicely in the GUI.
+    // Sort the aliases so they display more nicely in the GUI.
     std::sort(aliases.begin(), aliases.end(), [](const mode_alias_s &a, const mode_alias_s &b)
-                                              { return (a.to.w * a.to.h) < (b.to.w * b.to.h); });
+    {
+        return (a.to.w * a.to.h) < (b.to.w * b.to.h);
+    });
 
     kpropagate_loaded_aliases_from_disk(aliases, sourceFilename);
 
@@ -215,18 +215,8 @@ bool kdisk_load_aliases(const std::string &sourceFilename)
 bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
                         const std::string &targetFilename)
 {
-    file_streamer_c outFile(targetFilename);
-
-    for (const auto &a: aliases)
+    if (!file_writer::aliases::version_a::write(targetFilename, aliases))
     {
-        outFile << a.from.w << "," << a.from.h << ","
-                << a.to.w << "," << a.to.h << ",\n";
-    }
-
-    if (!outFile.is_valid() ||
-        !outFile.save_and_close())
-    {
-        NBENE(("Failed to write aliases to file."));
         goto fail;
     }
 
