@@ -24,5 +24,4 @@ namespace filter_graph
 }
 }
 
-
 #endif

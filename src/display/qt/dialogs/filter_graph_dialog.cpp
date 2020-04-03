@@ -174,7 +174,7 @@ void FilterGraphDialog::load_filters(void)
 {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     "Select a file containing the filter graph to be loaded", "",
-                                                    "Filter graphs (*.vcs-filter-graph);;Legacy filter sets (*.vcs-filtersets);;"
+                                                    "Filter graphs (*.vcs-filter-graph);;"
                                                     "All files(*.*)");
 
     if (filename.isEmpty())

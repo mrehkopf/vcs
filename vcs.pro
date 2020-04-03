@@ -76,7 +76,6 @@ SOURCES += \
     src/display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.cpp \
     src/display/qt/subclasses/QGraphicsScene_interactible_node_graph.cpp \
     src/display/qt/subclasses/QGraphicsView_interactible_node_graph_view.cpp \
-    src/common/disk/disk_legacy.cpp \
     src/display/qt/dialogs/filter_graph_dialog.cpp \
     src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.cpp \
     src/display/qt/dialogs/about_dialog.cpp \
@@ -91,7 +90,10 @@ SOURCES += \
     src/display/qt/dialogs/signal_dialog.cpp \
     src/capture/capture_api_video4linux.cpp \
     src/filter/filter_funcs.cpp \
-    src/common/disk/file_writer_filter_graph_version_b.cpp
+    src/common/disk/file_writer_filter_graph_version_b.cpp \
+    src/common/disk/file_reader.cpp \
+    src/common/disk/file_reader_filter_graph_version_b.cpp \
+    src/common/disk/file_reader_filter_graph_version_a.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -123,8 +125,6 @@ HEADERS += \
     src/display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h \
     src/display/qt/subclasses/QGraphicsScene_interactible_node_graph.h \
     src/display/qt/subclasses/QGraphicsView_interactible_node_graph_view.h \
-    src/filter/filter_legacy.h \
-    src/common/disk/disk_legacy.h \
     src/common/disk/file_writer.h \
     src/display/qt/dialogs/filter_graph_dialog.h \
     src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h \
@@ -141,7 +141,9 @@ HEADERS += \
     src/display/qt/dialogs/signal_dialog.h \
     src/capture/capture_api_video4linux.h \
     src/filter/filter_funcs.h \
-    src/common/disk/file_writer_filter_graph.h
+    src/common/disk/file_writer_filter_graph.h \
+    src/common/disk/file_reader_filter_graph.h \
+    src/common/disk/file_reader.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \

@@ -14,14 +14,14 @@
 #include "display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h"
 #include "display/qt/widgets/filter_widgets.h"
 #include "common/disk/file_writer.h"
+#include "common/disk/file_reader.h"
+#include "common/disk/file_reader_filter_graph.h"
 #include "common/disk/file_writer_filter_graph.h"
 #include "common/propagate/propagate.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
 #include "filter/filter.h"
-#include "filter/filter_legacy.h"
 #include "common/disk/disk.h"
-#include "common/disk/disk_legacy.h"
 #include "common/disk/csv.h"
 
 bool kdisk_save_video_signal_parameters(const std::vector<video_signal_parameters_s> &params,
@@ -271,247 +271,44 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
         return true;
     }
 
-    DEBUG(("Loading filter graph data from %s...", sourceFilename.c_str()));
+    const std::string fileVersion = file_reader::file_version(sourceFilename);
+
+    if (fileVersion.empty())
+    {
+        kd_show_headless_error_message("Unsupported filter graph file",
+                                       "The filter graph file could not be loaded: its format is "
+                                       "unsupported.");
+
+        NBENE(("Unknown filter graph file format."));
+
+        return false;
+    }
 
     std::vector<FilterGraphNode*> graphNodes;
     std::vector<filter_graph_option_s> graphOptions;
 
     kd_clear_filter_graph();
 
-    // Load from a legacy (prior to VCS v1.5) filters file.
-    if (QFileInfo(QString::fromStdString(sourceFilename)).suffix() == "vcs-filtersets")
+    if (fileVersion == "a")
     {
-        // Used to position successive nodes horizontally.
-        int nodeXOffset = 0;
-        int nodeYOffset = 0;
-        unsigned tallestNode = 0;
-
-        u8 *const filterParamsTmp = new u8[FILTER_PARAMETER_ARRAY_LENGTH];
-        const std::vector<legacy14_filter_set_s*> legacyFiltersets = kdisk_legacy14_load_filter_sets(sourceFilename);
-
-        const auto add_node = [&](const filter_type_enum_e type, const u8 *const params)
+        if (!file_reader::filter_graph::version_a::read(sourceFilename, &graphNodes, &graphOptions))
         {
-            FilterGraphNode *const newNode = kd_add_filter_graph_node(type, params);
-            newNode->setPos(nodeXOffset, nodeYOffset);
-            graphNodes.push_back(newNode);
-
-            nodeXOffset += (newNode->width + 50);
-
-            if (newNode->height > tallestNode)
-            {
-                tallestNode = newNode->height;
-            }
-
-            return;
-        };
-
-        for (const legacy14_filter_set_s *const filterSet: legacyFiltersets)
-        {
-            // Create the filter nodes.
-            {
-                // Add the input gate node.
-                {
-                    memset(filterParamsTmp, 0, FILTER_PARAMETER_ARRAY_LENGTH);
-                    *(u16*)&(filterParamsTmp[0]) = filterSet->inRes.w;
-                    *(u16*)&(filterParamsTmp[2]) = filterSet->inRes.h;
-                    add_node(filter_type_enum_e::input_gate, filterParamsTmp);
-                }
-
-                // Add the regular filter nodes.
-                {
-                    for (const legacy14_filter_s &filter: filterSet->preFilters)
-                    {
-                        add_node(kf_filter_type_for_id(filter.uuid), filter.data);
-                    }
-
-                    for (const legacy14_filter_s &filter: filterSet->postFilters)
-                    {
-                        add_node(kf_filter_type_for_id(filter.uuid), filter.data);
-                    }
-                }
-
-                // Add the output gate node.
-                {
-                    memset(filterParamsTmp, 0, FILTER_PARAMETER_ARRAY_LENGTH);
-                    *(u16*)&(filterParamsTmp[0]) = filterSet->outRes.w;
-                    *(u16*)&(filterParamsTmp[2]) = filterSet->outRes.h;
-                    add_node(filter_type_enum_e::output_gate, filterParamsTmp);
-                }
-            }
-
-            // Connect the filter nodes.
-            {
-                for (unsigned i = 0; i < (graphNodes.size() - 1); i++)
-                {
-                    auto sourceEdge = graphNodes.at(i)->output_edge();
-                    auto targetEdge = graphNodes.at(i+1)->input_edge();
-
-                    k_assert((sourceEdge && targetEdge), "A filter node is missing a required edge.");
-
-                    sourceEdge->connect_to(targetEdge);
-                }
-            }
-
-            graphNodes.clear();
-
-            nodeYOffset += (tallestNode + 50);
-            nodeXOffset = 0;
-        }
-
-        delete [] filterParamsTmp;
-    }
-    // Load from a normal filters file.
-    else
-    {
-        #define verify_first_element_on_row_is(name) if ((int)row >= rowData.length())\
-                                                     {\
-                                                         NBENE(("Error while loading the filter graph file: expected '%s' on line "\
-                                                                "#%d but found the data out of range.", name, (row+1)));\
-                                                         goto fail;\
-                                                     }\
-                                                     else if (rowData.at(row).at(0) != name)\
-                                                     {\
-                                                        NBENE(("Error while loading filter graph file: expected '%s' on line "\
-                                                               "#%d but found '%s' instead.",\
-                                                               name, (row+1), rowData.at(row).at(0).toStdString().c_str()));\
-                                                        goto fail;\
-                                                     }
-
-        QList<QStringList> rowData = csv_parse_c(QString::fromStdString(sourceFilename)).contents();
-
-        if (!rowData.length())
-        {
+            NBENE(("Unknown filter graph file format."));
             goto fail;
         }
-
-        // Load the data.
+    }
+    else if (fileVersion == "b")
+    {
+        if (!file_reader::filter_graph::version_b::read(sourceFilename, &graphNodes, &graphOptions))
         {
-            unsigned row = 0;
-
-            verify_first_element_on_row_is("fileType");
-            //const QString fileType = rowData.at(row).at(1);
-
-            row++;
-            verify_first_element_on_row_is("fileVersion");
-            const QString fileVersion = rowData.at(row).at(1);
-            if (QList<QString>{"a", "b"}.indexOf(fileVersion) < 0)
-            {
-                kd_show_headless_error_message("", "Unsupported graph file format.");
-                return false;
-            }
-
-            row++;
-            verify_first_element_on_row_is("filterCount");
-            const unsigned numFilters = rowData.at(row).at(1).toUInt();
-
-            // Load the filter data.
-            for (unsigned i = 0; i < numFilters; i++)
-            {
-                row++;
-                verify_first_element_on_row_is("id");
-                const filter_type_enum_e filterType = kf_filter_type_for_id(rowData.at(row).at(1).toStdString());
-
-                row++;
-                verify_first_element_on_row_is("parameterData");
-                const unsigned numParameters = rowData.at(row).at(1).toUInt();
-
-                std::vector<u8> params;
-                params.reserve(numParameters);
-                for (unsigned p = 0; p < numParameters; p++)
-                {
-                    params.push_back(rowData.at(row).at(2+p).toUInt());
-                }
-
-                const auto newNode = kd_add_filter_graph_node(filterType, (const u8*)params.data());
-                graphNodes.push_back(newNode);
-            }
-
-            // Load the node data.
-            {
-                row++;
-                verify_first_element_on_row_is("nodeCount");
-                const unsigned nodeCount = rowData.at(row).at(1).toUInt();
-
-                for (unsigned i = 0; i < nodeCount; i++)
-                {
-                    if (fileVersion == "a")
-                    {
-                        row++;
-                        verify_first_element_on_row_is("scenePosition");
-                        graphNodes.at(i)->setPos(QPointF(rowData.at(row).at(1).toDouble(), rowData.at(row).at(2).toDouble()));
-
-                        row++;
-                        verify_first_element_on_row_is("connections");
-                        const unsigned numConnections = rowData.at(row).at(1).toUInt();
-
-                        for (unsigned p = 0; p < numConnections; p++)
-                        {
-                            node_edge_s *const sourceEdge = graphNodes.at(i)->output_edge();
-                            node_edge_s *const targetEdge = graphNodes.at(rowData.at(row).at(2+p).toUInt())->input_edge();
-
-                            k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
-
-                            sourceEdge->connect_to(targetEdge);
-                        }
-                    }
-                    /// TODO: Reduce code repetition.
-                    else if (fileVersion == "b")
-                    {
-                        row++;
-                        verify_first_element_on_row_is("nodeParameterCount");
-                        const unsigned nodeParamCount = rowData.at(row).at(1).toInt();
-
-                        for (unsigned p = 0; p < nodeParamCount; p++)
-                        {
-                            row++;
-                            const auto paramName = rowData.at(row).at(0);
-
-                            if (paramName == "scenePosition")
-                            {
-                                graphNodes.at(i)->setPos(QPointF(rowData.at(row).at(1).toDouble(), rowData.at(row).at(2).toDouble()));
-                            }
-                            else if (paramName == "connections")
-                            {
-                                const unsigned numConnections = rowData.at(row).at(1).toUInt();
-
-                                for (unsigned c = 0; c < numConnections; c++)
-                                {
-                                    node_edge_s *const sourceEdge = graphNodes.at(i)->output_edge();
-                                    node_edge_s *const targetEdge = graphNodes.at(rowData.at(row).at(2+c).toUInt())->input_edge();
-
-                                    k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
-
-                                    sourceEdge->connect_to(targetEdge);
-                                }
-                            }
-                            else if (paramName == "backgroundColor")
-                            {
-                                graphNodes.at(i)->set_background_color(rowData.at(row).at(1));
-                            }
-                            else
-                            {
-                                NBENE(("Encountered an unknown filter graph node parameter name. Ignoring it."));
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Load the graph options.
-            {
-                row++;
-                verify_first_element_on_row_is("graphOptionsCount");
-                const unsigned graphOptionsCount = rowData.at(row).at(1).toUInt();
-
-                for (unsigned i = 0; i < graphOptionsCount; i++)
-                {
-                    row++;
-                    graphOptions.push_back(filter_graph_option_s(rowData.at(row).at(0).toStdString(), rowData.at(row).at(1).toInt()));
-                }
-            }
+            NBENE(("Unknown filter graph file format."));
+            goto fail;
         }
-
-        #undef verify_first_element_on_row_is
+    }
+    else
+    {
+        NBENE(("Unsupported filter graph file format."));
+        goto fail;
     }
 
     kpropagate_loaded_filter_graph_from_disk(graphNodes, graphOptions, sourceFilename);
