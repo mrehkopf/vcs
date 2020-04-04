@@ -124,6 +124,31 @@ The menu bar is divided into four categories: `File`, `Input`, `Output`, and `Ab
 `File` &rarr; `Exit`\
 Exit VCS.
 
+##### Menu bar: Window
+`Window` &rarr; `Renderer`\
+Set the type of rendering VCS uses to draw captured frames onto the [output window](#output-window).
+
+- &rarr; `Software`: Most compatible option. Rendering is done on the CPU.
+- &rarr; `OpenGL`: Rendering is done on the GPU using OpenGL.
+
+When choosing the renderer, be mindful of the following:
+- The OpenGL renderer might not work in Windows XP.
+- The output window's magnifying glass feature is not available with the OpenGL renderer.
+
+`Window` &rarr; `Position`\
+Snap the [output window](#output-window) into a pre-set position on the screen.
+
+`Window` &rarr; `Custom title...`\
+Give the [output window](#output-window) a custom title. All of VCS's normal title bar information - except the frame drop indicator - will be replaced with the text you set. You could, for instance, set the title to "Tomb Raider" if you're capturing footage of Tomb Raider. Setting an empty text will restore VCS's default title bar.
+
+`Window` &rarr; `Show border`\
+Set whether the [output window](#output-window) should be drawn with a border.
+
+`Window` &rarr; `Fullscreen`\
+Place the [output window](#output-window) into fullscreen mode. For best results, you should first scale the window to the resolution of your screen before making it fullscreen.
+
+Note: The fullscreen feature may not work properly on certain distributions of Linux.
+
 ##### Menu bar: Input
 `Input` &rarr; `Channel`\
 Set the hardware capture channel. Depending on the capabilities of your capture hardware, channels #1 through #2 are available.
@@ -141,16 +166,6 @@ Open the [alias resolutions](#alias-resolutions-dialog) dialog.
 Open the [input resolution](#input-resolution-dialog) dialog.
 
 ##### Menu bar: Output
-`Output` &rarr; `Renderer`\
-Set the type of rendering VCS uses to draw captured frames onto the [output window](#output-window).
-
-- &rarr; `Software`: Most compatible option. Rendering is done on the CPU.
-- &rarr; `OpenGL`: Rendering is done on the GPU using OpenGL.
-
-When choosing the renderer, be mindful of the following:
-- The OpenGL renderer might not work in Windows XP.
-- The output window's magnifying glass feature is not available with the OpenGL renderer.
-
 `Output` &rarr; `Aspect ratio`\
 Set the aspect ratio to display captured frames in. Letterboxing will be used to achieve the desired ratio.
 
