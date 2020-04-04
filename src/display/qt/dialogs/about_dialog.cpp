@@ -23,11 +23,13 @@ AboutDialog::AboutDialog(QWidget *parent) :
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    ui->groupBox_aboutVCS->setTitle("VCS " + QString(PROGRAM_VERSION_STRING));
-
-    if (DEV_VERSION)
     {
-        ui->groupBox_aboutVCS->setTitle(ui->groupBox_aboutVCS->title() + "-dev");
+        ui->groupBox_aboutVCS->setTitle("VCS " + QString(PROGRAM_VERSION_STRING));
+
+        if (DEV_VERSION)
+        {
+            ui->groupBox_aboutVCS->setTitle(ui->groupBox_aboutVCS->title() + "-dev");
+        }
     }
 
     // We'll set this label visible only when there's a new version of VCS available.
@@ -45,14 +47,16 @@ AboutDialog::AboutDialog(QWidget *parent) :
         ui->tableWidget_captureDeviceFeatures->modify_property("Firmware version",   QString::fromStdString(kc_capture_api().get_device_firmware_version()));
         ui->tableWidget_captureDeviceFeatures->modify_property("Driver version",     QString::fromStdString(kc_capture_api().get_device_driver_version()));
         ui->tableWidget_captureDeviceFeatures->modify_property("Capture API",        QString::fromStdString(kc_capture_api().get_api_name()));
-        ui->tableWidget_captureDeviceFeatures->modify_property("DMA transfer",       (kc_capture_api().device_supports_dma()?               "Supported" : "Not supported"));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Deinterlacing",      (kc_capture_api().device_supports_deinterlacing()?     "Supported" : "Not supported"));
-        ui->tableWidget_captureDeviceFeatures->modify_property("YUV encoding",       (kc_capture_api().device_supports_yuv()?               "Supported" : "Not supported"));
-        ui->tableWidget_captureDeviceFeatures->modify_property("VGA capture",        (kc_capture_api().device_supports_vga()?               "Supported" : "Not supported"));
-        ui->tableWidget_captureDeviceFeatures->modify_property("DVI capture",        (kc_capture_api().device_supports_dvi()?               "Supported" : "Not supported"));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Component capture",  (kc_capture_api().device_supports_component_capture()? "Supported" : "Not supported"));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Composite capture",  (kc_capture_api().device_supports_composite_capture()? "Supported" : "Not supported"));
-        ui->tableWidget_captureDeviceFeatures->modify_property("S-Video capture",    (kc_capture_api().device_supports_svideo()?            "Supported" : "Not supported"));
+        #ifndef __linux__ // The Linux capture API doesn't support querying these parameters.
+            ui->tableWidget_captureDeviceFeatures->modify_property("DMA transfer",       (kc_capture_api().device_supports_dma()?               "Supported" : "Not supported"));
+            ui->tableWidget_captureDeviceFeatures->modify_property("Deinterlacing",      (kc_capture_api().device_supports_deinterlacing()?     "Supported" : "Not supported"));
+            ui->tableWidget_captureDeviceFeatures->modify_property("YUV encoding",       (kc_capture_api().device_supports_yuv()?               "Supported" : "Not supported"));
+            ui->tableWidget_captureDeviceFeatures->modify_property("VGA capture",        (kc_capture_api().device_supports_vga()?               "Supported" : "Not supported"));
+            ui->tableWidget_captureDeviceFeatures->modify_property("DVI capture",        (kc_capture_api().device_supports_dvi()?               "Supported" : "Not supported"));
+            ui->tableWidget_captureDeviceFeatures->modify_property("Component capture",  (kc_capture_api().device_supports_component_capture()? "Supported" : "Not supported"));
+            ui->tableWidget_captureDeviceFeatures->modify_property("Composite capture",  (kc_capture_api().device_supports_composite_capture()? "Supported" : "Not supported"));
+            ui->tableWidget_captureDeviceFeatures->modify_property("S-Video capture",    (kc_capture_api().device_supports_svideo()?            "Supported" : "Not supported"));
+        #endif
     }
 
     // Restore persistent settings.
