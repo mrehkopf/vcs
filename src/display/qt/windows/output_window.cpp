@@ -894,6 +894,17 @@ void MainWindow::wheelEvent(QWheelEvent *event)
     return;
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if ((event->key() == Qt::Key_Escape) &&
+        this->isFullScreen())
+    {
+        this->showNormal();
+    }
+
+    return;
+}
+
 bool MainWindow::is_mouse_wheel_scaling_allowed(void)
 {
     return (!kd_is_fullscreen() && // On my virtual machine, at least, wheel scaling while in full-screen messes up the full-screen mode.
