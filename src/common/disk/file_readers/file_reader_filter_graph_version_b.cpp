@@ -48,7 +48,7 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
         row++;
         FAIL_IF_FIRST_CELL_IS_NOT("fileVersion");
         const QString fileVersion = rowData.at(row).at(1);
-        k_assert((fileVersion == "a"), "Mismatched file version for reading.");
+        k_assert((fileVersion == "b"), "Mismatched file version for reading.");
 
         row++;
         FAIL_IF_FIRST_CELL_IS_NOT("filterCount");
