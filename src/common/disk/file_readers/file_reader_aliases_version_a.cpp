@@ -6,7 +6,7 @@
  */
 
 #include <QList> /// TODO: Break dependency on Qt.
-#include "common/disk/file_reader_aliases.h"
+#include "common/disk/file_readers/file_reader_aliases.h"
 #include "common/disk/csv.h"
 #include "filter/filter.h"
 

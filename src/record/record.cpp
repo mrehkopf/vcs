@@ -288,7 +288,7 @@ bool krecord_start_recording(const char *const filename,
     if (!VIDEO_WRITER.isOpened())
     {
         kd_show_headless_error_message("VCS can't start recording",
-                                       "An error was encountred while attempting to start recording.\n\n"
+                                       "An error was encountred while attempting to start recording. "
                                        "More information may be found in the console window.");
         return false;
     }

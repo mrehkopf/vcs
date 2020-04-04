@@ -5,7 +5,7 @@
  *
  */
 
-#include "common/disk/file_writer_filter_graph.h"
+#include "common/disk/file_writers/file_writer_filter_graph.h"
 #include "common/disk/file_streamer.h"
 #include "common/globals.h"
 #include "filter/filter.h"

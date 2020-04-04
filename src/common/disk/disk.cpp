@@ -15,12 +15,12 @@
 #include "display/qt/widgets/filter_widgets.h"
 #include "common/disk/file_streamer.h"
 #include "common/disk/file_reader.h"
-#include "common/disk/file_reader_video_params.h"
-#include "common/disk/file_writer_video_params.h"
-#include "common/disk/file_reader_filter_graph.h"
-#include "common/disk/file_writer_filter_graph.h"
-#include "common/disk/file_writer_aliases.h"
-#include "common/disk/file_reader_aliases.h"
+#include "common/disk/file_readers/file_reader_video_params.h"
+#include "common/disk/file_writers/file_writer_video_params.h"
+#include "common/disk/file_readers/file_reader_filter_graph.h"
+#include "common/disk/file_writers/file_writer_filter_graph.h"
+#include "common/disk/file_writers/file_writer_aliases.h"
+#include "common/disk/file_readers/file_reader_aliases.h"
 #include "common/propagate/propagate.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
@@ -30,7 +30,7 @@
 bool kdisk_save_video_signal_parameters(const std::vector<video_signal_parameters_s> &params,
                                         const std::string &targetFilename)
 {
-    if (!file_writer::video_params::legacy_1_6_5::write(targetFilename, params))
+    if (!file_writer::video_params::version_a::write(targetFilename, params))
     {
         goto fail;
     }
@@ -41,9 +41,9 @@ bool kdisk_save_video_signal_parameters(const std::vector<video_signal_parameter
 
     fail:
     kd_show_headless_error_message("Data was not saved",
-                                   "An error was encountered while preparing the mode "
-                                   "settings for saving. As a result, no data was saved. \n\nMore "
-                                   "information about this error may be found in the terminal.");
+                                   "An error was encountered while preparing the video parameters "
+                                   "for saving. As a result, no data was saved. More information "
+                                   "about this error may be found in the terminal.");
     return false;
 }
 
@@ -57,9 +57,21 @@ bool kdisk_load_video_signal_parameters(const std::string &sourceFilename)
 
     std::vector<video_signal_parameters_s> videoModeParams;
 
-    if (!file_reader::video_params::legacy_1_6_5::read(sourceFilename, &videoModeParams))
+    const std::string fileVersion = file_reader::file_version(sourceFilename);
+
+    if (fileVersion == "a")
     {
-        goto fail;
+        if (!file_reader::video_params::version_a::read(sourceFilename, &videoModeParams))
+        {
+            goto fail;
+        }
+    }
+    else
+    {
+        if (!file_reader::video_params::legacy_1_6_5::read(sourceFilename, &videoModeParams))
+        {
+            goto fail;
+        }
     }
 
     // Sort the modes so they'll display more nicely in the GUI.
@@ -75,7 +87,7 @@ bool kdisk_load_video_signal_parameters(const std::string &sourceFilename)
     fail:
     kd_show_headless_error_message("Data was not loaded",
                                    "An error was encountered while loading video parameters. "
-                                   "No data was loaded.\n\nMore information about the error "
+                                   "No data was loaded. More information about the error "
                                    "may be found in the terminal.");
     return false;
 }
@@ -119,7 +131,7 @@ bool kdisk_load_aliases(const std::string &sourceFilename)
     fail:
     kd_show_headless_error_message("Data was not loaded",
                                    "An error was encountered while loading aliases. No data was "
-                                   "loaded.\n\nMore information about the error may be found in "
+                                   "loaded. More information about the error may be found in "
                                    "the terminal.");
     return false;
 }
@@ -160,7 +172,7 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
     fail:
     kd_show_headless_error_message("Data was not saved",
                                    "An error was encountered while preparing filter graph data for saving. "
-                                   "As a result, no data was saved. \n\nMore information about this "
+                                   "As a result, no data was saved. More information about this "
                                    "error may be found in the terminal.");
     return false;
 }
@@ -221,7 +233,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
     kd_clear_filter_graph();
     kd_show_headless_error_message("Data was not loaded",
                                    "An error was encountered while loading the filter graph. No data was "
-                                   "loaded.\n\nMore information about the error may be found in "
+                                   "loaded. More information about the error may be found in "
                                    "the terminal.");
     return false;
 }

@@ -20,6 +20,12 @@ namespace video_params
         bool write(const std::string &filename,
                    const std::vector<video_signal_parameters_s> &videoParams);
     }
+
+    namespace version_a
+    {
+        bool write(const std::string &filename,
+                   const std::vector<video_signal_parameters_s> &videoParams);
+    }
 }
 }
 

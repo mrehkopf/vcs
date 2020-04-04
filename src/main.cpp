@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
         kd_show_headless_error_message("",
                                        "VCS has to exit because it encountered one or more "
                                        "unrecoverable errors while initializing itself. "
-                                       "\n\nMore information will have been printed into "
+                                       "More information will have been printed into "
                                        "the console. If a console window was not already "
                                        "open, run VCS again from the command line.");
 

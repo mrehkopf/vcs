@@ -90,14 +90,17 @@ SOURCES += \
     src/display/qt/dialogs/signal_dialog.cpp \
     src/capture/capture_api_video4linux.cpp \
     src/filter/filter_funcs.cpp \
-    src/common/disk/file_writer_filter_graph_version_b.cpp \
+    src/common/disk/file_writers/file_writer_filter_graph_version_b.cpp \
     src/common/disk/file_reader.cpp \
-    src/common/disk/file_reader_filter_graph_version_b.cpp \
-    src/common/disk/file_reader_filter_graph_version_a.cpp \
-    src/common/disk/file_writer_aliases_version_a.cpp \
-    src/common/disk/file_reader_aliases_version_a.cpp \
-    src/common/disk/file_reader_video_params_legacy_1_6_5.cpp \
-    src/common/disk/file_writer_video_params_legacy_1_6_5.cpp
+    src/common/disk/file_readers/file_reader_filter_graph_version_b.cpp \
+    src/common/disk/file_readers/file_reader_filter_graph_version_a.cpp \
+    src/common/disk/file_writers/file_writer_aliases_version_a.cpp \
+    src/common/disk/file_readers/file_reader_aliases_version_a.cpp \
+    src/common/disk/file_readers/file_reader_video_params_legacy_1_6_5.cpp \
+    src/common/disk/file_writers/file_writer_video_params_legacy_1_6_5.cpp \
+    src/common/disk/file_writer.cpp \
+    src/common/disk/file_writers/file_writer_video_params_version_a.cpp \
+    src/common/disk/file_readers/file_reader_video_params_version_a.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -144,13 +147,14 @@ HEADERS += \
     src/display/qt/dialogs/signal_dialog.h \
     src/capture/capture_api_video4linux.h \
     src/filter/filter_funcs.h \
-    src/common/disk/file_writer_filter_graph.h \
-    src/common/disk/file_reader_filter_graph.h \
+    src/common/disk/file_writers/file_writer_filter_graph.h \
+    src/common/disk/file_readers/file_reader_filter_graph.h \
     src/common/disk/file_reader.h \
     src/common/disk/file_streamer.h \
-    src/common/disk/file_writer_aliases.h \
-    src/common/disk/file_reader_video_params.h \
-    src/common/disk/file_writer_video_params.h
+    src/common/disk/file_writers/file_writer_aliases.h \
+    src/common/disk/file_readers/file_reader_video_params.h \
+    src/common/disk/file_writers/file_writer_video_params.h \
+    src/common/disk/file_writer.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \

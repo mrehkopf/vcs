@@ -71,7 +71,7 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
 
         kd_show_headless_error_message("",
                                        "VCS has to exit because it found unexpected data while "
-                                       "parsing the command line.\n\nMore information "
+                                       "parsing the command line. More information "
                                        "will have been printed into the console. If a "
                                        "console window was not already open, run VCS "
                                        "again from the command line.");

@@ -6,7 +6,7 @@
  */
 
 #include <QList> /// TODO: Break dependency on Qt.
-#include "common/disk/file_reader_video_params.h"
+#include "common/disk/file_readers/file_reader_video_params.h"
 #include "common/disk/csv.h"
 
 bool file_reader::video_params::legacy_1_6_5::read(const std::string &filename,

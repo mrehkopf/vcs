@@ -5,7 +5,7 @@
  *
  */
 
-#include "common/disk/file_writer_video_params.h"
+#include "common/disk/file_writers/file_writer_video_params.h"
 #include "common/disk/file_streamer.h"
 #include "common/globals.h"
 
@@ -48,6 +48,8 @@ bool file_writer::video_params::legacy_1_6_5::write(const std::string &filename,
         NBENE(("Failed to save the video parameters to disk."));
         goto fail;
     }
+
+    return true;
 
     fail:
     return false;
