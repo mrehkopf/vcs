@@ -13,7 +13,7 @@
 bool file_writer::filter_graph::version_b::write(const std::string &filename,
                                                  const std::vector<FilterGraphNode*> &nodes,
                                                  const std::vector<filter_graph_option_s> &graphOptions)
-{
+{   
     file_streamer_c outFile(filename);
 
     outFile << "fileType,{VCS filter graph}\n"
@@ -82,12 +82,12 @@ bool file_writer::filter_graph::version_b::write(const std::string &filename,
     if (!outFile.is_valid() ||
         !outFile.save_and_close())
     {
+        NBENE(("Failed to save the filter graph to disk."));
         goto fail;
     }
 
     return true;
 
     fail:
-    NBENE(("Failed to save the filter graph to disk."));
     return false;
 }

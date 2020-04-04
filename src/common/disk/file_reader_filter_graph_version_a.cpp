@@ -32,8 +32,9 @@ bool file_reader::filter_graph::version_a::read(const std::string &filename,
 
     QList<QStringList> rowData = csv_parse_c(QString::fromStdString(filename)).contents();
 
-    if (!rowData.length())
+    if (rowData.isEmpty())
     {
+        NBENE(("Empty filter graph file."));
         goto fail;
     }
 
@@ -48,7 +49,7 @@ bool file_reader::filter_graph::version_a::read(const std::string &filename,
         FAIL_IF_FIRST_CELL_IS_NOT("fileVersion");
         const QString fileVersion = rowData.at(row).at(1);
         k_assert((fileVersion == "a"), "Mismatched file version for reading.");
-        
+
         row++;
         FAIL_IF_FIRST_CELL_IS_NOT("filterCount");
         const unsigned numFilters = rowData.at(row).at(1).toUInt();
@@ -122,6 +123,5 @@ bool file_reader::filter_graph::version_a::read(const std::string &filename,
     return true;
 
     fail:
-    NBENE(("Failed to read the filter graph from disk."));
     return false;
 }

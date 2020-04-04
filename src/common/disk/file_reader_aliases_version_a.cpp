@@ -31,8 +31,9 @@ bool file_reader::aliases::version_a::read(const std::string &filename,
 
     QList<QStringList> rowData = csv_parse_c(QString::fromStdString(filename)).contents();
 
-    if (!rowData.length())
+    if (rowData.isEmpty())
     {
+        NBENE(("Empty filter aliases file."));
         goto fail;
     }
 
@@ -74,6 +75,5 @@ bool file_reader::aliases::version_a::read(const std::string &filename,
     return true;
 
     fail:
-    NBENE(("Failed to read the aliases from disk."));
     return false;
 }

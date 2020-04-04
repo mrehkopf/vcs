@@ -29,13 +29,12 @@ bool file_writer::aliases::version_a::write(const std::string &filename,
     if (!outFile.is_valid() ||
         !outFile.save_and_close())
     {
-        NBENE(("Failed to write aliases to file."));
+        NBENE(("Failed to save the aliases to disk."));
         goto fail;
     }
     
     return true;
 
     fail:
-    NBENE(("Failed to save the aliases to disk."));
     return false;
 }

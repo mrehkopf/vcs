@@ -32,8 +32,9 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
 
     QList<QStringList> rowData = csv_parse_c(QString::fromStdString(filename)).contents();
 
-    if (!rowData.length())
+    if (rowData.isEmpty())
     {
+        NBENE(("Empty filter graph file."));
         goto fail;
     }
 
@@ -141,6 +142,5 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
     return true;
 
     fail:
-    NBENE(("Failed to read the filter graph from disk."));
     return false;
 }

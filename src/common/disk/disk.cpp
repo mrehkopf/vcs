@@ -15,6 +15,8 @@
 #include "display/qt/widgets/filter_widgets.h"
 #include "common/disk/file_streamer.h"
 #include "common/disk/file_reader.h"
+#include "common/disk/file_reader_video_params.h"
+#include "common/disk/file_writer_video_params.h"
 #include "common/disk/file_reader_filter_graph.h"
 #include "common/disk/file_writer_filter_graph.h"
 #include "common/disk/file_writer_aliases.h"
@@ -24,45 +26,12 @@
 #include "capture/alias.h"
 #include "filter/filter.h"
 #include "common/disk/disk.h"
-#include "common/disk/csv.h"
 
 bool kdisk_save_video_signal_parameters(const std::vector<video_signal_parameters_s> &params,
                                         const std::string &targetFilename)
 {
-    file_streamer_c outFile(targetFilename);
-
-    // Each mode params block consists of two values specifying the resolution
-    // followed by a set of string-value pairs for the different parameters.
-    for (const auto &p: params)
+    if (!file_writer::video_params::legacy_1_6_5::write(targetFilename, params))
     {
-        // Resolution.
-        outFile << "resolution," << p.r.w << "," << p.r.h << "\n";
-
-        // Video params.
-        outFile << "vPos,"   << p.verticalPosition << "\n"
-                << "hPos,"   << p.horizontalPosition << "\n"
-                << "hScale," << p.horizontalScale << "\n"
-                << "phase,"  << p.phase << "\n"
-                << "bLevel," << p.blackLevel << "\n";
-
-        // Color params.
-        outFile << "bright,"  << p.overallBrightness << "\n"
-                << "contr,"   << p.overallContrast << "\n"
-                << "redBr,"   << p.redBrightness << "\n"
-                << "redCn,"   << p.redContrast << "\n"
-                << "greenBr," << p.greenBrightness << "\n"
-                << "greenCn," << p.greenContrast << "\n"
-                << "blueBr,"  << p.blueBrightness << "\n"
-                << "blueCn,"  << p.blueContrast << "\n";
-
-        // Separate the next block.
-        outFile << "\n";
-    }
-
-    if (!outFile.is_valid() ||
-        !outFile.save_and_close())
-    {
-        NBENE(("Failed to write mode params to file."));
         goto fail;
     }
 
@@ -86,75 +55,18 @@ bool kdisk_load_video_signal_parameters(const std::string &sourceFilename)
         return true;
     }
 
-    DEBUG(("Loading video mode parameters from %s...", sourceFilename.c_str()));
-
     std::vector<video_signal_parameters_s> videoModeParams;
 
-    QList<QStringList> paramRows = csv_parse_c(QString::fromStdString(sourceFilename)).contents();
-
-    // Each mode is saved as a block of rows, starting with a 3-element row defining
-    // the mode's resolution, followed by several 2-element rows defining the various
-    // video and color parameters for the resolution.
-    for (int i = 0; i < paramRows.count();)
+    if (!file_reader::video_params::legacy_1_6_5::read(sourceFilename, &videoModeParams))
     {
-        if ((paramRows.at(i).count() != 3) ||
-            (paramRows.at(i).at(0) != "resolution"))
-        {
-            NBENE(("Expected a 3-parameter 'resolution' statement to begin a mode params block."));
-            goto fail;
-        }
-
-        video_signal_parameters_s p;
-        p.r.w = paramRows.at(i).at(1).toUInt();
-        p.r.h = paramRows.at(i).at(2).toUInt();
-
-        i++;    // Move to the next row to start fetching the params for this resolution.
-
-        auto get_param = [&](const QString &name)->QString
-                         {
-                             if ((int)i >= paramRows.length())
-                             {
-                                 NBENE(("Error while loading video parameters: expected '%s' but found the data out of range.", name.toLatin1().constData()));
-                                 throw 0;
-                             }
-                             else if (paramRows.at(i).at(0) != name)
-                             {
-                                 NBENE(("Error while loading video parameters: expected '%s' but got '%s'.",
-                                        name.toLatin1().constData(), paramRows.at(i).at(0).toLatin1().constData()));
-                                 throw 0;
-                             }
-                             return paramRows[i++].at(1);
-                         };
-        try
-        {
-            // Note: the order in which the params are fetched is fixed to the
-            // order in which they were saved.
-            p.verticalPosition   = get_param("vPos").toInt();
-            p.horizontalPosition = get_param("hPos").toInt();
-            p.horizontalScale    = get_param("hScale").toUInt();
-            p.phase              = get_param("phase").toInt();
-            p.blackLevel         = get_param("bLevel").toInt();
-            p.overallBrightness  = get_param("bright").toInt();
-            p.overallContrast    = get_param("contr").toInt();
-            p.redBrightness      = get_param("redBr").toInt();
-            p.redContrast        = get_param("redCn").toInt();
-            p.greenBrightness    = get_param("greenBr").toInt();
-            p.greenContrast      = get_param("greenCn").toInt();
-            p.blueBrightness     = get_param("blueBr").toInt();
-            p.blueContrast       = get_param("blueCn").toInt();
-        }
-        catch (int)
-        {
-            NBENE(("Failed to load mode params from disk."));
-            goto fail;
-        }
-
-        videoModeParams.push_back(p);
+        goto fail;
     }
 
     // Sort the modes so they'll display more nicely in the GUI.
     std::sort(videoModeParams.begin(), videoModeParams.end(), [](const video_signal_parameters_s &a, const video_signal_parameters_s &b)
-                                          { return (a.r.w * a.r.h) < (b.r.w * b.r.h); });
+    {
+        return (a.r.w * a.r.h) < (b.r.w * b.r.h);
+    });
 
     kpropagate_loaded_video_signal_parameters_from_disk(videoModeParams, sourceFilename);
 
