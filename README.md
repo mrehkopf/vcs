@@ -238,6 +238,7 @@ The recording functionality will write frames as they appear in the [output wind
 - The video resolution will be that of the current output size (see the [output resolution dialog](#output-resolution-dialog)).
 - The output size cannot be changed while recording; frames will be scaled to fit the current size.
 - The [overlay](#overlay-dialog) will not be recorded.
+- Encoder parameters influencing image quality (e.g. CRF) cannot be altered in the Linux version of VCS - this is a limitation of OpenCV. You can, however, modify and recompile the OpenCV code with higher-quality default options (see e.g. [here](https://www.researchgate.net/post/Is_it_possible_to_set_the_lossfree_option_for_the_X264_codec_in_OpenCV)).
 
 To make use of VCS's recording functionality on Windows, you will need to install the 32-bit version of the [x264vfw](https://sourceforge.net/projects/x264vfw/files/x264vfw/44_2851bm_44825/) codec and run its configurator at least once, so that its settings are added into the Windows registry for VCS to find.
 
