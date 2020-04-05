@@ -47,6 +47,13 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
             painter->setPen(QPen(QColor("black"), 1, Qt::SolidLine));
             painter->setBrush(QBrush(backgroundColor));
+
+            if (!this->isEnabled)
+            {
+                painter->setPen(QPen(QColor("black"), 1, Qt::DashLine));
+                painter->setBrush(QBrush(backgroundColor, Qt::BDiagPattern));
+            }
+
             painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);
         }
 

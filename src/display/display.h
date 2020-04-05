@@ -67,6 +67,8 @@ void kd_disable_output_size_controls(const bool areDisabled);
 
 void kd_clear_filter_graph(void);
 
+void kd_recalculate_filter_graph_chains(void);
+
 void kd_set_filter_graph_source_filename(const std::string &sourceFilename);
 
 void kd_set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);

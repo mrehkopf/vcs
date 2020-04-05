@@ -38,6 +38,14 @@ public:
     void set_background_color(const QString colorName);
     const QList<QString>& background_color_list(void);
     const QString& current_background_color_name(void);
+    bool is_enabled(void) const;
+
+    void set_enabled(const bool isDisabled);
+
+signals:
+    // Emitted when the node's enabled status is toggled.
+    void enabled(void);
+    void disabled(void);
 
 protected:
     const filter_node_type_e filterType;
@@ -50,6 +58,12 @@ protected:
     };
 
     QString backgroundColor = this->backgroundColorList.at(1);
+
+    // Whether the filter corresponding to this node will get applied. If false,
+    // the node will just act as a passthrough.
+    // Note: Use set_enabled() to toggle this value at runtime, rather than
+    // setting it directly.
+    bool isEnabled = true;
 
 private:
     void generate_right_click_menu(void);

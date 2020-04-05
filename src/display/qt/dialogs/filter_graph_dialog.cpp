@@ -325,7 +325,10 @@ void FilterGraphDialog::recalculate_filter_chains(void)
             return;
         }
 
-        accumulatedFilterChain.push_back(node->associatedFilter);
+        if (node->is_enabled())
+        {
+            accumulatedFilterChain.push_back(node->associatedFilter);
+        }
 
         if (node->associatedFilter->metaData.type == filter_type_enum_e::output_gate)
         {

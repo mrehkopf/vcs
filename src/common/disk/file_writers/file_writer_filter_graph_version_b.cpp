@@ -44,7 +44,9 @@ bool file_writer::filter_graph::version_b::write(const std::string &filename,
         {
             // How many individual parameters (like scenePosition, backgroundColor, etc.)
             // we'll save.
-            outFile << "nodeParameterCount,3" << "\n";
+            outFile << "nodeParameterCount,4" << "\n";
+
+            outFile << "isEnabled," << node->is_enabled() << "\n";
 
             outFile << "scenePosition," << QString("%1,%2").arg(node->pos().x()).arg(node->pos().y()) << "\n";
 

@@ -57,6 +57,29 @@ const QString& FilterGraphNode::current_background_color_name(void)
     return this->backgroundColor;
 }
 
+bool FilterGraphNode::is_enabled(void) const
+{
+    return this->isEnabled;
+}
+
+void FilterGraphNode::set_enabled(const bool enabled)
+{
+    this->isEnabled = enabled;
+
+    if (enabled)
+    {
+        emit this->enabled();
+    }
+    else
+    {
+        emit this->disabled();
+    }
+
+    dynamic_cast<InteractibleNodeGraph*>(this->scene())->update();
+
+    return;
+}
+
 void FilterGraphNode::generate_right_click_menu(void)
 {
     if (this->rightClickMenu)
@@ -68,6 +91,36 @@ void FilterGraphNode::generate_right_click_menu(void)
 
     this->rightClickMenu->addAction(this->title);
     this->rightClickMenu->actions().at(0)->setEnabled(false);
+
+    // Add an option to enable/disable this node. Nodes that are disabled will act
+    // as passthroughs, and their corresponding filter won't be applied.
+    if (this->filterType != filter_node_type_e::gate)
+    {
+        this->rightClickMenu->addSeparator();
+
+        QAction *enabled = new QAction("Enabled", this->rightClickMenu);
+
+        enabled->setCheckable(true);
+        enabled->setChecked(this->isEnabled);
+
+        connect(this, &FilterGraphNode::enabled, this, [=]
+        {
+            enabled->setChecked(true);
+        });
+
+        connect(this, &FilterGraphNode::disabled, this, [=]
+        {
+            enabled->setChecked(false);
+        });
+
+        connect(enabled, &QAction::triggered, this, [=]
+        {
+            this->set_enabled(!this->isEnabled);
+            kd_recalculate_filter_graph_chains();
+        });
+
+        this->rightClickMenu->addAction(enabled);
+    }
 
     // Add options to change the node's color.
     if ((this->filterType != filter_node_type_e::gate) &&

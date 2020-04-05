@@ -1122,6 +1122,12 @@ void MainWindow::clear_filter_graph(void)
     return;
 }
 
+void MainWindow::recalculate_filter_graph_chains(void)
+{
+    k_assert(this->filterGraphDlg != nullptr, "");
+    filterGraphDlg->recalculate_filter_chains();
+}
+
 void MainWindow::disable_output_size_controls(const bool areDisabled)
 {
     k_assert(this->outputResolutionDlg != nullptr, "");

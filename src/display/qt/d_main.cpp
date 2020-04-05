@@ -42,6 +42,16 @@ void kd_clear_filter_graph(void)
     return;
 }
 
+void kd_recalculate_filter_graph_chains(void)
+{
+    if (WINDOW != nullptr)
+    {
+        WINDOW->recalculate_filter_graph_chains();
+    }
+
+    return;
+}
+
 void kd_disable_output_size_controls(const bool areDisabled)
 {
     if (WINDOW != nullptr)

@@ -87,6 +87,8 @@ public:
 
     void clear_filter_graph(void);
 
+    void recalculate_filter_graph_chains(void);
+
     FilterGraphNode* add_filter_graph_node(const filter_type_enum_e &filterType, const u8 * const initialParameterValues);
 
     void set_filter_graph_source_filename(const std::string &sourceFilename);

@@ -97,6 +97,10 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
                     {
                         graphNodes->at(i)->setPos(QPointF(rowData.at(row).at(1).toDouble(), rowData.at(row).at(2).toDouble()));
                     }
+                    else if (paramName == "isEnabled")
+                    {
+                        graphNodes->at(i)->set_enabled(rowData.at(row).at(1).toInt());
+                    }
                     else if (paramName == "connections")
                     {
                         const unsigned numConnections = rowData.at(row).at(1).toUInt();
