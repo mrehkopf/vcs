@@ -6,15 +6,14 @@ VCS interfaces with compatible capture hardware to display the capture output in
 You can find the pre-built binary distribution of VCS for Windows on [Tarpeeksi Hyvae Soft's website](http://tarpeeksihyvaesoft.com/soft/).
 
 ### Features
-- On-the-fly frame filtering: blur, crop, flip, decimate, rotate, sharpen, ...
-- Several frame scalers: nearest, linear, area, cubic, and Lanczos
-- Anti-tearing
-- Temporal image denoising
-- Video recording with H.264 encoding
-- Custom overlays with HTML and CSS formatting
-- Minimal reliance on GPU features &ndash; ideal for virtual machines
-- Unique frame count &ndash; an FPS counter for DOS games!
-- Supports Windows XP to Windows 10, and compiles on Linux
+- Real-time customizable image filters: blur, crop, decimate, denoise, and more
+- Scaling with nearest, linear, area, cubic, and Lanczos sampling
+- Active triple buffering to reconstruct torn frames
+- Custom overlays with HTML/CSS formatting
+- Video recording
+- Virtual machine friendly (low reliance on GPU features)
+- Output in software or OpenGL
+- Supports Windows (XP and later), Linux
 
 ### Hardware support
 VCS is compatible with at least the following Datapath capture cards:
@@ -27,8 +26,6 @@ VCS is compatible with at least the following Datapath capture cards:
 - VisionRGB-X2
 
 The VisionAV range of cards should also work, albeit without their audio capture functionality.
-
-In general, if you know that your card supports Datapath's RGBEasy API, it should be able to function with VCS.
 
 # User's manual
 Contents:
