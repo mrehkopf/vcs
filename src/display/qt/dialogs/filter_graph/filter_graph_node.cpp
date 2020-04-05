@@ -70,7 +70,8 @@ void FilterGraphNode::generate_right_click_menu(void)
     this->rightClickMenu->actions().at(0)->setEnabled(false);
 
     // Add options to change the node's color.
-    if (!this->background_color_list().empty())
+    if ((this->filterType != filter_node_type_e::gate) &&
+        !this->background_color_list().empty())
     {
         this->rightClickMenu->addSeparator();
 
