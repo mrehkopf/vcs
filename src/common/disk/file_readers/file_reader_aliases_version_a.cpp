@@ -8,7 +8,6 @@
 #include <QList> /// TODO: Break dependency on Qt.
 #include "common/disk/file_readers/file_reader_aliases.h"
 #include "common/disk/csv.h"
-#include "filter/filter.h"
 
 bool file_reader::aliases::version_a::read(const std::string &filename,
                                            std::vector<mode_alias_s> *const aliases)

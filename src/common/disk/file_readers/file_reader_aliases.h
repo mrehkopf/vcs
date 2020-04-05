@@ -14,6 +14,13 @@ namespace file_reader
 {
 namespace aliases
 {
+    // Legacy for VCS <= 1.6.5.
+    namespace legacy_1_6_5
+    {
+        bool read(const std::string &filename,
+                  std::vector<mode_alias_s> *const aliases);
+    }
+
     namespace version_a
     {
         bool read(const std::string &filename,

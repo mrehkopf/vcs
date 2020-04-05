@@ -59,7 +59,14 @@ bool kdisk_load_video_signal_parameters(const std::string &sourceFilename)
 
     const std::string fileVersion = file_reader::file_version(sourceFilename);
 
-    if (fileVersion == "a")
+    if (fileVersion.empty())
+    {
+        if (!file_reader::video_params::legacy_1_6_5::read(sourceFilename, &videoModeParams))
+        {
+            goto fail;
+        }
+    }
+    else if (fileVersion == "a")
     {
         if (!file_reader::video_params::version_a::read(sourceFilename, &videoModeParams))
         {
@@ -68,10 +75,8 @@ bool kdisk_load_video_signal_parameters(const std::string &sourceFilename)
     }
     else
     {
-        if (!file_reader::video_params::legacy_1_6_5::read(sourceFilename, &videoModeParams))
-        {
-            goto fail;
-        }
+        NBENE(("Unsupported video signal parameter file format."));
+        goto fail;
     }
 
     // Sort the modes so they'll display more nicely in the GUI.
@@ -104,11 +109,17 @@ bool kdisk_load_aliases(const std::string &sourceFilename)
 
     std::vector<mode_alias_s> aliases;
 
-    if (fileVersion == "a")
+    if (fileVersion.empty())
+    {
+        if (!file_reader::aliases::legacy_1_6_5::read(sourceFilename, &aliases))
+        {
+            goto fail;
+        }
+    }
+    else if (fileVersion == "a")
     {
         if (!file_reader::aliases::version_a::read(sourceFilename, &aliases))
         {
-            DEBUG(("No alias file defined, skipping."));
             goto fail;
         }
     }
@@ -207,7 +218,6 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
     {
         if (!file_reader::filter_graph::version_a::read(sourceFilename, &graphNodes, &graphOptions))
         {
-            NBENE(("Unknown filter graph file format."));
             goto fail;
         }
     }
@@ -215,7 +225,6 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
     {
         if (!file_reader::filter_graph::version_b::read(sourceFilename, &graphNodes, &graphOptions))
         {
-            NBENE(("Unknown filter graph file format."));
             goto fail;
         }
     }
