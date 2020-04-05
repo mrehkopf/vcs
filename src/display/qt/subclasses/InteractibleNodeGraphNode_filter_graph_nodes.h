@@ -5,12 +5,15 @@
 
 class filter_c;
 
-class FilterGraphNode : public InteractibleNodeGraphNode
+class FilterGraphNode : public QObject, public InteractibleNodeGraphNode
 {
+    Q_OBJECT
+
 public:
     FilterGraphNode(const QString title,
                     const unsigned width = 240,
-                    const unsigned height = 130);
+                    const unsigned height = 130,
+                    const bool isGateNode = false);
     virtual ~FilterGraphNode();
 
     const filter_c *associatedFilter = nullptr;
@@ -19,7 +22,25 @@ public:
     virtual node_edge_s* input_edge(void) { return nullptr; }
     virtual node_edge_s* output_edge(void) { return nullptr; }
 
+    void set_background_color(const QString colorName);
+    const QList<QString>& background_color_list(void);
+    const QString& current_background_color_name(void);
+
+protected:
+    // Whether this node is an input or output gate.
+    bool isGateNode = false;
+
+    // A list of the node background colors we support. Note: You shouldn't
+    // delete or change the names of any of the items on this list. But
+    // you can add more.
+    const QList<QString> backgroundColorList = {
+        "Blue", "Cyan", "Green", "Magenta", "Red", "Yellow",
+    };
+
+    QString backgroundColor = this->backgroundColorList.at(1);
+
 private:
+    void generate_right_click_menu(void);
 };
 
 class FilterNode : public FilterGraphNode
@@ -27,7 +48,7 @@ class FilterNode : public FilterGraphNode
 public:
     FilterNode(const QString title,
                const unsigned width = 240,
-               const unsigned height = 130) : FilterGraphNode(title, width, height)
+               const unsigned height = 130) : FilterGraphNode(title, width, height, false)
     {
         this->edges =
         {
@@ -52,7 +73,7 @@ class InputGateNode : public FilterGraphNode
 public:
     InputGateNode(const QString title,
                   const unsigned width = 200,
-                  const unsigned height = 130) : FilterGraphNode(title, width, height)
+                  const unsigned height = 130) : FilterGraphNode(title, width, height, true)
     {
         this->edges =
         {
@@ -75,7 +96,7 @@ class OutputGateNode : public FilterGraphNode
 public:
     OutputGateNode(const QString title,
                    const unsigned width = 200,
-                   const unsigned height = 130) : FilterGraphNode(title, width, height)
+                   const unsigned height = 130) : FilterGraphNode(title, width, height, true)
     {
         this->edges =
         {

@@ -21,7 +21,6 @@ private:
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
 
-    void populate_node_click_menu(InteractibleNodeGraphNode *const node);
     void populate_edge_click_menu(node_edge_s *const edge);
 
     // Stores the last known position of the mouse cursor when it was moved while

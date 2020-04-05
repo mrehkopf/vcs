@@ -44,28 +44,6 @@ void InteractibleNodeGraphNode::disconnect_all_edges(void)
     return;
 }
 
-void InteractibleNodeGraphNode::set_background_color(const QString colorName)
-{
-    // If we recognize this color name.
-    if (this->backgroundColorList.indexOf(colorName) >= 0)
-    {
-        this->backgroundColor = colorName;
-        this->update();
-    }
-
-    return;
-}
-
-const QList<QString>& InteractibleNodeGraphNode::background_color_list(void)
-{
-    return this->backgroundColorList;
-}
-
-const QString& InteractibleNodeGraphNode::current_background_color_name(void)
-{
-    return this->backgroundColor;
-}
-
 // Connect this edge to the given target edge. If this is an input node, the
 // connection will be made through the target edge, instead (assuming it's an
 // output edge).
