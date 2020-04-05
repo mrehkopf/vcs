@@ -685,7 +685,7 @@ void filter_widget_unique_count_s::create_widget()
     thresholdSpin->setValue(this->parameterArray[OFFS_THRESHOLD]);
 
     // In which corner to show the counter.
-    QLabel *cornerLabel = new QLabel("Corner:", frame);
+    QLabel *cornerLabel = new QLabel("Show in:", frame);
     QComboBox *cornerList = new QComboBox(frame);
     cornerList->addItem("Top left");
     cornerList->addItem("Top right");
