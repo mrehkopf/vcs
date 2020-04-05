@@ -372,7 +372,7 @@ void FilterGraphDialog::refresh_filter_graph(void)
 
 void FilterGraphDialog::set_filter_graph_source_filename(const std::string &sourceFilename)
 {
-    const QString baseFilename = QFileInfo(sourceFilename.c_str()).fileName();
+    const QString baseFilename = QFileInfo(sourceFilename.c_str()).baseName();
 
     this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg(baseFilename));
 
