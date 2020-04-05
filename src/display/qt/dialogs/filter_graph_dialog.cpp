@@ -4,7 +4,10 @@
 #include <QMenuBar>
 #include <QTimer>
 #include <functional>
-#include "display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h"
+#include "display/qt/dialogs/filter_graph/filter_graph_node.h"
+#include "display/qt/dialogs/filter_graph/filter_node.h"
+#include "display/qt/dialogs/filter_graph/input_gate_node.h"
+#include "display/qt/dialogs/filter_graph/output_gate_node.h"
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"

@@ -11,8 +11,8 @@
 #include <QString>
 #include <QDebug>
 #include <QFile>
-#include "display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h"
 #include "display/qt/widgets/filter_widgets.h"
+#include "display/qt/dialogs/filter_graph/filter_graph_node.h"
 #include "common/disk/file_streamer.h"
 #include "common/disk/file_reader.h"
 #include "common/disk/file_readers/file_reader_video_params.h"

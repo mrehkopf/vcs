@@ -8,7 +8,7 @@
 #ifndef FILE_READER_FILTER_GRAPH_H
 #define FILE_READER_FILTER_GRAPH_H
 
-#include "display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h"
+#include "display/qt/dialogs/filter_graph/filter_graph_node.h"
 #include "display/display.h"
 
 namespace file_reader

@@ -77,7 +77,6 @@ SOURCES += \
     src/display/qt/subclasses/QGraphicsScene_interactible_node_graph.cpp \
     src/display/qt/subclasses/QGraphicsView_interactible_node_graph_view.cpp \
     src/display/qt/dialogs/filter_graph_dialog.cpp \
-    src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.cpp \
     src/display/qt/dialogs/about_dialog.cpp \
     src/display/qt/dialogs/record_dialog.cpp \
     src/display/qt/dialogs/output_resolution_dialog.cpp \
@@ -101,7 +100,11 @@ SOURCES += \
     src/common/disk/file_writer.cpp \
     src/common/disk/file_writers/file_writer_video_params_version_a.cpp \
     src/common/disk/file_readers/file_reader_video_params_version_a.cpp \
-    src/common/disk/file_readers/file_reader_aliases_legacy_1_6_5.cpp
+    src/common/disk/file_readers/file_reader_aliases_legacy_1_6_5.cpp \
+    src/display/qt/dialogs/filter_graph/output_gate_node.cpp \
+    src/display/qt/dialogs/filter_graph/input_gate_node.cpp \
+    src/display/qt/dialogs/filter_graph/filter_node.cpp \
+    src/display/qt/dialogs/filter_graph/filter_graph_node.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -134,7 +137,6 @@ HEADERS += \
     src/display/qt/subclasses/QGraphicsScene_interactible_node_graph.h \
     src/display/qt/subclasses/QGraphicsView_interactible_node_graph_view.h \
     src/display/qt/dialogs/filter_graph_dialog.h \
-    src/display/qt/subclasses/InteractibleNodeGraphNode_filter_graph_nodes.h \
     src/display/qt/dialogs/about_dialog.h \
     src/display/qt/dialogs/record_dialog.h \
     src/display/qt/dialogs/output_resolution_dialog.h \
@@ -155,7 +157,11 @@ HEADERS += \
     src/common/disk/file_writers/file_writer_aliases.h \
     src/common/disk/file_readers/file_reader_video_params.h \
     src/common/disk/file_writers/file_writer_video_params.h \
-    src/common/disk/file_writer.h
+    src/common/disk/file_writer.h \
+    src/display/qt/dialogs/filter_graph/output_gate_node.h \
+    src/display/qt/dialogs/filter_graph/input_gate_node.h \
+    src/display/qt/dialogs/filter_graph/filter_node.h \
+    src/display/qt/dialogs/filter_graph/filter_graph_node.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \
