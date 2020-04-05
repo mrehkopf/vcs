@@ -124,9 +124,7 @@ void InteractibleNodeGraphView::wheelEvent(QWheelEvent *event)
             this->viewScale -= this->viewScaleStepSize;
         }
 
-        this->viewScale = std::max(this->minViewScale, std::min(this->maxViewScale, this->viewScale));
-
-        this->setTransform(QTransform(this->viewScale, 0, 0, this->viewScale, 0, 0));
+        this->set_scale(this->viewScale);
 
         // Don't let the event propagate any further. This prevents e.g. the wheel from
         // inadvertently engaging an underlying GUI element.
@@ -156,6 +154,15 @@ void InteractibleNodeGraphView::populate_edge_click_menu(node_edge_s *const edge
             edge->disconnect_from(outgoing);
         });
     }
+
+    return;
+}
+
+void InteractibleNodeGraphView::set_scale(double newScale)
+{
+    this->viewScale = std::max(this->minViewScale, std::min(this->maxViewScale, newScale));
+
+    this->setTransform(QTransform(this->viewScale, 0, 0, this->viewScale, 0, 0));
 
     return;
 }

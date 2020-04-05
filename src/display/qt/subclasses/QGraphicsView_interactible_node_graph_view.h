@@ -16,6 +16,8 @@ class InteractibleNodeGraphView : public QGraphicsView
 public:
     explicit InteractibleNodeGraphView(QWidget *parent = 0);
 
+    void set_scale(const double newScale);
+
 private:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -30,10 +32,11 @@ private:
     QMenu *edgeClickMenu = nullptr;
 
     // For zooming the view.
-    double viewScale = 1;
-    const double viewScaleStepSize = 0.2;
+    const double defaultViewScale = 1;
+    const double viewScaleStepSize = 0.15;
     const double minViewScale = this->viewScaleStepSize;
-    const double maxViewScale = 2;
+    const double maxViewScale = 1.95;
+    double viewScale = this->defaultViewScale;
 };
 
 #endif
