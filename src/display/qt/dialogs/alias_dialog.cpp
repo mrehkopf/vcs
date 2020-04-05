@@ -51,7 +51,7 @@ AliasDialog::AliasDialog(QWidget *parent) :
             fileMenu->addSeparator();
             fileMenu->addAction("Save aliases as...", this, SLOT(save_aliases()));
 
-            menubar->addMenu(fileMenu);
+            this->menubar->addMenu(fileMenu);
         }
 
         // Aliases...
@@ -62,7 +62,7 @@ AliasDialog::AliasDialog(QWidget *parent) :
             fileMenu->addSeparator();
             fileMenu->addAction("Remove selected", this, SLOT(remove_selected_aliases()));
 
-            menubar->addMenu(fileMenu);
+            this->menubar->addMenu(fileMenu);
         }
 
         this->layout()->setMenuBar(menubar);

@@ -41,22 +41,6 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             this->menubar->addMenu(fileMenu);
         }
 
-        // View...
-        {
-            QMenu *viewMenu = new QMenu("View", this);
-
-            // Scale.
-            {
-                QMenu *scaleMenu = new QMenu("Zoom level", viewMenu);
-
-                connect(scaleMenu->addAction("Reset"), &QAction::triggered, this, [=]{ ui->graphicsView->set_scale(1); });
-
-                viewMenu->addMenu(scaleMenu);
-            }
-
-            this->menubar->addMenu(viewMenu);
-        }
-
         // Add...
         {
             QMenu *addMenu = new QMenu("Add", this);
@@ -100,6 +84,22 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             }
 
             this->menubar->addMenu(addMenu);
+        }
+
+        // View...
+        {
+            QMenu *viewMenu = new QMenu("View", this);
+
+            // Scale.
+            {
+                QMenu *scaleMenu = new QMenu("Zoom level", viewMenu);
+
+                connect(scaleMenu->addAction("Reset"), &QAction::triggered, this, [=]{ ui->graphicsView->set_scale(1); });
+
+                viewMenu->addMenu(scaleMenu);
+            }
+
+            this->menubar->addMenu(viewMenu);
         }
 
         this->layout()->setMenuBar(menubar);

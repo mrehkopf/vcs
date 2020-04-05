@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QDateTime>
 #include <QPainter>
+#include <QMenuBar>
 #include <QDebug>
 #include <QMenu>
 #include "display/qt/dialogs/overlay_dialog.h"
@@ -38,65 +39,149 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
     // Set the GUI controls to their proper initial values.
     {
         ui->groupBox_overlayEnabled->setChecked(false);
-
-        // Create push button menus for inserting variables into the overlay.
-        {
-            // Adds an action into the given menu, such that when the action is
-            // triggered, the given output string is inserted into the overlay's text
-            // field.
-            auto add_action_to_menu = [=](QMenu *const menu,
-                                          const QString &actionText,
-                                          const QString &actionOutput)
-            {
-                connect(menu->addAction(actionText), &QAction::triggered, this,
-                        [=]{ this->insert_text_into_overlay_editor(actionOutput); });
-
-                return;
-            };
-
-            QMenu *capture = new QMenu(this);
-            {
-                QMenu *input = new QMenu("Input", this);
-                QMenu *output = new QMenu("Output", this);
-
-                add_action_to_menu(input, "Resolution", "$inputResolution");
-                add_action_to_menu(input, "Refresh rate (Hz)", "$inputHz");
-
-                add_action_to_menu(output, "Resolution", "$outputResolution");
-                add_action_to_menu(output, "Frame rate", "$outputFPS");
-                add_action_to_menu(output, "Frames dropped?", "$areFramesDropped");
-                add_action_to_menu(output, "Peak capture latency (ms)", "$peakLatencyMs");
-                add_action_to_menu(output, "Average capture latency (ms)", "$averageLatencyMs");
-
-                capture->addMenu(input);
-                capture->addMenu(output);
-                ui->pushButton_capture->setMenu(capture);
-            }
-
-            QMenu *system = new QMenu(this);
-            add_action_to_menu(system, "Time", "$systemTime");
-            add_action_to_menu(system, "Date", "$systemDate");
-            ui->pushButton_system->setMenu(system);
-
-            QMenu *formatting = new QMenu(this);
-            add_action_to_menu(formatting, "Bullet", "&bull;");
-            add_action_to_menu(formatting, "Line break", "<br>\n");
-            add_action_to_menu(formatting, "Force space", "&nbsp;");
-            formatting->addSeparator();
-            add_action_to_menu(formatting, "Bold", "<b></b>");
-            add_action_to_menu(formatting, "Italic", "<i></i>");
-            add_action_to_menu(formatting, "Underline", "<u></u>");
-            formatting->addSeparator();
-            add_action_to_menu(formatting, "Align right", "<div align=\"right\">Right</div>");
-            formatting->addSeparator();
-            formatting->addAction("Image...", this, SLOT(add_image_to_overlay()));
-            ui->pushButton_htmlFormat->setMenu(formatting);
-        }
     }
 
     // Connect the GUI controls to consequences for changing their values.
     {
-        connect(ui->groupBox_overlayEnabled, &QGroupBox::toggled, this, [=]{kd_update_output_window_title();});
+        connect(ui->groupBox_overlayEnabled, &QGroupBox::toggled, this, [=]
+        {
+            kd_update_output_window_title();
+            this->menubar->setEnabled(ui->groupBox_overlayEnabled->isChecked());
+        });
+    }
+
+    // Create the dialog's menu bar.
+    {
+        this->menubar = new QMenuBar(this);
+
+        this->menubar->setEnabled(ui->groupBox_overlayEnabled->isChecked());
+
+        // Variables...
+        {
+            QMenu *variablesMenu = new QMenu("Variables", this->menubar);
+
+            // Capture input.
+            {
+                QMenu *inputMenu = new QMenu("Input", this->menubar);
+
+                connect(inputMenu->addAction("Resolution"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("$inputResolution");
+                });
+
+                connect(inputMenu->addAction("Refresh rate (Hz)"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("$inputHz");
+                });
+
+                variablesMenu->addMenu(inputMenu);
+            }
+
+            // Capture output.
+            {
+                QMenu *outputMenu = new QMenu("Output", this->menubar);
+
+                connect(outputMenu->addAction("Resolution"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("$outputResolution");
+                });
+
+                connect(outputMenu->addAction("Frame rate (FPS)"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("$outputFPS");
+                });
+
+                connect(outputMenu->addAction("Frames dropped?"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("$areFramesDropped");
+                });
+
+                connect(outputMenu->addAction("Peak latency (ms)"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("$peakLatencyMs");
+                });
+
+                connect(outputMenu->addAction("Average latency (ms)"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("$averageLatencyMs");
+                });
+
+                variablesMenu->addMenu(outputMenu);
+            }
+
+            variablesMenu->addSeparator();
+
+            // System.
+            {
+                QMenu *systemMenu = new QMenu("System", this->menubar);
+
+                connect(systemMenu->addAction("Time"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("$systemTime");
+                });
+
+                connect(systemMenu->addAction("Date"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("$systemDate");
+                });
+
+                variablesMenu->addMenu(systemMenu);
+            }
+
+            this->menubar->addMenu(variablesMenu);
+        }
+
+        // Formatting...
+        {
+            QMenu *formattingMenu = new QMenu("Formatting", this->menubar);
+
+            connect(formattingMenu->addAction("Line break"), &QAction::triggered, this, [=]
+            {
+                this->insert_text_into_overlay_editor("<br>\n");
+            });
+
+            connect(formattingMenu->addAction("Image..."), &QAction::triggered, this, [=]
+            {
+                const QString filename = QFileDialog::getOpenFileName(this, "Select an image", "",
+                                                                      "Image files (*.png *.gif *.jpeg *.jpg *.bmp);;"
+                                                                      "All files(*.*)");
+
+                if (filename.isEmpty())
+                {
+                    return;
+                }
+
+                insert_text_into_overlay_editor("<img src=\"" + filename + "\">");
+            });
+
+            formattingMenu->addSeparator();
+
+            // Align.
+            {
+                QMenu *alignMenu = new QMenu("Align", this->menubar);
+
+                connect(alignMenu->addAction("Left"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("<div style=\"text-align: left;\"></div>");
+                });
+
+                connect(alignMenu->addAction("Right"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("<div style=\"text-align: right;\"></div>");
+                });
+
+                connect(alignMenu->addAction("Center"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("<div style=\"text-align: center;\"></div>");
+                });
+
+                formattingMenu->addMenu(alignMenu);
+            }
+
+            this->menubar->addMenu(formattingMenu);
+        }
+
+        this->layout()->setMenuBar(menubar);
     }
 
     // Restore persistent settings.

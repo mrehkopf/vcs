@@ -11,6 +11,7 @@
 #include <QDialog>
 
 class QMenu;
+class QMenuBar;
 
 namespace Ui {
 class OverlayDialog;
@@ -44,6 +45,8 @@ private:
 
     // Used to render the overlay's HTML into an image.
     QTextDocument overlayDocument;
+
+    QMenuBar *menubar = nullptr;
 };
 
 #endif
