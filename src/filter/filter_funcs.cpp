@@ -70,26 +70,27 @@ void filter_func_unique_count(FILTER_FUNC_PARAMS)
     // Draw the counter into the frame.
     {
         std::string counterString = std::to_string(uniqueFramesPerSecond);
+        cv::Size textSize = cv::getTextSize(counterString, cv::FONT_HERSHEY_DUPLEX, 1, 2, nullptr);
 
-        const auto cornerPos = [corner, r, counterString]()->cv::Point
+        const auto cornerPos = [&]()->cv::Point
         {
             switch (corner)
             {
                 // Top right.
-                case 1: return cv::Point(r->w - (counterString.length() * 24), 24);
+                case 1: return cv::Point((r->w - textSize.width), (textSize.height + 3));
 
                 // Bottom right.
-                case 2: return cv::Point(r->w - (counterString.length() * 24), r->h - 12);
+                case 2: return cv::Point((r->w - textSize.width), (r->h - 5));
 
                 // Bottom left.
-                case 3: return cv::Point(0, r->h - 12);
+                case 3: return cv::Point(0, (r->h - 5));
 
-                default: return cv::Point(0, 24);
+                default: return cv::Point(0, (textSize.height + 3));
             }
         }();
 
         cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
-        cv::putText(output, counterString, cornerPos, cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 230, 255), 2);
+        cv::putText(output, counterString, cornerPos, cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 255, 255), 2, cv::LINE_AA);
     }
 #endif
 
