@@ -1,3 +1,11 @@
+/*
+ * 2018 Tarpeeksi Hyvae Soft
+ *
+ * Software: VCS
+ *
+ */
+
+#include <algorithm>
 #include <QGraphicsProxyWidget>
 #include <QApplication>
 #include <QMouseEvent>
@@ -15,7 +23,6 @@ InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphic
 {
     // Create and set up menus.
     {
-        this->nodeClickMenu = new QMenu(this);
         this->edgeClickMenu = new QMenu(this);
     }
 
@@ -110,12 +117,16 @@ void InteractibleNodeGraphView::wheelEvent(QWheelEvent *event)
     {
         if (event->angleDelta().y() > 0)
         {
-            this->scale(1.2, 1.2);
+            this->viewScale += this->viewScaleStepSize;
         }
         else
         {
-            this->scale(0.8, 0.8);
+            this->viewScale -= this->viewScaleStepSize;
         }
+
+        this->viewScale = std::max(this->minViewScale, std::min(this->maxViewScale, this->viewScale));
+
+        this->setTransform(QTransform(this->viewScale, 0, 0, this->viewScale, 0, 0));
 
         // Don't let the event propagate any further. This prevents e.g. the wheel from
         // inadvertently engaging an underlying GUI element.

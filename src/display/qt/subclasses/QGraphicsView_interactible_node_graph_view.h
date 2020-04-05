@@ -27,8 +27,13 @@ private:
     // a button was simultaneously held down.
     QPointF lastKnownMouseMiddleDragPos;
 
-    QMenu *nodeClickMenu = nullptr;
     QMenu *edgeClickMenu = nullptr;
+
+    // For zooming the view.
+    double viewScale = 1;
+    const double viewScaleStepSize = 0.2;
+    const double minViewScale = this->viewScaleStepSize;
+    const double maxViewScale = 2;
 };
 
 #endif

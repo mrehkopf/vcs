@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>400</height>
+    <height>490</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,27 +22,9 @@
      <property name="checkable">
       <bool>true</bool>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QWidget" name="widget_graphicsViewContainer" native="true">
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="InteractibleNodeGraphView" name="graphicsView"/>
-         </item>
-        </layout>
-       </widget>
+       <widget class="InteractibleNodeGraphView" name="graphicsView"/>
       </item>
      </layout>
     </widget>
