@@ -120,6 +120,8 @@ void InteractibleNodeGraph::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void InteractibleNodeGraph::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
+    QGraphicsScene::mouseMoveEvent(event);
+
     // Assume that if the user is holding the mouse button down while moving
     // the cursor, they're dragging one of the items in the scene.
     if (QApplication::mouseButtons() == Qt::LeftButton)
@@ -128,8 +130,6 @@ void InteractibleNodeGraph::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
         this->connectionEvent.mousePos = event->scenePos();
     }
-
-    QGraphicsScene::mouseMoveEvent(event);
 
     return;
 }
