@@ -953,7 +953,7 @@ bool capture_api_rgbeasy_s::set_input_channel(const unsigned idx)
         goto fail;
     }
 
-    kpropagate_news_of_input_channel_changed();
+    kpropagate_news_of_changed_input_channel();
 
     return true;
 

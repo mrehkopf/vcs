@@ -76,7 +76,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
                 ui->comboBox_recordingEncoderPreset->setVisible(false);
                 ui->lineEdit_recordingEncoderArguments->setVisible(false);
                 ui->spinBox_recordingEncoderCRF->setVisible(false);
-                ui->checkBox_recordingEncoderZeroLatency->setVisible(false);
+                ui->comboBox_recordingEncoderZeroLatency->setVisible(false);
 
                 ui->label_22->setVisible(false);
                 ui->label_15->setVisible(false);
@@ -96,7 +96,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
                 ui->groupBox_recordingSettings->layout()->removeWidget(ui->comboBox_recordingEncoderPreset);
                 ui->groupBox_recordingSettings->layout()->removeWidget(ui->lineEdit_recordingEncoderArguments);
                 ui->groupBox_recordingSettings->layout()->removeWidget(ui->spinBox_recordingEncoderCRF);
-                ui->groupBox_recordingSettings->layout()->removeWidget(ui->checkBox_recordingEncoderZeroLatency);
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->comboBox_recordingEncoderZeroLatency);
             #endif
         }
     }
@@ -153,7 +153,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
     // Restore persistent settings.
     {
         ui->spinBox_recordingFramerate->setValue(kpers_value_of(INI_GROUP_RECORDING, "frame_rate", 60).toUInt());
-        ui->checkBox_recordingLinearFrameInsertion->setChecked(kpers_value_of(INI_GROUP_RECORDING, "linear_sampling", true).toBool());
+        ui->comboBox_recordingLinearFrameInsertion->setCurrentIndex(kpers_value_of(INI_GROUP_RECORDING, "linear_sampling", true).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "record", this->size()).toSize());
 
         #if _WIN32
@@ -167,7 +167,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
                                .by_string(kpers_value_of(INI_GROUP_RECORDING, "preset", "Superfast").toString());
 
             ui->spinBox_recordingEncoderCRF->setValue(kpers_value_of(INI_GROUP_RECORDING, "crf", 1).toUInt());
-            ui->checkBox_recordingEncoderZeroLatency->setChecked(kpers_value_of(INI_GROUP_RECORDING, "zero_latency", false).toBool());
+            ui->comboBox_recordingEncoderZeroLatency->setCurrentIndex(kpers_value_of(INI_GROUP_RECORDING, "zero_latency", false).toBool());
             ui->lineEdit_recordingEncoderArguments->setText(kpers_value_of(INI_GROUP_RECORDING, "command_line", "").toString());
         #endif
     }
@@ -183,7 +183,7 @@ RecordDialog::~RecordDialog()
     // Save persistent settings.
     {
         kpers_set_value(INI_GROUP_RECORDING, "frame_rate", ui->spinBox_recordingFramerate->value());
-        kpers_set_value(INI_GROUP_RECORDING, "linear_sampling", ui->checkBox_recordingLinearFrameInsertion->isChecked());
+        kpers_set_value(INI_GROUP_RECORDING, "linear_sampling", bool(ui->comboBox_recordingLinearFrameInsertion->currentIndex()));
         kpers_set_value(INI_GROUP_GEOMETRY, "record", this->size());
 
         #if _WIN32
@@ -192,7 +192,7 @@ RecordDialog::~RecordDialog()
             kpers_set_value(INI_GROUP_RECORDING, "pixel_format", ui->comboBox_recordingEncoderPixelFormat->currentText());
             kpers_set_value(INI_GROUP_RECORDING, "preset", ui->comboBox_recordingEncoderPreset->currentText());
             kpers_set_value(INI_GROUP_RECORDING, "crf", ui->spinBox_recordingEncoderCRF->value());
-            kpers_set_value(INI_GROUP_RECORDING, "zero_latency", ui->checkBox_recordingEncoderZeroLatency->isChecked());
+            kpers_set_value(INI_GROUP_RECORDING, "zero_latency", ui->comboBox_recordingEncoderZeroLatency->currentIndex());
             kpers_set_value(INI_GROUP_RECORDING, "command_line", ui->lineEdit_recordingEncoderArguments->text());
         #endif
     }
@@ -363,7 +363,7 @@ bool RecordDialog::apply_x264_registry_settings(void)
         !set_x264_registry_string(reg, "extra_cmdline", commandLineString.toStdString().c_str()) ||
         !set_x264_registry_value(reg, "output_mode", 0) || // Always output via the VFW interface.
         !set_x264_registry_value(reg, "colorspace", colorSpace) ||
-        !set_x264_registry_value(reg, "zerolatency", ui->checkBox_recordingEncoderZeroLatency->isChecked()) ||
+        !set_x264_registry_value(reg, "zerolatency", ui->comboBox_recordingEncoderZeroLatency->currentIndex()) ||
         !set_x264_registry_value(reg, "ratefactor", (ui->spinBox_recordingEncoderCRF->value() * 10)))
     {
         return false;
@@ -400,7 +400,7 @@ void RecordDialog::set_recording_enabled(const bool enabled)
         krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
                                 videoResolution.w, videoResolution.h,
                                 ui->spinBox_recordingFramerate->value(),
-                                ui->checkBox_recordingLinearFrameInsertion->isChecked());
+                                ui->comboBox_recordingLinearFrameInsertion->currentIndex());
     }
 
     kd_update_output_window_title();
