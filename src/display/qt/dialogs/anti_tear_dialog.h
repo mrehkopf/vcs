@@ -9,6 +9,8 @@
 
 #include <QDialog>
 
+class QMenuBar;
+
 namespace Ui {
 class AntiTearDialog;
 }
@@ -24,10 +26,22 @@ public:
 
     bool is_anti_tear_enabled(void);
 
-    void toggle_anti_tear(void);
+    void set_anti_tear_enabled(const bool enabled);
+
+signals:
+    // Emitted when the anti-tear's enabled status is toggled.
+    void anti_tear_enabled(void);
+    void anti_tear_disabled(void);
 
 private:
+    void update_visualization_options(void);
+
     Ui::AntiTearDialog *ui;
+
+    // Whether anti-tearing is enabled.
+    bool isEnabled = false;
+
+    QMenuBar *menubar = nullptr;
 };
 
 #endif
