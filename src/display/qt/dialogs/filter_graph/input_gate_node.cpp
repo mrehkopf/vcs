@@ -34,7 +34,7 @@ void InputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         {
             painter->setPen(QPen(QColor("black"), 1, Qt::SolidLine));
             painter->setBrush(QBrush(QColor(90, 90, 90, (option->state & QStyle::State_Selected)? 175 : 125)));
-            painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);
+            painter->drawRoundedRect(0, 0, this->width, this->height, 1, 1);
         }
 
         // Connection points (edges).

@@ -20,7 +20,7 @@ linux {
 
 win32 {
     DEFINES += CAPTURE_API_RGBEASY
-    
+
     INCLUDEPATH += "C:/Program Files (x86)/Vision RGB-PRO/SDK/RGBEASY/INCLUDE"
     LIBS += "C:/Program Files (x86)/Vision RGB-PRO/SDK/RGBEASY/LIB/RGBEASY.lib"
 

@@ -54,7 +54,7 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
                 painter->setBrush(QBrush(backgroundColor, Qt::Dense6Pattern));
             }
 
-            painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);
+            painter->drawRoundedRect(0, 0, this->width, this->height, 1, 1);
         }
 
         // Connection points (edges).

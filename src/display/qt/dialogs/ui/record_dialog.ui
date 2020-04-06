@@ -41,9 +41,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-63</y>
+        <y>0</y>
         <width>366</width>
-        <height>671</height>
+        <height>659</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -143,7 +143,7 @@
           </sizepolicy>
          </property>
          <property name="title">
-          <string>Recorder status</string>
+          <string>Status</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>

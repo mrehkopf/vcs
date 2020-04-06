@@ -63,9 +63,9 @@ SignalDialog::SignalDialog(QWidget *parent) :
         // the vertical order in which the table's parameters are shown.
         {
             ui->tableWidget_propertyTable->modify_property("Input channel", "");
-            ui->tableWidget_propertyTable->modify_property("Resolution", "");
-            ui->tableWidget_propertyTable->modify_property("Refresh rate", "");
-            ui->tableWidget_propertyTable->modify_property("Uptime", "00:00:00");
+            ui->tableWidget_propertyTable->modify_property("Resolution", "No signal");
+            ui->tableWidget_propertyTable->modify_property("Refresh rate", "No signal");
+            ui->tableWidget_propertyTable->modify_property("Uptime", "No signal");
         }
 
         // Start timers to keep track of the video mode's uptime.
@@ -81,7 +81,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
 
                 if (kc_capture_api().has_no_signal())
                 {
-                    ui->tableWidget_propertyTable->modify_property("Uptime", "00:00:00");
+                    ui->tableWidget_propertyTable->modify_property("Uptime", "No signal");
                 }
                 else
                 {

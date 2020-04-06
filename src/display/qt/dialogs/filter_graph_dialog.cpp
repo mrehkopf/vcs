@@ -57,9 +57,9 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             filterGraphMenu->addSeparator();
             connect(filterGraphMenu->addAction("New graph"), &QAction::triggered, this, [=]{this->reset_graph();});
             filterGraphMenu->addSeparator();
-            connect(filterGraphMenu->addAction("Save graph..."), &QAction::triggered, this, [=]{this->save_filters();});
-            filterGraphMenu->addSeparator();
             connect(filterGraphMenu->addAction("Load graph..."), &QAction::triggered, this, [=]{this->load_filters();});
+            filterGraphMenu->addSeparator();
+            connect(filterGraphMenu->addAction("Save graph..."), &QAction::triggered, this, [=]{this->save_filters();});
 
             this->menubar->addMenu(filterGraphMenu);
         }
