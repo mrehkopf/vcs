@@ -34,12 +34,22 @@ public:
 
     void set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);
 
-    void toggle_filtering(void);
+    void set_filter_graph_enabled(const bool enabled);
+
+    bool is_filter_graph_enabled(void);
+
+signals:
+    // Emitted when the filter graph's enabled status is toggled.
+    void filter_graph_enabled(void);
+    void filter_graph_disabled(void);
 
 private:
     void reset_graph(const bool autoAccept = false);
     void save_filters(void);
     void load_filters(void);
+
+    // Whether the filter graph is enabled.
+    bool isEnabled = false;
 
     Ui::FilterGraphDialog *ui;
     QMenuBar *menubar = nullptr;

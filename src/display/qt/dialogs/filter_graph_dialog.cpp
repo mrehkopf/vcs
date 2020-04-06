@@ -29,16 +29,39 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
     {
         this->menubar = new QMenuBar(this);
 
-        // File...
+        // Filter graph...
         {
-            QMenu *fileMenu = new QMenu("File", this);
+            QMenu *filterGraphMenu = new QMenu("Filter graph", this->menubar);
 
-            connect(fileMenu->addAction("New graph"), &QAction::triggered, this, [=]{this->reset_graph();});
-            connect(fileMenu->addAction("Load graph..."), &QAction::triggered, this, [=]{this->load_filters();});
-            fileMenu->addSeparator();
-            connect(fileMenu->addAction("Save graph..."), &QAction::triggered, this, [=]{this->save_filters();});
+            QAction *enable = new QAction("Enabled", this->menubar);
+            enable->setCheckable(true);
+            enable->setChecked(this->isEnabled);
 
-            this->menubar->addMenu(fileMenu);
+            connect(this, &FilterGraphDialog::filter_graph_enabled, this, [=]
+            {
+                enable->setChecked(true);
+            });
+
+            connect(this, &FilterGraphDialog::filter_graph_disabled, this, [=]
+            {
+                enable->setChecked(false);
+            });
+
+            connect(enable, &QAction::triggered, this, [=]
+            {
+                this->set_filter_graph_enabled(!this->isEnabled);
+            });
+
+            filterGraphMenu->addAction(enable);
+
+            filterGraphMenu->addSeparator();
+            connect(filterGraphMenu->addAction("New graph"), &QAction::triggered, this, [=]{this->reset_graph();});
+            filterGraphMenu->addSeparator();
+            connect(filterGraphMenu->addAction("Save graph..."), &QAction::triggered, this, [=]{this->save_filters();});
+            filterGraphMenu->addSeparator();
+            connect(filterGraphMenu->addAction("Load graph..."), &QAction::triggered, this, [=]{this->load_filters();});
+
+            this->menubar->addMenu(filterGraphMenu);
         }
 
         // Add...
@@ -105,12 +128,6 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         this->layout()->setMenuBar(menubar);
     }
 
-    // Initialize the GUI controls to their default values.
-    {
-        ui->groupBox_filterGraphEnabled->setChecked(false);
-        this->menubar->setEnabled(false); // Enabled if filtering is enabled.
-    }
-
     // Create and configure the graphics scene.
     {
         this->graphicsScene = new InteractibleNodeGraph(this);
@@ -141,20 +158,9 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         });
     }
 
-    // Connect the GUI controls to consequences for changing their values.
-    {
-        connect(ui->groupBox_filterGraphEnabled, &QGroupBox::toggled, this,
-                [=](const bool isEnabled)
-                {
-                    kf_set_filtering_enabled(isEnabled);
-                    kd_update_output_window_title();
-                    this->menubar->setEnabled(isEnabled);
-                });
-    }
-
     // Restore persistent settings.
     {
-        ui->groupBox_filterGraphEnabled->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", kf_is_filtering_enabled()).toBool());
+        this->set_filter_graph_enabled(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", kf_is_filtering_enabled()).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "filter_graph", this->size()).toSize());
     }
 
@@ -167,7 +173,7 @@ FilterGraphDialog::~FilterGraphDialog()
 {
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", ui->groupBox_filterGraphEnabled->isChecked());
+        kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", this->isEnabled);
         kpers_set_value(INI_GROUP_GEOMETRY, "filter_graph", this->size());
     }
 
@@ -398,16 +404,35 @@ void FilterGraphDialog::set_filter_graph_options(const std::vector<filter_graph_
     return;
 }
 
+void FilterGraphDialog::set_filter_graph_enabled(const bool enabled)
+{
+    this->isEnabled = enabled;
+
+    if (!this->isEnabled)
+    {
+        emit this->filter_graph_disabled();
+    }
+    else
+    {
+        emit this->filter_graph_enabled();
+    }
+
+    kf_set_filtering_enabled(this->isEnabled);
+
+    kd_update_output_window_title();
+
+    return;
+}
+
+bool FilterGraphDialog::is_filter_graph_enabled(void)
+{
+    DEBUG(("WSD"));
+    return this->isEnabled;
+}
+
 
 FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const filter_type_enum_e &filterType,
                                                           const u8 *const initialParameterValues)
 {
     return add_filter_node(filterType, initialParameterValues);
-}
-
-void FilterGraphDialog::toggle_filtering(void)
-{
-    ui->groupBox_filterGraphEnabled->setChecked(!ui->groupBox_filterGraphEnabled->isChecked());
-
-    return;
 }
