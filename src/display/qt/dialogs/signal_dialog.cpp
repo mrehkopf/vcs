@@ -59,8 +59,10 @@ SignalDialog::SignalDialog(QWidget *parent) :
 
     // Set the GUI controls to their proper initial values.
     {
-        // Initialize the table of information.
+        // Initialize the table of information. Note that this also sets
+        // the vertical order in which the table's parameters are shown.
         {
+            ui->tableWidget_propertyTable->modify_property("Input channel", "");
             ui->tableWidget_propertyTable->modify_property("Resolution", "");
             ui->tableWidget_propertyTable->modify_property("Refresh rate", "");
             ui->tableWidget_propertyTable->modify_property("Uptime", "00:00:00");
@@ -94,9 +96,9 @@ SignalDialog::SignalDialog(QWidget *parent) :
         {
             this->menubar = new QMenuBar(this);
 
-            // File...
+            // Signal...
             {
-                QMenu *fileMenu = new QMenu("File", this);
+                QMenu *fileMenu = new QMenu("Signal", this);
 
                 fileMenu->addAction("Load parameters...", this, SLOT(load_settings()));
                 fileMenu->addSeparator();
@@ -353,6 +355,10 @@ void SignalDialog::set_controls_enabled(const bool state)
 
 void SignalDialog::update_information_table(const bool isReceivingSignal)
 {
+    const auto inputChannelIdx = (kc_capture_api().get_input_channel_idx() + 1);
+
+    ui->tableWidget_propertyTable->modify_property("Input channel", QString::number(inputChannelIdx));
+
     if (isReceivingSignal)
     {
         const resolution_s resolution = kc_capture_api().get_resolution();

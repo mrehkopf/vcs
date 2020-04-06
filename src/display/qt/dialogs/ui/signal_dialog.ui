@@ -14,8 +14,20 @@
    <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>6</number>
+   </property>
+   <property name="topMargin">
+    <number>6</number>
+   </property>
    <property name="rightMargin">
     <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>6</number>
    </property>
    <item>
     <widget class="QScrollArea" name="scrollArea">
@@ -30,13 +42,13 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>359</width>
-        <height>699</height>
+        <width>362</width>
+        <height>687</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
-        <number>6</number>
+        <number>0</number>
        </property>
        <property name="leftMargin">
         <number>0</number>
@@ -45,7 +57,7 @@
         <number>0</number>
        </property>
        <property name="rightMargin">
-        <number>9</number>
+        <number>6</number>
        </property>
        <property name="bottomMargin">
         <number>0</number>
@@ -59,7 +71,13 @@
           </sizepolicy>
          </property>
          <property name="title">
-          <string>Signal information</string>
+          <string>Information</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
@@ -71,7 +89,13 @@
        <item>
         <widget class="QGroupBox" name="groupBox_videoAdjust">
          <property name="title">
-          <string>Signal parameters</string>
+          <string>Parameters</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <item row="11" column="0">
@@ -808,23 +832,6 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item>
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_notice">
-        <property name="text">
-         <string>These controls influence how the capture device interprets the captured signal.</string>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>

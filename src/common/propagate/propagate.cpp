@@ -63,6 +63,13 @@ void kpropagate_news_of_new_capture_video_mode(void)
     return;
 }
 
+void kpropagate_news_of_changed_input_channel(void)
+{
+    kd_update_capture_signal_info();
+
+    return;
+}
+
 // Recording of output frames into a video file has begun. This message should be
 // propagated only when the recording has started anew; so e.g. resuming from a
 // paused state should not propagate this message.

@@ -32,7 +32,8 @@ struct capture_api_virtual_s : public capture_api_s
     unsigned get_refresh_rate(void) const override               { return 0; }
     double get_refresh_rate_exact(void) const override           { return 0; }
     uint get_missed_frames_count(void) const override            { return 0; }
-    uint get_input_channel_idx(void) const override              { return 0; }
+    uint get_input_channel_idx(void) const override              { return this->inputChannelIdx; }
+    bool set_input_channel(const unsigned idx) override;
     uint get_color_depth(void) const override                    { return (unsigned)this->defaultResolution.bpp; }
     bool is_capturing(void) const override                       { return false; }
     bool has_invalid_signal(void) const override                 { return false; }
@@ -52,6 +53,8 @@ private:
     void animate_frame_buffer(void);
 
     captured_frame_s frameBuffer;
+
+    unsigned inputChannelIdx = 0;
 };
 
 #endif

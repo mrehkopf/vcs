@@ -8,6 +8,7 @@
 #ifdef CAPTURE_API_VIRTUAL
 
 #include <chrono>
+#include "common/propagate/propagate.h"
 #include "capture/capture_api_virtual.h"
 
 bool capture_api_virtual_s::initialize(void)
@@ -22,6 +23,15 @@ bool capture_api_virtual_s::initialize(void)
 bool capture_api_virtual_s::release(void)
 {
     this->frameBuffer.pixels.release_memory();
+
+    return true;
+}
+
+bool capture_api_virtual_s::set_input_channel(const unsigned idx)
+{
+    this->inputChannelIdx = idx;
+
+    kpropagate_news_of_changed_input_channel();
 
     return true;
 }

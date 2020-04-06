@@ -14,6 +14,7 @@ struct resolution_s;
 void kpropagate_news_of_new_capture_video_mode(void);
 void kpropagate_news_of_invalid_capture_signal(void);
 void kpropagate_news_of_gained_capture_signal(void);
+void kpropagate_news_of_changed_input_channel(void);
 void kpropagate_news_of_lost_capture_signal(void);
 void kpropagate_news_of_unrecoverable_error(void);
 void kpropagate_news_of_new_captured_frame(void);
