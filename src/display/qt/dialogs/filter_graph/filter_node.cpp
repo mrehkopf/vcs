@@ -51,7 +51,7 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
             if (!this->isEnabled)
             {
                 painter->setPen(QPen(QColor("black"), 1, Qt::DashLine));
-                painter->setBrush(QBrush(backgroundColor, Qt::BDiagPattern));
+                painter->setBrush(QBrush(backgroundColor, Qt::Dense6Pattern));
             }
 
             painter->drawRoundedRect(0, 0, this->width, this->height, 2, 2);
@@ -60,7 +60,7 @@ void FilterNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         // Connection points (edges).
         {
             painter->setPen(QColor("white"));
-            painter->setBrush(QBrush(QColor("lightgray")));
+            painter->setBrush(QBrush(QColor("white")));
 
             for (const auto &edge: this->edges)
             {

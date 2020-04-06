@@ -40,7 +40,7 @@ void OutputGateNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
         // Connection points (edges).
         {
             painter->setPen(QColor("white"));
-            painter->setBrush(QBrush(QColor("lightgray")));
+            painter->setBrush(QBrush(QColor("white")));
 
             for (const auto &edge: this->edges)
             {
