@@ -36,25 +36,37 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
-    // Set the GUI controls to their proper initial values.
-    {
-        ui->groupBox_overlayEnabled->setChecked(false);
-    }
-
-    // Connect the GUI controls to consequences for changing their values.
-    {
-        connect(ui->groupBox_overlayEnabled, &QGroupBox::toggled, this, [=]
-        {
-            kd_update_output_window_title();
-            this->menubar->setEnabled(ui->groupBox_overlayEnabled->isChecked());
-        });
-    }
-
     // Create the dialog's menu bar.
     {
         this->menubar = new QMenuBar(this);
 
-        this->menubar->setEnabled(ui->groupBox_overlayEnabled->isChecked());
+        // Overlay...
+        {
+            QMenu *overlayMenu = new QMenu("Overlay", this->menubar);
+
+            QAction *enable = new QAction("Enabled", this->menubar);
+            enable->setCheckable(true);
+            enable->setChecked(this->isEnabled);
+
+            connect(this, &OverlayDialog::overlay_enabled, this, [=]
+            {
+                enable->setChecked(true);
+            });
+
+            connect(this, &OverlayDialog::overlay_disabled, this, [=]
+            {
+                enable->setChecked(false);
+            });
+
+            connect(enable, &QAction::triggered, this, [=]
+            {
+                this->set_overlay_enabled(!this->isEnabled);
+            });
+
+            overlayMenu->addAction(enable);
+
+            this->menubar->addMenu(overlayMenu);
+        }
 
         // Variables...
         {
@@ -187,7 +199,7 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
     // Restore persistent settings.
     {
         ui->plainTextEdit->setPlainText(kpers_value_of(INI_GROUP_OVERLAY, "content", "").toString());
-        ui->groupBox_overlayEnabled->setChecked(kpers_value_of(INI_GROUP_OVERLAY, "enabled", false).toBool());
+        this->set_overlay_enabled(kpers_value_of(INI_GROUP_OVERLAY, "enabled", false).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "overlay", this->size()).toSize());
     }
 
@@ -198,7 +210,7 @@ OverlayDialog::~OverlayDialog()
 {
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_OVERLAY, "enabled", ui->groupBox_overlayEnabled->isChecked());
+        kpers_set_value(INI_GROUP_OVERLAY, "enabled", this->isEnabled);
         kpers_set_value(INI_GROUP_OVERLAY, "content", ui->plainTextEdit->toPlainText());
         kpers_set_value(INI_GROUP_GEOMETRY, "overlay", this->size());
     }
@@ -212,6 +224,24 @@ OverlayDialog::~OverlayDialog()
 void OverlayDialog::set_overlay_max_width(const uint width)
 {
     overlayDocument.setTextWidth(width);
+
+    return;
+}
+
+void OverlayDialog::set_overlay_enabled(const bool enabled)
+{
+    this->isEnabled = enabled;
+
+    if (!this->isEnabled)
+    {
+        emit this->overlay_disabled();
+    }
+    else
+    {
+        emit this->overlay_enabled();
+    }
+
+    kd_update_output_window_title();
 
     return;
 }
@@ -263,33 +293,7 @@ QString OverlayDialog::parsed_overlay_string(void)
     return ("<font style=\"font-size: large; color: white; background-color: black;\">" + parsed + "</font>");
 }
 
-// A convenience function to query the user for the name of an image file, and
-// then to insert into the overlay editor's text field corresponding HTML code
-// to display that image in the overlay.
-void OverlayDialog::add_image_to_overlay(void)
-{
-    QString filename = QFileDialog::getOpenFileName(this, "Select an image", "",
-                                                    "Image files (*.png *.gif *.jpeg *.jpg *.bmp);;"
-                                                    "All files(*.*)");
-
-    if (filename.isEmpty())
-    {
-        return;
-    }
-
-    insert_text_into_overlay_editor("<img src=\"" + filename + "\">");
-
-    return;
-}
-
 bool OverlayDialog::is_overlay_enabled(void)
 {
-    return ui->groupBox_overlayEnabled->isChecked();
-}
-
-void OverlayDialog::toggle_overlay(void)
-{
-    ui->groupBox_overlayEnabled->setChecked(!ui->groupBox_overlayEnabled->isChecked());
-
-    return;
+    return this->isEnabled;
 }

@@ -29,12 +29,14 @@ public:
 
     void set_overlay_max_width(const uint width);
 
+    void set_overlay_enabled(const bool enabled);
+
     bool is_overlay_enabled(void);
 
-    void toggle_overlay(void);
-
-private slots:
-    void add_image_to_overlay(void);
+signals:
+    // Emitted when the overlay's enabled status is toggled.
+    void overlay_enabled(void);
+    void overlay_disabled(void);
 
 private:
     void insert_text_into_overlay_editor(const QString &text);
@@ -42,6 +44,9 @@ private:
     QString parsed_overlay_string(void);
 
     Ui::OverlayDialog *ui;
+
+    // Whether the overlay is enabled.
+    bool isEnabled = false;
 
     // Used to render the overlay's HTML into an image.
     QTextDocument overlayDocument;
