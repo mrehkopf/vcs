@@ -1101,7 +1101,7 @@ void MainWindow::set_keyboard_shortcuts(void)
     connect(keyboardShortcut("ctrl+shift+f"), &QShortcut::activated, [=]{this->filterGraphDlg->set_filter_graph_enabled(!this->filterGraphDlg->is_filter_graph_enabled());});
     connect(keyboardShortcut("ctrl+shift+l"), &QShortcut::activated, [=]{this->overlayDlg->set_overlay_enabled(!this->overlayDlg->is_overlay_enabled());});
     connect(keyboardShortcut("ctrl+shift+a"), &QShortcut::activated, [=]{this->antitearDlg->toggle_anti_tear();});
-    connect(keyboardShortcut("ctrl+shift+r"), &QShortcut::activated, [=]{this->recordDlg->toggle_recording();});
+    connect(keyboardShortcut("ctrl+shift+r"), &QShortcut::activated, [=]{this->recordDlg->set_recording_enabled(!this->recordDlg->is_recording_enabled());});
 
     return;
 }

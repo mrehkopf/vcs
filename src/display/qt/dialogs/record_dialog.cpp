@@ -8,6 +8,7 @@
 
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QMenuBar>
 #include "display/qt/dialogs/record_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
@@ -64,7 +65,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
             ui->comboBox_recordingEncoding->addItem(encoderName);
         }
 
-        // Disable recording settings not available in Linux. (To customize them,
+        // Disable recording settings not available under Linux. (To customize them,
         // you'll need to edit the relevant OpenCV source code and recompile it;
         // e.g. https://www.researchgate.net/post/Is_it_possible_to_set_the_lossfree_option_for_the_X264_codec_in_OpenCV).
         {
@@ -100,29 +101,43 @@ RecordDialog::RecordDialog(QDialog *parent) :
         }
     }
 
+    // Create the dialog's menu bar.
+    {
+        this->menubar = new QMenuBar(this);
+
+        // Record...
+        {
+            QMenu *recordMenu = new QMenu("Record", this->menubar);
+
+            QAction *enable = new QAction("Enabled", this->menubar);
+            enable->setCheckable(true);
+            enable->setChecked(this->isEnabled);
+
+            connect(this, &RecordDialog::recording_enabled, this, [=]
+            {
+                enable->setChecked(true);
+            });
+
+            connect(this, &RecordDialog::recording_disabled, this, [=]
+            {
+                enable->setChecked(false);
+            });
+
+            connect(enable, &QAction::triggered, this, [=]
+            {
+                this->set_recording_enabled(!this->isEnabled);
+            });
+
+            recordMenu->addAction(enable);
+
+            this->menubar->addMenu(recordMenu);
+        }
+
+        this->layout()->setMenuBar(menubar);
+    }
+
     // Connect the GUI controls to consequences for changing their values.
     {
-        connect(ui->pushButton_recordingStart, &QPushButton::clicked, this, [this]
-        {
-            if (!apply_x264_registry_settings()) return;
-
-            // Remove the existing file, if any. Without this, the file size reported
-            // in VCS's GUI during recording may be inaccurate on some platforms.
-            QFile(ui->lineEdit_recordingFilename->text()).remove();
-
-            const resolution_s videoResolution = ks_output_resolution();
-
-            krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
-                                    videoResolution.w, videoResolution.h,
-                                    ui->spinBox_recordingFramerate->value(),
-                                    ui->checkBox_recordingLinearFrameInsertion->isChecked());
-        });
-
-        connect(ui->pushButton_recordingStop, &QPushButton::clicked, this, [this]
-        {
-            krecord_stop_recording();
-        });
-
         connect(ui->pushButton_recordingSelectFilename, &QPushButton::clicked, this, [this]
         {
             QString filename = QFileDialog::getSaveFileName(this,
@@ -196,16 +211,12 @@ void RecordDialog::set_recording_controls_enabled(const bool areEnabled)
 {
     if (areEnabled)
     {
-        ui->pushButton_recordingStart->setEnabled(false);
-        ui->pushButton_recordingStop->setEnabled(true);
         ui->groupBox_recordingSettings->setEnabled(false);
         ui->lineEdit_recordingFilename->setEnabled(false);
         ui->pushButton_recordingSelectFilename->setEnabled(false);
     }
     else
     {
-        ui->pushButton_recordingStart->setEnabled(true);
-        ui->pushButton_recordingStop->setEnabled(false);
         ui->groupBox_recordingSettings->setEnabled(true);
         ui->lineEdit_recordingFilename->setEnabled(true);
         ui->pushButton_recordingSelectFilename->setEnabled(true);
@@ -364,16 +375,40 @@ bool RecordDialog::apply_x264_registry_settings(void)
     return true;
 }
 
-void RecordDialog::toggle_recording(void)
+void RecordDialog::set_recording_enabled(const bool enabled)
 {
-    if (krecord_is_recording())
+    this->isEnabled = enabled;
+
+    if (!this->isEnabled)
     {
-        ui->pushButton_recordingStop->click();
+        emit this->recording_disabled();
+
+        krecord_stop_recording();
     }
     else
     {
-        ui->pushButton_recordingStart->click();
+        emit this->recording_enabled();
+
+        if (!apply_x264_registry_settings()) return;
+
+        // Remove the existing file, if any. Without this, the file size reported
+        // in VCS's GUI during recording may be inaccurate on some platforms.
+        QFile(ui->lineEdit_recordingFilename->text()).remove();
+
+        const resolution_s videoResolution = ks_output_resolution();
+
+        krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
+                                videoResolution.w, videoResolution.h,
+                                ui->spinBox_recordingFramerate->value(),
+                                ui->checkBox_recordingLinearFrameInsertion->isChecked());
     }
 
+    kd_update_output_window_title();
+
     return;
+}
+
+bool RecordDialog::is_recording_enabled(void)
+{
+    return this->isEnabled;
 }

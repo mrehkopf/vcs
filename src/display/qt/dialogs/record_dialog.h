@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+class QMenuBar;
+
 namespace Ui {
 class RecordDialog;
 }
@@ -21,10 +23,24 @@ public:
 
     void toggle_recording(void);
 
+    void set_recording_enabled(const bool enabled);
+
+    bool is_recording_enabled(void);
+
+signals:
+    // Emitted when the recording's enabled status is toggled.
+    void recording_enabled(void);
+    void recording_disabled(void);
+
 private:
     bool apply_x264_registry_settings(void);
 
     Ui::RecordDialog *ui;
+
+    // Whether recording is enabled (on).
+    bool isEnabled = false;
+
+    QMenuBar *menubar = nullptr;
 };
 
 #endif
