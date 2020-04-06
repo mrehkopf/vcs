@@ -147,9 +147,6 @@ void OutputResolutionDialog::disable_output_size_controls(const bool areDisabled
 {
     ui->frame_outputResolutionControls->setDisabled(areDisabled);
 
-    ui->label_notice->setText(areDisabled? "<b>Note:</b> The output resolution is currently fixed."
-                                         : "These controls alter the size of the output window.");
-
     return;
 }
 
