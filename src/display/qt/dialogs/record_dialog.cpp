@@ -116,11 +116,23 @@ RecordDialog::RecordDialog(QDialog *parent) :
             connect(this, &RecordDialog::recording_enabled, this, [=]
             {
                 enable->setChecked(true);
+                this->isEnabled = true;
             });
 
             connect(this, &RecordDialog::recording_disabled, this, [=]
             {
                 enable->setChecked(false);
+                this->isEnabled = false;
+            });
+
+            connect(this, &RecordDialog::recording_could_not_be_enabled, this, [=]
+            {
+                enable->setChecked(false);
+            });
+
+            connect(this, &RecordDialog::recording_could_not_be_disabled, this, [=]
+            {
+                enable->setChecked(true);
             });
 
             connect(enable, &QAction::triggered, this, [=]
@@ -377,30 +389,50 @@ bool RecordDialog::apply_x264_registry_settings(void)
 
 void RecordDialog::set_recording_enabled(const bool enabled)
 {
-    this->isEnabled = enabled;
-
-    if (!this->isEnabled)
+    if (!enabled)
     {
-        emit this->recording_disabled();
-
         krecord_stop_recording();
+
+        if (!krecord_is_recording())
+        {
+            emit this->recording_disabled();
+        }
+        else
+        {
+            emit this->recording_could_not_be_disabled();
+        }
     }
+    // Start recording.
     else
     {
-        emit this->recording_enabled();
+        // This could fail if the codec we want isn't available on the system.
+        if (!apply_x264_registry_settings())
+        {
+            emit this->recording_could_not_be_enabled();
+        }
+        else
+        {
+            // Remove the existing output file, if any. Without this, the file size
+            // reported in VCS's GUI during recording may be inaccurate on some
+            // platforms.
+            QFile(ui->lineEdit_recordingFilename->text()).remove();
 
-        if (!apply_x264_registry_settings()) return;
+            const resolution_s videoResolution = ks_output_resolution();
 
-        // Remove the existing file, if any. Without this, the file size reported
-        // in VCS's GUI during recording may be inaccurate on some platforms.
-        QFile(ui->lineEdit_recordingFilename->text()).remove();
+            krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
+                                    videoResolution.w, videoResolution.h,
+                                    ui->spinBox_recordingFramerate->value(),
+                                    ui->comboBox_recordingLinearFrameInsertion->currentIndex());
 
-        const resolution_s videoResolution = ks_output_resolution();
-
-        krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
-                                videoResolution.w, videoResolution.h,
-                                ui->spinBox_recordingFramerate->value(),
-                                ui->comboBox_recordingLinearFrameInsertion->currentIndex());
+            if (krecord_is_recording())
+            {
+                emit this->recording_enabled();
+            }
+            else
+            {
+                emit this->recording_could_not_be_enabled();
+            }
+        }
     }
 
     kd_update_output_window_title();

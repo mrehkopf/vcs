@@ -31,6 +31,8 @@ signals:
     // Emitted when the recording's enabled status is toggled.
     void recording_enabled(void);
     void recording_disabled(void);
+    void recording_could_not_be_disabled(void);
+    void recording_could_not_be_enabled(void);
 
 private:
     bool apply_x264_registry_settings(void);
