@@ -34,7 +34,7 @@ AliasDialog::AliasDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Alias Resolutions");
+    this->setWindowTitle("VCS - Aliases");
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -43,24 +43,17 @@ AliasDialog::AliasDialog(QWidget *parent) :
     {
         this->menubar = new QMenuBar(this);
 
-        // File...
-        {
-            QMenu *fileMenu = new QMenu("File", this);
-
-            fileMenu->addAction("Load aliases...", this, SLOT(load_aliases()));
-            fileMenu->addSeparator();
-            fileMenu->addAction("Save aliases as...", this, SLOT(save_aliases()));
-
-            this->menubar->addMenu(fileMenu);
-        }
-
-        // Aliases...
+        // Alias resolutions...
         {
             QMenu *fileMenu = new QMenu("Aliases", this);
 
-            fileMenu->addAction("Add an alias", this, SLOT(add_alias()));
+            fileMenu->addAction("Add", this, SLOT(add_alias()));
             fileMenu->addSeparator();
             fileMenu->addAction("Remove selected", this, SLOT(remove_selected_aliases()));
+            fileMenu->addSeparator();
+            fileMenu->addAction("Save as...", this, SLOT(save_aliases()));
+            fileMenu->addSeparator();
+            fileMenu->addAction("Load...", this, SLOT(load_aliases()));
 
             this->menubar->addMenu(fileMenu);
         }
