@@ -3,10 +3,17 @@
  * 
  * Software: VCS
  *
+ * Implements capturing under Linux via the Datapath's Vision driver and the
+ * Vision4Linux 2 API.
+ *
+ * Initialization happens in ::initialize(). The capture thread runs in
+ * capture_function().
+ *
  */
 
 #ifdef CAPTURE_API_VIDEO4LINUX
 
+#include <unordered_map>
 #include <cmath>
 #include <atomic>
 #include <vector>
@@ -19,6 +26,7 @@
 #include <cstring>
 #include <chrono>
 #include <poll.h>
+#include "capture/video_parameters.h"
 #include "capture/capture_api_video4linux.h"
 
 #define INCLUDE_VISION
@@ -46,11 +54,6 @@ static bool INVALID_SIGNAL = false;
 // Information about the capture device, in the Vision API's format.
 static _sVWDeviceInfo DEVICE_INFO;
 
-// The default/min/max values for the device's parameters.
-static _sVWDeviceParms DEVICE_MINIMUM_PARAMS;
-static _sVWDeviceParms DEVICE_MAXIMUM_PARAMS;
-static _sVWDeviceParms DEVICE_DEFAULT_PARAMS;
-
 // The current (or most recent) capture resolution. This is a cached variable
 // intended to reduce calls to the Vision API - it gets updated whenever the
 // API tells us of a new capture resolution without us specifically polling
@@ -63,7 +66,7 @@ static capture_pixel_format_e CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb
 static captured_frame_s FRAME_BUFFER;
 
 // A back buffer area for the capture device to capture into.
-struct capture_back_buffer_s
+static struct capture_back_buffer_s
 {
     const unsigned numPages = 2;
 
@@ -111,6 +114,216 @@ private:
 // various capture events it detects during capture.
 static bool CAPTURE_EVENT_FLAG[static_cast<int>(capture_event_e::num_enumerators)] = {false};
 
+static struct signal_parameters_s
+{
+    // These correspond to the signal parameters recognized by VCS.
+    enum class parameter_type_e
+    {
+        horizontal_size,
+        horizontal_position,
+        vertical_position,
+        phase,
+        black_level,
+        brightness,
+        contrast,
+        red_brightness,
+        red_contrast,
+        green_brightness,
+        green_contrast,
+        blue_brightness,
+        blue_contrast,
+
+        unknown,
+    };
+
+    // Ask the capture device to change the given parameters's value. Returns true
+    // on success; false otherwise.
+    bool set_value(const int newValue, const parameter_type_e parameterType)
+    {
+        // If we don't know the this parameter.
+        if (this->v4l_id(parameterType) < 0)
+        {
+            return false;
+        }
+
+        v4l2_control v4lc = {};
+        v4lc.id = this->v4l_id(parameterType);
+        v4lc.value = newValue;
+
+        return bool(ioctl(CAPTURE_HANDLE, VIDIOC_S_CTRL, &v4lc) == 0);
+    }
+
+    int value(const parameter_type_e parameterType)
+    {
+        try
+        {
+            return this->parameters.at(parameterType).currentValue;
+        }
+        catch(...)
+        {
+            return 0;
+        }
+    }
+
+    int default_value(const parameter_type_e parameterType)
+    {
+        try
+        {
+            return this->parameters.at(parameterType).defaultValue;
+        }
+        catch(...)
+        {
+            return 0;
+        }
+    }
+
+    int minimum_value(const parameter_type_e parameterType)
+    {
+        try
+        {
+            return this->parameters.at(parameterType).minimumValue;
+        }
+        catch(...)
+        {
+            return 0;
+        }
+    }
+
+    int maximum_value(const parameter_type_e parameterType)
+    {
+        try
+        {
+            return this->parameters.at(parameterType).maximumValue;
+        }
+        catch(...)
+        {
+            return 0;
+        }
+    }
+
+    int v4l_id(const parameter_type_e parameterType)
+    {
+        try
+        {
+            return this->parameters.at(parameterType).v4lId;
+        }
+        catch(...)
+        {
+            return -1;
+        }
+    }
+
+    std::string name(const parameter_type_e parameterType)
+    {
+        try
+        {
+            return this->parameters.at(parameterType).name;
+        }
+        catch(...)
+        {
+            return "unknown";
+        }
+    }
+
+    // Polls the capture device for the current signal parameters' values.
+    void update(void)
+    {
+        this->parameters.clear();
+
+        const auto enumerate_parameters = [this](const unsigned startID, const unsigned endID)
+        {
+            for (unsigned i = startID; i < endID; i++)
+            {
+                v4l2_queryctrl query = {};
+                query.id = i;
+
+                if (ioctl(CAPTURE_HANDLE, VIDIOC_QUERYCTRL, &query) == 0)
+                {
+                    if (!(query.flags & V4L2_CTRL_FLAG_DISABLED) &&
+                        !(query.flags & V4L2_CTRL_FLAG_READ_ONLY) &&
+                        !(query.flags & V4L2_CTRL_FLAG_INACTIVE) &&
+                        !(query.flags & V4L2_CTRL_FLAG_HAS_PAYLOAD) &&
+                        !(query.flags & V4L2_CTRL_FLAG_WRITE_ONLY))
+                    {
+                        signal_parameter_s parameter;
+
+                        parameter.name = (char*)query.name;
+                        parameter.v4lId = i;
+                        parameter.minimumValue = query.minimum;
+                        parameter.maximumValue = query.maximum;
+                        parameter.defaultValue = query.default_value;
+                        parameter.stepSize = query.step;
+
+                        // Attempt to get the control's current value.
+                        {
+                            v4l2_control v4lc = {};
+                            v4lc.id = i;
+
+                            if (ioctl(CAPTURE_HANDLE, VIDIOC_G_CTRL, &v4lc) == 0)
+                            {
+                                parameter.currentValue = v4lc.value;
+                            }
+                            else
+                            {
+                                parameter.currentValue = 0;
+                            }
+                        }
+
+                        // Standardize the control names.
+                        for (auto &chr: parameter.name)
+                        {
+                            chr = ((chr == ' ')? '_' : (char)std::tolower(chr));
+                        }
+
+                        this->parameters[this->type_for_name(parameter.name)] = parameter;
+                    }
+                }
+            }
+        };
+
+        enumerate_parameters(V4L2_CID_BASE, V4L2_CID_LASTP1);
+        enumerate_parameters(V4L2_CID_PRIVATE_BASE, V4L2_CID_PRIVATE_LASTP1);
+
+        return;
+    }
+
+private:
+    parameter_type_e type_for_name(const std::string &name)
+    {
+        if (name == "horizontal_size")     return parameter_type_e::horizontal_size;
+        if (name == "horizontal_position") return parameter_type_e::horizontal_position;
+        if (name == "vertical_position")   return parameter_type_e::vertical_position;
+        if (name == "phase")               return parameter_type_e::phase;
+        if (name == "black_level")         return parameter_type_e::black_level;
+        if (name == "brightness")          return parameter_type_e::brightness;
+        if (name == "contrast")            return parameter_type_e::contrast;
+        if (name == "red_brightness")      return parameter_type_e::red_brightness;
+        if (name == "red_contrast")        return parameter_type_e::red_contrast;
+        if (name == "green_brightness")    return parameter_type_e::green_brightness;
+        if (name == "green_contrast")      return parameter_type_e::green_contrast;
+        if (name == "blue_brightness")     return parameter_type_e::blue_brightness;
+        if (name == "blue_contrast")       return parameter_type_e::blue_contrast;
+
+        return parameter_type_e::unknown;
+    }
+
+    // Data mined from the v4l2_queryctrl struct.
+    struct signal_parameter_s
+    {
+        std::string name;
+        int currentValue;
+        int minimumValue;
+        int maximumValue;
+        int defaultValue;
+        int stepSize;
+        /// TODO: Implement v4l2_queryctrl flags.
+
+        int v4lId;
+    };
+
+    std::unordered_map<parameter_type_e, signal_parameter_s> parameters;
+} SIGNAL_CONTROLS;
+
 static bool vision_read_device_info(_sVWDeviceInfo *const deviceInfo)
 {
     k_assert(VISION_HANDLE, "Attempting to query the Vision API before initializing it.");
@@ -155,36 +368,6 @@ static bool vision_read_device_params(_sVWDeviceParms *const deviceParams)
     }
 
     *deviceParams = input.curDeviceParms;
-
-    return true;
-}
-
-static bool vision_read_device_default_params(_sVWDeviceParms *const deviceParams)
-{
-    _sVWInput input;
-    vision_read_device_input(0, &input);
-
-    *deviceParams = input.defDeviceParms;
-
-    return true;
-}
-
-static bool vision_read_device_minimum_params(_sVWDeviceParms *const deviceParams)
-{
-    _sVWInput input;
-    vision_read_device_input(0, &input);
-
-    *deviceParams = input.minDeviceParms;
-
-    return true;
-}
-
-static bool vision_read_device_maximum_params(_sVWDeviceParms *const deviceParams)
-{
-    _sVWInput input;
-    vision_read_device_input(0, &input);
-
-    *deviceParams = input.maxDeviceParms;
 
     return true;
 }
@@ -501,10 +684,14 @@ capture_event_e capture_api_video4linux_s::pop_capture_event_queue(void)
     {
         this->set_resolution(this->get_source_resolution());
 
+        SIGNAL_CONTROLS.update();
+
         return capture_event_e::new_video_mode;
     }
     else if (pop_capture_event(capture_event_e::signal_lost))
     {
+        SIGNAL_CONTROLS.update();
+
         return capture_event_e::signal_lost;
     }
     else if (pop_capture_event(capture_event_e::invalid_signal))
@@ -599,17 +786,13 @@ bool capture_api_video4linux_s::initialize_hardware(void)
 
     // Get basic device info via the Vision API.
     {
-        if (!vision_read_device_info(&DEVICE_INFO) ||
-            !vision_read_device_minimum_params(&DEVICE_MINIMUM_PARAMS) ||
-            !vision_read_device_maximum_params(&DEVICE_MAXIMUM_PARAMS) ||
-            !vision_read_device_default_params(&DEVICE_DEFAULT_PARAMS))
+        if (!vision_read_device_info(&DEVICE_INFO))
         {
             NBENE(("Failed to read capture device info."));
 
             goto fail;
         }
     }
-
     // Open the capture device.
     if ((CAPTURE_HANDLE = open(this->get_device_node().c_str(), O_RDWR)) < 0)
     {
@@ -647,6 +830,8 @@ bool capture_api_video4linux_s::initialize_hardware(void)
 
     if (!this->enqueue_capture_buffers())
     {
+        NBENE(("Failed to enqueue the capture buffers."));
+
         goto fail;
     }
 
@@ -661,7 +846,6 @@ bool capture_api_video4linux_s::initialize_hardware(void)
         if (!capture_apicall(VIDIOC_G_FMT, &format))
         {
             NBENE(("Failed to query the current capture format (error %d).", errno));
-
             goto fail;
         }
 
@@ -673,21 +857,18 @@ bool capture_api_video4linux_s::initialize_hardware(void)
         if (!capture_apicall(VIDIOC_S_FMT, &format))
         {
             NBENE(("Failed to query the current capture format (error %d).", errno));
-
             goto fail;
         }
 
         if (!capture_apicall(VIDIOC_G_FMT, &format))
         {
             NBENE(("Failed to query the current capture format (error %d).", errno));
-
             goto fail;
         }
 
         if (format.fmt.pix.pixelformat != V4L2_PIX_FMT_RGB32)
         {
             NBENE(("Failed to initialize the correct capture pixel format.", errno));
-
             goto fail;
         }
 
@@ -813,52 +994,88 @@ int capture_api_video4linux_s::get_device_maximum_input_count(void) const
     return 1;
 }
 
-// Converts the Vision API's device parameter format into VCS's signal parameters
-// struct.
-static video_signal_parameters_s video_signal_params_from_device_params(const _sVWDeviceParms &deviceParams)
+video_signal_parameters_s capture_api_video4linux_s::get_video_signal_parameters(void) const
 {
     video_signal_parameters_s p;
 
-    p.r = CAPTURE_RESOLUTION;
-    p.overallBrightness  = deviceParams.Brightness;
-    p.overallContrast    = deviceParams.Contrast;
-    p.redBrightness      = deviceParams.Colour.RedGain;
-    p.redContrast        = deviceParams.Colour.RedOffset;
-    p.greenBrightness    = deviceParams.Colour.GreenGain;
-    p.greenContrast      = deviceParams.Colour.GreenOffset;
-    p.blueBrightness     = deviceParams.Colour.BlueGain;
-    p.blueContrast       = deviceParams.Colour.BlueOffset;
-    p.horizontalScale    = 0; /// FIXME: Which timing parameter corresponds to this?
-    p.horizontalPosition = deviceParams.VideoTimings.HorAddrTime;
-    p.verticalPosition   = deviceParams.VideoTimings.VerAddrTime;
-    p.phase              = deviceParams.Phase;
-    p.blackLevel         = deviceParams.Blacklevel;
+    p.phase              = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::phase);
+    p.blackLevel         = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::black_level);
+    p.horizontalPosition = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::horizontal_position);
+    p.verticalPosition   = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::vertical_position);
+    p.horizontalScale    = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::horizontal_size);
+    p.overallBrightness  = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::brightness);
+    p.overallContrast    = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::contrast);
+    p.redBrightness      = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::red_brightness);
+    p.greenBrightness    = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::green_brightness);
+    p.blueBrightness     = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::blue_brightness);
+    p.redContrast        = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::red_contrast);
+    p.greenContrast      = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::green_contrast);
+    p.blueContrast       = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::blue_contrast);
 
     return p;
 }
 
-video_signal_parameters_s capture_api_video4linux_s::get_video_signal_parameters(void) const
-{
-    _sVWDeviceParms params;
-
-    vision_read_device_params(&params);
-
-    return video_signal_params_from_device_params(params);
-}
-
 video_signal_parameters_s capture_api_video4linux_s::get_default_video_signal_parameters(void) const
 {
-    return video_signal_params_from_device_params(DEVICE_DEFAULT_PARAMS);
+    video_signal_parameters_s p;
+
+    p.phase              = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::phase);
+    p.blackLevel         = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::black_level);
+    p.horizontalPosition = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::horizontal_position);
+    p.verticalPosition   = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::vertical_position);
+    p.horizontalScale    = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::horizontal_size);
+    p.overallBrightness  = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::brightness);
+    p.overallContrast    = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::contrast);
+    p.redBrightness      = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::red_brightness);
+    p.greenBrightness    = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::green_brightness);
+    p.blueBrightness     = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::blue_brightness);
+    p.redContrast        = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::red_contrast);
+    p.greenContrast      = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::green_contrast);
+    p.blueContrast       = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::blue_contrast);
+
+    return p;
 }
 
 video_signal_parameters_s capture_api_video4linux_s::get_minimum_video_signal_parameters(void) const
 {
-    return video_signal_params_from_device_params(DEVICE_MINIMUM_PARAMS);
+    video_signal_parameters_s p;
+
+    p.phase              = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::phase);
+    p.blackLevel         = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::black_level);
+    p.horizontalPosition = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::horizontal_position);
+    p.verticalPosition   = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::vertical_position);
+    p.horizontalScale    = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::horizontal_size);
+    p.overallBrightness  = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::brightness);
+    p.overallContrast    = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::contrast);
+    p.redBrightness      = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::red_brightness);
+    p.greenBrightness    = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::green_brightness);
+    p.blueBrightness     = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::blue_brightness);
+    p.redContrast        = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::red_contrast);
+    p.greenContrast      = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::green_contrast);
+    p.blueContrast       = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::blue_contrast);
+
+    return p;
 }
 
 video_signal_parameters_s capture_api_video4linux_s::get_maximum_video_signal_parameters(void) const
 {
-    return video_signal_params_from_device_params(DEVICE_MAXIMUM_PARAMS);
+    video_signal_parameters_s p;
+
+    p.phase              = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::phase);
+    p.blackLevel         = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::black_level);
+    p.horizontalPosition = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::horizontal_position);
+    p.verticalPosition   = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::vertical_position);
+    p.horizontalScale    = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::horizontal_size);
+    p.overallBrightness  = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::brightness);
+    p.overallContrast    = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::contrast);
+    p.redBrightness      = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::red_brightness);
+    p.greenBrightness    = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::green_brightness);
+    p.blueBrightness     = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::blue_brightness);
+    p.redContrast        = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::red_contrast);
+    p.greenContrast      = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::green_contrast);
+    p.blueContrast       = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::blue_contrast);
+
+    return p;
 }
 
 std::string capture_api_video4linux_s::get_device_node(void) const
@@ -889,32 +1106,33 @@ bool capture_api_video4linux_s::reset_missed_frames_count()
 
 bool capture_api_video4linux_s::set_video_signal_parameters(const video_signal_parameters_s &p)
 {
-    _sVWDevice device;
-    memset(&device, 0, sizeof(device));
-    device.magic = VW_MAGIC_SET_DEVICE_PARMS;
-    device.input = 0;
-    device.device = 0;
-
-    vision_read_device_params(&device.inputs[0].curDeviceParms);
-
-    device.inputs[0].curDeviceParms.Brightness               = p.overallBrightness;
-    device.inputs[0].curDeviceParms.Contrast                 = p.overallContrast;
-    device.inputs[0].curDeviceParms.Colour.RedGain           = p.redBrightness;
-    device.inputs[0].curDeviceParms.Colour.RedOffset         = p.redContrast;
-    device.inputs[0].curDeviceParms.Colour.GreenGain         = p.greenBrightness;
-    device.inputs[0].curDeviceParms.Colour.GreenOffset       = p.greenContrast;
-    device.inputs[0].curDeviceParms.Colour.BlueGain          = p.blueBrightness;
-    device.inputs[0].curDeviceParms.Colour.BlueOffset        = p.blueContrast;
-    device.inputs[0].curDeviceParms.Phase                    = p.phase;
-    device.inputs[0].curDeviceParms.Blacklevel               = p.blackLevel;
-    device.inputs[0].curDeviceParms.VideoTimings.HorAddrTime = p.horizontalPosition;
-    device.inputs[0].curDeviceParms.VideoTimings.VerAddrTime = p.verticalPosition;
-    /// TODO: p.horizontalScale;
-
-    if (write(VISION_HANDLE, &device, sizeof(device)) <= 0)
+    const auto set_parameter = [](const int value, const signal_parameters_s::parameter_type_e parameterType)
     {
-        return false;
-    }
+        if (SIGNAL_CONTROLS.value(parameterType) != value)
+        {
+            return SIGNAL_CONTROLS.set_value(value, parameterType);
+        }
+
+        return true;
+    };
+
+    set_parameter(p.phase,              signal_parameters_s::parameter_type_e::phase);
+    set_parameter(p.blackLevel,         signal_parameters_s::parameter_type_e::black_level);
+    set_parameter(p.horizontalPosition, signal_parameters_s::parameter_type_e::horizontal_position);
+    set_parameter(p.verticalPosition,   signal_parameters_s::parameter_type_e::vertical_position);
+    set_parameter(p.horizontalScale,    signal_parameters_s::parameter_type_e::horizontal_size);
+    set_parameter(p.overallBrightness,  signal_parameters_s::parameter_type_e::brightness);
+    set_parameter(p.overallContrast,    signal_parameters_s::parameter_type_e::contrast);
+    set_parameter(p.redBrightness,      signal_parameters_s::parameter_type_e::red_brightness);
+    set_parameter(p.greenBrightness,    signal_parameters_s::parameter_type_e::green_brightness);
+    set_parameter(p.blueBrightness,     signal_parameters_s::parameter_type_e::blue_brightness);
+    set_parameter(p.redContrast,        signal_parameters_s::parameter_type_e::red_contrast);
+    set_parameter(p.greenContrast,      signal_parameters_s::parameter_type_e::green_contrast);
+    set_parameter(p.blueContrast,       signal_parameters_s::parameter_type_e::blue_contrast);
+
+    SIGNAL_CONTROLS.update();
+
+    kvideoparam_update_parameters_for_resolution(this->get_resolution(), p);
 
     return true;
 }
