@@ -289,25 +289,25 @@ void SignalDialog::update_controls(void)
         ui->horizontalScrollBar_colorContrRed->setMinimum(min.redContrast);
         ui->horizontalScrollBar_colorContrRed->setMaximum(max.redContrast);
 
-        ui->spinBox_colorBrightGreen->setMinimum(min.blueBrightness);
-        ui->spinBox_colorBrightGreen->setMaximum(max.blueBrightness);
-        ui->horizontalScrollBar_colorBrightGreen->setMinimum(min.blueBrightness);
-        ui->horizontalScrollBar_colorBrightGreen->setMaximum(max.blueBrightness);
+        ui->spinBox_colorBrightGreen->setMinimum(min.greenBrightness);
+        ui->spinBox_colorBrightGreen->setMaximum(max.greenBrightness);
+        ui->horizontalScrollBar_colorBrightGreen->setMinimum(min.greenBrightness);
+        ui->horizontalScrollBar_colorBrightGreen->setMaximum(max.greenBrightness);
 
-        ui->spinBox_colorContrGreen->setMinimum(min.blueContrast);
-        ui->spinBox_colorContrGreen->setMaximum(max.blueContrast);
-        ui->horizontalScrollBar_colorContrGreen->setMinimum(min.blueContrast);
-        ui->horizontalScrollBar_colorContrGreen->setMaximum(max.blueContrast);
+        ui->spinBox_colorContrGreen->setMinimum(min.greenContrast);
+        ui->spinBox_colorContrGreen->setMaximum(max.greenContrast);
+        ui->horizontalScrollBar_colorContrGreen->setMinimum(min.greenContrast);
+        ui->horizontalScrollBar_colorContrGreen->setMaximum(max.greenContrast);
 
-        ui->spinBox_colorBrightBlue->setMinimum(min.greenBrightness);
-        ui->spinBox_colorBrightBlue->setMaximum(max.greenBrightness);
-        ui->horizontalScrollBar_colorBrightBlue->setMinimum(min.greenBrightness);
-        ui->horizontalScrollBar_colorBrightBlue->setMaximum(max.greenBrightness);
+        ui->spinBox_colorBrightBlue->setMinimum(min.blueBrightness);
+        ui->spinBox_colorBrightBlue->setMaximum(max.blueBrightness);
+        ui->horizontalScrollBar_colorBrightBlue->setMinimum(min.blueBrightness);
+        ui->horizontalScrollBar_colorBrightBlue->setMaximum(max.blueBrightness);
 
-        ui->spinBox_colorContrBlue->setMinimum(min.greenContrast);
-        ui->spinBox_colorContrBlue->setMaximum(max.greenContrast);
-        ui->horizontalScrollBar_colorContrBlue->setMinimum(min.greenContrast);
-        ui->horizontalScrollBar_colorContrBlue->setMaximum(max.greenContrast);
+        ui->spinBox_colorContrBlue->setMinimum(min.blueContrast);
+        ui->spinBox_colorContrBlue->setMaximum(max.blueContrast);
+        ui->horizontalScrollBar_colorContrBlue->setMinimum(min.blueContrast);
+        ui->horizontalScrollBar_colorContrBlue->setMaximum(max.blueContrast);
 
         ui->spinBox_videoBlackLevel->setMinimum(min.blackLevel);
         ui->spinBox_videoBlackLevel->setMaximum(max.blackLevel);
