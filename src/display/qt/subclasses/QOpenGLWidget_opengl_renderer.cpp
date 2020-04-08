@@ -36,8 +36,6 @@ OGLWidget::OGLWidget(std::function<QImage()> overlay_as_qimage, QWidget *parent)
 
 void OGLWidget::initializeGL()
 {
-    DEBUG(("Initializing OpenGL..."));
-
     this->initializeOpenGLFunctions();
 
     DEBUG(("OpenGL is reported to be version %s.", glGetString(GL_VERSION)));

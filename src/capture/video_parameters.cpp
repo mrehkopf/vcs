@@ -45,31 +45,26 @@ void kvideoparam_assign_parameter_sets(const std::vector<video_signal_parameters
     return;
 }
 
-void kvideoparam_update_parameters_for_resolution(const resolution_s r,
-                                                  const video_signal_parameters_s &newParams)
+void kvideoparam_update_parameters_for_resolution(const resolution_s &r,
+                                                  video_signal_parameters_s newParams)
 {
-    unsigned idx = 0;
+    newParams.r = r;
 
-    for (idx = 0; idx < KNOWN_PARAMETER_SETS.size(); idx++)
+    // See if we already have a parameter set for this resolution; and if we do,
+    // update it with the new parameters.
+    for (unsigned idx = 0; idx < KNOWN_PARAMETER_SETS.size(); idx++)
     {
-        if (KNOWN_PARAMETER_SETS[idx].r.w == r.w &&
-            KNOWN_PARAMETER_SETS[idx].r.h == r.h)
+        if ((KNOWN_PARAMETER_SETS[idx].r.w == r.w) &&
+            (KNOWN_PARAMETER_SETS[idx].r.h == r.h))
         {
-            goto mode_exists;
+            KNOWN_PARAMETER_SETS[idx] = newParams;
+
+            return;
         }
     }
 
-    // If we didn't already know of any parameters for this resolution, add
-    // them.
-    {
-        auto defaultParams = kc_capture_api().get_default_video_signal_parameters();
-        defaultParams.r = r;
-
-        KNOWN_PARAMETER_SETS.push_back(defaultParams);
-    }
-
-    mode_exists:
-    KNOWN_PARAMETER_SETS[idx] = newParams;
+    // Otherwise, we'll create a new set for these parameters.
+    KNOWN_PARAMETER_SETS.push_back(newParams);
 
     return;
 }
