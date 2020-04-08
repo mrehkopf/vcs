@@ -60,6 +60,9 @@ static _sVWDeviceInfo DEVICE_INFO;
 // the API for it.
 static resolution_s CAPTURE_RESOLUTION = {640, 480, 32};
 
+// The current refresh rate, multiplied by 1000.
+static unsigned REFRESH_RATE = 0;
+
 static capture_pixel_format_e CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_888;
 
 // The latest frame we've received from the capture device.
@@ -338,40 +341,6 @@ static bool vision_read_device_info(_sVWDeviceInfo *const deviceInfo)
     return true;
 }
 
-static bool vision_read_device_input(const unsigned inputIdx, _sVWInput *const input)
-{
-    k_assert(VISION_HANDLE, "Attempting to query the Vision API before initializing it.");
-
-    _sVWDevice device;
-    memset(&device, 0, sizeof(device));
-    device.magic = VW_MAGIC_DEVICE;
-    device.input = inputIdx;
-    device.device = 0;
-
-    if (read(VISION_HANDLE, &device, sizeof(_sVWDevice)) <= 0)
-    {
-        return false;
-    }
-
-    *input = device.inputs[inputIdx];
-
-    return true;
-}
-
-static bool vision_read_device_params(_sVWDeviceParms *const deviceParams)
-{
-    _sVWInput input;
-
-    if (!vision_read_device_input(0, &input))
-    {
-        return false;
-    }
-
-    *deviceParams = input.curDeviceParms;
-
-    return true;
-}
-
 // Marks the given capture event as having occurred.
 static void push_capture_event(capture_event_e event)
 {
@@ -550,46 +519,36 @@ bool capture_api_video4linux_s::enqueue_capture_buffers(void)
 // The thread will be terminated externally when the program exits.
 static void capture_function(capture_api_video4linux_s *const thisPtr)
 {
-    // We'll keep track of the current device parameters to detect changes in
-    // video mode.
-    _sVWDeviceParms knownDeviceParams = {};
-    knownDeviceParams.type = _eVWSignalType::VW_TYPE_UNKNOWN; // Make sure we correctly trigger the current signal type on the first loop.
-
     while (!PROGRAM_EXIT_REQUESTED)
     {
-        // See if aspects of the signal has changed.
+        // See if aspects of the signal have changed.
         /// TODO: Are there signal events we could hook onto, rather than
         ///       constantly polling for these parameters?
         {
-            _sVWDeviceParms updatedDeviceParams;
+            v4l2_format format = {};
+            format.type = V4L2_BUF_TYPE_CAPTURE_SOURCE;
 
-            if (vision_read_device_params(&updatedDeviceParams))
+            /// TODO: Check for 'no signal' status.
+
+            if (ioctl(CAPTURE_HANDLE, RGB133_VIDIOC_G_SRC_FMT, &format) >= 0)
             {
-                if ((updatedDeviceParams.type != knownDeviceParams.type) ||                                           // Lost or gained a signal.
-                    (updatedDeviceParams.VideoTimings.VerFrequency != knownDeviceParams.VideoTimings.VerFrequency) || // Refresh rate changed.
-                    (updatedDeviceParams.VideoTimings.HorAddrTime != knownDeviceParams.VideoTimings.HorAddrTime) ||   // Horizontal resolution changed.
-                    (updatedDeviceParams.VideoTimings.VerAddrTime != knownDeviceParams.VideoTimings.VerAddrTime))     // Vertical resolution changed.
+                const unsigned currentRefreshRate = format.fmt.pix.priv;
+
+                if ((currentRefreshRate != REFRESH_RATE) ||
+                    (format.fmt.pix.width != CAPTURE_RESOLUTION.w) ||
+                    (format.fmt.pix.height != CAPTURE_RESOLUTION.h))
                 {
-                    std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
+                    NO_SIGNAL = false;
+                    REFRESH_RATE = currentRefreshRate;
 
-                    knownDeviceParams.type = updatedDeviceParams.type;
-                    knownDeviceParams.VideoTimings.VerFrequency = updatedDeviceParams.VideoTimings.VerFrequency;
-                    knownDeviceParams.VideoTimings.HorAddrTime = updatedDeviceParams.VideoTimings.HorAddrTime;
-                    knownDeviceParams.VideoTimings.VerAddrTime = updatedDeviceParams.VideoTimings.VerAddrTime;
-
-                    if (knownDeviceParams.type == VW_TYPE_NOSIGNAL)
-                    {
-                        NO_SIGNAL = true;
-
-                        push_capture_event(capture_event_e::signal_lost);
-                    }
-                    else
-                    {
-                        NO_SIGNAL = false;
-
-                        push_capture_event(capture_event_e::new_video_mode);
-                    }
+                    push_capture_event(capture_event_e::new_video_mode);
                 }
+            }
+            else
+            {
+                push_capture_event(capture_event_e::unrecoverable_error);
+
+                break;
             }
         }
 
@@ -731,11 +690,7 @@ unsigned capture_api_video4linux_s::get_refresh_rate(void) const
 
 double capture_api_video4linux_s::get_refresh_rate_exact(void) const
 {
-    _sVWDeviceParms params;
-
-    vision_read_device_params(&params);
-
-    return (params.VideoTimings.VerFrequency / 1000.0);
+    return (REFRESH_RATE / 1000.0);
 }
 
 uint capture_api_video4linux_s::get_missed_frames_count(void) const
