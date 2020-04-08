@@ -31,7 +31,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
         // Filter graph...
         {
-            QMenu *filterGraphMenu = new QMenu("Filter graph", this->menubar);
+            QMenu *filterGraphMenu = new QMenu("Graph", this->menubar);
 
             QAction *enable = new QAction("Enabled", this->menubar);
             enable->setCheckable(true);

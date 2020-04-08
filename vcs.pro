@@ -104,7 +104,8 @@ SOURCES += \
     src/display/qt/dialogs/filter_graph/output_gate_node.cpp \
     src/display/qt/dialogs/filter_graph/input_gate_node.cpp \
     src/display/qt/dialogs/filter_graph/filter_node.cpp \
-    src/display/qt/dialogs/filter_graph/filter_graph_node.cpp
+    src/display/qt/dialogs/filter_graph/filter_graph_node.cpp \
+    src/display/qt/dialogs/video_parameter_dialog.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -161,7 +162,8 @@ HEADERS += \
     src/display/qt/dialogs/filter_graph/output_gate_node.h \
     src/display/qt/dialogs/filter_graph/input_gate_node.h \
     src/display/qt/dialogs/filter_graph/filter_node.h \
-    src/display/qt/dialogs/filter_graph/filter_graph_node.h
+    src/display/qt/dialogs/filter_graph/filter_graph_node.h \
+    src/display/qt/dialogs/video_parameter_dialog.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \
@@ -174,7 +176,8 @@ FORMS += \
     src/display/qt/dialogs/ui/record_dialog.ui \
     src/display/qt/dialogs/ui/output_resolution_dialog.ui \
     src/display/qt/dialogs/ui/input_resolution_dialog.ui \
-    src/display/qt/dialogs/ui/signal_dialog.ui
+    src/display/qt/dialogs/ui/signal_dialog.ui \
+    src/display/qt/dialogs/ui/video_parameter_dialog.ui
 
 # C++. For GCC/Clang/MinGW.
 QMAKE_CXXFLAGS += -g

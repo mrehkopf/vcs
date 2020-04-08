@@ -29,6 +29,7 @@
 #include <cmath>
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
 #include "display/qt/dialogs/output_resolution_dialog.h"
+#include "display/qt/dialogs/video_parameter_dialog.h"
 #include "display/qt/dialogs/input_resolution_dialog.h"
 #include "display/qt/dialogs/signal_dialog.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
@@ -92,6 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         outputResolutionDlg = new OutputResolutionDialog;
         inputResolutionDlg = new InputResolutionDialog;
+        videoParamDlg = new VideoParameterDialog;
         filterGraphDlg = new FilterGraphDialog;
         antitearDlg = new AntiTearDialog;
         overlayDlg = new OverlayDialog;
@@ -103,6 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
         this->dialogs << outputResolutionDlg
                       << inputResolutionDlg
                       << filterGraphDlg
+                      << videoParamDlg
                       << antitearDlg
                       << overlayDlg
                       << signalDlg
@@ -377,7 +380,12 @@ MainWindow::MainWindow(QWidget *parent) :
             resolution->setShortcut(QKeySequence("ctrl+i"));
             menu->addAction(resolution);
 
+            QAction *videoParams = new QAction("Video parameter graph...", this);
+            videoParams->setShortcut(QKeySequence("ctrl+v"));
+            menu->addAction(videoParams);
+
             connect(signal, &QAction::triggered, this, [=]{this->open_video_dialog();});
+            connect(videoParams, &QAction::triggered, this, [=]{this->open_video_parameter_graph_dialog();});
             connect(resolution, &QAction::triggered, this, [=]{this->open_input_resolution_dialog();});
         }
 
@@ -662,6 +670,16 @@ void MainWindow::open_input_resolution_dialog(void)
     this->inputResolutionDlg->show();
     this->inputResolutionDlg->activateWindow();
     this->inputResolutionDlg->raise();
+
+    return;
+}
+
+void MainWindow::open_video_parameter_graph_dialog(void)
+{
+    k_assert(this->videoParamDlg != nullptr, "");
+    this->videoParamDlg->show();
+    this->videoParamDlg->activateWindow();
+    this->videoParamDlg->raise();
 
     return;
 }

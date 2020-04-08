@@ -14,6 +14,7 @@
 
 class OutputResolutionDialog;
 class InputResolutionDialog;
+class VideoParameterDialog;
 class FilterGraphDialog;
 class AntiTearDialog;
 class OverlayDialog;
@@ -115,6 +116,8 @@ public:
 
     void open_input_resolution_dialog(void);
 
+    void open_video_parameter_graph_dialog(void);
+
     void disable_output_size_controls(const bool areDisabled);
 
     void set_recording_is_active(const bool isActive);
@@ -152,11 +155,12 @@ private:
 
     OutputResolutionDialog *outputResolutionDlg = nullptr;
     InputResolutionDialog *inputResolutionDlg = nullptr;
-    SignalDialog *signalDlg = nullptr;
+    VideoParameterDialog *videoParamDlg = nullptr;
     FilterGraphDialog *filterGraphDlg = nullptr;
     AntiTearDialog *antitearDlg = nullptr;
     OverlayDialog *overlayDlg = nullptr;
     RecordDialog *recordDlg = nullptr;
+    SignalDialog *signalDlg = nullptr;
     AliasDialog *aliasDlg = nullptr;
     AboutDialog *aboutDlg = nullptr;
 
