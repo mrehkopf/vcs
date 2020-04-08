@@ -14,8 +14,20 @@
    <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="rightMargin">
+   <property name="spacing">
     <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>6</number>
+   </property>
+   <property name="topMargin">
+    <number>6</number>
+   </property>
+   <property name="rightMargin">
+    <number>6</number>
+   </property>
+   <property name="bottomMargin">
+    <number>6</number>
    </property>
    <item>
     <widget class="QScrollArea" name="scrollArea_about">
@@ -30,8 +42,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>581</width>
-        <height>333</height>
+        <width>578</width>
+        <height>339</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -62,7 +74,10 @@
           <string>VCS vX.X.X</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
          </property>
          <property name="checkable">
           <bool>false</bool>
@@ -114,10 +129,10 @@
           <string>Capture device: Unknown</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          <set>Qt::AlignCenter</set>
          </property>
          <property name="flat">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <property name="leftMargin">
