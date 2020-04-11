@@ -29,8 +29,7 @@ struct capture_api_video4linux_s : public capture_api_s
     resolution_s get_resolution(void) const override;
     resolution_s get_minimum_resolution(void) const override;
     resolution_s get_maximum_resolution(void) const override;
-    unsigned get_refresh_rate(void) const override;
-    double get_refresh_rate_exact(void) const override;
+    refresh_rate_s get_refresh_rate(void) const override;
     uint get_missed_frames_count(void) const override;
     uint get_input_channel_idx(void) const override              { return 0;  }
     uint get_color_depth(void) const override                    { return 32; }

@@ -26,6 +26,7 @@
 #include <string>
 #include <mutex>
 #include "common/globals.h"
+#include "common/refresh_rate.h"
 #include "display/display.h"
 #include "capture/capture.h"
 
@@ -111,8 +112,7 @@ struct capture_api_s
     virtual unsigned get_input_channel_idx(void) const = 0;
 
     // Get the refresh rate, in Hz, of the current capture signal.
-    virtual unsigned get_refresh_rate(void) const = 0;
-    virtual double get_refresh_rate_exact(void) const = 0;
+    virtual refresh_rate_s get_refresh_rate(void) const = 0;
 
     // Get the color depth, in bits, of the frames the API currently expects
     // to output via get_frame_buffer(). For instance, for RGB888 this might be

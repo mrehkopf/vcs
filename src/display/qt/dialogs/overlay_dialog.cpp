@@ -282,7 +282,7 @@ QString OverlayDialog::parsed_overlay_string(void)
 
     parsed.replace("$inputResolution",  QString("%1 x %2").arg(inRes.w).arg(inRes.h));
     parsed.replace("$outputResolution", QString("%1 x %2").arg(outRes.w).arg(outRes.h));
-    parsed.replace("$inputHz",          QString::number(kc_capture_api().get_refresh_rate()));
+    parsed.replace("$inputHz",          QString::number(kc_capture_api().get_refresh_rate().value<unsigned>()));
     parsed.replace("$outputFPS",        QString::number(kd_output_framerate()));
     parsed.replace("$areFramesDropped", ((kc_capture_api().get_missed_frames_count() > 0)? "Dropping frames" : ""));
     parsed.replace("$peakLatencyMs",    QString::number(kd_peak_pipeline_latency()));

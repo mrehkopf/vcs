@@ -19,6 +19,7 @@
 #include "record/record.h"
 #include "scaler/scaler.h"
 #include "filter/filter.h"
+#include "capture/video_presets.h"
 #include "common/memory/memory.h"
 #include "common/disk/disk.h"
 
@@ -35,6 +36,7 @@ static void cleanup_all(void)
     kc_release_capture();
     kat_release_anti_tear();
     kf_release_filters();
+    kvideopreset_release();
 
     if (krecord_is_recording()) krecord_stop_recording();
 

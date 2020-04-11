@@ -61,7 +61,7 @@ static _sVWDeviceInfo DEVICE_INFO;
 static resolution_s CAPTURE_RESOLUTION = {640, 480, 32};
 
 // The current refresh rate, multiplied by 1000.
-static unsigned REFRESH_RATE = 0;
+static refresh_rate_s REFRESH_RATE = refresh_rate_s(0);
 
 static capture_pixel_format_e CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_888;
 
@@ -532,7 +532,7 @@ static void capture_function(capture_api_video4linux_s *const thisPtr)
 
             if (ioctl(CAPTURE_HANDLE, RGB133_VIDIOC_G_SRC_FMT, &format) >= 0)
             {
-                const unsigned currentRefreshRate = format.fmt.pix.priv;
+                const refresh_rate_s currentRefreshRate = refresh_rate_s(format.fmt.pix.priv / 1000.0);
 
                 if ((currentRefreshRate != REFRESH_RATE) ||
                     (format.fmt.pix.width != CAPTURE_RESOLUTION.w) ||
@@ -683,14 +683,9 @@ resolution_s capture_api_video4linux_s::get_maximum_resolution(void) const
     return resolution_s{1920, 1080, 32};
 }
 
-unsigned capture_api_video4linux_s::get_refresh_rate(void) const
+refresh_rate_s capture_api_video4linux_s::get_refresh_rate(void) const
 {
-    return round(get_refresh_rate_exact());
-}
-
-double capture_api_video4linux_s::get_refresh_rate_exact(void) const
-{
-    return (REFRESH_RATE / 1000.0);
+    return REFRESH_RATE;
 }
 
 uint capture_api_video4linux_s::get_missed_frames_count(void) const

@@ -380,7 +380,7 @@ MainWindow::MainWindow(QWidget *parent) :
             resolution->setShortcut(QKeySequence("ctrl+i"));
             menu->addAction(resolution);
 
-            QAction *videoParams = new QAction("Video parameter graph...", this);
+            QAction *videoParams = new QAction("Video presets...", this);
             videoParams->setShortcut(QKeySequence("ctrl+v"));
             menu->addAction(videoParams);
 

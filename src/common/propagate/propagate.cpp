@@ -30,7 +30,7 @@ void kpropagate_news_of_new_capture_video_mode(void)
 
     resolution_s resolution = kc_capture_api().get_resolution();
 
-    INFO(("New video mode: %u x %u @ %f Hz.", resolution.w, resolution.h, kc_capture_api().get_refresh_rate_exact()));
+    INFO(("New video mode: %u x %u @ %f Hz.", resolution.w, resolution.h, kc_capture_api().get_refresh_rate().value<double>()));
 
     if (ka_has_alias(resolution))
     {

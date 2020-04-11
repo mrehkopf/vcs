@@ -783,17 +783,12 @@ capture_event_e capture_api_rgbeasy_s::pop_capture_event_queue(void)
     return (RECEIVING_A_SIGNAL? capture_event_e::none : capture_event_e::sleep);
 }
 
-unsigned capture_api_rgbeasy_s::get_refresh_rate(void) const
-{
-    return round(this->get_refresh_rate_exact());
-}
-
-double capture_api_rgbeasy_s::get_refresh_rate_exact(void) const
+refresh_rate_s capture_api_rgbeasy_s::get_refresh_rate(void) const
 {
     if (this->has_no_signal())
     {
         NBENE(("Tried to query the capture signal while no signal was being received."));
-        return 0;
+        return refresh_rate_s(0);
     }
 
     RGBMODEINFO mi = {0};
@@ -801,11 +796,11 @@ double capture_api_rgbeasy_s::get_refresh_rate_exact(void) const
 
     if (apicall_succeeded(RGBGetModeInfo(this->captureHandle, &mi)))
     {
-        return (mi.RefreshRate / 1000.0);
+        return refresh_rate_s(mi.RefreshRate / 1000.0);
     }
     else
     {
-        return 0;
+        return refresh_rate_s(0);
     }
 }
 
