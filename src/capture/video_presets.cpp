@@ -40,7 +40,7 @@ bool kvideopreset_remove_preset(const unsigned presetId)
     return true;
 }
 
-static video_preset_s* strongest_activator(void)
+static video_preset_s* strongest_activating_preset(void)
 {
     const resolution_s resolution = kc_capture_api().get_resolution();
     const refresh_rate_s refreshRate = kc_capture_api().get_refresh_rate();
@@ -88,16 +88,28 @@ void kvideopreset_remove_all_presets(void)
     return;
 }
 
-void kvideopreset_update_preset_parameters(const unsigned presetId, const video_signal_parameters_s &params)
+void kvideoparam_preset_video_params_changed(const unsigned presetId)
 {
-    video_preset_s *targetPreset = kvideopreset_get_preset(presetId);
-    const video_preset_s *activePreset = strongest_activator();
+    const video_preset_s *thisPreset = kvideopreset_get_preset(presetId);
+    const video_preset_s *activePreset = strongest_activating_preset();
 
-    targetPreset->videoParameters = params;
-
-    if (targetPreset == activePreset)
+    if (thisPreset == activePreset)
     {
-        kc_capture_api().set_video_signal_parameters(params);
+        kc_capture_api().set_video_signal_parameters(thisPreset->videoParameters);
+    }
+}
+
+void kvideopreset_apply_current_active_preset(void)
+{
+    const video_preset_s *activePreset = strongest_activating_preset();
+
+    if (activePreset)
+    {
+        kc_capture_api().set_video_signal_parameters(activePreset->videoParameters);
+    }
+    else
+    {
+        kc_capture_api().set_video_signal_parameters(kc_capture_api().get_default_video_signal_parameters());
     }
 
     return;
@@ -139,6 +151,8 @@ video_preset_s* kvideopreset_create_preset(void)
     preset->activatesWithResolution = true;
     preset->activationResolution = {640, 480, 32};
 
+    preset->videoParameters = kc_capture_api().get_default_video_signal_parameters();
+
     PRESETS.push_back(preset);
 
     return preset;
@@ -146,7 +160,7 @@ video_preset_s* kvideopreset_create_preset(void)
 
 video_signal_parameters_s kvideopreset_current_video_parameters(void)
 {
-    const auto activePreset = strongest_activator();
+    const auto activePreset = strongest_activating_preset();
 
     if (!activePreset)
     {

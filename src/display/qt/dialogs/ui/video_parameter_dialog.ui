@@ -137,6 +137,9 @@
             <property name="text">
              <string>Resolution</string>
             </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item row="0" column="1">
@@ -207,6 +210,9 @@
             <property name="text">
              <string>Refresh rate</string>
             </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item row="1" column="1">
@@ -270,7 +276,7 @@
              </sizepolicy>
             </property>
             <property name="suffix">
-             <string> Hz</string>
+             <string/>
             </property>
             <property name="decimals">
              <number>3</number>
@@ -290,6 +296,9 @@
             </property>
             <property name="text">
              <string>Shortcut</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>

@@ -49,7 +49,7 @@ void kpropagate_news_of_new_capture_video_mode(void)
         }
     }
 
-    kc_capture_api().set_video_signal_parameters(kvideoparam_parameters_for_resolution(resolution));
+    kvideopreset_apply_current_active_preset();
 
     kd_update_capture_signal_info();
 

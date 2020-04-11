@@ -15,6 +15,11 @@
 #include "capture/video_presets.h"
 #include "ui_video_parameter_dialog.h"
 
+// By default, values from the GUI's controls (sliders and spinboxes) will be
+// sent to the capture card in real-time, i.e. as the controls are operated.
+// Set this variable to false to disable real-time updates.
+static bool CONTROLS_LIVE_UPDATE = true;
+
 VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::VideoParameterDialog)
@@ -85,6 +90,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                     const auto presetToDelete = this->currentPreset;
                     this->remove_video_preset_from_list(presetToDelete);
                     kvideopreset_remove_preset(presetToDelete->id);
+                    kvideopreset_apply_current_active_preset();
                 }
             });
 
@@ -92,6 +98,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             {
                 this->remove_all_video_presets_from_list();
                 kvideopreset_remove_all_presets();
+                kvideopreset_apply_current_active_preset();
             });
 
             this->menubar->addMenu(presetMenu);
@@ -125,6 +132,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             {
                 this->currentPreset->activationRefreshRate = value;
                 this->update_current_present_list_text();
+                kvideopreset_apply_current_active_preset();
             }
         });
 
@@ -138,6 +146,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             {
                 this->currentPreset->activationResolution.w = std::min(MAX_OUTPUT_WIDTH, unsigned(value));
                 this->update_current_present_list_text();
+                kvideopreset_apply_current_active_preset();
             }
         });
 
@@ -147,6 +156,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             {
                 this->currentPreset->activationResolution.h = std::min(MAX_OUTPUT_HEIGHT, unsigned(value));
                 this->update_current_present_list_text();
+                kvideopreset_apply_current_active_preset();
             }
         });
 
@@ -178,6 +188,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 this->currentPreset->activatesWithRefreshRate = checked;
                 this->update_current_present_list_text();
             }
+
+            kvideopreset_apply_current_active_preset();
         });
 
         connect(ui->checkBox_activatorResolution, &QCheckBox::toggled, this, [this](const bool checked)
@@ -191,6 +203,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 this->currentPreset->activatesWithResolution = checked;
                 this->update_current_present_list_text();
             }
+
+            kvideopreset_apply_current_active_preset();
         });
 
         connect(ui->checkBox_activatorShortcut, &QCheckBox::toggled, this, [this](const bool checked)
@@ -204,6 +218,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 this->currentPreset->activatesWithShortcut = checked;
                 this->update_current_present_list_text();
             }
+
+            kvideopreset_apply_current_active_preset();
         });
 
         // The valueChanged() signal is overloaded for int and QString, and we
@@ -231,6 +247,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 this->update_preset_controls();
                 this->update_current_present_list_text();
             }
+
+            kvideopreset_apply_current_active_preset();
         });
 
         connect(ui->comboBox_refreshRateComparison, OVERLOAD_QSTRING(&QComboBox::currentIndexChanged), this, [this](const QString &text)
@@ -246,6 +264,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 if (text == "Ceiled")  this->currentPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::ceiled;
 
                 this->update_current_present_list_text();
+                kvideopreset_apply_current_active_preset();
             }
         });
 
@@ -297,7 +316,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
                             connect((QSpinBox*)spinbox, OVERLOAD_INT(&QSpinBox::valueChanged), this, [this]
                             {
-                                this->update_current_preset_parameters();
+                                this->broadcast_current_preset_parameters();
                             });
 
                             #undef OVERLOAD_INT
@@ -368,25 +387,29 @@ void VideoParameterDialog::update_current_present_list_text(void)
     return;
 }
 
-void VideoParameterDialog::update_current_preset_parameters(void)
+void VideoParameterDialog::broadcast_current_preset_parameters(void)
 {
-    video_signal_parameters_s p;
+    if (!this->currentPreset ||
+        !CONTROLS_LIVE_UPDATE)
+    {
+        return;
+    }
 
-    p.overallBrightness  = ui->spinBox_colorBright->value();
-    p.overallContrast    = ui->spinBox_colorContr->value();
-    p.redBrightness      = ui->spinBox_colorBrightRed->value();
-    p.redContrast        = ui->spinBox_colorContrRed->value();
-    p.greenBrightness    = ui->spinBox_colorBrightGreen->value();
-    p.greenContrast      = ui->spinBox_colorContrGreen->value();
-    p.blueBrightness     = ui->spinBox_colorBrightBlue->value();
-    p.blueContrast       = ui->spinBox_colorContrBlue->value();
-    p.blackLevel         = ui->spinBox_videoBlackLevel->value();
-    p.horizontalPosition = ui->spinBox_videoHorPos->value();
-    p.horizontalScale    = ui->spinBox_videoHorSize->value();
-    p.phase              = ui->spinBox_videoPhase->value();
-    p.verticalPosition   = ui->spinBox_videoVerPos->value();
+    this->currentPreset->videoParameters.overallBrightness  = ui->spinBox_colorBright->value();
+    this->currentPreset->videoParameters.overallContrast    = ui->spinBox_colorContr->value();
+    this->currentPreset->videoParameters.redBrightness      = ui->spinBox_colorBrightRed->value();
+    this->currentPreset->videoParameters.redContrast        = ui->spinBox_colorContrRed->value();
+    this->currentPreset->videoParameters.greenBrightness    = ui->spinBox_colorBrightGreen->value();
+    this->currentPreset->videoParameters.greenContrast      = ui->spinBox_colorContrGreen->value();
+    this->currentPreset->videoParameters.blueBrightness     = ui->spinBox_colorBrightBlue->value();
+    this->currentPreset->videoParameters.blueContrast       = ui->spinBox_colorContrBlue->value();
+    this->currentPreset->videoParameters.blackLevel         = ui->spinBox_videoBlackLevel->value();
+    this->currentPreset->videoParameters.horizontalPosition = ui->spinBox_videoHorPos->value();
+    this->currentPreset->videoParameters.horizontalScale    = ui->spinBox_videoHorSize->value();
+    this->currentPreset->videoParameters.phase              = ui->spinBox_videoPhase->value();
+    this->currentPreset->videoParameters.verticalPosition   = ui->spinBox_videoVerPos->value();
 
-    kvideopreset_update_preset_parameters(this->currentPreset->id, p);
+    kvideoparam_preset_video_params_changed(this->currentPreset->id);
 
     return;
 }
@@ -495,6 +518,99 @@ void VideoParameterDialog::add_video_preset_to_list(const video_preset_s *const 
     return;
 }
 
+void VideoParameterDialog::update_preset_control_ranges(void)
+{
+    video_signal_parameters_s currentParams = {};
+
+    if (this->currentPreset)
+    {
+        currentParams = this->currentPreset->videoParameters;
+    }
+
+    // Current valid ranges. Note: we adjust the min/max values so that Qt
+    // doesn't clip preset data that falls outside of the capture card's
+    // min/max range.
+    {
+        const video_signal_parameters_s min = kc_capture_api().get_minimum_video_signal_parameters();
+        const video_signal_parameters_s max = kc_capture_api().get_maximum_video_signal_parameters();
+
+        ui->spinBox_colorBright->setMinimum(std::min(currentParams.overallBrightness, min.overallBrightness));
+        ui->spinBox_colorBright->setMaximum(std::max(currentParams.overallBrightness, max.overallBrightness));
+        ui->horizontalScrollBar_colorBright->setMinimum(ui->spinBox_colorBright->minimum());
+        ui->horizontalScrollBar_colorBright->setMaximum(ui->spinBox_colorBright->maximum());
+
+        ui->spinBox_colorContr->setMinimum(std::min(currentParams.overallContrast, min.overallContrast));
+        ui->spinBox_colorContr->setMaximum(std::max(currentParams.overallContrast, max.overallContrast));
+        ui->horizontalScrollBar_colorContr->setMinimum(ui->spinBox_colorContr->minimum());
+        ui->horizontalScrollBar_colorContr->setMaximum(ui->spinBox_colorContr->maximum());
+
+        ui->spinBox_colorBrightRed->setMinimum(std::min(currentParams.redBrightness, min.redBrightness));
+        ui->spinBox_colorBrightRed->setMaximum(std::max(currentParams.redBrightness, max.redBrightness));
+        ui->horizontalScrollBar_colorBrightRed->setMinimum(ui->spinBox_colorBrightRed->minimum());
+        ui->horizontalScrollBar_colorBrightRed->setMaximum(ui->spinBox_colorBrightRed->maximum());
+
+        ui->spinBox_colorContrRed->setMinimum(std::min(currentParams.redContrast, min.redContrast));
+        ui->spinBox_colorContrRed->setMaximum(std::max(currentParams.redContrast, max.redContrast));
+        ui->horizontalScrollBar_colorContrRed->setMinimum(ui->spinBox_colorContrRed->minimum());
+        ui->horizontalScrollBar_colorContrRed->setMaximum(ui->spinBox_colorContrRed->maximum());
+
+        ui->spinBox_colorBrightGreen->setMinimum(std::min(currentParams.greenBrightness, min.greenBrightness));
+        ui->spinBox_colorBrightGreen->setMaximum(std::max(currentParams.greenBrightness, max.greenBrightness));
+        ui->horizontalScrollBar_colorBrightGreen->setMinimum(ui->spinBox_colorBrightGreen->minimum());
+        ui->horizontalScrollBar_colorBrightGreen->setMaximum(ui->spinBox_colorBrightGreen->maximum());
+
+        ui->spinBox_colorContrGreen->setMinimum(std::min(currentParams.greenContrast, min.greenContrast));
+        ui->spinBox_colorContrGreen->setMaximum(std::max(currentParams.greenContrast, max.greenContrast));
+        ui->horizontalScrollBar_colorContrGreen->setMinimum(ui->spinBox_colorContrGreen->minimum());
+        ui->horizontalScrollBar_colorContrGreen->setMaximum(ui->spinBox_colorContrGreen->maximum());
+
+        ui->spinBox_colorBrightBlue->setMinimum(std::min(currentParams.blueBrightness, min.blueBrightness));
+        ui->spinBox_colorBrightBlue->setMaximum(std::max(currentParams.blueBrightness, max.blueBrightness));
+        ui->horizontalScrollBar_colorBrightBlue->setMinimum(ui->spinBox_colorBrightBlue->minimum());
+        ui->horizontalScrollBar_colorBrightBlue->setMaximum(ui->spinBox_colorBrightBlue->maximum());
+
+        ui->spinBox_colorContrBlue->setMinimum(std::min(currentParams.blueContrast, min.blueContrast));
+        ui->spinBox_colorContrBlue->setMaximum(std::max(currentParams.blueContrast, max.blueContrast));
+        ui->horizontalScrollBar_colorContrBlue->setMinimum(ui->spinBox_colorContrBlue->minimum());
+        ui->horizontalScrollBar_colorContrBlue->setMaximum(ui->spinBox_colorContrBlue->maximum());
+
+        ui->spinBox_videoBlackLevel->setMinimum(std::min(currentParams.blackLevel, min.blackLevel));
+        ui->spinBox_videoBlackLevel->setMaximum(std::max(currentParams.blackLevel, max.blackLevel));
+        ui->horizontalScrollBar_videoBlackLevel->setMinimum(ui->spinBox_videoBlackLevel->minimum());
+        ui->horizontalScrollBar_videoBlackLevel->setMaximum(ui->spinBox_videoBlackLevel->maximum());
+
+        ui->spinBox_videoHorPos->setMinimum(std::min(currentParams.horizontalPosition, min.horizontalPosition));
+        ui->spinBox_videoHorPos->setMaximum(std::max(currentParams.horizontalPosition, max.horizontalPosition));
+        ui->horizontalScrollBar_videoHorPos->setMinimum(ui->spinBox_videoHorPos->minimum());
+        ui->horizontalScrollBar_videoHorPos->setMaximum(ui->spinBox_videoHorPos->maximum());
+
+        ui->spinBox_videoHorSize->setMinimum(std::min(currentParams.horizontalScale, min.horizontalScale));
+        ui->spinBox_videoHorSize->setMaximum(std::max(currentParams.horizontalScale, max.horizontalScale));
+        ui->horizontalScrollBar_videoHorSize->setMinimum(ui->spinBox_videoHorSize->minimum());
+        ui->horizontalScrollBar_videoHorSize->setMaximum(ui->spinBox_videoHorSize->maximum());
+
+        ui->spinBox_videoPhase->setMinimum(std::min(currentParams.phase, min.phase));
+        ui->spinBox_videoPhase->setMaximum(std::max(currentParams.phase, max.phase));
+        ui->horizontalScrollBar_videoPhase->setMinimum(ui->spinBox_videoPhase->minimum());
+        ui->horizontalScrollBar_videoPhase->setMaximum(ui->spinBox_videoPhase->maximum());
+
+        ui->spinBox_videoVerPos->setMinimum(std::min(currentParams.verticalPosition, min.verticalPosition));
+        ui->spinBox_videoVerPos->setMaximum(std::max(currentParams.verticalPosition, max.verticalPosition));
+        ui->horizontalScrollBar_videoVerPos->setMinimum(ui->spinBox_videoVerPos->minimum());
+        ui->horizontalScrollBar_videoVerPos->setMaximum(ui->spinBox_videoVerPos->maximum());
+    }
+
+    return;
+}
+
+// Called to inform the dialog that a new capture signal has been received.
+void VideoParameterDialog::notify_of_new_capture_signal(void)
+{
+    this->update_preset_control_ranges();
+
+    return;
+}
+
 void VideoParameterDialog::update_preset_controls(void)
 {
     this->currentPreset = kvideopreset_get_preset(ui->comboBox_presetList->currentData().toUInt());
@@ -546,6 +662,57 @@ void VideoParameterDialog::update_preset_controls(void)
     }
 
     ui->lineEdit_presetName->setText(QString::fromStdString(this->currentPreset->name));
+
+    // Assign the video parameter values.
+    {
+        CONTROLS_LIVE_UPDATE = false;
+
+        this->update_preset_control_ranges();
+
+        // Current values.
+        {
+            ui->spinBox_colorBright->setValue(this->currentPreset->videoParameters.overallBrightness);
+            ui->horizontalScrollBar_colorBright->setValue(this->currentPreset->videoParameters.overallBrightness);
+
+            ui->spinBox_colorContr->setValue(this->currentPreset->videoParameters.overallContrast);
+            ui->horizontalScrollBar_colorContr->setValue(this->currentPreset->videoParameters.overallContrast);
+
+            ui->spinBox_colorBrightRed->setValue(this->currentPreset->videoParameters.redBrightness);
+            ui->horizontalScrollBar_colorBrightRed->setValue(this->currentPreset->videoParameters.redBrightness);
+
+            ui->spinBox_colorContrRed->setValue(this->currentPreset->videoParameters.redContrast);
+            ui->horizontalScrollBar_colorContrRed->setValue(this->currentPreset->videoParameters.redContrast);
+
+            ui->spinBox_colorBrightGreen->setValue(this->currentPreset->videoParameters.greenBrightness);
+            ui->horizontalScrollBar_colorBrightGreen->setValue(this->currentPreset->videoParameters.greenBrightness);
+
+            ui->spinBox_colorContrGreen->setValue(this->currentPreset->videoParameters.greenContrast);
+            ui->horizontalScrollBar_colorContrGreen->setValue(this->currentPreset->videoParameters.greenContrast);
+
+            ui->spinBox_colorBrightBlue->setValue(this->currentPreset->videoParameters.blueBrightness);
+            ui->horizontalScrollBar_colorBrightBlue->setValue(this->currentPreset->videoParameters.blueBrightness);
+
+            ui->spinBox_colorContrBlue->setValue(this->currentPreset->videoParameters.blueContrast);
+            ui->horizontalScrollBar_colorContrBlue->setValue(this->currentPreset->videoParameters.blueContrast);
+
+            ui->spinBox_videoBlackLevel->setValue(this->currentPreset->videoParameters.blackLevel);
+            ui->horizontalScrollBar_videoBlackLevel->setValue(this->currentPreset->videoParameters.blackLevel);
+
+            ui->spinBox_videoHorPos->setValue(this->currentPreset->videoParameters.horizontalPosition);
+            ui->horizontalScrollBar_videoHorPos->setValue(this->currentPreset->videoParameters.horizontalPosition);
+
+            ui->spinBox_videoHorSize->setValue(this->currentPreset->videoParameters.horizontalScale);
+            ui->horizontalScrollBar_videoHorSize->setValue(this->currentPreset->videoParameters.horizontalScale);
+
+            ui->spinBox_videoPhase->setValue(this->currentPreset->videoParameters.phase);
+            ui->horizontalScrollBar_videoPhase->setValue(this->currentPreset->videoParameters.phase);
+
+            ui->spinBox_videoVerPos->setValue(this->currentPreset->videoParameters.verticalPosition);
+            ui->horizontalScrollBar_videoVerPos->setValue(this->currentPreset->videoParameters.verticalPosition);
+        }
+
+        CONTROLS_LIVE_UPDATE = true;
+    }
 
     return;
 }

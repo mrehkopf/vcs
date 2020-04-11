@@ -946,6 +946,11 @@ int capture_api_video4linux_s::get_device_maximum_input_count(void) const
 
 video_signal_parameters_s capture_api_video4linux_s::get_video_signal_parameters(void) const
 {
+    if (this->has_no_signal())
+    {
+        return this->get_default_video_signal_parameters();
+    }
+
     video_signal_parameters_s p;
 
     p.phase              = SIGNAL_CONTROLS.value(signal_parameters_s::parameter_type_e::phase);
@@ -969,19 +974,40 @@ video_signal_parameters_s capture_api_video4linux_s::get_default_video_signal_pa
 {
     video_signal_parameters_s p;
 
-    p.phase              = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::phase);
-    p.blackLevel         = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::black_level);
-    p.horizontalPosition = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::horizontal_position);
-    p.verticalPosition   = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::vertical_position);
-    p.horizontalScale    = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::horizontal_size);
-    p.overallBrightness  = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::brightness);
-    p.overallContrast    = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::contrast);
-    p.redBrightness      = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::red_brightness);
-    p.greenBrightness    = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::green_brightness);
-    p.blueBrightness     = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::blue_brightness);
-    p.redContrast        = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::red_contrast);
-    p.greenContrast      = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::green_contrast);
-    p.blueContrast       = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::blue_contrast);
+    // The V4L API returns no parameter ranges while there's no signal - so let's
+    // approximate them.
+    if (this->has_no_signal())
+    {
+        p.phase              = 0;
+        p.blackLevel         = 8;
+        p.horizontalPosition = 112;
+        p.verticalPosition   = 11;
+        p.horizontalScale    = 800;
+        p.overallBrightness  = 32;
+        p.overallContrast    = 128;
+        p.redBrightness      = 128;
+        p.greenBrightness    = 256;
+        p.blueBrightness     = 128;
+        p.redContrast        = 256;
+        p.greenContrast      = 128;
+        p.blueContrast       = 256;
+    }
+    else
+    {
+        p.phase              = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::phase);
+        p.blackLevel         = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::black_level);
+        p.horizontalPosition = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::horizontal_position);
+        p.verticalPosition   = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::vertical_position);
+        p.horizontalScale    = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::horizontal_size);
+        p.overallBrightness  = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::brightness);
+        p.overallContrast    = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::contrast);
+        p.redBrightness      = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::red_brightness);
+        p.greenBrightness    = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::green_brightness);
+        p.blueBrightness     = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::blue_brightness);
+        p.redContrast        = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::red_contrast);
+        p.greenContrast      = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::green_contrast);
+        p.blueContrast       = SIGNAL_CONTROLS.default_value(signal_parameters_s::parameter_type_e::blue_contrast);
+    }
 
     return p;
 }
@@ -990,19 +1016,40 @@ video_signal_parameters_s capture_api_video4linux_s::get_minimum_video_signal_pa
 {
     video_signal_parameters_s p;
 
-    p.phase              = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::phase);
-    p.blackLevel         = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::black_level);
-    p.horizontalPosition = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::horizontal_position);
-    p.verticalPosition   = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::vertical_position);
-    p.horizontalScale    = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::horizontal_size);
-    p.overallBrightness  = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::brightness);
-    p.overallContrast    = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::contrast);
-    p.redBrightness      = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::red_brightness);
-    p.greenBrightness    = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::green_brightness);
-    p.blueBrightness     = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::blue_brightness);
-    p.redContrast        = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::red_contrast);
-    p.greenContrast      = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::green_contrast);
-    p.blueContrast       = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::blue_contrast);
+    // The V4L API returns no parameter ranges while there's no signal - so let's
+    // approximate them.
+    if (this->has_no_signal())
+    {
+        p.phase              = 0;
+        p.blackLevel         = 1;
+        p.horizontalPosition = 32;
+        p.verticalPosition   = 4;
+        p.horizontalScale    = 100;
+        p.overallBrightness  = 0;
+        p.overallContrast    = 0;
+        p.redBrightness      = 0;
+        p.greenBrightness    = 0;
+        p.blueBrightness     = 0;
+        p.redContrast        = 0;
+        p.greenContrast      = 0;
+        p.blueContrast       = 0;
+    }
+    else
+    {
+        p.phase              = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::phase);
+        p.blackLevel         = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::black_level);
+        p.horizontalPosition = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::horizontal_position);
+        p.verticalPosition   = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::vertical_position);
+        p.horizontalScale    = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::horizontal_size);
+        p.overallBrightness  = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::brightness);
+        p.overallContrast    = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::contrast);
+        p.redBrightness      = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::red_brightness);
+        p.greenBrightness    = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::green_brightness);
+        p.blueBrightness     = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::blue_brightness);
+        p.redContrast        = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::red_contrast);
+        p.greenContrast      = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::green_contrast);
+        p.blueContrast       = SIGNAL_CONTROLS.minimum_value(signal_parameters_s::parameter_type_e::blue_contrast);
+    }
 
     return p;
 }
@@ -1011,19 +1058,40 @@ video_signal_parameters_s capture_api_video4linux_s::get_maximum_video_signal_pa
 {
     video_signal_parameters_s p;
 
-    p.phase              = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::phase);
-    p.blackLevel         = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::black_level);
-    p.horizontalPosition = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::horizontal_position);
-    p.verticalPosition   = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::vertical_position);
-    p.horizontalScale    = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::horizontal_size);
-    p.overallBrightness  = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::brightness);
-    p.overallContrast    = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::contrast);
-    p.redBrightness      = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::red_brightness);
-    p.greenBrightness    = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::green_brightness);
-    p.blueBrightness     = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::blue_brightness);
-    p.redContrast        = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::red_contrast);
-    p.greenContrast      = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::green_contrast);
-    p.blueContrast       = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::blue_contrast);
+    // The V4L API returns no parameter ranges while there's no signal - so let's
+    // approximate them.
+    if (this->has_no_signal())
+    {
+        p.phase              = 31;
+        p.blackLevel         = 255;
+        p.horizontalPosition = 800;
+        p.verticalPosition   = 15;
+        p.horizontalScale    = 4095;
+        p.overallBrightness  = 255;
+        p.overallContrast    = 255;
+        p.redBrightness      = 255;
+        p.greenBrightness    = 511;
+        p.blueBrightness     = 255;
+        p.redContrast        = 511;
+        p.greenContrast      = 255;
+        p.blueContrast       = 511;
+    }
+    else
+    {
+        p.phase              = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::phase);
+        p.blackLevel         = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::black_level);
+        p.horizontalPosition = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::horizontal_position);
+        p.verticalPosition   = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::vertical_position);
+        p.horizontalScale    = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::horizontal_size);
+        p.overallBrightness  = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::brightness);
+        p.overallContrast    = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::contrast);
+        p.redBrightness      = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::red_brightness);
+        p.greenBrightness    = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::green_brightness);
+        p.blueBrightness     = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::blue_brightness);
+        p.redContrast        = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::red_contrast);
+        p.greenContrast      = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::green_contrast);
+        p.blueContrast       = SIGNAL_CONTROLS.maximum_value(signal_parameters_s::parameter_type_e::blue_contrast);
+    }
 
     return p;
 }
@@ -1056,6 +1124,14 @@ bool capture_api_video4linux_s::reset_missed_frames_count()
 
 bool capture_api_video4linux_s::set_video_signal_parameters(const video_signal_parameters_s &p)
 {
+    if (this->has_no_signal())
+    {
+        DEBUG(("Was asked to set capture video params while there was no signal. "
+               "Ignoring the request."));
+
+        return true;
+    }
+
     const auto set_parameter = [](const int value, const signal_parameters_s::parameter_type_e parameterType)
     {
         if (SIGNAL_CONTROLS.value(parameterType) != value)

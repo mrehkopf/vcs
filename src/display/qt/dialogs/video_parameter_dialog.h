@@ -46,6 +46,9 @@ public:
     // Called to inform the dialog of a new source file for video presets.
     void receive_new_video_presets_filename(const QString &filename);
 
+    // Called to inform the dialog that a new capture signal has been received.
+    void notify_of_new_capture_signal(void);
+
 signals:
     // Emitted when the graph's enabled status is toggled.
     void video_parameter_graph_enabled(void);
@@ -54,11 +57,13 @@ signals:
 private:
     void add_video_preset_to_list(const video_preset_s *const preset);
 
+    void update_preset_control_ranges(void);
+
     void update_preset_controls(void);
 
     QString make_preset_list_text(const video_preset_s *const preset);
 
-    void update_current_preset_parameters(void);
+    void broadcast_current_preset_parameters(void);
 
     void update_current_present_list_text(void);
 

@@ -104,13 +104,18 @@ struct video_preset_s
 
 void kvideopreset_release(void);
 
+// Call this to inform the system that the given preset's parameter(s) have
+// changed. Note that if you change the preset's activation conditions, you
+// should call kvideopreset_apply_current_active_preset() instead.
+void kvideoparam_preset_video_params_changed(const unsigned presetId);
+
 void kvideopreset_remove_all_presets(void);
 
 void kvideopreset_assign_presets(const std::vector<video_preset_s*> &presets);
 
 const std::vector<video_preset_s*>& kvideopreset_all_presets(void);
 
-void kvideopreset_update_preset_parameters(const unsigned presetId, const video_signal_parameters_s &params);
+void kvideopreset_apply_current_active_preset(void);
 
 video_preset_s* kvideopreset_get_preset(const unsigned presetId);
 
