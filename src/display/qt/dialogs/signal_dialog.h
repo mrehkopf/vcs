@@ -32,27 +32,12 @@ public:
 
     void set_controls_enabled(const bool state);
 
-    void receive_new_mode_settings_filename(const QString &filename);
-
     void update_controls(void);
 
-private slots:
-    void save_settings(void);
-
-    void load_settings(void);
-
-    void broadcast_settings(void);
-
 private:
-    void flag_unsaved_changes(void);
-
-    void remove_unsaved_changes_flag(void);
-
     void update_information_table(const bool isReceivingSignal);
 
     Ui::SignalDialog *ui;
-
-    QMenuBar *menubar = nullptr;
 };
 
 #endif

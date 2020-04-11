@@ -370,15 +370,15 @@ MainWindow::MainWindow(QWidget *parent) :
             menu->addMenu(colorDepth);
             menu->addSeparator();
 
-            QAction *signal = new QAction("Signal...", this);
-            signal->setShortcut(QKeySequence("ctrl+s"));
-            menu->addAction(signal);
-
             connect(menu->addAction("Aliases..."), &QAction::triggered, this, [=]{this->open_alias_dialog();});
 
             QAction *resolution = new QAction("Resolution...", this);
             resolution->setShortcut(QKeySequence("ctrl+i"));
             menu->addAction(resolution);
+
+            QAction *signal = new QAction("Signal info...", this);
+            signal->setShortcut(QKeySequence("ctrl+s"));
+            menu->addAction(signal);
 
             QAction *videoParams = new QAction("Video presets...", this);
             videoParams->setShortcut(QKeySequence("ctrl+v"));
@@ -1164,7 +1164,7 @@ FilterGraphNode* MainWindow::add_filter_graph_node(const filter_type_enum_e &fil
 void MainWindow::signal_new_mode_settings_source_file(const std::string &filename)
 {
     k_assert(this->signalDlg != nullptr, "");
-    this->signalDlg->receive_new_mode_settings_filename(QString::fromStdString(filename));
+    //this->signalDlg->receive_new_mode_settings_filename(QString::fromStdString(filename));
 
     return;
 }
@@ -1269,7 +1269,7 @@ void MainWindow::update_output_framerate(const u32 fps,
 void MainWindow::update_video_mode_params(void)
 {
     k_assert(this->signalDlg != nullptr, "");
-    this->signalDlg->update_controls();
+    //this->signalDlg->update_controls();
 
     return;
 }
