@@ -17,12 +17,11 @@ static std::vector<video_preset_s*> PRESETS;
 // currently active.
 static int ACTIVE_PRESET_ID;
 
+static unsigned RUNNING_PRESET_ID = 0;
+
 void kvideopreset_release(void)
 {
-    for (auto preset: PRESETS)
-    {
-        delete preset;
-    }
+    kvideopreset_remove_all_presets();
 
     return;
 }
@@ -35,8 +34,6 @@ bool kvideopreset_remove_preset(const unsigned presetId)
     {
         return false;
     }
-
-    DEBUG(("Deleting %s", (*targetPreset)->name.c_str()));
 
     PRESETS.erase(targetPreset);
 
@@ -78,6 +75,19 @@ static video_preset_s* strongest_activator(void)
     }
 }
 
+void kvideopreset_remove_all_presets(void)
+{
+    for (auto preset: PRESETS)
+    {
+        delete preset;
+    }
+
+    PRESETS.clear();
+    RUNNING_PRESET_ID = 0;
+
+    return;
+}
+
 void kvideopreset_update_preset_parameters(const unsigned presetId, const video_signal_parameters_s &params)
 {
     video_preset_s *targetPreset = kvideopreset_get_preset(presetId);
@@ -93,7 +103,12 @@ void kvideopreset_update_preset_parameters(const unsigned presetId, const video_
     return;
 }
 
-video_preset_s *kvideopreset_get_preset(const unsigned presetId)
+const std::vector<video_preset_s*>& kvideopreset_all_presets(void)
+{
+    return PRESETS;
+}
+
+video_preset_s* kvideopreset_get_preset(const unsigned presetId)
 {
     for (auto preset: PRESETS)
     {
@@ -103,15 +118,24 @@ video_preset_s *kvideopreset_get_preset(const unsigned presetId)
         }
     }
 
-    k_assert(0, "Unknown video preset id.");
+    return nullptr;
+}
+
+void kvideopreset_assign_presets(const std::vector<video_preset_s*> &presets)
+{
+    kvideopreset_remove_all_presets();
+
+    PRESETS = presets;
+
+    return;
 }
 
 video_preset_s* kvideopreset_create_preset(void)
 {
     video_preset_s *preset = new video_preset_s();
 
-    preset->id = unsigned(PRESETS.size());
-    preset->name = ("Preset #" + std::to_string(preset->id + 1));
+    preset->id = ++RUNNING_PRESET_ID;
+    preset->name = ("Video preset #" + std::to_string(preset->id));
     preset->activatesWithResolution = true;
     preset->activationResolution = {640, 480, 32};
 

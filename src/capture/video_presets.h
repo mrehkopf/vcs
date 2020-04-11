@@ -15,11 +15,6 @@
 
 struct video_preset_s
 {
-    video_signal_parameters_s videoParameters = {};
-
-    unsigned id = 0;
-    std::string name = "";
-
     enum class refresh_rate_comparison_e
     {
         equals,
@@ -27,6 +22,22 @@ struct video_preset_s
         rounded,
         ceiled,
     };
+
+    video_signal_parameters_s videoParameters = {};
+
+    unsigned id = 0;
+    std::string name = "";
+
+    bool activatesWithResolution = false;
+    resolution_s activationResolution = {640, 480, 32};
+
+    bool activatesWithRefreshRate = false;
+    refresh_rate_s activationRefreshRate = 60;
+    refresh_rate_comparison_e refreshRateComparator = refresh_rate_comparison_e::equals;
+
+    // Only handled by the GUI.
+    bool activatesWithShortcut = false;
+    std::string activationShortcut = "ctrl+f1";
 
     // Returns the strength of activation, expressed as an integer, of this preset
     // to the given capture conditions (resolution, refresh rate, etc.). The activation
@@ -89,20 +100,15 @@ struct video_preset_s
     {
         return (this->activatesWithShortcut && (this->activationShortcut == shortcut));
     }
-
-    bool activatesWithResolution = false;
-    resolution_s activationResolution = {640, 480, 32};
-
-    bool activatesWithRefreshRate = false;
-    refresh_rate_s activationRefreshRate = 60;
-    refresh_rate_comparison_e refreshRateComparator = refresh_rate_comparison_e::equals;
-
-    // Only handled by the GUI.
-    bool activatesWithShortcut = false;
-    std::string activationShortcut = "ctrl+f1";
 };
 
 void kvideopreset_release(void);
+
+void kvideopreset_remove_all_presets(void);
+
+void kvideopreset_assign_presets(const std::vector<video_preset_s*> &presets);
+
+const std::vector<video_preset_s*>& kvideopreset_all_presets(void);
 
 void kvideopreset_update_preset_parameters(const unsigned presetId, const video_signal_parameters_s &params);
 

@@ -8,6 +8,7 @@ class FilterGraphNode;
 
 struct filter_graph_option_s;
 struct video_signal_parameters_s;
+struct video_preset_s;
 struct mode_alias_s;
 struct resolution_s;
 
@@ -21,10 +22,13 @@ void kpropagate_news_of_new_captured_frame(void);
 void kpropagate_news_of_recording_started(void);
 void kpropagate_news_of_recording_ended(void);
 
+void kpropagate_saved_video_presets_to_disk(const std::vector<video_preset_s*> &presets, const std::string &targetFilename);
 void kpropagate_saved_filter_graph_to_disk(const std::string &targetFilename);
 void kpropagate_saved_video_signal_parameters_to_disk(const std::vector<video_signal_parameters_s> &p, const std::string &targetFilename);
 void kpropagate_saved_aliases_to_disk(const std::vector<mode_alias_s> &aliases, const std::string &targetFilename);
 
+void kpropagate_loaded_video_presets_from_disk(const std::vector<video_preset_s*> &presets,
+                                               const std::string &sourceFilename);
 void kpropagate_loaded_filter_graph_from_disk(const std::vector<FilterGraphNode*> &nodes,
                                               const std::vector<filter_graph_option_s> &graphOptions,
                                               const std::string &sourceFilename);

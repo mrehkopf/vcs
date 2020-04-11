@@ -132,7 +132,7 @@ void kd_set_capture_signal_reception_status(const bool receivingASignal);
 // Capture video settings have been loaded (e.g. by the user) from the file whose
 // name is given. If the GUI has a means to display this information, update it
 // accordingly.
-void kd_set_video_settings_filename(const std::string &filename);
+void kd_set_video_presets_filename(const std::string &filename);
 
 // Returns true if the output window is in fullscreen mode (true fullscreen, not
 // just as a window resized to fill the screen).

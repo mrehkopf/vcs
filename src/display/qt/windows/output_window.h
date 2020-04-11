@@ -70,7 +70,7 @@ public:
     // current frame rate.
     void measure_framerate(void);
 
-    void signal_new_mode_settings_source_file(const std::string &filename);
+    void signal_new_video_presets_source_file(const std::string &filename);
 
     void set_opengl_enabled(const bool enabled);
 

@@ -24,3 +24,18 @@ std::string file_reader::file_version(const std::string &filename)
 
     return "";
 }
+
+std::string file_reader::file_type(const std::string &filename)
+{
+    QList<QStringList> rowData = csv_parse_c(QString::fromStdString(filename)).contents();
+
+    for (const auto &row : rowData)
+    {
+        if (row.at(0) == "fileType")
+        {
+            return row.at(1).toStdString();
+        }
+    }
+
+    return "";
+}

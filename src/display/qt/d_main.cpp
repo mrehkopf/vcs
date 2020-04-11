@@ -104,11 +104,11 @@ void kd_add_alias(const mode_alias_s a)
     return;
 }
 
-void kd_set_video_settings_filename(const std::string &filename)
+void kd_set_video_presets_filename(const std::string &filename)
 {
     if (WINDOW != nullptr)
     {
-        WINDOW->signal_new_mode_settings_source_file(filename);
+        WINDOW->signal_new_video_presets_source_file(filename);
     }
 
     return;

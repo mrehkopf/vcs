@@ -106,7 +106,9 @@ SOURCES += \
     src/display/qt/dialogs/filter_graph/filter_node.cpp \
     src/display/qt/dialogs/filter_graph/filter_graph_node.cpp \
     src/display/qt/dialogs/video_parameter_dialog.cpp \
-    src/capture/video_presets.cpp
+    src/capture/video_presets.cpp \
+    src/common/disk/file_writers/file_writer_video_presets_version_a.cpp \
+    src/common/disk/file_readers/file_reader_video_presets_version_a.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -166,7 +168,9 @@ HEADERS += \
     src/display/qt/dialogs/filter_graph/filter_graph_node.h \
     src/display/qt/dialogs/video_parameter_dialog.h \
     src/common/refresh_rate.h \
-    src/capture/video_presets.h
+    src/capture/video_presets.h \
+    src/common/disk/file_writers/file_writer_video_presets.h \
+    src/common/disk/file_readers/file_reader_video_presets.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \

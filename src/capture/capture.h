@@ -64,7 +64,7 @@ struct signal_info_s
 // Capture video parameters for a given resolution.
 struct video_signal_parameters_s
 {
-    resolution_s r;
+    resolution_s r; // For legacy (VCS <= 1.6.5) support.
 
     long overallBrightness;
     long overallContrast;

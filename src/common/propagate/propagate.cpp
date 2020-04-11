@@ -13,6 +13,7 @@
 #include "propagate.h"
 #include "capture/capture_api.h"
 #include "capture/video_parameters.h"
+#include "capture/video_presets.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
@@ -106,6 +107,24 @@ void kpropagate_news_of_recording_ended(void)
     return;
 }
 
+// Call to let the system know that the given video presets have been loaded
+// from the given file.
+void kpropagate_loaded_video_presets_from_disk(const std::vector<video_preset_s*> &presets,
+                                               const std::string &sourceFilename)
+{
+    kvideopreset_assign_presets(presets);
+
+    // In case we loaded in parameters for the current resolution.
+    ///kc_capture_api().set_video_signal_parameters(kvideoparam_parameters_for_resolution(kc_capture_api().get_resolution()));
+
+    kd_update_video_mode_params();
+    kd_set_video_presets_filename(sourceFilename);
+
+    INFO(("Loaded %u preset(s).", presets.size()));
+
+    return;
+}
+
 // Call to let the system know that the given mode parameters have been loaded
 // from the given file.
 void kpropagate_loaded_video_signal_parameters_from_disk(const std::vector<video_signal_parameters_s> &paramSets,
@@ -117,9 +136,19 @@ void kpropagate_loaded_video_signal_parameters_from_disk(const std::vector<video
     kc_capture_api().set_video_signal_parameters(kvideoparam_parameters_for_resolution(kc_capture_api().get_resolution()));
 
     kd_update_video_mode_params();
-    kd_set_video_settings_filename(sourceFilename);
+    kd_set_video_presets_filename(sourceFilename);
 
     INFO(("Loaded %u set(s) of mode params from disk.", paramSets.size()));
+
+    return;
+}
+
+void kpropagate_saved_video_presets_to_disk(const std::vector<video_preset_s*> &presets,
+                                            const std::string &targetFilename)
+{
+    INFO(("Saved %u video preset(s).", presets.size()));
+
+    kd_set_video_presets_filename(targetFilename);
 
     return;
 }
@@ -129,7 +158,7 @@ void kpropagate_saved_video_signal_parameters_to_disk(const std::vector<video_si
 {
     INFO(("Saved %u set(s) of mode params to disk.", p.size()));
 
-    kd_set_video_settings_filename(targetFilename);
+    kd_set_video_presets_filename(targetFilename);
 
     return;
 }

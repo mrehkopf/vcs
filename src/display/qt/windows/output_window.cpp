@@ -1161,10 +1161,10 @@ FilterGraphNode* MainWindow::add_filter_graph_node(const filter_type_enum_e &fil
     return this->filterGraphDlg->add_filter_graph_node(filterType, initialParameterValues);
 }
 
-void MainWindow::signal_new_mode_settings_source_file(const std::string &filename)
+void MainWindow::signal_new_video_presets_source_file(const std::string &filename)
 {
-    k_assert(this->signalDlg != nullptr, "");
-    //this->signalDlg->receive_new_mode_settings_filename(QString::fromStdString(filename));
+    k_assert(this->videoParamDlg != nullptr, "");
+    this->videoParamDlg->receive_new_video_presets_filename(QString::fromStdString(filename));
 
     return;
 }

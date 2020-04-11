@@ -65,7 +65,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_presetList">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -111,7 +111,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_activation">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -131,6 +131,9 @@
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
            <widget class="QCheckBox" name="checkBox_activatorResolution">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="text">
              <string>Resolution</string>
             </property>
@@ -139,7 +142,7 @@
           <item row="0" column="1">
            <widget class="QSpinBox" name="spinBox_resolutionX">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
@@ -161,7 +164,7 @@
           <item row="0" column="2">
            <widget class="QLabel" name="label_resolutionSeparator">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -177,7 +180,7 @@
           <item row="0" column="3">
            <widget class="QSpinBox" name="spinBox_resolutionY">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
@@ -198,6 +201,9 @@
           </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="checkBox_activatorRefreshRate">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="text">
              <string>Refresh rate</string>
             </property>
@@ -206,7 +212,7 @@
           <item row="1" column="1">
            <widget class="QComboBox" name="comboBox_refreshRateComparison">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
@@ -216,7 +222,7 @@
             </property>
             <item>
              <property name="text">
-              <string>Exact</string>
+              <string>Exactly</string>
              </property>
             </item>
             <item>
@@ -239,7 +245,7 @@
           <item row="1" column="2">
            <widget class="QLabel" name="label_refreshRateSeparator">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -255,7 +261,7 @@
           <item row="1" column="3">
            <widget class="QDoubleSpinBox" name="doubleSpinBox_refreshRateValue">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
@@ -280,7 +286,7 @@
           <item row="2" column="0">
            <widget class="QCheckBox" name="checkBox_activatorShortcut">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Shortcut</string>
@@ -290,7 +296,7 @@
           <item row="2" column="1">
            <widget class="QComboBox" name="comboBox_shortcutFirstKey">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
@@ -308,7 +314,7 @@
           <item row="2" column="2">
            <widget class="QLabel" name="label_shortcutSeparator">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -324,7 +330,7 @@
           <item row="2" column="3">
            <widget class="QComboBox" name="comboBox_shortcutSecondKey">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
@@ -400,7 +406,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_videoParameters">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
