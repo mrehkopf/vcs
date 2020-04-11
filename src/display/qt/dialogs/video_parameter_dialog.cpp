@@ -94,6 +94,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 }
             });
 
+            presetMenu->addSeparator();
+
             connect(presetMenu->addAction("Delete all presets"), &QAction::triggered, this, [=]
             {
                 this->remove_all_video_presets_from_list();
@@ -253,12 +255,12 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
         connect(ui->comboBox_refreshRateComparison, OVERLOAD_QSTRING(&QComboBox::currentIndexChanged), this, [this](const QString &text)
         {
-            if (text == "Exactly") ui->doubleSpinBox_refreshRateValue->setDecimals(refresh_rate_s::numDecimalsPrecision);
+            if (text == "Exact") ui->doubleSpinBox_refreshRateValue->setDecimals(refresh_rate_s::numDecimalsPrecision);
             else ui->doubleSpinBox_refreshRateValue->setDecimals(0);
 
             if (this->currentPreset)
             {
-                if (text == "Exactly") this->currentPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
+                if (text == "Exact") this->currentPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
                 if (text == "Rounded") this->currentPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::rounded;
                 if (text == "Floored") this->currentPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::floored;
                 if (text == "Ceiled")  this->currentPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::ceiled;
@@ -420,7 +422,7 @@ QString VideoParameterDialog::make_preset_list_text(const video_preset_s *const 
 
     if (preset->activatesWithShortcut)
     {
-        text << QString("F%1").arg(QString::number(ui->comboBox_shortcutSecondKey->currentIndex() + 1));
+        text << QString("[Ctrl+F%1]").arg(QString::number(ui->comboBox_shortcutSecondKey->currentIndex() + 1));
     }
 
     if (preset->activatesWithResolution)

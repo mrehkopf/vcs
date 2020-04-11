@@ -43,12 +43,12 @@
         <x>0</x>
         <y>0</y>
         <width>389</width>
-        <height>684</height>
+        <height>711</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <property name="spacing">
-        <number>0</number>
+        <number>9</number>
        </property>
        <property name="leftMargin">
         <number>0</number>
@@ -77,10 +77,10 @@
           <string>Preset</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <property name="leftMargin">
@@ -123,10 +123,10 @@
           <string>Activates when</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
@@ -178,6 +178,9 @@
             <property name="text">
              <string>x</string>
             </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
            </widget>
           </item>
           <item row="0" column="3">
@@ -228,7 +231,7 @@
             </property>
             <item>
              <property name="text">
-              <string>Exactly</string>
+              <string>Exact</string>
              </property>
             </item>
             <item>
@@ -262,6 +265,9 @@
             <property name="text">
              <string>=</string>
             </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
            </widget>
           </item>
           <item row="1" column="3">
@@ -275,8 +281,11 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::NoButtons</enum>
+            </property>
             <property name="suffix">
-             <string/>
+             <string> Hz</string>
             </property>
             <property name="decimals">
              <number>3</number>
@@ -333,6 +342,9 @@
             </property>
             <property name="text">
              <string>+</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -424,13 +436,13 @@
           </sizepolicy>
          </property>
          <property name="title">
-          <string>Parameters</string>
+          <string>Video parameters</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <property name="leftMargin">

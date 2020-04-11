@@ -59,6 +59,29 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
             this->menubar->addMenu(antitearMenu);
         }
 
+        // Values...
+        {
+            QMenu *valuesMenu = new QMenu("Values", this->menubar);
+
+            connect(valuesMenu->addAction("Reset to defaults"), &QAction::triggered, this, [=]
+            {
+                const anti_tear_options_s defaults = kat_default_settings();
+
+                kat_set_buffer_updates_disabled(true);
+
+                ui->spinBox_rangeDown->setValue(0);
+                ui->spinBox_rangeUp->setValue(0);
+                ui->spinBox_threshold->setValue(defaults.threshold);
+                ui->spinBox_matchesReqd->setValue(defaults.matchesReqd);
+                ui->spinBox_domainSize->setValue(defaults.windowLen);
+                ui->spinBox_stepSize->setValue(defaults.stepSize);
+
+                kat_set_buffer_updates_disabled(false);
+            });
+
+            this->menubar->addMenu(valuesMenu);
+        }
+
         this->layout()->setMenuBar(this->menubar);
     }
 
@@ -88,23 +111,6 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
                 [this]{ kat_set_step_size(ui->spinBox_stepSize->value()); });
 
         #undef OVERLOAD_INT
-
-        const auto restore_default_settings = [this]
-        {
-            const anti_tear_options_s defaults = kat_default_settings();
-
-            kat_set_buffer_updates_disabled(true);
-            ui->spinBox_threshold->setValue(defaults.threshold);
-            ui->spinBox_matchesReqd->setValue(defaults.matchesReqd);
-            ui->spinBox_domainSize->setValue(defaults.windowLen);
-            ui->spinBox_stepSize->setValue(defaults.stepSize);
-            kat_set_buffer_updates_disabled(false);
-
-            return;
-        };
-
-        connect(ui->pushButton_resetDefaults, &QPushButton::clicked, this,
-                [=]{ restore_default_settings(); });
 
         connect(ui->checkBox_visualizeRange, &QCheckBox::stateChanged, this,
                 [=]{ update_visualization_options(); });

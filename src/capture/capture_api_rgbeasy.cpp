@@ -787,7 +787,7 @@ refresh_rate_s capture_api_rgbeasy_s::get_refresh_rate(void) const
 {
     if (this->has_no_signal())
     {
-        NBENE(("Tried to query the capture signal while no signal was being received."));
+        DEBUG(("Tried to query the refresh rate while no signal was being received. Ignoring this."));
         return refresh_rate_s(0);
     }
 
