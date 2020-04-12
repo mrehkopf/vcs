@@ -57,7 +57,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
         // Initialize the table of information. Note that this also sets
         // the vertical order in which the table's parameters are shown.
         {
-            ui->tableWidget_propertyTable->modify_property("Input channel", "");
+            ui->tableWidget_propertyTable->modify_property("Input channel", "No signal");
             ui->tableWidget_propertyTable->modify_property("Resolution", "No signal");
             ui->tableWidget_propertyTable->modify_property("Refresh rate", "No signal");
             ui->tableWidget_propertyTable->modify_property("Uptime", "No signal");
