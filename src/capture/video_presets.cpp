@@ -36,6 +36,7 @@ bool kvideopreset_remove_preset(const unsigned presetId)
         return false;
     }
 
+    delete (*targetPreset);
     PRESETS.erase(targetPreset);
 
     return true;
