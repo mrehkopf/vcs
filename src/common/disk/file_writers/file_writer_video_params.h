@@ -8,7 +8,7 @@
 #ifndef FILE_WRITER_VIDEO_PARAMS_H
 #define FILE_WRITER_VIDEO_PARAMS_H
 
-#include "capture/video_parameters.h"
+#include "capture/capture.h"
 
 namespace file_writer
 {

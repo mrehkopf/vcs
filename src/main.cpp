@@ -122,7 +122,7 @@ static capture_event_e process_next_capture_event(void)
 // Load in any data files that the user requested via the command-line.
 static void load_user_data(void)
 {
-    kdisk_load_video_signal_parameters(kcom_params_file_name());
+    kdisk_load_video_presets(kcom_params_file_name());
     kdisk_load_filter_graph(kcom_filters_file_name());
     kdisk_load_aliases(kcom_alias_file_name());
 

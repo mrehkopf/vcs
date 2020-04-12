@@ -12,7 +12,6 @@
 #include "common/globals.h"
 #include "common/propagate/propagate.h"
 #include "capture/capture_api_rgbeasy.h"
-#include "capture/video_parameters.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
 
@@ -853,8 +852,6 @@ bool capture_api_rgbeasy_s::set_video_signal_parameters(const video_signal_param
                                              p.redContrast,
                                              p.greenContrast,
                                              p.blueContrast);
-
-    kvideoparam_update_parameters_for_resolution(this->get_resolution(), p);
 
     return true;
 }

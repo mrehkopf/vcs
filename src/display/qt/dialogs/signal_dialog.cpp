@@ -22,7 +22,6 @@
 #include "display/qt/utility.h"
 #include "display/display.h"
 #include "capture/capture_api.h"
-#include "capture/video_parameters.h"
 #include "capture/capture.h"
 #include "common/disk/disk.h"
 #include "ui_signal_dialog.h"

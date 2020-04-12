@@ -26,7 +26,6 @@
 #include <cstring>
 #include <chrono>
 #include <poll.h>
-#include "capture/video_parameters.h"
 #include "capture/capture_api_video4linux.h"
 
 #define INCLUDE_VISION
@@ -1157,8 +1156,6 @@ bool capture_api_video4linux_s::set_video_signal_parameters(const video_signal_p
     set_parameter(p.blueContrast,       signal_parameters_s::parameter_type_e::blue_contrast);
 
     SIGNAL_CONTROLS.update();
-
-    kvideoparam_update_parameters_for_resolution(this->get_resolution(), p);
 
     return true;
 }

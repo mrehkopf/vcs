@@ -84,7 +84,6 @@ SOURCES += \
     src/capture/capture_api_virtual.cpp \
     src/capture/capture_api_rgbeasy.cpp \
     src/capture/capture_api.cpp \
-    src/capture/video_parameters.cpp \
     src/display/qt/subclasses/QTableWidget_property_table.cpp \
     src/display/qt/dialogs/signal_dialog.cpp \
     src/capture/capture_api_video4linux.cpp \
@@ -148,7 +147,6 @@ HEADERS += \
     src/capture/capture_api.h \
     src/capture/capture_api_virtual.h \
     src/capture/capture_api_rgbeasy.h \
-    src/capture/video_parameters.h \
     src/display/display.h \
     src/display/qt/subclasses/QTableWidget_property_table.h \
     src/display/qt/dialogs/signal_dialog.h \
