@@ -111,6 +111,10 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
     // Set the GUI controls to their proper initial values.
     {
+        // The file format we save presets into reserves the { and } characters;
+        // these characters shouldn't occur in preset names.
+        ui->lineEdit_presetName->setValidator(new QRegExpValidator(QRegExp("[^{}]*"), this));
+
         ui->groupBox_activation->setEnabled(false);
         ui->groupBox_presetList->setEnabled(false);
         ui->groupBox_videoParameters->setEnabled(false);
