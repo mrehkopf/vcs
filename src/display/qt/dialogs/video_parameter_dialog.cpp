@@ -433,7 +433,7 @@ QString VideoParameterDialog::make_preset_list_text(const video_preset_s *const 
 
     if (preset->activatesWithRefreshRate)
     {
-        if (this->currentPreset->refreshRateComparator == video_preset_s::refresh_rate_comparison_e::equals)
+        if (preset->refreshRateComparator == video_preset_s::refresh_rate_comparison_e::equals)
         {
             text << QString("%1 Hz").arg(QString::number(preset->activationRefreshRate.value<double>(), 'f', 3));
         }
