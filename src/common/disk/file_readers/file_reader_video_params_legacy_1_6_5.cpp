@@ -74,7 +74,7 @@ bool file_reader::video_params::legacy_1_6_5::read(const std::string &filename,
         }
         catch (int)
         {
-            NBENE(("Failed to load the video parameters from disk."));
+            NBENE(("Failed to load video parameters."));
             goto fail;
         }
 

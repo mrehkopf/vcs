@@ -533,18 +533,6 @@ void ks_scale_frame(const captured_frame_s &frame)
         pixelData = COLORCONV_BUFFER.ptr();
     }
 
-    // While we have access to the color-converted original frame, and if we've
-    // been asked to do so, find out whether the frame is out of alignment with
-    // the screen; and if it is, adjust the capture properties to align it.
-    if (ALIGN_CAPTURE)
-    {
-        const auto alignment = kf_find_capture_alignment(pixelData, frameRes);
-
-        kpropagate_capture_alignment_adjust(alignment[0], alignment[1]);
-
-        ALIGN_CAPTURE = false;
-    }
-
     // Perform anti-tearing on the (color-converted) frame. If the user has turned
     // anti-tearing off, this will just return without doing anything.
     pixelData = kat_anti_tear(pixelData, frameRes);

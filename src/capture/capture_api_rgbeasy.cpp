@@ -803,31 +803,6 @@ refresh_rate_s capture_api_rgbeasy_s::get_refresh_rate(void) const
     }
 }
 
-bool capture_api_rgbeasy_s::assign_video_signal_params_for_resolution(const resolution_s r)
-{
-    video_signal_parameters_s p = kvideoparam_parameters_for_resolution(r);
-
-    // Apply the parameters to the current input signal.
-    /// TODO. Add error-checking.
-    RGBSetPhase(this->captureHandle,         p.phase);
-    RGBSetBlackLevel(this->captureHandle,    p.blackLevel);
-    RGBSetHorScale(this->captureHandle,      p.horizontalScale);
-    RGBSetHorPosition(this->captureHandle,   p.horizontalPosition);
-    RGBSetVerPosition(this->captureHandle,   p.verticalPosition);
-    RGBSetBrightness(this->captureHandle,    p.overallBrightness);
-    RGBSetContrast(this->captureHandle,      p.overallContrast);
-    RGBSetColourBalance(this->captureHandle, p.redBrightness,
-                                             p.greenBrightness,
-                                             p.blueBrightness,
-                                             p.redContrast,
-                                             p.greenContrast,
-                                             p.blueContrast);
-
-    (void)p;
-
-    return true;
-}
-
 bool capture_api_rgbeasy_s::set_video_signal_parameters(const video_signal_parameters_s &p)
 {
     if (this->has_no_signal())
@@ -852,64 +827,6 @@ bool capture_api_rgbeasy_s::set_video_signal_parameters(const video_signal_param
                                              p.redContrast,
                                              p.greenContrast,
                                              p.blueContrast);
-
-    return true;
-}
-
-bool capture_api_rgbeasy_s::adjust_horizontal_offset(const int delta)
-{
-    if (!delta)
-    {
-        return true;
-    }
-
-    if (!RECEIVING_A_SIGNAL)
-    {
-        return false;
-    }
-
-    const long newPos = (this->get_video_signal_parameters().horizontalPosition + delta);
-    if (newPos < this->get_minimum_video_signal_parameters().horizontalPosition ||
-        newPos > this->get_maximum_video_signal_parameters().horizontalPosition)
-    {
-        return false;
-    }
-
-    if (apicall_succeeded(RGBSetHorPosition(this->captureHandle, newPos)))
-    {
-        // Assume that this was a user-requested change, and as such that it
-        // should affect the user's custom mode parameter settings.
-        kvideoparam_update_parameters_for_resolution(this->get_resolution(), this->get_video_signal_parameters());
-
-        kd_update_video_mode_params();
-    }
-
-    return true;
-}
-
-bool capture_api_rgbeasy_s::adjust_vertical_offset(const int delta)
-{
-    if (!delta) return true;
-    if (!RECEIVING_A_SIGNAL) return false;
-
-    const long newPos = (this->get_video_signal_parameters().verticalPosition + delta);
-    if (newPos < std::max(2, (int)this->get_minimum_video_signal_parameters().verticalPosition) ||
-        newPos > this->get_maximum_video_signal_parameters().verticalPosition)
-    {
-        // ^ Testing for < 2 along with < MIN_VIDEO_PARAMS.verPos, since on my
-        // VisionRGB-PRO2, MIN_VIDEO_PARAMS.verPos gives a value less than 2,
-        // but setting any such value corrupts the captured image.
-        return false;
-    }
-
-    if (apicall_succeeded(RGBSetVerPosition(this->captureHandle, newPos)))
-    {
-        // Assume that this was a user-requested change, and as such that it
-        // should affect the user's custom mode parameter settings.
-        kvideoparam_update_parameters_for_resolution(this->get_resolution(), this->get_video_signal_parameters());
-
-        kd_update_video_mode_params();
-    }
 
     return true;
 }

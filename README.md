@@ -377,8 +377,6 @@ output window ........... Magnify this portion of the output window.
 Mouse wheel
 output window ........... Scale the output window up/down.
 
-F5 ...................... Snap the capture display to the edges of the frame.
-
 F11 ..................... Toggle fullscreen mode on/off.
 
 Ctrl + A ................ Open the anti-tear dialog.
@@ -395,13 +393,11 @@ Ctrl + R ................ Open the record dialog.
 
 Ctrl + L ................ Open the overlay dialog.
 
-Ctrl + Shift + key ...... Toggle the corresponding dialog's functionality on/off.
+Ctrl + Shift + key ...... Toggle the corresponding dialog's functionality on/off;
+                          e.g. Ctrl + Shift + R to turn recording on/off.
 
 Ctrl + 1 to 9 ........... Shortcuts for the input resolution buttons on the
                           control panel's Input tab.
-
-Alt + Shift + Arrows .... Adjust the capture's video position horizontally
-                          and vertically.
 ```
 
 ## Command-line arguments

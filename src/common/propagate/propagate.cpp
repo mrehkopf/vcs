@@ -136,7 +136,7 @@ void kpropagate_saved_video_presets_to_disk(const std::vector<video_preset_s*> &
 
 void kpropagate_saved_filter_graph_to_disk(const std::string &targetFilename)
 {
-    INFO(("Saved filter graph to disk."));
+    INFO(("Saved the filter graph."));
 
     kd_set_filter_graph_source_filename(targetFilename);
 
@@ -146,7 +146,7 @@ void kpropagate_saved_filter_graph_to_disk(const std::string &targetFilename)
 void kpropagate_saved_aliases_to_disk(const std::vector<mode_alias_s> &aliases,
                                       const std::string &targetFilename)
 {
-    INFO(("Saved %u aliases to disk.", aliases.size()));
+    INFO(("Saved %u aliases.", aliases.size()));
 
     (void)targetFilename;
 
@@ -160,7 +160,7 @@ void kpropagate_loaded_aliases_from_disk(const std::vector<mode_alias_s> &aliase
 
     ka_broadcast_aliases_to_gui();
 
-    INFO(("Loaded %u alias(es) from disk.", aliases.size()));
+    INFO(("Loaded %u alias(es).", aliases.size()));
 
     (void)sourceFilename;
 
@@ -177,17 +177,6 @@ void kpropagate_loaded_filter_graph_from_disk(const std::vector<FilterGraphNode*
 
     (void)sourceFilename;
     (void)nodes;
-
-    return;
-}
-
-// Call to ask the capture's horizontal and/or vertical positioning to be
-// adjusted by the given amount.
-void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int verticalDelta)
-{
-    kc_capture_api().adjust_horizontal_offset(horizontalDelta);
-
-    kc_capture_api().adjust_vertical_offset(verticalDelta);
 
     return;
 }

@@ -46,8 +46,6 @@ struct capture_api_video4linux_s : public capture_api_s
     bool set_video_signal_parameters(const video_signal_parameters_s &p) override;
 
     /// TODO: Properly implement these.
-    bool adjust_horizontal_offset(const int delta) override         { (void)delta; return false; }
-    bool adjust_vertical_offset(const int delta) override           { (void)delta; return false; }
     bool set_input_channel(const unsigned idx) override             { (void)idx; return false;   }
     bool set_pixel_format(const capture_pixel_format_e pf) override { (void)pf; return false;    }
 

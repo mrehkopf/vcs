@@ -60,11 +60,6 @@ int UPDATE_LATENCY_AVG = 0;
 /// Temporary.
 uint CURRENT_OUTPUT_FRAMERATE = 0;
 
-// Set to true to have the capture's horizontal and vertical positions be
-// adjusted next frame to align the captured image with the edges of the
-// screen.
-bool ALIGN_CAPTURE = false;
-
 // For an optional OpenGL render surface.
 static OGLWidget *OGL_SURFACE = nullptr;
 
@@ -1107,14 +1102,6 @@ void MainWindow::set_keyboard_shortcuts(void)
         connect(keyboardShortcut(QString("ctrl+%1").arg(QString::number(i)).toStdString()),
                 &QShortcut::activated, [=]{this->inputResolutionDlg->activate_capture_res_button(i);});
     }
-
-    // Assign alt + arrow keys to move the capture input alignment horizontally and vertically.
-    connect(keyboardShortcut("alt+shift+left"), &QShortcut::activated,  []{kc_capture_api().adjust_horizontal_offset(1); });
-    connect(keyboardShortcut("alt+shift+right"), &QShortcut::activated, []{kc_capture_api().adjust_horizontal_offset(-1);});
-    connect(keyboardShortcut("alt+shift+up"), &QShortcut::activated,    []{kc_capture_api().adjust_vertical_offset(1);   });
-    connect(keyboardShortcut("alt+shift+down"), &QShortcut::activated,  []{kc_capture_api().adjust_vertical_offset(-1);  });
-
-    connect(keyboardShortcut("f5"), &QShortcut::activated, []{if (!kc_capture_api().has_no_signal()) ALIGN_CAPTURE = true;});
 
     // Make Ctrl + Shift + <x> toggle the various dialogs' functionality on/off.
     connect(keyboardShortcut("ctrl+shift+f"), &QShortcut::activated, [=]{this->filterGraphDlg->set_filter_graph_enabled(!this->filterGraphDlg->is_filter_graph_enabled());});

@@ -165,15 +165,6 @@ struct capture_api_s
     // on success; false otherwise.
     virtual bool set_video_signal_parameters(const video_signal_parameters_s &p) { (void)p; return true; }
 
-    // Ask the device to adjust the horizontal offset in its current video
-    // signal parameters by the given delta. Returns true on success; false
-    // otherwise.
-    virtual bool adjust_horizontal_offset(const int delta) { (void)delta; return false; }
-
-    // Ask the device to adjust the vertical offset in its current video signal
-    // parameters by the given delta. Returns true on success; false otherwise.
-    virtual bool adjust_vertical_offset(const int delta) { (void)delta; return false; }
-
     // Ask the device to change its current input channel to that of the given
     // index. Returns true on success; false otherwise.
     virtual bool set_input_channel(const unsigned idx) { (void)idx; return false; }

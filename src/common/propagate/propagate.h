@@ -33,7 +33,6 @@ void kpropagate_loaded_filter_graph_from_disk(const std::vector<FilterGraphNode*
                                               const std::string &sourceFilename);
 void kpropagate_loaded_aliases_from_disk(const std::vector<mode_alias_s> &aliases, const std::string &sourceFilename);
 
-void kpropagate_capture_alignment_adjust(const int horizontalDelta, const int verticalDelta);
 void kpropagate_forced_capture_resolution(const resolution_s &r);
 
 #endif

@@ -62,8 +62,6 @@ const u32 FILTER_PARAMETER_ARRAY_LENGTH = 16;
 
 extern unsigned int FRAME_SKIP;
 
-extern bool ALIGN_CAPTURE;
-
 extern i32 PROGRAM_EXIT_REQUESTED;
 
 extern unsigned int INPUT_CHANNEL_IDX;

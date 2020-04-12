@@ -72,7 +72,7 @@ bool file_writer::video_presets::version_a::write(const std::string &filename,
     if (!outFile.is_valid() ||
         !outFile.save_and_close())
     {
-        NBENE(("Failed to save the video presets to disk."));
+        NBENE(("Failed to save video presets."));
         goto fail;
     }
 

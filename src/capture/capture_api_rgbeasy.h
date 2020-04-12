@@ -63,8 +63,6 @@ struct capture_api_rgbeasy_s : public capture_api_s
     bool mark_frame_buffer_as_processed(void) override;
     capture_event_e pop_capture_event_queue(void) override;
     virtual bool set_video_signal_parameters(const video_signal_parameters_s &p) override;
-    bool adjust_horizontal_offset(const int delta) override;
-    bool adjust_vertical_offset(const int delta) override;
     bool set_input_channel(const unsigned idx) override;
     bool set_pixel_format(const capture_pixel_format_e pf) override;
     bool set_resolution(const resolution_s &r) override;
@@ -89,8 +87,6 @@ private:
     bool release_hardware(void);
 
     bool pop_capture_event(capture_event_e event);
-
-    bool assign_video_signal_params_for_resolution(const resolution_s r);
 
     // Converts VCS's pixel format into the RGBEasy pixel format.
     PIXELFORMAT pixel_format_to_rgbeasy_pixel_format(capture_pixel_format_e fmt);

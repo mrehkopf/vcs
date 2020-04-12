@@ -84,7 +84,7 @@ bool file_writer::filter_graph::version_b::write(const std::string &filename,
     if (!outFile.is_valid() ||
         !outFile.save_and_close())
     {
-        NBENE(("Failed to save the filter graph to disk."));
+        NBENE(("Failed to save the filter graph."));
         goto fail;
     }
 

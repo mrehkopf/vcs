@@ -45,7 +45,7 @@ bool file_writer::video_params::legacy_1_6_5::write(const std::string &filename,
     if (!outFile.is_valid() ||
         !outFile.save_and_close())
     {
-        NBENE(("Failed to save the video parameters to disk."));
+        NBENE(("Failed to save video parameters."));
         goto fail;
     }
 
