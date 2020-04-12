@@ -66,6 +66,8 @@ bool file_reader::video_presets::version_a::read(const std::string &filename,
         {
             video_preset_s *const preset = new video_preset_s;
 
+            preset->id = unsigned(i + 1);
+
             row++;
             FAIL_IF_FIRST_CELL_IS_NOT("metadataCount");
             const int numMetadata = rowData.at(row).at(1).toInt();
@@ -89,7 +91,18 @@ bool file_reader::video_presets::version_a::read(const std::string &filename,
                 else if (metadataName == "activatedByRefreshRate")
                 {
                     preset->activatesWithRefreshRate = rowData.at(row).at(1).toInt();
-                    preset->activationRefreshRate = rowData.at(row).at(2).toDouble();
+                    preset->activationRefreshRate = rowData.at(row).at(3).toDouble();
+
+                    const QString &comparator = rowData.at(row).at(2);
+                    if      (comparator == "Equals")  preset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
+                    else if (comparator == "Rounded") preset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::rounded;
+                    else if (comparator == "Floored") preset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::floored;
+                    else if (comparator == "Ceiled")  preset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::ceiled;
+                    else
+                    {
+                        NBENE(("Unknown refresh rate comparator '%s'.", comparator.toStdString().c_str()));
+                        goto fail;
+                    }
                 }
                 else if (metadataName == "activatedByShortcut")
                 {

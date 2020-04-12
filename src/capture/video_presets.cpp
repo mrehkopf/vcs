@@ -17,6 +17,7 @@ static std::vector<video_preset_s*> PRESETS;
 // currently active.
 static int ACTIVE_PRESET_ID;
 
+// Incremented for each new preset added, and used as the id for that preset.
 static unsigned RUNNING_PRESET_ID = 0;
 
 void kvideopreset_release(void)
@@ -139,12 +140,14 @@ void kvideopreset_assign_presets(const std::vector<video_preset_s*> &presets)
 
     PRESETS = presets;
 
+    RUNNING_PRESET_ID = (*std::max_element(PRESETS.begin(), PRESETS.end(), [](const video_preset_s *a, const video_preset_s *b){return a->id < b->id;}))->id;
+
     return;
 }
 
 video_preset_s* kvideopreset_create_preset(void)
 {
-    video_preset_s *preset = new video_preset_s();
+    video_preset_s *const preset = new video_preset_s;
 
     preset->id = ++RUNNING_PRESET_ID;
     preset->name = ("Video preset #" + std::to_string(preset->id));
