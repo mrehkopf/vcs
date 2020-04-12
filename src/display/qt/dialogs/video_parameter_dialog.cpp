@@ -220,8 +220,6 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 this->currentPreset->activatesWithShortcut = checked;
                 this->update_current_present_list_text();
             }
-
-            kvideopreset_apply_current_active_preset();
         });
 
         // The valueChanged() signal is overloaded for int and QString, and we

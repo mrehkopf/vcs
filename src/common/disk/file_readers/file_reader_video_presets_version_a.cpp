@@ -66,7 +66,7 @@ bool file_reader::video_presets::version_a::read(const std::string &filename,
         {
             video_preset_s *const preset = new video_preset_s;
 
-            preset->id = unsigned(i + 1);
+            preset->id = unsigned(i);
 
             row++;
             FAIL_IF_FIRST_CELL_IS_NOT("metadataCount");

@@ -43,6 +43,7 @@
 #include "display/qt/persistent_settings.h"
 #include "filter/anti_tear.h"
 #include "common/propagate/propagate.h"
+#include "capture/video_presets.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
@@ -1120,6 +1121,17 @@ void MainWindow::set_keyboard_shortcuts(void)
     connect(keyboardShortcut("ctrl+shift+l"), &QShortcut::activated, [=]{this->overlayDlg->set_overlay_enabled(!this->overlayDlg->is_overlay_enabled());});
     connect(keyboardShortcut("ctrl+shift+a"), &QShortcut::activated, [=]{this->antitearDlg->set_anti_tear_enabled(!this->antitearDlg->is_anti_tear_enabled());});
     connect(keyboardShortcut("ctrl+shift+r"), &QShortcut::activated, [=]{this->recordDlg->set_recording_enabled(!this->recordDlg->is_recording_enabled());});
+
+    // Ctrl + function keys maps to video presets.
+    for (uint i = 1; i <= 12; i++)
+    {
+        const std::string shortcutString = QString("ctrl+f%1").arg(QString::number(i)).toStdString();
+
+        connect(keyboardShortcut(shortcutString), &QShortcut::activated, this, [=]
+        {
+            kvideopreset_activate_keyboard_shortcut(shortcutString);
+        });
+    }
 
     return;
 }

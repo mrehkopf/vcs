@@ -96,9 +96,19 @@ struct video_preset_s
 
     // Whether this preset should be activated by the given shortcut (e.g.
     // "ctrl+f1").
-    bool activates_with_shortcut(const std::string &shortcut)
+    bool activates_with_shortcut(std::string shortcutString)
     {
-        return (this->activatesWithShortcut && (this->activationShortcut == shortcut));
+        for (auto &chr: shortcutString)
+        {
+            chr = char(std::tolower(chr));
+        }
+
+        for (auto &chr: this->activationShortcut)
+        {
+            chr = char(std::tolower(chr));
+        }
+
+        return (this->activatesWithShortcut && (this->activationShortcut == shortcutString));
     }
 };
 
@@ -112,6 +122,8 @@ void kvideoparam_preset_video_params_changed(const unsigned presetId);
 void kvideopreset_remove_all_presets(void);
 
 void kvideopreset_assign_presets(const std::vector<video_preset_s*> &presets);
+
+void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString);
 
 const std::vector<video_preset_s*>& kvideopreset_all_presets(void);
 

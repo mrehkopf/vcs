@@ -52,7 +52,7 @@ static video_preset_s* strongest_activating_preset(void)
     ACTIVE_PRESET_ID = -1;
     int highestActivationLevel = 0;
 
-    for (auto preset: PRESETS)
+    for (auto *preset: PRESETS)
     {
         const int activationLevel = preset->activation_level(resolution, refreshRate);
 
@@ -78,7 +78,7 @@ static video_preset_s* strongest_activating_preset(void)
 
 void kvideopreset_remove_all_presets(void)
 {
-    for (auto preset: PRESETS)
+    for (auto *preset: PRESETS)
     {
         delete preset;
     }
@@ -123,7 +123,7 @@ const std::vector<video_preset_s*>& kvideopreset_all_presets(void)
 
 video_preset_s* kvideopreset_get_preset(const unsigned presetId)
 {
-    for (auto preset: PRESETS)
+    for (auto *preset: PRESETS)
     {
         if (preset->id == presetId)
         {
@@ -134,13 +134,27 @@ video_preset_s* kvideopreset_get_preset(const unsigned presetId)
     return nullptr;
 }
 
+void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
+{
+    for (auto *preset: PRESETS)
+    {
+        if (preset->activates_with_shortcut(shortcutString))
+        {
+            kc_capture_api().set_video_signal_parameters(preset->videoParameters);
+            return;
+        }
+    }
+
+    return;
+}
+
 void kvideopreset_assign_presets(const std::vector<video_preset_s*> &presets)
 {
     kvideopreset_remove_all_presets();
 
     PRESETS = presets;
 
-    RUNNING_PRESET_ID = (*std::max_element(PRESETS.begin(), PRESETS.end(), [](const video_preset_s *a, const video_preset_s *b){return a->id < b->id;}))->id;
+    RUNNING_PRESET_ID = (1 + (*std::max_element(PRESETS.begin(), PRESETS.end(), [](const video_preset_s *a, const video_preset_s *b){return a->id < b->id;}))->id);
 
     return;
 }
@@ -149,8 +163,8 @@ video_preset_s* kvideopreset_create_preset(void)
 {
     video_preset_s *const preset = new video_preset_s;
 
-    preset->id = ++RUNNING_PRESET_ID;
-    preset->name = ("Video preset #" + std::to_string(preset->id));
+    preset->id = RUNNING_PRESET_ID++;
+    preset->name = ("Video preset #" + std::to_string(preset->id + 1));
     preset->activatesWithResolution = true;
     preset->activationResolution = {640, 480, 32};
 
