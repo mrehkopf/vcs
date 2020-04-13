@@ -42,11 +42,13 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
             connect(this, &AntiTearDialog::anti_tear_enabled, this, [=]
             {
                 enable->setChecked(true);
+                update_visualization_options();
             });
 
             connect(this, &AntiTearDialog::anti_tear_disabled, this, [=]
             {
                 enable->setChecked(false);
+                update_visualization_options();
             });
 
             connect(enable, &QAction::triggered, this, [=]
