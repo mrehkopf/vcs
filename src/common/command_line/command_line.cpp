@@ -32,7 +32,7 @@ static std::string FILTERS_FILE_NAME = "";
 bool kcom_parse_command_line(const int argc, char *const argv[])
 {
     int c = 0;
-    while ((c = getopt(argc, argv, "i:m:a:f:")) != -1)
+    while ((c = getopt(argc, argv, "i:m:v:a:f:")) != -1)
     {
         switch (c)
         {
@@ -42,7 +42,8 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
 
                 break;
             }
-            case 'm':   // Location of the mode parameter file.
+            case 'v':   // Location of the video presets file.
+            case 'm':   // ('m' provided for legacy compatibility)
             {
                 PARAMS_FILE_NAME = optarg;
 

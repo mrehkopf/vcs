@@ -403,12 +403,12 @@ Ctrl + 1 to 9 ........... Shortcuts for the input resolution buttons on the
 ## Command-line arguments
 Optionally, you can pass one or more of following command-line arguments to VCS:
 ```
--m <path + filename> .... Load capture parameters from the given file on start-
-                          up. Capture parameter files typically have the .vcsm
-                          or .vcs-video suffix.
+-v <path + filename> .... Load video presets from the given file on start-up.
+                          Video preset files typically have the .vcs-video
+                          suffix.
 
 -f <path + filename> .... Load a custom filter graph from the given file on
-                          start- up. Filter graph files typically have the .vcs-
+                          start-up. Filter graph files typically have the .vcs-
                           filter-graph suffix.
 
 -a <path + filename> .... Load alias resolutions from the given file on start-

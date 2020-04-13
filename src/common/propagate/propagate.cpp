@@ -119,7 +119,7 @@ void kpropagate_loaded_video_presets_from_disk(const std::vector<video_preset_s*
     kd_update_video_mode_params();
     kd_set_video_presets_filename(sourceFilename);
 
-    INFO(("Loaded %u preset(s).", presets.size()));
+    INFO(("Loaded %u video preset(s).", presets.size()));
 
     return;
 }
