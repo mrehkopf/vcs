@@ -39,10 +39,6 @@ public:
     explicit VideoParameterDialog(QWidget *parent = 0);
     ~VideoParameterDialog();
 
-    void set_video_parameter_graph_enabled(const bool enabled);
-
-    bool is_video_parameter_graph_enabled(void);
-
     // Called to inform the dialog of a new source file for video presets.
     void receive_new_video_presets_filename(const QString &filename);
 
@@ -50,9 +46,11 @@ public:
     void notify_of_new_capture_signal(void);
 
 signals:
-    // Emitted when the graph's enabled status is toggled.
-    void video_parameter_graph_enabled(void);
-    void video_parameter_graph_disabled(void);
+    // Emitted when the last item in the preset list is removed.
+    void preset_list_became_empty(void);
+
+    // Emitted when an item is added to an empty preset list.
+    void preset_list_no_longer_empty(void);
 
 private:
     void add_video_preset_to_list(const video_preset_s *const preset);

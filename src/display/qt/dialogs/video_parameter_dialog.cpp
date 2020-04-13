@@ -37,14 +37,41 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         {
             QMenu *presetMenu = new QMenu("Video presets", this->menubar);
 
-            connect(presetMenu->addAction("Add preset"), &QAction::triggered, this, [=]
+            QAction *addPreset = new QAction("Add preset", presetMenu);
+            QAction *savePresets = new QAction("Save presets as...", presetMenu);
+            QAction *loadPresets = new QAction("Load presets...", presetMenu);
+            QAction *deletePresets = new QAction("Delete preset", presetMenu);
+            QAction *deleteAllPresets = new QAction("Delete all presets", presetMenu);
+
+            presetMenu->addAction(addPreset);
+            presetMenu->addSeparator();
+            presetMenu->addAction(savePresets);
+            presetMenu->addAction(loadPresets);
+            presetMenu->addSeparator();
+            presetMenu->addAction(deletePresets);
+            presetMenu->addSeparator();
+            presetMenu->addAction(deleteAllPresets);
+
+            connect(this, &VideoParameterDialog::preset_list_became_empty, this, [=]
+            {
+                savePresets->setEnabled(false);
+                deletePresets->setEnabled(false);
+                deleteAllPresets->setEnabled(false);
+            });
+
+            connect(this, &VideoParameterDialog::preset_list_no_longer_empty, this, [=]
+            {
+                savePresets->setEnabled(true);
+                deletePresets->setEnabled(true);
+                deleteAllPresets->setEnabled(true);
+            });
+
+            connect(addPreset, &QAction::triggered, this, [=]
             {
                 this->add_video_preset_to_list(kvideopreset_create_preset());
             });
 
-            presetMenu->addSeparator();
-
-            connect(presetMenu->addAction("Save presets as..."), &QAction::triggered, this, [=]
+            connect(savePresets, &QAction::triggered, this, [=]
             {
                 QString filename = QFileDialog::getSaveFileName(this, "Save video presets as...", "",
                                                                 "Video presets (*.vcs-video);;All files (*.*)");
@@ -65,7 +92,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 }
             });
 
-            connect(presetMenu->addAction("Load presets..."), &QAction::triggered, this, [=]
+            connect(loadPresets, &QAction::triggered, this, [=]
             {
                 QString filename = QFileDialog::getOpenFileName(this, "Load video presets from...", "",
                                                                 "Video presets (*.vcs-video);;All files(*.*)");
@@ -81,9 +108,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 }
             });
 
-            presetMenu->addSeparator();
-
-            connect(presetMenu->addAction("Delete preset"), &QAction::triggered, this, [=]
+            connect(deletePresets, &QAction::triggered, this, [=]
             {
                 if (this->currentPreset)
                 {
@@ -94,9 +119,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 }
             });
 
-            presetMenu->addSeparator();
-
-            connect(presetMenu->addAction("Delete all presets"), &QAction::triggered, this, [=]
+            connect(deleteAllPresets, &QAction::triggered, this, [=]
             {
                 this->remove_all_video_presets_from_list();
                 kvideopreset_remove_all_presets();
@@ -262,7 +285,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
             if (this->currentPreset)
             {
-                if (text == "Exact") this->currentPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
+                if (text == "Exact")   this->currentPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
                 if (text == "Rounded") this->currentPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::rounded;
                 if (text == "Floored") this->currentPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::floored;
                 if (text == "Ceiled")  this->currentPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::ceiled;
@@ -346,8 +369,18 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
     // Restore persistent settings.
     {
-        this->set_video_parameter_graph_enabled(kpers_value_of(INI_GROUP_OUTPUT, "video_parameters", kf_is_filtering_enabled()).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "video_parameters", this->size()).toSize());
+    }
+
+    // Force initialization of any GUI elements that respond to dynamic changes
+    // in the preset list.
+    if (ui->comboBox_presetList->count() <= 0)
+    {
+        emit this->preset_list_became_empty();
+    }
+    else
+    {
+        emit this->preset_list_no_longer_empty();
     }
 
     return;
@@ -357,7 +390,6 @@ VideoParameterDialog::~VideoParameterDialog()
 {
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_OUTPUT, "video_parameters", this->isEnabled);
         kpers_set_value(INI_GROUP_GEOMETRY, "video_parameters", this->size());
     }
 
@@ -469,6 +501,8 @@ void VideoParameterDialog::remove_all_video_presets_from_list(void)
 
     ui->comboBox_presetList->clear();
 
+    emit this->preset_list_became_empty();
+
     return;
 }
 
@@ -489,6 +523,8 @@ void VideoParameterDialog::remove_video_preset_from_list(const video_preset_s *c
         ui->lineEdit_presetName->clear();
 
         this->currentPreset = nullptr;
+
+        emit this->preset_list_became_empty();
     }
 
     const int presetListIdx = ui->comboBox_presetList->findText(this->make_preset_list_text(preset));
@@ -508,6 +544,8 @@ void VideoParameterDialog::add_video_preset_to_list(const video_preset_s *const 
         ui->groupBox_activation->setEnabled(true);
         ui->groupBox_presetList->setEnabled(true);
         ui->groupBox_videoParameters->setEnabled(true);
+
+        emit this->preset_list_no_longer_empty();
     }
 
     const QString presetText = this->make_preset_list_text(preset);
@@ -719,29 +757,4 @@ void VideoParameterDialog::update_preset_controls(void)
     }
 
     return;
-}
-
-void VideoParameterDialog::set_video_parameter_graph_enabled(const bool enabled)
-{
-    this->isEnabled = enabled;
-
-    if (!this->isEnabled)
-    {
-        emit this->video_parameter_graph_disabled();
-    }
-    else
-    {
-        emit this->video_parameter_graph_enabled();
-    }
-
-    kf_set_filtering_enabled(this->isEnabled);
-
-    kd_update_output_window_title();
-
-    return;
-}
-
-bool VideoParameterDialog::is_video_parameter_graph_enabled(void)
-{
-    return this->isEnabled;
 }
