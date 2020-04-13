@@ -1,3 +1,10 @@
+
+---
+
+**Note!** Tarpeeksi Hyvae Soft's website for downloading the binary distributions of VCS is temporarily down. In the meantime, binaries are available on the repo's [releases](https://github.com/leikareipa/vcs/releases) page.
+
+---
+
 # VCS
 A third-party capture tool for Datapath's VisionRGB range of capture cards. Greatly improves the hardware's suitability for capturing dynamic VGA signals (e.g. of retro PCs) compared to Datapath's bundled capture software.
 
