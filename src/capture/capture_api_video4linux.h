@@ -19,7 +19,7 @@ struct capture_api_video4linux_s : public capture_api_s
 
     std::string get_device_name(void) const override;
     std::string get_api_name(void) const override                { return "Video4Linux"; }
-    std::string get_device_driver_version(void) const override   { return "Unknown"; }
+    std::string get_device_driver_version(void) const override;
     std::string get_device_firmware_version(void) const override;
     int get_device_maximum_input_count(void) const override;
     video_signal_parameters_s get_video_signal_parameters(void) const override;
@@ -76,10 +76,6 @@ private:
     // Polls for the source signal resolution, rather than the capture output's
     // resolution like get_resolution().
     resolution_s get_source_resolution(void) const;
-
-    // Returns capture device's Video4Linux node (e.g. "dev/video0"); or an empty
-    // string if no such node could be found.
-    std::string get_device_node(void) const;
 };
 
 #endif

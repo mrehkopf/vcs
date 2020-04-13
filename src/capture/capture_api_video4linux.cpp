@@ -29,7 +29,6 @@
 #include "capture/capture_api_video4linux.h"
 
 #define INCLUDE_VISION
-#include <visionrgb/include/rgb133control.h>
 #include <visionrgb/include/rgb133v4l2.h>
 
 static std::atomic<unsigned int> NUM_FRAMES_PROCESSED(0);
@@ -43,15 +42,8 @@ static std::atomic<unsigned int> NUM_NEW_FRAME_EVENTS_SKIPPED(0);
 // selected input.
 static int CAPTURE_HANDLE = 0;
 
-// A value returned from open("/dev/video63") - control channel for the
-// Vision API.
-static int VISION_HANDLE = 0;
-
 static bool NO_SIGNAL = false;
 static bool INVALID_SIGNAL = false;
-
-// Information about the capture device, in the Vision API's format.
-static _sVWDeviceInfo DEVICE_INFO;
 
 // The current (or most recent) capture resolution. This is a cached variable
 // intended to reduce calls to the Vision API - it gets updated whenever the
@@ -325,20 +317,6 @@ private:
 
     std::unordered_map<parameter_type_e, signal_parameter_s> parameters;
 } SIGNAL_CONTROLS;
-
-static bool vision_read_device_info(_sVWDeviceInfo *const deviceInfo)
-{
-    k_assert(VISION_HANDLE, "Attempting to query the Vision API before initializing it.");
-
-    deviceInfo->magic = VW_MAGIC_DEVICE_INFO;
-
-    if (read(VISION_HANDLE, deviceInfo, sizeof(_sVWDeviceInfo)) <= 0)
-    {
-       return false;
-    }
-
-    return true;
-}
 
 // Marks the given capture event as having occurred.
 static void push_capture_event(capture_event_e event)
@@ -725,25 +703,9 @@ resolution_s capture_api_video4linux_s::get_source_resolution(void) const
 
 bool capture_api_video4linux_s::initialize_hardware(void)
 {
-    // Open the capture device's Vision control channel.
-    if ((VISION_HANDLE = open("/dev/video63", O_RDWR)) == -1)
-    {
-        NBENE(("Failed to open the Vision control channel"));
-
-        goto fail;
-    }
-
-    // Get basic device info via the Vision API.
-    {
-        if (!vision_read_device_info(&DEVICE_INFO))
-        {
-            NBENE(("Failed to read capture device info."));
-
-            goto fail;
-        }
-    }
     // Open the capture device.
-    if ((CAPTURE_HANDLE = open(this->get_device_node().c_str(), O_RDWR)) < 0)
+    /// TODO: Query for the correct video channel rather than hardcoding /dev/video0.
+    if ((CAPTURE_HANDLE = open("/dev/video0", O_RDWR)) < 0)
     {
         NBENE(("Failed to open the capture device."));
 
@@ -752,19 +714,11 @@ bool capture_api_video4linux_s::initialize_hardware(void)
 
     // Verify device capabilities.
     {
-        v4l2_capability caps;
-        memset(&caps, 0, sizeof(caps));
+        v4l2_capability caps = {};
 
         if (!capture_apicall(VIDIOC_QUERYCAP, &caps))
         {
             NBENE(("Failed to query capture device capabilities."));
-
-            goto fail;
-        }
-
-        if (strcmp((char*)caps.card, this->get_device_name().c_str()) != 0)
-        {
-            NBENE(("Ambiguous capture device names: '%s' vs '%s'.", (char*)caps.card, this->get_device_name().c_str()));
 
             goto fail;
         }
@@ -788,8 +742,7 @@ bool capture_api_video4linux_s::initialize_hardware(void)
     {
         const resolution_s sourceResolution = this->get_source_resolution();
 
-        v4l2_format format;
-        memset(&format, 0, sizeof(format));
+        v4l2_format format = {};
         format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
         if (!capture_apicall(VIDIOC_G_FMT, &format))
@@ -841,8 +794,7 @@ bool capture_api_video4linux_s::initialize_hardware(void)
 
 bool capture_api_video4linux_s::set_resolution(const resolution_s &r)
 {
-    v4l2_format format;
-    memset(&format, 0, sizeof(format));
+    v4l2_format format = {};
     format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
     if (!capture_apicall(VIDIOC_G_FMT, &format))
@@ -916,7 +868,6 @@ bool capture_api_video4linux_s::release(void)
 {
     this->release_hardware();
     close(CAPTURE_HANDLE);
-    close(VISION_HANDLE);
 
     FRAME_BUFFER.pixels.release_memory();
     CAPTURE_BACK_BUFFER.release();
@@ -926,15 +877,38 @@ bool capture_api_video4linux_s::release(void)
 
 std::string capture_api_video4linux_s::get_device_name(void) const
 {
-    return DEVICE_INFO.name;
+    v4l2_capability caps = {};
+
+    if (!capture_apicall(VIDIOC_QUERYCAP, &caps))
+    {
+        NBENE(("Failed to query capture device capabilities."));
+
+        return "Unknown";
+    }
+
+    return (char*)caps.card;
+}
+
+std::string capture_api_video4linux_s::get_device_driver_version() const
+{
+    v4l2_capability caps = {};
+
+    if (!capture_apicall(VIDIOC_QUERYCAP, &caps))
+    {
+        NBENE(("Failed to query capture device capabilities."));
+
+        return "Unknown";
+    }
+
+    return (std::string((char*)caps.driver)             + " " +
+            std::to_string((caps.version >> 16) & 0xff) + "." +
+            std::to_string((caps.version >> 8) & 0xff)  + "." +
+            std::to_string((caps.version >> 0) & 0xff));
 }
 
 std::string capture_api_video4linux_s::get_device_firmware_version(void) const
 {
-    return (std::to_string(DEVICE_INFO.FW.Version) + "/" +
-            std::to_string(DEVICE_INFO.FW.day)     + "." +
-            std::to_string(DEVICE_INFO.FW.month)   + "." +
-            std::to_string(DEVICE_INFO.FW.year));
+    return "Unknown";
 }
 
 int capture_api_video4linux_s::get_device_maximum_input_count(void) const
@@ -1093,11 +1067,6 @@ video_signal_parameters_s capture_api_video4linux_s::get_maximum_video_signal_pa
     }
 
     return p;
-}
-
-std::string capture_api_video4linux_s::get_device_node(void) const
-{
-    return DEVICE_INFO.node;
 }
 
 const captured_frame_s& capture_api_video4linux_s::get_frame_buffer(void) const

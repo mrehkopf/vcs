@@ -44,8 +44,8 @@ AboutDialog::AboutDialog(QWidget *parent) :
 
         ui->tableWidget_captureDeviceFeatures->modify_property("Minimum resolution", QString("%1 x %2").arg(minres.w).arg(minres.h));
         ui->tableWidget_captureDeviceFeatures->modify_property("Maximum resolution", QString("%1 x %2").arg(maxres.w).arg(maxres.h));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Firmware version",   QString::fromStdString(kc_capture_api().get_device_firmware_version()));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Driver version",     QString::fromStdString(kc_capture_api().get_device_driver_version()));
+        ui->tableWidget_captureDeviceFeatures->modify_property("Firmware",           QString::fromStdString(kc_capture_api().get_device_firmware_version()));
+        ui->tableWidget_captureDeviceFeatures->modify_property("Driver",             QString::fromStdString(kc_capture_api().get_device_driver_version()));
         ui->tableWidget_captureDeviceFeatures->modify_property("Capture API",        QString::fromStdString(kc_capture_api().get_api_name()));
         #ifndef __linux__ // The Linux capture API doesn't support querying these parameters.
             ui->tableWidget_captureDeviceFeatures->modify_property("DMA transfer",       (kc_capture_api().device_supports_dma()?               "Supported" : "Not supported"));
