@@ -135,7 +135,7 @@ void SignalDialog::update_information_table(const bool isReceivingSignal)
         const resolution_s resolution = kc_capture_api().get_resolution();
         const auto refreshRate = kc_capture_api().get_refresh_rate().value<double>();
 
-        ui->tableWidget_propertyTable->modify_property("Refresh rate", QString("%1 Hz").arg(QString::number(refreshRate)));
+        ui->tableWidget_propertyTable->modify_property("Refresh rate", QString("%1 Hz").arg(QString::number(refreshRate, 'f', 3)));
         ui->tableWidget_propertyTable->modify_property("Resolution", QString("%1 x %2").arg(resolution.w)
                                                                                        .arg(resolution.h));
     }

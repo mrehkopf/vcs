@@ -1195,13 +1195,14 @@ void MainWindow::update_window_title()
 
         const resolution_s inRes = kc_capture_api().get_resolution();
         const resolution_s outRes = ks_output_resolution();
+        const refresh_rate_s refreshRate = kc_capture_api().get_refresh_rate();
         const int relativeScale = round((outRes.h / (real)inRes.h) * 100); /// FIXME: Doesn't notice if only the width is modified.
 
         QStringList programStatus;
-        if (krecord_is_recording()) programStatus << "R";
-        if (kf_is_filtering_enabled()) programStatus << "F";
+        if (krecord_is_recording())           programStatus << "R";
+        if (kf_is_filtering_enabled())        programStatus << "F";
         if (overlayDlg->is_overlay_enabled()) programStatus << "O";
-        if (kat_is_anti_tear_enabled()) programStatus << "A";
+        if (kat_is_anti_tear_enabled())       programStatus << "A";
 
         if (!this->windowTitleOverride.isEmpty())
         {
@@ -1211,12 +1212,13 @@ void MainWindow::update_window_title()
         }
         else
         {
-            title = QString("%1%2 - %3%4 x %5 scaled to %6 x %7 (~%8%)")
+            title = QString("%1%2 - %3%4 x %5 (%6 Hz) scaled to %7 x %8 (~%9%)")
                     .arg((kc_capture_api().get_missed_frames_count() > 0)? (missedFramesMarker + " ") : "")
                     .arg(PROGRAM_NAME)
                     .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
                     .arg(inRes.w)
                     .arg(inRes.h)
+                    .arg(QString::number(refreshRate.value<double>(), 'f', 3))
                     .arg(outRes.w)
                     .arg(outRes.h)
                     .arg(relativeScale);
