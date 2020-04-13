@@ -110,7 +110,10 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
             connect(deletePresets, &QAction::triggered, this, [=]
             {
-                if (this->currentPreset)
+                if (this->currentPreset &&
+                    (QMessageBox::question(this, "Confirm preset deletion",
+                                           "Do you really want to delete this preset?",
+                                           (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes))
                 {
                     const auto presetToDelete = this->currentPreset;
                     this->remove_video_preset_from_list(presetToDelete);
@@ -121,9 +124,14 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
             connect(deleteAllPresets, &QAction::triggered, this, [=]
             {
-                this->remove_all_video_presets_from_list();
-                kvideopreset_remove_all_presets();
-                kvideopreset_apply_current_active_preset();
+                if (QMessageBox::warning(this, "Confirm deletion of all presets",
+                                          "Do you really want to delete <b>all</b> presets?",
+                                          (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes)
+                {
+                    this->remove_all_video_presets_from_list();
+                    kvideopreset_remove_all_presets();
+                    kvideopreset_apply_current_active_preset();
+                }
             });
 
             this->menubar->addMenu(presetMenu);
