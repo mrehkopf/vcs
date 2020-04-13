@@ -24,7 +24,7 @@
     <number>6</number>
    </property>
    <property name="rightMargin">
-    <number>6</number>
+    <number>0</number>
    </property>
    <property name="bottomMargin">
     <number>6</number>
@@ -42,7 +42,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>578</width>
+        <width>584</width>
         <height>339</height>
        </rect>
       </property>
@@ -57,7 +57,7 @@
         <number>0</number>
        </property>
        <property name="rightMargin">
-        <number>9</number>
+        <number>6</number>
        </property>
        <property name="bottomMargin">
         <number>0</number>
@@ -74,10 +74,10 @@
           <string>VCS vX.X.X</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="checkable">
           <bool>false</bool>
@@ -129,10 +129,10 @@
           <string>Capture device: Unknown</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <property name="leftMargin">
