@@ -63,8 +63,8 @@ When running VCS for the first time, the first thing you may want to do is adjus
 ## Output window
 The central point of the VCS user interface is the output window, where captured frames are displayed as they arrive from the capture hardware.
 
-![](images/screenshots/v1.6.2/output-window.png)\
-*The output window, showing a Windows 98 desktop being captured.*
+![](images/screenshots/v2.0.0/output-window.png)\
+*The output window - showing a Windows 98 desktop being captured on Linux.*
 
 ### Interacting with the output window
 #### Magnifying glass
@@ -199,7 +199,7 @@ Display information about VCS and the capture hardware.
 The VCS user interface includes a number of dialogs, with which you can adjust the program's operational parameters.
 
 Contents:
-- [Video & color dialog](#video-&-color-dialog)
+- [Video presets dialog](#video-presets-dialog)
 - [Alias resolutions dialog](#alias-resolutions-dialog)
 - [Record dialog](#record-dialog)
 - [Input resolution dialog](#input-resolution-dialog)
@@ -207,21 +207,19 @@ Contents:
 - [Anti-tear dialog](#anti-tear-dialog)
 - [Filter graph dialog](#filter-graph-dialog)
 
-### Video & color dialog
+### Video presets dialog
 To access: Ctrl+V or [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Video...`
 
-The video & color dialog lets you to modify the capture hardware's video parameters.
+The video presets dialog lets you to modify the capture hardware's video signal parameters.
 
-![](images/screenshots/v1.6.2/video-color-dialog.png)\
-*The video & color dialog, showing controls for adjusting the capture hardware's video parameters.*
+![](images/screenshots/v2.0.0/video-presets-dialog.png)\
+*The video presets dialog - showing controls for adjusting the capture hardware's video signal parameters.*
 
-Any changes you make to the settings will be sent to the capture hardware in real-time, and are reflected accordingly in the [output window](#output-window).
+The parameter values you input will take effect when all of the "Activates when" conditions are met. For instance, if you've set the preset's activation resolution to 800 x 600 and the refresh rate to 59.695 Hz, the video parameters will apply when the capture resolution is 800 x 600 and the capture refresh rate is 59.695 Hz. Or, for instance, you might only assign the preset with a shortcut activation, in which case its parameters will be applied when you activate the shortcut key, but not otherwise.
 
-The settings are specific to the current capture resolution, and will be recalled automatically by VCS whenever that capture resolution is used. For instance, if the current resolution is 640 x 480 and you modify a parameter whose default value is 5 to make it 10, VCS will assign this parameter a value of 10 whenever the resolution is 640 x 480, and 5 otherwise. Following that, if the resolution is 800 x 600 and you now set the parameter to 7, the parameter will be assigned a value of 7 whenever the resolution is 800 x 600, 10 whenever the resolution is 640 x 480, and 5 for any other resolution.
+To add or delete presets, select the corresponding option from the dialog's "Video presets" menu.
 
-- Note: Settings cannot be defined per refresh rate. Thus, the capture modes 640 x 480 @ 60 Hz and 640 x 480 @ 55 Hz both cause VCS to recall the settings for 640 x 480.
-
-If you want your settings to persist after you exit VCS, remember to save them first. This can be done via `File` &rarr; `Save settings as...`.
+If you want your settings to persist after you exit VCS, remember to save them first! This can be done via `File` &rarr; `Save settings as...`.
 
 Saved settings can be restored via `File` &rarr; `Load settings...`.
 
@@ -230,8 +228,8 @@ To access: [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Aliases...`
 
 With the alias resolutions dialog, you can tell VCS to automatically override certain input resolutions.
 
-![](images/screenshots/v1.6.2/alias-resolutions-dialog.png)\
-*The alias resolutions dialog, showing controls for creating and managing aliases.*
+![](images/screenshots/v2.0.0/alias-dialog.png)\
+*The alias resolutions dialog - showing controls for creating and managing aliases.*
 
 For instance, if you find that your capture hardware is incorrectly initializing 640 x 400 as 512 x 488 (or something of that sort), you can define 640 x 400 as an alias of 512 x 488. Now, whenever the capture hardware sets the input resolution to 512 x 488, VCS will instruct it to change it to 640 x 400.
 
@@ -240,8 +238,8 @@ To access: Ctrl+R or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Record...`
 
 The record dialog gives you the option to stream captured frames into a video file.
 
-![](images/screenshots/v1.6.2/record-dialog.png)\
-*The record dialog, showing controls for recording captured frames into a video file.*
+![](images/screenshots/v2.0.0/record-dialog.png)\
+*The record dialog - showing controls for recording captured frames into a video file.*
 
 The recording functionality will write frames as they appear in the [output window](#output-window) into a video file. But make note of the following:
 
@@ -275,7 +273,7 @@ To access: Ctrl+I or [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Resolution...`
 The input resolution dialog lets you override the capture hardware's current capture resolution.
 
 ![](images/screenshots/v1.6.2/input-resolution-dialog.png)\
-*The input resolution dialog, showing controls for adjusting the capture resolution.*
+*The input resolution dialog - showing controls for adjusting the capture resolution.*
 
 Normally, the capture hardware will automatically set the capture resolution to match that of the input signal. But sometimes the result is sub-optimal, and you may want to manually override it.
 
@@ -291,7 +289,7 @@ To access: Ctrl+O or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Resolution...
 The output resolution dialog lets you resize the output window. This also resizes the frames being displayed in the window.
 
 ![](images/screenshots/v1.6.2/output-resolution-dialog.png)\
-*The output resolution dialog, showing controls for adjusting the size of the output window.*
+*The output resolution dialog - showing controls for adjusting the size of the output window.*
 
 Normally, the size of the [output window](#output-window) will match the capture resolution, but you can use this dialog to scale the window up or down.
 
@@ -308,8 +306,8 @@ To access: Ctrl+L or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Overlay...`
 
 The overlay dialog lets you define a message to be overlaid on the [output window](#output-window).
 
-![](images/screenshots/v1.6.2/overlay-dialog.png)\
-*The overlay dialog, showing controls for overlaying a message on the output window.*
+![](images/screenshots/v2.0.0/overlay-dialog.png)\
+*The overlay dialog - showing controls for overlaying a message on the output window.*
 
 You can combine normal text with pre-set VCS variables and HTML/CSS formatting to create a message to be shown over the output window.
 
@@ -320,8 +318,8 @@ To access: Ctrl+A or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Anti-tear...`
 
 The anti-tear dialog provides functionality to remove tearing from captured frames.
 
-![](images/screenshots/v1.6.2/antitear-dialog.png)\
-*The anti-tear dialog, showing controls for adjusting the parameters of VCS's anti-tear engine.*
+![](images/screenshots/v2.0.0/anti-tear-dialog.png)\
+*The anti-tear dialog - showing controls for adjusting the parameters of VCS's anti-tear engine.*
 
 Under some circumstances, such as when the captured source does not sync its rendering with the refresh rate, you may find that the captured frames contain horizontal tearing. VCS comes with an anti-tear engine to help mitigate this problem.
 
@@ -348,8 +346,8 @@ To access: Ctrl+F or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Filter graph.
 
 The filter graph dialog allows you to create chains of image filters to be applied to captured frames prior to display in the [output window](#output-window).
 
-![](images/screenshots/v1.6.2/filter-graph-dialog.png)\
-*The filter graph dialog, showing controls for creating and modifying filter chains.*
+![](images/screenshots/v2.0.0/filter-graph-dialog.png)\
+*The filter graph dialog - showing controls for creating and modifying filter chains.*
 
 The filter graph is made up of nodes that can be connected together in a chain. These nodes come in three varieties: `input gate`, `output gate`, and `filter`.
 
