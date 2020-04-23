@@ -1,8 +1,12 @@
 
 ---
+---
+---
 
 **Note!** Tarpeeksi Hyvae Soft's website for downloading the binary distributions of VCS is temporarily down. In the meantime, binaries are available on the repo's [releases](https://github.com/leikareipa/vcs/releases) page.
 
+---
+---
 ---
 
 # VCS
@@ -429,14 +433,16 @@ For instance, if you had capture parameters stored in the file `params.vcsm`, an
 vcs.exe -m "params.vcsm" -i 2
 ```
 
-# Building
+# Developer's manual
+
+## Building
 **On Linux:** Do `qmake && make` at the repo's root, or open [vcs.pro](vcs.pro) in Qt Creator.
 
 **On Windows:** Same as for Linux.
 
 While developing VCS, I've been compiling it with GCC 5-9 on Linux and MinGW 5.3 on Windows, and my Qt has been version 5.5-5.9 on Linux and 5.7 on Windows. If you're building VCS, sticking with these tools should guarantee the least number of compatibility issues.
 
-### Dependencies
+### Build dependencies
 **Qt.** VCS uses [Qt](https://www.qt.io/) for its GUI and certain other functionality. Qt of version 5.5 or newer should satisfy VCS's requirements. The binary distribution of VCS for Windows includes the required DLLs.
 - Non-GUI code interacts with the GUI through a wrapper interface ([src/display/display.h](src/display/display.h), instantiated for Qt in [src/display/qt/d_main.cpp](src/display/qt/d_main.cpp)). If you wanted to implement the GUI with something other than Qt, you could do so by creating a new wrapper that implements this interface.
     - There is, however, currently some bleeding of Qt functionality into non-GUI regions of the codebase, which you would need to deal with also if you wanted to fully excise Qt. Namely, in the units [src/record/record.cpp](src/record/record.cpp), [src/common/disk.cpp](src/common/disk.cpp), and [src/common/csv.h](src/common/csv.h).
@@ -450,36 +456,44 @@ While developing VCS, I've been compiling it with GCC 5-9 on Linux and MinGW 5.3
 **Video4Linux.** On Linux, VCS uses Datapath's Video4Linux driver to interface with the capture hardware. For this to work, you should install the latest Datapath Vision Linux driver (may not support kernel 5+).
 - If you want to remove VCS's the dependency on the Video4Linux driver, replace `CAPTURE_API_VIDEO4LINUX` with `CAPTURE_API_VIRTUAL` in [vcs.pro](vcs.pro). This will also disable capturing, but will let you run the program without the Datapath drivers installed.
 
-# Code organization
-**Modules.** The following table lists the four main modules of VCS:
+## Code organization
+VCS is largely a single-threaded application whose event loop is synchronized to the capture devices's rate of operation. VCS's main loop polls the capture hardware (which may run in a separate thread) until a capture event (e.g. new frame) occurs, then processes the event, and returns to the polling loop.
 
-| Module  | Source                             | Responsibility                        |
-| ------- | ---------------------------------- | ------------------------------------- |
-| Capture | [src/capture/](src/capture/)       | Interaction with the capture hardware |
-| Scaler  | [src/scaler/](src/scaler/)         | Frame scaling                         |
-| Filter  | [src/filter/](src/filter/)         | Frame filtering                       |
-| Record  | [src/record/](src/record/)         | Record capture output into video      |
-| Display | [src/display/qt/](src/display/qt/) | Graphical user interface              |
+```
+.--> MAIN <--> CAPTURE <-- [Capture device]
+|     |
+|     v
+|    SCALE
+|     |
+|     v 
+|    FILTER
+|     |
+|     +--> RECORD
+|     |
+|     v
+`--- DISPLAY
+```
 
-**Main loop and program flow.** VCS has been written in a procedural style. As such, you can easily identify &ndash; and follow &ndash; the program's main loop, which is located in `main()` in [src/main.cpp](src/main.cpp).
+In the above diagram, MAIN polls CAPTURE, which returns information to MAIN about capture events. When it receives a new frame from CAPTURE, MAIN sends the frame data to SCALE for scaling, to FILTER for image filtering, and finally to DISPLAY for the scaled and filtered frame be rendered on screen - and optionally to RECORD for recording the frame into a video file.
 
-- The main loop first asks the `Capture` module to poll for any new capture events, like a new captured frame.
-- Once a new frame has been received, it is directed into the `Filter` module for any pre-scaling filtering.
-- The filtered frame will then be passed to the `Scaler` module, where it's scaled to match the user-specified output size.
-- The scaled frame will be fed into the `Filter` module again for any post-scaling filtering.
-- Finally, the frame is sent to the `Display` module for displaying on screen.
+The modules marked in uppercase in the above diagram correspond to source code files roughly like so:
 
-**Qt's event loop.** The loop in which Qt processes GUI-related events is spun manually (by `update_gui_state()` in [src/display/qt/windows/output_window.cpp](src/display/qt/windows/output_window.cpp)) each time a new frame has been received from the capture hardware. This is done to match the rate of screen updates on the output to that of the input capture source.
+| Module  | Source                             |
+| ------- | ---------------------------------- |
+| Main    | [src/main.cpp](src/main.cpp)       |
+| Capture | [src/capture/](src/capture/)       |
+| Scale   | [src/scaler/](src/scaler/)         |
+| Filter  | [src/filter/](src/filter/)         |
+| Record  | [src/record/](src/record/)         |
+| Display | [src/display/](src/display/)       |
 
-## How-to
-
-### Adding a frame filter
+## Guide: Adding a frame filter
 
 Frame filters modify captured frames' pixel data before the frames are displayed on-screen. With these filters, the user can add real-time effects like blur, crop, or rotation - or something more exotic like a frame rate counter, which keeps track of pixel changes across frames to count how many unique frames per second are being captured.
 
 Coding a custom filter for VCS involves three steps: (1) [creating a function that applies the filter to incoming frames' pixels](#creating-the-filter-function), (2) [defining a GUI widget with which the user can interact with the filter](#defining-the-filters-gui-widget), and (3) [making VCS aware of the filter's existence](#making-vcs-aware-of-the-filter). The steps are described in more detail, below.
 
-#### Creating the filter function
+### Creating the filter function
 Each filter must have a function that applies the filter's processing (blurring, sharpening, or whatever you have in mind) to captured pixel data. These functions are defined in [src/filter/filter_funcs.cpp](src/filter/filter_funcs.cpp) and declared in [src/filter/filter_funcs.h](src/filter/filter_funcs.h).
 
 For example, a simple filter function - let's call it `filter_func_solid_fill()` - that makes all pixels in the frame a certain color could be defined in [src/filter/filter_funcs.cpp](src/filter/filter_funcs.cpp) like so:
@@ -534,7 +548,7 @@ void filter_func_solid_fill(FILTER_FUNC_PARAMS);
 
 If you're wondering where the magic `filter_widget_solid_fill_s::` values in `filter_func_solid_fill()` come from, read on! (Hint: they come from the filter's GUI widget and so are ultimately set by the user.)
 
-#### Defining the filter's GUI widget
+### Defining the filter's GUI widget
 Each filter must be accompanied by a GUI widget that provides the user a way to interact with the widget in the [Filter graph dialog](#filter-graph-dialog).
 
 Filter widgets are defined in [src/display/qt/widgets/filter_widgets.cpp](src/display/qt/widgets/filter_widgets.cpp) and declared in [src/display/qt/widgets/filter_widgets.h](src/display/qt/widgets/filter_widgets.h). Each widget is a struct subclassing `filter_widget_s`.
@@ -640,7 +654,7 @@ private:
 
 You can look around [src/display/qt/widgets/filter_widgets.h](src/display/qt/widgets/filter_widgets.h) for more examples of how VCS's filters are implementing their GUI widgets.
 
-#### Making VCS aware of the filter
+### Making VCS aware of the filter
 Once the filter function and GUI widget have been created, all that's left to do is to let VCS know that the filter exists - which will also make the filter available to the user in the [Filter graph dialog](#filter-graph-dialog).
 
 To make VCS recognize our sample solid fill filter, we'll need to append [src/filter/filter.cpp](src/filter/filter.cpp) and [src/filter/filter.h](src/filter/filter.h) with the following:
