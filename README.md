@@ -1,20 +1,9 @@
-
----
----
----
-
-**Note!** Tarpeeksi Hyvae Soft's website for downloading the binary distributions of VCS is temporarily down. In the meantime, binaries are available on the repo's [releases](https://github.com/leikareipa/vcs/releases) page.
-
----
----
----
-
 # VCS
 A third-party capture tool for Datapath's VisionRGB range of capture cards. Greatly improves the hardware's suitability for capturing dynamic VGA signals (e.g. of retro PCs) compared to Datapath's bundled capture software.
 
 VCS interfaces with compatible capture hardware to display the capture output in a window on your desktop. Additionally, you can apply filters, scalers, anti-tearing, and various other adjustments to the output before it's displayed. A more complete list of VCS's features is given below.
 
-You can find the pre-built binary distribution of VCS for Windows on [Tarpeeksi Hyvae Soft's website](http://tarpeeksihyvaesoft.com/soft/).
+You can find the pre-built binary distribution of VCS for Windows on [Tarpeeksi Hyvae Soft's website](https://www.tarpeeksihyvaesoft.com/soft/).
 
 ### Features
 - Real-time customizable image filters: blur, crop, decimate, denoise, and more
@@ -726,6 +715,6 @@ Padding (i.e. aspect ratio correction) can incur a performance penalty with some
 | No padding    | 820     | 370    | 370  | 210   | 70      |
 
 # Authors and credits
-The primary author of VCS is the one-man Tarpeeksi Hyvae Soft (see on [GitHub](https://github.com/leikareipa) and the [Web](http://www.tarpeeksihyvaesoft.com)).
+The primary author of VCS is the one-man Tarpeeksi Hyvae Soft (see on [GitHub](https://github.com/leikareipa) and the [Web](https://www.tarpeeksihyvaesoft.com)).
 
 VCS uses [Qt](https://www.qt.io/) for its UI, [OpenCV](https://opencv.org/) for image filtering, and [Datapath](https://www.datapath.co.uk/)'s RGBEasy API for interfacing with the capture hardware.
