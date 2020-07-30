@@ -2,21 +2,33 @@
  * 2020 Tarpeeksi Hyvae Soft
  * 
  * Software: VCS
- *
- * Provides a base public interface for interacting with the capture device.
  * 
+ */
+
+/*! @file
+ *
+ * @brief
+ * The capture API provides an interface for exposing a capture device to VCS.
+ * 
+ * As a developer, you can use the API to e.g. implement support in VCS for a
+ * previously-unsupported capture device, or even some other source of images.
  * 
  * Usage:
  * 
- *   1. Create a custom capture API by inheriting capture_api_s and implementing
- *      at least its pure virtual functions.
+ *   1. Create a new class for your capture device - this will be its specific
+ *      capture API. You can look at existing examples: e.g. @a capture_api_virtual.h,
+ *      which is for a dummy (null) capture device; or @a capture_api_rgbeasy.h,
+ *      which is for the Datapath VisionRGB cards under Windows.
  * 
- *   2. Create an instance of your custom capture API in kc_initialize_capture()
- *      (capture.cpp) and have kc_capture_api() (in capture.cpp) return a reference
- *      to it.
+ *   2. Have the new class inherit from capture_api_s and implement at least its
+ *      pure virtual functions.
  * 
- *   3. VCS will periodically call pop_capture_event_queue() to get and respond
- *      to the API's capture events.
+ *   3. Inside VCS's @a capture.cpp, instance the new class in kc_initialize_capture()
+ *      and have kc_capture_api() return a reference to it.
+ * 
+ *   4. VCS will now interact with the new capture API, e.g. by periodically
+ *      calling kc_capture_api().pop_capture_event_queue() to see if there are
+ *      new captured frames to be displayed.
  *
  */
 
@@ -30,160 +42,433 @@
 #include "display/display.h"
 #include "capture/capture.h"
 
+/*!
+ * @brief
+ * The base capture API class. Subclass this to add support for new capture
+ * devices.
+ * 
+ * A capture API provides a standard interface for VCS to talk to a capture
+ * device. You can thus subclass this base API to add support in VCS for new
+ * capture devices.
+ * 
+ * The main functions here are initialize(), pop_capture_event_queue(), and
+ * get_frame_buffer(). VCS uses them to intialize the capture API and to
+ * receive new captured frames from it.
+ * 
+ * When subclassing, you'll need to implement at least the pure virtual
+ * functions, which are considered mandatory custom functionality. Other
+ * virtual functions can be overridden on a case-by-case basis if their
+ * default implementations aren't satisfactory.
+ * 
+ * For an example of a very basic implementation of a capture API, see
+ * @a capture_api_virtual.h. It implements a capture interface for a virtual
+ * capture device, i.e. for code that generates images of an animating test
+ * pattern.
+ */
 struct capture_api_s
 {
     virtual ~capture_api_s();
 
-    // Initializes the API and the capture device, and tells the device to begin
-    // capturing.
+    /*!
+     * Initializes the capture API and its capture device.
+     * 
+     * If the call succeeds, the capture API will begin receiving captured
+     * frames from the capture device.
+     * 
+     * In case of error, this function may additionally set the global variable
+     * PROGRAM_EXIT_REQUESTED to a truthy value, which will result in VCS's
+     * termination once the event loop in main.cpp detects this condition.
+     * 
+     * Returns @a true on success; @a false otherwise.
+     * 
+     * @note
+     * Regardless of the return value, you should call release() before calling
+     * this function again. This ensures that any memory allocated to the
+     * capture API is freed.
+     * 
+     * @see
+     * release(), pop_capture_event_queue(), get_frame_buffer()
+     */
     virtual bool initialize(void) = 0;
 
-    // Stops capturing, releases the capture device and deallocates the API.
+    /*!
+     * Releases the capture device and deallocates the capture API's memory
+     * buffers.
+     * 
+     * If the call succeeds, frames will no longer be captured, and the return
+     * value from get_frame_buffer() will be undefined until the API is
+     * re-initialized with a call to initialize().
+     * 
+     * Returns @a true on success; @a false otherwise.
+     * 
+     * @note
+     * Refrain from calling this function without having called initialize()
+     * first.
+     * 
+     * @see
+     * initialize()
+     */
     virtual bool release(void) = 0;
 
-    // Query capture device/API capabilities.
-    virtual bool device_supports_component_capture(void) const { return false; }
-    virtual bool device_supports_composite_capture(void) const { return false; }
-    virtual bool device_supports_deinterlacing(void)     const { return false; }
-    virtual bool device_supports_svideo(void)            const { return false; }
-    virtual bool device_supports_dma(void)               const { return false; }
-    virtual bool device_supports_dvi(void)               const { return false; }
-    virtual bool device_supports_vga(void)               const { return false; }
-    virtual bool device_supports_yuv(void)               const { return false; }
+    /************************
+     * Capability queries: */
 
-    /*
-     * Getters:
+    /*!
+     * Returns @a true if the capture device is capable of capturing from a
+     * component video source; @a false otherwise.
      */
+    virtual bool device_supports_component_capture(void) const { return false; }
 
-    // The number of operable input channels on this device that the API can
-    // make use of. The number is expected to reflect consecutive inputs from
-    // #1 to n, where n is the value returned.
+    /*!
+     * Returns @a true if the capture device is capable of capturing from a
+     * composite video source; @a false otherwise.
+     */
+    virtual bool device_supports_composite_capture(void) const { return false; }
+
+    /*!
+     * Returns @a true if the capture device supports hardware de-interlacing;
+     * @a false otherwise.
+     * 
+     * \note
+     * VCS can't take advantage of hardware de-interlacing even if supported by
+     * the capture device.
+     */
+    virtual bool device_supports_deinterlacing(void) const { return false; }
+
+    /*!
+     * Returns @a true if the capture device is capable of capturing from an
+     * S-Video source; @a false otherwise.
+     */
+    virtual bool device_supports_svideo(void) const { return false; }
+    
+    /*!
+     * Returns @a true if the capture device is capable of streaming frames via
+     * direct memory access (DMA); @a false otherwise.
+     * 
+     * \note
+     * VCS can't take advantage of DMA even if supported by the capture device.
+     */
+    virtual bool device_supports_dma(void) const { return false; }
+
+    /*!
+     * Returns @a true if the capture device is capable of capturing from a
+     * digital (DVI) source; @a false otherwise.
+     */
+    virtual bool device_supports_dvi(void) const { return false; }
+
+    /*!
+     * Returns @a true if the capture device is capable of capturing from an
+     * analog (VGA) source; @a false otherwise.
+     */
+    virtual bool device_supports_vga(void) const { return false; }
+
+    /*!
+     * Returns @a true if the capture device is capable of capturing in YUV
+     * color; @a false otherwise.
+     * 
+     * \note
+     * VCS can't take advantage of YUV color even if supported by the capture
+     * device. Capturing will always happen in RGB color.
+     */
+    virtual bool device_supports_yuv(void) const { return false; }
+
+    /*************
+     * Getters: */
+
+    /*!
+     * Returns the number of input channels on the capture device that're
+     * available to the capture API.
+     * 
+     * The value returned is an integer in the range [1,n] such that if the
+     * capture device has, for instance, 16 input channels and the capture API
+     * can use two of them, 2 is returned.
+     * 
+     * @see
+     * get_input_channel_idx()
+     */
     virtual int get_device_maximum_input_count(void) const = 0;
 
-    // A string that describes the device's firmware version. This won't be for
-    // any practical use, just for displaying in the GUI and that kind of thing.
+    /*!
+     * Returns a string that identifies the capture device's firmware version;
+     * e.g. "14.12.3".
+     * 
+     * Will return "Unknown" if the firmware version is not known.
+     * 
+     * @see
+     * get_device_driver_version()
+     */
     virtual std::string get_device_firmware_version(void) const = 0;
 
-    // A string that describes the device's driver version. This won't be for
-    // any practical use, just for displaying in the GUI and that kind of thing.
+    /*!
+     * Returns a string that identifies the capture device's driver version;
+     * e.g. "14.12.3".
+     * 
+     * Will return "Unknown" if the firmware version is not known.
+     * 
+     * @see
+     * get_device_firmware_version()
+     */
     virtual std::string get_device_driver_version(void) const = 0;
 
-    // A string that describes the device, e.g. its model name ("Datapath
-    // VisionRGB-PRO2", for instance.). This won't be for any practical use,
-    // just for displaying in the GUI and that kind of thing.
+    /*!
+     * Returns a string that identifies the capture device; e.g. "Datapath
+     * VisionRGB-PRO2".
+     * 
+     * Will return "Unknown" if the capture device is not recognized.
+     */
     virtual std::string get_device_name(void) const = 0;
 
-    // A string that describes the API ("RGBEasy", for instance.). This won't
-    // be for any practical use, just for displaying in the GUI and that kind
-    // of thing.
+    /*!
+     * Returns a string that identifies the capture API; e.g. "RGBEasy".
+     */
     virtual std::string get_api_name(void) const = 0;
 
-    // The device's current video signal parameters.
+    /*!
+     * Returns the capture device's current video signal parameters.
+     * 
+     * @see
+     * set_video_signal_parameters(), get_minimum_video_signal_parameters(),
+     * get_maximum_video_signal_parameters(), get_default_video_signal_parameters()
+     */
     virtual video_signal_parameters_s get_video_signal_parameters(void) const = 0;
 
-    // The device's default video signal parameters.
+    /*!
+     * Returns the capture device's default video signal parameters.
+     * 
+     * @see
+     * get_video_signal_parameters(), get_video_signal_parameters(),
+     * get_minimum_video_signal_parameters(), get_maximum_video_signal_parameters()
+     */
     virtual video_signal_parameters_s get_default_video_signal_parameters(void) const = 0;
 
-    // The lowest value supported by the device for each video signal parameter.
+    /*!
+     * Returns the minimum value supported by the capture device for each video
+     * signal parameter.
+     * 
+     * @see
+     * set_video_signal_parameters(), get_video_signal_parameters(),
+     * get_maximum_video_signal_parameters(), get_default_video_signal_parameters()
+     */
     virtual video_signal_parameters_s get_minimum_video_signal_parameters(void) const = 0;
 
-    // The highest value supported by the device for each video signal
-    // parameter.
+    /*!
+     * Returns the maximum value supported by the capture device for each video
+     * signal parameter.
+     * 
+     * @see
+     * set_video_signal_parameters(), get_video_signal_parameters(),
+     * get_minimum_video_signal_parameters(), get_default_video_signal_parameters()
+     */
     virtual video_signal_parameters_s get_maximum_video_signal_parameters(void) const = 0;
 
-    // The device's current capture resolution.
+    /*!
+     * Returns the capture device's current input resolution. This is the
+     * resolution in which the device is presently capturing frames.
+     * 
+     * @warning
+     * Do not take this to be the resolution of the latest captured frame as
+     * returned from get_frame_buffer(), as the capture device's resolution may
+     * have changed since that frame was captured.
+     * 
+     * @see
+     * set_resolution(), get_minimum_resolution(), get_maximum_resolution()
+     */
     virtual resolution_s get_resolution(void) const = 0;
 
-    // The lowest capture resolution supported by the device.
+    /*!
+     * Returns the minimum capture resolution supported by the capture API.
+     * 
+     * @note
+     * This resolution may be larger than the minimum resolution supported by
+     * the capture device, but never smaller.
+     * 
+     * @see
+     * set_resolution(), get_resolution(), get_maximum_resolution()
+     */
     virtual resolution_s get_minimum_resolution(void) const = 0;
 
-    // The highest capture resolution supported by the device.
+    /*!
+     * Returns the maximum capture resolution supported by the capture API.
+     * 
+     * @note
+     * This resolution may be smaller than the maximum resolution supported by
+     * the capture device, but never larger.
+     * 
+     * @see
+     * set_resolution(), get_resolution(), get_minimum_resolution()
+     */
     virtual resolution_s get_maximum_resolution(void) const = 0;
 
-    // The number of captured frames the VCS thread failed to note between its
-    // calls to get_frame_buffer() and mark_frame_buffer_as_processed(). Since
-    // the VCS thread locks the API's capture mutex while processing frame data,
-    // a missed frame would occur when the API thread receives a new frame
-    // while the capture mutex is locked by a non-API thread.
+    /*!
+     * Returns the difference between the number of frames received by the
+     * capture API from the capture device and the number of times
+     * mark_frame_buffer_as_processed() has been called.
+     * 
+     * If this value is above 0, it indicates that VCS is failing to process
+     * and display captured frames as fast as the capture device is producing
+     * them. This could be a symptom of e.g. an inadequately performant host
+     * CPU.
+     * 
+     * @see
+     * reset_missed_frames_count()
+     */
     virtual unsigned get_missed_frames_count(void) const = 0;
 
-    // Get the index of the input channel on which the capture is currently
-    // active.
+    /*!
+     * Returns the index value of the capture API's input channel on which the
+     * capture device is currently listening for signals. The value is in the
+     * range [0,n-1], where n = get_device_maximum_input_count().
+     * 
+     * If the capture device has more input channels than are supported by the
+     * API, the API is expected to map the index to a consecutive range. For
+     * example, if channels #1, #5, and #6 on the capture device are available
+     * to the API, capturing on channel #5 would correspond to an index value
+     * of 1, with index 0 being channel #1 and index 2 channel #6.
+     * 
+     * @see
+     * get_device_maximum_input_count()
+     */
     virtual unsigned get_input_channel_idx(void) const = 0;
 
-    // Get the refresh rate, in Hz, of the current capture signal.
+    /*!
+     * Returns the refresh rate of the current capture signal.
+     */
     virtual refresh_rate_s get_refresh_rate(void) const = 0;
 
-    // Get the color depth, in bits, of the frames the API currently expects
-    // to output via get_frame_buffer(). For instance, for RGB888 this might be
-    // 32, and 16 for RGB555 (the latter is technically 15 bits, but its data
-    // are probably in 16-bit format).
-    //
-    // Note: When dealing with individual frames, VCS will refer to the color
-    // depth provided by the frame struct rather than this value; but may also
-    // verify that both values match before processing the frame further.
+    /*!
+     * Returns the color depth, in bits, that the capture API currently expects
+     * to receive captured frames in.
+     * 
+     * For RGB888 frames the color depth would be 32; 16 for RGB565 frames; etc.
+     * 
+     * The color depth of a given frame as returned from get_frame_buffer() may
+     * be different from this value e.g. if the capture color depth was changed
+     * just after the frame was captured.
+     */
     virtual unsigned get_color_depth(void) const = 0;
 
-    // Get the pixel format of the frames the API currently expects to output
-    // via get_frame_buffer().
-    //
-    // Note: When dealing with individual frames, VCS will refer to the pixel
-    // format provided by the frame struct rather than this value; but may also
-    // verify that both values match before processing the frame further.
+    /*!
+     * Returns the pixel format that the capture device is currently storing
+     * its captured frames in.
+     *
+     * The pixel format of a given frame as returned from get_frame_buffer() may
+     * be different from this value e.g. if the capture pixel format was changed
+     * just after the frame was captured.
+     */
     virtual capture_pixel_format_e get_pixel_format(void) const = 0;
 
-    // Returns true if the current capture signal is invalid; false otherwise.
+    /*!
+     * Returns @a true if the current capture signal is invalid; @a false
+     * otherwise.
+     * 
+     * @see
+     * has_no_signal()
+     */
     virtual bool has_invalid_signal(void) const = 0;
 
-    // Returns true if there's currently no capture signal on the selected
-    // input channel; false otherwise.
+    /*!
+     * Returns @a true if there's currently no capture signal on the active
+     * input channel; @a false otherwise.
+     * 
+     * @see
+     * get_input_channel_idx()
+     */
     virtual bool has_no_signal(void) const = 0;
 
-    // Returns true if the device is currently capturing.
+    /*!
+     * Returns @a true if the device is currently capturing; @a false otherwise.
+     */
     virtual bool is_capturing(void) const = 0;
 
-    // Returns the most recent captured frame's data.
+    /*!
+     * Returns the most recent captured frame's data.
+     */
     virtual const captured_frame_s& get_frame_buffer(void) const = 0;
 
-    /*
-     * Setters:
-     */
+    /*************
+     * Setters: */
 
-    // Used by the VCS thread to notify the API that VCS has finished processing
-    // the most recent frame it obtained from get_frame_buffer(). Returns true
-    // on success; false otherwise.
+    /*!
+     * Called by VCS to notify the capture API that it has finished processing
+     * the latest frame obtained via get_frame_buffer(). The API is then free
+     * to e.g. overwrite the frame's data.
+     * 
+     * Returns @a true on success; @a false otherwise.
+     */
     virtual bool mark_frame_buffer_as_processed(void) { return false; }
 
-    // Returns the type of what the API considers the most recent and/or most
-    // relevant capture event. Capture events that are never returned by this
-    // function will be ignored by the VCS thread. This is technically both a
-    // getter and a setter, since it gets a capture event, but will likely
-    // also result in the API modifying its event queue to remove that event.
+    /*!
+     * Returns the latest capture event and removes it from the capture API's
+     * event queue. The caller can then respond to the event; e.g. by calling
+     * get_frame_buffer() if the event is a new frame.
+     */
     virtual capture_event_e pop_capture_event_queue(void) { return capture_event_e::none; }
 
-    // Ask the device to adopt the given video signal parameters. Returns true
-    // on success; false otherwise.
+    /*!
+     * Assigns to the capture device the given video signal parameters.
+     * 
+     * Returns @a true on success; @a false otherwise.
+     * 
+     * @see
+     * get_video_signal_parameters(), get_minimum_video_signal_parameters(),
+     * get_maximum_video_signal_parameters(), get_default_video_signal_parameters()
+     */
     virtual bool set_video_signal_parameters(const video_signal_parameters_s &p) { (void)p; return true; }
 
-    // Ask the device to change its current input channel to that of the given
-    // index. Returns true on success; false otherwise.
+    /*!
+     * Tells the capture device to start listening for signals on the given
+     * input channel.
+     * 
+     * Returns @a true on success; @a false otherwise.
+     * 
+     * @see
+     * get_input_channel_idx(), get_device_maximum_input_count()
+     */
     virtual bool set_input_channel(const unsigned idx) { (void)idx; return false; }
 
-    // Ask the device to adopt the given pixel format. Returns true on success;
-    // false otherwise.
+    /*!
+     * Tells the capture device to store its captured frames using the given
+     * pixel format.
+     * 
+     * Returns @a true on success; @a false otherwise.
+     * 
+     * @see
+     * get_pixel_format()
+     */
     virtual bool set_pixel_format(const capture_pixel_format_e pf) { (void)pf; return false; }
 
-    // Ask the device to adopt the given resolution. Returns true on success;
-    // false otherwise.
+    /*!
+     * Tells the capture device to adopt the given input resolution.
+     * 
+     * Captured frames may exhibit artefacting if this resolution doesn't match
+     * the captured video signal's original resolution.
+     * 
+     * Returns @a true on success; @a false otherwise.
+     * 
+     * @see
+     * get_resolution(), get_minimum_resolution(), get_maximum_resolution()
+     */
     virtual bool set_resolution(const resolution_s &r) { (void)r; return false; }
 
-    // Ask the API to reset its count of missed frames (cf. get_missed_frames_count()).
-    // Returns true on success; false otherwise.
+    /*!
+     * Tells the capture API to reset its count of missed frames.
+     * 
+     * Returns @a true on success; @a false otherwise.
+     * 
+     * @see
+     * get_missed_frames_count()
+     */
     virtual bool reset_missed_frames_count(void) { return false; }
 
-    // If the capture API runs in a separate thread that modifies the API's
-    // state, that thread should lock this mutex while about it; and the main
-    // VCS thread will also lock this when accessing that state.
+    /*!
+     * A mutex used to coordinate access to the capture API's data between the
+     * threads of the capture API, VCS, and the capture device.
+     * 
+     * The VCS thread will lock this mutex while it's accessing frame data
+     * received from get_frame_buffer(). During this time, the capture API
+     * should not modify those data nor allow the capture device to modify
+     * them.
+     */
     std::mutex captureMutex;
 };
 
