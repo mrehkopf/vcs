@@ -8,8 +8,9 @@ $ doxygen doxygen.cfg
 ```
 
 The above command assumes you've:
-- already installed Doxygen
-- are in VCS's `doxygen` directory
+- installed Doxygen
+- cloned the full VCS repository
+- navigated to the `doxygen` directory of the VCS repository
 
 The built docs will be placed under the `html` subdirectory.
 
