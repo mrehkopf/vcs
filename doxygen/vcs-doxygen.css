@@ -1,0 +1,434 @@
+/*
+ * 2020 Tarpeeksi Hyvae Soft
+ *
+ * Software: VCS
+ *
+ * A custom CSS styling for Doxygen.
+ *
+ */
+
+:root
+{
+	--page-background-color: rgb(238, 238, 238);
+}
+
+*
+{
+	line-height: initial !important;
+	font-family: sans-serif !important;
+	font-size: 100% !important;
+	box-shadow: none !important;
+	text-shadow: none !important;
+	transition: none !important;
+	-webkit-transition:  none !important;
+	-moz-transition:  none !important;
+	-ms-transition:  none !important;
+	-o-transition:  none !important;
+}
+
+body
+{
+	background-color: var(--page-background-color) !important;
+	width: 60% !important;
+	margin: 0 auto !important;
+}
+
+a.el,
+a:visited.el
+{
+	font-weight: normal !important;
+	color: #004fcf !important;
+}
+
+table
+{
+	border-spacing: 0 !important;
+}
+
+table [class*="separator:"]
+{
+	display: none !important;
+}
+
+hr
+{
+	visibility: hidden !important;
+}
+
+.contents
+{
+	background-color: white !important;
+	padding: 30px !important;
+	margin: 0 !important;
+	border-bottom-left-radius: 4px !important;
+	border-bottom-right-radius: 4px !important;
+	box-shadow: 0 5px 4px -6px gray !important;
+}
+
+.contents > hr
+{
+	margin-top: 40px;
+}
+
+.contents > p:first-of-type
+{
+	margin: 0 !important;
+}
+
+.directory
+{
+	border: none !important;
+}
+
+.directory .levels
+{
+	display: none !important;
+}
+
+.footer
+{
+	font-size: 80% !important;
+	margin-top: 2px !important;
+	margin-bottom: 2px !important;
+	color: gray !important;
+}
+
+.footer a
+{
+	margin-left: -3px !important;
+}
+
+.footer a::before
+{
+	content: "Doxygen" !important;
+	text-decoration: none !important;
+	color: gray !important;
+}
+
+.footer a:hover
+{
+	text-decoration: none !important;
+}
+
+.footer img
+{
+	vertical-align: middle !important;
+	display: none !important;
+}
+
+.header
+{
+	border: none !important;
+	padding: 30px !important;
+	padding-top: 10px !important;
+	padding-bottom: 10px !important;
+	background-image: none !important;
+}
+
+.header .summary
+{
+	display: none !important;
+}
+
+.header .headertitle
+{
+	font-weight: normal !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.header .title
+{
+	font-weight: normal !important;
+}
+
+.header .title::before
+{
+	content: "Topic: " !important;
+}
+
+#titlearea
+{
+	border: none !important;
+	font-size: 150% !important;
+}
+
+#main-menu
+{
+	border-top-left-radius: 4px !important;
+	border-top-right-radius: 4px !important;
+}
+
+#main-menu a
+{
+	font-weight: normal !important;
+	padding: 7px !important;
+}
+
+#main-menu .sub-arrow
+{
+	display: none !important;
+}
+
+/* Hide the main menu's dropdown mouse hover menus.*/
+#main-menu [class*="sm-"]
+{
+	display: none !important;
+}
+
+.memitem
+{
+	margin-bottom: 10px !important;
+}
+
+.memItemLeft,
+.memItemRight
+{
+	background-color: transparent !important;
+}
+
+.memtitle
+{
+	visibility: hidden !important;
+	height: 0 !important;
+	border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#projectname
+{
+	font-size: 150% !important;
+}
+
+#projectnumber
+{
+	font-size: 70% !important;
+}
+
+.memname
+{
+	letter-spacing: -1px !important;
+	font: initial !important;
+	font-family: sans-serif !important;
+	font-size: 115% !important;
+	padding-left: 0 !important;
+	margin: 0 !important;
+	color: black !important;
+}
+
+table .memname
+{
+	line-height: 100% !important;
+}
+
+table.memberdecls td[class*="memItem"],
+table.memberdecls td[class*="mdesc"]
+{
+	border-top: 1px solid var(--page-background-color) !important;
+	padding: 3px !important;
+}
+
+table.memberdecls td.memItemLeft,
+table.memberdecls td.mdescLeft
+{
+	border-left: 1px solid var(--page-background-color) !important;
+	border-right: 1px solid var(--page-background-color) !important;
+}
+
+table.memberdecls td.memItemRight,
+table.memberdecls td.mdescRight
+{
+	border-right: 1px solid var(--page-background-color) !important;
+	padding-left: 10px !important;
+}
+
+table.memberdecls [class*="memitem:"]:nth-last-of-type(2) .memItemLeft,
+table.memberdecls [class*="memitem:"]:nth-last-of-type(2) .memItemRight,
+table.memberdecls [class*="memdesc:"]:nth-last-of-type(2) .mdescLeft,
+table.memberdecls [class*="memdesc:"]:nth-last-of-type(2) .mdescRight
+{
+	border-bottom: 1px solid var(--page-background-color) !important;
+}
+
+.memname td
+{
+	font-size: 120% !important;
+	padding: 0 !important;	
+	display: inline !important;
+	vertical-align: inherit !important;
+}
+
+.paramtype
+{
+	margin-left: 5px !important;
+}
+
+.paramname em
+{
+	font-style: italic !important;
+	color: black !important;
+	margin-right: 5px !important;
+}
+
+.memproto
+{
+	box-shadow: none !important;
+	background-color: transparent !important;
+	font-weight: bold !important;
+	border: none !important;
+	border-bottom: 2px solid var(--page-background-color) !important;
+	padding-bottom: 12px !important;
+}
+
+.memdoc
+{
+	box-shadow: none !important;
+	border: none !important;
+	padding: 0 !important;
+	background: none !important;
+}
+
+.memdoc p
+{
+	font-family: sans-serif !important;
+	padding-left: 0 !important;
+}
+
+.section.note,
+.section.warning
+{
+	border: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.section.note dt::after,
+.section.warning dt::after
+{
+	content: ": " !important;
+}
+
+.section.note dd,
+.section.warning dd,
+.section.see dd
+{
+	margin: 0 !important;
+}
+
+.section.note dt,
+.section.warning dt,
+.section.see dd .el
+{
+	font-weight: normal !important;
+}
+
+.section.see,
+.section.note,
+.section.warning
+{
+	margin-bottom: 16px !important;
+	margin-top: 16px !important;
+}
+
+.section.see dd,
+.section.see dt,
+.section.note dd,
+.section.note dt,
+.section.warning dd,
+.section.warning dt
+{
+	display: inline !important;
+}
+
+.section.warning dt
+{
+	font-style: italic !important;
+}
+
+.section.see dt::after
+{
+	content: " " !important;
+}
+
+span .mlabel
+{
+	background-color: var(--page-background-color) !important;
+	color: black !important;
+	padding: 3px 6px !important;
+	border: none !important;
+	border-radius: 3px !important;
+	font-weight: normal !important;
+	vertical-align: bottom !important;
+	border: 1px solid rgb(213, 213, 213) !important;
+}
+
+.groupheader
+{
+	color: black !important;
+	font-size: 160% !important;
+	border: none !important;
+	margin: 0 !important;
+	margin-top: 40px !important;
+	margin-bottom: 20px !important;
+	padding: 0 !important;
+}
+
+.contents .memberdecls:first-child .groupheader
+{
+	margin-top: 0 !important;
+}
+
+.iconfopen,
+.iconfclosed
+{
+	vertical-align: sub !important;
+}
+
+.icondoc
+{
+	vertical-align: middle !important;
+}
+
+.navpath .navelem .el
+{
+	line-height: 170% !important;
+}
+
+.icon
+{
+	width: 85% !important;
+	height: 95% !important;
+}
+
+@media only screen and (max-width: 1500px)
+{
+    body
+    {
+        width: 70% !important;
+    }
+}
+
+@media only screen and (max-width: 1400px)
+{
+    body
+    {
+        width: 80% !important;
+    }
+}
+
+@media only screen and (max-width: 1200px)
+{
+    body
+    {
+        width: 90% !important;
+    }
+}
+
+@media only screen and (max-width: 900px)
+{
+    body
+    {
+        width: 100% !important;
+    }
+}

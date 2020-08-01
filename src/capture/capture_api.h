@@ -356,11 +356,11 @@ struct capture_api_s
     virtual bool has_invalid_signal(void) const = 0;
 
     /*!
-     * Returns @a true if there's currently no capture signal on the active
-     * input channel; @a false otherwise.
+     * Returns @a true if there's currently no capture signal on the capture
+     * device's active input channel; @a false otherwise.
      * 
      * @see
-     * get_input_channel_idx()
+     * get_input_channel_idx(), set_input_channel()
      */
     virtual bool has_no_signal(void) const = 0;
 
