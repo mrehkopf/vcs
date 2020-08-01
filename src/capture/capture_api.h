@@ -10,25 +10,22 @@
  * @brief
  * The capture API provides an interface for exposing a capture device to VCS.
  * 
- * As a developer, you can use the API to e.g. implement support in VCS for a
- * previously-unsupported capture device, or even some other source of images.
- * 
- * Usage:
+ * Usage
  * 
  *   1. Create a new class for your capture device - this will be its specific
  *      capture API. You can look at existing examples: e.g. @a capture_api_virtual.h,
- *      which is for a dummy (null) capture device; or @a capture_api_rgbeasy.h,
+ *      which is for a dummy (null) capture device; and @a capture_api_rgbeasy.h,
  *      which is for the Datapath VisionRGB cards under Windows.
  * 
- *   2. Have the new class inherit from capture_api_s and implement at least its
- *      pure virtual functions.
+ *   2. Have the new class inherit from capture_api_s and implement at least
+ *      its pure virtual functions.
  * 
- *   3. Inside VCS's @a capture.cpp, instance the new class in kc_initialize_capture()
- *      and have kc_capture_api() return a reference to it.
+ *   3. Inside VCS's @a capture.cpp, instance the new class in kc_initialize_capture(),
+ *      and have kc_capture_api() return a reference to that instance.
  * 
- *   4. VCS will now interact with the new capture API, e.g. by periodically
- *      calling kc_capture_api().pop_capture_event_queue() to see if there are
- *      new captured frames to be displayed.
+ *   4. VCS will now interact with the new capture device though the API; e.g.
+ *      by periodically calling kc_capture_api().pop_capture_event_queue() to
+ *      see if there are new captured frames to be displayed.
  *
  */
 
@@ -128,10 +125,6 @@ struct capture_api_s
     /*!
      * Returns @a true if the capture device supports hardware de-interlacing;
      * @a false otherwise.
-     * 
-     * \note
-     * VCS can't take advantage of hardware de-interlacing even if supported by
-     * the capture device.
      */
     virtual bool device_supports_deinterlacing(void) const { return false; }
 
@@ -144,9 +137,6 @@ struct capture_api_s
     /*!
      * Returns @a true if the capture device is capable of streaming frames via
      * direct memory access (DMA); @a false otherwise.
-     * 
-     * \note
-     * VCS can't take advantage of DMA even if supported by the capture device.
      */
     virtual bool device_supports_dma(void) const { return false; }
 
@@ -165,10 +155,6 @@ struct capture_api_s
     /*!
      * Returns @a true if the capture device is capable of capturing in YUV
      * color; @a false otherwise.
-     * 
-     * \note
-     * VCS can't take advantage of YUV color even if supported by the capture
-     * device. Capturing will always happen in RGB color.
      */
     virtual bool device_supports_yuv(void) const { return false; }
 
@@ -262,13 +248,16 @@ struct capture_api_s
     virtual video_signal_parameters_s get_maximum_video_signal_parameters(void) const = 0;
 
     /*!
-     * Returns the capture device's current input resolution. This is the
-     * resolution in which the device is presently capturing frames.
+     * Returns the capture device's current input/output resolution.
+     * 
+     * @note
+     * The capture device's input and output resolutions are expected to always
+     * be equal.
      * 
      * @warning
-     * Do not take this to be the resolution of the latest captured frame as
-     * returned from get_frame_buffer(), as the capture device's resolution may
-     * have changed since that frame was captured.
+     * Don't take this to be the resolution of the latest captured frame
+     * (returned from get_frame_buffer()), as the capture device's resolution
+     * may have changed since that frame was captured.
      * 
      * @see
      * set_resolution(), get_minimum_resolution(), get_maximum_resolution()
@@ -279,11 +268,11 @@ struct capture_api_s
      * Returns the minimum capture resolution supported by the capture API.
      * 
      * @note
-     * This resolution may be larger than the minimum resolution supported by
-     * the capture device, but never smaller.
+     * This resolution may be larger - but not smaller - than the minimum
+     * input/output resolution supported by the capture device.
      * 
      * @see
-     * set_resolution(), get_resolution(), get_maximum_resolution()
+     * get_maximum_resolution(), get_resolution(), set_resolution()
      */
     virtual resolution_s get_minimum_resolution(void) const = 0;
 
@@ -291,11 +280,11 @@ struct capture_api_s
      * Returns the maximum capture resolution supported by the capture API.
      * 
      * @note
-     * This resolution may be smaller than the maximum resolution supported by
-     * the capture device, but never larger.
+     * This resolution may be smaller - but not larger - than the maximum
+     * input/output resolution supported by the capture device.
      * 
      * @see
-     * set_resolution(), get_resolution(), get_minimum_resolution()
+     * get_minimum_resolution(), get_resolution(), set_resolution()
      */
     virtual resolution_s get_maximum_resolution(void) const = 0;
 
@@ -381,9 +370,15 @@ struct capture_api_s
     virtual bool is_capturing(void) const = 0;
 
     /*!
-     * Returns the most recent captured frame's data.
+     * Returns the most recently-captured frame's data.
+     * 
+     * @warning
+     * The caller should lock @ref captureMutex while accessing the returned
+     * data. Failure to do so may result in a race condition, as the capture
+     * API is permitted to operate on these data outside of the caller's
+     * thread.
      */
-    virtual const captured_frame_s& get_frame_buffer(void) const = 0;
+    virtual const captured_frame_s &get_frame_buffer(void) const = 0;
 
     /*************
      * Setters: */
@@ -438,10 +433,19 @@ struct capture_api_s
     virtual bool set_pixel_format(const capture_pixel_format_e pf) { (void)pf; return false; }
 
     /*!
-     * Tells the capture device to adopt the given input resolution.
+     * Tells the capture device to adopt the given resolution as its input and
+     * output resolution.
      * 
-     * Captured frames may exhibit artefacting if this resolution doesn't match
-     * the captured video signal's original resolution.
+     * @note
+     * The capture device must adopt this as both its input and output
+     * resolution. For example, if this resolution is 800 x 600, the capture
+     * device should interpret the video signal as if it were 800 x 600, rather
+     * than upscaling or downscaling the frame to 800 x 600 after capturing.
+     * 
+     * @warning
+     * Since this will be set as the capture device's input resolution,
+     * captured frames may exhibit artefacting if the resolution doesn't match
+     * the video signal's true or intended resolution.
      * 
      * Returns @a true on success; @a false otherwise.
      * 
