@@ -10,6 +10,7 @@
 :root
 {
 	--page-background-color: rgb(238, 238, 238);
+	--content-padding: 27px;
 }
 
 *
@@ -29,7 +30,7 @@
 body
 {
 	background-color: var(--page-background-color) !important;
-	width: 60% !important;
+	width: 100% !important;
 	margin: 0 auto !important;
 }
 
@@ -55,14 +56,21 @@ hr
 	visibility: hidden !important;
 }
 
+#nav-tree
+{
+	background-image: none !important;
+}
+
+#nav-tree .item:hover
+{
+	background-color: rgba(0, 0, 50, 0.04) !important;
+}
+
 .contents
 {
 	background-color: white !important;
-	padding: 30px !important;
+	padding: var(--content-padding) !important;
 	margin: 0 !important;
-	border-bottom-left-radius: 4px !important;
-	border-bottom-right-radius: 4px !important;
-	box-shadow: 0 5px 4px -6px gray !important;
 }
 
 .contents > hr
@@ -85,43 +93,12 @@ hr
 	display: none !important;
 }
 
-.footer
-{
-	font-size: 80% !important;
-	margin-top: 2px !important;
-	margin-bottom: 2px !important;
-	color: gray !important;
-}
-
-.footer a
-{
-	margin-left: -3px !important;
-}
-
-.footer a::before
-{
-	content: "Doxygen" !important;
-	text-decoration: none !important;
-	color: gray !important;
-}
-
-.footer a:hover
-{
-	text-decoration: none !important;
-}
-
-.footer img
-{
-	vertical-align: middle !important;
-	display: none !important;
-}
-
 .header
 {
 	border: none !important;
-	padding: 30px !important;
-	padding-top: 10px !important;
-	padding-bottom: 10px !important;
+	padding: var(--content-padding) !important;
+	padding-top: 14px !important;
+	padding-bottom: 14px !important;
 	background-image: none !important;
 }
 
@@ -153,16 +130,11 @@ hr
 	font-size: 150% !important;
 }
 
-#main-menu
-{
-	border-top-left-radius: 4px !important;
-	border-top-right-radius: 4px !important;
-}
-
 #main-menu a
 {
-	font-weight: normal !important;
-	padding: 7px !important;
+	font-weight: bold !important;
+	padding: 8px !important;
+	font-size: 15px !important;
 }
 
 #main-menu .sub-arrow
@@ -178,7 +150,7 @@ hr
 
 .memitem
 {
-	margin-bottom: 10px !important;
+	margin-bottom: 15px !important;
 }
 
 .memItemLeft,
@@ -208,7 +180,6 @@ hr
 
 .memname
 {
-	letter-spacing: -1px !important;
 	font: initial !important;
 	font-family: sans-serif !important;
 	font-size: 115% !important;
@@ -278,11 +249,12 @@ table.memberdecls [class*="memdesc:"]:nth-last-of-type(2) .mdescRight
 	font-weight: bold !important;
 	border: none !important;
 	border-bottom: 2px solid var(--page-background-color) !important;
-	padding-bottom: 12px !important;
+	padding-bottom: 11px !important;
 }
 
 .memdoc
 {
+	margin-top: -3px !important;
 	box-shadow: none !important;
 	border: none !important;
 	padding: 0 !important;
@@ -393,42 +365,12 @@ span .mlabel
 .navpath .navelem .el
 {
 	line-height: 170% !important;
+	font-size: 16px !important;
+	font-weight: bold !important;
 }
 
 .icon
 {
 	width: 85% !important;
 	height: 95% !important;
-}
-
-@media only screen and (max-width: 1500px)
-{
-    body
-    {
-        width: 70% !important;
-    }
-}
-
-@media only screen and (max-width: 1400px)
-{
-    body
-    {
-        width: 80% !important;
-    }
-}
-
-@media only screen and (max-width: 1200px)
-{
-    body
-    {
-        width: 90% !important;
-    }
-}
-
-@media only screen and (max-width: 900px)
-{
-    body
-    {
-        width: 100% !important;
-    }
 }
