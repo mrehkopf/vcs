@@ -3,7 +3,7 @@
  *
  * Software: VCS
  *
- * A custom CSS styling for Doxygen.
+ * A custom CSS styling for Doxygen 1.8.13.
  *
  */
 
@@ -11,6 +11,8 @@
 {
 	--page-background-color: rgb(238, 238, 238);
 	--content-padding: 27px;
+	--section-vertical-margin: 16px;
+	--link-color: #004fcf;
 }
 
 *
@@ -38,7 +40,7 @@ a.el,
 a:visited.el
 {
 	font-weight: normal !important;
-	color: #004fcf !important;
+	color: var(--link-color) !important;
 }
 
 table
@@ -64,6 +66,11 @@ hr
 #nav-tree .item:hover
 {
 	background-color: rgba(0, 0, 50, 0.04) !important;
+}
+
+#MSearchBox
+{
+	font-size: 80% !important;
 }
 
 .contents
@@ -130,6 +137,11 @@ hr
 	font-size: 150% !important;
 }
 
+#main-menu
+{
+	padding-left: 2px !important;
+}
+
 #main-menu a
 {
 	font-weight: bold !important;
@@ -188,9 +200,10 @@ hr
 	color: black !important;
 }
 
-table .memname
+table.memname tr
 {
 	line-height: 100% !important;
+	float: left !important;
 }
 
 table.memberdecls td[class*="memItem"],
@@ -232,14 +245,20 @@ table.memberdecls [class*="memdesc:"]:nth-last-of-type(2) .mdescRight
 
 .paramtype
 {
-	margin-left: 5px !important;
+	margin-left: 0 !important;
 }
 
 .paramname em
 {
 	font-style: italic !important;
 	color: black !important;
-	margin-right: 5px !important;
+	margin-right: 0 !important;
+}
+
+/* Separate parameter names with non-breaking spaces.*/
+table.memname tr:not(:nth-last-child(-n+2))::after
+{
+	content: "\a0" !important;
 }
 
 .memproto
@@ -263,8 +282,58 @@ table.memberdecls [class*="memdesc:"]:nth-last-of-type(2) .mdescRight
 
 .memdoc p
 {
+	font: initial !important;
 	font-family: sans-serif !important;
 	padding-left: 0 !important;
+}
+
+/* For function parameter names.*/
+.memdoc code
+{
+	font-style: italic !important;
+}
+
+.memdoc > .fragment
+{
+	counter-reset: line;
+	background-color: #fbfbfb !important;
+	border: 1px dashed #c6c6c6 !important;
+	border-radius: 3px !important;
+	margin: 0px !important;
+	margin-top: var(--section-vertical-margin) !important;
+	margin-bottom: var(--section-vertical-margin) !important;
+	padding: 15px !important;
+}
+
+.memdoc > .fragment > .line
+{
+	font-family: monospace !important;
+	font-size: 15px !important;
+}
+
+.memdoc > .fragment > .line:not(:last-child)
+{
+	margin-bottom: 5px !important;
+}
+
+.memdoc > .fragment > .line::before
+{
+	color: #c6c6c6 !important;
+	counter-increment: line !important;
+	content: counter(line) ": " !important;
+}
+
+.memdoc > .fragment > .line > span
+{
+	color: inherit !important;
+	font-family: monospace !important;
+}
+
+.memdoc > .fragment > .line > a.code,
+.memdoc > .fragment > .line > a.code:visited
+{
+	font-family: monospace !important;
+	color: var(--link-color) !important;
 }
 
 .section.note,
@@ -299,8 +368,8 @@ table.memberdecls [class*="memdesc:"]:nth-last-of-type(2) .mdescRight
 .section.note,
 .section.warning
 {
-	margin-bottom: 16px !important;
-	margin-top: 16px !important;
+	margin-bottom: var(--section-vertical-margin) !important;
+	margin-top: var(--section-vertical-margin) !important;
 }
 
 .section.see dd,
