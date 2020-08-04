@@ -31,7 +31,7 @@
 
 body
 {
-	background-color: var(--page-background-color) !important;
+	background-color: white !important;
 	width: 100% !important;
 	margin: 0 auto !important;
 }
@@ -135,11 +135,12 @@ hr
 {
 	border: none !important;
 	font-size: 150% !important;
+	display: none !important;
 }
 
 #main-menu
 {
-	padding-left: 2px !important;
+	padding-left: 0 !important;
 }
 
 #main-menu a
