@@ -76,7 +76,7 @@ struct capture_api_s
      * PROGRAM_EXIT_REQUESTED to a truthy value, which will result in VCS's
      * termination once the event loop in main.cpp detects this condition.
      * 
-     * Returns @a true on success; @a false otherwise.
+     * Returns true on success; false otherwise.
      * 
      * @note
      * Regardless of the return value, you should call release() before calling
@@ -96,7 +96,7 @@ struct capture_api_s
      * value from get_frame_buffer() will be undefined until the API is
      * re-initialized with a call to initialize().
      * 
-     * Returns @a true on success; @a false otherwise.
+     * Returns true on success; false otherwise.
      * 
      * @note
      * Refrain from calling this function without having called initialize()
@@ -111,50 +111,50 @@ struct capture_api_s
      * Capability queries: */
 
     /*!
-     * Returns @a true if the capture device is capable of capturing from a
-     * component video source; @a false otherwise.
+     * Returns true if the capture device is capable of capturing from a
+     * component video source; false otherwise.
      */
     virtual bool device_supports_component_capture(void) const { return false; }
 
     /*!
-     * Returns @a true if the capture device is capable of capturing from a
-     * composite video source; @a false otherwise.
+     * Returns true if the capture device is capable of capturing from a
+     * composite video source; false otherwise.
      */
     virtual bool device_supports_composite_capture(void) const { return false; }
 
     /*!
-     * Returns @a true if the capture device supports hardware de-interlacing;
-     * @a false otherwise.
+     * Returns true if the capture device supports hardware de-interlacing;
+     * false otherwise.
      */
     virtual bool device_supports_deinterlacing(void) const { return false; }
 
     /*!
-     * Returns @a true if the capture device is capable of capturing from an
-     * S-Video source; @a false otherwise.
+     * Returns true if the capture device is capable of capturing from an
+     * S-Video source; false otherwise.
      */
     virtual bool device_supports_svideo(void) const { return false; }
     
     /*!
-     * Returns @a true if the capture device is capable of streaming frames via
-     * direct memory access (DMA); @a false otherwise.
+     * Returns true if the capture device is capable of streaming frames via
+     * direct memory access (DMA); false otherwise.
      */
     virtual bool device_supports_dma(void) const { return false; }
 
     /*!
-     * Returns @a true if the capture device is capable of capturing from a
-     * digital (DVI) source; @a false otherwise.
+     * Returns true if the capture device is capable of capturing from a
+     * digital (DVI) source; false otherwise.
      */
     virtual bool device_supports_dvi(void) const { return false; }
 
     /*!
-     * Returns @a true if the capture device is capable of capturing from an
-     * analog (VGA) source; @a false otherwise.
+     * Returns true if the capture device is capable of capturing from an
+     * analog (VGA) source; false otherwise.
      */
     virtual bool device_supports_vga(void) const { return false; }
 
     /*!
-     * Returns @a true if the capture device is capable of capturing in YUV
-     * color; @a false otherwise.
+     * Returns true if the capture device is capable of capturing in YUV
+     * color; false otherwise.
      */
     virtual bool device_supports_yuv(void) const { return false; }
 
@@ -347,7 +347,7 @@ struct capture_api_s
     virtual capture_pixel_format_e get_pixel_format(void) const = 0;
 
     /*!
-     * Returns @a true if the current capture signal is invalid; @a false
+     * Returns true if the current capture signal is invalid; false
      * otherwise.
      * 
      * @see
@@ -356,8 +356,8 @@ struct capture_api_s
     virtual bool has_invalid_signal(void) const = 0;
 
     /*!
-     * Returns @a true if there's currently no capture signal on the capture
-     * device's active input channel; @a false otherwise.
+     * Returns true if there's currently no capture signal on the capture
+     * device's active input channel; false otherwise.
      * 
      * @see
      * get_input_channel_idx(), set_input_channel()
@@ -365,7 +365,7 @@ struct capture_api_s
     virtual bool has_no_signal(void) const = 0;
 
     /*!
-     * Returns @a true if the device is currently capturing; @a false otherwise.
+     * Returns true if the device is currently capturing; false otherwise.
      */
     virtual bool is_capturing(void) const = 0;
 
@@ -388,7 +388,7 @@ struct capture_api_s
      * the latest frame obtained via get_frame_buffer(). The API is then free
      * to e.g. overwrite the frame's data.
      * 
-     * Returns @a true on success; @a false otherwise.
+     * Returns true on success; false otherwise.
      */
     virtual bool mark_frame_buffer_as_processed(void) { return false; }
 
@@ -402,7 +402,7 @@ struct capture_api_s
     /*!
      * Assigns to the capture device the given video signal parameters.
      * 
-     * Returns @a true on success; @a false otherwise.
+     * Returns true on success; false otherwise.
      * 
      * @see
      * get_video_signal_parameters(), get_minimum_video_signal_parameters(),
@@ -414,7 +414,7 @@ struct capture_api_s
      * Tells the capture device to start listening for signals on the given
      * input channel.
      * 
-     * Returns @a true on success; @a false otherwise.
+     * Returns true on success; false otherwise.
      * 
      * @see
      * get_input_channel_idx(), get_device_maximum_input_count()
@@ -425,7 +425,7 @@ struct capture_api_s
      * Tells the capture device to store its captured frames using the given
      * pixel format.
      * 
-     * Returns @a true on success; @a false otherwise.
+     * Returns true on success; false otherwise.
      * 
      * @see
      * get_pixel_format()
@@ -447,7 +447,7 @@ struct capture_api_s
      * captured frames may exhibit artefacting if the resolution doesn't match
      * the video signal's true or intended resolution.
      * 
-     * Returns @a true on success; @a false otherwise.
+     * Returns true on success; false otherwise.
      * 
      * @see
      * get_resolution(), get_minimum_resolution(), get_maximum_resolution()
@@ -457,7 +457,7 @@ struct capture_api_s
     /*!
      * Tells the capture API to reset its count of missed frames.
      * 
-     * Returns @a true on success; @a false otherwise.
+     * Returns true on success; false otherwise.
      * 
      * @see
      * get_missed_frames_count()
