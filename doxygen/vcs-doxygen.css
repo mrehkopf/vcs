@@ -90,6 +90,25 @@ hr
 	margin: 0 !important;
 }
 
+.contents > .textblock > h1,
+.contents > .textblock > h2,
+.contents > .textblock > h3,
+.contents > .textblock > h4,
+.contents > .textblock > h5
+{
+	margin-top: var(--content-padding) !important;
+	margin-bottom: 15px !important;
+}
+
+.contents > .textblock > h1:first-child,
+.contents > .textblock > h2:first-child,
+.contents > .textblock > h3:first-child,
+.contents > .textblock > h4:first-child,
+.contents > .textblock > h5:first-child
+{
+	margin-top: 0 !important;
+}
+
 .directory
 {
 	border: none !important;
@@ -135,6 +154,11 @@ hr
 {
 	border: none !important;
 	font-size: 150% !important;
+	display: none !important;
+}
+
+#nav-sync
+{
 	display: none !important;
 }
 
