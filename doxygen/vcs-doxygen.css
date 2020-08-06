@@ -187,7 +187,13 @@ hr
 
 .memitem
 {
-	margin-bottom: 15px !important;
+	margin-top: var(--content-padding) !important;
+	margin-bottom: 0 !important;
+}
+
+.memitem .memdoc *:last-of-type
+{
+	margin-bottom: 0 !important;
 }
 
 .memItemLeft,
@@ -295,6 +301,14 @@ table.memberdecls [class*="memdesc:"]:nth-last-of-type(2) .mdescRight
 	font-style: italic !important;
 	color: black !important;
 	margin-right: 0 !important;
+}
+
+/* When the parameter type is void, Doxygen nonetheless inserts a non-breaking
+ * space after "void". This isn't a problem for types that are followed by the
+ * parameter name, but since void has no name, a dangling space results.*/
+.paramname:empty
+{
+	margin-left: -0.25em !important;
 }
 
 /* Separate parameter names with non-breaking spaces.*/
