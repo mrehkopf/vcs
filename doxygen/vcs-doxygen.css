@@ -97,7 +97,7 @@ hr
 .contents > .textblock > h5
 {
 	margin-top: var(--content-padding) !important;
-	margin-bottom: 15px !important;
+	margin-bottom: var(--section-vertical-margin) !important;
 }
 
 .contents > .textblock > h1:first-child,
@@ -194,6 +194,23 @@ hr
 .memItemRight
 {
 	background-color: transparent !important;
+}
+
+.memItemRight b
+{
+	font-weight: normal !important;
+}
+
+/* Undo the two non-breaking spaces that occur after every n elements in
+ * enum value listings.*/
+.memItemRight br + b
+{
+	margin-left: -0.5em !important;
+}
+
+.memItemRight br
+{
+	display: none !important;
 }
 
 .memtitle
