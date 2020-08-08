@@ -296,10 +296,14 @@ table.memberdecls [class*="memdesc:"]:nth-last-of-type(2) .mdescRight
 	margin-left: 0 !important;
 }
 
+.paramname
+{
+	color: black !important;
+}
+
 .paramname em
 {
 	font-style: italic !important;
-	color: black !important;
 	margin-right: 0 !important;
 }
 
