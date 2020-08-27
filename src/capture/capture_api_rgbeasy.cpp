@@ -210,18 +210,17 @@ bool capture_api_rgbeasy_s::initialize(void)
     FRAME_BUFFER.pixels.alloc(MAX_FRAME_SIZE);
 
     // Open an input on the capture hardware, and have it start sending in frames.
+    if (!this->initialize_hardware() ||
+        !this->start_capture())
     {
-        if (!this->initialize_hardware() ||
-            !this->start_capture())
-        {
-            NBENE(("Failed to initialize the capture API."));
+        NBENE(("Failed to initialize the capture API."));
 
-            PROGRAM_EXIT_REQUESTED = 1;
-            goto done;
-        }
+        PROGRAM_EXIT_REQUESTED = 1;
+        goto done;
     }
 
-    kpropagate_news_of_new_capture_video_mode();
+    // Propagate the current capture video mode to VCS.
+    push_capture_event(capture_event_e::new_video_mode);
 
     done:
     // We can successfully exit if the initialization didn't trigger a request
