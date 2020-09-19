@@ -77,7 +77,6 @@ void kd_acquire_output_window(void)
 {
     INFO(("Acquiring the display."));
 
-    app_n::APP->setWindowIcon(QIcon(":/res/images/icons/appicon.ico"));
     WINDOW = new MainWindow;
     WINDOW->show();
 

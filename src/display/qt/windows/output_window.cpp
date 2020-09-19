@@ -212,7 +212,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 {
                     const QString newTitle = QInputDialog::getText(this,
                                                                    "VCS - Enter a custom window title",
-                                                                   "Title (empty to restore default):",
+                                                                   "Title (empty restores the default):",
                                                                    QLineEdit::Normal,
                                                                    this->windowTitleOverride);
 
@@ -477,17 +477,12 @@ MainWindow::MainWindow(QWidget *parent) :
             menu->addMenu(downscaler);
             menu->addSeparator();
 
-            QAction *record = new QAction("Record...", this);
-            record->setShortcut(QKeySequence("ctrl+r"));
-            menu->addAction(record);
-            connect(record, &QAction::triggered, this, [=]{this->open_record_dialog();});
-
             QAction *overlay = new QAction("Overlay...", this);
             overlay->setShortcut(QKeySequence("ctrl+l"));
             menu->addAction(overlay);
             connect(overlay, &QAction::triggered, this, [=]{this->open_overlay_dialog();});
 
-            QAction *antiTear = new QAction("Anti-tear...", this);
+            QAction *antiTear = new QAction("Anti-tearing...", this);
             antiTear->setShortcut(QKeySequence("ctrl+a"));
             menu->addAction(antiTear);
             connect(antiTear, &QAction::triggered, this, [=]{this->open_antitear_dialog();});
@@ -501,6 +496,11 @@ MainWindow::MainWindow(QWidget *parent) :
             filter->setShortcut(QKeySequence("ctrl+f"));
             menu->addAction(filter);
             connect(filter, &QAction::triggered, this, [=]{this->open_filter_graph_dialog();});
+
+            QAction *record = new QAction("Video recorder...", this);
+            record->setShortcut(QKeySequence("ctrl+r"));
+            menu->addAction(record);
+            connect(record, &QAction::triggered, this, [=]{this->open_record_dialog();});
         }
 
         // Help...
@@ -593,7 +593,45 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     });
 
+    // Apply any custom styling.
+    {
+        qApp->setWindowIcon(QIcon(":/res/images/icons/appicon.ico"));
+        this->apply_programwide_styling(":/res/stylesheets/appstyle-oldie.qss");
+    }
+
     return;
+}
+
+// Loads a QSS stylesheet from the given file, and assigns it to the entire
+// program. Returns true if the file was successfully opened; false otherwise;
+// will not signal whether actually assigning the stylesheet succeeded or not.
+bool MainWindow::apply_programwide_styling(const QString &filename)
+{
+    // Take an empty filename to mean that all custom stylings should be removed.
+    if (filename.isEmpty())
+    {
+        qApp->setStyleSheet("");
+
+        return true;
+    }
+
+    // Apply the given style, prepended by an OS-specific font style.
+    QFile styleFile(filename);
+    #if _WIN32
+        QFile defaultFontStyleFile(":/res/stylesheets/font-windows.qss");
+    #else
+        QFile defaultFontStyleFile(":/res/stylesheets/font-linux.qss");
+    #endif
+    if (styleFile.open(QIODevice::ReadOnly) &&
+        defaultFontStyleFile.open(QIODevice::ReadOnly))
+    {
+        qApp->setStyleSheet(QString("%1 %2").arg(QString(defaultFontStyleFile.readAll()))
+                                            .arg(QString(styleFile.readAll())));
+
+        return true;
+    }
+
+    return false;
 }
 
 MainWindow::~MainWindow()

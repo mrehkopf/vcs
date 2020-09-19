@@ -38,9 +38,12 @@ public:
     void set_background_color(const QString colorName);
     const QList<QString>& background_color_list(void);
     const QString& current_background_color_name(void);
+    const QColor current_background_color(void);
     bool is_enabled(void) const;
 
     void set_enabled(const bool isDisabled);
+
+    QRectF boundingRect(void) const;
 
 signals:
     // Emitted when the node's enabled status is toggled.
@@ -54,16 +57,18 @@ protected:
     // delete or change the names of any of the items on this list. But
     // you can add more.
     const QList<QString> backgroundColorList = {
-        "Blue", "Cyan", "Green", "Magenta", "Red", "Yellow",
+        "Black", "Blue", "Cyan", "Green", "Magenta", "Red", "Yellow",
     };
 
-    QString backgroundColor = this->backgroundColorList.at(1);
+    QString backgroundColor = this->backgroundColorList.at(0);
 
     // Whether the filter corresponding to this node will get applied. If false,
     // the node will just act as a passthrough.
     // Note: Use set_enabled() to toggle this value at runtime, rather than
     // setting it directly.
     bool isEnabled = true;
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 private:
     void generate_right_click_menu(void);

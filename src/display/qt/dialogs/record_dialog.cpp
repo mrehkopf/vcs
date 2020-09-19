@@ -27,7 +27,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Record");
+    this->setWindowTitle("VCS - Video Recorder");
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -107,7 +107,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
 
         // Record...
         {
-            QMenu *recordMenu = new QMenu("Record", this->menubar);
+            QMenu *recordMenu = new QMenu("Recorder", this->menubar);
 
             QAction *enable = new QAction("Enabled", this->menubar);
             enable->setCheckable(true);

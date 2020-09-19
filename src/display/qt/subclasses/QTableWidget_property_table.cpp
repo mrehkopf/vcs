@@ -24,8 +24,10 @@ PropertyTable::PropertyTable(QWidget *parent) : QTableWidget(parent)
     this->verticalHeader()->setDefaultSectionSize(25);
     this->verticalHeader()->setMinimumSectionSize(25);
 
+    this->setShowGrid(false);
     this->setAlternatingRowColors(true);
     this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    this->setSelectionMode(QAbstractItemView::NoSelection);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 

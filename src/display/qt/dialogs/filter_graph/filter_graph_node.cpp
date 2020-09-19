@@ -35,6 +35,90 @@ FilterGraphNode::~FilterGraphNode()
     return;
 }
 
+QRectF FilterGraphNode::boundingRect(void) const
+{
+    const int margin = 20;
+
+    return QRectF(-margin,
+                  -margin,
+                  (this->width + (margin * 2)),
+                  (this->height + (margin * 2)));
+}
+
+void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    (void)option;
+    (void)widget;
+
+    QFont bodyFont = painter->font();
+    QFont titleFont = painter->font();
+
+    painter->setRenderHint(QPainter::Antialiasing, false);
+
+    const auto draw_box_shadow = [painter](const QRect &rect, const unsigned lineWidth)
+    {
+        painter->setPen(QPen(QColor("#f5f5f0"), lineWidth, Qt::SolidLine));
+        painter->drawLine(rect.x(),
+                          rect.y(),
+                          rect.x(),
+                          rect.y() + (rect.height() - 1));
+        painter->drawLine(rect.x(),
+                          rect.y(),
+                          rect.x() + (rect.width() - 1),
+                          rect.y());
+
+        painter->setPen(QPen(QColor("#808075"), lineWidth, Qt::SolidLine));
+        painter->drawLine(rect.x() + (rect.width()),
+                          rect.y(),
+                          rect.x() + (rect.width()),
+                          rect.y() + (rect.height()));
+        painter->drawLine(rect.x(),
+                          rect.y() + (rect.height()),
+                          rect.x() + (rect.width()),
+                          rect.y() + (rect.height()));
+    };
+
+    // Draw the node's body.
+    {
+        const unsigned edgePenThickness = 4;
+
+        painter->setFont(bodyFont);
+
+        // Background.
+        {
+            // Node's background.
+            painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
+            painter->setBrush(QBrush(QColor("#d4d0c8")));
+            painter->drawRect(0, 0, this->width, this->height);
+            draw_box_shadow(QRect(0, 0, this->width, this->height), edgePenThickness);
+
+            // Title bar's background.
+            painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
+            painter->setBrush(QBrush((this->is_enabled()? this->current_background_color() : "#a5a39f"),
+                                     (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
+            painter->drawRect(QRect(2, 8, (this->width - 4), 24));
+        }
+
+        // Connection points (edges).
+        {
+            for (const auto &edge: this->edges)
+            {
+                painter->setPen(QColor("#d4d0c8"));
+                painter->setBrush(QBrush(QColor("#d4d0c8")));
+                painter->drawRect(edge.rect);
+                draw_box_shadow(edge.rect, (edgePenThickness / 2));
+            }
+        }
+    }
+
+    const QString clr = (this->current_background_color().lightness() < 128? "white" : "black");
+    painter->setFont(titleFont);
+    painter->setPen(QColor(this->is_enabled()? clr : "black"));
+    painter->drawText(20, 26, title);
+
+    return;
+}
+
 void FilterGraphNode::set_background_color(const QString colorName)
 {
     // If we recognize this color name.
@@ -57,6 +141,19 @@ const QString& FilterGraphNode::current_background_color_name(void)
     return this->backgroundColor;
 }
 
+const QColor FilterGraphNode::current_background_color(void)
+{
+    const QString currentColor = this->backgroundColor.toLower();
+
+    if (currentColor == "red") return QColor("brown");
+    else if (currentColor == "black") return QColor("dimgray");
+    else if (currentColor == "blue") return QColor("navy");
+    else if (currentColor == "cyan") return QColor("darkcyan");
+    else if (currentColor == "magenta") return QColor("mediumvioletred");
+
+    return this->backgroundColor;
+}
+
 bool FilterGraphNode::is_enabled(void) const
 {
     return this->isEnabled;
@@ -68,6 +165,7 @@ void FilterGraphNode::set_enabled(const bool enabled)
 
     if (enabled)
     {
+
         emit this->enabled();
     }
     else
@@ -98,7 +196,7 @@ void FilterGraphNode::generate_right_click_menu(void)
     {
         this->rightClickMenu->addSeparator();
 
-        QAction *enabled = new QAction("Enabled", this->rightClickMenu);
+        QAction *enabled = new QAction("Active", this->rightClickMenu);
 
         enabled->setCheckable(true);
         enabled->setChecked(this->isEnabled);
@@ -123,22 +221,15 @@ void FilterGraphNode::generate_right_click_menu(void)
     }
 
     // Add options to change the node's color.
-    if ((this->filterType != filter_node_type_e::gate) &&
-        !this->background_color_list().empty())
+    if (!this->background_color_list().empty())
     {
         this->rightClickMenu->addSeparator();
 
         QMenu *colorMenu = new QMenu("Background color", this->rightClickMenu);
 
-        QActionGroup *colorGroup = new QActionGroup(colorMenu);
-        colorGroup->setExclusive(true);
-
         for (const auto &color : this->backgroundColorList)
         {
             QAction *colorAction = new QAction(color, colorMenu);
-            colorAction->setCheckable(true);
-            colorAction->setChecked(color == this->backgroundColor);
-            colorAction->setActionGroup(colorGroup);
             colorMenu->addAction(colorAction);
 
             connect(colorAction, &QAction::triggered, this, [=]

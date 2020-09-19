@@ -29,9 +29,9 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
     {
         this->menubar = new QMenuBar(this);
 
-        // Filter graph...
+        // Graph...
         {
-            QMenu *filterGraphMenu = new QMenu("Filter graph", this->menubar);
+            QMenu *filterGraphMenu = new QMenu("Graph", this->menubar);
 
             QAction *enable = new QAction("Enabled", this->menubar);
             enable->setCheckable(true);
@@ -55,18 +55,17 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             filterGraphMenu->addAction(enable);
 
             filterGraphMenu->addSeparator();
-            connect(filterGraphMenu->addAction("New graph"), &QAction::triggered, this, [=]{this->reset_graph();});
+            connect(filterGraphMenu->addAction("New"), &QAction::triggered, this, [=]{this->reset_graph();});
             filterGraphMenu->addSeparator();
-            connect(filterGraphMenu->addAction("Load graph..."), &QAction::triggered, this, [=]{this->load_filters();});
-            filterGraphMenu->addSeparator();
-            connect(filterGraphMenu->addAction("Save graph..."), &QAction::triggered, this, [=]{this->save_filters();});
+            connect(filterGraphMenu->addAction("Load..."), &QAction::triggered, this, [=]{this->load_filters();});
+            connect(filterGraphMenu->addAction("Save as..."), &QAction::triggered, this, [=]{this->save_filters();});
 
             this->menubar->addMenu(filterGraphMenu);
         }
 
-        // Add...
+        // Nodes...
         {
-            QMenu *addMenu = new QMenu("Add", this);
+            QMenu *addMenu = new QMenu("Nodes", this);
 
             // Insert the names of all available filter types.
             {
@@ -113,14 +112,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         {
             QMenu *viewMenu = new QMenu("View", this);
 
-            // Scale.
-            {
-                QMenu *scaleMenu = new QMenu("Zoom level", viewMenu);
-
-                connect(scaleMenu->addAction("Reset"), &QAction::triggered, this, [=]{ ui->graphicsView->set_scale(1); });
-
-                viewMenu->addMenu(scaleMenu);
-            }
+            connect(viewMenu->addAction("Reset zoom"), &QAction::triggered, this, [=]{ ui->graphicsView->set_scale(1); });
 
             this->menubar->addMenu(viewMenu);
         }
@@ -131,7 +123,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
     // Create and configure the graphics scene.
     {
         this->graphicsScene = new InteractibleNodeGraph(this);
-        this->graphicsScene->setBackgroundBrush(QBrush("gray"));
+        this->graphicsScene->setBackgroundBrush(QBrush("transparent"));
 
         ui->graphicsView->setScene(this->graphicsScene);
 
@@ -259,8 +251,8 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_enum_e typ
 {
     const filter_c *const newFilter = kf_create_new_filter_instance(type, initialParameterValues);
     const unsigned filterWidgetWidth = (newFilter->guiWidget->widget->width() + 20);
-    const unsigned filterWidgetHeight = (newFilter->guiWidget->widget->height() + 49);
-    const QString nodeTitle = QString("#%1: %2").arg(this->numNodesAdded+1).arg(newFilter->guiWidget->title);
+    const unsigned filterWidgetHeight = (newFilter->guiWidget->widget->height() + 35);
+    const QString nodeTitle = QString("%1. %2").arg(this->numNodesAdded+1).arg(newFilter->guiWidget->title);
 
     k_assert(newFilter, "Failed to add a new filter node.");
 
@@ -279,7 +271,7 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_enum_e typ
 
     QGraphicsProxyWidget* nodeWidgetProxy = new QGraphicsProxyWidget(newNode);
     nodeWidgetProxy->setWidget(newFilter->guiWidget->widget);
-    nodeWidgetProxy->widget()->move(10, 40);
+    nodeWidgetProxy->widget()->move(10, 30);
 
     if (type == filter_type_enum_e::input_gate)
     {
@@ -426,7 +418,6 @@ void FilterGraphDialog::set_filter_graph_enabled(const bool enabled)
 
 bool FilterGraphDialog::is_filter_graph_enabled(void)
 {
-    DEBUG(("WSD"));
     return this->isEnabled;
 }
 

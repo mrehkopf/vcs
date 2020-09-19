@@ -40,8 +40,8 @@ ResolutionDialog::ResolutionDialog(const QString title, resolution_s *const r, Q
         ui->spinBox_x->setValue(resolution->w);
         ui->spinBox_y->setValue(resolution->h);
 
-        ui->label_minRes->setText(QString("Minimum: %1 x %2").arg(minres.w).arg(minres.h));
-        ui->label_maxRes->setText(QString("Maximum: %1 x %2").arg(maxres.w).arg(maxres.h));
+        //ui->label_minRes->setText(QString("Minimum: %1 x %2").arg(minres.w).arg(minres.h));
+        //ui->label_maxRes->setText(QString("Maximum: %1 x %2").arg(maxres.w).arg(maxres.h));
     }
 
     // Connect GUI controls to consequences for operating them.

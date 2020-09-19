@@ -20,15 +20,12 @@ public:
     {
         this->edges =
         {
-            node_edge_s(node_edge_s::direction_e::in, QRect(-10, 11, 18, 18), this),
-            node_edge_s(node_edge_s::direction_e::out, QRect(this->width-10, 11, 18, 18), this),
+            node_edge_s(node_edge_s::direction_e::in, QRect(-11, 9, 22, 22), this),
+            node_edge_s(node_edge_s::direction_e::out, QRect(this->width-11, 9, 22, 22), this),
         };
 
         return;
     }
-
-    QRectF boundingRect(void) const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
     node_edge_s* input_edge(void) override;
     node_edge_s* output_edge(void) override;

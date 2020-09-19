@@ -72,6 +72,7 @@ void InteractibleNodeGraphView::mousePressEvent(QMouseEvent *event)
             }
         }
     }
+    // Pressing the left mouse button over the scene's background starts a rubberband selection.
     else if (event->button() == Qt::LeftButton)
     {
         // Only allow rubberband-dragging when the user clicks on the scene's background.

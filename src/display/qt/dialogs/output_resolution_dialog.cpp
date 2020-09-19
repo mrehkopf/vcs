@@ -51,6 +51,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
         {
             ui->spinBox_outputResX->setEnabled(is_checked(state));
             ui->spinBox_outputResY->setEnabled(is_checked(state));
+            ui->label_resolutionX->setEnabled(is_checked(state));
 
             ks_set_output_resolution_override_enabled(is_checked(state));
 
@@ -145,7 +146,7 @@ void OutputResolutionDialog::adjust_output_scaling(const int dir)
 
 void OutputResolutionDialog::disable_output_size_controls(const bool areDisabled)
 {
-    ui->frame_outputResolutionControls->setDisabled(areDisabled);
+    ui->groupBox->setDisabled(areDisabled);
 
     return;
 }

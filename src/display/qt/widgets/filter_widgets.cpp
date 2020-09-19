@@ -41,14 +41,14 @@ void filter_widget_blur_s::create_widget(void)
     frame->setMinimumWidth(this->minWidth);
 
     // Blur type.
-    QLabel *typeLabel = new QLabel("Type:", frame);
+    QLabel *typeLabel = new QLabel("Type", frame);
     QComboBox *typeList = new QComboBox(frame);
     typeList->addItem("Box");
     typeList->addItem("Gaussian");
     typeList->setCurrentIndex(this->parameterArray[OFFS_TYPE]);
 
     // Blur radius.
-    QLabel *radiusLabel = new QLabel("Radius:", frame);
+    QLabel *radiusLabel = new QLabel("Radius", frame);
     QDoubleSpinBox *radiusSpin = new QDoubleSpinBox(frame);
     radiusSpin->setRange(0.1, 25);
     radiusSpin->setDecimals(1);
@@ -96,13 +96,13 @@ void filter_widget_rotate_s::create_widget(void)
     QFrame *frame = new QFrame();
     frame->setMinimumWidth(this->minWidth);
 
-    QLabel *rotLabel = new QLabel("Angle:", frame);
+    QLabel *rotLabel = new QLabel("Angle", frame);
     QDoubleSpinBox *rotSpin = new QDoubleSpinBox(frame);
     rotSpin->setDecimals(1);
     rotSpin->setRange(-360, 360);
     rotSpin->setValue(*(i16*)&(this->parameterArray[OFFS_ROT]) / 10.0);
 
-    QLabel *scaleLabel = new QLabel("Scale:", frame);
+    QLabel *scaleLabel = new QLabel("Scale", frame);
     QDoubleSpinBox *scaleSpin = new QDoubleSpinBox(frame);
     scaleSpin->setDecimals(2);
     scaleSpin->setRange(0.01, 20);
@@ -146,12 +146,12 @@ void filter_widget_input_gate_s::create_widget(void)
     QFrame *frame = new QFrame();
     frame->setMinimumWidth(this->minWidth);
 
-    QLabel *widthLabel = new QLabel("Width:", frame);
+    QLabel *widthLabel = new QLabel("Width", frame);
     QSpinBox *widthSpin = new QSpinBox(frame);
     widthSpin->setRange(0, u16(~0u));
     widthSpin->setValue(*(u16*)&(this->parameterArray[OFFS_WIDTH]));
 
-    QLabel *heightLabel = new QLabel("Height:", frame);
+    QLabel *heightLabel = new QLabel("Height", frame);
     QSpinBox *heightSpin = new QSpinBox(frame);
     heightSpin->setRange(0, u16(~0u));
     heightSpin->setValue(*(i16*)&(this->parameterArray[OFFS_HEIGHT]));
@@ -195,12 +195,12 @@ void filter_widget_output_gate_s::create_widget(void)
     QFrame *frame = new QFrame();
     frame->setMinimumWidth(this->minWidth);
 
-    QLabel *widthLabel = new QLabel("Width:", frame);
+    QLabel *widthLabel = new QLabel("Width", frame);
     QSpinBox *widthSpin = new QSpinBox(frame);
     widthSpin->setRange(0, u16(~0u));
     widthSpin->setValue(*(u16*)&(this->parameterArray[OFFS_WIDTH]));
 
-    QLabel *heightLabel = new QLabel("Height:", frame);
+    QLabel *heightLabel = new QLabel("Height", frame);
     QSpinBox *heightSpin = new QSpinBox(frame);
     heightSpin->setRange(0, u16(~0u));
     heightSpin->setValue(*(i16*)&(this->parameterArray[OFFS_HEIGHT]));
@@ -247,27 +247,27 @@ void filter_widget_crop_s::create_widget(void)
     QFrame *frame = new QFrame();
     frame->setMinimumWidth(this->minWidth);
 
-    QLabel *xLabel = new QLabel("X:", frame);
+    QLabel *xLabel = new QLabel("X", frame);
     QSpinBox *xSpin = new QSpinBox(frame);
     xSpin->setRange(0, 65535);
     xSpin->setValue(*(u16*)&(this->parameterArray[OFFS_X]));
 
-    QLabel *yLabel = new QLabel("Y:", frame);
+    QLabel *yLabel = new QLabel("Y", frame);
     QSpinBox *ySpin = new QSpinBox(frame);
     ySpin->setRange(0, 65535);
     ySpin->setValue(*(u16*)&(this->parameterArray[OFFS_Y]));
 
-    QLabel *widthLabel = new QLabel("Width:", frame);
+    QLabel *widthLabel = new QLabel("Width", frame);
     QSpinBox *widthSpin = new QSpinBox(frame);
     widthSpin->setRange(0, 65535);
     widthSpin->setValue(*(u16*)&(this->parameterArray[OFFS_WIDTH]));
 
-    QLabel *heightLabel = new QLabel("Height:", frame);
+    QLabel *heightLabel = new QLabel("Height", frame);
     QSpinBox *heightSpin = new QSpinBox(frame);
     heightSpin->setRange(0, 65535);
     heightSpin->setValue(*(u16*)&(this->parameterArray[OFFS_HEIGHT]));
 
-    QLabel *scalerLabel = new QLabel("Scaler:", frame);
+    QLabel *scalerLabel = new QLabel("Scaler", frame);
     QComboBox *scalerList = new QComboBox(frame);
     scalerList->addItem("Linear");
     scalerList->addItem("Nearest");
@@ -331,7 +331,7 @@ void filter_widget_flip_s::create_widget(void)
     QFrame *frame = new QFrame();
     frame->setMinimumWidth(this->minWidth);
 
-    QLabel *axisLabel = new QLabel("Axis:", frame);
+    QLabel *axisLabel = new QLabel("Axis", frame);
     QComboBox *axisList = new QComboBox(frame);
     axisList->addItem("Vertical");
     axisList->addItem("Horizontal");
@@ -370,7 +370,7 @@ void filter_widget_median_s::create_widget(void)
     frame->setMinimumWidth(this->minWidth);
 
     // Median radius.
-    QLabel *radiusLabel = new QLabel("Radius:", frame);
+    QLabel *radiusLabel = new QLabel("Radius", frame);
     QSpinBox *radiusSpin = new QSpinBox(frame);
     radiusSpin->setRange(0, 99);
     radiusSpin->setValue(this->parameterArray[OFFS_KERNEL_SIZE] / 2);
@@ -407,7 +407,7 @@ void filter_widget_denoise_temporal_s::create_widget(void)
     frame->setMinimumWidth(this->minWidth);
 
     // Denoising threshold.
-    QLabel *thresholdLabel = new QLabel("Threshold:", frame);
+    QLabel *thresholdLabel = new QLabel("Threshold", frame);
     QSpinBox *thresholdSpin = new QSpinBox(frame);
     thresholdSpin->setRange(0, 255);
     thresholdSpin->setValue(this->parameterArray[OFFS_THRESHOLD]);
@@ -446,10 +446,10 @@ void filter_widget_denoise_nonlocal_means_s::create_widget(void)
     QFrame *frame = new QFrame();
     frame->setMinimumWidth(this->minWidth);
 
-    QLabel *hLabel = new QLabel("Luminance:", frame);
-    QLabel *hColorLabel = new QLabel("Color:", frame);
-    QLabel *templateWindowLabel = new QLabel("Template wnd.:", frame);
-    QLabel *searchWindowLabel = new QLabel("Search wnd.:", frame);
+    QLabel *hLabel = new QLabel("Luminance", frame);
+    QLabel *hColorLabel = new QLabel("Color", frame);
+    QLabel *templateWindowLabel = new QLabel("Template wnd.", frame);
+    QLabel *searchWindowLabel = new QLabel("Search wnd.", frame);
 
     QSpinBox *hSpin = new QSpinBox(frame);
     hSpin->setRange(0, 255);
@@ -547,13 +547,13 @@ void filter_widget_unsharp_mask_s::create_widget(void)
     frame->setMinimumWidth(this->minWidth);
 
     // Strength.
-    QLabel *strLabel = new QLabel("Strength:", frame);
+    QLabel *strLabel = new QLabel("Strength", frame);
     QSpinBox *strSpin = new QSpinBox(frame);
     strSpin->setRange(0, 255);
     strSpin->setValue(this->parameterArray[OFFS_STRENGTH]);
 
     // Radius.
-    QLabel *radiusLabel = new QLabel("Radius:", frame);
+    QLabel *radiusLabel = new QLabel("Radius", frame);
     QSpinBox *radiusdSpin = new QSpinBox(frame);
     radiusdSpin->setRange(0, 255);
     radiusdSpin->setValue(this->parameterArray[OFFS_RADIUS] / 10);
@@ -598,7 +598,7 @@ void filter_widget_decimate_s::create_widget(void)
     frame->setMinimumWidth(this->minWidth);
 
     // Factor.
-    QLabel *factorLabel = new QLabel("Factor:", frame);
+    QLabel *factorLabel = new QLabel("Factor", frame);
     QComboBox *factorList = new QComboBox(frame);
     factorList->addItem("2");
     factorList->addItem("4");
@@ -607,7 +607,7 @@ void filter_widget_decimate_s::create_widget(void)
     factorList->setCurrentIndex((round(sqrt(this->parameterArray[OFFS_FACTOR])) - 1));
 
     // Sampling.
-    QLabel *radiusLabel = new QLabel("Sampling:", frame);
+    QLabel *radiusLabel = new QLabel("Sampling", frame);
     QComboBox *samplingList = new QComboBox(frame);
     samplingList->addItem("Nearest");
     samplingList->addItem("Average");
@@ -679,13 +679,13 @@ void filter_widget_unique_count_s::create_widget()
     frame->setMinimumWidth(this->minWidth);
 
     // Denoising threshold.
-    QLabel *thresholdLabel = new QLabel("Threshold:", frame);
+    QLabel *thresholdLabel = new QLabel("Threshold", frame);
     QSpinBox *thresholdSpin = new QSpinBox(frame);
     thresholdSpin->setRange(0, 255);
     thresholdSpin->setValue(this->parameterArray[OFFS_THRESHOLD]);
 
     // In which corner to show the counter.
-    QLabel *cornerLabel = new QLabel("Show in:", frame);
+    QLabel *cornerLabel = new QLabel("Show in", frame);
     QComboBox *cornerList = new QComboBox(frame);
     cornerList->addItem("Top left");
     cornerList->addItem("Top right");

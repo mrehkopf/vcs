@@ -22,7 +22,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Anti-tear");
+    this->setWindowTitle("VCS - Anti-tearing");
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -33,7 +33,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 
         // Anti-tearing...
         {
-            QMenu *antitearMenu = new QMenu("Anti-tear", this->menubar);
+            QMenu *antitearMenu = new QMenu("Anti-tearing", this->menubar);
 
             QAction *enable = new QAction("Enabled", this->menubar);
             enable->setCheckable(true);
@@ -61,34 +61,28 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
             this->menubar->addMenu(antitearMenu);
         }
 
-        // Values...
-        {
-            QMenu *valuesMenu = new QMenu("Values", this->menubar);
-
-            connect(valuesMenu->addAction("Reset to defaults"), &QAction::triggered, this, [=]
-            {
-                const anti_tear_options_s defaults = kat_default_settings();
-
-                kat_set_buffer_updates_disabled(true);
-
-                ui->spinBox_rangeDown->setValue(0);
-                ui->spinBox_rangeUp->setValue(0);
-                ui->spinBox_threshold->setValue(defaults.threshold);
-                ui->spinBox_matchesReqd->setValue(defaults.matchesReqd);
-                ui->spinBox_domainSize->setValue(defaults.windowLen);
-                ui->spinBox_stepSize->setValue(defaults.stepSize);
-
-                kat_set_buffer_updates_disabled(false);
-            });
-
-            this->menubar->addMenu(valuesMenu);
-        }
 
         this->layout()->setMenuBar(this->menubar);
     }
 
     // Connect the GUI controls to consequences for changing their values.
     {
+        connect(ui->pushButton_resetDefaults, &QPushButton::clicked, this, [=]
+        {
+            const anti_tear_options_s defaults = kat_default_settings();
+
+            kat_set_buffer_updates_disabled(true);
+
+            ui->spinBox_rangeDown->setValue(0);
+            ui->spinBox_rangeUp->setValue(0);
+            ui->spinBox_threshold->setValue(defaults.threshold);
+            ui->spinBox_matchesReqd->setValue(defaults.matchesReqd);
+            ui->spinBox_domainSize->setValue(defaults.windowLen);
+            ui->spinBox_stepSize->setValue(defaults.stepSize);
+
+            kat_set_buffer_updates_disabled(false);
+        });
+
         // The valueChanged() signal is overloaded for int and QString, and we
         // have to choose one. I'm using Qt 5.5, but you may have better ways
         // of doing this in later versions.

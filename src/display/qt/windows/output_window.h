@@ -122,6 +122,8 @@ public:
 
     void set_recording_is_active(const bool isActive);
 
+    bool apply_programwide_styling(const QString &filename);
+
 signals:
     void entered_fullscreen(void);
     void left_fullscreen(void);

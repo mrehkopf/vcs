@@ -231,8 +231,8 @@ bool krecord_start_recording(const char *const filename,
     if ((width % 2 != 0) || (height % 2 != 0))
     {
         kd_show_headless_error_message("VCS can't start recording",
-                                       "Video width and height must be divisible by two.\n\n"
-                                       "You can fix this by adjusting the output size on the control panel's Output tab.");
+                                       "To record to video, the output resolution's width and height must "
+                                       "be divisible by two (e.g. 640 x 480 but not 641 x 480).");
         return false;
     }
 
