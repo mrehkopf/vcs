@@ -150,7 +150,7 @@ QPushButton
     border: none;
     border: 1px solid black;
     border-radius: 0;
-    padding: 2px;
+    padding: 3px;
     color: black;
 
     background-color: #d4d0c8;
@@ -183,7 +183,7 @@ QComboBox
     border: none;
     border-bottom: 1px solid black;
     border-radius: 0;
-    padding: 2px;
+    padding: 1px;
     color: black;
 
     background-color: white;
@@ -332,14 +332,22 @@ QGroupBox::title
     top: 9px;
 }
 
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal,
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical
+{
+    background-image: url(:/res/images/icons/grid_pattern.png);
+    background-position: top-left;
+    background-repeat: repeat-xy;
+}
+
 QScrollBar:vertical
 {
     width: 19px;
     border: none;
     background-color: white;
     margin: 19px 0 19px 0;
-    background-image: url(:/res/images/icons/grid_pattern.png);
-    background-repeat: repeat-xy;
 }
 
 QScrollBar::handle:vertical
@@ -395,8 +403,6 @@ QScrollBar:horizontal
     border: none;
     background-color: white;
     margin: 0px 19px 0 19px;
-    background-image: url(:/res/images/icons/grid_pattern.png);
-    background-repeat: repeat-xy;
 }
 
 QScrollBar::handle:horizontal
@@ -531,7 +537,7 @@ QLineEdit
     border: none;
     border: 1px solid black;
     border-radius: 0;
-    padding: 1px;
+    padding: 0;
     color: black;
 
     background-color: white;
