@@ -94,7 +94,7 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 
             // Title bar's background.
             painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
-            painter->setBrush(QBrush((this->is_enabled()? this->current_background_color() : "#a5a39f"),
+            painter->setBrush(QBrush(this->current_background_color(),
                                      (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
             painter->drawRect(QRect(2, 8, (this->width - 4), 24));
         }
