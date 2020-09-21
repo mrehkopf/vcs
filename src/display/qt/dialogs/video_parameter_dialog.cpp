@@ -42,7 +42,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             QAction *addPreset = new QAction("Add new", presetMenu);
             QAction *savePresets = new QAction("Save as...", presetMenu);
             QAction *loadPresets = new QAction("Load...", presetMenu);
-            QAction *deletePreset = new QAction("Delete selected", presetMenu);
+            QAction *deletePreset = new QAction("Delete current", presetMenu);
             QAction *deleteAllPresets = new QAction("Delete all", presetMenu);
 
             presetMenu->addAction(addPreset);
