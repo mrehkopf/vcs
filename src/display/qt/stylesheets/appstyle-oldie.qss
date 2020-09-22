@@ -624,3 +624,9 @@ QLabel
     text-align: left;
     border: none;
 }
+
+#treeWidget_knownAliases
+{
+    margin-left: 0;
+    margin-right: 0;
+}
