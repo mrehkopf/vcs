@@ -119,6 +119,15 @@ void AliasDialog::resizeEvent(QResizeEvent *)
     return;
 }
 
+void AliasDialog::showEvent(QShowEvent *event)
+{
+    this->adjust_treewidget_column_size();
+
+    QDialog::showEvent(event);
+
+    return;
+}
+
 // Add the given alias into the GUI.
 void AliasDialog::receive_new_alias(const mode_alias_s a)
 {

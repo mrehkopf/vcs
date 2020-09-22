@@ -48,6 +48,8 @@ private:
 
     void resizeEvent(QResizeEvent *);
 
+    void showEvent(QShowEvent *event);
+
     QMenuBar *menubar = nullptr;
 };
 
