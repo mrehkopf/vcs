@@ -125,8 +125,8 @@ Exit VCS.
 `Window` &rarr; `Renderer`\
 Set the type of rendering VCS uses to draw captured frames onto the [output window](#output-window).
 
-- &rarr; `Software`: Most compatible option. Rendering is done on the CPU.
-- &rarr; `OpenGL`: Rendering is done on the GPU using OpenGL.
+- `Software`: Most compatible option. Rendering is done on the CPU.
+- `OpenGL`: Rendering is done on the GPU using OpenGL.
 
 When choosing the renderer, be mindful of the following:
 - The OpenGL renderer might not work in Windows XP.
@@ -166,9 +166,9 @@ Open the [input resolution](#input-resolution-dialog) dialog.
 `Output` &rarr; `Aspect ratio`\
 Set the aspect ratio to display captured frames in. Letterboxing will be used to achieve the desired ratio.
 
-- &rarr; `Native`: Display frames in the full size of the [output window](#output-window), without letterboxing.
-- &rarr; `Traditional 4:3`: Use 4:3 aspect ratio for resolutions that historically might have been meant to be displayed as such. These include 720 x 400, 640 x 400, and 320 x 200.
-- &rarr; `Always 4:3`: Display all frames in 4:3 aspect ratio.
+- `Native`: Display frames in the full size of the [output window](#output-window), without letterboxing.
+- `Traditional 4:3`: Use 4:3 aspect ratio for resolutions that historically might have been meant to be displayed as such. These include 720 x 400, 640 x 400, and 320 x 200.
+- `Always 4:3`: Display all frames in 4:3 aspect ratio.
 
 `Output` &rarr; `Upscaler`\
 Set the scaler to be used when frames are upscaled to fit the [output window](#output-window).
@@ -212,7 +212,7 @@ To access: Ctrl+V or [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Video...`
 
 The video presets dialog lets you to modify the capture hardware's video signal parameters.
 
-![](images/screenshots/v2.0.0/video-presets-dialog.png)\
+![](images/screenshots/v2.1.0/video-presets-dialog.png)\
 *The video presets dialog - showing controls for adjusting the capture hardware's video signal parameters.*
 
 The parameter values you input will take effect when all of the "Activates when" conditions are met. For instance, if you've set the preset's activation resolution to 800 x 600 and the refresh rate to 59.695 Hz, the video parameters will apply when the capture resolution is 800 x 600 and the capture refresh rate is 59.695 Hz. Or, for instance, you might only assign the preset with a shortcut activation, in which case its parameters will be applied when you activate the shortcut key, but not otherwise.
@@ -228,7 +228,7 @@ To access: [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Aliases...`
 
 With the alias resolutions dialog, you can tell VCS to automatically override certain input resolutions.
 
-![](images/screenshots/v2.0.0/alias-dialog.png)\
+![](images/screenshots/v2.1.0/alias-resolutions-dialog.png)\
 *The alias resolutions dialog - showing controls for creating and managing aliases.*
 
 For instance, if you find that your capture hardware is incorrectly initializing 640 x 400 as 512 x 488 (or something of that sort), you can define 640 x 400 as an alias of 512 x 488. Now, whenever the capture hardware sets the input resolution to 512 x 488, VCS will instruct it to change it to 640 x 400.
@@ -238,7 +238,7 @@ To access: Ctrl+R or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Record...`
 
 The record dialog gives you the option to stream captured frames into a video file.
 
-![](images/screenshots/v2.0.0/record-dialog.png)\
+![](images/screenshots/v2.1.0/video-recorder-dialog.png)\
 *The record dialog - showing controls for recording captured frames into a video file.*
 
 The recording functionality will write frames as they appear in the [output window](#output-window) into a video file. But make note of the following:
@@ -272,9 +272,6 @@ To access: Ctrl+I or [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Resolution...`
 
 The input resolution dialog lets you override the capture hardware's current capture resolution.
 
-![](images/screenshots/v1.6.2/input-resolution-dialog.png)\
-*The input resolution dialog - showing controls for adjusting the capture resolution.*
-
 Normally, the capture hardware will automatically set the capture resolution to match that of the input signal. But sometimes the result is sub-optimal, and you may want to manually override it.
 
 The dialog's buttons will tell the capture hardware to set a particular input resolution regardless of what the hardware thinks is the correct resolution for the input signal.
@@ -287,9 +284,6 @@ You can change a button's assigned resolution by clicking on it while holding do
 To access: Ctrl+O or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Resolution...`
 
 The output resolution dialog lets you resize the output window. This also resizes the frames being displayed in the window.
-
-![](images/screenshots/v1.6.2/output-resolution-dialog.png)\
-*The output resolution dialog - showing controls for adjusting the size of the output window.*
 
 Normally, the size of the [output window](#output-window) will match the capture resolution, but you can use this dialog to scale the window up or down.
 
@@ -306,7 +300,7 @@ To access: Ctrl+L or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Overlay...`
 
 The overlay dialog lets you define a message to be overlaid on the [output window](#output-window).
 
-![](images/screenshots/v2.0.0/overlay-dialog.png)\
+![](images/screenshots/v2.1.0/overlay-dialog.png)\
 *The overlay dialog - showing controls for overlaying a message on the output window.*
 
 You can combine normal text with pre-set VCS variables and HTML/CSS formatting to create a message to be shown over the output window.
@@ -318,7 +312,7 @@ To access: Ctrl+A or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Anti-tear...`
 
 The anti-tear dialog provides functionality to remove tearing from captured frames.
 
-![](images/screenshots/v2.0.0/anti-tear-dialog.png)\
+![](images/screenshots/v2.1.0/anti-tearing-dialog.png)\
 *The anti-tear dialog - showing controls for adjusting the parameters of VCS's anti-tear engine.*
 
 Under some circumstances, such as when the captured source does not sync its rendering with the refresh rate, you may find that the captured frames contain horizontal tearing. VCS comes with an anti-tear engine to help mitigate this problem.
@@ -346,7 +340,7 @@ To access: Ctrl+F or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Filter graph.
 
 The filter graph dialog allows you to create chains of image filters to be applied to captured frames prior to display in the [output window](#output-window).
 
-![](images/screenshots/v2.0.0/filter-graph-dialog.png)\
+![](images/screenshots/v2.1.0/filter-graph-dialog.png)\
 *The filter graph dialog - showing controls for creating and modifying filter chains.*
 
 The filter graph is made up of nodes that can be connected together in a chain. These nodes come in three varieties: `input gate`, `output gate`, and `filter`.
