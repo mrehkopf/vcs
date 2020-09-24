@@ -337,7 +337,7 @@ MainWindow::MainWindow(QWidget *parent) :
             {
                 QActionGroup *group = new QActionGroup(this);
 
-                QAction *c24 = new QAction("24-bit (RGB-888)", this);
+                QAction *c24 = new QAction("24-bit (RGB 888)", this);
                 c24->setActionGroup(group);
                 c24->setCheckable(true);
                 c24->setChecked(true);
@@ -345,12 +345,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 // Note: on Linux, we don't currently support any other capture color depth than RGB888.
                 #ifndef __linux__
-                    QAction *c16 = new QAction("16-bit (RGB-565)", this);
+                    QAction *c16 = new QAction("16-bit (RGB 565)", this);
                     c16->setActionGroup(group);
                     c16->setCheckable(true);
                     colorDepth->addAction(c16);
 
-                    QAction *c15 = new QAction("15-bit (RGB-555)", this);
+                    QAction *c15 = new QAction("15-bit (RGB 555)", this);
                     c15->setActionGroup(group);
                     c15->setCheckable(true);
                     colorDepth->addAction(c15);
@@ -625,8 +625,8 @@ bool MainWindow::apply_programwide_styling(const QString &filename)
     if (styleFile.open(QIODevice::ReadOnly) &&
         defaultFontStyleFile.open(QIODevice::ReadOnly))
     {
-        qApp->setStyleSheet(QString("%1 %2").arg(QString(defaultFontStyleFile.readAll()))
-                                            .arg(QString(styleFile.readAll())));
+        qApp->setStyleSheet(QString("%1 %2").arg(QString(styleFile.readAll()))
+                                            .arg(QString(defaultFontStyleFile.readAll())));
 
         return true;
     }

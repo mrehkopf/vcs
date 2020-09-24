@@ -184,6 +184,7 @@ QComboBox
     border-bottom: 1px solid black;
     border-radius: 0;
     padding: 1px;
+    padding-left: 2px;
     color: black;
 
     background-color: white;
@@ -530,7 +531,8 @@ QTreeWidget::indicator::checked:disabled
 
 QSpinBox,
 QDoubleSpinBox,
-QLineEdit
+QLineEdit,
+QTextEdit
 {
     background-color: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 rgba(0, 0, 0, 0.30), stop: 1 rgba(0, 0, 0, 0.35));
     background-color: white;

@@ -41,7 +41,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-174</y>
         <width>382</width>
         <height>671</height>
        </rect>
@@ -563,7 +563,7 @@
                </item>
               </widget>
              </item>
-             <item row="9" column="0" colspan="2">
+             <item row="9" column="1">
               <widget class="QLineEdit" name="lineEdit_recordingEncoderArguments">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -572,7 +572,14 @@
                 </sizepolicy>
                </property>
                <property name="placeholderText">
-                <string>Additional x264 arguments</string>
+                <string>Additional codec arguments</string>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Arguments</string>
                </property>
               </widget>
              </item>
