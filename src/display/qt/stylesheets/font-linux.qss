@@ -1,7 +1,32 @@
 /* VCS's default program-wide font style; intended for Linux targets.*/
 
-*
+/* We want to allow certain elements of the program to retain the original
+   system font - things like the menu bar. Ideally, we'd make all (*)
+   elements use the custom font and then set the particular other elements
+   to "font-style: initial", but that syntax doesn't appear supported in
+   QSS at the time of writing. So let's just laboriously define all the
+   specific elements that should have the custom font, leaving out the
+   ones that should use the default font. This isn't ideal, but hey.*/
+QPushButton,
+QAbstractButton,
+QSpinBox,
+QDoubleSpinBox,
+QGroupBox,
+QLineEdit,
+QTextEdit,
+QPlainTextEdit,
+QLabel,
+QFrame,
+QScrollArea,
+QComboBox,
+QListWidget,
+QTreeWidget,
+QTreeView,
+QHeaderView,
+QHeaderView::section,
+QAbstractItemView,
+QTreeWidget QHeaderView::section
 {
-    font-family: "Ubuntu"; /*Assumes that the Ubuntu font is provided with VCS.*/
-    font-size: 11pt;
+    font-family: "Ubuntu"; /* Assumes the Ubuntu font is bundled with VCS.*/
+    font-size: 15px;
 }
