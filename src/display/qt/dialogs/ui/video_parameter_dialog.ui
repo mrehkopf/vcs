@@ -131,7 +131,7 @@
              <item>
               <widget class="QLineEdit" name="lineEdit_presetName">
                <property name="placeholderText">
-                <string>Unnamed preset</string>
+                <string>Untitled preset</string>
                </property>
               </widget>
              </item>

@@ -165,13 +165,25 @@ QPushButton:flat
 
 QPushButton:pressed,
 QPushButton:flat:pressed,
-QPushButton:flat:hover:pressed
+QPushButton:flat:hover:pressed,
+QScrollBar::add-line:vertical:pressed,
+QScrollBar::sub-line:vertical:pressed,
+QScrollBar::add-line:horizontal:pressed,
+QScrollBar::sub-line:horizontal:pressed
 {
     border-right: 2px solid #f0f0ea;
     border-bottom: 2px solid #f0f0ea;
     border-left: 2px solid #808075;
     border-top: 2px solid #808075;
     margin-top: 2px;
+}
+
+QScrollBar::add-line:vertical:pressed,
+QScrollBar::sub-line:vertical:pressed,
+QScrollBar::add-line:horizontal:pressed,
+QScrollBar::sub-line:horizontal:pressed
+{
+    margin-top: 0;
 }
 
 QPushButton:flat
