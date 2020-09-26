@@ -44,6 +44,12 @@ bool kvideopreset_remove_preset(const unsigned presetId)
 
 static video_preset_s* strongest_activating_preset(void)
 {
+    if (kc_capture_api().has_no_signal())
+    {
+        ACTIVE_PRESET_ID = -1;
+        return nullptr;
+    }
+
     const resolution_s resolution = kc_capture_api().get_resolution();
     const refresh_rate_s refreshRate = kc_capture_api().get_refresh_rate();
 
@@ -92,6 +98,11 @@ void kvideopreset_remove_all_presets(void)
 
 void kvideoparam_preset_video_params_changed(const unsigned presetId)
 {
+    if (kc_capture_api().has_no_signal())
+    {
+        return;
+    }
+
     const video_preset_s *thisPreset = kvideopreset_get_preset_ptr(presetId);
     const video_preset_s *activePreset = strongest_activating_preset();
 
@@ -99,10 +110,17 @@ void kvideoparam_preset_video_params_changed(const unsigned presetId)
     {
         kc_capture_api().set_video_signal_parameters(thisPreset->videoParameters);
     }
+
+    return;
 }
 
 void kvideopreset_apply_current_active_preset(void)
 {
+    if (kc_capture_api().has_no_signal())
+    {
+        return;
+    }
+
     const video_preset_s *activePreset = strongest_activating_preset();
 
     if (activePreset)
@@ -137,6 +155,11 @@ video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId)
 
 void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
 {
+    if (kc_capture_api().has_no_signal())
+    {
+        return;
+    }
+
     for (auto *preset: PRESETS)
     {
         if (preset->activates_with_shortcut(shortcutString))
