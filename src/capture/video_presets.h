@@ -25,7 +25,11 @@ struct video_preset_s
 
     video_signal_parameters_s videoParameters = {};
 
+    // Internal identifier for this particular video preset. Not user-facing.
     unsigned id = 0;
+
+    // A user-facing, user-created string describing what this video preset is
+    // for (e.g. "Quake on Windows 95").
     std::string name = "";
 
     bool activatesWithResolution = false;
@@ -129,7 +133,7 @@ const std::vector<video_preset_s*>& kvideopreset_all_presets(void);
 
 void kvideopreset_apply_current_active_preset(void);
 
-video_preset_s* kvideopreset_get_preset(const unsigned presetId);
+video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId);
 
 video_preset_s* kvideopreset_create_preset(void);
 

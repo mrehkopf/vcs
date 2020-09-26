@@ -4,6 +4,7 @@
 #include <QMenuBar>
 #include <QTimer>
 #include <functional>
+#include <cstring>
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/dialogs/video_parameter_dialog.h"
@@ -272,6 +273,20 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             ui->doubleSpinBox_refreshRateValue->setValue(kc_capture_api().get_refresh_rate().value<double>());
         });
 
+        connect(ui->pushButton_resetToDefaultVideoParams, &QPushButton::clicked, this, [this](void)
+        {
+            if (QMessageBox::warning(this, "Confirm resetting of parameter values",
+                                     "This will reset the video parameter values to their defaults, overriding "
+                                     "any unsaved changes you've made to them. Continue?",
+                                     (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes)
+            {
+                this->currentPreset->videoParameters = kc_capture_api().get_default_video_signal_parameters();
+
+                this->update_preset_controls_with_current_preset_data();
+                kvideopreset_apply_current_active_preset();
+            }
+        });
+
         // The valueChanged() signal is overloaded for int and QString, and we
         // have to choose one. I'm using Qt 5.5, but you may have better ways
         // of doing this in later versions.
@@ -287,14 +302,15 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 this->update_current_present_list_text();
             }
 
-            this->update_preset_controls();
+            this->update_preset_controls_with_current_preset_data();
         });
 
         connect(ui->comboBox_presetList, OVERLOAD_QSTRING(&QComboBox::currentIndexChanged), this, [this]()
         {
             if (ui->comboBox_presetList->count() > 0)
             {
-                this->update_preset_controls();
+                this->currentPreset = kvideopreset_get_preset_ptr(ui->comboBox_presetList->currentData().toUInt());
+                this->update_preset_controls_with_current_preset_data();
                 this->update_current_present_list_text();
             }
 
@@ -686,10 +702,8 @@ void VideoParameterDialog::notify_of_new_capture_signal(void)
     return;
 }
 
-void VideoParameterDialog::update_preset_controls(void)
+void VideoParameterDialog::update_preset_controls_with_current_preset_data(void)
 {
-    this->currentPreset = kvideopreset_get_preset(ui->comboBox_presetList->currentData().toUInt());
-
     if (!this->currentPreset)
     {
         return;

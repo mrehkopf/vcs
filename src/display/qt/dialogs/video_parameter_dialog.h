@@ -57,7 +57,7 @@ private:
 
     void update_preset_control_ranges(void);
 
-    void update_preset_controls(void);
+    void update_preset_controls_with_current_preset_data(void);
 
     QString make_preset_list_text(const video_preset_s *const preset);
 

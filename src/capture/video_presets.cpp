@@ -73,7 +73,7 @@ static video_preset_s* strongest_activating_preset(void)
     }
     else
     {
-        return kvideopreset_get_preset(unsigned(ACTIVE_PRESET_ID));
+        return kvideopreset_get_preset_ptr(unsigned(ACTIVE_PRESET_ID));
     }
 }
 
@@ -92,7 +92,7 @@ void kvideopreset_remove_all_presets(void)
 
 void kvideoparam_preset_video_params_changed(const unsigned presetId)
 {
-    const video_preset_s *thisPreset = kvideopreset_get_preset(presetId);
+    const video_preset_s *thisPreset = kvideopreset_get_preset_ptr(presetId);
     const video_preset_s *activePreset = strongest_activating_preset();
 
     if (thisPreset == activePreset)
@@ -122,7 +122,7 @@ const std::vector<video_preset_s*>& kvideopreset_all_presets(void)
     return PRESETS;
 }
 
-video_preset_s* kvideopreset_get_preset(const unsigned presetId)
+video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId)
 {
     for (auto *preset: PRESETS)
     {
