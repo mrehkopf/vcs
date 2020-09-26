@@ -502,10 +502,17 @@ QString VideoParameterDialog::make_preset_list_text(const video_preset_s *const 
 
     if (!preset->name.empty())
     {
-        text << QString::fromStdString(preset->name);
+        text << QString("\"%1\"").arg(QString::fromStdString(preset->name));
     }
 
-    return text.join(" - ");
+    QString combinedText = text.join(" - ");
+
+    if (combinedText.isEmpty())
+    {
+        combinedText = "(Null preset)";
+    }
+
+    return combinedText;
 }
 
 void VideoParameterDialog::remove_all_video_presets_from_list(void)
