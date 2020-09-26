@@ -165,7 +165,7 @@ video_preset_s* kvideopreset_create_preset(void)
     video_preset_s *const preset = new video_preset_s;
 
     preset->id = RUNNING_PRESET_ID++;
-    preset->name = ("Video preset #" + std::to_string(preset->id + 1));
+    preset->name = "";
     preset->activatesWithResolution = true;
     preset->activationResolution = {640, 480, 32};
 
