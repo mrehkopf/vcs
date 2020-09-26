@@ -220,7 +220,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         {
             ui->doubleSpinBox_refreshRateValue->setEnabled(checked);
             ui->comboBox_refreshRateComparison->setEnabled(checked);
-            ui->label_refreshRateSeparator->setEnabled(checked);
+            ui->pushButton_refreshRateSeparator->setEnabled(checked);
 
             if (this->currentPreset)
             {
@@ -235,7 +235,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         {
             ui->spinBox_resolutionX->setEnabled(checked);
             ui->spinBox_resolutionY->setEnabled(checked);
-            ui->label_resolutionSeparator->setEnabled(checked);
+            ui->pushButton_resolutionSeparator->setEnabled(checked);
 
             if (this->currentPreset)
             {
@@ -257,6 +257,19 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 this->currentPreset->activatesWithShortcut = checked;
                 this->update_current_present_list_text();
             }
+        });
+
+        connect(ui->pushButton_resolutionSeparator, &QPushButton::clicked, this, [this](void)
+        {
+            const auto currentResolution = kc_capture_api().get_resolution();
+
+            ui->spinBox_resolutionX->setValue(int(currentResolution.w));
+            ui->spinBox_resolutionY->setValue(int(currentResolution.h));
+        });
+
+        connect(ui->pushButton_refreshRateSeparator, &QPushButton::clicked, this, [this](void)
+        {
+            ui->doubleSpinBox_refreshRateValue->setValue(kc_capture_api().get_refresh_rate().value<double>());
         });
 
         // The valueChanged() signal is overloaded for int and QString, and we
