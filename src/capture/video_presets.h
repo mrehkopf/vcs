@@ -135,7 +135,7 @@ void kvideopreset_apply_current_active_preset(void);
 
 video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId);
 
-video_preset_s* kvideopreset_create_preset(void);
+video_preset_s* kvideopreset_create_new_preset(void);
 
 bool kvideopreset_remove_preset(const unsigned presetId);
 

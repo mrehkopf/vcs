@@ -160,7 +160,7 @@ void kvideopreset_assign_presets(const std::vector<video_preset_s*> &presets)
     return;
 }
 
-video_preset_s* kvideopreset_create_preset(void)
+video_preset_s* kvideopreset_create_new_preset(void)
 {
     video_preset_s *const preset = new video_preset_s;
 

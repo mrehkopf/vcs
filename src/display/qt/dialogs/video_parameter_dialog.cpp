@@ -70,7 +70,9 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
             connect(addPreset, &QAction::triggered, this, [=]
             {
-                this->add_video_preset_to_list(kvideopreset_create_preset());
+                const video_preset_s *const newPreset = kvideopreset_create_new_preset();
+
+                this->add_video_preset_to_list(newPreset);
             });
 
             connect(savePresets, &QAction::triggered, this, [=]
@@ -106,6 +108,11 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
                 if (kdisk_load_video_presets(filename.toStdString()))
                 {
+                    // Sort the list alphabetically.
+                    /// TODO: It would be better to sort the items by (numeric) resolution.
+                    ui->comboBox_presetList->model()->sort(0);
+                    ui->comboBox_presetList->setCurrentIndex(0);
+
                     /// TODO: remove_unsaved_changes_flag();
                 }
             });
@@ -201,12 +208,6 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         });
 
         #undef OVERLOAD_INT
-
-        connect(ui->comboBox_presetList, &QComboBox::currentTextChanged, this, [this]
-        {
-            // Sort the list alphabetically.
-            ui->comboBox_presetList->model()->sort(0);
-        });
 
         connect(ui->lineEdit_presetName, &QLineEdit::textEdited, this, [this](const QString &text)
         {
@@ -601,10 +602,8 @@ void VideoParameterDialog::add_video_preset_to_list(const video_preset_s *const 
 
     ui->comboBox_presetList->addItem(presetText, preset->id);
 
-    // Sort the list alphabetically.
-    ui->comboBox_presetList->model()->sort(0);
-
-    ui->comboBox_presetList->setCurrentText(presetText);
+    // Select the item we added.
+    ui->comboBox_presetList->setCurrentIndex(ui->comboBox_presetList->count() - 1);
 
     return;
 }
