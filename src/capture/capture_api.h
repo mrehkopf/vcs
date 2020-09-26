@@ -360,9 +360,18 @@ struct capture_api_s
      * device's active input channel; false otherwise.
      * 
      * @see
-     * get_input_channel_idx(), set_input_channel()
+     * has_signal(), get_input_channel_idx(), set_input_channel()
      */
     virtual bool has_no_signal(void) const = 0;
+
+    /*!
+     * Returns true if the capture device's active input channel is currently
+     * receiving a signal; false otherwise.
+     *
+     * @see
+     * has_no_signal(), get_input_channel_idx(), set_input_channel()
+     */
+    virtual bool has_signal(void) const { return !this->has_no_signal(); }
 
     /*!
      * Returns true if the device is currently capturing; false otherwise.
