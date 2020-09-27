@@ -126,6 +126,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>spinBox_x</tabstop>
+  <tabstop>spinBox_y</tabstop>
+  <tabstop>pushButton_ok</tabstop>
+  <tabstop>pushButton_cancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
