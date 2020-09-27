@@ -40,10 +40,7 @@ public:
     ~VideoParameterDialog();
 
     // Called to inform the dialog of a new source file for video presets.
-    void receive_new_video_presets_filename(const QString &filename);
-
-    // Called to inform the dialog that a new capture signal has been received.
-    void notify_of_new_capture_signal(void);
+    void assign_presets(const std::vector<video_preset_s*> &presets);
 
 signals:
     // Emitted when the last item in the preset list is removed.
@@ -71,6 +68,7 @@ private:
 
     void remove_all_video_presets_from_list(void);
 
+    void set_video_params_source_filename(const QString &filename);
 
     // Whether the filter graph is enabled.
     bool isEnabled = false;
@@ -91,7 +89,6 @@ private:
     // The dialog's title, without any additional information that may be appended,
     // like the name of the file from which the dialog's current data was loaded.
     const QString dialogBaseTitle = "VCS - Video Presets";
-
 };
 
 #endif

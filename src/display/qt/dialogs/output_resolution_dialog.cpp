@@ -1,5 +1,6 @@
 #include "display/qt/dialogs/output_resolution_dialog.h"
 #include "display/qt/persistent_settings.h"
+#include "common/propagate/app_events.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "common/globals.h"
@@ -103,6 +104,22 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
     ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "force_relative_scale", false).toBool());
     ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
     this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "output_resolution", this->size()).toSize());
+
+    // Subscribe to app events.
+    {
+        ke_events().recorder.recordingStarted->subscribe([this]
+        {
+            // Disable any GUI functionality that would let the user change the current
+            // output size, since we want to keep the output resolution constant while
+            // recording.
+            this->disable_output_size_controls(true);
+        });
+
+        ke_events().recorder.recordingEnded->subscribe([this]
+        {
+            this->disable_output_size_controls(false);
+        });
+    }
 
     return;
 }

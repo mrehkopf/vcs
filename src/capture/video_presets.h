@@ -116,6 +116,8 @@ struct video_preset_s
     }
 };
 
+void kvideopreset_initialize(void);
+
 void kvideopreset_release(void);
 
 // Call this to inform the system that the given preset's parameter(s) have

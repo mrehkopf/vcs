@@ -199,7 +199,13 @@ void FilterGraphDialog::load_filters(void)
         return;
     }
 
-    kdisk_load_filter_graph(filename.toStdString());
+    const auto filterData = kdisk_load_filter_graph(filename.toStdString());
+
+    if (!filterData.first.empty())
+    {
+        this->set_filter_graph_source_filename(filename);
+        this->set_filter_graph_options(filterData.second);
+    }
 
     return;
 }
@@ -239,7 +245,10 @@ void FilterGraphDialog::save_filters(void)
         /// TODO.
     }
 
-    kdisk_save_filter_graph(filterNodes, graphOptions, filename.toStdString());
+    if (kdisk_save_filter_graph(filterNodes, graphOptions, filename.toStdString()))
+    {
+        this->set_filter_graph_source_filename(filename);
+    }
 
     return;
 }
@@ -370,10 +379,9 @@ void FilterGraphDialog::refresh_filter_graph(void)
     return;
 }
 
-
-void FilterGraphDialog::set_filter_graph_source_filename(const std::string &sourceFilename)
+void FilterGraphDialog::set_filter_graph_source_filename(const QString &sourceFilename)
 {
-    const QString baseFilename = QFileInfo(sourceFilename.c_str()).baseName();
+    const QString baseFilename = QFileInfo(sourceFilename).baseName();
 
     this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg(baseFilename));
 

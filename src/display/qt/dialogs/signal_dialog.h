@@ -28,8 +28,6 @@ public:
     explicit SignalDialog(QWidget *parent = 0);
     ~SignalDialog();
 
-    void notify_of_new_capture_signal(void);
-
     void set_controls_enabled(const bool state);
 
     void update_controls(void);

@@ -8,7 +8,7 @@
 #include "display/qt/dialogs/resolution_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
-#include "common/propagate/propagate.h"
+#include "common/propagate/app_events.h"
 #include "capture/capture.h"
 #include "ui_input_resolution_dialog.h"
 
@@ -131,7 +131,7 @@ void InputResolutionDialog::parse_capture_resolution_button_press(QWidget *butto
 
     assign_resolution:
     DEBUG(("Received a request via the GUI to set the input resolution to %u x %u.", res.w, res.h));
-    kpropagate_forced_capture_resolution(res);
+    kc_force_input_resolution(res);
 
     done:
     return;

@@ -19,6 +19,7 @@
 #include "display/qt/subclasses/QTableWidget_property_table.h"
 #include "display/qt/dialogs/signal_dialog.h"
 #include "display/qt/persistent_settings.h"
+#include "common/propagate/app_events.h"
 #include "display/qt/utility.h"
 #include "display/display.h"
 #include "capture/capture_api.h"
@@ -92,6 +93,38 @@ SignalDialog::SignalDialog(QWidget *parent) :
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "signal", this->size()).toSize());
     }
 
+    // Subscribe to app events.
+    {
+        const auto update_info = [this]
+        {
+            if (kc_capture_api().has_signal())
+            {
+                VIDEO_MODE_UPTIME.restart();
+            }
+
+            update_information_table(kc_capture_api().has_signal());
+        };
+
+        ke_events().capture.invalidSignal->subscribe([this]
+        {
+            this->set_controls_enabled(false);
+        });
+
+        ke_events().capture.signalLost->subscribe([this]
+        {
+            this->set_controls_enabled(false);
+        });
+
+        ke_events().capture.signalGained->subscribe([this]
+        {
+            this->set_controls_enabled(true);
+        });
+
+        ke_events().capture.newVideoMode->subscribe(update_info);
+
+        ke_events().capture.newInputChannel->subscribe(update_info);
+    }
+
     return;
 }
 
@@ -104,15 +137,6 @@ SignalDialog::~SignalDialog()
 
     delete ui;
     ui = nullptr;
-
-    return;
-}
-
-// Called to inform the dialog that a new capture signal has been received.
-void SignalDialog::notify_of_new_capture_signal(void)
-{
-    VIDEO_MODE_UPTIME.restart();
-    update_information_table(true);
 
     return;
 }

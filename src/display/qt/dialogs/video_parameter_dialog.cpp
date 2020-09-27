@@ -9,6 +9,7 @@
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/dialogs/video_parameter_dialog.h"
 #include "display/qt/persistent_settings.h"
+#include "common/propagate/app_events.h"
 #include "common/refresh_rate.h"
 #include "common/disk/disk.h"
 #include "capture/capture_api.h"
@@ -92,6 +93,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
                 if (kdisk_save_video_presets(kvideopreset_all_presets(), filename.toStdString()))
                 {
+                    this->set_video_params_source_filename(filename);
+
                     /// TODO: remove_unsaved_changes_flag();
                 }
             });
@@ -106,12 +109,13 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                     return;
                 }
 
-                if (kdisk_load_video_presets(filename.toStdString()))
+                const auto presets = kdisk_load_video_presets(filename.toStdString());
+
+                if (!presets.empty())
                 {
-                    // Sort the list alphabetically.
-                    /// TODO: It would be better to sort the items by (numeric) resolution.
-                    ui->comboBox_presetList->model()->sort(0);
-                    ui->comboBox_presetList->setCurrentIndex(0);
+                    kvideopreset_assign_presets(presets);
+                    this->assign_presets(presets);
+                    this->set_video_params_source_filename(QFileInfo(filename).baseName());
 
                     /// TODO: remove_unsaved_changes_flag();
                 }
@@ -412,6 +416,17 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "video_parameters", this->size()).toSize());
     }
 
+    // Subscribe to app events.
+    {
+        ke_events().capture.newVideoMode->subscribe([this]
+        {
+            if (kc_capture_api().has_signal())
+            {
+                this->update_preset_control_ranges();
+            }
+        });
+    }
+
     // Force initialization of any GUI elements that respond to dynamic changes
     // in the preset list.
     if (ui->comboBox_presetList->count() <= 0)
@@ -438,20 +453,19 @@ VideoParameterDialog::~VideoParameterDialog()
     return;
 }
 
-void VideoParameterDialog::receive_new_video_presets_filename(const QString &filename)
+void VideoParameterDialog::assign_presets(const std::vector<video_preset_s*> &presets)
 {
-    const QString newWindowTitle = QString("%1%2 - %3").arg(this->windowTitle().startsWith("*")? "*" : "")
-                                                       .arg(this->dialogBaseTitle)
-                                                       .arg(QFileInfo(filename).baseName());
-
     this->remove_all_video_presets_from_list();
 
-    for (const auto *p: kvideopreset_all_presets())
+    for (const auto *p: presets)
     {
         this->add_video_preset_to_list(p);
     }
 
-    this->setWindowTitle(newWindowTitle);
+    // Sort the preset list alphabetically.
+    /// TODO: It would be better to sort the items by (numeric) resolution.
+    ui->comboBox_presetList->model()->sort(0);
+    ui->comboBox_presetList->setCurrentIndex(0);
 
     return;
 }
@@ -459,6 +473,15 @@ void VideoParameterDialog::receive_new_video_presets_filename(const QString &fil
 void VideoParameterDialog::update_current_present_list_text(void)
 {
     ui->comboBox_presetList->setItemText(ui->comboBox_presetList->currentIndex(), this->make_preset_list_text(this->currentPreset));
+
+    return;
+}
+
+void VideoParameterDialog::set_video_params_source_filename(const QString &filename)
+{
+    const QString baseFilename = QFileInfo(filename).baseName();
+
+    this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg(baseFilename));
 
     return;
 }
@@ -689,14 +712,6 @@ void VideoParameterDialog::update_preset_control_ranges(void)
         ui->horizontalScrollBar_videoVerPos->setMinimum(ui->spinBox_videoVerPos->minimum());
         ui->horizontalScrollBar_videoVerPos->setMaximum(ui->spinBox_videoVerPos->maximum());
     }
-
-    return;
-}
-
-// Called to inform the dialog that a new capture signal has been received.
-void VideoParameterDialog::notify_of_new_capture_signal(void)
-{
-    this->update_preset_control_ranges();
 
     return;
 }

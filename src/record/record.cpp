@@ -14,7 +14,7 @@
 #include <QElapsedTimer>
 #include <QFileInfo>
 #include <QFuture>
-#include "common/propagate/propagate.h"
+#include "common/propagate/app_events.h"
 #include "display/display.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
@@ -293,7 +293,7 @@ bool krecord_start_recording(const char *const filename,
         return false;
     }
 
-    kpropagate_news_of_recording_started();
+    ke_events().recorder.recordingStarted->fire();
 
     return true;
 #endif
@@ -435,7 +435,7 @@ void krecord_stop_recording(void)
     RECORDING.encoderThread.waitForFinished();
     VIDEO_WRITER.release();
 
-    kpropagate_news_of_recording_ended();
+    ke_events().recorder.recordingEnded->fire();
 
     return;
 #endif

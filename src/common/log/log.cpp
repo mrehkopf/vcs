@@ -9,6 +9,9 @@
 #include <thread>
 #include <deque>
 #include <stdarg.h>
+#include "capture/capture.h"
+#include "capture/capture_api.h"
+#include "common/propagate/app_events.h"
 #include "display/display.h"
 #include "common/globals.h"
 #include "common/log/log.h"
@@ -39,6 +42,18 @@ void klog_set_logging_enabled(const bool state)
                "further messages."));
         LOGGING_ENABLED = false;
     }
+
+    return;
+}
+
+void klog_initialize(void)
+{
+    ke_events().capture.newVideoMode->subscribe([]
+    {
+        const auto resolution = kc_capture_api().get_resolution();
+
+        INFO(("New video mode: %u x %u @ %f Hz.", resolution.w, resolution.h, kc_capture_api().get_refresh_rate().value<double>()));
+    });
 
     return;
 }

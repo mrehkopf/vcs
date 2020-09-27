@@ -10,7 +10,7 @@
 #include "display/qt/windows/output_window.h"
 #include "common/command_line/command_line.h"
 #include "filter/anti_tear.h"
-#include "common/propagate/propagate.h"
+#include "common/propagate/app_events.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "display/display.h"
@@ -49,6 +49,13 @@ static void cleanup_all(void)
 
 static bool initialize_all(void)
 {
+    ke_events().capture.unrecoverableError->subscribe([]
+    {
+        PROGRAM_EXIT_REQUESTED = true;
+    });
+
+    if (!PROGRAM_EXIT_REQUESTED) klog_initialize();
+    if (!PROGRAM_EXIT_REQUESTED) kvideopreset_initialize();
     if (!PROGRAM_EXIT_REQUESTED) ks_initialize_scaler();
     if (!PROGRAM_EXIT_REQUESTED) kc_initialize_capture();
     if (!PROGRAM_EXIT_REQUESTED) kat_initialize_anti_tear();
@@ -58,7 +65,6 @@ static bool initialize_all(void)
     if (!PROGRAM_EXIT_REQUESTED)
     {
         kd_acquire_output_window();
-        ka_broadcast_aliases_to_gui();
     }
 
     return !PROGRAM_EXIT_REQUESTED;
@@ -74,27 +80,27 @@ static capture_event_e process_next_capture_event(void)
     {
         case capture_event_e::unrecoverable_error:
         {
-            kpropagate_news_of_unrecoverable_error();
+            ke_events().capture.unrecoverableError->fire();
             break;
         }
         case capture_event_e::new_frame:
         {
-            kpropagate_news_of_new_captured_frame();
+            ke_events().capture.newFrame->fire();
             break;
         }
         case capture_event_e::new_video_mode:
         {
-            kpropagate_news_of_new_capture_video_mode();
+            ke_events().capture.newVideoMode->fire();
             break;
         }
         case capture_event_e::signal_lost:
         {
-            kpropagate_news_of_lost_capture_signal();
+            ke_events().capture.signalLost->fire();
             break;
         }
         case capture_event_e::invalid_signal:
         {
-            kpropagate_news_of_invalid_capture_signal();
+            ke_events().capture.invalidSignal->fire();
             break;
         }
         case capture_event_e::sleep:

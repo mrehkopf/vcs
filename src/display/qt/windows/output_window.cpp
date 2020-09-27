@@ -42,7 +42,7 @@
 #include "display/qt/dialogs/about_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "filter/anti_tear.h"
-#include "common/propagate/propagate.h"
+#include "common/propagate/app_events.h"
 #include "capture/video_presets.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"
@@ -599,6 +599,46 @@ MainWindow::MainWindow(QWidget *parent) :
         this->apply_programwide_styling(":/res/stylesheets/appstyle-oldie.qss");
     }
 
+    // Subscribe to app events.
+    {
+        ke_events().display.dirty->subscribe([this]
+        {
+            this->redraw();
+
+            /// Temporary. Later, we'll have a better place for measuring FPS.
+            this->measure_framerate();
+        });
+
+        ke_events().capture.newVideoMode->subscribe([this]
+        {
+            this->update_window_title();
+            this->update_window_size();
+            ke_events().display.dirty->fire();
+        });
+
+        ke_events().recorder.recordingStarted->subscribe([this]
+        {
+            if (!PROGRAM_EXIT_REQUESTED)
+            {
+                this->update_window_title();
+            }
+        });
+
+        ke_events().recorder.recordingEnded->subscribe([this]
+        {
+            if (!PROGRAM_EXIT_REQUESTED)
+            {
+                this->update_window_title();
+
+                // The output resolution might have changed while we were recording, but
+                // since we also prevent the size of the output window from changing while
+                // recording, we should now - that recording has stopped - tell the window
+                // to update its size to match the current proper output size.
+                this->update_window_size();
+            }
+        });
+    }
+
     return;
 }
 
@@ -778,7 +818,7 @@ void MainWindow::open_antitear_dialog(void)
     return;
 }
 
-void MainWindow::refresh(void)
+void MainWindow::redraw(void)
 {
     if (OGL_SURFACE != nullptr)
     {
@@ -1164,7 +1204,7 @@ void MainWindow::set_keyboard_shortcuts(void)
 void MainWindow::signal_new_known_alias(const mode_alias_s a)
 {
     k_assert(this->aliasDlg != nullptr, "");
-    aliasDlg->receive_new_alias(a);
+    aliasDlg->add_alias_to_list(a);
 
     return;
 }
@@ -1196,22 +1236,6 @@ FilterGraphNode* MainWindow::add_filter_graph_node(const filter_type_enum_e &fil
 {
     k_assert(this->filterGraphDlg != nullptr, "");
     return this->filterGraphDlg->add_filter_graph_node(filterType, initialParameterValues);
-}
-
-void MainWindow::signal_new_video_presets_source_file(const std::string &filename)
-{
-    k_assert(this->videoParamDlg != nullptr, "");
-    this->videoParamDlg->receive_new_video_presets_filename(QString::fromStdString(filename));
-
-    return;
-}
-
-void MainWindow::set_recording_is_active(const bool isActive)
-{
-    k_assert(this->recordDlg != nullptr, "");
-    this->recordDlg->set_recording_controls_enabled(isActive);
-
-    return;
 }
 
 void MainWindow::update_window_title()
@@ -1313,41 +1337,10 @@ void MainWindow::update_video_mode_params(void)
     return;
 }
 
-void MainWindow::update_capture_signal_info(void)
-{
-    if (kc_capture_api().has_no_signal())
-    {
-        DEBUG(("Was asked to update GUI input info while there was no signal."));
-    }
-    else
-    {
-        k_assert(this->signalDlg != nullptr, "");
-        this->signalDlg->notify_of_new_capture_signal();
-
-        k_assert(this->videoParamDlg != nullptr, "");
-        this->videoParamDlg->notify_of_new_capture_signal();
-
-        k_assert(this->outputResolutionDlg != nullptr, "");
-        this->outputResolutionDlg->notify_of_new_capture_signal();
-
-        this->update_window_title();
-    }
-
-    return;
-}
-
-void MainWindow::set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions)
-{
-    k_assert(this->filterGraphDlg != nullptr, "");
-    this->filterGraphDlg->set_filter_graph_options(graphOptions);
-
-    return;
-}
-
 void MainWindow::set_filter_graph_source_filename(const std::string &sourceFilename)
 {
     k_assert(this->filterGraphDlg != nullptr, "");
-    this->filterGraphDlg->set_filter_graph_source_filename(sourceFilename);
+    //this->filterGraphDlg->set_filter_graph_source_filename(sourceFilename);
 
     return;
 }

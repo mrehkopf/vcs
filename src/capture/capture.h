@@ -19,6 +19,7 @@ struct capture_api_s;
 capture_api_s& kc_capture_api(void);
 void kc_initialize_capture(void);
 void kc_release_capture(void);
+void kc_force_input_resolution(const resolution_s &r);
 
 enum class capture_pixel_format_e
 {

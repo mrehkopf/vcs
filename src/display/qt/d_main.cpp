@@ -107,7 +107,7 @@ void kd_set_video_presets_filename(const std::string &filename)
 {
     if (WINDOW != nullptr)
     {
-        WINDOW->signal_new_video_presets_source_file(filename);
+        //WINDOW->signal_new_video_presets_source_file(filename);
     }
 
     return;
@@ -137,7 +137,7 @@ void kd_set_filter_graph_options(const std::vector<filter_graph_option_s> &graph
 {
     if (WINDOW != nullptr)
     {
-        WINDOW->set_filter_graph_options(graphOptions);
+        //WINDOW->set_filter_graph_options(graphOptions);
     }
 
     return;
@@ -147,7 +147,7 @@ void kd_update_capture_signal_info(void)
 {
     if (WINDOW != nullptr)
     {
-        WINDOW->update_capture_signal_info();
+        //WINDOW->update_capture_signal_info();
     }
 
     return;
@@ -222,7 +222,7 @@ void kd_set_video_recording_is_active(const bool isActive)
 {
     if (WINDOW != nullptr)
     {
-        WINDOW->set_recording_is_active(isActive);
+        //WINDOW->set_recording_is_active(isActive);
     }
 
     return;
@@ -290,7 +290,7 @@ void kd_redraw_output_window(void)
     }
     else
     {
-        WINDOW->refresh();
+        WINDOW->redraw();
 
         WINDOW->measure_framerate();
     }

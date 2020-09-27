@@ -34,7 +34,7 @@ AliasDialog::AliasDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Alias Resolutions");
+    this->setWindowTitle(this->dialogBaseTitle);
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -128,8 +128,7 @@ void AliasDialog::showEvent(QShowEvent *event)
     return;
 }
 
-// Add the given alias into the GUI.
-void AliasDialog::receive_new_alias(const mode_alias_s a)
+void AliasDialog::add_alias_to_list(const mode_alias_s a)
 {
     // Returns a widget containing two QSpinBoxes, corresponding to a resolution's
     // width and height. In other words, with the widget, the user can specify a resolution.
@@ -203,7 +202,7 @@ void AliasDialog::add_alias(void)
     newAlias.from = {1, 1, 0};
     newAlias.to = {640, 480, 0};
 
-    this->receive_new_alias(newAlias);
+    this->add_alias_to_list(newAlias);
 
     this->broadcast_aliases();
 
@@ -235,7 +234,15 @@ void AliasDialog::load_aliases()
         return;
     }
 
-    kdisk_load_aliases(filename.toStdString());
+    const auto aliases = kdisk_load_aliases(filename.toStdString());
+
+    if (!aliases.empty())
+    {
+        ka_set_aliases(aliases);
+        this->assign_aliases(aliases);
+
+        /// TODO: remove_unsaved_changes_flag();
+    }
 
     return;
 }
@@ -259,7 +266,32 @@ void AliasDialog::save_aliases()
 
     this->broadcast_aliases();
 
-    kdisk_save_aliases(ka_aliases(), filename.toStdString());
+    if (kdisk_save_aliases(ka_aliases(), filename.toStdString()))
+    {
+        this->set_alias_source_filename(filename);
+    }
+
+    return;
+}
+
+void AliasDialog::set_alias_source_filename(const QString &filename)
+{
+    const QString baseFilename = QFileInfo(filename).baseName();
+
+    this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle)
+                                           .arg(baseFilename));
+
+    return;
+}
+
+void AliasDialog::assign_aliases(const std::vector<mode_alias_s> &aliases)
+{
+    ui->treeWidget_knownAliases->clear();
+
+    for (const auto a: aliases)
+    {
+        this->add_alias_to_list(a);
+    }
 
     return;
 }

@@ -23,7 +23,7 @@
 #include "common/disk/file_writers/file_writer_filter_graph.h"
 #include "common/disk/file_writers/file_writer_aliases.h"
 #include "common/disk/file_readers/file_reader_aliases.h"
-#include "common/propagate/propagate.h"
+#include "common/propagate/app_events.h"
 #include "capture/capture.h"
 #include "capture/video_presets.h"
 #include "capture/alias.h"
@@ -38,7 +38,7 @@ bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
         goto fail;
     }
 
-    kpropagate_saved_video_presets_to_disk(presets, targetFilename);
+    ke_events().file.savedVideoPresets->fire();
 
     return true;
 
@@ -51,12 +51,12 @@ bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
 }
 
 
-bool kdisk_load_video_presets(const std::string &sourceFilename)
+std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
     {
         DEBUG(("No video presets file defined, skipping."));
-        return true;
+        return {};
     }
 
     std::vector<video_preset_s*> presets;
@@ -129,24 +129,26 @@ bool kdisk_load_video_presets(const std::string &sourceFilename)
         }
     }
 
-    kpropagate_loaded_video_presets_from_disk(presets, sourceFilename);
+    ke_events().file.loadedVideoPresets->fire();
 
-    return true;
+    INFO(("Loaded %u video preset(s).", presets.size()));
+
+    return presets;
 
     fail:
     kd_show_headless_error_message("Data was not loaded",
                                    "An error was encountered while loading video presets. "
                                    "No data was loaded. More information about the error "
                                    "may be found in the terminal.");
-    return false;
+    return {};
 }
 
-bool kdisk_load_aliases(const std::string &sourceFilename)
+std::vector<mode_alias_s> kdisk_load_aliases(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
     {
         DEBUG(("No alias file defined, skipping."));
-        return true;
+        return {};
     }
 
     const std::string fileVersion = file_reader::file_version(sourceFilename);
@@ -179,16 +181,18 @@ bool kdisk_load_aliases(const std::string &sourceFilename)
         return (a.to.w * a.to.h) < (b.to.w * b.to.h);
     });
 
-    kpropagate_loaded_aliases_from_disk(aliases, sourceFilename);
+    ke_events().file.loadedAliases->fire();
 
-    return true;
+    INFO(("Loaded %u alias(es).", aliases.size()));
+
+    return aliases;
 
     fail:
     kd_show_headless_error_message("Data was not loaded",
                                    "An error was encountered while loading aliases. No data was "
                                    "loaded. More information about the error may be found in "
                                    "the terminal.");
-    return false;
+    return {};
 }
 
 bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
@@ -199,7 +203,7 @@ bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
         goto fail;
     }
 
-    kpropagate_saved_aliases_to_disk(aliases, targetFilename);
+    ke_events().file.savedAliases->fire();
 
     return true;
 
@@ -220,7 +224,7 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
         goto fail;
     }
 
-    kpropagate_saved_filter_graph_to_disk(targetFilename);
+    ke_events().file.savedFilterGraph->fire();
 
     return true;
 
@@ -232,12 +236,13 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
     return false;
 }
 
-bool kdisk_load_filter_graph(const std::string &sourceFilename)
+std::pair<std::vector<FilterGraphNode*>,
+          std::vector<filter_graph_option_s>> kdisk_load_filter_graph(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
     {
         DEBUG(("No filter graph file defined, skipping."));
-        return true;
+        return {};
     }
 
     const std::string fileVersion = file_reader::file_version(sourceFilename);
@@ -250,7 +255,7 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
 
         NBENE(("Unknown filter graph file format."));
 
-        return false;
+        return {};
     }
 
     std::vector<FilterGraphNode*> graphNodes;
@@ -278,9 +283,9 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
         goto fail;
     }
 
-    kpropagate_loaded_filter_graph_from_disk(graphNodes, graphOptions, sourceFilename);
+    ke_events().file.loadedFilterGraph->fire();
 
-    return true;
+    return {graphNodes, graphOptions};
 
     fail:
     kd_clear_filter_graph();
@@ -288,5 +293,5 @@ bool kdisk_load_filter_graph(const std::string &sourceFilename)
                                    "An error was encountered while loading the filter graph. No data was "
                                    "loaded. More information about the error may be found in "
                                    "the terminal.");
-    return false;
+    return {};
 }

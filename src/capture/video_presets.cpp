@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <vector>
+#include "common/propagate/app_events.h"
 #include "capture/video_presets.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"
@@ -19,6 +20,13 @@ static int ACTIVE_PRESET_ID;
 
 // Incremented for each new preset added, and used as the id for that preset.
 static unsigned RUNNING_PRESET_ID = 0;
+
+void kvideopreset_initialize(void)
+{
+    ke_events().capture.newVideoMode->subscribe(kvideopreset_apply_current_active_preset);
+
+    return;
+}
 
 void kvideopreset_release(void)
 {

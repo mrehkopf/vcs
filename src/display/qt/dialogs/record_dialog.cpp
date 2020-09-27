@@ -11,6 +11,7 @@
 #include <QMenuBar>
 #include "display/qt/dialogs/record_dialog.h"
 #include "display/qt/persistent_settings.h"
+#include "common/propagate/app_events.h"
 #include "display/qt/utility.h"
 #include "scaler/scaler.h"
 #include "record/record.h"
@@ -184,6 +185,29 @@ RecordDialog::RecordDialog(QDialog *parent) :
         #endif
     }
 
+    // Subscribe to app events.
+    {
+        ke_events().recorder.recordingStarted->subscribe([this]
+        {
+            this->set_recording_controls_enabled(true);
+
+            if (!PROGRAM_EXIT_REQUESTED)
+            {
+                this->update_recording_metainfo();
+            }
+        });
+
+        ke_events().recorder.recordingEnded->subscribe([this]
+        {
+            this->set_recording_controls_enabled(false);
+
+            if (!PROGRAM_EXIT_REQUESTED)
+            {
+                this->update_recording_metainfo();
+            }
+        });
+    }
+
     // Reset the metainfo values to their defaults.
     update_recording_metainfo();
 
@@ -221,18 +245,9 @@ RecordDialog::~RecordDialog()
 // begun.
 void RecordDialog::set_recording_controls_enabled(const bool areEnabled)
 {
-    if (areEnabled)
-    {
-        ui->groupBox_recordingSettings->setEnabled(false);
-        ui->lineEdit_recordingFilename->setEnabled(false);
-        ui->pushButton_recordingSelectFilename->setEnabled(false);
-    }
-    else
-    {
-        ui->groupBox_recordingSettings->setEnabled(true);
-        ui->lineEdit_recordingFilename->setEnabled(true);
-        ui->pushButton_recordingSelectFilename->setEnabled(true);
-    }
+    ui->groupBox_recordingSettings->setEnabled(areEnabled);
+    ui->lineEdit_recordingFilename->setEnabled(areEnabled);
+    ui->pushButton_recordingSelectFilename->setEnabled(areEnabled);
 
     return;
 }

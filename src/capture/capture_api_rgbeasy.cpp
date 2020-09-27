@@ -11,6 +11,7 @@
 #include <cmath>
 #include "common/globals.h"
 #include "common/propagate/propagate.h"
+#include "common/propagate/event.h"
 #include "capture/capture_api_rgbeasy.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
@@ -861,7 +862,7 @@ bool capture_api_rgbeasy_s::set_input_channel(const unsigned idx)
         goto fail;
     }
 
-    kpropagate_news_of_changed_input_channel();
+    ke_events().capture.newInputChannel->fire();
 
     return true;
 

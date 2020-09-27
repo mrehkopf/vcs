@@ -1,6 +1,6 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
- * 
+ *
  * Software: VCS
  *
  * Implements capturing under Linux via the Datapath's Vision driver and the

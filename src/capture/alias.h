@@ -53,7 +53,4 @@ const std::vector<mode_alias_s>& ka_aliases(void);
 // Assign the list of aliases we'll operate on.
 void ka_set_aliases(const std::vector<mode_alias_s> &aliases);
 
-// Informs the GUI of all the aliases we know of.
-void ka_broadcast_aliases_to_gui(void);
-
 #endif

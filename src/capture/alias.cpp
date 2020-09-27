@@ -6,7 +6,7 @@
  */
 
 #include <vector>
-#include "common/propagate/propagate.h"
+#include "common/propagate/app_events.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "common/globals.h"
@@ -14,6 +14,32 @@
 
 // A list of all the aliases we know of.
 static std::vector<mode_alias_s> ALIASES;
+
+void ka_initialize_aliases(void)
+{
+    // When we get a new capture video mode, see if its resolution matches
+    // an alias; and if so, force the input resolution to match the alias.
+    ke_events().capture.newVideoMode->subscribe([]
+    {
+        const auto resolution = kc_capture_api().get_resolution();
+
+        if (ka_has_alias(resolution))
+        {
+            const resolution_s aliasResolution = ka_aliased(resolution);
+
+            if (kc_capture_api().set_resolution(aliasResolution))
+            {
+                INFO(("Video mode's resolution aliased to %u x %u.", aliasResolution.w, aliasResolution.h));
+            }
+            else
+            {
+                INFO(("This video mode's resolution has an alias, but it could not be set."));
+            }
+        }
+    });
+
+    return;
+}
 
 // Returns the index in the list of known aliases the alias whose source
 // resolution matches the given resolution; or -1 is no such alias is
@@ -54,19 +80,6 @@ resolution_s ka_aliased(const resolution_s &r)
     return r;
 }
 
-void ka_broadcast_aliases_to_gui(void)
-{
-    DEBUG(("Broadcasting %u alias(es) to the GUI.", ALIASES.size()));
-
-    kd_clear_aliases();
-    for (const auto &a: ALIASES)
-    {
-        kd_add_alias(a);
-    }
-
-    return;
-}
-
 const std::vector<mode_alias_s>& ka_aliases(void)
 {
     return ALIASES;
@@ -90,7 +103,7 @@ void ka_set_aliases(const std::vector<mode_alias_s> &aliases)
             if (alias.from.w == currentRes.w &&
                 alias.from.h == currentRes.h)
             {
-                kpropagate_forced_capture_resolution(alias.to);
+                kc_force_input_resolution(alias.to);
                 break;
             }
         }

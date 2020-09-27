@@ -28,7 +28,7 @@ public:
 
     void clear_known_aliases();
 
-    void receive_new_alias(const mode_alias_s a);
+    void add_alias_to_list(const mode_alias_s a);
 
 private slots:
     void load_aliases();
@@ -42,6 +42,8 @@ private slots:
 private:
     Ui::AliasDialog *ui;
 
+    void set_alias_source_filename(const QString &filename);
+
     void broadcast_aliases();
 
     void adjust_treewidget_column_size();
@@ -50,7 +52,13 @@ private:
 
     void showEvent(QShowEvent *event);
 
+    void assign_aliases(const std::vector<mode_alias_s> &aliases);
+
     QMenuBar *menubar = nullptr;
+
+    // The dialog's title, without any additional information that may be appended,
+    // like the name of the file from which the dialog's current data was loaded.
+    const QString dialogBaseTitle = "VCS - Alias Resolutions";
 };
 
 #endif

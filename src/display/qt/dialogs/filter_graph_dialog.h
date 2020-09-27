@@ -28,8 +28,6 @@ public:
 
     FilterGraphNode* add_filter_node(const filter_type_enum_e type, const u8 *const initialParameterValues = nullptr);
 
-    void set_filter_graph_source_filename(const std::string &sourceFilename);
-
     void refresh_filter_graph(void);
 
     void set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);
@@ -47,6 +45,8 @@ private:
     void reset_graph(const bool autoAccept = false);
     void save_filters(void);
     void load_filters(void);
+
+    void set_filter_graph_source_filename(const QString &filename);
 
     // Whether the filter graph is enabled.
     bool isEnabled = false;

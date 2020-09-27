@@ -11,7 +11,7 @@
 #include <vector>
 #include <cmath>
 #include "filter/anti_tear.h"
-#include "common/propagate/propagate.h"
+#include "common/propagate/app_events.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"
 #include "display/display.h"
@@ -385,6 +385,38 @@ void ks_initialize_scaler(void)
 
     ks_set_upscaling_filter(SCALING_FILTERS.at(0).name);
     ks_set_downscaling_filter(SCALING_FILTERS.at(0).name);
+
+    ke_events().capture.newFrame->subscribe([]
+    {
+        ks_scale_frame(kc_capture_api().get_frame_buffer());
+
+        if (krecord_is_recording())
+        {
+            krecord_record_new_frame();
+        }
+
+        kc_capture_api().mark_frame_buffer_as_processed();
+
+        ke_events().display.dirty->fire();
+    });
+
+    ke_events().capture.newVideoMode->subscribe([]
+    {
+        const auto currentInputRes = kc_capture_api().get_resolution();
+        ks_set_output_base_resolution(currentInputRes, false);
+    });
+
+    ke_events().capture.invalidSignal->subscribe([]
+    {
+        ks_indicate_invalid_signal();
+        ke_events().display.dirty->fire();
+    });
+
+    ke_events().capture.signalLost->subscribe([]
+    {
+        ks_indicate_no_signal();
+        ke_events().display.dirty->fire();
+    });
 
     return;
 }

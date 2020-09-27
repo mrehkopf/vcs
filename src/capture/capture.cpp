@@ -6,7 +6,7 @@
  *
  */
 
-#include "common/propagate/propagate.h"
+#include "common/propagate/app_events.h"
 #include "capture/capture_api_virtual.h"
 #include "capture/capture_api_rgbeasy.h"
 #include "capture/capture_api_video4linux.h"
@@ -36,7 +36,7 @@ void kc_initialize_capture(void)
 
     API->initialize();
 
-    kpropagate_news_of_new_capture_video_mode();
+    ke_events().capture.newVideoMode->fire();
 
     return;
 }
@@ -49,6 +49,38 @@ void kc_release_capture(void)
 
     delete API;
     API = nullptr;
+
+    return;
+}
+
+void kc_force_input_resolution(const resolution_s &r)
+{
+    const resolution_s min = kc_capture_api().get_minimum_resolution();
+    const resolution_s max = kc_capture_api().get_maximum_resolution();
+
+    if (kc_capture_api().has_no_signal())
+    {
+        DEBUG(("Was asked to change the input resolution while the capture card was not receiving a signal. Ignoring the request."));
+        return;
+    }
+
+    if (r.w > max.w ||
+        r.w < min.w ||
+        r.h > max.h ||
+        r.h < min.h)
+    {
+        NBENE(("Was asked to set an input resolution which is not supported by the capture card (%u x %u). Ignoring the request.",
+               r.w, r.h));
+        return;
+    }
+
+    if (!kc_capture_api().set_resolution(r))
+    {
+        NBENE(("Failed to set the new input resolution (%u x %u).", r.w, r.h));
+        return;
+    }
+
+    ke_events().capture.newVideoMode->fire();
 
     return;
 }

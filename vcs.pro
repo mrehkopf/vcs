@@ -68,7 +68,6 @@ SOURCES += \
     src/display/qt/persistent_settings.cpp \
     src/common/memory/memory.cpp \
     src/record/record.cpp \
-    src/common/propagate/propagate.cpp \
     src/common/disk/disk.cpp \
     src/capture/alias.cpp \
     src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.cpp \
@@ -107,7 +106,8 @@ SOURCES += \
     src/display/qt/dialogs/video_parameter_dialog.cpp \
     src/capture/video_presets.cpp \
     src/common/disk/file_writers/file_writer_video_presets_version_a.cpp \
-    src/common/disk/file_readers/file_reader_video_presets_version_a.cpp
+    src/common/disk/file_readers/file_reader_video_presets_version_a.cpp \
+    src/common/propagate/app_events.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -131,7 +131,6 @@ HEADERS += \
     src/common/memory/memory.h \
     src/common/memory/memory_interface.h \
     src/record/record.h \
-    src/common/propagate/propagate.h \
     src/common/disk/disk.h \
     src/capture/alias.h \
     src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.h \
@@ -168,7 +167,8 @@ HEADERS += \
     src/common/refresh_rate.h \
     src/capture/video_presets.h \
     src/common/disk/file_writers/file_writer_video_presets.h \
-    src/common/disk/file_readers/file_reader_video_presets.h
+    src/common/disk/file_readers/file_reader_video_presets.h \
+    src/common/propagate/app_events.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \

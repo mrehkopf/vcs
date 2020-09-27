@@ -46,8 +46,6 @@ public:
 
     void add_gui_log_entry(const log_entry_s e);
 
-    void update_capture_signal_info(void);
-
     void update_output_framerate(const u32 fps, const bool missedFrames);
 
     void set_capture_info_as_no_signal(void);
@@ -70,11 +68,9 @@ public:
     // current frame rate.
     void measure_framerate(void);
 
-    void signal_new_video_presets_source_file(const std::string &filename);
-
     void set_opengl_enabled(const bool enabled);
 
-    void refresh(void);
+    void redraw(void);
 
     // Returns the current overlay as a QImage, or a null QImage if the overlay
     // should not be shown at this time.
@@ -93,8 +89,6 @@ public:
     FilterGraphNode* add_filter_graph_node(const filter_type_enum_e &filterType, const u8 * const initialParameterValues);
 
     void set_filter_graph_source_filename(const std::string &sourceFilename);
-
-    void set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);
 
     void open_filter_graph_dialog(void);
 
@@ -119,8 +113,6 @@ public:
     void open_video_parameter_graph_dialog(void);
 
     void disable_output_size_controls(const bool areDisabled);
-
-    void set_recording_is_active(const bool isActive);
 
     bool apply_programwide_styling(const QString &filename);
 
