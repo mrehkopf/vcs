@@ -54,6 +54,30 @@ static bool initialize_all(void)
         PROGRAM_EXIT_REQUESTED = true;
     });
 
+    // The capture device has received a new video mode. We'll inspect the
+    // mode to see if we think it's acceptable, then allow news of it to
+    // propagate to the rest of VCS.
+    ke_events().capture.newProposedVideoMode->subscribe([]
+    {
+        const auto resolution = kc_capture_api().get_resolution();
+
+        // If there's an alias for this resolution, force that resolution
+        // instead. Note that forcing the resolution is expected to automatically
+        // fire a capture.newVideoMode event.
+        if (ka_has_alias(resolution))
+        {
+            const resolution_s aliasResolution = ka_aliased(resolution);
+
+            kc_force_input_resolution(aliasResolution);
+        }
+        else
+        {
+            ke_events().capture.newVideoMode->fire();
+        }
+    });
+
+    if (!PROGRAM_EXIT_REQUESTED) ka_initialize_aliases();
+    if (!PROGRAM_EXIT_REQUESTED) krecord_initialize();
     if (!PROGRAM_EXIT_REQUESTED) klog_initialize();
     if (!PROGRAM_EXIT_REQUESTED) kvideopreset_initialize();
     if (!PROGRAM_EXIT_REQUESTED) ks_initialize_scaler();
@@ -90,7 +114,7 @@ static capture_event_e process_next_capture_event(void)
         }
         case capture_event_e::new_video_mode:
         {
-            ke_events().capture.newVideoMode->fire();
+            ke_events().capture.newProposedVideoMode->fire();
             break;
         }
         case capture_event_e::signal_lost:

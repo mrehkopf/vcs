@@ -17,27 +17,6 @@ static std::vector<mode_alias_s> ALIASES;
 
 void ka_initialize_aliases(void)
 {
-    // When we get a new capture video mode, see if its resolution matches
-    // an alias; and if so, force the input resolution to match the alias.
-    ke_events().capture.newVideoMode->subscribe([]
-    {
-        const auto resolution = kc_capture_api().get_resolution();
-
-        if (ka_has_alias(resolution))
-        {
-            const resolution_s aliasResolution = ka_aliased(resolution);
-
-            if (kc_capture_api().set_resolution(aliasResolution))
-            {
-                INFO(("Video mode's resolution aliased to %u x %u.", aliasResolution.w, aliasResolution.h));
-            }
-            else
-            {
-                INFO(("This video mode's resolution has an alias, but it could not be set."));
-            }
-        }
-    });
-
     return;
 }
 

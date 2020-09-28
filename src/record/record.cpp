@@ -205,6 +205,19 @@ static struct recording_s
     } meta;
 } RECORDING;
 
+void krecord_initialize(void)
+{
+    ke_events().scaler.newFrame->subscribe([]
+    {
+        if (krecord_is_recording())
+        {
+            krecord_record_new_frame();
+        }
+    });
+
+    return;
+}
+
 // Prepare the OpenCV video writer for recording frames into a video.
 // Returns true if successful, false otherwise.
 //

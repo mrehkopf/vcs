@@ -601,7 +601,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Subscribe to app events.
     {
-        ke_events().display.dirty->subscribe([this]
+        ke_events().scaler.newFrame->subscribe([this]
         {
             this->redraw();
 
@@ -609,11 +609,15 @@ MainWindow::MainWindow(QWidget *parent) :
             this->measure_framerate();
         });
 
-        ke_events().capture.newVideoMode->subscribe([this]
+        ke_events().scaler.newFrameResolution->subscribe([this]
         {
             this->update_window_title();
             this->update_window_size();
-            ke_events().display.dirty->fire();
+        });
+
+        ke_events().capture.newVideoMode->subscribe([this]
+        {
+            this->update_window_title();
         });
 
         ke_events().recorder.recordingStarted->subscribe([this]

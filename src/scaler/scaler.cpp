@@ -55,7 +55,7 @@ static heap_bytes_s<u8> TMP_BUFFER;
 static aspect_mode_e ASPECT_MODE = aspect_mode_e::native;
 static bool FORCE_ASPECT = true;
 
-static resolution_s LATEST_OUTPUT_SIZE = {0};       // The size of the image currently in the scaler's output buffer.
+static resolution_s LATEST_OUTPUT_SIZE = {0, 0, 0}; // The size of the image currently in the scaler's output buffer.
 
 static const u32 OUTPUT_BIT_DEPTH = 32;             // The bit depth we're currently scaling to.
 
@@ -390,14 +390,9 @@ void ks_initialize_scaler(void)
     {
         ks_scale_frame(kc_capture_api().get_frame_buffer());
 
-        if (krecord_is_recording())
-        {
-            krecord_record_new_frame();
-        }
+        ke_events().scaler.newFrame->fire();
 
         kc_capture_api().mark_frame_buffer_as_processed();
-
-        ke_events().display.dirty->fire();
     });
 
     ke_events().capture.newVideoMode->subscribe([]
@@ -612,7 +607,13 @@ void ks_scale_frame(const captured_frame_s &frame)
         }
     }
 
-    LATEST_OUTPUT_SIZE = outputRes;
+    if ((LATEST_OUTPUT_SIZE.w != outputRes.w) ||
+        (LATEST_OUTPUT_SIZE.h != outputRes.h))
+    {
+        ke_events().scaler.newFrameResolution->fire();
+
+        LATEST_OUTPUT_SIZE = outputRes;
+    }
 
     done:
     return;

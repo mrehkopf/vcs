@@ -36,7 +36,7 @@ void kc_initialize_capture(void)
 
     API->initialize();
 
-    ke_events().capture.newVideoMode->fire();
+    ke_events().capture.newProposedVideoMode->fire();
 
     return;
 }
@@ -53,7 +53,7 @@ void kc_release_capture(void)
     return;
 }
 
-void kc_force_input_resolution(const resolution_s &r)
+bool kc_force_input_resolution(const resolution_s &r)
 {
     const resolution_s min = kc_capture_api().get_minimum_resolution();
     const resolution_s max = kc_capture_api().get_maximum_resolution();
@@ -61,7 +61,7 @@ void kc_force_input_resolution(const resolution_s &r)
     if (kc_capture_api().has_no_signal())
     {
         DEBUG(("Was asked to change the input resolution while the capture card was not receiving a signal. Ignoring the request."));
-        return;
+        return false;
     }
 
     if (r.w > max.w ||
@@ -71,16 +71,16 @@ void kc_force_input_resolution(const resolution_s &r)
     {
         NBENE(("Was asked to set an input resolution which is not supported by the capture card (%u x %u). Ignoring the request.",
                r.w, r.h));
-        return;
+        return false;
     }
 
     if (!kc_capture_api().set_resolution(r))
     {
         NBENE(("Failed to set the new input resolution (%u x %u).", r.w, r.h));
-        return;
+        return false;
     }
 
     ke_events().capture.newVideoMode->fire();
 
-    return;
+    return true;
 }

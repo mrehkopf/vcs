@@ -10,8 +10,7 @@
 #include <atomic>
 #include <cmath>
 #include "common/globals.h"
-#include "common/propagate/propagate.h"
-#include "common/propagate/event.h"
+#include "common/propagate/app_events.h"
 #include "capture/capture_api_rgbeasy.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
