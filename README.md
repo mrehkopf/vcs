@@ -6,14 +6,14 @@ VCS interfaces with compatible capture hardware to display the capture output in
 You can find the pre-built binary distribution of VCS for Windows on [Tarpeeksi Hyvae Soft's website](https://www.tarpeeksihyvaesoft.com/soft/).
 
 ### Features
-- Real-time customizable image filters: blur, crop, decimate, denoise, and more
+- Real-time customizable frame filters: blur, crop, decimate, denoise, ...
 - Scaling with nearest, linear, area, cubic, and Lanczos sampling
-- Active triple buffering to reconstruct torn frames
+- System-side triple buffering that fixes existing frame tearing
 - Custom overlays with HTML/CSS formatting
 - Video recording
-- Virtual machine friendly (low reliance on GPU features)
-- Output in software or OpenGL
-- Supports Windows (XP and later), Linux
+- Virtual machine friendly - low reliance on GPU features
+- Outputs in software and OpenGL
+- Windows (XP and later), Linux (experimental)
 
 ### Hardware support
 VCS is compatible with at least the following Datapath capture cards:
