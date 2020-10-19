@@ -8,7 +8,7 @@
 #ifdef CAPTURE_API_VIRTUAL
 
 #include <chrono>
-#include "common/propagate/propagate.h"
+#include "common/propagate/app_events.h"
 #include "capture/capture_api_virtual.h"
 
 bool capture_api_virtual_s::initialize(void)
