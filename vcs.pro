@@ -21,12 +21,12 @@ linux {
 win32 {
     DEFINES += CAPTURE_API_RGBEASY
 
-    INCLUDEPATH += "C:/Program Files (x86)/Vision RGB-PRO/SDK/RGBEASY/INCLUDE"
-    LIBS += "C:/Program Files (x86)/Vision RGB-PRO/SDK/RGBEASY/LIB/RGBEASY.lib"
+    INCLUDEPATH += "C:/VisionSDK/RGBEASY 1.0/INCLUDE"
+    LIBS += "C:/VisionSDK/RGBEASY 1.0/LIB/Win32/Release/RGBEASY.lib"
 
     contains(DEFINES, USE_OPENCV) {
-        INCLUDEPATH += "C:/Program Files (x86)/OpenCV/3.2.0/include"
-        LIBS += -L"C:/Program Files (x86)/OpenCV/3.2.0/bin/mingw"
+        INCLUDEPATH += "C:/OpenCV/3.2.0/include"
+        LIBS += -L"C:/OpenCV/3.2.0/bin/mingw"
         LIBS += -lopencv_world320
     }
 
