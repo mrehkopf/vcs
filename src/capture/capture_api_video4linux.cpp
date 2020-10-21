@@ -389,13 +389,6 @@ static bool stream_on(void)
     return true;
 }
 
-// Returns true if the given v4l2 capabilities match a vision device
-static bool is_vision_caps(v4l2_capability* card_caps) 
-{
-    return strcmp((const char*)card_caps->driver, "Vision") == 0 && // Verify that card is using "Vision" driver
-        strcmp((const char*)card_caps->card, "Vision Control") != 0; // Verify that card is not "Vision Control" device
-}
-
 bool capture_api_video4linux_s::unqueue_capture_buffers(void)
 {
     // Tell the capture device we want it to use capture buffers we've allocated.
@@ -921,25 +914,43 @@ std::string capture_api_video4linux_s::get_device_firmware_version(void) const
 
 int capture_api_video4linux_s::get_device_maximum_input_count(void) const
 {
-    std::string video_device_prefix = "/dev/video";
-    int total_devices = 0;
+    const char baseDevicePath[] = "/dev/video";
+    unsigned numInputs = 0;
 
+    // Returns true if the given V4L capabilities appear to indicate a Vision
+    // capture device.
+    const auto is_vision_capture_device = [](const v4l2_capability *const caps) 
+    {
+        const bool usesVisionDriver = (strcmp((const char*)caps->driver, "Vision") == 0);
+        const bool isVisionControlDevice = (strcmp((const char*)caps->card, "Vision Control") == 0);
+
+        return (usesVisionDriver && !isVisionControlDevice);
+    };
+
+    /// TODO: Make sure we only count inputs on the capture card that we're
+    /// currently capturing on, rather than tallying up the number of inputs on
+    /// all the Vision capture cards on the system.
     for (int i = 0; i < 64; i++) 
     {
-        v4l2_capability card_caps; 
+        v4l2_capability deviceCaps; 
 
-        int f = open((video_device_prefix + std::to_string(i)).c_str(), O_RDONLY);
+        const int deviceFile = open((baseDevicePath + std::to_string(i)).c_str(), O_RDONLY);
         
-        if (f < 0)
+        if (deviceFile < 0)
+        {
             continue;
+        }
 
-        if (ioctl(f, VIDIOC_QUERYCAP, &card_caps) >= 0 && is_vision_caps(&card_caps))
-            total_devices++;
+        if ((ioctl(deviceFile, VIDIOC_QUERYCAP, &deviceCaps) >= 0) &&
+            is_vision_capture_device(&deviceCaps))
+        {
+            numInputs++;
+        }
 
-        close(f);
+        close(deviceFile);
     }
     
-    return total_devices;
+    return numInputs;
 }
 
 video_signal_parameters_s capture_api_video4linux_s::get_video_signal_parameters(void) const
