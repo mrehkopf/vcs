@@ -380,7 +380,7 @@ void ks_initialize_scaler(void)
     #endif
 
     OUTPUT_BUFFER.alloc(MAX_FRAME_SIZE, "Scaler output buffer");
-    COLORCONV_BUFFER.alloc(MAX_FRAME_SIZE, "Scaler color convertion buffer");
+    COLORCONV_BUFFER.alloc(MAX_FRAME_SIZE, "Scaler color conversion buffer");
     TMP_BUFFER.alloc(MAX_FRAME_SIZE, "Scaler scratch buffer");
 
     ks_set_upscaling_filter(SCALING_FILTERS.at(0).name);
@@ -568,10 +568,10 @@ void ks_scale_frame(const captured_frame_s &frame)
         goto done;
     }
 
-    // Apply filtering, and scale the frame.
-    {
-        kf_apply_filter_chain(pixelData, frameRes);
+    kf_apply_filter_chain(pixelData, frameRes);
 
+    // Scale the frame to the desired output size.
+    {
         // If no need to scale, just copy the data over.
         if ((!FORCE_ASPECT || ASPECT_MODE == aspect_mode_e::native) &&
             frameRes.w == outputRes.w &&

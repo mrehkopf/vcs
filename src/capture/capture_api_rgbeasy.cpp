@@ -207,7 +207,7 @@ bool capture_api_rgbeasy_s::initialize(void)
 {
     INFO(("Initializing the capture API."));
 
-    FRAME_BUFFER.pixels.alloc(MAX_FRAME_SIZE);
+    FRAME_BUFFER.pixels.alloc(MAX_FRAME_SIZE, "Capture frame buffer (RGBEASY)");
 
     // Open an input on the capture hardware, and have it start sending in frames.
     if (!this->initialize_hardware() ||
@@ -280,7 +280,7 @@ bool capture_api_rgbeasy_s::initialize_hardware(void)
         goto fail;
     }
 
-    if (!apicall_succeeded(RGBOpenInput(INPUT_CHANNEL_IDX,      &this->captureHandle)) ||
+    if (!apicall_succeeded(RGBOpenInput(INPUT_CHANNEL_IDX,            &this->captureHandle)) ||
         !apicall_succeeded(RGBSetFrameDropping(this->captureHandle,   FRAME_SKIP)) ||
         !apicall_succeeded(RGBSetDMADirect(this->captureHandle,       FALSE)) ||
         !apicall_succeeded(RGBSetPixelFormat(this->captureHandle,     pixel_format_to_rgbeasy_pixel_format(CAPTURE_PIXEL_FORMAT))) ||

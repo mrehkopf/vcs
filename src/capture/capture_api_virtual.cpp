@@ -15,7 +15,7 @@ bool capture_api_virtual_s::initialize(void)
 {
     this->frameBuffer.r = this->defaultResolution;
     this->frameBuffer.pixelFormat = this->defaultPixelFormat;
-    this->frameBuffer.pixels.alloc(MAX_FRAME_SIZE);
+    this->frameBuffer.pixels.alloc(MAX_FRAME_SIZE, "Capture frame buffer (virtual)");
 
     return true;
 }

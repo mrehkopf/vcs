@@ -47,6 +47,8 @@ capture_event_e capture_api_video4linux_s::pop_capture_event_queue(void)
     }
     else if (this->inputChannel->pop_capture_event(capture_event_e::unrecoverable_error))
     {
+        this->inputChannel->captureStatus.invalidDevice = true;
+
         return capture_event_e::unrecoverable_error;
     }
     else if (this->inputChannel->pop_capture_event(capture_event_e::new_video_mode))
@@ -208,7 +210,7 @@ bool capture_api_video4linux_s::initialize(void)
 {
     FRAME_BUFFER.r = {640, 480, 32};
     FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
-    FRAME_BUFFER.pixels.alloc(MAX_FRAME_SIZE);
+    FRAME_BUFFER.pixels.alloc(MAX_FRAME_SIZE, "Capture frame buffer (V4L)");
 
     CAPTURE_BACK_BUFFER.allocate();
 

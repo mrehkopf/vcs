@@ -611,7 +611,7 @@ void kat_initialize_anti_tear(void)
     BUFFER_PRIMARY.pixels = (BACK_BUFFER_STORAGE.ptr() + 0);
     BUFFER_SECONDARY.pixels = (BACK_BUFFER_STORAGE.ptr() + backBufferSize);
 
-    PREV_FRAME.alloc(maxres.w * maxres.h * (EXPECTED_BIT_DEPTH / 8));
+    PREV_FRAME.alloc((maxres.w * maxres.h * (EXPECTED_BIT_DEPTH / 8)), "Anti-tearing prev frame buffer");
 
     reset_all_buffers();
 
