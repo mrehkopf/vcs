@@ -1216,6 +1216,10 @@ void MainWindow::set_keyboard_shortcuts(void)
         });
     }
 
+    // Shift + number assigns the current input channel.
+    connect(keyboardShortcut("shift+1"), &QShortcut::activated, [=]{kc_capture_api().set_input_channel(0);});
+    connect(keyboardShortcut("shift+2"), &QShortcut::activated, [=]{kc_capture_api().set_input_channel(1);});
+
     return;
 }
 
