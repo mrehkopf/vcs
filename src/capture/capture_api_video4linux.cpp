@@ -102,7 +102,10 @@ resolution_s capture_api_video4linux_s::get_minimum_resolution(void) const
 resolution_s capture_api_video4linux_s::get_maximum_resolution(void) const
 {
     /// TODO: Query actual hardware parameters for this.
-    return resolution_s{1920, 1080, 32};
+
+    return resolution_s{std::min(2048u, MAX_CAPTURE_WIDTH),
+                        std::min(1536u, MAX_CAPTURE_HEIGHT),
+                        std::min(32u, MAX_CAPTURE_BPP)};
 }
 
 refresh_rate_s capture_api_video4linux_s::get_refresh_rate(void) const
@@ -123,8 +126,10 @@ uint capture_api_video4linux_s::get_missed_frames_count(void) const
 
 bool capture_api_video4linux_s::has_invalid_signal() const
 {
-    /// TODO.
-    return false;
+    k_assert((this->inputChannel),
+             "Attempting to query input channel parameters on a null channel.");
+
+    return this->inputChannel->captureStatus.invalidSignal;
 }
 
 bool capture_api_video4linux_s::has_invalid_device() const
@@ -210,7 +215,7 @@ bool capture_api_video4linux_s::initialize(void)
 {
     FRAME_BUFFER.r = {640, 480, 32};
     FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
-    FRAME_BUFFER.pixels.alloc(MAX_FRAME_SIZE, "Capture frame buffer (V4L)");
+    FRAME_BUFFER.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (V4L)");
 
     CAPTURE_BACK_BUFFER.allocate();
 

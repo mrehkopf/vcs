@@ -247,7 +247,6 @@ void kmem_deallocate_memory_cache(void)
 
     /*for (uint i = 0; i < NUM_ALLOC_TABLE_ELEMENTS; i++)
     {
-
         if ((ALLOC_TABLE[i].memory != NULL) &&
             ALLOC_TABLE[i].isInUse)
         {

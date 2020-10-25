@@ -47,6 +47,10 @@ public:
         // True if this channel is currently not receiving a signal.
         bool noSignal = true;
 
+        // True if the signal we're currently receiving is invalid in some way
+        // (e.g. out of range).
+        bool invalidSignal = false;
+
         // Set to true if we were unable to start capturing on the given capture
         // device.
         bool invalidDevice = false;

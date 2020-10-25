@@ -379,9 +379,9 @@ void ks_initialize_scaler(void)
         cv::redirectError(cv_error_handler);
     #endif
 
-    OUTPUT_BUFFER.alloc(MAX_FRAME_SIZE, "Scaler output buffer");
-    COLORCONV_BUFFER.alloc(MAX_FRAME_SIZE, "Scaler color conversion buffer");
-    TMP_BUFFER.alloc(MAX_FRAME_SIZE, "Scaler scratch buffer");
+    OUTPUT_BUFFER.alloc(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler output buffer");
+    COLORCONV_BUFFER.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Scaler color conversion buffer");
+    TMP_BUFFER.alloc(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler scratch buffer");
 
     ks_set_upscaling_filter(SCALING_FILTERS.at(0).name);
     ks_set_downscaling_filter(SCALING_FILTERS.at(0).name);
@@ -498,7 +498,9 @@ void ks_scale_frame(const captured_frame_s &frame)
 
     // Verify that we have a workable frame.
     {
-        if (frame.r.bpp != 16 && frame.r.bpp != 24 && frame.r.bpp != 32)
+        if ((frame.r.bpp != 16) &&
+            (frame.r.bpp != 24) &&
+            (frame.r.bpp != 32))
         {
             NBENE(("Was asked to scale a frame with an incompatible bit depth (%u). Ignoring it.",
                     frame.r.bpp));
@@ -691,7 +693,7 @@ void ks_clear_scaler_output_buffer(void)
     k_assert(!OUTPUT_BUFFER.is_null(),
              "Can't access the output buffer: it was unexpectedly null.");
 
-    memset(OUTPUT_BUFFER.ptr(), 0, OUTPUT_BUFFER.up_to(MAX_FRAME_SIZE));
+    memset(OUTPUT_BUFFER.ptr(), 0, OUTPUT_BUFFER.up_to(MAX_NUM_BYTES_IN_OUTPUT_FRAME));
 
     return;
 }

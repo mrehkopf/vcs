@@ -16,7 +16,7 @@
 #include "capture/alias.h"
 
 static std::atomic<unsigned int> CNT_FRAMES_PROCESSED(0);
-static std::atomic<unsigned int> CNT_FRAMES_CAPTURED(0);
+static std::atomic<unsigned int> CNT_FRAMES_RECEIVED(0);
 
 // The pixel format in which the capture device sends captured frames.
 static capture_pixel_format_e CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_888;
@@ -73,7 +73,7 @@ namespace rgbeasy_callbacks_n
         // If the hardware is sending us a new frame while we're still unfinished
         // with processing the previous frame. In that case, we'll need to skip
         // this new frame.
-        if (CNT_FRAMES_CAPTURED != CNT_FRAMES_PROCESSED)
+        if (CNT_FRAMES_RECEIVED != CNT_FRAMES_PROCESSED)
         {
             NUM_NEW_FRAME_EVENTS_SKIPPED++;
             return;
@@ -87,25 +87,39 @@ namespace rgbeasy_callbacks_n
             goto done;
         }
 
-        // This could happen e.g. if direct DMA transfer is enabled.
-        if (frameData == nullptr ||
-            frameInfo == nullptr)
+        // Verify that the
         {
-            goto done;
-        }
+            // This could happen e.g. if direct DMA transfer is enabled.
+            if (frameData == nullptr ||
+                frameInfo == nullptr)
+            {
+                goto done;
+            }
 
-        if (FRAME_BUFFER.pixels.is_null())
-        {
-            //ERRORI(("The capture hardware sent in a frame but the frame buffer was uninitialized. "
-            //        "Ignoring the frame."));
-            goto done;
-        }
+            // The capture device sent in a frame before the local buffer into which
+            // VCS wants to copy the frame had been allocated.
+            if (FRAME_BUFFER.pixels.is_null())
+            {
+                goto done;
+            }
 
-        if (frameInfo->biBitCount > MAX_BIT_DEPTH)
-        {
-            //ERRORI(("The capture hardware sent in a frame that had an illegal bit depth (%u). "
-            //        "The maximum allowed bit depth is %u.", frameInfo->biBitCount, MAX_BIT_DEPTH));
-            goto done;
+            // The capture device sent in a frame that has an unsupported bit depth.
+            if (frameInfo->biBitCount > MAX_BIT_DEPTH)
+            {
+                goto done;
+            }
+
+            if ((frameInfo->biWidth < MIN_CAPTURE_WIDTH) ||
+                (frameInfo->biWidth > MAX_CAPTURE_WIDTH) ||
+                (abs(frameInfo->biHeight) < MIN_CAPTURE_HEIGHT) ||
+                (abs(frameInfo->biHeight) > MAX_CAPTURE_HEIGHT))
+            {
+                thisPtr->push_capture_event(capture_event_e::invalid_signal);
+
+                IS_SIGNAL_INVALID = true;
+
+                goto done;
+            }
         }
 
         FRAME_BUFFER.r.w = frameInfo->biWidth;
@@ -120,7 +134,7 @@ namespace rgbeasy_callbacks_n
         thisPtr->push_capture_event(capture_event_e::new_frame);
 
         done:
-        CNT_FRAMES_CAPTURED++;
+        CNT_FRAMES_RECEIVED++;
         return;
     }
 
@@ -207,7 +221,7 @@ bool capture_api_rgbeasy_s::initialize(void)
 {
     INFO(("Initializing the capture API."));
 
-    FRAME_BUFFER.pixels.alloc(MAX_FRAME_SIZE, "Capture frame buffer (RGBEASY)");
+    FRAME_BUFFER.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (RGBEASY)");
 
     // Open an input on the capture hardware, and have it start sending in frames.
     if (!this->initialize_hardware() ||
@@ -293,16 +307,6 @@ bool capture_api_rgbeasy_s::initialize_hardware(void)
     {
         NBENE(("Failed to initialize the capture hardware."));
         goto fail;
-    }
-
-    /// Temp hack. We've only allocated enough room in the input frame buffer to
-    /// hold at most the maximum output size.
-    {
-        const resolution_s maxCaptureRes = this->get_maximum_resolution();
-
-        k_assert((maxCaptureRes.w <= MAX_OUTPUT_WIDTH &&
-                  maxCaptureRes.h <= MAX_OUTPUT_HEIGHT),
-                 "The capture hardware is not compatible with this version of VCS.");
     }
 
     return true;
@@ -745,7 +749,7 @@ const captured_frame_s& capture_api_rgbeasy_s::get_frame_buffer(void) const
 
 bool capture_api_rgbeasy_s::mark_frame_buffer_as_processed(void)
 {
-    CNT_FRAMES_PROCESSED = CNT_FRAMES_CAPTURED.load();
+    CNT_FRAMES_PROCESSED = CNT_FRAMES_RECEIVED.load();
 
     FRAME_BUFFER.processed = true;
 

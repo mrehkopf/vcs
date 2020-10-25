@@ -572,7 +572,7 @@ MainWindow::MainWindow(QWidget *parent) :
         });
 
         // Make the request.
-        if (!DEV_VERSION)
+        if (!IS_DEV_VERSION)
         {
             const QString url = QString("http://www.tarpeeksihyvaesoft.com/vcs/is_newer_version_available.php?uv=%1").arg(PROGRAM_VERSION_STRING);
             network->get(QNetworkRequest(QUrl(url)));
@@ -623,6 +623,13 @@ MainWindow::MainWindow(QWidget *parent) :
         });
 
         ke_events().capture.invalidDevice->subscribe([this]
+        {
+            this->update_window_title();
+            this->update_window_size();
+            this->redraw();
+        });
+
+        ke_events().capture.invalidSignal->subscribe([this]
         {
             this->update_window_title();
             this->update_window_size();
@@ -1270,7 +1277,7 @@ void MainWindow::update_window_title()
     }
     else if (kc_capture_api().has_invalid_signal())
     {
-        title = QString("%1 - Invalid signal").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
+        title = QString("%1 - Signal out of range").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
     }
     else if (kc_capture_api().has_no_signal())
     {

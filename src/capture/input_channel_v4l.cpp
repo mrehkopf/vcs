@@ -78,7 +78,10 @@ bool input_channel_v4l_c::pop_capture_event(const capture_event_e flag)
 resolution_s input_channel_v4l_c::maximum_resolution(void) const
 {
     /// TODO: Query actual hardware parameters for this.
-    return resolution_s{1920, 1080, 32};
+    
+    return resolution_s{std::min(2048u, MAX_CAPTURE_WIDTH),
+                        std::min(1536u, MAX_CAPTURE_HEIGHT),
+                        std::min(32u, MAX_CAPTURE_BPP)};
 }
 
 resolution_s input_channel_v4l_c::source_resolution(void)
@@ -103,27 +106,46 @@ bool input_channel_v4l_c::capture_thread__update_video_mode(void)
     v4l2_format format = {};
     format.type = V4L2_BUF_TYPE_CAPTURE_SOURCE;
 
+    // We'll set this to true, below, if need be.
+    this->captureStatus.invalidSignal = false;
+
     /// TODO: Check for 'no signal' status.
 
     if (ioctl(this->v4lDeviceFileHandle, RGB133_VIDIOC_G_SRC_FMT, &format) >= 0)
     {
-        const refresh_rate_s currentRefreshRate = refresh_rate_s(format.fmt.pix.priv / 1000.0);
-
-        if ((currentRefreshRate != this->captureStatus.refreshRate) ||
-            (format.fmt.pix.width != this->captureStatus.resolution.w) ||
-            (format.fmt.pix.height != this->captureStatus.resolution.h))
+        if ((format.fmt.pix.width < MIN_CAPTURE_WIDTH) ||
+            (format.fmt.pix.width > MAX_CAPTURE_WIDTH) ||
+            (format.fmt.pix.height < MIN_CAPTURE_HEIGHT) ||
+            (format.fmt.pix.height > MAX_CAPTURE_HEIGHT))
         {
-            this->captureStatus.noSignal = false;
-            this->captureStatus.refreshRate = currentRefreshRate;
-            this->captureStatus.resolution.w = format.fmt.pix.width;
-            this->captureStatus.resolution.h = format.fmt.pix.height;
+            this->captureStatus.invalidSignal = true;
 
-            this->push_capture_event(capture_event_e::new_video_mode);
+            return true;
+        }
+
+        // Attempt to detect if aspects of the signal have changed.
+        {
+            const refresh_rate_s currentRefreshRate = refresh_rate_s(format.fmt.pix.priv / 1000.0);
+
+            if ((currentRefreshRate != this->captureStatus.refreshRate) ||
+                (format.fmt.pix.width != this->captureStatus.resolution.w) ||
+                (format.fmt.pix.height != this->captureStatus.resolution.h))
+            {
+                this->captureStatus.noSignal = false;
+                this->captureStatus.refreshRate = currentRefreshRate;
+                this->captureStatus.resolution.w = format.fmt.pix.width;
+                this->captureStatus.resolution.h = format.fmt.pix.height;
+
+                this->push_capture_event(capture_event_e::new_video_mode);
+            }
         }
     }
     else
     {
+        this->captureStatus.invalidSignal = true;
+        
         this->push_capture_event(capture_event_e::unrecoverable_error);
+
         return false;
     }
 

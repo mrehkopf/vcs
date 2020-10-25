@@ -28,7 +28,7 @@ void capture_back_buffer_s::allocate()
 {
     for (auto &page: this->pages)
     {
-        page.alloc(MAX_FRAME_SIZE, "Capture back buffer");
+        page.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture back buffer");
     }
 }
 

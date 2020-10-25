@@ -20,18 +20,25 @@
 const char PROGRAM_NAME[] = "VCS";
 const char PROGRAM_VERSION_STRING[] = "2.1.0";
 
-// If this build is a developmental (non-stable, non-release) version.
-const bool DEV_VERSION = true;
+// Whether this build is a developmental (non-stable, non-release) version.
+const bool IS_DEV_VERSION = true;
 
-// The minimum and maximum resolutions we can output to.
-// Note that these also set the limit for the input (from the capture card) resolutions,
-// as they're not allowed to be larger/smaller than the output limits.
+// The minimum and maximum resolution we can output frames in.
 const uint MIN_OUTPUT_WIDTH = 200;
 const uint MIN_OUTPUT_HEIGHT = 100;
 const uint MAX_OUTPUT_WIDTH = 4096;
 const uint MAX_OUTPUT_HEIGHT = 4096;
 const uint MAX_OUTPUT_BPP = 32;
-const u32 MAX_FRAME_SIZE = MAX_OUTPUT_WIDTH * MAX_OUTPUT_HEIGHT * u64(MAX_OUTPUT_BPP / 8);    // The maximum number of bytes a single frame will take.
+const u32 MAX_NUM_BYTES_IN_OUTPUT_FRAME = (MAX_OUTPUT_WIDTH * MAX_OUTPUT_HEIGHT * u64(MAX_OUTPUT_BPP / 8));
+
+// The minimum and maximum resolution we can accept frames from the capture
+// device in.
+const uint MIN_CAPTURE_WIDTH = 1;
+const uint MIN_CAPTURE_HEIGHT = 1;
+const uint MAX_CAPTURE_WIDTH = 2048;
+const uint MAX_CAPTURE_HEIGHT = 1536;
+const uint MAX_CAPTURE_BPP = 32;
+const u32 MAX_NUM_BYTES_IN_CAPTURED_FRAME = (MAX_CAPTURE_WIDTH * MAX_CAPTURE_HEIGHT * u64(MAX_CAPTURE_BPP / 8));
 
 // How many bytes to allocate for each frame filter's parameter data array.
 // (The array holds the filter's parameter values, e.g. radius for a

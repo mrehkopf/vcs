@@ -9,6 +9,8 @@
 #include "common/globals.h"
 #include "display/qt/widgets/filter_widgets.h"
 #include "filter/filter_funcs.h"
+#include "capture/capture.h"
+#include "capture/capture_api.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/imgproc/imgproc.hpp>
@@ -34,7 +36,7 @@ void filter_func_unique_count(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    static heap_bytes_s<u8> prevPixels(MAX_FRAME_SIZE, "Unique count filter buffer");
+    static heap_bytes_s<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Unique count filter buffer");
 
     const u8 threshold = params[filter_widget_unique_count_s::OFFS_THRESHOLD];
     const u8 corner = params[filter_widget_unique_count_s::OFFS_CORNER];
@@ -125,7 +127,7 @@ void filter_func_denoise_temporal(FILTER_FUNC_PARAMS)
 
 #ifdef USE_OPENCV
     const u8 threshold = params[filter_widget_denoise_temporal_s::OFFS_THRESHOLD];
-    static heap_bytes_s<u8> prevPixels(MAX_FRAME_SIZE, "Denoising filter buffer");
+    static heap_bytes_s<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Denoising filter buffer");
 
     for (uint i = 0; i < (r->h * r->w); i++)
     {
@@ -158,7 +160,7 @@ void filter_func_delta_histogram(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    static heap_bytes_s<u8> prevFramePixels(MAX_FRAME_SIZE, "Delta histogram buffer");
+    static heap_bytes_s<u8> prevFramePixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Delta histogram buffer");
 
     const uint numBins = 512;
 
@@ -218,7 +220,7 @@ void filter_func_unsharp_mask(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    static heap_bytes_s<u8> TMP_BUF(MAX_FRAME_SIZE, "Unsharp mask buffer");
+    static heap_bytes_s<u8> TMP_BUF(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Unsharp mask buffer");
     const real str = params[filter_widget_unsharp_mask_s::OFFS_STRENGTH] / 100.0;
     const real rad = params[filter_widget_unsharp_mask_s::OFFS_RADIUS] / 10.0;
 
@@ -361,7 +363,7 @@ void filter_func_flip(FILTER_FUNC_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
-    static heap_bytes_s<u8> scratch(MAX_FRAME_SIZE, "Flip filter scratch buffer");
+    static heap_bytes_s<u8> scratch(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Flip filter scratch buffer");
 
     // 0 = vertical, 1 = horizontal, -1 = both.
     const uint axis = ((params[filter_widget_flip_s::OFFS_AXIS] == 2)? -1 : params[filter_widget_flip_s::OFFS_AXIS]);
@@ -383,7 +385,7 @@ void filter_func_rotate(FILTER_FUNC_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
-    static heap_bytes_s<u8> scratch(MAX_FRAME_SIZE, "Rotate filter scratch buffer");
+    static heap_bytes_s<u8> scratch(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Rotate filter scratch buffer");
 
     const double angle = (*(i16*)&(params[filter_widget_rotate_s::OFFS_ROT]) / 10.0);
     const double scale = (*(i16*)&(params[filter_widget_rotate_s::OFFS_SCALE]) / 100.0);

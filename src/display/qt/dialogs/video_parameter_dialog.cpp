@@ -195,7 +195,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         {
             if (this->currentPreset)
             {
-                this->currentPreset->activationResolution.w = std::min(MAX_OUTPUT_WIDTH, unsigned(value));
+                this->currentPreset->activationResolution.w = std::min(MAX_CAPTURE_WIDTH, unsigned(value));
                 this->update_current_present_list_text();
                 kvideopreset_apply_current_active_preset();
             }
@@ -205,7 +205,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         {
             if (this->currentPreset)
             {
-                this->currentPreset->activationResolution.h = std::min(MAX_OUTPUT_HEIGHT, unsigned(value));
+                this->currentPreset->activationResolution.h = std::min(MAX_CAPTURE_HEIGHT, unsigned(value));
                 this->update_current_present_list_text();
                 kvideopreset_apply_current_active_preset();
             }

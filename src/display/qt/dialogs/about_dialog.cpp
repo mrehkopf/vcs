@@ -26,7 +26,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     {
         ui->groupBox->setTitle("VCS " + QString(PROGRAM_VERSION_STRING));
 
-        if (DEV_VERSION)
+        if (IS_DEV_VERSION)
         {
             ui->groupBox->setTitle(ui->groupBox->title() + "~dev");
         }
