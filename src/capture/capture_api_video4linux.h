@@ -40,6 +40,7 @@ struct capture_api_video4linux_s : public capture_api_s
     uint get_color_depth(void) const override                    { return 32; }
     bool is_capturing(void) const override                       { return true; }
     bool has_invalid_signal(void) const override;
+    bool has_invalid_device(void) const override;
     bool has_no_signal(void) const override;
     capture_pixel_format_e get_pixel_format(void) const override;
     const captured_frame_s& get_frame_buffer(void) const override;
@@ -51,7 +52,7 @@ struct capture_api_video4linux_s : public capture_api_s
     bool set_video_signal_parameters(const video_signal_parameters_s &p) override;
 
     /// TODO: Properly implement these.
-    bool set_input_channel(const unsigned idx) override { (void)idx; return false; }
+    bool set_input_channel(const unsigned idx) override;
     bool set_pixel_format(const capture_pixel_format_e pf) override { (void)pf; return false;    }
 
     /// TODO: Does the Vision API allow you to query these?

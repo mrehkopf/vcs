@@ -615,6 +615,20 @@ MainWindow::MainWindow(QWidget *parent) :
             this->update_window_size();
         });
 
+        ke_events().capture.signalLost->subscribe([this]
+        {
+            this->update_window_title();
+            this->update_window_size();
+            this->redraw();
+        });
+
+        ke_events().capture.invalidDevice->subscribe([this]
+        {
+            this->update_window_title();
+            this->update_window_size();
+            this->redraw();
+        });
+
         ke_events().capture.newVideoMode->subscribe([this]
         {
             this->update_window_title();
@@ -1246,13 +1260,17 @@ void MainWindow::update_window_title()
 {
     QString title = PROGRAM_NAME;
 
-    if (kc_capture_api().has_no_signal())
+    if (kc_capture_api().has_invalid_device())
     {
-        title = QString("%1 - No signal").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
+        title = QString("%1 - Invalid capture channel").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
     }
     else if (kc_capture_api().has_invalid_signal())
     {
         title = QString("%1 - Invalid signal").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
+    }
+    else if (kc_capture_api().has_no_signal())
+    {
+        title = QString("%1 - No signal").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
     }
     else
     {

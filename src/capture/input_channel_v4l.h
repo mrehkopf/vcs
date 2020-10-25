@@ -47,6 +47,10 @@ public:
         // True if this channel is currently not receiving a signal.
         bool noSignal = true;
 
+        // Set to true if we were unable to start capturing on the given capture
+        // device.
+        bool invalidDevice = false;
+
         // The current capture resolution.
         resolution_s resolution = {1024, 768, 32};
 

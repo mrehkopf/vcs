@@ -57,6 +57,9 @@ public:
         // The active input channel index has changed.
         vcs_event_c *const newInputChannel = new vcs_event_c;
 
+        // The current capture device is invalid.
+        vcs_event_c *const invalidDevice = new vcs_event_c;
+
         vcs_event_c *const signalLost = new vcs_event_c;
         vcs_event_c *const signalGained = new vcs_event_c;
         vcs_event_c *const invalidSignal = new vcs_event_c;

@@ -67,6 +67,10 @@ capture_event_e capture_api_video4linux_s::pop_capture_event_queue(void)
     {
         return capture_event_e::invalid_signal;
     }
+    else if (this->inputChannel->pop_capture_event(capture_event_e::invalid_device))
+    {
+        return capture_event_e::invalid_device;
+    }
     else if (this->inputChannel->pop_capture_event(capture_event_e::new_frame))
     {
         return capture_event_e::new_frame;
@@ -119,6 +123,14 @@ bool capture_api_video4linux_s::has_invalid_signal() const
 {
     /// TODO.
     return false;
+}
+
+bool capture_api_video4linux_s::has_invalid_device() const
+{
+    k_assert((this->inputChannel),
+             "Attempting to query input channel parameters on a null channel.");
+
+    return this->inputChannel->captureStatus.invalidDevice;
 }
 
 bool capture_api_video4linux_s::has_no_signal(void) const
@@ -200,11 +212,7 @@ bool capture_api_video4linux_s::initialize(void)
 
     CAPTURE_BACK_BUFFER.allocate();
 
-    const std::string captureDeviceFileName = (std::string("/dev/video") + std::to_string(INPUT_CHANNEL_IDX));
-    this->inputChannel = new input_channel_v4l_c(this,
-                                                   captureDeviceFileName,
-                                                   &FRAME_BUFFER,
-                                                   &CAPTURE_BACK_BUFFER);
+    this->set_input_channel(INPUT_CHANNEL_IDX);
 
     return true;
 
@@ -503,6 +511,21 @@ bool capture_api_video4linux_s::reset_missed_frames_count()
 
     this->inputChannel->captureStatus.numNewFrameEventsSkipped = 0;
 
+    return true;
+}
+
+bool capture_api_video4linux_s::set_input_channel(const unsigned idx)
+{
+    if (this->inputChannel)
+    {
+        delete this->inputChannel;
+    }
+
+    const std::string captureDeviceFileName = (std::string("/dev/video") + std::to_string(idx));
+    this->inputChannel = new input_channel_v4l_c(this,
+                                                 captureDeviceFileName,
+                                                 &FRAME_BUFFER,
+                                                 &CAPTURE_BACK_BUFFER);
     return true;
 }
 

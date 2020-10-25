@@ -347,13 +347,19 @@ struct capture_api_s
     virtual capture_pixel_format_e get_pixel_format(void) const = 0;
 
     /*!
-     * Returns true if the current capture signal is invalid; false
-     * otherwise.
+     * Returns true if the current capture signal is invalid; false otherwise.
      * 
      * @see
      * has_no_signal()
      */
     virtual bool has_invalid_signal(void) const = 0;
+
+    /*!
+     * Returns true if the current capture device is invalid; false otherwise.
+     * This could happen e.g. if the user (on Linux) opens a /dev/videoX that
+     * doesn't provide a compatible capture device.
+     */
+    virtual bool has_invalid_device(void) const = 0;
 
     /*!
      * Returns true if there's currently no capture signal on the capture

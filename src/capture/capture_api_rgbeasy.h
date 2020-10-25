@@ -57,6 +57,7 @@ struct capture_api_rgbeasy_s : public capture_api_s
     uint get_color_depth(void) const override;
     bool is_capturing(void) const override;
     bool has_invalid_signal(void) const override;
+    bool has_invalid_device(void) const override { return false; } /// TODO: Implement this - if it can be implemented for the Datapath API.
     bool has_no_signal(void) const override;
     capture_pixel_format_e get_pixel_format(void) const override;
     const captured_frame_s& get_frame_buffer(void) const override;

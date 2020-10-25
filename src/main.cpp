@@ -127,6 +127,11 @@ static capture_event_e process_next_capture_event(void)
             ke_events().capture.invalidSignal->fire();
             break;
         }
+        case capture_event_e::invalid_device:
+        {
+            ke_events().capture.invalidDevice->fire();
+            break;
+        }
         case capture_event_e::sleep:
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(4)); /// TODO. Is 4 the best wait-time?

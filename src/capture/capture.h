@@ -36,6 +36,7 @@ enum class capture_event_e
     new_frame,
     new_video_mode,
     invalid_signal,
+    invalid_device,
     unrecoverable_error,
 
     // Total enumerator count; should remain the last item on the list.

@@ -388,7 +388,7 @@ bool input_channel_v4l_c::start_capturing()
     {
         NBENE(("Failed to open the capture device '%s'.",
                this->v4lDeviceFileName.c_str()));
-        
+
         goto fail;
     }
 
@@ -489,7 +489,10 @@ bool input_channel_v4l_c::start_capturing()
     return true;
 
     fail:
+    this->captureStatus.invalidDevice = true;
     this->run = false;
+    this->reset_capture_event_flags();
+    this->push_capture_event(capture_event_e::signal_lost);
     return false;
 }
 
