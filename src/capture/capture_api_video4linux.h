@@ -2,6 +2,9 @@
  * 2020 Tarpeeksi Hyvae Soft
  * 
  * Software: VCS
+ * 
+ * This Video4Linux version of the VCS capture API provides support for capturing
+ * under Linux via Datapath's Vision V4L drivers/interface.
  *
  */
 
@@ -11,6 +14,8 @@
 #define CAPTURE_API_VIDEO4LINUX_H
 
 #include "capture/capture_api.h"
+
+class input_channel_v4l_c;
 
 struct capture_api_video4linux_s : public capture_api_s
 {
@@ -76,6 +81,9 @@ private:
     // Polls for the source signal resolution, rather than the capture output's
     // resolution like get_resolution().
     resolution_s get_source_resolution(void) const;
+
+    // The input channel (/dev/videoX device) we're currently capturing from.
+    input_channel_v4l_c *inputChannel = nullptr;
 };
 
 #endif

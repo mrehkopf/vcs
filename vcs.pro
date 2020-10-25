@@ -107,7 +107,10 @@ SOURCES += \
     src/capture/video_presets.cpp \
     src/common/disk/file_writers/file_writer_video_presets_version_a.cpp \
     src/common/disk/file_readers/file_reader_video_presets_version_a.cpp \
-    src/common/propagate/app_events.cpp
+    src/common/propagate/app_events.cpp \
+    src/capture/input_channel_v4l.cpp \
+    src/capture/ic_v4l_video_parameters.cpp \
+    src/capture/back_buffer.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -168,7 +171,10 @@ HEADERS += \
     src/capture/video_presets.h \
     src/common/disk/file_writers/file_writer_video_presets.h \
     src/common/disk/file_readers/file_reader_video_presets.h \
-    src/common/propagate/app_events.h
+    src/common/propagate/app_events.h \
+    src/capture/input_channel_v4l.h \
+    src/capture/ic_v4l_video_parameters.h \
+    src/capture/back_buffer.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \
