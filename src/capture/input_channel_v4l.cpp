@@ -5,6 +5,8 @@
  *
  */
 
+#ifdef CAPTURE_API_VIDEO4LINUX
+
 #include <poll.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -143,7 +145,7 @@ bool input_channel_v4l_c::capture_thread__update_video_mode(void)
     else
     {
         this->captureStatus.invalidSignal = true;
-        
+
         this->push_capture_event(capture_event_e::unrecoverable_error);
 
         return false;
@@ -561,3 +563,5 @@ int input_channel_v4l_c::stop_capturing(void)
 
     return retVal;
 }
+
+#endif

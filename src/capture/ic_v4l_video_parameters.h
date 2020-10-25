@@ -7,6 +7,8 @@
  *
  */
 
+#ifdef CAPTURE_API_VIDEO4LINUX
+
 #ifndef IC_V4L_VIDEO_PARAMETERS_H
 #define IC_V4L_VIDEO_PARAMETERS_H
 
@@ -80,5 +82,7 @@ private:
 
     int v4lDeviceFileHandle = -1;
 };
+
+#endif
 
 #endif

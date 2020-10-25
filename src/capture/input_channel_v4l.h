@@ -8,6 +8,8 @@
  *
  */
 
+#ifdef CAPTURE_API_VIDEO4LINUX
+
 #ifndef INPUT_CHANNEL_V4L_H
 #define INPUT_CHANNEL_V4L_H
 
@@ -150,5 +152,7 @@ private:
     // run until this is set to false.
     std::atomic<bool> run = {false};
 };
+
+#endif
 
 #endif

@@ -5,6 +5,8 @@
  *
  */
 
+#ifdef CAPTURE_API_VIDEO4LINUX
+
 #include <poll.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -188,3 +190,5 @@ ic_v4l_video_parameters_c::parameter_type_e ic_v4l_video_parameters_c::type_for_
 
     return parameter_type_e::unknown;
 }
+
+#endif
