@@ -115,6 +115,8 @@ bool input_channel_v4l_c::capture_thread__update_video_mode(void)
         {
             this->captureStatus.noSignal = false;
             this->captureStatus.refreshRate = currentRefreshRate;
+            this->captureStatus.resolution.w = format.fmt.pix.width;
+            this->captureStatus.resolution.h = format.fmt.pix.height;
 
             this->push_capture_event(capture_event_e::new_video_mode);
         }
