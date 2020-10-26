@@ -212,6 +212,16 @@ void krecord_initialize(void)
         }
     });
 
+    ke_events().recorder.recordingStarted->subscribe([]
+    {
+        DEBUG(("Recording into \"%s\".", RECORDING.meta.filename.c_str()));
+    });
+
+    ke_events().recorder.recordingEnded->subscribe([]
+    {
+        DEBUG(("Finished recording into \"%s\".", RECORDING.meta.filename.c_str()));
+    });
+
     return;
 }
 
@@ -288,8 +298,6 @@ bool krecord_start_recording(const char *const filename,
     #else
         #error "Unknown platform."
     #endif
-
-    DEBUG(("Starting recording into file '%s'.", RECORDING.meta.filename.c_str()));
 
     VIDEO_WRITER.open(RECORDING.meta.filename,
                       encoder,
@@ -441,8 +449,6 @@ void krecord_record_new_frame(void)
 void krecord_stop_recording(void)
 {
 #ifdef USE_OPENCV
-    DEBUG(("Stopping recording into file '%s'.", RECORDING.meta.filename.c_str()));
-
     RECORDING.encoderThread.waitForFinished();
     VIDEO_WRITER.release();
 
