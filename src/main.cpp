@@ -31,14 +31,14 @@ static void cleanup_all(void)
 {
     DEBUG(("Received orders to exit. Initiating cleanup."));
 
+    if (krecord_is_recording()) krecord_stop_recording();
+
     kd_release_output_window();
     ks_release_scaler();
     kc_release_capture();
     kat_release_anti_tear();
     kf_release_filters();
     kvideopreset_release();
-
-    if (krecord_is_recording()) krecord_stop_recording();
 
     // Call this last.
     kmem_deallocate_memory_cache();
