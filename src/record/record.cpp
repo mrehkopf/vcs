@@ -29,9 +29,6 @@
     static cv::VideoWriter VIDEO_WRITER;
 #endif
 
-// The maximum number of frames that can fit into a frame buffer.
-static const uint FRAME_BUFFER_CAPACITY = 60;
-
 // Used to keep track of the recording's frame rate. Counts the number
 // of frames captured between two points in time, and derives from that
 // and the amount of time elapsed an estimate of the frame rate.
@@ -224,7 +221,8 @@ void krecord_initialize(void)
 bool krecord_start_recording(const char *const filename,
                              const uint width, const uint height,
                              const uint frameRate,
-                             const bool linearFrameInsertion)
+                             const bool linearFrameInsertion,
+                             const uint bufferCapacity)
 {
 #ifndef USE_OPENCV
     kd_show_headless_info_message("VCS can't start recording",
@@ -267,8 +265,8 @@ bool krecord_start_recording(const char *const filename,
     // Allocate memory.
     try
     {
-        RECORDING.backBuffers[0].initialize(width, height, FRAME_BUFFER_CAPACITY);
-        RECORDING.backBuffers[1].initialize(width, height, FRAME_BUFFER_CAPACITY);
+        RECORDING.backBuffers[0].initialize(width, height, bufferCapacity);
+        RECORDING.backBuffers[1].initialize(width, height, bufferCapacity);
     }
     catch(...)
     {

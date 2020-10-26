@@ -263,6 +263,8 @@ To make use of VCS's recording functionality on Windows, you will need to instal
 
 **Video codec.** The encoder with which to create the video. On Windows, the 32-bit version of x264vfw is used.
 
+**Buffer capacity.** The video recorder uses double-buffering with multithreaded encoding, where one buffer is filled up with captured frames while the other buffer's frames are being encoded and saved to disk in a separate thread. This parameter sets the maximum number of frames the recording buffer can hold at once. Smaller values will reduce the amount of memory required for recording, but may also result in a failure by the recorder to keep up with the requested frame rate.
+
 **Additional x264 arguments.** You can provide the encoder with custom command-line parameters via this field.
 
 For best image quality regardless of performance and/or file size, set `profile` to "High 4:4:4", `pixel format` to "RGB", `CRF` to 1, and `preset` to "ultrafast". To maintain high image quality but reduce the file size, you can set `preset` to "veryfast" or "faster", and increase `CRF` to 10&ndash;15. For more tips and tricks, you can look up documentation specific to the x264 encoder.

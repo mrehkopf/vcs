@@ -186,8 +186,13 @@ RecordDialog::RecordDialog(QDialog *parent) :
     // Restore persistent settings.
     {
         ui->spinBox_recordingFramerate->setValue(kpers_value_of(INI_GROUP_RECORDING, "frame_rate", 60).toUInt());
-        ui->comboBox_recordingLinearFrameInsertion->setCurrentIndex(kpers_value_of(INI_GROUP_RECORDING, "linear_sampling", true).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "record", this->size()).toSize());
+
+        set_qcombobox_idx_c(ui->comboBox_recordingBufferCapacity)
+                           .by_string(kpers_value_of(INI_GROUP_RECORDING, "buffer_capacity", "60").toString());
+
+        set_qcombobox_idx_c(ui->comboBox_recordingLinearFrameInsertion)
+                           .by_string(kpers_value_of(INI_GROUP_RECORDING, "linear_sampling", "Enabled").toString());
 
         #if _WIN32
             set_qcombobox_idx_c(ui->comboBox_recordingEncoderProfile)
@@ -199,8 +204,10 @@ RecordDialog::RecordDialog(QDialog *parent) :
             set_qcombobox_idx_c(ui->comboBox_recordingEncoderPreset)
                                .by_string(kpers_value_of(INI_GROUP_RECORDING, "preset", "Superfast").toString());
 
+            set_qcombobox_idx_c(ui->comboBox_recordingEncoderZeroLatency)
+                               .by_string(kpers_value_of(INI_GROUP_RECORDING, "zero_latency", "Disabled").toString());
+
             ui->spinBox_recordingEncoderCRF->setValue(kpers_value_of(INI_GROUP_RECORDING, "crf", 1).toUInt());
-            ui->comboBox_recordingEncoderZeroLatency->setCurrentIndex(kpers_value_of(INI_GROUP_RECORDING, "zero_latency", false).toBool());
             ui->lineEdit_recordingEncoderArguments->setText(kpers_value_of(INI_GROUP_RECORDING, "command_line", "").toString());
         #endif
     }
@@ -244,19 +251,24 @@ RecordDialog::~RecordDialog()
 {
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_RECORDING, "frame_rate", ui->spinBox_recordingFramerate->value());
-        kpers_set_value(INI_GROUP_RECORDING, "linear_sampling", bool(ui->comboBox_recordingLinearFrameInsertion->currentIndex()));
         kpers_set_value(INI_GROUP_GEOMETRY, "record", this->size());
 
-        #if _WIN32
-            // Encoder settings. These aren't available to the user on Linux (non-Windows) builds.
-            kpers_set_value(INI_GROUP_RECORDING, "profile", ui->comboBox_recordingEncoderProfile->currentText());
-            kpers_set_value(INI_GROUP_RECORDING, "pixel_format", ui->comboBox_recordingEncoderPixelFormat->currentText());
-            kpers_set_value(INI_GROUP_RECORDING, "preset", ui->comboBox_recordingEncoderPreset->currentText());
-            kpers_set_value(INI_GROUP_RECORDING, "crf", ui->spinBox_recordingEncoderCRF->value());
-            kpers_set_value(INI_GROUP_RECORDING, "zero_latency", ui->comboBox_recordingEncoderZeroLatency->currentIndex());
-            kpers_set_value(INI_GROUP_RECORDING, "command_line", ui->lineEdit_recordingEncoderArguments->text());
-        #endif
+        // Encoder settings.
+        {
+            kpers_set_value(INI_GROUP_RECORDING, "buffer_capacity", ui->comboBox_recordingBufferCapacity->currentText());
+            kpers_set_value(INI_GROUP_RECORDING, "linear_sampling", ui->comboBox_recordingLinearFrameInsertion->currentText());
+            kpers_set_value(INI_GROUP_RECORDING, "frame_rate", ui->spinBox_recordingFramerate->value());
+
+            #if _WIN32
+                // These settings are only available in the Windows version of VCS.
+                kpers_set_value(INI_GROUP_RECORDING, "profile", ui->comboBox_recordingEncoderProfile->currentText());
+                kpers_set_value(INI_GROUP_RECORDING, "pixel_format", ui->comboBox_recordingEncoderPixelFormat->currentText());
+                kpers_set_value(INI_GROUP_RECORDING, "preset", ui->comboBox_recordingEncoderPreset->currentText());
+                kpers_set_value(INI_GROUP_RECORDING, "crf", ui->spinBox_recordingEncoderCRF->value());
+                kpers_set_value(INI_GROUP_RECORDING, "zero_latency", ui->comboBox_recordingEncoderZeroLatency->currentIndex());
+                kpers_set_value(INI_GROUP_RECORDING, "command_line", ui->lineEdit_recordingEncoderArguments->text());
+            #endif
+        }
     }
 
     delete ui;
@@ -461,9 +473,11 @@ void RecordDialog::set_recording_enabled(const bool enabled)
             const resolution_s videoResolution = ks_output_resolution();
 
             krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
-                                    videoResolution.w, videoResolution.h,
+                                    videoResolution.w,
+                                    videoResolution.h,
                                     ui->spinBox_recordingFramerate->value(),
-                                    ui->comboBox_recordingLinearFrameInsertion->currentIndex());
+                                    ui->comboBox_recordingLinearFrameInsertion->currentIndex(),
+                                    ui->comboBox_recordingBufferCapacity->currentText().toUInt());
 
             if (krecord_is_recording())
             {

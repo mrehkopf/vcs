@@ -41,9 +41,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-239</y>
         <width>382</width>
-        <height>713</height>
+        <height>746</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -271,7 +271,7 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="0">
+             <item row="2" column="0">
               <widget class="QLabel" name="label_26">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -284,7 +284,7 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
+             <item row="2" column="1">
               <widget class="QComboBox" name="comboBox_recordingLinearFrameInsertion">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -307,7 +307,7 @@
                </item>
               </widget>
              </item>
-             <item row="2" column="0">
+             <item row="3" column="0">
               <widget class="QLabel" name="label_25">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -320,7 +320,7 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="1">
+             <item row="3" column="1">
               <widget class="QComboBox" name="comboBox_recordingContainer">
                <property name="enabled">
                 <bool>true</bool>
@@ -333,7 +333,7 @@
                </property>
               </widget>
              </item>
-             <item row="3" column="0">
+             <item row="4" column="0">
               <widget class="QLabel" name="label_7">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -346,7 +346,7 @@
                </property>
               </widget>
              </item>
-             <item row="3" column="1">
+             <item row="4" column="1">
               <widget class="QComboBox" name="comboBox_recordingEncoding">
                <property name="enabled">
                 <bool>true</bool>
@@ -359,7 +359,7 @@
                </property>
               </widget>
              </item>
-             <item row="4" column="0">
+             <item row="5" column="0">
               <widget class="QLabel" name="label_23">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -372,7 +372,7 @@
                </property>
               </widget>
              </item>
-             <item row="4" column="1">
+             <item row="5" column="1">
               <widget class="QSpinBox" name="spinBox_recordingEncoderCRF">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -394,7 +394,7 @@
                </property>
               </widget>
              </item>
-             <item row="5" column="0">
+             <item row="6" column="0">
               <widget class="QLabel" name="label_22">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -407,7 +407,7 @@
                </property>
               </widget>
              </item>
-             <item row="5" column="1">
+             <item row="6" column="1">
               <widget class="QComboBox" name="comboBox_recordingEncoderProfile">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -437,7 +437,7 @@
                </item>
               </widget>
              </item>
-             <item row="6" column="0">
+             <item row="7" column="0">
               <widget class="QLabel" name="label_15">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -450,7 +450,7 @@
                </property>
               </widget>
              </item>
-             <item row="6" column="1">
+             <item row="7" column="1">
               <widget class="QComboBox" name="comboBox_recordingEncoderPixelFormat">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -470,7 +470,7 @@
                </item>
               </widget>
              </item>
-             <item row="7" column="0">
+             <item row="8" column="0">
               <widget class="QLabel" name="label_24">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -483,7 +483,7 @@
                </property>
               </widget>
              </item>
-             <item row="7" column="1">
+             <item row="8" column="1">
               <widget class="QComboBox" name="comboBox_recordingEncoderPreset">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -541,7 +541,7 @@
                </item>
               </widget>
              </item>
-             <item row="8" column="0">
+             <item row="9" column="0">
               <widget class="QLabel" name="label_27">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -554,7 +554,7 @@
                </property>
               </widget>
              </item>
-             <item row="8" column="1">
+             <item row="9" column="1">
               <widget class="QComboBox" name="comboBox_recordingEncoderZeroLatency">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -577,7 +577,7 @@
                </item>
               </widget>
              </item>
-             <item row="9" column="1">
+             <item row="11" column="1">
               <widget class="QLineEdit" name="lineEdit_recordingEncoderArguments">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -590,11 +590,47 @@
                </property>
               </widget>
              </item>
-             <item row="9" column="0">
+             <item row="11" column="0">
               <widget class="QLabel" name="label">
                <property name="text">
                 <string>Arguments</string>
                </property>
+              </widget>
+             </item>
+             <item row="10" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Buffer capacity</string>
+               </property>
+              </widget>
+             </item>
+             <item row="10" column="1">
+              <widget class="QComboBox" name="comboBox_recordingBufferCapacity">
+               <item>
+                <property name="text">
+                 <string>60</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>30</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>20</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>10</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>5</string>
+                </property>
+               </item>
               </widget>
              </item>
             </layout>
