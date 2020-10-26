@@ -16,7 +16,7 @@ bool krecord_start_recording(const char *const filename,
                              const uint height,
                              const uint frameRate,
                              const bool linearFrameInsertion = true,
-                             const uint bufferCapacity = 60);
+                             uint bufferCapacity = 60);
 
 resolution_s krecord_video_resolution(void);
 

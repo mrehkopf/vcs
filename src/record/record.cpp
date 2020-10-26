@@ -29,6 +29,10 @@
     static cv::VideoWriter VIDEO_WRITER;
 #endif
 
+// The min/max capacity (number of frames) of the recording buffer.
+static const unsigned MIN_BUFFER_CAPACITY = 1;
+static const unsigned MAX_BUFFER_CAPACITY = 128;
+
 // Used to keep track of the recording's frame rate. Counts the number
 // of frames captured between two points in time, and derives from that
 // and the amount of time elapsed an estimate of the frame rate.
@@ -232,8 +236,10 @@ bool krecord_start_recording(const char *const filename,
                              const uint width, const uint height,
                              const uint frameRate,
                              const bool linearFrameInsertion,
-                             const uint bufferCapacity)
+                             uint bufferCapacity)
 {
+    bufferCapacity = std::max(MIN_BUFFER_CAPACITY, std::min(MAX_BUFFER_CAPACITY, bufferCapacity));
+
 #ifndef USE_OPENCV
     kd_show_headless_info_message("VCS can't start recording",
                                   "OpenCV is needed for recording, but has been disabled on this build of VCS.");

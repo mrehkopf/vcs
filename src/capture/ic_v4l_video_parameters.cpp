@@ -26,7 +26,7 @@ ic_v4l_video_parameters_c::ic_v4l_video_parameters_c(const int v4lDeviceFileHand
 
 bool ic_v4l_video_parameters_c::set_value(const int newValue, const ic_v4l_video_parameters_c::parameter_type_e parameterType)
 {
-    // If we don't know the this parameter.
+    // If we don't recognize the given parameter.
     if (this->v4l_id(parameterType) < 0)
     {
         return false;
