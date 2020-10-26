@@ -79,12 +79,14 @@ RecordDialog::RecordDialog(QDialog *parent) :
                 ui->spinBox_recordingEncoderCRF->setVisible(false);
                 ui->comboBox_recordingEncoderZeroLatency->setVisible(false);
 
+                ui->label->setVisible(false);
                 ui->label_22->setVisible(false);
                 ui->label_15->setVisible(false);
                 ui->label_24->setVisible(false);
                 ui->label_23->setVisible(false);
                 ui->label_27->setVisible(false);
 
+                ui->groupBox_recordingSettings->layout()->removeWidget(ui->label);
                 ui->groupBox_recordingSettings->layout()->removeWidget(ui->label_22);
                 ui->groupBox_recordingSettings->layout()->removeWidget(ui->label_15);
                 ui->groupBox_recordingSettings->layout()->removeWidget(ui->label_24);
@@ -138,6 +140,8 @@ RecordDialog::RecordDialog(QDialog *parent) :
 
             connect(enable, &QAction::triggered, this, [=]
             {
+                ui->pushButton_startStopRecording->setEnabled(false);
+
                 this->set_recording_enabled(!this->isEnabled);
             });
 
@@ -151,10 +155,26 @@ RecordDialog::RecordDialog(QDialog *parent) :
 
     // Connect the GUI controls to consequences for changing their values.
     {
+        connect(ui->pushButton_startStopRecording, &QPushButton::clicked, this, [this]
+        {
+            // We'll set the button to disabled to prevent double-clicks; it'll be
+            // re-enabled once recording starts.
+            ui->pushButton_startStopRecording->setEnabled(false);
+
+            if (krecord_is_recording())
+            {
+                this->set_recording_enabled(false);
+            }
+            else
+            {
+                this->set_recording_enabled(true);
+            }
+        });
+
         connect(ui->pushButton_recordingSelectFilename, &QPushButton::clicked, this, [this]
         {
             QString filename = QFileDialog::getSaveFileName(this,
-                                                            "Select a file to record the video into", "",
+                                                            "Record into video", "",
                                                             "All files(*.*)");
 
             if (filename.isEmpty()) return;
@@ -189,7 +209,10 @@ RecordDialog::RecordDialog(QDialog *parent) :
     {
         ke_events().recorder.recordingStarted->subscribe([this]
         {
-            this->set_recording_controls_enabled(true);
+            this->set_recording_controls_enabled(false);
+
+            ui->pushButton_startStopRecording->setText("Stop recording");
+            ui->pushButton_startStopRecording->setEnabled(true);
 
             if (!PROGRAM_EXIT_REQUESTED)
             {
@@ -199,7 +222,10 @@ RecordDialog::RecordDialog(QDialog *parent) :
 
         ke_events().recorder.recordingEnded->subscribe([this]
         {
-            this->set_recording_controls_enabled(false);
+            this->set_recording_controls_enabled(true);
+
+            ui->pushButton_startStopRecording->setText("Record");
+            ui->pushButton_startStopRecording->setEnabled(true);
 
             if (!PROGRAM_EXIT_REQUESTED)
             {

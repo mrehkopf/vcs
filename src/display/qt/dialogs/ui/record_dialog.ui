@@ -41,9 +41,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-174</y>
+        <y>0</y>
         <width>382</width>
-        <height>671</height>
+        <height>713</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -151,6 +151,20 @@
                 </widget>
                </item>
               </layout>
+             </item>
+             <item>
+              <widget class="Line" name="line">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButton_startStopRecording">
+               <property name="text">
+                <string>Record</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
