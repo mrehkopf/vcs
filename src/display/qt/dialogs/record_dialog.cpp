@@ -140,8 +140,6 @@ RecordDialog::RecordDialog(QDialog *parent) :
 
             connect(enable, &QAction::triggered, this, [=]
             {
-                ui->pushButton_startStopRecording->setEnabled(false);
-
                 this->set_recording_enabled(!this->isEnabled);
             });
 
@@ -157,8 +155,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
     {
         connect(ui->pushButton_startStopRecording, &QPushButton::clicked, this, [this]
         {
-            // We'll set the button to disabled to prevent double-clicks; it'll be
-            // re-enabled once recording starts.
+            // We'll set the button to disabled to prevent double-clicks.
             ui->pushButton_startStopRecording->setEnabled(false);
 
             if (krecord_is_recording())
@@ -169,6 +166,8 @@ RecordDialog::RecordDialog(QDialog *parent) :
             {
                 this->set_recording_enabled(true);
             }
+
+            ui->pushButton_startStopRecording->setEnabled(true);
         });
 
         connect(ui->pushButton_recordingSelectFilename, &QPushButton::clicked, this, [this]
@@ -219,7 +218,6 @@ RecordDialog::RecordDialog(QDialog *parent) :
             this->set_recording_controls_enabled(false);
 
             ui->pushButton_startStopRecording->setText("Stop recording");
-            ui->pushButton_startStopRecording->setEnabled(true);
 
             if (!PROGRAM_EXIT_REQUESTED)
             {
@@ -232,7 +230,6 @@ RecordDialog::RecordDialog(QDialog *parent) :
             this->set_recording_controls_enabled(true);
 
             ui->pushButton_startStopRecording->setText("Record");
-            ui->pushButton_startStopRecording->setEnabled(true);
 
             if (!PROGRAM_EXIT_REQUESTED)
             {
