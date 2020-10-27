@@ -28,7 +28,16 @@ VCS is compatible with at least the following Datapath capture cards:
 The VisionAV range of cards should also work, albeit without their audio capture functionality.
 
 # User's manual
-Contents:
+
+This is the user's manual for VCS 2.2.
+
+Older versions of the manual are also available:
+- [VCS 2.1](https://github.com/leikareipa/vcs/blob/v2.1.0/README.md#users-manual)
+- [VCS 2.0](https://github.com/leikareipa/vcs/blob/v2.0.0/README.md#users-manual)
+- [VCS 1.6](https://github.com/leikareipa/vcs/blob/v1.6.5/README.md#usage)
+- [VCS 1.5](https://github.com/leikareipa/vcs/blob/v1.5.2/README.md#how-to-use-vcs)
+
+## Table of contents
 - [Setting up](#setting-up)
 - [Output window](#output-window)
     - Interacting with the output window
@@ -197,7 +206,6 @@ Display information about VCS and the capture hardware.
 ## Dialogs
 The VCS user interface includes a number of dialogs, with which you can adjust the program's operational parameters.
 
-Contents:
 - [Video presets dialog](#video-presets-dialog)
 - [Alias resolutions dialog](#alias-resolutions-dialog)
 - [Record dialog](#record-dialog)
