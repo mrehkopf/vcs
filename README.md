@@ -99,8 +99,7 @@ This is a shortcut for the `relative scale` setting in the [output resolution di
 The output window's title bar displays information about VCS's current state, like the input and output resolutions.
 
 The title bar's text may contain the following elements, in order of appearance from left to right:
-- `{!}`: Shown if captured frames are being dropped (e.g. due to VCS lacking sufficient CPU power to keep up with the capture hardware's output rate).
-- `VCS`: The program's name!
+- `VCS`: The program's name
 - `R` `F` `O` `A`: Indicators for whether certain functionality is enabled. Not shown if the corresponding functionality is disabled.
     - `R` &rarr; Recording to video (see [Record dialog](#record-dialog)).
     - `F` &rarr; Filtering enabled (see [Filter graph dialog](#filter-graph-dialog)).

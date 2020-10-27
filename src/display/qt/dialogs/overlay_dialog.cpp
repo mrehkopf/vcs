@@ -98,24 +98,9 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
                     this->insert_text_into_overlay_editor("$outputResolution");
                 });
 
-                connect(outputMenu->addAction("Frame rate (FPS)"), &QAction::triggered, this, [=]
-                {
-                    this->insert_text_into_overlay_editor("$outputFPS");
-                });
-
                 connect(outputMenu->addAction("Frames dropped?"), &QAction::triggered, this, [=]
                 {
                     this->insert_text_into_overlay_editor("$areFramesDropped");
-                });
-
-                connect(outputMenu->addAction("Peak latency (ms)"), &QAction::triggered, this, [=]
-                {
-                    this->insert_text_into_overlay_editor("$peakLatencyMs");
-                });
-
-                connect(outputMenu->addAction("Average latency (ms)"), &QAction::triggered, this, [=]
-                {
-                    this->insert_text_into_overlay_editor("$averageLatencyMs");
                 });
 
                 variablesMenu->addMenu(outputMenu);
@@ -283,10 +268,7 @@ QString OverlayDialog::parsed_overlay_string(void)
     parsed.replace("$inputResolution",  QString("%1 x %2").arg(inRes.w).arg(inRes.h));
     parsed.replace("$outputResolution", QString("%1 x %2").arg(outRes.w).arg(outRes.h));
     parsed.replace("$inputHz",          QString::number(kc_capture_api().get_refresh_rate().value<unsigned>()));
-    parsed.replace("$outputFPS",        QString::number(kd_output_framerate()));
     parsed.replace("$areFramesDropped", ((kc_capture_api().get_missed_frames_count() > 0)? "Dropping frames" : ""));
-    parsed.replace("$peakLatencyMs",    QString::number(kd_peak_pipeline_latency()));
-    parsed.replace("$averageLatencyMs", QString::number(kd_average_pipeline_latency()));
     parsed.replace("$systemTime",       QDateTime::currentDateTime().time().toString());
     parsed.replace("$systemDate",       QDateTime::currentDateTime().date().toString());
 

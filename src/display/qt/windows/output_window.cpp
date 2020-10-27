@@ -52,14 +52,6 @@
 #include "scaler/scaler.h"
 #include "ui_output_window.h"
 
-/// Temp. Stores the number of milliseconds passed for each frame update. This
-/// number includes everything done to the frame - capture, scaling, and display.
-int UPDATE_LATENCY_PEAK = 0;
-int UPDATE_LATENCY_AVG = 0;
-
-/// Temporary.
-uint CURRENT_OUTPUT_FRAMERATE = 0;
-
 // For an optional OpenGL render surface.
 static OGLWidget *OGL_SURFACE = nullptr;
 
@@ -604,9 +596,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ke_events().scaler.newFrame->subscribe([this]
         {
             this->redraw();
-
-            /// Temporary. Later, we'll have a better place for measuring FPS.
-            this->measure_framerate();
         });
 
         ke_events().scaler.newFrameResolution->subscribe([this]
@@ -1138,54 +1127,6 @@ void MainWindow::paintEvent(QPaintEvent *)
     return;
 }
 
-void MainWindow::measure_framerate()
-{
-    static qint64 elapsed = 0, prevElapsed = 0;
-    static u32 peakProcessTime = 0, avgProcessTime = 0;
-    static u32 numFramesDrawn = 0;
-
-    static QElapsedTimer fpsTimer;
-    if (!fpsTimer.isValid())
-    {
-        fpsTimer.start();
-    }
-
-    elapsed = fpsTimer.elapsed();
-
-    if ((elapsed - prevElapsed) > peakProcessTime)
-    {
-        peakProcessTime = (elapsed - prevElapsed);
-    }
-
-    avgProcessTime += (elapsed - prevElapsed);
-
-    numFramesDrawn++;
-
-    // Once per second or so update the GUI on capture output performance.
-    if (elapsed >= 1000)
-    {
-        const int fps = round(1000 / (real(elapsed) / numFramesDrawn));
-
-        UPDATE_LATENCY_AVG = (avgProcessTime / numFramesDrawn);
-        UPDATE_LATENCY_PEAK = peakProcessTime;
-
-        this->update_output_framerate(fps, kc_capture_api().get_missed_frames_count());
-        kc_capture_api().reset_missed_frames_count();
-
-        numFramesDrawn = 0;
-        avgProcessTime = 0;
-        peakProcessTime = 0;
-        prevElapsed = 0;
-        fpsTimer.restart();
-    }
-    else
-    {
-        prevElapsed = elapsed;
-    }
-
-    return;
-}
-
 void MainWindow::set_keyboard_shortcuts(void)
 {
     // Creates a new QShortcut instance assigned to the given QKeySequence-
@@ -1285,9 +1226,6 @@ void MainWindow::update_window_title()
     }
     else
     {
-        // A symbol shown in the title if VCS is currently dropping frames.
-        const QString missedFramesMarker = "{!}";
-
         const resolution_s inRes = kc_capture_api().get_resolution();
         const resolution_s outRes = ks_output_resolution();
         const refresh_rate_s refreshRate = kc_capture_api().get_refresh_rate();
@@ -1301,14 +1239,11 @@ void MainWindow::update_window_title()
 
         if (!this->windowTitleOverride.isEmpty())
         {
-            title = QString("%1%2")
-                    .arg((kc_capture_api().get_missed_frames_count() > 0)? (missedFramesMarker + " ") : "")
-                    .arg(this->windowTitleOverride);
+            title = this->windowTitleOverride;
         }
         else
         {
-            title = QString("%1%2 - %3%4 x %5 (%6 Hz) scaled to %7 x %8 (~%9%)")
-                    .arg((kc_capture_api().get_missed_frames_count() > 0)? (missedFramesMarker + " ") : "")
+            title = QString("%1 - %2%3 x %4 (%5 Hz) scaled to %6 x %7 (~%8%)")
                     .arg(PROGRAM_NAME)
                     .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
                     .arg(inRes.w)
@@ -1339,25 +1274,6 @@ void MainWindow::set_capture_info_as_receiving_signal()
 {
     k_assert(this->signalDlg != nullptr, "");
     this->signalDlg->set_controls_enabled(true);
-
-    return;
-}
-
-uint MainWindow::output_framerate(void)
-{
-    return CURRENT_OUTPUT_FRAMERATE;
-}
-
-void MainWindow::update_output_framerate(const u32 fps,
-                                         const bool missedFrames)
-{
-    CURRENT_OUTPUT_FRAMERATE = fps;
-
-    // We assume that the window title contains information about
-    // the current frame rate, so we'll want to keep it up-to-date.
-    this->update_window_title();
-
-    (void)missedFrames;
 
     return;
 }

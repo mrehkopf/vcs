@@ -46,8 +46,6 @@ public:
 
     void add_gui_log_entry(const log_entry_s e);
 
-    void update_output_framerate(const u32 fps, const bool missedFrames);
-
     void set_capture_info_as_no_signal(void);
 
     void set_capture_info_as_receiving_signal(void);
@@ -64,10 +62,6 @@ public:
 
     void open_overlay_dialog(void);
 
-    // Call this once per frame to allow the output window to estimate the
-    // current frame rate.
-    void measure_framerate(void);
-
     void set_opengl_enabled(const bool enabled);
 
     void redraw(void);
@@ -79,8 +73,6 @@ public:
     void update_recording_metainfo(void);
 
     void update_video_mode_params(void);
-
-    uint output_framerate(void);
 
     void clear_filter_graph(void);
 

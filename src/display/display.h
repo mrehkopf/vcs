@@ -427,32 +427,4 @@ void kd_set_video_presets_filename(const std::string &filename);
  */
 bool kd_is_fullscreen(void);
 
-/*!
- * Returns the number of frames that were painted onto the output window in the
- * last one second (or an approximation of that number).
- * 
- * This value is used by VCS to estimate its overall capture performance.
- */
-uint kd_output_framerate(void);
-
-/*!
- * Returns the average time, in milliseconds, elapsed between two consecutive
- * frames being painted onto the output window.
- * 
- * The average is assumed to be over a one-second period.
- * 
- * This value is used by VCS to estimate its overall capture performance.
- */
-int kd_average_pipeline_latency(void);
-
-/*!
- * Returns the peak time, in milliseconds, elapsed between two consecutive
- * frames being painted onto the output window.
- * 
- * The peak is assumed to be over a one-second period.
- * 
- * This value is used by VCS to estimate its overall capture performance.
- */
-int kd_peak_pipeline_latency(void);
-
 #endif

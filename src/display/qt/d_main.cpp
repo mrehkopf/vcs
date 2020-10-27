@@ -29,9 +29,6 @@ namespace app_n
 // The window we'll display the program in. Also owns the various sub-dialogs, etc.
 static MainWindow *WINDOW = nullptr;
 
-extern int UPDATE_LATENCY_PEAK;
-extern int UPDATE_LATENCY_AVG;
-
 void kd_clear_filter_graph(void)
 {
     if (WINDOW != nullptr)
@@ -257,28 +254,11 @@ void kd_refresh_filter_chains(void)
     return;
 }
 
-int kd_peak_pipeline_latency(void)
-{
-    return UPDATE_LATENCY_PEAK;
-}
-
-int kd_average_pipeline_latency(void)
-{
-    return UPDATE_LATENCY_AVG;
-}
-
 bool kd_is_fullscreen(void)
 {
     k_assert(WINDOW != nullptr, "Tried to query the display before it had been initialized.");
 
     return WINDOW->isFullScreen();
-}
-
-uint kd_output_framerate(void)
-{
-    k_assert(WINDOW != nullptr, "Tried to query the display before it had been initialized.");
-
-    return WINDOW->output_framerate();
 }
 
 void kd_redraw_output_window(void)
@@ -291,8 +271,6 @@ void kd_redraw_output_window(void)
     else
     {
         WINDOW->redraw();
-
-        WINDOW->measure_framerate();
     }
 
     return;
