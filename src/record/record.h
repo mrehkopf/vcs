@@ -14,13 +14,13 @@
 bool krecord_start_recording(const char *const filename,
                              const uint width,
                              const uint height,
-                             const uint frameRate,
-                             const bool linearFrameInsertion = true,
-                             uint bufferCapacity = 60);
+                             const uint frameRate);
 
 resolution_s krecord_video_resolution(void);
 
 uint krecord_num_frames_recorded(void);
+
+uint krecord_num_frames_dropped(void);
 
 uint krecord_playback_framerate(void);
 
@@ -32,7 +32,7 @@ std::string krecord_video_filename(void);
 
 bool krecord_is_recording(void);
 
-void krecord_record_new_frame(void);
+void krecord_record_current_frame(void);
 
 void krecord_stop_recording(void);
 

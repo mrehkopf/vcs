@@ -187,12 +187,6 @@ RecordDialog::RecordDialog(QDialog *parent) :
         ui->spinBox_recordingFramerate->setValue(kpers_value_of(INI_GROUP_RECORDING, "frame_rate", 60).toUInt());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "record", this->size()).toSize());
 
-        set_qcombobox_idx_c(ui->comboBox_recordingBufferCapacity)
-                           .by_string(kpers_value_of(INI_GROUP_RECORDING, "buffer_capacity", "60").toString());
-
-        set_qcombobox_idx_c(ui->comboBox_recordingLinearFrameInsertion)
-                           .by_string(kpers_value_of(INI_GROUP_RECORDING, "linear_sampling", "Enabled").toString());
-
         #if _WIN32
             set_qcombobox_idx_c(ui->comboBox_recordingEncoderProfile)
                                .by_string(kpers_value_of(INI_GROUP_RECORDING, "profile", "High 4:4:4").toString());
@@ -252,8 +246,6 @@ RecordDialog::~RecordDialog()
 
         // Encoder settings.
         {
-            kpers_set_value(INI_GROUP_RECORDING, "buffer_capacity", ui->comboBox_recordingBufferCapacity->currentText());
-            kpers_set_value(INI_GROUP_RECORDING, "linear_sampling", ui->comboBox_recordingLinearFrameInsertion->currentText());
             kpers_set_value(INI_GROUP_RECORDING, "frame_rate", ui->spinBox_recordingFramerate->value());
 
             #if _WIN32
@@ -326,17 +318,14 @@ void RecordDialog::update_recording_metainfo(void)
             ui->tableWidget_status->modify_property("File size", QString("%1 %2").arg(QString::number(size, 'f', 2)).arg(suffix));
         }
 
-        ui->tableWidget_status->modify_property("Input FPS", QString::number(krecord_recording_framerate(), 'f', 2));
-
-        ui->tableWidget_status->modify_property("Target FPS", QString::number(krecord_playback_framerate()));
+        ui->tableWidget_status->modify_property("Frames dropped", QString::number(krecord_num_frames_dropped()));
     }
     else
     {
         ui->tableWidget_status->modify_property("Duration", "-");
         ui->tableWidget_status->modify_property("Resolution", "-");
         ui->tableWidget_status->modify_property("File size", "-");
-        ui->tableWidget_status->modify_property("Input FPS", "-");
-        ui->tableWidget_status->modify_property("Target FPS", "-");
+        ui->tableWidget_status->modify_property("Frames dropped", "-");
     }
 
     return;
@@ -472,9 +461,7 @@ void RecordDialog::set_recording_enabled(const bool enabled)
             krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
                                     videoResolution.w,
                                     videoResolution.h,
-                                    ui->spinBox_recordingFramerate->value(),
-                                    ui->comboBox_recordingLinearFrameInsertion->currentIndex(),
-                                    ui->comboBox_recordingBufferCapacity->currentText().toUInt());
+                                    ui->spinBox_recordingFramerate->value());
 
             if (krecord_is_recording())
             {

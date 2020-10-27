@@ -255,15 +255,9 @@ To make use of VCS's recording functionality on Windows, you will need to instal
 #### Recording settings
 **Frame rate.** The video's nominal playback rate. Typically, you will want to match this to the capture source's refresh rate, so that e.g. a 60 Hz capture signal is recorded with a frame rate of 60.
 
-**Linear sampling.** Whether VCS is allowed to duplicate and/or skip frames to match the captured frame rate with the video's nominal playback rate. If linear sampling is disabled, captured frames will be inserted into the video as they are received, and are never duplicated or skipped to maintain time-coherency. Disabling linear sampling may result in smoother-looking playback when the capture frame rate is uneven; but enabling it will help prevent time compression in these cases. If you are planning to append the video with an audio track you recorded at the same time, you will most likely want to enable linear sampling or the video may not keep in sync with the audio.
-
-- Note: While the capture hardware reports 'no signal', no frames will be recorded, regardless of whether linear sampling is enabled.
-
 **Video container.** The file format in which the video is saved. On Windows, the AVI format is used.
 
 **Video codec.** The encoder with which to create the video. On Windows, the 32-bit version of x264vfw is used.
-
-**Buffer capacity.** The video recorder uses double-buffering with multithreaded encoding, where one buffer is filled up with captured frames while the other buffer's frames are being encoded and saved to disk in a separate thread. This parameter sets the maximum number of frames the recording buffer can hold at once. Smaller values will reduce the amount of memory required for recording, but may also result in a failure by the recorder to keep up with the requested frame rate.
 
 **Additional x264 arguments.** You can provide the encoder with custom command-line parameters via this field.
 

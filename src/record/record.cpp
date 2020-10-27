@@ -29,9 +29,9 @@
     static cv::VideoWriter VIDEO_WRITER;
 #endif
 
-// The min/max capacity (number of frames) of the recording buffer.
-static const unsigned MIN_BUFFER_CAPACITY = 1;
-static const unsigned MAX_BUFFER_CAPACITY = 128;
+// A scratch buffer used to convert from 32-bit color (input frames) to 24-bit
+// color (for streaming into video).
+static heap_bytes_s<u8> COLORCONV_BUFFER;
 
 // Used to keep track of the recording's frame rate. Counts the number
 // of frames captured between two points in time, and derives from that
@@ -69,123 +69,10 @@ static struct framerate_estimator_s
 
 } FRAMERATE_ESTIMATE;
 
-// Incoming frames will first be accumulated into a frame buffer; and when the buffer
-// is full, encoded into the video file.
-// NOTE: The frame buffer expcts frames to be of 24-bit color depth (e.g. BGR).
-struct frame_buffer_s
-{
-    u8* memoryPool = nullptr;
-
-    resolution_s frameResolution;
-
-    // How many frames the frame buffer is currently storing.
-    uint numFrames = 0;
-
-    // A timestamp of roughly when the corresponding frame was captured.
-    std::vector<i64> frameTimestamps;
-
-    // How many frames in total the buffer has memory capacity for.
-    uint maxNumFrames = 0;
-
-    ~frame_buffer_s(void)
-    {
-        delete[] memoryPool;
-
-        return;
-    }
-
-    // Allocates the frame buffer for the given number of frames of the given
-    // resolution. The frames' pixels are expected to have three 8-bit color
-    // channels, each - e.g. RGB.
-    void initialize(const uint width, const uint height, const uint frameCapacity)
-    {
-        delete[] memoryPool;
-        memoryPool = new u8[width * height * 3 * frameCapacity];
-
-        this->maxNumFrames = frameCapacity;
-        this->numFrames = 0;
-        this->frameResolution = {width, height, 0};
-        this->frameTimestamps.resize(frameCapacity);
-
-        return;
-    }
-
-    void reset(void)
-    {
-        this->numFrames = 0;
-
-        return;
-    }
-
-    resolution_s resolution(void) const
-    {
-        return this->frameResolution;
-    }
-
-    bool is_full(void) const
-    {
-        return (this->numFrames >= this->maxNumFrames);
-    }
-
-    uint frame_count(void) const
-    {
-        return this->numFrames;
-    }
-
-    const std::vector<i64>& frame_timestamps(void) const
-    {
-        return frameTimestamps;
-    }
-
-    // Returns a pointer to an unused area of the frame buffer that has the
-    // capacity to hold the pixels of a single frame.
-    u8* next_slot(const i64 timestamp)
-    {
-        k_assert((this->numFrames < this->maxNumFrames), "Overflowing the video recording frame buffer.");
-
-        const uint offset = ((this->frameResolution.w * this->frameResolution.h * 3) * this->numFrames);
-
-        this->frameTimestamps.at(this->numFrames) = timestamp;
-        this->numFrames++;
-
-        return (memoryPool + offset);
-    }
-
-    // Index into the frame buffer on a per-frame basis. Note that this index
-    // should be to an already-stored frame. If you want to access uninitialized
-    // memory in the frame buffer, use the next_slot() function.
-    u8* frame(const uint frameIdx) const
-    {
-        k_assert((frameIdx < this->maxNumFrames), "Attempting to access a frame buffer out of bounds.");
-        k_assert((frameIdx < this->numFrames), "Attempting to access an uninitialized frame.");
-
-        const uint offset = ((this->frameResolution.w * this->frameResolution.h * 3) * frameIdx);
-        return (memoryPool + offset);
-    }
-};
-
 static struct recording_s
 {
-    // Accumulate the captured frames in two back buffers. When one buffer
-    // fills up, we'll flip the buffers and encode the filled-up one's frames
-    // into the video file.
-    frame_buffer_s *activeFrameBuffer;
-    frame_buffer_s backBuffers[2];
-    void flip_frame_buffer(void)
-    {
-        activeFrameBuffer = (activeFrameBuffer == &backBuffers[0])? &backBuffers[1] : &backBuffers[0];
-    }
-
     // We'll run the recording's video encoding in a separate thread.
     QFuture<void> encoderThread;
-
-    // If true, frames will be inserted into the video in linear time, not as
-    // they come in. For instance, if the input FPS is 55 and the video's playback
-    // rate is set to 60, linear insertion tries to ensure that frames are duplicated
-    // and/or dropped to ensure roughly 60 FPS output into the video. Without linear
-    // insertion, the frames would be output at 55 FPS, and playing the video at its
-    // rate of 60 FPS would result in temporal skew.
-    bool linearFrameInsertion = true;
 
     // Metainfo.
     struct info_s
@@ -201,6 +88,11 @@ static struct recording_s
         // Number of frames recorded in this video.
         uint numFrames;
 
+        // Number of frames we've had to drop (= not record), e.g. because the
+        // encoder thread had not yet finished its work by the time a new frame
+        // was available.
+        uint numDroppedFrames;
+
         // Milliseconds passed since the recording was started.
         QElapsedTimer recordingTimer;
     } meta;
@@ -208,11 +100,13 @@ static struct recording_s
 
 void krecord_initialize(void)
 {
+    COLORCONV_BUFFER.alloc(MAX_OUTPUT_WIDTH * MAX_OUTPUT_HEIGHT * 3);
+
     ke_events().scaler.newFrame->subscribe([]
     {
         if (krecord_is_recording())
         {
-            krecord_record_new_frame();
+            krecord_record_current_frame();
         }
     });
 
@@ -234,12 +128,8 @@ void krecord_initialize(void)
 //
 bool krecord_start_recording(const char *const filename,
                              const uint width, const uint height,
-                             const uint frameRate,
-                             const bool linearFrameInsertion,
-                             uint bufferCapacity)
+                             const uint frameRate)
 {
-    bufferCapacity = std::max(MIN_BUFFER_CAPACITY, std::min(MAX_BUFFER_CAPACITY, bufferCapacity));
-
 #ifndef USE_OPENCV
     kd_show_headless_info_message("VCS can't start recording",
                                   "OpenCV is needed for recording, but has been disabled on this build of VCS.");
@@ -273,25 +163,10 @@ bool krecord_start_recording(const char *const filename,
     RECORDING.meta.filename = filename;
     RECORDING.meta.resolution = {width, height, 24};
     RECORDING.meta.playbackFrameRate = frameRate;
-    RECORDING.linearFrameInsertion = linearFrameInsertion;
     RECORDING.meta.numFrames = 0;
+    RECORDING.meta.numDroppedFrames = 0;
     RECORDING.meta.recordingTimer.start();
     FRAMERATE_ESTIMATE.initialize(0);
-
-    // Allocate memory.
-    try
-    {
-        RECORDING.backBuffers[0].initialize(width, height, bufferCapacity);
-        RECORDING.backBuffers[1].initialize(width, height, bufferCapacity);
-    }
-    catch(...)
-    {
-        kd_show_headless_error_message("VCS can't start recording",
-                                       "Failed to allocate memory for video frame buffers. "
-                                       "The video's resolution may be too high.");
-        return false;
-    }
-    RECORDING.activeFrameBuffer = &RECORDING.backBuffers[0];
 
     #if _WIN32
         // Encoder: x264vfw. Container: AVI.
@@ -338,6 +213,11 @@ uint krecord_playback_framerate(void)
     return RECORDING.meta.playbackFrameRate;
 }
 
+uint krecord_num_frames_dropped(void)
+{
+    return RECORDING.meta.numDroppedFrames;
+}
+
 double krecord_recording_framerate(void)
 {
     return FRAMERATE_ESTIMATE.framerate();
@@ -365,54 +245,17 @@ resolution_s krecord_video_resolution(void)
     return RECORDING.meta.resolution;
 }
 
-void encode_frame_buffer(frame_buffer_s *const frameBuffer)
+static void encode_current_frame(void)
 {
-#ifdef USE_OPENCV
-    if (RECORDING.linearFrameInsertion)
-    {
-        const auto &frameTimestamps = frameBuffer->frame_timestamps();
-
-        // Nanoseconds between each frame at the recording's playback rate.
-        const i64 stampDelta = ((1000.0 / RECORDING.meta.playbackFrameRate) * 1000000);
-
-        // Add frames at even intervals as per the recording's playback rate.
-        i64 stamp = (RECORDING.meta.numFrames * stampDelta);
-        uint i = 0;
-        while (stamp <= frameTimestamps[frameBuffer->frame_count()-1])
-        {
-            for (; i < frameBuffer->frame_count(); i++)
-            {
-                if (frameTimestamps[i] >= stamp)
-                {
-                    VIDEO_WRITER << cv::Mat(frameBuffer->resolution().h, frameBuffer->resolution().w, CV_8UC3, frameBuffer->frame(i));
-                    RECORDING.meta.numFrames++;
-                    break;
-                }
-            }
-
-            stamp += stampDelta;
-        }
-    }
-    else
-    {
-        for (uint i = 0; i < frameBuffer->frame_count(); i++)
-        {
-            VIDEO_WRITER << cv::Mat(frameBuffer->resolution().h, frameBuffer->resolution().w, CV_8UC3, frameBuffer->frame(i));
-            RECORDING.meta.numFrames++;
-        }
-    }
-
-    frameBuffer->reset();
+    VIDEO_WRITER << cv::Mat(RECORDING.meta.resolution.h, RECORDING.meta.resolution.w, CV_8UC3, COLORCONV_BUFFER.ptr());
+    RECORDING.meta.numFrames++;
 
     return;
-#else
-    (void)frameBuffer;
-#endif
 }
 
 // Encode VCS's most recent output frame into the video.
 //
-void krecord_record_new_frame(void)
+void krecord_record_current_frame(void)
 {
 #ifdef USE_OPENCV
     k_assert(VIDEO_WRITER.isOpened(),
@@ -426,26 +269,24 @@ void krecord_record_new_frame(void)
     k_assert((resolution.w == RECORDING.meta.resolution.w &&
               resolution.h == RECORDING.meta.resolution.h), "Incompatible frame for recording: mismatched resolution.");
 
-    // Convert the frame to BRG, and save it into the frame buffer.
-    cv::Mat originalFrame(resolution.h, resolution.w, CV_8UC4, (u8*)frameData);
-    cv::Mat frame = cv::Mat(resolution.h, resolution.w, CV_8UC3, RECORDING.activeFrameBuffer->next_slot(RECORDING.meta.recordingTimer.nsecsElapsed()));
-    cv::cvtColor(originalFrame, frame, CV_BGRA2BGR);
-
-    // Once we've accumulated enough frames to fill the frame buffer, encode
-    // its contents into the video file.
-    if (RECORDING.activeFrameBuffer->is_full())
+    // Save the frame into the video file.
     {
-        RECORDING.encoderThread.waitForFinished();
+        cv::Mat originalFrame(resolution.h, resolution.w, CV_8UC4, (u8*)frameData);
+        cv::Mat frame = cv::Mat(resolution.h, resolution.w, CV_8UC3, COLORCONV_BUFFER.ptr());
+        cv::cvtColor(originalFrame, frame, CV_BGRA2BGR);
 
-        FRAMERATE_ESTIMATE.update(RECORDING.meta.numFrames);
+        if (RECORDING.encoderThread.isFinished())
+        {
+            RECORDING.encoderThread = QtConcurrent::run(encode_current_frame);
+        }
+        else
+        {
+            RECORDING.meta.numDroppedFrames++;
+        }
+
+        /// TODO: Have a timer or something for this, rather than calling it
+        /// every frame. Ideally, the timer setup would be handled by the GUI.
         kd_update_video_recording_metainfo();
-
-        // Run the encoding in a separate thread.
-        const auto frameBuffer = RECORDING.activeFrameBuffer;
-        RECORDING.encoderThread = QtConcurrent::run([=]{encode_frame_buffer(frameBuffer);});
-
-        // Meanwhile, switch to the other frame buffer, and keep accumulating new frames.
-        RECORDING.flip_frame_buffer();
     }
 
     return;
