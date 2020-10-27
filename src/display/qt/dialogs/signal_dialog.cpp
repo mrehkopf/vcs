@@ -39,7 +39,15 @@ static const QString BASE_WINDOW_TITLE = "VCS - Signal Info";
 
 // Used to keep track of how long we've had a particular video mode set.
 static QElapsedTimer VIDEO_MODE_UPTIME;
-static QTimer VIDEO_MODE_UPTIME_UPDATE;
+static QTimer INFO_UPDATE_TIMER;
+
+// How many captured frames we've had to drop. This count is shown to the user
+// in the signal dialog.
+static unsigned NUM_DROPPED_FRAMES = 0;
+
+// How many captured frames the capture API has had to drop, in total. We'll
+// use this value to derive NUM_DROPPED_FRAMES.
+static unsigned GLOBAL_NUM_DROPPED_FRAMES = 0;
 
 SignalDialog::SignalDialog(QWidget *parent) :
     QDialog(parent),
@@ -58,31 +66,46 @@ SignalDialog::SignalDialog(QWidget *parent) :
         // the vertical order in which the table's parameters are shown.
         {
             ui->tableWidget_propertyTable->modify_property("Input channel", "No signal");
-            ui->tableWidget_propertyTable->modify_property("Resolution", "No signal");
-            ui->tableWidget_propertyTable->modify_property("Refresh rate", "No signal");
-            ui->tableWidget_propertyTable->modify_property("Uptime", "No signal");
+            ui->tableWidget_propertyTable->modify_property("Uptime",        "-");
+            ui->tableWidget_propertyTable->modify_property("Resolution",    "-");
+            ui->tableWidget_propertyTable->modify_property("Refresh rate",  "-");
+            ui->tableWidget_propertyTable->modify_property("Frames dropped", "-");
         }
 
-        // Start timers to keep track of the video mode's uptime.
+        // Start timers to keep track of the video mode's uptime and dropped
+        // frames count.
         {
             VIDEO_MODE_UPTIME.start();
-            VIDEO_MODE_UPTIME_UPDATE.start(1000);
+            INFO_UPDATE_TIMER.start(1000);
 
-            connect(&VIDEO_MODE_UPTIME_UPDATE, &QTimer::timeout, [this]
+            GLOBAL_NUM_DROPPED_FRAMES = kc_capture_api().get_missed_frames_count();
+
+            connect(&INFO_UPDATE_TIMER, &QTimer::timeout, [this]
             {
-                const unsigned seconds = unsigned(VIDEO_MODE_UPTIME.elapsed() / 1000);
-                const unsigned minutes = (seconds / 60);
-                const unsigned hours   = (minutes / 60);
+                // Update missed frames count.
+                {
+                    NUM_DROPPED_FRAMES += (kc_capture_api().get_missed_frames_count() - GLOBAL_NUM_DROPPED_FRAMES);
+                    GLOBAL_NUM_DROPPED_FRAMES = kc_capture_api().get_missed_frames_count();
 
-                if (kc_capture_api().has_no_signal())
-                {
-                    ui->tableWidget_propertyTable->modify_property("Uptime", "No signal");
+                    ui->tableWidget_propertyTable->modify_property("Frames dropped", QString::number(NUM_DROPPED_FRAMES));
                 }
-                else
+
+                // Update uptime.
                 {
-                    ui->tableWidget_propertyTable->modify_property("Uptime", QString("%1:%2:%3").arg(QString::number(hours).rightJustified(2, '0'))
-                                                                                                .arg(QString::number(minutes % 60).rightJustified(2, '0'))
-                                                                                                .arg(QString::number(seconds % 60).rightJustified(2, '0')));
+                    const unsigned seconds = unsigned(VIDEO_MODE_UPTIME.elapsed() / 1000);
+                    const unsigned minutes = (seconds / 60);
+                    const unsigned hours   = (minutes / 60);
+
+                    if (kc_capture_api().has_no_signal())
+                    {
+                        ui->tableWidget_propertyTable->modify_property("Uptime", "-");
+                    }
+                    else
+                    {
+                        ui->tableWidget_propertyTable->modify_property("Uptime", QString("%1:%2:%3").arg(QString::number(hours).rightJustified(2, '0'))
+                                                                                                    .arg(QString::number(minutes % 60).rightJustified(2, '0'))
+                                                                                                    .arg(QString::number(seconds % 60).rightJustified(2, '0')));
+                    }
                 }
             });
         }
@@ -91,6 +114,15 @@ SignalDialog::SignalDialog(QWidget *parent) :
     // Restore persistent settings.
     {
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "signal", this->size()).toSize());
+    }
+
+    // Connect the GUI controls to consequences for changing their values.
+    {
+        connect(ui->pushButton_resetMissedFramesCount, &QPushButton::clicked, this, [this]
+        {
+            NUM_DROPPED_FRAMES = 0;
+            ui->tableWidget_propertyTable->modify_property("Frames dropped", "0");
+        });
     }
 
     // Subscribe to app events.
@@ -165,8 +197,8 @@ void SignalDialog::update_information_table(const bool isReceivingSignal)
     }
     else
     {
-        ui->tableWidget_propertyTable->modify_property("Resolution", "No signal");
-        ui->tableWidget_propertyTable->modify_property("Refresh rate", "No signal");
+        ui->tableWidget_propertyTable->modify_property("Resolution", "-");
+        ui->tableWidget_propertyTable->modify_property("Refresh rate", "-");
     }
 
     return;

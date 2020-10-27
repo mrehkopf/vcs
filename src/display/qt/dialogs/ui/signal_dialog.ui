@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>408</width>
-    <height>190</height>
+    <width>424</width>
+    <height>194</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,9 +41,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
-        <width>394</width>
-        <height>216</height>
+        <y>-64</y>
+        <width>410</width>
+        <height>258</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -69,7 +69,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <property name="spacing">
-           <number>3</number>
+           <number>6</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
@@ -93,6 +93,20 @@
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_resetMissedFramesCount">
+            <property name="text">
+             <string>Reset frame drop count</string>
             </property>
            </widget>
           </item>
