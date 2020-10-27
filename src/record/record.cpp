@@ -20,6 +20,8 @@
 #include "scaler/scaler.h"
 #include "common/memory/memory.h"
 #include "record/record.h"
+#include "capture/capture.h"
+#include "capture/capture_api.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/core/core.hpp>
@@ -93,6 +95,10 @@ static struct recording_s
         // was available.
         uint numDroppedFrames;
 
+        // The number of frames the capture subsystem has missed. We'll use this
+        // value to keep track of dropped frames on the capture-side.
+        uint numGlobalDroppedFrames;
+
         // Milliseconds passed since the recording was started.
         QElapsedTimer recordingTimer;
     } meta;
@@ -165,6 +171,7 @@ bool krecord_start_recording(const char *const filename,
     RECORDING.meta.playbackFrameRate = frameRate;
     RECORDING.meta.numFrames = 0;
     RECORDING.meta.numDroppedFrames = 0;
+    RECORDING.meta.numGlobalDroppedFrames = kc_capture_api().get_missed_frames_count();
     RECORDING.meta.recordingTimer.start();
     FRAMERATE_ESTIMATE.initialize(0);
 
@@ -283,6 +290,9 @@ void krecord_record_current_frame(void)
         {
             RECORDING.meta.numDroppedFrames++;
         }
+
+        RECORDING.meta.numDroppedFrames += (kc_capture_api().get_missed_frames_count() - RECORDING.meta.numGlobalDroppedFrames);
+        RECORDING.meta.numGlobalDroppedFrames = kc_capture_api().get_missed_frames_count();
 
         /// TODO: Have a timer or something for this, rather than calling it
         /// every frame. Ideally, the timer setup would be handled by the GUI.
