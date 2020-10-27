@@ -197,6 +197,7 @@ void kd_spin_event_loop(void)
 {
     k_assert(WINDOW != nullptr,
              "Expected the display to have been acquired before accessing it for events processing. ");
+
     WINDOW->update_gui_state();
 
     return;
@@ -210,6 +211,7 @@ void kd_update_video_recording_metainfo(void)
 
     k_assert(WINDOW != nullptr,
              "Expected the display to have been acquired before accessing it for events processing. ");
+             
     WINDOW->update_recording_metainfo();
 
     return;

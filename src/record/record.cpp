@@ -133,18 +133,19 @@ void krecord_initialize(void)
 // Returns true if successful, false otherwise.
 //
 bool krecord_start_recording(const char *const filename,
-                             const uint width, const uint height,
+                             const uint width,
+                             const uint height,
                              const uint frameRate)
 {
 #ifndef USE_OPENCV
     kd_show_headless_info_message("VCS can't start recording",
-                                  "OpenCV is needed for recording, but has been disabled on this build of VCS.");
+                                  "Recording functionality is not available in this build of VCS. "
+                                  "(Missing OpenCV.)");
 
     (void)filename;
     (void)width;
     (void)height;
     (void)frameRate;
-    (void)linearFrameInsertion;
 
     return false;
 #else
@@ -154,15 +155,16 @@ bool krecord_start_recording(const char *const filename,
     if ((width % 2 != 0) || (height % 2 != 0))
     {
         kd_show_headless_error_message("VCS can't start recording",
-                                       "To record to video, the output resolution's width and height must "
-                                       "be divisible by two (e.g. 640 x 480 but not 641 x 480).");
+                                       "The output resolution's width and height must be divisible "
+                                       "by two. For example, 640 x 480 but not 641 x 480.");
         return false;
     }
 
     if (!filename || !strlen(filename))
     {
         kd_show_headless_error_message("VCS can't start recording",
-                                       "The output file is unnamed.");
+                                       "No output file specified.");
+
         return false;
     }
 
@@ -171,8 +173,6 @@ bool krecord_start_recording(const char *const filename,
     RECORDING.meta.playbackFrameRate = frameRate;
     RECORDING.meta.numFrames = 0;
     RECORDING.meta.numDroppedFrames = 0;
-    RECORDING.meta.numGlobalDroppedFrames = kc_capture_api().get_missed_frames_count();
-    RECORDING.meta.recordingTimer.start();
     FRAMERATE_ESTIMATE.initialize(0);
 
     #if _WIN32
@@ -191,6 +191,9 @@ bool krecord_start_recording(const char *const filename,
                       encoder,
                       RECORDING.meta.playbackFrameRate,
                       cv::Size(RECORDING.meta.resolution.w, RECORDING.meta.resolution.h));
+
+    RECORDING.meta.numGlobalDroppedFrames = kc_capture_api().get_missed_frames_count();
+    RECORDING.meta.recordingTimer.start();
 
     if (!VIDEO_WRITER.isOpened())
     {
