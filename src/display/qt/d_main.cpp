@@ -9,13 +9,19 @@
 
 #include <QApplication>
 #include <QMessageBox>
-#include <assert.h>
+#include <cassert>
+#include <thread>
 #include "display/qt/windows/output_window.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "filter/filter.h"
 #include "capture/alias.h"
 #include "common/log/log.h"
+
+// We'll want to avoid accessing the GUI via non-GUI threads, so let's assume
+// the thread that creates this unit is the GUI thread. We'll later compare
+// against this id to detect out-of-GUI-thread access.
+static const std::thread::id NATIVE_THREAD_ID = std::this_thread::get_id();
 
 // Qt wants a QApplication object around for the GUI to function.
 namespace app_n
@@ -281,14 +287,17 @@ void kd_redraw_output_window(void)
 void kd_show_headless_info_message(const char *const title,
                                    const char *const msg)
 {
-    QMessageBox mb;
-    mb.setWindowTitle(strlen(title) == 0? "VCS has this to say" : title);
-    mb.setText(msg);
-    mb.setStandardButtons(QMessageBox::Ok);
-    mb.setIcon(QMessageBox::Information);
-    mb.setDefaultButton(QMessageBox::Ok);
+    if (std::this_thread::get_id() == NATIVE_THREAD_ID)
+    {
+        QMessageBox mb;
+        mb.setWindowTitle(strlen(title) == 0? "VCS has this to say" : title);
+        mb.setText(msg);
+        mb.setStandardButtons(QMessageBox::Ok);
+        mb.setIcon(QMessageBox::Information);
+        mb.setDefaultButton(QMessageBox::Ok);
 
-    mb.exec();
+        mb.exec();
+    }
 
     INFO(("%s", msg));
 
@@ -302,14 +311,17 @@ void kd_show_headless_info_message(const char *const title,
 void kd_show_headless_error_message(const char *const title,
                                     const char *const msg)
 {
-    QMessageBox mb;
-    mb.setWindowTitle(strlen(title) == 0? "VCS has this to say" : title);
-    mb.setText(msg);
-    mb.setStandardButtons(QMessageBox::Ok);
-    mb.setIcon(QMessageBox::Critical);
-    mb.setDefaultButton(QMessageBox::Ok);
+    if (std::this_thread::get_id() == NATIVE_THREAD_ID)
+    {
+        QMessageBox mb;
+        mb.setWindowTitle(strlen(title) == 0? "VCS has this to say" : title);
+        mb.setText(msg);
+        mb.setStandardButtons(QMessageBox::Ok);
+        mb.setIcon(QMessageBox::Critical);
+        mb.setDefaultButton(QMessageBox::Ok);
 
-    mb.exec();
+        mb.exec();
+    }
 
     NBENE(("%s", msg));
 
@@ -319,20 +331,23 @@ void kd_show_headless_assert_error_message(const char *const msg,
                                            const char *const filename,
                                            const uint lineNum)
 {
-    QMessageBox mb;
-    mb.setWindowTitle("VCS Assertion Error");
-    mb.setText("<html>"
-               "VCS has come across an unexpected condition in its code. As a precaution, "
-               "the program will shut itself down now.<br><br>"
-               "<b>Error:</b> " + QString(msg) + "<br>"
-               "<b>In file:</b> " + QString(filename) + "<br>"
-               "<b>On line:</b> " + QString::number(lineNum) +
-               "</html>");
-    mb.setStandardButtons(QMessageBox::Ok);
-    mb.setIcon(QMessageBox::Critical);
-    mb.setDefaultButton(QMessageBox::Ok);
+    if (std::this_thread::get_id() == NATIVE_THREAD_ID)
+    {
+        QMessageBox mb;
+        mb.setWindowTitle("VCS Assertion Error");
+        mb.setText("<html>"
+                "VCS has come across an unexpected condition in its code. As a precaution, "
+                "the program will shut itself down now.<br><br>"
+                "<b>Error:</b> " + QString(msg) + "<br>"
+                "<b>In file:</b> " + QString(filename) + "<br>"
+                "<b>On line:</b> " + QString::number(lineNum) +
+                "</html>");
+        mb.setStandardButtons(QMessageBox::Ok);
+        mb.setIcon(QMessageBox::Critical);
+        mb.setDefaultButton(QMessageBox::Ok);
 
-    mb.exec();
+        mb.exec();
+    }
 
     NBENE(("%s %s %d", msg, filename, lineNum));
 
