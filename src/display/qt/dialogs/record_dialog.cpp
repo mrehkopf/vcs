@@ -319,6 +319,8 @@ void RecordDialog::update_recording_metainfo(void)
         }
 
         ui->tableWidget_status->modify_property("Frames dropped", QString::number(krecord_num_frames_dropped()));
+
+        ui->tableWidget_status->modify_property("Peak buffer usage", QString("%1%").arg(krecord_peak_buffer_usage_percent()));
     }
     else
     {
@@ -326,6 +328,7 @@ void RecordDialog::update_recording_metainfo(void)
         ui->tableWidget_status->modify_property("Resolution", "-");
         ui->tableWidget_status->modify_property("File size", "-");
         ui->tableWidget_status->modify_property("Frames dropped", "-");
+        ui->tableWidget_status->modify_property("Peak buffer usage", "-");
     }
 
     return;

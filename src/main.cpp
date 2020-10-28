@@ -39,6 +39,7 @@ static void cleanup_all(void)
     kat_release_anti_tear();
     kf_release_filters();
     kvideopreset_release();
+    krecord_release();
 
     // Call this last.
     kmem_deallocate_memory_cache();

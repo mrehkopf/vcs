@@ -9,9 +9,7 @@
 #include <QSettings>
 #include "display/qt/persistent_settings.h"
 
-static const char SETTINGS_FILENAME[] = "vcs.ini";
-
-static QSettings SETTINGS_FILE(SETTINGS_FILENAME, QSettings::IniFormat);
+static QSettings SETTINGS_FILE("vcs.ini", QSettings::IniFormat);
 
 void kpers_initialize(void)
 {

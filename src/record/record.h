@@ -22,6 +22,8 @@ uint krecord_num_frames_recorded(void);
 
 uint krecord_num_frames_dropped(void);
 
+uint krecord_peak_buffer_usage_percent(void);
+
 uint krecord_playback_framerate(void);
 
 i64 krecord_recording_time(void);
@@ -37,5 +39,7 @@ void krecord_record_current_frame(void);
 void krecord_stop_recording(void);
 
 void krecord_initialize(void);
+
+void krecord_release(void);
 
 #endif

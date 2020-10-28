@@ -49,8 +49,8 @@ const u32 FILTER_PARAMETER_ARRAY_LENGTH = 16;
 
 #define k_assert(condition, error_string)   if (!(condition))\
                                             {\
+                                                DEBUG_(("Assertion failure in %s:%d: \"%s\"", __FILE__, __LINE__, error_string));\
                                                 kd_show_headless_assert_error_message(error_string, __FILE__, __LINE__);\
-                                                NBENE(("Assertion failure in %s {%d}: \"%s\"", __FILE__, __LINE__, error_string));\
                                                 throw std::runtime_error(error_string);\
                                             }
 
