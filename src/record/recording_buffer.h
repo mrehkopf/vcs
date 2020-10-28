@@ -28,12 +28,17 @@
 //      be reserved - and thus won't be returned by subsequent calls to push() -
 //      until the frame is removed from the buffer by calling pop().
 //
-//      Warning: Do not call push() if full() returns true.
+//      WARNING: Do not call push() if full() returns true.
 //
 //   3. Pop frames out of the buffer by calling pop(). Frames will be popped in
 //      the order they were push()ed but in reverse (first in, last out).
 //
-//      Warning: Do not call pop() if empty() returns true.
+//      WARNING: Calling pop() will immediately mark the frame's memory area as no
+//      longer being in use, which means a subsequent call to push() may share its
+//      pointer to another part of the code. So you'll want to block calls to push()
+//      until you're finished accessing the memory's data.
+//
+//      WARNING: Do not call pop() if empty() returns true.
 //
 //   4. When you no longer need the buffer, release it by calling release().
 //

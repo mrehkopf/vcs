@@ -69,6 +69,7 @@ void krecord_initialize(void)
 }
 
 static bool runEncoder = false;
+static std::string encoderError = "";
 
 // A thread launched by the recorder to encode and save to disk any captured
 // frames.
@@ -76,35 +77,52 @@ static bool encoder_thread(void)
 {
     while (runEncoder)
     {
-        bool gotNewFrame = false;
-
-        // See if the recorder thread has sent us any new frames. If so, copy
-        // the oldest such frame's data into our scratch buffer, so we can
-        // work on it and let the recorder thread reuse the memory.
+        try
         {
-            std::lock_guard<std::mutex> lock(RECORDING_BUFFER.mutex);
+            bool gotNewFrame = false;
 
-            if (!RECORDING_BUFFER.empty())
+            // See if the recorder thread has sent us any new frames. If so, copy
+            // the oldest such frame's data into our scratch buffer, so we can
+            // work on it and let the recorder thread reuse the memory.
             {
-                RECORDING.peakBufferUsagePercent = std::max(RECORDING_BUFFER.usage(),
-                                                            RECORDING.peakBufferUsagePercent);
+                std::lock_guard<std::mutex> lock(RECORDING_BUFFER.mutex);
 
-                memcpy(RECORDING_BUFFER.scratchBuffer.ptr(),
-                       RECORDING_BUFFER.pop()->ptr(),
-                       RECORDING_BUFFER.scratchBuffer.up_to(RECORDING_BUFFER.maxWidth * RECORDING_BUFFER.maxHeight * 3));
+                if (!RECORDING_BUFFER.empty())
+                {
+                    RECORDING.peakBufferUsagePercent = std::max(RECORDING_BUFFER.usage(),
+                                                                RECORDING.peakBufferUsagePercent);
 
-                gotNewFrame = true;
+                    memcpy(RECORDING_BUFFER.scratchBuffer.ptr(),
+                           RECORDING_BUFFER.pop()->ptr(),
+                           RECORDING_BUFFER.scratchBuffer.up_to(RECORDING_BUFFER.maxWidth * RECORDING_BUFFER.maxHeight * 3));
+
+                    gotNewFrame = true;
+                }
+            }
+
+            if (gotNewFrame)
+            {
+                VIDEO_WRITER << cv::Mat(RECORDING.resolution.h,
+                                        RECORDING.resolution.w,
+                                        CV_8UC3,
+                                        RECORDING_BUFFER.scratchBuffer.ptr());
+
+                RECORDING.numFrames++;
             }
         }
-
-        if (gotNewFrame)
+        catch(const std::exception &e)
         {
-            VIDEO_WRITER << cv::Mat(RECORDING.resolution.h,
-                                    RECORDING.resolution.w,
-                                    CV_8UC3,
-                                    RECORDING_BUFFER.scratchBuffer.ptr());
+            runEncoder = false;
+            encoderError = e.what();
 
-            RECORDING.numFrames++;
+            return false;
+        }
+        catch(...)
+        {
+            runEncoder = false;
+            encoderError = "Unknown error.";
+
+            return false;
         }
     }
 
@@ -195,6 +213,7 @@ bool krecord_start_recording(const char *const filename,
     RECORDING.numGlobalDroppedFrames = kc_capture_api().get_missed_frames_count();
     RECORDING.recordingTimer.start();
     runEncoder = true;
+    encoderError = "No error specified.";
     RECORDING.encoderThreadFuture = std::async(std::launch::async, encoder_thread);
 
     if (!VIDEO_WRITER.isOpened())
@@ -270,6 +289,22 @@ void krecord_record_current_frame(void)
     k_assert(VIDEO_WRITER.isOpened(),
              "Attempted to record a video frame before video recording had been initialized.");
 
+    // If the encoder thread has, for some reason, had to exit early. This will
+    // probably have been due to an error of some kind.
+    if (!runEncoder)
+    {
+        const std::string errorMsg = "The VCS video recorder has encountered an error and must "
+                                     "stop recording.\n\nThe following error message was reported: "
+                                     "\"" + encoderError + "\"\n\nFurther information may have "
+                                     "been printed into the console.";
+
+        kd_show_headless_error_message("Recording interrupted", errorMsg.c_str());
+                                       
+        krecord_stop_recording();
+
+        return;
+    }
+
     // Get the current output frame.
     const resolution_s resolution = ks_output_resolution();
     const u8 *const frameData = ks_scaler_output_as_raw_ptr();
@@ -301,6 +336,11 @@ void krecord_record_current_frame(void)
 
             if (bufferPtr)
             {
+                /// TODO: Verify that the frames' resolution doesn't exceed the
+                /// frame buffer's maximum resolution. We alredy have a check in
+                /// place for this before we allow the recording to start, but you
+                /// never know...
+                
                 cv::Mat originalFrame(resolution.h, resolution.w, CV_8UC4, (u8*)frameData);
                 cv::Mat frame = cv::Mat(resolution.h, resolution.w, CV_8UC3, bufferPtr);
                 cv::cvtColor(originalFrame, frame, CV_BGRA2BGR);
