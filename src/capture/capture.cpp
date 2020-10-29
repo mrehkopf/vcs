@@ -11,8 +11,13 @@
 #include "capture/capture_api_rgbeasy.h"
 #include "capture/capture_api_video4linux.h"
 #include "capture/capture.h"
+#include "common/timer/timer.h"
 
 static capture_api_s *API = nullptr;
+
+// We'll keep a running count of the number of frames we've missed, in total,
+// during capturing.
+static unsigned LAST_KNOWN_MISSED_FRAMES_COUNT = 0;
 
 capture_api_s& kc_capture_api(void)
 {
@@ -37,6 +42,16 @@ void kc_initialize_capture(void)
     API->initialize();
 
     ke_events().capture.newProposedVideoMode.fire();
+
+    kt_timer(1000, []
+    {
+        const unsigned numMissedCurrent = kc_capture_api().get_missed_frames_count();
+        const unsigned numMissedFrames = (numMissedCurrent- LAST_KNOWN_MISSED_FRAMES_COUNT);
+
+        LAST_KNOWN_MISSED_FRAMES_COUNT = numMissedCurrent;
+
+        ke_events().capture.missedFramesCount.fire(numMissedFrames);
+    });
 
     return;
 }

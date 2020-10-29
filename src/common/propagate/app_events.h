@@ -89,6 +89,13 @@ public:
         vcs_event_c signalGained;
         vcs_event_c invalidSignal;
         vcs_event_c unrecoverableError;
+
+        // The capture subsystem has had to ignore frames coming from the capture
+        // device because VCS was busy with something else (e.g. with processing
+        // a previous frame). Provides the count of missed frames (generally, the
+        // capture subsystem might fire this event at regular intervals and pass
+        // the count of missed frames during that interval).
+        vcs_event_with_value_c<unsigned> missedFramesCount;
     } capture;
 
     // Events related to video recording.
