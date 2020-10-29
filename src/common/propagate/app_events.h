@@ -18,20 +18,45 @@
 #include <functional>
 #include <list>
 
-typedef std::function<void(void)> vcs_event_handler_fn_t;
-
+// An event that passes no parameters.
 class vcs_event_c
 {
 public:
     // Ask the given handler function to be called when this event fires.
-    void subscribe(vcs_event_handler_fn_t handlerFn);
+    void subscribe(std::function<void(void)> handlerFn);
 
     // Fire the event, causing all subscribed handler functions to be called
     // immediately, in the order of their subscription.
     void fire(void) const;
 
 private:
-    std::list<vcs_event_handler_fn_t> subscribedHandlers;
+    std::list<std::function<void(void)>> subscribedHandlers;
+};
+
+// Same as vcs_event_c, but passes on a type T value.
+template <typename T>
+class vcs_event_with_value_c
+{
+public:
+    void subscribe(std::function<void(T)> handlerFn)
+    {
+        this->subscribedHandlers.push_back(handlerFn);
+
+        return;
+    }
+
+    void fire(T value) const
+    {
+        for (const auto &handlerFn: this->subscribedHandlers)
+        {
+            handlerFn(value);
+        }
+
+        return;
+    }
+
+private:
+    std::list<std::function<void(T)>> subscribedHandlers;
 };
 
 // The selection of events recognized by VCS.

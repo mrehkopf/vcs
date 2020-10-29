@@ -14,7 +14,7 @@ vcs_event_pool_c& ke_events(void)
     return EVENTS;
 }
 
-void vcs_event_c::subscribe(vcs_event_handler_fn_t handlerFn)
+void vcs_event_c::subscribe(std::function<void(void)> handlerFn)
 {
     this->subscribedHandlers.push_back(handlerFn);
 
