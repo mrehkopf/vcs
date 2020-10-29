@@ -22,6 +22,7 @@
 #include "capture/video_presets.h"
 #include "common/memory/memory.h"
 #include "common/disk/disk.h"
+#include "common/timer/timer.h"
 
 // Set to !0 when we want to exit the program.
 /// TODO. Don't have this global.
@@ -31,8 +32,11 @@ static void cleanup_all(void)
 {
     DEBUG(("Received orders to exit. Initiating cleanup."));
 
-    if (krecord_is_recording()) krecord_stop_recording();
-
+    kt_release_timers();
+    if (krecord_is_recording())
+    {
+        krecord_stop_recording();
+    }
     kd_release_output_window();
     ks_release_scaler();
     kc_release_capture();
@@ -77,6 +81,7 @@ static bool initialize_all(void)
         }
     });
 
+    if (!PROGRAM_EXIT_REQUESTED) kt_initialize_timers();
     if (!PROGRAM_EXIT_REQUESTED) ka_initialize_aliases();
     if (!PROGRAM_EXIT_REQUESTED) krecord_initialize();
     if (!PROGRAM_EXIT_REQUESTED) klog_initialize();
