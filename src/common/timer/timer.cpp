@@ -77,10 +77,20 @@ private:
     {
         this->future_ = std::async(std::launch::async, [=]
         {
-            while (*keepRunning)
+            while (*this->keepRunning)
             {
+                unsigned timeWaited = 0;
+                while (*this->keepRunning &&
+                       (timeWaited < this->intervalMs))
+                {
+                    /// TODO: Inform the user that timers' resolution is basically this value.
+                    const unsigned waitGranularity = 100;
+
+                    std::this_thread::sleep_for(std::chrono::milliseconds(waitGranularity));
+                    timeWaited += waitGranularity;
+                }
+
                 this->timeoutFunction();
-                std::this_thread::sleep_for(std::chrono::milliseconds(intervalMs));
             }
         });
 
@@ -100,6 +110,10 @@ void kt_release_timers(void)
     for (timer_c *const timer: ACTIVE_TIMERS)
     {
         *timer->keepRunning = false;
+    }
+
+    for (timer_c *const timer: ACTIVE_TIMERS)
+    {
         timer->future().wait();
         delete timer;
     }
