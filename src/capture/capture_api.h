@@ -297,9 +297,6 @@ struct capture_api_s
      * and display captured frames as fast as the capture device is producing
      * them. This could be a symptom of e.g. an inadequately performant host
      * CPU.
-     * 
-     * @see
-     * reset_missed_frames_count()
      */
     virtual unsigned get_missed_frames_count(void) const = 0;
 
@@ -468,16 +465,6 @@ struct capture_api_s
      * get_resolution(), get_minimum_resolution(), get_maximum_resolution()
      */
     virtual bool set_resolution(const resolution_s &r) { (void)r; return false; }
-
-    /*!
-     * Tells the capture API to reset its count of missed frames.
-     * 
-     * Returns true on success; false otherwise.
-     * 
-     * @see
-     * get_missed_frames_count()
-     */
-    virtual bool reset_missed_frames_count(void) { return false; }
 
     /*!
      * A mutex used to coordinate access to the capture API's data between the

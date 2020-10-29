@@ -885,13 +885,6 @@ bool capture_api_rgbeasy_s::set_pixel_format(const capture_pixel_format_e pf)
     return false;
 }
 
-bool capture_api_rgbeasy_s::reset_missed_frames_count(void)
-{
-    NUM_NEW_FRAME_EVENTS_SKIPPED = 0;
-
-    return true;
-}
-
 bool capture_api_rgbeasy_s::set_resolution(const resolution_s &r)
 {
     if (!this->captureIsActive)

@@ -511,16 +511,6 @@ bool capture_api_video4linux_s::mark_frame_buffer_as_processed(void)
     return true;
 }
 
-bool capture_api_video4linux_s::reset_missed_frames_count()
-{
-    k_assert((this->inputChannel),
-             "Attempting to set input channel parameters on a null channel.");
-
-    this->inputChannel->captureStatus.numNewFrameEventsSkipped = 0;
-
-    return true;
-}
-
 bool capture_api_video4linux_s::set_input_channel(const unsigned idx)
 {
     if (this->inputChannel)

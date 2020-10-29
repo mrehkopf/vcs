@@ -48,7 +48,6 @@ struct capture_api_video4linux_s : public capture_api_s
     capture_event_e pop_capture_event_queue(void) override;
     bool set_resolution(const resolution_s &r) override;
     bool mark_frame_buffer_as_processed(void) override;
-    bool reset_missed_frames_count(void) override;
     bool set_video_signal_parameters(const video_signal_parameters_s &p) override;
 
     /// TODO: Properly implement these.
