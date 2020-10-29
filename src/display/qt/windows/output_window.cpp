@@ -651,6 +651,17 @@ MainWindow::MainWindow(QWidget *parent) :
                 this->update_window_size();
             }
         });
+
+        ke_events().capture.missedFramesCount.subscribe([this](const unsigned numMissed)
+        {
+            const bool areDropped = (numMissed > 0);
+
+            if (this->areFramesBeingDropped != areDropped)
+            {
+                this->areFramesBeingDropped = areDropped;
+                this->update_window_title();
+            }
+        });
     }
 
     return;
@@ -1226,6 +1237,9 @@ void MainWindow::update_window_title()
     }
     else
     {
+        // A symbol shown in the title if VCS is currently dropping frames.
+        const QString missedFramesMarker = "{!}";
+
         const resolution_s inRes = kc_capture_api().get_resolution();
         const resolution_s outRes = ks_output_resolution();
         const refresh_rate_s refreshRate = kc_capture_api().get_refresh_rate();
@@ -1239,11 +1253,14 @@ void MainWindow::update_window_title()
 
         if (!this->windowTitleOverride.isEmpty())
         {
-            title = this->windowTitleOverride;
+            title = QString("%1%2")
+                    .arg(this->areFramesBeingDropped? (missedFramesMarker + " ") : "")
+                    .arg(this->windowTitleOverride);
         }
         else
         {
-            title = QString("%1 - %2%3 x %4 (%5 Hz) scaled to %6 x %7 (~%8%)")
+            title = QString("%1%2 - %3%4 x %5 (%6 Hz) scaled to %7 x %8 (~%9%)")
+                    .arg(this->areFramesBeingDropped? (missedFramesMarker + " ") : "")
                     .arg(PROGRAM_NAME)
                     .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
                     .arg(inRes.w)
