@@ -47,7 +47,7 @@ void krecord_initialize(void)
 {
     RECORDING_BUFFER.initialize(RECORDING_BUFFER_CAPACITY);
 
-    ke_events().scaler.newFrame->subscribe([]
+    ke_events().scaler.newFrame.subscribe([]
     {
         if (krecord_is_recording())
         {
@@ -55,12 +55,12 @@ void krecord_initialize(void)
         }
     });
 
-    ke_events().recorder.recordingStarted->subscribe([]
+    ke_events().recorder.recordingStarted.subscribe([]
     {
         DEBUG(("Recording into \"%s\".", RECORDING.filename.c_str()));
     });
 
-    ke_events().recorder.recordingEnded->subscribe([]
+    ke_events().recorder.recordingEnded.subscribe([]
     {
         DEBUG(("Finished recording into \"%s\".", RECORDING.filename.c_str()));
     });
@@ -224,7 +224,7 @@ bool krecord_start_recording(const char *const filename,
         return false;
     }
 
-    ke_events().recorder.recordingStarted->fire();
+    ke_events().recorder.recordingStarted.fire();
 
     return true;
 #endif
@@ -373,7 +373,7 @@ void krecord_stop_recording(void)
 
     VIDEO_WRITER.release();
 
-    ke_events().recorder.recordingEnded->fire();
+    ke_events().recorder.recordingEnded.fire();
 
     return;
 #endif

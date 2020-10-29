@@ -865,7 +865,7 @@ bool capture_api_rgbeasy_s::set_input_channel(const unsigned idx)
         goto fail;
     }
 
-    ke_events().capture.newInputChannel->fire();
+    ke_events().capture.newInputChannel.fire();
 
     return true;
 

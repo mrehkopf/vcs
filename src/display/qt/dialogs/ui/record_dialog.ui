@@ -41,7 +41,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-183</y>
         <width>382</width>
         <height>680</height>
        </rect>
@@ -369,7 +369,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>Frame rate</string>
+                <string>Nominal FPS</string>
                </property>
               </widget>
              </item>

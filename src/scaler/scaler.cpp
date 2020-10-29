@@ -386,31 +386,31 @@ void ks_initialize_scaler(void)
     ks_set_upscaling_filter(SCALING_FILTERS.at(0).name);
     ks_set_downscaling_filter(SCALING_FILTERS.at(0).name);
 
-    ke_events().capture.newFrame->subscribe([]
+    ke_events().capture.newFrame.subscribe([]
     {
         ks_scale_frame(kc_capture_api().get_frame_buffer());
 
-        ke_events().scaler.newFrame->fire();
+        ke_events().scaler.newFrame.fire();
 
         kc_capture_api().mark_frame_buffer_as_processed();
     });
 
-    ke_events().capture.newVideoMode->subscribe([]
+    ke_events().capture.newVideoMode.subscribe([]
     {
         const auto currentInputRes = kc_capture_api().get_resolution();
         ks_set_output_base_resolution(currentInputRes, false);
     });
 
-    ke_events().capture.invalidSignal->subscribe([]
+    ke_events().capture.invalidSignal.subscribe([]
     {
         ks_indicate_invalid_signal();
-        ke_events().display.dirty->fire();
+        ke_events().display.dirty.fire();
     });
 
-    ke_events().capture.signalLost->subscribe([]
+    ke_events().capture.signalLost.subscribe([]
     {
         ks_indicate_no_signal();
-        ke_events().display.dirty->fire();
+        ke_events().display.dirty.fire();
     });
 
     return;
@@ -612,7 +612,7 @@ void ks_scale_frame(const captured_frame_s &frame)
     if ((LATEST_OUTPUT_SIZE.w != outputRes.w) ||
         (LATEST_OUTPUT_SIZE.h != outputRes.h))
     {
-        ke_events().scaler.newFrameResolution->fire();
+        ke_events().scaler.newFrameResolution.fire();
 
         LATEST_OUTPUT_SIZE = outputRes;
     }

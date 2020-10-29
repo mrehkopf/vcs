@@ -50,7 +50,7 @@ static void cleanup_all(void)
 
 static bool initialize_all(void)
 {
-    ke_events().capture.unrecoverableError->subscribe([]
+    ke_events().capture.unrecoverableError.subscribe([]
     {
         PROGRAM_EXIT_REQUESTED = true;
     });
@@ -58,7 +58,7 @@ static bool initialize_all(void)
     // The capture device has received a new video mode. We'll inspect the
     // mode to see if we think it's acceptable, then allow news of it to
     // propagate to the rest of VCS.
-    ke_events().capture.newProposedVideoMode->subscribe([]
+    ke_events().capture.newProposedVideoMode.subscribe([]
     {
         const auto resolution = kc_capture_api().get_resolution();
 
@@ -73,7 +73,7 @@ static bool initialize_all(void)
         }
         else
         {
-            ke_events().capture.newVideoMode->fire();
+            ke_events().capture.newVideoMode.fire();
         }
     });
 
@@ -105,32 +105,32 @@ static capture_event_e process_next_capture_event(void)
     {
         case capture_event_e::unrecoverable_error:
         {
-            ke_events().capture.unrecoverableError->fire();
+            ke_events().capture.unrecoverableError.fire();
             break;
         }
         case capture_event_e::new_frame:
         {
-            ke_events().capture.newFrame->fire();
+            ke_events().capture.newFrame.fire();
             break;
         }
         case capture_event_e::new_video_mode:
         {
-            ke_events().capture.newProposedVideoMode->fire();
+            ke_events().capture.newProposedVideoMode.fire();
             break;
         }
         case capture_event_e::signal_lost:
         {
-            ke_events().capture.signalLost->fire();
+            ke_events().capture.signalLost.fire();
             break;
         }
         case capture_event_e::invalid_signal:
         {
-            ke_events().capture.invalidSignal->fire();
+            ke_events().capture.invalidSignal.fire();
             break;
         }
         case capture_event_e::invalid_device:
         {
-            ke_events().capture.invalidDevice->fire();
+            ke_events().capture.invalidDevice.fire();
             break;
         }
         case capture_event_e::sleep:

@@ -36,7 +36,7 @@ void kc_initialize_capture(void)
 
     API->initialize();
 
-    ke_events().capture.newProposedVideoMode->fire();
+    ke_events().capture.newProposedVideoMode.fire();
 
     return;
 }
@@ -80,7 +80,7 @@ bool kc_force_input_resolution(const resolution_s &r)
         return false;
     }
 
-    ke_events().capture.newVideoMode->fire();
+    ke_events().capture.newVideoMode.fire();
 
     return true;
 }

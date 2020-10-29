@@ -211,7 +211,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
 
     // Subscribe to app events.
     {
-        ke_events().recorder.recordingStarted->subscribe([this]
+        ke_events().recorder.recordingStarted.subscribe([this]
         {
             this->set_recording_controls_enabled(false);
 
@@ -225,7 +225,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
             }
         });
 
-        ke_events().recorder.recordingEnded->subscribe([this]
+        ke_events().recorder.recordingEnded.subscribe([this]
         {
             this->set_recording_controls_enabled(true);
 
@@ -295,9 +295,9 @@ void RecordDialog::update_recording_metainfo(void)
         const uint seconds = totalDuration % 60;
         const uint minutes = totalDuration / 60;
         const uint hours = minutes / 60;
-        ui->tableWidget_status->modify_property("Duration", QString("%1:%2:%3").arg(QString::number(hours).rightJustified(2, '0'))
-                                                                               .arg(QString::number(minutes).rightJustified(2, '0'))
-                                                                               .arg(QString::number(seconds).rightJustified(2, '0')));
+        ui->tableWidget_status->modify_property("Playback duration", QString("%1:%2:%3").arg(QString::number(hours).rightJustified(2, '0'))
+                                                                                        .arg(QString::number(minutes).rightJustified(2, '0'))
+                                                                                        .arg(QString::number(seconds).rightJustified(2, '0')));
 
         ui->tableWidget_status->modify_property("Resolution", QString("%1 x %2").arg(krecord_video_resolution().w)
                                                                                 .arg(krecord_video_resolution().h));
@@ -332,7 +332,7 @@ void RecordDialog::update_recording_metainfo(void)
     }
     else
     {
-        ui->tableWidget_status->modify_property("Duration", "-");
+        ui->tableWidget_status->modify_property("Playback duration", "-");
         ui->tableWidget_status->modify_property("Resolution", "-");
         ui->tableWidget_status->modify_property("File size", "-");
         ui->tableWidget_status->modify_property("Frames dropped", "-");

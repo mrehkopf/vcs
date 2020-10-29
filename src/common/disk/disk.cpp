@@ -38,7 +38,7 @@ bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
         goto fail;
     }
 
-    ke_events().file.savedVideoPresets->fire();
+    ke_events().file.savedVideoPresets.fire();
 
     return true;
 
@@ -129,7 +129,7 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &sourceF
         }
     }
 
-    ke_events().file.loadedVideoPresets->fire();
+    ke_events().file.loadedVideoPresets.fire();
 
     INFO(("Loaded %u video preset(s).", presets.size()));
 
@@ -181,7 +181,7 @@ std::vector<mode_alias_s> kdisk_load_aliases(const std::string &sourceFilename)
         return (a.to.w * a.to.h) < (b.to.w * b.to.h);
     });
 
-    ke_events().file.loadedAliases->fire();
+    ke_events().file.loadedAliases.fire();
 
     INFO(("Loaded %u alias(es).", aliases.size()));
 
@@ -203,7 +203,7 @@ bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
         goto fail;
     }
 
-    ke_events().file.savedAliases->fire();
+    ke_events().file.savedAliases.fire();
 
     return true;
 
@@ -224,7 +224,7 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
         goto fail;
     }
 
-    ke_events().file.savedFilterGraph->fire();
+    ke_events().file.savedFilterGraph.fire();
 
     return true;
 
@@ -283,7 +283,7 @@ std::pair<std::vector<FilterGraphNode*>,
         goto fail;
     }
 
-    ke_events().file.loadedFilterGraph->fire();
+    ke_events().file.loadedFilterGraph.fire();
 
     return {graphNodes, graphOptions};
 

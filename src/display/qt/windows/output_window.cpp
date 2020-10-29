@@ -593,44 +593,44 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Subscribe to app events.
     {
-        ke_events().scaler.newFrame->subscribe([this]
+        ke_events().scaler.newFrame.subscribe([this]
         {
             this->redraw();
         });
 
-        ke_events().scaler.newFrameResolution->subscribe([this]
+        ke_events().scaler.newFrameResolution.subscribe([this]
         {
             this->update_window_title();
             this->update_window_size();
         });
 
-        ke_events().capture.signalLost->subscribe([this]
-        {
-            this->update_window_title();
-            this->update_window_size();
-            this->redraw();
-        });
-
-        ke_events().capture.invalidDevice->subscribe([this]
+        ke_events().capture.signalLost.subscribe([this]
         {
             this->update_window_title();
             this->update_window_size();
             this->redraw();
         });
 
-        ke_events().capture.invalidSignal->subscribe([this]
+        ke_events().capture.invalidDevice.subscribe([this]
         {
             this->update_window_title();
             this->update_window_size();
             this->redraw();
         });
 
-        ke_events().capture.newVideoMode->subscribe([this]
+        ke_events().capture.invalidSignal.subscribe([this]
+        {
+            this->update_window_title();
+            this->update_window_size();
+            this->redraw();
+        });
+
+        ke_events().capture.newVideoMode.subscribe([this]
         {
             this->update_window_title();
         });
 
-        ke_events().recorder.recordingStarted->subscribe([this]
+        ke_events().recorder.recordingStarted.subscribe([this]
         {
             if (!PROGRAM_EXIT_REQUESTED)
             {
@@ -638,7 +638,7 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
 
-        ke_events().recorder.recordingEnded->subscribe([this]
+        ke_events().recorder.recordingEnded.subscribe([this]
         {
             if (!PROGRAM_EXIT_REQUESTED)
             {

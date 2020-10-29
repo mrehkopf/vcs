@@ -137,24 +137,24 @@ SignalDialog::SignalDialog(QWidget *parent) :
             update_information_table(kc_capture_api().has_signal());
         };
 
-        ke_events().capture.invalidSignal->subscribe([this]
+        ke_events().capture.invalidSignal.subscribe([this]
         {
             this->set_controls_enabled(false);
         });
 
-        ke_events().capture.signalLost->subscribe([this]
+        ke_events().capture.signalLost.subscribe([this]
         {
             this->set_controls_enabled(false);
         });
 
-        ke_events().capture.signalGained->subscribe([this]
+        ke_events().capture.signalGained.subscribe([this]
         {
             this->set_controls_enabled(true);
         });
 
-        ke_events().capture.newVideoMode->subscribe(update_info);
+        ke_events().capture.newVideoMode.subscribe(update_info);
 
-        ke_events().capture.newInputChannel->subscribe(update_info);
+        ke_events().capture.newInputChannel.subscribe(update_info);
     }
 
     return;

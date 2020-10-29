@@ -107,7 +107,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
 
     // Subscribe to app events.
     {
-        ke_events().recorder.recordingStarted->subscribe([this]
+        ke_events().recorder.recordingStarted.subscribe([this]
         {
             // Disable any GUI functionality that would let the user change the current
             // output size, since we want to keep the output resolution constant while
@@ -115,7 +115,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
             this->disable_output_size_controls(true);
         });
 
-        ke_events().recorder.recordingEnded->subscribe([this]
+        ke_events().recorder.recordingEnded.subscribe([this]
         {
             this->disable_output_size_controls(false);
         });

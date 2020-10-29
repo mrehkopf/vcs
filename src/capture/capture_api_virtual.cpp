@@ -31,7 +31,7 @@ bool capture_api_virtual_s::set_input_channel(const unsigned idx)
 {
     this->inputChannelIdx = idx;
 
-    ke_events().capture.newInputChannel->fire();
+    ke_events().capture.newInputChannel.fire();
 
     return true;
 }
