@@ -12,8 +12,8 @@
  *
  */
 
-#ifndef EVENT_H
-#define EVENT_H
+#ifndef VCS_COMMON_PROPAGATE_APP_EVENTS_H
+#define VCS_COMMON_PROPAGATE_APP_EVENTS_H
 
 #include <functional>
 #include <list>

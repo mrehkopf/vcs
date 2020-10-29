@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef FRAMERATE_ESTIMATOR_H
-#define FRAMERATE_ESTIMATOR_H
+#ifndef VCS_RECORD_FRAMERATE_ESTIMATOR_H
+#define VCS_RECORD_FRAMERATE_ESTIMATOR_H
 
 #include <QElapsedTimer>
 

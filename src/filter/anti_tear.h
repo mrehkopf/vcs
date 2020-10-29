@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef ANTI_TEAR_H
-#define ANTI_TEAR_H
+#ifndef VCS_FILTER_ANTI_TEAR_H
+#define VCS_FILTER_ANTI_TEAR_H
 
 #include "common/globals.h"
 

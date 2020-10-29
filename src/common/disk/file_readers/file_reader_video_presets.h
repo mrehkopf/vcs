@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef FILE_READER_VIDEO_PRESETS_H
-#define FILE_READER_VIDEO_PRESETS_H
+#ifndef VCS_COMMON_DISK_FILE_READERS_FILE_READER_VIDEO_PRESETS_H
+#define VCS_COMMON_DISK_FILE_READERS_FILE_READER_VIDEO_PRESETS_H
 
 #include "capture/capture.h"
 #include "capture/video_presets.h"

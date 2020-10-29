@@ -6,8 +6,8 @@
  */
 
 
-#ifndef VIDEO_PRESETS_H
-#define VIDEO_PRESETS_H
+#ifndef VCS_CAPTURE_VIDEO_PRESETS_H
+#define VCS_CAPTURE_VIDEO_PRESETS_H
 
 #include "common/globals.h"
 #include "common/refresh_rate.h"

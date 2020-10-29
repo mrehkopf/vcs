@@ -7,8 +7,8 @@
 
 #ifdef CAPTURE_API_VIRTUAL
 
-#ifndef CAPTURE_API_VIRTUAL_H
-#define CAPTURE_API_VIRTUAL_H
+#ifndef VCS_CAPTURE_CAPTURE_API_VIRTUAL_H
+#define VCS_CAPTURE_CAPTURE_API_VIRTUAL_H
 
 #include "capture/capture_api.h"
 

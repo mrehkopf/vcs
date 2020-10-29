@@ -1,5 +1,5 @@
-#ifndef FILTER_GRAPH_DIALOG_H_
-#define FILTER_GRAPH_DIALOG_H_
+#ifndef VCS_DISPLAY_QT_DIALOGS_FILTER_GRAPH_DIALOG_H
+#define VCS_DISPLAY_QT_DIALOGS_FILTER_GRAPH_DIALOG_H
 
 #include <QDialog>
 #include "filter/filter.h"

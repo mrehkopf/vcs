@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef FILTER_FUNCTIONS_H
-#define FILTER_FUNCTIONS_H
+#ifndef VCS_FILTER_FILTER_FUNCS_H
+#define VCS_FILTER_FILTER_FUNCS_H
 
 #include "filter/filter.h"
 

@@ -9,8 +9,8 @@
 
 #ifdef CAPTURE_API_VIDEO4LINUX
 
-#ifndef IC_V4L_VIDEO_PARAMETERS_H
-#define IC_V4L_VIDEO_PARAMETERS_H
+#ifndef VCS_CAPTURE_IC_V4L_VIDEO_PARAMETERS_H
+#define VCS_CAPTURE_IC_V4L_VIDEO_PARAMETERS_H
 
 #include <string>
 #include <unordered_map>

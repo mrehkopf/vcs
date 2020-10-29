@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef HEAP_MEM_H
-#define HEAP_MEM_H
+#ifndef VCS_COMMON_MEMORY_MEMORY_INTERFACE_H
+#define VCS_COMMON_MEMORY_MEMORY_INTERFACE_H
 
 #include "common/globals.h"
 #include "common/memory/memory.h"

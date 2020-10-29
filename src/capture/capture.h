@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef CAPTURE_H
-#define CAPTURE_H
+#ifndef VCS_CAPTURE_CAPTURE_H
+#define VCS_CAPTURE_CAPTURE_H
 
 #include <vector>
 #include "display/display.h"

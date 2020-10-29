@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef VCS_COMMON_MEMORY_MEMORY_H
+#define VCS_COMMON_MEMORY_MEMORY_H
 
 #include <string>
 #include "common/types.h"

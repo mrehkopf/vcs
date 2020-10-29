@@ -34,8 +34,8 @@
  * functions may become renamed or removed in future versions.
  */
 
-#ifndef DISPLAY_H
-#define DISPLAY_H
+#ifndef VCS_DISPLAY_DISPLAY_H
+#define VCS_DISPLAY_DISPLAY_H
 
 #include <string>
 #include <vector>

@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef CAPTURE_BACK_BUFFER_H
-#define CAPTURE_BACK_BUFFER_H
+#ifndef VCS_CAPTURE_BACK_BUFFER_H
+#define VCS_CAPTURE_BACK_BUFFER_H
 
 #include <vector>
 #include "common/memory/memory_interface.h"

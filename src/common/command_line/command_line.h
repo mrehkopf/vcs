@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef COMMAND_LINE_H
-#define COMMAND_LINE_H
+#ifndef VCS_COMMON_COMMAND_LINE_COMMAND_LINE_H
+#define VCS_COMMON_COMMAND_LINE_COMMAND_LINE_H
 
 #include <string>
 

@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef FILE_READER_H
-#define FILE_READER_H
+#ifndef VCS_COMMON_DISK_FILE_READER_H
+#define VCS_COMMON_DISK_FILE_READER_H
 
 #include <string>
 

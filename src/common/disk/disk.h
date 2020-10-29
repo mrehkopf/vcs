@@ -1,5 +1,5 @@
-#ifndef DISK_H_
-#define DISK_H_
+#ifndef VCS_COMMON_DISK_DISK_H
+#define VCS_COMMON_DISK_DISK_H
 
 #include <vector>
 #include <string>

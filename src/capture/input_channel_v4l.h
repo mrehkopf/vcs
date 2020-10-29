@@ -10,8 +10,8 @@
 
 #ifdef CAPTURE_API_VIDEO4LINUX
 
-#ifndef INPUT_CHANNEL_V4L_H
-#define INPUT_CHANNEL_V4L_H
+#ifndef VCS_CAPTURE_INPUT_CHANNEL_V4L_H
+#define VCS_CAPTURE_INPUT_CHANNEL_V4L_H
 
 #include <future>
 #include <chrono>

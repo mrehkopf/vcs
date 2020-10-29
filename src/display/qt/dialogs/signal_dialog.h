@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef SIGNAL_DIALOG_H
-#define SIGNAL_DIALOG_H
+#ifndef VCS_DISPLAY_QT_DIALOGS_SIGNAL_DIALOG_H
+#define VCS_DISPLAY_QT_DIALOGS_SIGNAL_DIALOG_H
 
 #include <QDialog>
 

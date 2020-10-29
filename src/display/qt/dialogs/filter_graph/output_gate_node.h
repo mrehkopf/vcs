@@ -5,8 +5,8 @@
  * 
  */
 
-#ifndef FILTER_GRAPH_OUTPUT_GATE_NODE_H
-#define FILTER_GRAPH_OUTPUT_GATE_NODE_H
+#ifndef VCS_DISPLAY_QT_DIALOGS_FILTER_GRAPH_OUTPUT_GATE_NODE_H
+#define VCS_DISPLAY_QT_DIALOGS_FILTER_GRAPH_OUTPUT_GATE_NODE_H
 
 #include "filter/filter.h"
 #include "display/qt/dialogs/filter_graph/filter_graph_node.h"

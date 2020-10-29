@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef RECORDING_META_H
-#define RECORDING_META_H
+#ifndef VCS_RECORD_RECORDING_META_H
+#define VCS_RECORD_RECORDING_META_H
 
 #include <future>
 #include <string>

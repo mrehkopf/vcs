@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef INI_H
-#define INI_H
+#ifndef VCS_DISPLAY_QT_PERSISTENT_SETTINGS_H
+#define VCS_DISPLAY_QT_PERSISTENT_SETTINGS_H
 
 #include <QVariant>
 

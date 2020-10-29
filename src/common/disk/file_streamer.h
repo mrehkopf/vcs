@@ -1,5 +1,5 @@
-#ifndef FILE_STREAMER_H
-#define FILE_STREAMER_H
+#ifndef VCS_COMMON_DISK_FILE_STREAMER_H
+#define VCS_COMMON_DISK_FILE_STREAMER_H
 
 #include <QTextStream>
 #include <QString>

@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef D_ALIAS_DIALOG_H
-#define D_ALIAS_DIALOG_H
+#ifndef VCS_DISPLAY_QT_DIALOGS_ALIAS_DIALOG_H
+#define VCS_DISPLAY_QT_DIALOGS_ALIAS_DIALOG_H
 
 #include <QDialog>
 

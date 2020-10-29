@@ -5,8 +5,8 @@
  * 
  */
 
-#ifndef FILTER_GRAPH_FILTER_GRAPH_NODE_H
-#define FILTER_GRAPH_FILTER_GRAPH_NODE_H
+#ifndef VCS_DISPLAY_QT_DIALOGS_FILTER_GRAPH_FILTER_GRAPH_NODE_H
+#define VCS_DISPLAY_QT_DIALOGS_FILTER_GRAPH_FILTER_GRAPH_NODE_H
 
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 

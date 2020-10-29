@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef CAPTURE_ALIAS_H
-#define CAPTURE_ALIAS_H
+#ifndef VCS_CAPTURE_ALIAS_H
+#define VCS_CAPTURE_ALIAS_H
 
 #include "display/display.h"
 

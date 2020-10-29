@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef RECORD_H
-#define RECORD_H
+#ifndef VCS_RECORD_RECORD_H
+#define VCS_RECORD_RECORD_H
 
 #include <string>
 #include "common/globals.h"

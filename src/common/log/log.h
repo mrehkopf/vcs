@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef LOG_H_
-#define LOG_H_
+#ifndef VCS_COMMON_LOG_LOG_H
+#define VCS_COMMON_LOG_LOG_H
 
 #include <string>
 #include "common/types.h"

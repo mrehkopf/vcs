@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef VCS_COMMON_GLOBALS_H
+#define VCS_COMMON_GLOBALS_H
 
 #include "display/display.h"
 #include "common/types.h"

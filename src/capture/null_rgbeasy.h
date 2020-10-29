@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef NULL_RGBEASY_H
-#define NULL_RGBEASY_H
+#ifndef VCS_CAPTURE_NULL_RGBEASY_H
+#define VCS_CAPTURE_NULL_RGBEASY_H
 
 #include "common/globals.h"
 

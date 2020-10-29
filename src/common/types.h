@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef VCS_COMMON_TYPES_H
+#define VCS_COMMON_TYPES_H
 
 #include "stdint.h"
 

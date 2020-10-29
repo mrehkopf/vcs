@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef REFRESH_RATE_H
-#define REFRESH_RATE_H
+#ifndef VCS_COMMON_REFRESH_RATE_H
+#define VCS_COMMON_REFRESH_RATE_H
 
 #include <cmath>
 #include <type_traits>

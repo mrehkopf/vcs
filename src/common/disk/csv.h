@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef CSV_PARSE_H
-#define CSV_PARSE_H
+#ifndef VCS_COMMON_DISK_CSV_H
+#define VCS_COMMON_DISK_CSV_H
 
 #include <QFile>
 #include "common/globals.h"

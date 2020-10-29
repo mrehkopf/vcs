@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef VCS_TIMER_H
-#define VCS_TIMER_H
+#ifndef VCS_COMMON_TIMER_TIMER_H
+#define VCS_COMMON_TIMER_TIMER_H
 
 #include <functional>
 

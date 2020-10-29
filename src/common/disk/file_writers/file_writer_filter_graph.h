@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef FILE_WRITER_FILTER_GRAPH_H
-#define FILE_WRITER_FILTER_GRAPH_H
+#ifndef VCS_COMMON_DISK_FILE_WRITERS_FILE_WRITER_FILTER_GRAPH_H
+#define VCS_COMMON_DISK_FILE_WRITERS_FILE_WRITER_FILTER_GRAPH_H
 
 #include "display/qt/dialogs/filter_graph/filter_graph_node.h"
 #include "display/display.h"

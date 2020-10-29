@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef RECORDING_BUFFERS_H
-#define RECORDING_BUFFERS_H
+#ifndef VCS_RECORD_RECORDING_BUFFER_H
+#define VCS_RECORD_RECORDING_BUFFER_H
 
 #include <vector>
 #include <queue>

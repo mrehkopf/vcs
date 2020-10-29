@@ -67,8 +67,8 @@
  * 5. Call kf_release_filters() on program exit to free allocated memory.
  */
 
-#ifndef FILTER_H_
-#define FILTER_H_
+#ifndef VCS_FILTER_FILTER_H
+#define VCS_FILTER_FILTER_H
 
 #include <functional>
 #include "common/memory/memory_interface.h"

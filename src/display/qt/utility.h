@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef DISPLAY_UTIL_H
-#define DISPLAY_UTIL_H
+#ifndef VCS_DISPLAY_QT_UTILITY_H
+#define VCS_DISPLAY_QT_UTILITY_H
 
 #include <QComboBox>
 #include <QWidget>

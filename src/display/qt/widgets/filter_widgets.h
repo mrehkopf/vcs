@@ -1,5 +1,5 @@
-#ifndef FILTER_WIDGETS_H
-#define FILTER_WIDGETS_H
+#ifndef VCS_DISPLAY_QT_WIGETS_FILTER_WIDGETS_H
+#define VCS_DISPLAY_QT_WIGETS_FILTER_WIDGETS_H
 
 #include <QDoubleSpinBox>
 #include <QFormLayout>

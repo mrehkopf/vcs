@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef ANTI_TEAR_DIALOG_H
-#define ANTI_TEAR_DIALOG_H
+#ifndef VCS_DISPLAY_QT_DIALOGS_ANTI_TEAR_DIALOG_H
+#define VCS_DISPLAY_QT_DIALOGS_ANTI_TEAR_DIALOG_H
 
 #include <QDialog>
 

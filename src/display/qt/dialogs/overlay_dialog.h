@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef OVERLAY_DIALOG_H
-#define OVERLAY_DIALOG_H
+#ifndef VCS_DISPLAY_QT_DIALOGS_OVERLAY_DIALOG_H
+#define VCS_DISPLAY_QT_DIALOGS_OVERLAY_DIALOG_H
 
 #include <QTextDocument>
 #include <QDialog>

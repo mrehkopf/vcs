@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef FILE_WRITER_H
-#define FILE_WRITER_H
+#ifndef VCS_COMMON_DISK_FILE_WRITER_H
+#define VCS_COMMON_DISK_FILE_WRITER_H
 
 namespace file_writer
 {

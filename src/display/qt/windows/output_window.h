@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef OUTPUT_WINDOW_H
-#define OUTPUT_WINDOW_H
+#ifndef VCS_DISPLAY_QT_WINDOWS_OUTPUT_WINDOW_H
+#define VCS_DISPLAY_QT_WINDOWS_OUTPUT_WINDOW_H
 
 #include <QMainWindow>
 #include "display/qt/utility.h"

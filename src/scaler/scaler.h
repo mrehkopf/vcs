@@ -4,8 +4,8 @@
  *
  */
 
-#ifndef SCALER_H
-#define SCALER_H
+#ifndef VCS_SCALER_SCALER_H
+#define VCS_SCALER_SCALER_H
 
 #include "common/globals.h"
 

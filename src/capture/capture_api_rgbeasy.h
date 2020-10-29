@@ -7,8 +7,8 @@
 
 #ifdef CAPTURE_API_RGBEASY
 
-#ifndef CAPTURE_API_RGBEASY_H
-#define CAPTURE_API_RGBEASY_H
+#ifndef VCS_CAPTURE_CAPTURE_API_RGBEASY_H
+#define VCS_CAPTURE_CAPTURE_API_RGBEASY_H
 
 #include <mutex>
 #include "capture/capture_api.h"
