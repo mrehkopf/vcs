@@ -209,20 +209,6 @@ void kd_spin_event_loop(void)
     return;
 }
 
-void kd_update_video_recording_metainfo(void)
-{
-    // A recording may still be ongoing when the user requests the program to
-    // exit. In that case, we can just ignore this request to update the GUI.
-    if (PROGRAM_EXIT_REQUESTED) return;
-
-    k_assert(WINDOW != nullptr,
-             "Expected the display to have been acquired before accessing it for events processing. ");
-             
-    WINDOW->update_recording_metainfo();
-
-    return;
-}
-
 void kd_set_video_recording_is_active(const bool isActive)
 {
     if (WINDOW != nullptr)

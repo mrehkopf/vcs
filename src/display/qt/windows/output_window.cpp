@@ -1294,14 +1294,6 @@ void MainWindow::set_filter_graph_source_filename(const std::string &sourceFilen
     return;
 }
 
-void MainWindow::update_recording_metainfo(void)
-{
-    k_assert(this->recordDlg != nullptr, "");
-    this->recordDlg->update_recording_metainfo();
-
-    return;
-}
-
 void MainWindow::update_gui_state()
 {
     // Manually spin the event loop.

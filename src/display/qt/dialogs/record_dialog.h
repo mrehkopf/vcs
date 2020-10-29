@@ -4,6 +4,7 @@
 #include <QDialog>
 
 class QMenuBar;
+class QTimer;
 
 namespace Ui {
 class RecordDialog;
@@ -43,6 +44,11 @@ private:
     bool isEnabled = false;
 
     QMenuBar *menubar = nullptr;
+
+    // While VCS is recording, this timer will provide an interval for updating
+    // the GUI's recording info (duration of recording, size of the video file,
+    // etc.).
+    QTimer *timerUpdateRecordingInfo = nullptr;
 };
 
 #endif

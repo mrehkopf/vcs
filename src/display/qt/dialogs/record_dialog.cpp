@@ -33,6 +33,10 @@ RecordDialog::RecordDialog(QDialog *parent) :
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+    this->timerUpdateRecordingInfo = new QTimer(this);
+    connect(this->timerUpdateRecordingInfo, &QTimer::timeout,
+            this, [=]{this->update_recording_metainfo();});
+
     // Certain features of recording are not available on certain operating systems;
     // so disable them accordingly.
     {
@@ -211,6 +215,8 @@ RecordDialog::RecordDialog(QDialog *parent) :
         {
             this->set_recording_controls_enabled(false);
 
+            this->timerUpdateRecordingInfo->start(1000);
+
             ui->pushButton_startStopRecording->setText("Stop recording");
 
             if (!PROGRAM_EXIT_REQUESTED)
@@ -222,6 +228,8 @@ RecordDialog::RecordDialog(QDialog *parent) :
         ke_events().recorder.recordingEnded->subscribe([this]
         {
             this->set_recording_controls_enabled(true);
+
+            this->timerUpdateRecordingInfo->stop();
 
             ui->pushButton_startStopRecording->setText("Record");
 

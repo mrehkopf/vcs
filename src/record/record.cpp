@@ -349,10 +349,6 @@ void krecord_record_current_frame(void)
 
         RECORDING.numDroppedFrames += (kc_capture_api().get_missed_frames_count() - RECORDING.numGlobalDroppedFrames);
         RECORDING.numGlobalDroppedFrames = kc_capture_api().get_missed_frames_count();
-
-        /// TODO: Have a timer or something for this, rather than calling it
-        /// every frame. Ideally, the timer setup would be handled by the GUI.
-        kd_update_video_recording_metainfo();
     }
 
     return;

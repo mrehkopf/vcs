@@ -70,8 +70,6 @@ public:
     // should not be shown at this time.
     QImage overlay_image(void);
 
-    void update_recording_metainfo(void);
-
     void update_video_mode_params(void);
 
     void clear_filter_graph(void);

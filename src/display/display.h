@@ -230,9 +230,6 @@ void kd_redraw_output_window(void);
  * From the moment this function is called with @p isActive set to true to the
  * moment it's called with @p isActive set to false, the GUI may indicate to
  * the user that recording is ongoing.
- * 
- * @see
- * kd_update_video_recording_metainfo()
  */
 void kd_set_video_recording_is_active(const bool isActive);
 
@@ -274,22 +271,6 @@ void kd_update_output_window_title(void);
  * kd_update_output_window_title()
  */
 void kd_update_output_window_size(void);
-
-/*!
- * Lets the GUI know that aspects about the current video recording (e.g. file
- * size, time recorded) have changed. The GUI should update any views it
- * provides to such information.
- * 
- * Generally, VCS will call this function periodically - f.e. once per second -
- * while video recording is active.
- * 
- * The GUI can call the video recording interface, @ref src/record/record.h, to
- * get information about the current state of recording.
- * 
- * @see
- * kd_set_video_recording_is_active()
- */
-void kd_update_video_recording_metainfo(void);
 
 /*!
  * @warning
