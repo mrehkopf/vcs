@@ -115,6 +115,8 @@ private:
     // success; false otherwise.
     bool enqueue_back_buffers(void);
 
+    bool dequeue_capture_buffers(void);
+
     // Returns the maximum supported capture resolution for this input channel.
     resolution_s maximum_resolution(void) const;
 

@@ -408,6 +408,27 @@ bool input_channel_v4l_c::enqueue_back_buffers(void)
     return false;
 }
 
+bool input_channel_v4l_c::dequeue_capture_buffers(void)
+{
+    v4l2_requestbuffers buf;
+    memset(&buf, 0, sizeof(buf));
+
+    buf.count = 0; // 0 releases all buffers.
+    buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buf.memory = V4L2_MEMORY_USERPTR;
+
+    if (!this->device_ioctl(VIDIOC_REQBUFS, &buf))
+    {
+        NBENE(("Stream buffers could not be deallocated (error %d).", errno));
+        goto fail;
+    }
+
+    return true;
+
+    fail:
+    return false;
+}
+
 bool input_channel_v4l_c::start_capturing()
 {
     if (!this->open_device(this->v4lDeviceFileName))
@@ -534,24 +555,33 @@ void input_channel_v4l_c::reset_capture_event_flags(void)
 
 int input_channel_v4l_c::stop_capturing(void)
 {
-    // Ask the capture thread to stop, and block until it does so.
-    this->run = false;
-    const int retVal = (this->captureThreadFuture.valid()? this->captureThreadFuture.get() : 0);
-  
+    int retVal = 1;
+
+    // The 'run' flag would be false e.g. if we were not able to start capturing
+    // on this channel to begin with.
+    if (this->run)
+    {
+        // Ask the capture thread to stop, and block until it does so.
+        this->run = false;
+        retVal = (this->captureThreadFuture.valid()? this->captureThreadFuture.get() : 0);
+
+        // Stop the capture stream. Note that we don't return on error, we just
+        // continue to force the capturing to stop.
+        {
+            v4l2_buf_type bufType = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+            if (!this->device_ioctl(VIDIOC_STREAMOFF, &bufType))
+            {
+                DEBUG(("Couldn't stop the capture stream for device '%s'.",
+                    this->v4lDeviceFileName.c_str()));
+            }
+        }
+
+        this->dequeue_capture_buffers();
+    }
+      
     this->reset_capture_event_flags();
     this->push_capture_event(capture_event_e::signal_lost);
-
-    // Stop the capture stream. Note that we don't return on error, we just
-    // continue to force the capturing to stop.
-    {
-        v4l2_buf_type bufType = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-
-        if (!this->device_ioctl(VIDIOC_STREAMOFF, &bufType))
-        {
-            DEBUG(("Couldn't stop the capture stream for device '%s'.",
-                   this->v4lDeviceFileName.c_str()));
-        }
-    }
 
     // Note: we don't return on error, we just continue to force the capturing
     // to stop.
