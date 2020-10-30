@@ -108,9 +108,6 @@ bool input_channel_v4l_c::capture_thread__update_video_mode(void)
     v4l2_format format = {};
     format.type = V4L2_BUF_TYPE_CAPTURE_SOURCE;
 
-    // We'll set this to true, below, if need be.
-    this->captureStatus.invalidSignal = false;
-
     /// TODO: Check for 'no signal' status.
 
     if (ioctl(this->v4lDeviceFileHandle, RGB133_VIDIOC_G_SRC_FMT, &format) >= 0)
@@ -120,6 +117,8 @@ bool input_channel_v4l_c::capture_thread__update_video_mode(void)
             (format.fmt.pix.height < MIN_CAPTURE_HEIGHT) ||
             (format.fmt.pix.height > MAX_CAPTURE_HEIGHT))
         {
+            std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
+
             this->captureStatus.invalidSignal = true;
 
             return true;
@@ -133,6 +132,9 @@ bool input_channel_v4l_c::capture_thread__update_video_mode(void)
                 (format.fmt.pix.width != this->captureStatus.resolution.w) ||
                 (format.fmt.pix.height != this->captureStatus.resolution.h))
             {
+                std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
+
+                this->captureStatus.invalidSignal = false;
                 this->captureStatus.noSignal = false;
                 this->captureStatus.refreshRate = currentRefreshRate;
                 this->captureStatus.resolution.w = format.fmt.pix.width;
@@ -144,6 +146,8 @@ bool input_channel_v4l_c::capture_thread__update_video_mode(void)
     }
     else
     {
+        std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
+
         this->captureStatus.invalidSignal = true;
 
         this->push_capture_event(capture_event_e::unrecoverable_error);
@@ -189,7 +193,10 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
                 }
                 default:
                 {
+                    std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
+
                     this->push_capture_event(capture_event_e::unrecoverable_error);
+
                     return false;
                 }
             }
@@ -220,14 +227,20 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
         // Tell the capture device it can use its capture buffer again.
         if (!this->device_ioctl(VIDIOC_QBUF, &buf))
         {
+            std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
+
             this->push_capture_event(capture_event_e::unrecoverable_error);
+
             return false;
         }
     }
     // A capture error.
     else
     {
+        std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
+
         this->push_capture_event(capture_event_e::unrecoverable_error);
+        
         return false;
     }
 
