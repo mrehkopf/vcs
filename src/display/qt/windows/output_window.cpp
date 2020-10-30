@@ -1145,7 +1145,9 @@ void MainWindow::set_keyboard_shortcuts(void)
     auto keyboardShortcut = [this](const std::string keySequence)->QShortcut*
     {
         QShortcut *shortcut = new QShortcut(QKeySequence(keySequence.c_str()), this);
+
         shortcut->setContext(Qt::ApplicationShortcut);
+        shortcut->setAutoRepeat(false);
 
         return shortcut;
     };
@@ -1176,8 +1178,20 @@ void MainWindow::set_keyboard_shortcuts(void)
     }
 
     // Shift + number assigns the current input channel.
-    connect(keyboardShortcut("shift+1"), &QShortcut::activated, [=]{kc_capture_api().set_input_channel(0);});
-    connect(keyboardShortcut("shift+2"), &QShortcut::activated, [=]{kc_capture_api().set_input_channel(1);});
+    connect(keyboardShortcut("shift+1"), &QShortcut::activated, [=]
+    {
+        if (kc_capture_api().get_input_channel_idx() != 0)
+        {
+            kc_capture_api().set_input_channel(0);
+        }
+    });
+    connect(keyboardShortcut("shift+2"), &QShortcut::activated, [=]
+    {
+        if (kc_capture_api().get_input_channel_idx() != 1)
+        {
+            kc_capture_api().set_input_channel(1);
+        }
+    });
 
     return;
 }
