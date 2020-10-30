@@ -29,6 +29,7 @@
 #include "capture/capture_api_video4linux.h"
 #include "capture/input_channel_v4l.h"
 #include "capture/ic_v4l_video_parameters.h"
+#include "common/propagate/app_events.h"
 
 #define INCLUDE_VISION
 #include <visionrgb/include/rgb133v4l2.h>
@@ -38,6 +39,17 @@ static captured_frame_s FRAME_BUFFER;
 
 // A back buffer area for the capture device to capture into.
 static capture_back_buffer_s CAPTURE_BACK_BUFFER;
+
+// The numeric index of the currently-active input channel. This would be 0 for
+// /dev/video0, 4 for /dev/video4, etc.
+static unsigned CURRENT_INPUT_CHANNEL_IDX = 0;
+
+// Cumulative count of frames that were sent to us by the capture device but which
+// VCS was too busy to process. Note that this count doesn't account for the missed
+// frames on the current input channel, only on previous ones. The total number of
+// missed frames over the program's execution is thus this value + the current input
+// channel's value.
+static unsigned NUM_MISSED_FRAMES = 0;
 
 capture_event_e capture_api_video4linux_s::pop_capture_event_queue(void)
 {
@@ -121,7 +133,7 @@ uint capture_api_video4linux_s::get_missed_frames_count(void) const
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
 
-    return this->inputChannel->captureStatus.numNewFrameEventsSkipped;
+    return (NUM_MISSED_FRAMES + this->inputChannel->captureStatus.numNewFrameEventsSkipped);
 }
 
 bool capture_api_video4linux_s::has_invalid_signal() const
@@ -322,6 +334,11 @@ int capture_api_video4linux_s::get_device_maximum_input_count(void) const
     return numInputs;
 }
 
+uint capture_api_video4linux_s::get_input_channel_idx(void) const
+{
+    return CURRENT_INPUT_CHANNEL_IDX;
+}
+
 video_signal_parameters_s capture_api_video4linux_s::get_video_signal_parameters(void) const
 {
     k_assert((this->inputChannel),
@@ -515,6 +532,8 @@ bool capture_api_video4linux_s::set_input_channel(const unsigned idx)
 {
     if (this->inputChannel)
     {
+        NUM_MISSED_FRAMES += this->inputChannel->captureStatus.numNewFrameEventsSkipped;
+
         delete this->inputChannel;
     }
 
@@ -523,6 +542,11 @@ bool capture_api_video4linux_s::set_input_channel(const unsigned idx)
                                                  captureDeviceFileName,
                                                  &FRAME_BUFFER,
                                                  &CAPTURE_BACK_BUFFER);
+
+    CURRENT_INPUT_CHANNEL_IDX = idx;
+
+    ke_events().capture.newInputChannel.fire();
+
     return true;
 }
 

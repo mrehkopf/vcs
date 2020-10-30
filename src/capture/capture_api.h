@@ -289,14 +289,18 @@ struct capture_api_s
     virtual resolution_s get_maximum_resolution(void) const = 0;
 
     /*!
-     * Returns the difference between the number of frames received by the
-     * capture API from the capture device and the number of times
-     * mark_frame_buffer_as_processed() has been called.
+     * Returns number of frames that were sent to the API by the capture device
+     * but which VCS was too busy to process (they were never displayed, recorded,
+     * etc.).
      * 
      * If this value is above 0, it indicates that VCS is failing to process
      * and display captured frames as fast as the capture device is producing
      * them. This could be a symptom of e.g. an inadequately performant host
      * CPU.
+     * 
+     * @note
+     * This value must be cumulative over the lifetime of the program's
+     * execution and must never decrease.
      */
     virtual unsigned get_missed_frames_count(void) const = 0;
 
