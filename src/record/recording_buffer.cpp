@@ -87,6 +87,8 @@ void recording_buffer_s::reset(void)
               this->isFrameInUse.end(),
               false);
 
+    this->frameQueue = std::queue<size_t>();
+
     return;
 }
 
