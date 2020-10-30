@@ -129,10 +129,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
     {
         const auto update_info = [this]
         {
-            if (kc_capture_api().has_signal())
-            {
-                VIDEO_MODE_UPTIME.restart();
-            }
+            VIDEO_MODE_UPTIME.restart();
 
             update_information_table(kc_capture_api().has_signal());
         };
@@ -182,9 +179,14 @@ void SignalDialog::set_controls_enabled(const bool state)
 
 void SignalDialog::update_information_table(const bool isReceivingSignal)
 {
-    const auto inputChannelIdx = (kc_capture_api().get_input_channel_idx() + 1);
+    const auto inputChannelIdx = kc_capture_api().get_input_channel_idx();
 
-    ui->tableWidget_propertyTable->modify_property("Input channel", QString::number(inputChannelIdx));
+    ui->tableWidget_propertyTable->modify_property("Input channel",
+    #if __linux__
+                                                   QString("/dev/video%1").arg(inputChannelIdx));
+    #else
+                                                   QString::number(inputChannelIdx + 1));
+    #endif
 
     if (isReceivingSignal)
     {
