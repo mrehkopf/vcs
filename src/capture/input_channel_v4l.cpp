@@ -158,8 +158,6 @@ bool input_channel_v4l_c::capture_thread__update_video_mode(void)
     return true;
 }
 
-// Poll the capture devicve for a new frame. On success (or if no new frames
-// were available), returns true. On error, returns false.
 bool input_channel_v4l_c::capture_thread__get_next_frame(void)
 {
     pollfd fd;
@@ -182,7 +180,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
         buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         buf.memory = V4L2_MEMORY_USERPTR;
 
-        // Tell the capture device we want to access its capture buffer.
+        // Tell the capture device we want to access the frame buffer's data.
         if (!this->device_ioctl(VIDIOC_DQBUF, &buf))
         {
             switch (errno)
@@ -202,29 +200,45 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
             }
         }
 
-        // If the hardware is sending us a new frame while we're still unfinished
-        // processing the previous frame, we'll skip this new frame.
-        if (this->captureStatus.numFramesCaptured != this->captureStatus.numFramesProcessed)
+        // Verify that the buffer is one that we've queued.
+        bool isBufferOurs = false;
+        for (unsigned i = 0; i < this->backBuffer->numPages; i++)
         {
-            this->captureStatus.numNewFrameEventsSkipped++;
-        }
-        else
-        {
-            std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
+            if (uintptr_t(buf.m.userptr) == uintptr_t(this->backBuffer->page(i).ptr()))
+            {
+                isBufferOurs = true;
 
-            this->dstFrameBuffer->r = this->captureStatus.resolution;
-            this->dstFrameBuffer->r.bpp = ((this->captureStatus.pixelFormat == capture_pixel_format_e::rgb_888)? 32 : 16);
-            this->dstFrameBuffer->pixelFormat = this->captureStatus.pixelFormat;
-
-            // Copy the frame's data into our local buffer so we can work on it.
-            memcpy(this->dstFrameBuffer->pixels.ptr(), (char*)buf.m.userptr,
-                   this->dstFrameBuffer->pixels.up_to(this->dstFrameBuffer->r.w * this->dstFrameBuffer->r.h * (this->dstFrameBuffer->r.bpp / 8)));
-
-            this->captureStatus.numFramesCaptured++;
-            this->push_capture_event(capture_event_e::new_frame);
+                break;
+            }
         }
 
-        // Tell the capture device it can use its capture buffer again.
+        if (isBufferOurs)
+        {
+            // If the hardware is sending us a new frame while we're still unfinished
+            // processing the previous frame, we'll skip this new frame.
+            if (this->captureStatus.numFramesCaptured != this->captureStatus.numFramesProcessed)
+            {
+                this->captureStatus.numNewFrameEventsSkipped++;
+            }
+            else
+            {
+                std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
+
+                this->dstFrameBuffer->r = this->captureStatus.resolution;
+                this->dstFrameBuffer->r.bpp = ((this->captureStatus.pixelFormat == capture_pixel_format_e::rgb_888)? 32 : 16);
+                this->dstFrameBuffer->pixelFormat = this->captureStatus.pixelFormat;
+
+                // Copy the frame's data into our local buffer so we can work on it.
+                memcpy(this->dstFrameBuffer->pixels.ptr(),
+                       (u8*)buf.m.userptr,
+                       this->dstFrameBuffer->pixels.up_to(this->dstFrameBuffer->pixels.size()));
+
+                this->captureStatus.numFramesCaptured++;
+                this->push_capture_event(capture_event_e::new_frame);
+            }
+        }
+
+        // Tell the capture device that we've finished accessing the buffer.
         if (!this->device_ioctl(VIDIOC_QBUF, &buf))
         {
             std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
