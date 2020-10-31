@@ -393,6 +393,8 @@ Ctrl + Shift + key ...... Toggle the corresponding dialog's functionality on/off
 
 Ctrl + 1 to 9 ........... Shortcuts for the input resolution buttons on the
                           control panel's Input tab.
+
+Shift + 1 to 2 .......... Set the input channel index.
 ```
 
 ## Command-line arguments
