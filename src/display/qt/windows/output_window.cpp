@@ -28,6 +28,7 @@
 #include <QLabel>
 #include <cmath>
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
+#include "display/qt/dialogs/linux_device_selector_dialog.h"
 #include "display/qt/dialogs/output_resolution_dialog.h"
 #include "display/qt/dialogs/video_parameter_dialog.h"
 #include "display/qt/dialogs/input_resolution_dialog.h"
@@ -307,22 +308,38 @@ MainWindow::MainWindow(QWidget *parent) :
 
             QMenu *channel = new QMenu("Channel", this);
             {
-                QActionGroup *group = new QActionGroup(this);
-
-                for (int i = 0; i < kc_capture_api().get_device_maximum_input_count(); i++)
-                {
-                    QAction *inputChannel = new QAction(QString::number(i+1), this);
-                    inputChannel->setActionGroup(group);
-                    inputChannel->setCheckable(true);
-                    channel->addAction(inputChannel);
-
-                    if (i == int(INPUT_CHANNEL_IDX))
+                #if __linux__
+                    QAction *select = new QAction("Select...", this);
+                    channel->addAction(select);
+                    connect(select, &QAction::triggered, this, [this]
                     {
-                        inputChannel->setChecked(true);
-                    }
+                        unsigned newIdx = kc_capture_api().get_input_channel_idx();
 
-                    connect(inputChannel, &QAction::triggered, this, [=]{kc_capture_api().set_input_channel(i);});
-                }
+                        if (LinuxDeviceSelectorDialog(&newIdx).exec() != QDialog::Rejected)
+                        {
+                            kc_capture_api().set_input_channel(newIdx);
+                        }
+                    });
+
+                    channel->addSeparator();
+                #else
+                    QActionGroup *group = new QActionGroup(this);
+
+                    for (int i = 0; i < kc_capture_api().get_device_maximum_input_count(); i++)
+                    {
+                        QAction *inputChannel = new QAction(QString::number(i+1), this);
+                        inputChannel->setActionGroup(group);
+                        inputChannel->setCheckable(true);
+                        channel->addAction(inputChannel);
+
+                        if (i == int(INPUT_CHANNEL_IDX))
+                        {
+                            inputChannel->setChecked(true);
+                        }
+
+                        connect(inputChannel, &QAction::triggered, this, [=]{kc_capture_api().set_input_channel(i);});
+                    }
+                #endif
             }
 
             QMenu *colorDepth = new QMenu("Color depth", this);
@@ -523,9 +540,9 @@ MainWindow::MainWindow(QWidget *parent) :
     // We intend to repaint the entire window every time we update it, so ask for no automatic fill.
     this->setAttribute(Qt::WA_OpaquePaintEvent, true);
 
-    update_window_size();
-    update_window_title();
-    set_keyboard_shortcuts();
+    this->update_window_size();
+    this->update_window_title();
+    this->set_keyboard_shortcuts();
 
 #ifdef _WIN32
     /// Temp hack. On my system, need to toggle this or there'll be a 2-pixel

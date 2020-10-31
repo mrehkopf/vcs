@@ -113,7 +113,8 @@ SOURCES += \
     src/capture/back_buffer.cpp \
     src/record/recording_buffer.cpp \
     src/record/framerate_estimator.cpp \
-    src/common/timer/timer.cpp
+    src/common/timer/timer.cpp \
+    src/display/qt/dialogs/linux_device_selector_dialog.cpp
 
 HEADERS += \
     src/common/globals.h \
@@ -181,7 +182,8 @@ HEADERS += \
     src/record/recording_buffer.h \
     src/record/recording_meta.h \
     src/record/framerate_estimator.h \
-    src/common/timer/timer.h
+    src/common/timer/timer.h \
+    src/display/qt/dialogs/linux_device_selector_dialog.h
 
 FORMS += \
     src/display/qt/windows/ui/output_window.ui \
@@ -195,7 +197,8 @@ FORMS += \
     src/display/qt/dialogs/ui/output_resolution_dialog.ui \
     src/display/qt/dialogs/ui/input_resolution_dialog.ui \
     src/display/qt/dialogs/ui/signal_dialog.ui \
-    src/display/qt/dialogs/ui/video_parameter_dialog.ui
+    src/display/qt/dialogs/ui/video_parameter_dialog.ui \
+    src/display/qt/dialogs/ui/linux_device_selector_dialog.ui
 
 # C++. For GCC/Clang/MinGW.
 QMAKE_CXXFLAGS += -g
