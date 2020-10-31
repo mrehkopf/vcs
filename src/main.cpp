@@ -115,12 +115,24 @@ static capture_event_e process_next_capture_event(void)
         }
         case capture_event_e::new_frame:
         {
-            ke_events().capture.newFrame.fire();
+            if (kc_capture_api().has_valid_signal())
+            {
+                ke_events().capture.newFrame.fire();
+            }
+            else
+            {
+                kc_capture_api().mark_frame_buffer_as_processed();
+            }
+            
             break;
         }
         case capture_event_e::new_video_mode:
         {
-            ke_events().capture.newProposedVideoMode.fire();
+            if (kc_capture_api().has_valid_signal())
+            {
+                ke_events().capture.newProposedVideoMode.fire();
+            }
+
             break;
         }
         case capture_event_e::signal_lost:

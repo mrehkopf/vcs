@@ -356,11 +356,24 @@ struct capture_api_s
     virtual bool has_invalid_signal(void) const = 0;
 
     /*!
+     * Returns true if the current capture signal is valid; false otherwise.
+     * 
+     * @see
+     * has_invalid_signal(), has_no_signal()
+     */
+    virtual bool has_valid_signal(void) const { return !this->has_invalid_signal(); }
+
+    /*!
      * Returns true if the current capture device is invalid; false otherwise.
      * This could happen e.g. if the user (on Linux) opens a /dev/videoX that
      * doesn't provide a compatible capture device.
      */
     virtual bool has_invalid_device(void) const = 0;
+
+    /*!
+     * Returns true if the current capture device is valid; false otherwise.
+     */
+    virtual bool has_valid_device(void) const { return !this->has_invalid_device(); }
 
     /*!
      * Returns true if there's currently no capture signal on the capture

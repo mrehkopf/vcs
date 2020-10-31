@@ -23,6 +23,8 @@
 #include "capture/ic_v4l_video_parameters.h"
 #include "capture/back_buffer.h"
 
+struct v4l2_format;
+
 class input_channel_v4l_c
 {
 public:
@@ -43,11 +45,15 @@ public:
     // Returns true on success; false otherwise (see errno for ioctl() errors).
     bool device_ioctl(const unsigned long request, void *data);
 
+    // Returns true if the given format's parameters indicate a valid signal (e.g.
+    // that the signal's resolution isn't out of range).
+    static bool is_format_of_valid_signal(const v4l2_format *const format);
+
     // Metadata about the current capture on this input channel.
     struct
     {
         // True if this channel is currently not receiving a signal.
-        bool noSignal = true;
+        bool noSignal = false;
 
         // True if the signal we're currently receiving is invalid in some way
         // (e.g. out of range).
