@@ -1,9 +1,7 @@
 /*
- * 2018 Tarpeeksi Hyvae Soft /
- * VCS video & color dialog
- *
- * A GUI dialog for allowing the user to adjust the capture card's video and color
- * parameters.
+ * 2020 Tarpeeksi Hyvae Soft
+ * 
+ * Software: VCS
  *
  */
 
@@ -26,14 +24,6 @@
 #include "capture/capture.h"
 #include "common/disk/disk.h"
 #include "ui_signal_dialog.h"
-
-/*
- * TODOS:
- *
- * - the dialog should communicate more clearly which mode the current GUI controls
- *   are editing, and which modes are available or known about.
- *
- */
 
 static const QString BASE_WINDOW_TITLE = "VCS - Signal Info";
 
