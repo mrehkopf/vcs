@@ -114,9 +114,9 @@ namespace rgbeasy_callbacks_n
                 (abs(frameInfo->biHeight) < MIN_CAPTURE_HEIGHT) ||
                 (abs(frameInfo->biHeight) > MAX_CAPTURE_HEIGHT))
             {
-                thisPtr->push_capture_event(capture_event_e::invalid_signal);
-
                 IS_SIGNAL_INVALID = true;
+
+                thisPtr->push_capture_event(capture_event_e::invalid_signal);
 
                 goto done;
             }
@@ -151,10 +151,10 @@ namespace rgbeasy_callbacks_n
             goto done;
         }
 
-        thisPtr->push_capture_event(capture_event_e::new_video_mode);
-
         IS_SIGNAL_INVALID = false;
         RECEIVING_A_SIGNAL = true;
+
+        thisPtr->push_capture_event(capture_event_e::new_video_mode);
 
         done:
         return;
@@ -176,10 +176,10 @@ namespace rgbeasy_callbacks_n
         // Let the card apply its own no signal handler as well, just in case.
         RGBInvalidSignal(thisPtr->rgbeasy_capture_handle(), horClock, verClock);
 
-        thisPtr->push_capture_event(capture_event_e::invalid_signal);
-
         IS_SIGNAL_INVALID = true;
         RECEIVING_A_SIGNAL = false;
+
+        thisPtr->push_capture_event(capture_event_e::invalid_signal);
 
         done:
         return;
@@ -195,9 +195,9 @@ namespace rgbeasy_callbacks_n
         // Let the card apply its own 'no signal' handler as well, just in case.
         RGBNoSignal(thisPtr->rgbeasy_capture_handle());
 
-        thisPtr->push_capture_event(capture_event_e::signal_lost);
-
         RECEIVING_A_SIGNAL = false;
+
+        thisPtr->push_capture_event(capture_event_e::signal_lost);
 
         return;
     }
@@ -208,9 +208,9 @@ namespace rgbeasy_callbacks_n
 
         std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
 
-        thisPtr->push_capture_event(capture_event_e::unrecoverable_error);
-
         RECEIVING_A_SIGNAL = false;
+
+        thisPtr->push_capture_event(capture_event_e::unrecoverable_error);
 
         return;
     }
