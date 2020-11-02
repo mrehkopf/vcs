@@ -24,6 +24,7 @@ ResolutionDialog::ResolutionDialog(const QString title, resolution_s *const r, Q
     ui->setupUi(this);
 
     this->setWindowTitle(title);
+    ui->groupBox->setTitle(title);
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
