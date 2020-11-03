@@ -11,6 +11,8 @@
 #include "common/propagate/app_events.h"
 #include "capture/capture_api_virtual.h"
 
+static unsigned NUM_FRAMES_GENERATED = 0;
+
 bool capture_api_virtual_s::initialize(void)
 {
     this->frameBuffer.r = this->defaultResolution;
@@ -43,6 +45,13 @@ const captured_frame_s& capture_api_virtual_s::get_frame_buffer(void) const
 
 capture_event_e capture_api_virtual_s::pop_capture_event_queue(void)
 {
+    if (!NUM_FRAMES_GENERATED)
+    {
+        NUM_FRAMES_GENERATED++;
+        
+        return capture_event_e::new_video_mode;
+    }
+    
     // Normally, the capture card's output rate limits VCS's frame rate;
     // but for the virtual capture device, we'll need to emulate a delay.
     static auto startTime = std::chrono::system_clock::now();
@@ -69,8 +78,7 @@ bool capture_api_virtual_s::mark_frame_buffer_as_processed(void)
 
 void capture_api_virtual_s::animate_frame_buffer(void)
 {
-    static unsigned offset = 0;
-    offset++;
+    NUM_FRAMES_GENERATED++;
 
     for (unsigned y = 0; y < this->frameBuffer.r.h; y++)
     {
@@ -78,8 +86,8 @@ void capture_api_virtual_s::animate_frame_buffer(void)
         {
             const unsigned idx = ((x + y * this->frameBuffer.r.w) * (this->frameBuffer.r.bpp / 8));
 
-            this->frameBuffer.pixels[idx + 0] = ((offset + x) % 256);
-            this->frameBuffer.pixels[idx + 1] = ((offset + y) % 256);
+            this->frameBuffer.pixels[idx + 0] = ((NUM_FRAMES_GENERATED + x) % 256);
+            this->frameBuffer.pixels[idx + 1] = ((NUM_FRAMES_GENERATED + y) % 256);
             this->frameBuffer.pixels[idx + 2] = 150;
             this->frameBuffer.pixels[idx + 3] = 255;
         }
