@@ -440,6 +440,13 @@ struct capture_api_s
     virtual bool set_video_signal_parameters(const video_signal_parameters_s &p) { (void)p; return true; }
 
     /*!
+     * Sets the capture device's deinterlacing mode.
+     * 
+     * Returns true on success; false otherwise.
+     */
+    virtual bool set_deinterlacing_mode(const capture_deinterlacing_mode_e mode) { (void)mode; return false; }
+
+    /*!
      * Tells the capture device to start listening for signals on the given
      * input channel.
      * 

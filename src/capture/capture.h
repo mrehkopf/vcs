@@ -21,6 +21,14 @@ void kc_initialize_capture(void);
 void kc_release_capture(void);
 bool kc_force_input_resolution(const resolution_s &r);
 
+enum class capture_deinterlacing_mode_e
+{
+    weave,
+    bob,
+    field_0,
+    field_1,
+};
+
 enum class capture_pixel_format_e
 {
     rgb_555,

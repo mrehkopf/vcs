@@ -65,6 +65,7 @@
 #define RGBLoad(...)                        NULL_RGBEASY_FUNCTION("RGBLoad")
 #define RGBOpenInput(...)                   NULL_RGBEASY_FUNCTION("RGBOpenInput")
 #define RGBSetDMADirect(...)                NULL_RGBEASY_FUNCTION("RGBSetDMADirect")
+#define RGBSetDeinterlace(...)              NULL_RGBEASY_FUNCTION("RGBSetDeinterlace")
 #define RGBSetPixelFormat(...)              NULL_RGBEASY_FUNCTION("RGBSetPixelFormat")
 #define RGBUseOutputBuffers(...)            NULL_RGBEASY_FUNCTION("RGBUseOutputBuffers")
 #define RGBGetBrightness(...)               NULL_RGBEASY_FUNCTION("RGBGetBrightness")
@@ -117,6 +118,14 @@
 #define CAPTURECARD_DGC133                  1
 
 // Enums.
+typedef enum _DEINTERLACE
+{
+   RGB_DEINTERLACE_WEAVE = 0,
+   RGB_DEINTERLACE_BOB = 1,
+   RGB_DEINTERLACE_FIELD_0 = 2,
+   RGB_DEINTERLACE_FIELD_1 = 3,
+}  DEINTERLACE, *PDEINTERLACE;
+
 typedef enum _CAPTURESTATE
 {
    RGB_STATE_CAPTURING        = 0,

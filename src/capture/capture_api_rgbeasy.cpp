@@ -806,6 +806,30 @@ refresh_rate_s capture_api_rgbeasy_s::get_refresh_rate(void) const
     }
 }
 
+bool capture_api_rgbeasy_s::set_deinterlacing_mode(const capture_deinterlacing_mode_e mode)
+{
+    DEINTERLACE apiDeinterlacingMode = RGB_DEINTERLACE_BOB;
+
+    switch (mode)
+    {
+        case capture_deinterlacing_mode_e::bob: apiDeinterlacingMode = RGB_DEINTERLACE_BOB; break;
+        case capture_deinterlacing_mode_e::weave: apiDeinterlacingMode = RGB_DEINTERLACE_WEAVE; break;
+        case capture_deinterlacing_mode_e::field_0: apiDeinterlacingMode = RGB_DEINTERLACE_FIELD_0; break;
+        case capture_deinterlacing_mode_e::field_1: apiDeinterlacingMode = RGB_DEINTERLACE_FIELD_1; break;
+        default: k_assert(0, "Unknown deinterlacing mode."); return false;
+    }
+
+    if (apicall_succeeded(RGBSetDeinterlace(this->captureHandle, apiDeinterlacingMode)))
+    {
+        return true;
+    }
+    else
+    {
+        INFO(("Failed to set the deinterlacing mode."));
+        return false;
+    }
+}
+
 bool capture_api_rgbeasy_s::set_video_signal_parameters(const video_signal_parameters_s &p)
 {
     if (this->has_no_signal())

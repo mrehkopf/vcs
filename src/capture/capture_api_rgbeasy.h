@@ -65,6 +65,7 @@ struct capture_api_rgbeasy_s : public capture_api_s
     capture_event_e pop_capture_event_queue(void) override;
     virtual bool set_video_signal_parameters(const video_signal_parameters_s &p) override;
     bool set_input_channel(const unsigned idx) override;
+    bool set_deinterlacing_mode(const capture_deinterlacing_mode_e mode) override;
     bool set_pixel_format(const capture_pixel_format_e pf) override;
     bool set_resolution(const resolution_s &r) override;
 
