@@ -370,9 +370,43 @@ MainWindow::MainWindow(QWidget *parent) :
                 connect(c24, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_888);});
             }
 
+            QMenu *deinterlacing = new QMenu("Deinterlacing", this);
+            {
+                deinterlacing->setEnabled(kc_capture_api().device_supports_deinterlacing());
+
+                QActionGroup *group = new QActionGroup(this);
+
+                QAction *bob = new QAction("Bob", this);
+                bob->setActionGroup(group);
+                bob->setCheckable(true);
+                bob->setChecked(true);
+                deinterlacing->addAction(bob);
+
+                QAction *weave = new QAction("Weave", this);
+                weave->setActionGroup(group);
+                weave->setCheckable(true);
+                deinterlacing->addAction(weave);
+
+                QAction *field0 = new QAction("Field 1", this);
+                field0->setActionGroup(group);
+                field0->setCheckable(true);
+                deinterlacing->addAction(field0);
+
+                QAction *field1 = new QAction("Field 2", this);
+                field1->setActionGroup(group);
+                field1->setCheckable(true);
+                deinterlacing->addAction(field1);
+
+                connect(bob, &QAction::triggered, this, [=]{kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::bob);});
+                connect(weave, &QAction::triggered, this, [=]{kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::weave);});
+                connect(field0, &QAction::triggered, this, [=]{kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::field_0);});
+                connect(field1, &QAction::triggered, this, [=]{kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::field_1);});
+            }
+
             menu->addMenu(channel);
             menu->addSeparator();
             menu->addMenu(colorDepth);
+            menu->addMenu(deinterlacing);
             menu->addSeparator();
 
             connect(menu->addAction("Aliases..."), &QAction::triggered, this, [=]{this->open_alias_dialog();});
