@@ -810,6 +810,8 @@ bool capture_api_rgbeasy_s::set_deinterlacing_mode(const capture_deinterlacing_m
 {
     DEINTERLACE apiDeinterlacingMode = RGB_DEINTERLACE_BOB;
 
+    DEBUG(("Setting deinterlacing mode to %d.", static_cast<int>(mode)));
+
     switch (mode)
     {
         case capture_deinterlacing_mode_e::bob: apiDeinterlacingMode = RGB_DEINTERLACE_BOB; break;

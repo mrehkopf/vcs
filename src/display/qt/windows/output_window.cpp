@@ -376,16 +376,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 QActionGroup *group = new QActionGroup(this);
 
-                QAction *bob = new QAction("Bob", this);
-                bob->setActionGroup(group);
-                bob->setCheckable(true);
-                bob->setChecked(true);
-                deinterlacing->addAction(bob);
-
                 QAction *weave = new QAction("Weave", this);
                 weave->setActionGroup(group);
                 weave->setCheckable(true);
                 deinterlacing->addAction(weave);
+
+                QAction *bob = new QAction("Bob", this);
+                bob->setActionGroup(group);
+                bob->setCheckable(true);
+                deinterlacing->addAction(bob);
 
                 QAction *field0 = new QAction("Field 1", this);
                 field0->setActionGroup(group);
@@ -397,10 +396,56 @@ MainWindow::MainWindow(QWidget *parent) :
                 field1->setCheckable(true);
                 deinterlacing->addAction(field1);
 
-                connect(bob, &QAction::triggered, this, [=]{kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::bob);});
-                connect(weave, &QAction::triggered, this, [=]{kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::weave);});
-                connect(field0, &QAction::triggered, this, [=]{kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::field_0);});
-                connect(field1, &QAction::triggered, this, [=]{kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::field_1);});
+                const auto set_mode = [=](const capture_deinterlacing_mode_e mode)
+                {
+                    switch (mode)
+                    {
+                        case capture_deinterlacing_mode_e::bob:
+                        {
+                            kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::bob);
+                            kpers_set_value(INI_GROUP_OUTPUT, "interlacing_mode", "Bob");
+                            break;
+                        }
+                        case capture_deinterlacing_mode_e::weave:
+                        {
+                            kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::weave);
+                            kpers_set_value(INI_GROUP_OUTPUT, "interlacing_mode", "Weave");
+                            break;
+                        }
+                        case capture_deinterlacing_mode_e::field_0:
+                        {
+                            kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::field_0);
+                            kpers_set_value(INI_GROUP_OUTPUT, "interlacing_mode", "Field 1");
+                            break;
+                        }
+                        case capture_deinterlacing_mode_e::field_1:
+                        {
+                            kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::field_1);
+                            kpers_set_value(INI_GROUP_OUTPUT, "interlacing_mode", "Field 2");
+                            break;
+                        }
+                        default: k_assert(0, "Unknown deinterlacing mode."); break;
+                    }
+                };
+
+                connect(bob, &QAction::triggered, this, [=]{set_mode(capture_deinterlacing_mode_e::bob);});
+                connect(weave, &QAction::triggered, this, [=]{set_mode(capture_deinterlacing_mode_e::weave);});
+                connect(field0, &QAction::triggered, this, [=]{set_mode(capture_deinterlacing_mode_e::field_0);});
+                connect(field1, &QAction::triggered, this, [=]{set_mode(capture_deinterlacing_mode_e::field_1);});
+
+                // Activate the default setting.
+                {
+                    const QString defaultMode = kpers_value_of(INI_GROUP_OUTPUT, "interlacing_mode", "Weave").toString();
+
+                    QAction *action = bob;
+
+                    if      (defaultMode.toLower() == "bob") action = bob;
+                    else if (defaultMode.toLower() == "weave") action = weave;
+                    else if (defaultMode.toLower() == "field 1") action = field0;
+                    else if (defaultMode.toLower() == "field 2") action = field1;
+
+                    action->trigger();
+                }
             }
 
             menu->addMenu(channel);
