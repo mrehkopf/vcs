@@ -11,11 +11,14 @@ linux {
     # bundled with the driver downloadable from Datapath's website. The files
     # are expected to be in a visionrgb subdirectory of this path e.g.
     # .../visionrgb/include/rgb133control.h.
-    INCLUDEPATH += $$(HOME)/sdk/
+    INCLUDEPATH += $$(HOME)/sdk/ \
+                   /usr/local/include/ \
 
     contains(DEFINES, USE_OPENCV) {
-        LIBS += -lopencv_imgproc -lopencv_videoio -lopencv_highgui -lopencv_core -lopencv_photo
+        LIBS += -L /usr/local/lib/ -lopencv_imgproc -lopencv_videoio -lopencv_highgui -lopencv_core -lopencv_photo
     }
+
+    QMAKE_RPATHDIR += /usr/local/lib/ \
 }
 
 win32 {
