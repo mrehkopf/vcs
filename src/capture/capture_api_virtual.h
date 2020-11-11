@@ -43,6 +43,15 @@ struct capture_api_virtual_s : public capture_api_s
     const captured_frame_s& get_frame_buffer(void) const override;
     bool mark_frame_buffer_as_processed(void) override;
 
+    bool device_supports_component_capture(void) const override  { return true; }
+    bool device_supports_composite_capture(void) const override  { return true; }
+    bool device_supports_deinterlacing(void) const override      { return true; }
+    bool device_supports_svideo(void) const override             { return true; }
+    bool device_supports_dma(void) const override                { return true; }
+    bool device_supports_dvi(void) const override                { return true; }
+    bool device_supports_vga(void) const override                { return true; }
+    bool device_supports_yuv(void) const override                { return true; }
+
 private:
     const resolution_s defaultResolution = resolution_s{640, 480, 32};
 
