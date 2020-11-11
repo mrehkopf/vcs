@@ -37,6 +37,17 @@ RecordDialog::RecordDialog(QDialog *parent) :
     connect(this->timerUpdateRecordingInfo, &QTimer::timeout,
             this, [=]{this->update_recording_metainfo();});
 
+    // Initialize the table of information. Note that this also sets
+    // the vertical order in which the table's parameters are shown.
+    {
+        ui->tableWidget_status->modify_property("Frames recorded", "-");
+        ui->tableWidget_status->modify_property("Frames dropped", "-");
+        ui->tableWidget_status->modify_property("Playback duration", "-");
+        ui->tableWidget_status->modify_property("Resolution", "-");
+        ui->tableWidget_status->modify_property("File size", "-");
+        ui->tableWidget_status->modify_property("Peak buffer usage", "-");
+    }
+
     // Certain features of recording are not available on certain operating systems;
     // so disable them accordingly.
     {
@@ -326,16 +337,19 @@ void RecordDialog::update_recording_metainfo(void)
             ui->tableWidget_status->modify_property("File size", QString("%1 %2").arg(QString::number(size, 'f', 2)).arg(suffix));
         }
 
+        ui->tableWidget_status->modify_property("Frames recorded", QString::number(krecord_num_frames_recorded()));
+
         ui->tableWidget_status->modify_property("Frames dropped", QString::number(krecord_num_frames_dropped()));
 
         ui->tableWidget_status->modify_property("Peak buffer usage", QString("%1%").arg(krecord_peak_buffer_usage_percent()));
     }
     else
     {
+        ui->tableWidget_status->modify_property("Frames recorded", "-");
+        ui->tableWidget_status->modify_property("Frames dropped", "-");
         ui->tableWidget_status->modify_property("Playback duration", "-");
         ui->tableWidget_status->modify_property("Resolution", "-");
         ui->tableWidget_status->modify_property("File size", "-");
-        ui->tableWidget_status->modify_property("Frames dropped", "-");
         ui->tableWidget_status->modify_property("Peak buffer usage", "-");
     }
 
