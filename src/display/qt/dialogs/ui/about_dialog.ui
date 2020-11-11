@@ -149,7 +149,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;VCS is a third-party open-source capture tool for Datapath's VisionRGB range of capture devices. VCS is not associated with nor endorsed by Datapath.&lt;/p&gt;&lt;p&gt;VCS uses the Qt framework (© The Qt Company) and the OpenCV image processing library (© OpenCV team).&lt;/p&gt;&lt;p&gt;VCS was made in Finland by Tarpeeksi Hyvae Soft.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A capture tool for Datapath's VisionRGB range of capture devices. (VCS is not associated with nor endorsed by Datapath.)&lt;/p&gt;&lt;p&gt;VCS uses the Qt framework (© The Qt Company) and the OpenCV image processing library (© OpenCV team).&lt;/p&gt;&lt;p&gt;VCS was made in Finland by Tarpeeksi Hyvae Soft.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -236,10 +236,10 @@
                <attribute name="verticalHeaderVisible">
                 <bool>false</bool>
                </attribute>
-               <attribute name="verticalHeaderDefaultSectionSize">
+               <attribute name="verticalHeaderMinimumSectionSize">
                 <number>28</number>
                </attribute>
-               <attribute name="verticalHeaderMinimumSectionSize">
+               <attribute name="verticalHeaderDefaultSectionSize">
                 <number>28</number>
                </attribute>
               </widget>
