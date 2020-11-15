@@ -1329,11 +1329,15 @@ FilterGraphNode* MainWindow::add_filter_graph_node(const filter_type_enum_e &fil
     return this->filterGraphDlg->add_filter_graph_node(filterType, initialParameterValues);
 }
 
-void MainWindow::update_window_title()
+void MainWindow::update_window_title(void)
 {
     QString title = PROGRAM_NAME;
 
-    if (kc_capture_api().has_invalid_device())
+    if (PROGRAM_EXIT_REQUESTED)
+    {
+        title = QString("%1 - Closing...").arg(PROGRAM_NAME);
+    }
+    else if (kc_capture_api().has_invalid_device())
     {
         title = QString("%1 - Invalid capture channel").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
     }
@@ -1438,8 +1442,13 @@ void MainWindow::clear_known_aliases()
     return;
 }
 
-void MainWindow::update_window_size()
+void MainWindow::update_window_size(void)
 {
+    if (PROGRAM_EXIT_REQUESTED)
+    {
+        return;
+    }
+
     const resolution_s r = ks_output_resolution();
 
     this->setFixedSize(r.w, r.h);
