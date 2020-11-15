@@ -1444,11 +1444,6 @@ void MainWindow::clear_known_aliases()
 
 void MainWindow::update_window_size(void)
 {
-    if (PROGRAM_EXIT_REQUESTED)
-    {
-        return;
-    }
-
     const resolution_s r = ks_output_resolution();
 
     this->setFixedSize(r.w, r.h);

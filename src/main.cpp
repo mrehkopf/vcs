@@ -228,6 +228,7 @@ int main(int argc, char *argv[])
     while (!PROGRAM_EXIT_REQUESTED)
     {
         process_next_capture_event();
+        kt_update_timers();
         kd_spin_event_loop();
     }
 
