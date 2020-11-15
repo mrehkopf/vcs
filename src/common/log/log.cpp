@@ -52,7 +52,7 @@ void klog_initialize(void)
     {
         const auto resolution = kc_capture_api().get_resolution();
 
-        INFO(("New video mode: %u x %u @ %f Hz.", resolution.w, resolution.h, kc_capture_api().get_refresh_rate().value<double>()));
+        INFO(("New video mode: %u x %u @ %.3f Hz.", resolution.w, resolution.h, kc_capture_api().get_refresh_rate().value<double>()));
     });
 
     return;
