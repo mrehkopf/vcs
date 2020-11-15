@@ -22,6 +22,7 @@
 #include <chrono>
 #include <future>
 #include <vector>
+#include <atomic>
 #include <functional>
 #include "common/timer/timer.h"
 
@@ -43,7 +44,7 @@ class timer_c
 {
 public:
     timer_c(const unsigned intervalMs, std::function<void(void)> func) :
-        keepRunning(new bool(true)),
+        keepRunning(true),
         intervalMs(intervalMs),
         timeoutFunction(func)
     {
@@ -54,8 +55,6 @@ public:
 
     ~timer_c()
     {
-        delete this->keepRunning;
-
         return;
     }
 
@@ -64,7 +63,7 @@ public:
         return this->future_;
     }
 
-    bool *const keepRunning;
+    std::atomic<bool> keepRunning;
 
     const unsigned intervalMs;
 
@@ -77,10 +76,11 @@ private:
     {
         this->future_ = std::async(std::launch::async, [=]
         {
-            while (*this->keepRunning)
+            while (this->keepRunning)
             {
                 unsigned timeWaited = 0;
-                while (*this->keepRunning &&
+                
+                while (this->keepRunning &&
                        (timeWaited < this->intervalMs))
                 {
                     /// TODO: Inform the user that timers' resolution is basically this value.
@@ -109,12 +109,16 @@ void kt_release_timers(void)
 {
     for (timer_c *const timer: ACTIVE_TIMERS)
     {
-        *timer->keepRunning = false;
+        timer->keepRunning = false;
     }
 
     for (timer_c *const timer: ACTIVE_TIMERS)
     {
-        timer->future().wait();
+        if (timer->future().valid())
+        {
+            timer->future().wait();
+        }
+
         delete timer;
     }
 
