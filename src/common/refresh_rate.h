@@ -47,11 +47,7 @@ struct refresh_rate_s
         }
         else if (std::is_same<T, double>::value)
         {
-            return (this->internalValue / pow(10.0, double(numDecimalsPrecision)));
-        }
-        else if (std::is_same<T, float>::value)
-        {
-            return (this->internalValue / powf(10.0f, float(numDecimalsPrecision)));
+            return (this->internalValue / pow(10, double(numDecimalsPrecision)));
         }
     }
 
@@ -62,7 +58,7 @@ struct refresh_rate_s
 
     void operator=(const double hz)
     {
-        this->internalValue = unsigned(hz * pow(10, numDecimalsPrecision));
+        this->internalValue = unsigned(round(hz * pow(10, numDecimalsPrecision)));
     }
 
     void operator=(const unsigned hz)
