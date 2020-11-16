@@ -251,16 +251,18 @@ The record dialog gives you the option to stream captured frames into a video fi
 The recording functionality will write frames as they appear in the [output window](#output-window) into a video file. But make note of the following:
 
 - Audio will not be recorded.
+- Frames will be inserted into the video at the rate of capture; the recorder itself does not try to maintain any particular frame rate (e.g. by duplicating or discarding frames). For example, if your capture source is 57.5 Hz, one minute of video will have 57.5 * 60 frames, and if that video is played back at 60 FPS, it will appear slightly sped up.
+- If any frames are dropped during recording, the video's playback will be non-linear. So if you're recording a separate audio file and are planning to sync it with the video, you want 0 frame drop.
 - The video will be recorded in the H.264 format using an x264 codec.
 - The video resolution will be that of the current output size (see the [output resolution dialog](#output-resolution-dialog)).
 - The output size cannot be changed while recording; frames will be scaled to fit the current size.
 - The [overlay](#overlay-dialog) will not be recorded.
 - Encoder parameters influencing image quality (e.g. CRF) cannot be altered in the Linux version of VCS - this is a limitation of OpenCV. You can, however, modify and recompile the OpenCV code with higher-quality default options (see e.g. [here](https://www.researchgate.net/post/Is_it_possible_to_set_the_lossfree_option_for_the_X264_codec_in_OpenCV)).
 
-To make use of VCS's recording functionality on Windows, you will need to install the 32-bit version of the [x264vfw](https://sourceforge.net/projects/x264vfw/files/x264vfw/44_2851bm_44825/) codec and run its configurator at least once, so that its settings are added into the Windows registry for VCS to find.
+To make use of VCS's recording functionality in Windows, you will need to install the 32-bit version of the [x264vfw](https://sourceforge.net/projects/x264vfw/files/x264vfw/44_2851bm_44825/) codec and run its configurator at least once, so that its settings are added into the Windows registry for VCS to find.
 
 #### Recording settings
-**Frame rate.** The video's nominal playback rate. Typically, you will want to match this to the capture source's refresh rate, so that e.g. a 60 Hz capture signal is recorded with a frame rate of 60.
+**Nominal FPS.** The video's suggested playback rate, for video player software. This setting does not affect the recording rate, only the rate at which the video will (or might be) played back.
 
 **Video container.** The file format in which the video is saved. On Windows, the AVI format is used.
 
@@ -269,6 +271,10 @@ To make use of VCS's recording functionality on Windows, you will need to instal
 **Additional x264 arguments.** You can provide the encoder with custom command-line parameters via this field.
 
 For best image quality regardless of performance and/or file size, set `profile` to "High 4:4:4", `pixel format` to "RGB", `CRF` to 1, and `preset` to "ultrafast". To maintain high image quality but reduce the file size, you can set `preset` to "veryfast" or "faster", and increase `CRF` to 10&ndash;15. For more tips and tricks, you can look up documentation specific to the x264 encoder.
+
+If the recorder dialog indicates that frames are being dropped while recording, try to select recording options that require less CPU or IO performance.
+- Dragging or otherwise interacting with GUI items (e.g. dialog windows) during recording may cause transient frame drops.
+- During recording, frames will be saved to disk in batches. If you get a bunch of frames dropped every couple of seconds but no drops otherwise, insufficient disk performance may be the reason (i.e. writing the batch of frames takes too long).
 
 ### Input resolution dialog
 To access: Ctrl+I or [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Resolution...`
