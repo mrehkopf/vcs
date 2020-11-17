@@ -269,8 +269,20 @@ void s_scaler_nearest(SCALER_FUNC_PARAMS)
     #if USE_OPENCV
         opencv_scale(pixelData, OUTPUT_BUFFER.ptr(), sourceRes, targetRes, cv::INTER_NEAREST);
     #else
-        /// TODO. Implement a non-OpenCV nearest scaler so there's a basic fallback.
-        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
+        real deltaW = (sourceRes.w / real(targetRes.w));
+        real deltaH = (sourceRes.h / real(targetRes.h));
+        u8 *const dst = OUTPUT_BUFFER.ptr();
+
+        for (uint y = 0; y < targetRes.h; y++)
+        {
+            for (uint x = 0; x < targetRes.w; x++)
+            {
+                const uint dstIdx = ((x + y * targetRes.w) * 4);
+                const uint srcIdx = ((uint(x * deltaW) + uint(y * deltaH) * sourceRes.w) * 4);
+
+                memcpy(&dst[dstIdx], &pixelData[srcIdx], 4);
+            }
+        }
     #endif
 
     return;
