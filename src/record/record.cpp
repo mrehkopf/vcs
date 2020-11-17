@@ -69,8 +69,9 @@ void krecord_initialize(void)
 }
 
 static bool runEncoder = false;
-static std::string encoderError = "";
+static std::string encoderError = {};
 
+#ifdef USE_OPENCV
 // A thread launched by the recorder to encode and save to disk any captured
 // frames.
 static bool encoder_thread(void)
@@ -128,8 +129,9 @@ static bool encoder_thread(void)
 
     return true;
 }
+#endif
 
-// Prepare the OpenCV video writer for recording frames into a video.
+// Prepare the OpenCV video writer for recording frames into a video.ssss
 // Returns true if successful, false otherwise.
 //
 bool krecord_start_recording(const char *const filename,
