@@ -27,7 +27,7 @@ QHeaderView::section,
 QAbstractItemView,
 QTreeWidget QHeaderView::section
 {
-    font-family: "MS Sans Serif"; /*Assumes that the Ubuntu font is provided with VCS.*/
+    font-family: "MS Sans Serif";
     font-size: 15px;
 }
 
