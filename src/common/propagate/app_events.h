@@ -126,6 +126,8 @@ public:
     struct
     {
         vcs_event_c newFrameResolution;
+
+        // The most recent captured frame has now been processed and is ready for display.
         vcs_event_c newFrame;
     } scaler;
 
