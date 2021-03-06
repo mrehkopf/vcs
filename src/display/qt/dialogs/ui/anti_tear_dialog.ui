@@ -467,6 +467,23 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>spinBox_rangeUp</tabstop>
+  <tabstop>spinBox_rangeDown</tabstop>
+  <tabstop>spinBox_threshold</tabstop>
+  <tabstop>spinBox_domainSize</tabstop>
+  <tabstop>spinBox_stepSize</tabstop>
+  <tabstop>spinBox_matchesReqd</tabstop>
+  <tabstop>pushButton_reset_value_scanStart</tabstop>
+  <tabstop>pushButton_reset_value_scanEnd</tabstop>
+  <tabstop>pushButton_reset_value_threshold</tabstop>
+  <tabstop>pushButton_reset_value_windowSize</tabstop>
+  <tabstop>pushButton_reset_value_stepSize</tabstop>
+  <tabstop>pushButton_reset_value_matchesReqd</tabstop>
+  <tabstop>checkBox_visualizeRange</tabstop>
+  <tabstop>checkBox_visualizeTear</tabstop>
+  <tabstop>scrollArea</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

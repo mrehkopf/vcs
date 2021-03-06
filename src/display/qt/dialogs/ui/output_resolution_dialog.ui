@@ -210,6 +210,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>checkBox_forceOutputRes</tabstop>
+  <tabstop>spinBox_outputResX</tabstop>
+  <tabstop>spinBox_outputResY</tabstop>
+  <tabstop>checkBox_forceOutputScale</tabstop>
+  <tabstop>spinBox_outputScale</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

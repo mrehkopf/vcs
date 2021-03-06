@@ -226,6 +226,17 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>pushButton_inputForce_7</tabstop>
+  <tabstop>pushButton_inputForce_8</tabstop>
+  <tabstop>pushButton_inputForce_9</tabstop>
+  <tabstop>pushButton_inputForce_4</tabstop>
+  <tabstop>pushButton_inputForce_5</tabstop>
+  <tabstop>pushButton_inputForce_6</tabstop>
+  <tabstop>pushButton_inputForce_1</tabstop>
+  <tabstop>pushButton_inputForce_2</tabstop>
+  <tabstop>pushButton_inputForce_3</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

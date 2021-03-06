@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>421</width>
-    <height>497</height>
+    <height>753</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,7 +41,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-268</y>
+        <y>0</y>
         <width>407</width>
         <height>765</height>
        </rect>
@@ -1604,6 +1604,48 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>comboBox_presetList</tabstop>
+  <tabstop>lineEdit_presetName</tabstop>
+  <tabstop>checkBox_activatorResolution</tabstop>
+  <tabstop>spinBox_resolutionX</tabstop>
+  <tabstop>pushButton_resolutionSeparator</tabstop>
+  <tabstop>spinBox_resolutionY</tabstop>
+  <tabstop>checkBox_activatorRefreshRate</tabstop>
+  <tabstop>comboBox_refreshRateComparison</tabstop>
+  <tabstop>pushButton_refreshRateSeparator</tabstop>
+  <tabstop>doubleSpinBox_refreshRateValue</tabstop>
+  <tabstop>checkBox_activatorShortcut</tabstop>
+  <tabstop>comboBox_shortcutFirstKey</tabstop>
+  <tabstop>comboBox_shortcutSecondKey</tabstop>
+  <tabstop>spinBox_videoHorSize</tabstop>
+  <tabstop>spinBox_videoHorPos</tabstop>
+  <tabstop>spinBox_videoVerPos</tabstop>
+  <tabstop>spinBox_videoBlackLevel</tabstop>
+  <tabstop>spinBox_videoPhase</tabstop>
+  <tabstop>spinBox_colorBright</tabstop>
+  <tabstop>spinBox_colorBrightRed</tabstop>
+  <tabstop>spinBox_colorBrightGreen</tabstop>
+  <tabstop>spinBox_colorBrightBlue</tabstop>
+  <tabstop>spinBox_colorContr</tabstop>
+  <tabstop>spinBox_colorContrRed</tabstop>
+  <tabstop>spinBox_colorContrGreen</tabstop>
+  <tabstop>spinBox_colorContrBlue</tabstop>
+  <tabstop>pushButton_reset_value_horSize</tabstop>
+  <tabstop>pushButton_reset_value_horPos</tabstop>
+  <tabstop>pushButton_reset_value_verPos</tabstop>
+  <tabstop>pushButton_reset_value_blackLevel</tabstop>
+  <tabstop>pushButton_reset_value_phase</tabstop>
+  <tabstop>pushButton_reset_value_brightness</tabstop>
+  <tabstop>pushButton_reset_value_brightnessRed</tabstop>
+  <tabstop>pushButton_reset_value_brightnessGreen</tabstop>
+  <tabstop>pushButton_reset_value_brightnessBlue</tabstop>
+  <tabstop>pushButton_reset_value_contrast</tabstop>
+  <tabstop>pushButton_reset_value_contrastRed</tabstop>
+  <tabstop>pushButton_reset_value_contrastGreen</tabstop>
+  <tabstop>pushButton_reset_value_contrastBlue</tabstop>
+  <tabstop>scrollArea</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
