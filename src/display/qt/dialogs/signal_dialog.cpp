@@ -113,6 +113,11 @@ SignalDialog::SignalDialog(QWidget *parent) :
             NUM_DROPPED_FRAMES = 0;
             ui->tableWidget_propertyTable->modify_property("Frames dropped", "0");
         });
+
+        connect(ui->pushButton_resetUptime, &QPushButton::clicked, this, [this]
+        {
+            VIDEO_MODE_UPTIME.restart();
+        });
     }
 
     // Subscribe to app events.

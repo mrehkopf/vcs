@@ -131,6 +131,13 @@
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QPushButton" name="pushButton_resetUptime">
+               <property name="text">
+                <string>Reset uptime</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
