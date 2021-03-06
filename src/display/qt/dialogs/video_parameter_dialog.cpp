@@ -33,6 +33,43 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+    // Wire up the buttons for resetting individual video parameters.
+    for (int i = 0; i < ui->groupBox_videoParameters->layout()->count(); i++)
+    {
+        QWidget *const button = ui->groupBox_videoParameters->layout()->itemAt(i)->widget();
+
+        // The button name is expected to identify its video parameter affiliation. E.g.
+        // a button called "pushButton_reset_value_horPos" is for resetting the horizontal
+        // video position.
+        if (!button->objectName().startsWith("pushButton_reset_value_"))
+        {
+            continue;
+        }
+
+        connect((QPushButton*)button, &QPushButton::clicked, this, [this, button]
+        {
+            const QString paramId = button->objectName().replace("pushButton_reset_value_", "");
+            const auto defaultParams = kc_capture_api().get_default_video_signal_parameters();
+
+            if (paramId == "horSize") ui->spinBox_videoHorSize->setValue(defaultParams.horizontalScale);
+            else if (paramId == "horPos") ui->spinBox_videoHorPos->setValue(defaultParams.horizontalPosition);
+            else if (paramId == "verPos") ui->spinBox_videoVerPos->setValue(defaultParams.verticalPosition);
+            else if (paramId == "blackLevel") ui->spinBox_videoBlackLevel->setValue(defaultParams.blackLevel);
+            else if (paramId == "phase") ui->spinBox_videoPhase->setValue(defaultParams.phase);
+            else if (paramId == "brightness") ui->spinBox_colorBright->setValue(defaultParams.overallBrightness);
+            else if (paramId == "brightnessRed") ui->spinBox_colorBrightRed->setValue(defaultParams.redBrightness);
+            else if (paramId == "brightnessGreen") ui->spinBox_colorBrightGreen->setValue(defaultParams.greenBrightness);
+            else if (paramId == "brightnessBlue") ui->spinBox_colorBrightBlue->setValue(defaultParams.blueBrightness);
+            else if (paramId == "contrast") ui->spinBox_colorContr->setValue(defaultParams.overallContrast);
+            else if (paramId == "contrastRed") ui->spinBox_colorContrRed->setValue(defaultParams.redContrast);
+            else if (paramId == "contrastGreen") ui->spinBox_colorContrGreen->setValue(defaultParams.greenContrast);
+            else if (paramId == "contrastBlue") ui->spinBox_colorContrBlue->setValue(defaultParams.blueContrast);
+            else k_assert(0, "Unknown video parameter identifier");
+        });
+
+        continue;
+    }
+
     // Create the dialog's menu bar.
     {
         this->menubar = new QMenuBar(this);
@@ -276,20 +313,6 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         connect(ui->pushButton_refreshRateSeparator, &QPushButton::clicked, this, [this](void)
         {
             ui->doubleSpinBox_refreshRateValue->setValue(kc_capture_api().get_refresh_rate().value<double>());
-        });
-
-        connect(ui->pushButton_resetToDefaultVideoParams, &QPushButton::clicked, this, [this](void)
-        {
-            if (QMessageBox::warning(this, "Confirm resetting of parameter values",
-                                     "This will reset the video parameter values to their defaults, overriding "
-                                     "any unsaved changes you've made to them. Continue?",
-                                     (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes)
-            {
-                this->currentPreset->videoParameters = kc_capture_api().get_default_video_signal_parameters();
-
-                this->update_preset_controls_with_current_preset_data();
-                kvideopreset_apply_current_active_preset();
-            }
         });
 
         // The valueChanged() signal is overloaded for int and QString, and we
