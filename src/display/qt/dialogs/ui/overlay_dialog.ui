@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
-    <height>307</height>
+    <width>458</width>
+    <height>289</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -30,11 +30,11 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="groupBox_main">
      <property name="title">
-      <string>Overlay editor</string>
+      <string/>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <property name="spacing">
        <number>3</number>
       </property>
@@ -48,28 +48,52 @@
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>6</number>
+       <number>0</number>
       </property>
       <item>
-       <widget class="QPlainTextEdit" name="plainTextEdit">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string>Overlay editor</string>
         </property>
-        <property name="frameShape">
-         <enum>QFrame::NoFrame</enum>
-        </property>
-        <property name="lineWrapMode">
-         <enum>QPlainTextEdit::NoWrap</enum>
-        </property>
-        <property name="tabStopWidth">
-         <number>15</number>
-        </property>
-        <property name="placeholderText">
-         <string>Enter your overlay text here</string>
-        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>3</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>6</number>
+         </property>
+         <item>
+          <widget class="QPlainTextEdit" name="plainTextEdit">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="lineWrapMode">
+            <enum>QPlainTextEdit::NoWrap</enum>
+           </property>
+           <property name="tabStopWidth">
+            <number>15</number>
+           </property>
+           <property name="placeholderText">
+            <string>Enter your overlay text here</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>

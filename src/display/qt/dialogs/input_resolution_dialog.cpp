@@ -18,31 +18,29 @@ InputResolutionDialog::InputResolutionDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Input Resolution");
+    this->setWindowTitle("VCS - Capture Resolution");
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     // Wire up the buttons for forcing the capture input resolution.
+    for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)
     {
-        for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)
+        QWidget *const w = ui->frame_inputForceButtons->layout()->itemAt(i)->widget();
+
+        k_assert(w->objectName().startsWith("pushButton"), "Expected all widgets in this layout to be pushbuttons.");
+
+        // Store the unique id of this button, so we can later identify it.
+        ((QPushButton*)w)->setProperty("butt_id", i);
+
+        // Load in any custom resolutions the user may have set earlier.
+        if (kpers_contains(INI_GROUP_INPUT, QString("force_res_%1").arg(i)))
         {
-            QWidget *const w = ui->frame_inputForceButtons->layout()->itemAt(i)->widget();
-
-            k_assert(w->objectName().contains("pushButton"), "Expected all widgets in this layout to be pushbuttons.");
-
-            // Store the unique id of this button, so we can later identify it.
-            ((QPushButton*)w)->setProperty("butt_id", i);
-
-            // Load in any custom resolutions the user may have set earlier.
-            if (kpers_contains(INI_GROUP_INPUT, QString("force_res_%1").arg(i)))
-            {
-                ((QPushButton*)w)->setText(kpers_value_of(INI_GROUP_INPUT, QString("force_res_%1").arg(i)).toString());
-            }
-
-            connect((QPushButton*)w, &QPushButton::clicked,
-                    this, [this,w]{this->parse_capture_resolution_button_press(w);});
+            ((QPushButton*)w)->setText(kpers_value_of(INI_GROUP_INPUT, QString("force_res_%1").arg(i)).toString());
         }
+
+        connect((QPushButton*)w, &QPushButton::clicked,
+                this, [this,w]{this->parse_capture_resolution_button_press(w);});
     }
 
     // Restore persistent settings.
@@ -81,7 +79,7 @@ void InputResolutionDialog::parse_capture_resolution_button_press(QWidget *butto
     {
         res.w = 1920;
         res.h = 1080;
-        if (ResolutionDialog("Force an input resolution",
+        if (ResolutionDialog("Force a capture resolution",
                              &res, parentWidget()).exec() == QDialog::Rejected)
         {
             // If the user canceled.

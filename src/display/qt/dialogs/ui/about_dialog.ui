@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>428</width>
-    <height>401</height>
+    <width>462</width>
+    <height>315</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_5">
+  <layout class="QVBoxLayout" name="verticalLayout_6">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -42,8 +42,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>428</width>
-        <height>401</height>
+        <width>448</width>
+        <height>331</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -63,25 +63,19 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QGroupBox" name="groupBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+        <widget class="QGroupBox" name="groupBox_main">
          <property name="title">
-          <string>About VCS</string>
+          <string/>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
           <property name="spacing">
-           <number>11</number>
+           <number>3</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
           <property name="topMargin">
-           <number>6</number>
+           <number>3</number>
           </property>
           <property name="rightMargin">
            <number>0</number>
@@ -90,73 +84,103 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QFrame" name="frame">
+           <widget class="QGroupBox" name="groupBox_aboutVCS">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
+            <property name="title">
+             <string>About VCS</string>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
+            <layout class="QVBoxLayout" name="verticalLayout">
              <property name="spacing">
-              <number>9</number>
+              <number>6</number>
              </property>
              <property name="leftMargin">
               <number>0</number>
              </property>
              <property name="topMargin">
-              <number>0</number>
+              <number>9</number>
              </property>
              <property name="rightMargin">
-              <number>0</number>
+              <number>9</number>
              </property>
              <property name="bottomMargin">
-              <number>0</number>
+              <number>9</number>
              </property>
              <item>
-              <widget class="QLabel" name="label_newVersionNotice">
+              <widget class="QFrame" name="frame">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
-               <property name="font">
-                <font>
-                 <italic>false</italic>
-                </font>
+               <property name="frameShape">
+                <enum>QFrame::NoFrame</enum>
                </property>
-               <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A newer version of VCS is available. &lt;a href=&quot;https://www.github.com/leikareipa/vcs/releases/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;See the change log&lt;/span&gt;&lt;/a&gt; for more details.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="wordWrap">
-                <bool>true</bool>
-               </property>
-               <property name="openExternalLinks">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_17">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A capture tool for Datapath's VisionRGB range of capture devices. (VCS is not associated with nor endorsed by Datapath.)&lt;/p&gt;&lt;p&gt;VCS uses the Qt framework (© The Qt Company) and the OpenCV image processing library (© OpenCV team).&lt;/p&gt;&lt;p&gt;VCS was made in Finland by Tarpeeksi Hyvae Soft.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-               </property>
-               <property name="wordWrap">
-                <bool>true</bool>
-               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_2">
+                <property name="spacing">
+                 <number>9</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_newVersionNotice">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <italic>false</italic>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A newer version of VCS is available. &lt;a href=&quot;https://www.github.com/leikareipa/vcs/releases/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;See the change log&lt;/span&gt;&lt;/a&gt; for more details.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                  <property name="openExternalLinks">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_17">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A capture tool for Datapath's VisionRGB range of capture devices. (VCS is not associated with nor endorsed by Datapath.)&lt;/p&gt;&lt;p&gt;VCS uses the Qt framework (© The Qt Company) and the OpenCV image processing library (© OpenCV team).&lt;/p&gt;&lt;p&gt;VCS was made in Finland by Tarpeeksi Hyvae Soft.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>

@@ -24,11 +24,11 @@ AboutDialog::AboutDialog(QWidget *parent) :
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     {
-        ui->groupBox->setTitle("VCS " + QString(PROGRAM_VERSION_STRING));
+        ui->groupBox_aboutVCS->setTitle("VCS " + QString(PROGRAM_VERSION_STRING));
 
         if (IS_DEV_VERSION)
         {
-            ui->groupBox->setTitle(ui->groupBox->title() + "~dev");
+            ui->groupBox_aboutVCS->setTitle(ui->groupBox_aboutVCS->title() + "~dev");
         }
     }
 

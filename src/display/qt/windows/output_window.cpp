@@ -112,6 +112,8 @@ MainWindow::MainWindow(QWidget *parent) :
             QMenu *menu = new QMenu("Capture", this);
             menus.push_back(menu);
 
+            QMenu *dialogs = new QMenu("Dialogs", this);
+
             QMenu *channel = new QMenu("Channel", this);
             {
                 #if __linux__
@@ -176,7 +178,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 connect(c24, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_888);});
             }
 
-            QMenu *deinterlacing = new QMenu("Deinterlacing", this);
+            QMenu *deinterlacing = new QMenu("De-interlace", this);
             {
                 deinterlacing->setEnabled(kc_capture_api().device_supports_deinterlacing());
 
@@ -255,24 +257,24 @@ MainWindow::MainWindow(QWidget *parent) :
             }
 
             menu->addMenu(channel);
-            menu->addSeparator();
             menu->addMenu(colorDepth);
             menu->addMenu(deinterlacing);
             menu->addSeparator();
+            menu->addMenu(dialogs);
 
-            connect(menu->addAction("Aliases..."), &QAction::triggered, this, [=]{this->open_alias_dialog();});
+            connect(dialogs->addAction("Aliases"), &QAction::triggered, this, [=]{this->open_alias_dialog();});
 
-            QAction *resolution = new QAction("Resolution...", this);
+            QAction *resolution = new QAction("Resolution", this);
             resolution->setShortcut(QKeySequence("ctrl+i"));
-            menu->addAction(resolution);
+            dialogs->addAction(resolution);
 
-            QAction *signal = new QAction("Signal info...", this);
+            QAction *signal = new QAction("Signal info", this);
             signal->setShortcut(QKeySequence("ctrl+s"));
-            menu->addAction(signal);
+            dialogs->addAction(signal);
 
-            QAction *videoParams = new QAction("Video presets...", this);
+            QAction *videoParams = new QAction("Video presets", this);
             videoParams->setShortcut(QKeySequence("ctrl+v"));
-            menu->addAction(videoParams);
+            dialogs->addAction(videoParams);
 
             connect(signal, &QAction::triggered, this, [=]{this->open_video_dialog();});
             connect(videoParams, &QAction::triggered, this, [=]{this->open_video_parameter_graph_dialog();});
@@ -285,7 +287,7 @@ MainWindow::MainWindow(QWidget *parent) :
             menus.push_back(menu);
 
             const std::vector<std::string> scalerNames = ks_list_of_scaling_filter_names();
-            k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
+            k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");  
 
             QMenu *upscaler = new QMenu("Upscaler", this);
             {
@@ -365,35 +367,38 @@ MainWindow::MainWindow(QWidget *parent) :
                 else if (defaultAspectRatio == "Traditional 4:3") traditional43->setChecked(true);
             }
 
+            QMenu *dialogs = new QMenu("Dialogs", this);
+
             menu->addMenu(aspectRatio);
             menu->addSeparator();
             menu->addMenu(upscaler);
             menu->addMenu(downscaler);
             menu->addSeparator();
+            menu->addMenu(dialogs);
 
-            QAction *overlay = new QAction("Overlay...", this);
+            QAction *overlay = new QAction("Overlay", this);
             overlay->setShortcut(QKeySequence("ctrl+l"));
-            menu->addAction(overlay);
+            dialogs->addAction(overlay);
             connect(overlay, &QAction::triggered, this, [=]{this->open_overlay_dialog();});
 
-            QAction *antiTear = new QAction("Anti-tearing...", this);
+            QAction *antiTear = new QAction("Anti-tear", this);
             antiTear->setShortcut(QKeySequence("ctrl+a"));
-            menu->addAction(antiTear);
+            dialogs->addAction(antiTear);
             connect(antiTear, &QAction::triggered, this, [=]{this->open_antitear_dialog();});
 
-            QAction *resolution = new QAction("Resolution...", this);
+            QAction *resolution = new QAction("Resolution", this);
             resolution->setShortcut(QKeySequence("ctrl+o"));
-            menu->addAction(resolution);
+            dialogs->addAction(resolution);
             connect(resolution, &QAction::triggered, this, [=]{this->open_output_resolution_dialog();});
 
-            QAction *filter = new QAction("Filter graph...", this);
+            QAction *filter = new QAction("Filter graph", this);
             filter->setShortcut(QKeySequence("ctrl+f"));
-            menu->addAction(filter);
+            dialogs->addAction(filter);
             connect(filter, &QAction::triggered, this, [=]{this->open_filter_graph_dialog();});
 
-            QAction *record = new QAction("Video recorder...", this);
+            QAction *record = new QAction("Video recorder", this);
             record->setShortcut(QKeySequence("ctrl+r"));
-            menu->addAction(record);
+            dialogs->addAction(record);
             connect(record, &QAction::triggered, this, [=]{this->open_record_dialog();});
         }
 
@@ -403,6 +408,104 @@ MainWindow::MainWindow(QWidget *parent) :
             menus.push_back(menu);
 
             {
+                QAction *showBorder = new QAction("Border", this);
+
+                showBorder->setCheckable(true);
+                showBorder->setChecked(this->window_has_border());
+                showBorder->setShortcut(QKeySequence("f1"));
+
+                connect(this, &MainWindow::border_hidden, this, [=]
+                {
+                    showBorder->setChecked(false);
+                });
+
+                connect(this, &MainWindow::border_revealed, this, [=]
+                {
+                    showBorder->setChecked(true);
+                });
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    showBorder->setEnabled(false);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    showBorder->setEnabled(true);
+                });
+
+                connect(showBorder, &QAction::triggered, this, [this]
+                {
+                    this->toggle_window_border();
+                });
+
+                menu->addAction(showBorder);
+            }
+
+            {
+                QAction *fullscreen = new QAction("Fullscreen", this);
+
+                fullscreen->setCheckable(true);
+                fullscreen->setChecked(this->isFullScreen());
+                fullscreen->setShortcut(QKeySequence("f11"));
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    fullscreen->setChecked(true);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    fullscreen->setChecked(false);
+                });
+
+                connect(fullscreen, &QAction::triggered, this, [this]
+                {
+                    if (this->isFullScreen())
+                    {
+                        this->showNormal();
+                    }
+                    else
+                    {
+                        this->showFullScreen();
+                    }
+                });
+
+                menu->addAction(fullscreen);
+            }
+
+            {
+                QMenu *positionMenu = new QMenu("Position", this);
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    positionMenu->setEnabled(false);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    positionMenu->setEnabled(true);
+                });
+
+                connect(positionMenu->addAction("Center"), &QAction::triggered, this, [=]
+                {
+                    this->move(this->pos() + (QGuiApplication::primaryScreen()->geometry().center() - this->geometry().center()));
+                });
+
+                QAction *topLeft = new QAction("Top left", this);
+                topLeft->setShortcut(QKeySequence("f2"));
+                positionMenu->addAction(topLeft);
+                connect(topLeft, &QAction::triggered, this, [=]
+                {
+                    this->move(0, 0);
+                });
+
+                menu->addMenu(positionMenu);
+            }
+
+            {
+                menu->addSeparator();
+
                 QMenu *rendererMenu = new QMenu("Renderer", this);
 
                 QActionGroup *group = new QActionGroup(this);
@@ -452,36 +555,7 @@ MainWindow::MainWindow(QWidget *parent) :
             {
                 menu->addSeparator();
 
-                QMenu *positionMenu = new QMenu("Position", this);
-
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
-                {
-                    positionMenu->setEnabled(false);
-                });
-
-                connect(this, &MainWindow::left_fullscreen, this, [=]
-                {
-                    positionMenu->setEnabled(true);
-                });
-
-                connect(positionMenu->addAction("Center"), &QAction::triggered, this, [=]
-                {
-                    this->move(this->pos() + (QGuiApplication::primaryScreen()->geometry().center() - this->geometry().center()));
-                });
-
-                QAction *topLeft = new QAction("Top left", this);
-                topLeft->setShortcut(QKeySequence("f2"));
-                positionMenu->addAction(topLeft);
-                connect(topLeft, &QAction::triggered, this, [=]
-                {
-                    this->move(0, 0);
-                });
-
-                menu->addMenu(positionMenu);
-            }
-
-            {
-                QAction *customTitle = new QAction("Custom title...", this);
+                QAction *customTitle = new QAction("Set title...", this);
 
                 connect(customTitle, &QAction::triggered, this, [=]
                 {
@@ -509,77 +583,6 @@ MainWindow::MainWindow(QWidget *parent) :
                 });
 
                 menu->addAction(customTitle);
-            }
-
-            {
-                menu->addSeparator();
-
-                QAction *showBorder = new QAction("Show border", this);
-
-                showBorder->setCheckable(true);
-                showBorder->setChecked(this->window_has_border());
-                showBorder->setShortcut(QKeySequence("f1"));
-
-                connect(this, &MainWindow::border_hidden, this, [=]
-                {
-                    showBorder->setChecked(false);
-                });
-
-                connect(this, &MainWindow::border_revealed, this, [=]
-                {
-                    showBorder->setChecked(true);
-                });
-
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
-                {
-                    showBorder->setEnabled(false);
-                });
-
-                connect(this, &MainWindow::left_fullscreen, this, [=]
-                {
-                    showBorder->setEnabled(true);
-                });
-
-                connect(showBorder, &QAction::triggered, this, [this]
-                {
-                    this->toggle_window_border();
-                });
-
-                menu->addAction(showBorder);
-            }
-
-            {
-                menu->addSeparator();
-
-                QAction *fullscreen = new QAction("Fullscreen", this);
-
-                fullscreen->setCheckable(true);
-                fullscreen->setChecked(this->isFullScreen());
-                fullscreen->setShortcut(QKeySequence("f11"));
-
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
-                {
-                    fullscreen->setChecked(true);
-                });
-
-                connect(this, &MainWindow::left_fullscreen, this, [=]
-                {
-                    fullscreen->setChecked(false);
-                });
-
-                connect(fullscreen, &QAction::triggered, this, [this]
-                {
-                    if (this->isFullScreen())
-                    {
-                        this->showNormal();
-                    }
-                    else
-                    {
-                        this->showFullScreen();
-                    }
-                });
-
-                menu->addAction(fullscreen);
             }
         }
 

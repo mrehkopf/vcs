@@ -22,7 +22,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Anti-tearing");
+    this->setWindowTitle("VCS - Anti-tear");
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -31,9 +31,9 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
     {
         this->menubar = new QMenuBar(this);
 
-        // Anti-tearing...
+        // Anti-tear...
         {
-            QMenu *antitearMenu = new QMenu("Anti-tearing", this->menubar);
+            QMenu *antitearMenu = new QMenu("Anti-tear", this->menubar);
 
             QAction *enable = new QAction("Enabled", this->menubar);
             enable->setCheckable(true);

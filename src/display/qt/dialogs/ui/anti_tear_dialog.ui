@@ -401,7 +401,7 @@
              </sizepolicy>
             </property>
             <property name="title">
-             <string>Visualization</string>
+             <string>Visualize</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -425,7 +425,7 @@
              <item row="0" column="0">
               <widget class="QCheckBox" name="checkBox_visualizeRange">
                <property name="text">
-                <string>Scanline range</string>
+                <string>Scan range</string>
                </property>
                <property name="checked">
                 <bool>true</bool>

@@ -66,8 +66,6 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             else if (paramId == "contrastBlue") ui->spinBox_colorContrBlue->setValue(defaultParams.blueContrast);
             else k_assert(0, "Unknown video parameter identifier");
         });
-
-        continue;
     }
 
     // Create the dialog's menu bar.
