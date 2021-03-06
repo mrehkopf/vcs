@@ -302,6 +302,18 @@ static void visualize_settings(captured_frame_s &frame)
         return;
     }
 
+    // Shade the area under the scan range.
+    for (unsigned long y = MINY; y < MAXY; y++)
+    {
+        for (unsigned long x = 0; x < frame.r.w; x++)
+        {
+            const unsigned long idx = ((x + y * frame.r.w) * 4);
+
+            frame.pixels[idx + 1] *= 0.5;
+            frame.pixels[idx + 2] *= 0.5;
+        }
+    }
+
     // Indicate with a line where the sampling area starts and ends.
     u8 color = 255;
     for (unsigned long x = 0; x < frame.r.w; x++)
