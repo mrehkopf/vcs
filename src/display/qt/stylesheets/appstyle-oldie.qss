@@ -325,7 +325,7 @@ QTreeWidget::item:selected
 QGroupBox
 {
     margin: 0px;
-    background-color: white;
+    background-color: whitesmoke;
     border-radius: 0;
     padding-bottom: 6px;
     padding-left: 6px;
@@ -339,7 +339,7 @@ QGroupBox > QGroupBox
     margin-top: 3px;
     padding-top: 1.5em;
     background-color: #d4d0c8;
-    border: 1px solid black;
+    border: 1px solid gray;
     border-radius: 0px;
 }
 

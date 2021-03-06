@@ -43,7 +43,7 @@
         <x>0</x>
         <y>0</y>
         <width>448</width>
-        <height>331</height>
+        <height>348</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -170,7 +170,7 @@
                    </sizepolicy>
                   </property>
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A capture tool for Datapath's VisionRGB range of capture devices. (VCS is not associated with nor endorsed by Datapath.)&lt;/p&gt;&lt;p&gt;VCS uses the Qt framework (© The Qt Company) and the OpenCV image processing library (© OpenCV team).&lt;/p&gt;&lt;p&gt;VCS was made in Finland by Tarpeeksi Hyvae Soft.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A capture tool for Datapath's VisionRGB range of capture devices. (VCS is not associated with nor endorsed by Datapath.)&lt;/p&gt;&lt;p&gt;VCS uses the Qt framework (© The Qt Company) and the OpenCV image processing library (© OpenCV team).&lt;/p&gt;&lt;p&gt;VCS was made by Tarpeeksi Hyvae Soft. Find them at tarpeeksihyvaesoft.com.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
