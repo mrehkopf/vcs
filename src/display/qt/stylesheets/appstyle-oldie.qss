@@ -22,10 +22,6 @@ QInputDialog
     background-color: #d4d0c8;
     padding: 40px;
     border: none;
-    border-right: 3px solid #808075;
-    border-bottom: 3px solid #808075;
-    border-left: 3px solid #f5f5f0;
-    border-top: 3px solid #f5f5f0;
 }
 
 QMessageBox QPushButton,
@@ -151,7 +147,7 @@ QPushButton:flat
     border: none;
     border: 1px solid black;
     border-radius: 0;
-    padding: 3px;
+    padding: 2px;
     color: black;
 
     background-color: #d4d0c8;
@@ -161,6 +157,16 @@ QPushButton:flat
     border-bottom: 2px solid #808075;
     border-left: 2px solid #f5f5f0;
     border-top: 2px solid #f5f5f0;
+}
+
+/* For push buttons intended to reset an associated value field.*/
+QPushButton[objectName^="pushButton_reset_value_"]
+{
+    image: url(:/res/images/icons/reset.png);
+}
+QPushButton:disabled[objectName^="pushButton_reset_value_"]
+{
+    image: url(:/res/images/icons/reset_disabled.png);
 }
 
 QPushButton:pressed,
@@ -189,14 +195,6 @@ QScrollBar::sub-line:horizontal:pressed
 QPushButton:flat
 {
     border: none;
-}
-
-QPushButton:flat:hover
-{
-    border-right: 2px solid #808075;
-    border-bottom: 2px solid #808075;
-    border-left: 2px solid #f5f5f0;
-    border-top: 2px solid #f5f5f0;
 }
 
 QAbstractScrollArea::corner
@@ -286,10 +284,7 @@ QTreeWidget
     padding: 0;
     background-color: #d4d0c8;
     color: black;
-    border-right: 3px solid #808075;
-    border-bottom: 3px solid #808075;
-    border-left: 3px solid #f5f5f0;
-    border-top: 3px solid #f5f5f0;
+    border: 1px solid #808075;
 }
 
 QTreeWidget QAbstractItemView
@@ -305,14 +300,8 @@ QTreeWidget QHeaderView::section
     background-color: #d4d0c8;
     color: black;
     border: none;
-    border-left: 1px solid #f5f5f0;
-    border-right: 1px solid #808075;
     border-bottom: 1px solid #808075;
-}
-
-QTreeWidget QHeaderView::section:first
-{
-    border-left: none;
+    border-right: 1px solid #808075;
 }
 
 QTreeWidget QHeaderView::section:last
@@ -335,24 +324,23 @@ QTreeWidget::item:selected
 
 QGroupBox
 {
-    margin: 10px;
-    background-color: #d4d0c8;
+    margin: 0px;
+    background-color: white;
     border-radius: 0;
-    padding-top: 1.5em;
     padding-bottom: 6px;
     padding-left: 6px;
     padding-right: 6px;
     border: none;
-    border-right: 3px solid #808075;
-    border-bottom: 3px solid #808075;
-    border-left: 3px solid #f5f5f0;
-    border-top: 3px solid #f5f5f0;
 }
 
 QGroupBox > QGroupBox
 {
     margin: 0;
     margin-top: 3px;
+    padding-top: 1.5em;
+    background-color: #d4d0c8;
+    border: 1px solid black;
+    border-radius: 0px;
 }
 
 QGroupBox::title
@@ -562,12 +550,10 @@ QDoubleSpinBox,
 QLineEdit,
 QTextEdit
 {
-    background-color: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 rgba(0, 0, 0, 0.30), stop: 1 rgba(0, 0, 0, 0.35));
-    background-color: white;
     border: none;
     border: 1px solid black;
     border-radius: 0;
-    padding: 0;
+    padding: 1px;
     color: black;
 
     background-color: white;
@@ -577,6 +563,14 @@ QTextEdit
     border-top: 2px solid #808075;
     border-right: 2px solid #f0f0ea;
     border-bottom: 2px solid #f0f0ea;
+}
+
+QSpinBox:focus,
+QDoubleSpinBox:focus,
+QLineEdit:focus,
+QTextEdit:focus
+{
+    background-color: white;
 }
 
 QSpinBox::up-button,
@@ -626,8 +620,8 @@ QFrame[frameShape="4"]
 {
     margin: 0;
     border: none;
-    border-top: 1px solid #858580;
-    border-bottom: 1px solid #f0f0ea;
+    border-top: 1px solid #808075;
+    border-bottom: 1px solid #f5f5f0;
     max-height: 0px;
 }
 

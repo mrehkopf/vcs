@@ -17,5 +17,7 @@
         <file>images/icons/arrow_left_disabled.png</file>
         <file>images/icons/arrow_right_disabled.png</file>
         <file>images/icons/arrow_right.png</file>
+        <file>images/icons/reset.png</file>
+        <file>images/icons/reset_disabled.png</file>
     </qresource>
 </RCC>
