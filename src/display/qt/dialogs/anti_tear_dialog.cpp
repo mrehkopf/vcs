@@ -67,21 +67,37 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 
     // Connect the GUI controls to consequences for changing their values.
     {
-        connect(ui->pushButton_resetDefaults, &QPushButton::clicked, this, [=]
+        // Wire up the buttons for resetting individual video parameters.
+        for (int i = 0; i < ui->groupBox_parameters->layout()->count(); i++)
         {
-            const anti_tear_options_s defaults = kat_default_settings();
+            QWidget *const button = ui->groupBox_parameters->layout()->itemAt(i)->widget();
 
-            kat_set_buffer_updates_disabled(true);
+            // The button name is expected to identify its video parameter affiliation. E.g.
+            // a button called "pushButton_reset_value_horPos" is for resetting the horizontal
+            // video position.
+            if (!button->objectName().startsWith("pushButton_reset_value_"))
+            {
+                continue;
+            }
 
-            ui->spinBox_rangeDown->setValue(0);
-            ui->spinBox_rangeUp->setValue(0);
-            ui->spinBox_threshold->setValue(defaults.threshold);
-            ui->spinBox_matchesReqd->setValue(defaults.matchesReqd);
-            ui->spinBox_domainSize->setValue(defaults.windowLen);
-            ui->spinBox_stepSize->setValue(defaults.stepSize);
+            connect((QPushButton*)button, &QPushButton::clicked, this, [this, button]
+            {
+                const QString paramId = button->objectName().replace("pushButton_reset_value_", "");
+                const auto defaults = kat_default_settings();
 
-            kat_set_buffer_updates_disabled(false);
-        });
+                kat_set_buffer_updates_disabled(true);
+
+                if (paramId == "scanStart") ui->spinBox_rangeUp->setValue(defaults.rangeUp);
+                else if (paramId == "scanEnd") ui->spinBox_rangeDown->setValue(defaults.rangeDown);
+                else if (paramId == "threshold") ui->spinBox_threshold->setValue(defaults.threshold);
+                else if (paramId == "windowSize") ui->spinBox_domainSize->setValue(defaults.windowLen);
+                else if (paramId == "stepSize") ui->spinBox_stepSize->setValue(defaults.stepSize);
+                else if (paramId == "matchesReqd") ui->spinBox_matchesReqd->setValue(defaults.matchesReqd);
+                else k_assert(0, "Unknown parameter identifier");
+
+                kat_set_buffer_updates_disabled(false);
+            });
+        }
 
         // The valueChanged() signal is overloaded for int and QString, and we
         // have to choose one. I'm using Qt 5.5, but you may have better ways
