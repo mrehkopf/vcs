@@ -107,203 +107,9 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         std::vector<QMenu*> menus;
 
-        // File...
+        // Capture...
         {
-            QMenu *menu = new QMenu("File", this);
-            menus.push_back(menu);
-
-            connect(menu->addAction("Exit"), &QAction::triggered, this, [=]{this->close();});
-        }
-
-        // Window...
-        {
-            QMenu *menu = new QMenu("Window", this);
-            menus.push_back(menu);
-
-            {
-                QMenu *rendererMenu = new QMenu("Renderer", this);
-
-                QActionGroup *group = new QActionGroup(this);
-
-                QAction *opengl = new QAction("OpenGL", this);
-                opengl->setActionGroup(group);
-                opengl->setCheckable(true);
-                rendererMenu->addAction(opengl);
-
-                QAction *software = new QAction("Software", this);
-                software->setActionGroup(group);
-                software->setCheckable(true);
-                rendererMenu->addAction(software);
-
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
-                {
-                    rendererMenu->setEnabled(false);
-                });
-
-                connect(this, &MainWindow::left_fullscreen, this, [=]
-                {
-                    rendererMenu->setEnabled(true);
-                });
-
-                connect(opengl, &QAction::triggered, this, [=]
-                {
-                    this->set_opengl_enabled(true);
-                });
-
-                connect(software, &QAction::triggered, this, [=]
-                {
-                    this->set_opengl_enabled(false);
-                });
-
-                if (kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString() == "Software")
-                {
-                    software->setChecked(true);
-                }
-                else
-                {
-                    opengl->setChecked(true);
-                }
-
-                menu->addMenu(rendererMenu);
-            }
-
-            {
-                menu->addSeparator();
-
-                QMenu *positionMenu = new QMenu("Position", this);
-
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
-                {
-                    positionMenu->setEnabled(false);
-                });
-
-                connect(this, &MainWindow::left_fullscreen, this, [=]
-                {
-                    positionMenu->setEnabled(true);
-                });
-
-                connect(positionMenu->addAction("Center"), &QAction::triggered, this, [=]
-                {
-                    this->move(this->pos() + (QGuiApplication::primaryScreen()->geometry().center() - this->geometry().center()));
-                });
-
-                QAction *topLeft = new QAction("Top left", this);
-                topLeft->setShortcut(QKeySequence("f2"));
-                positionMenu->addAction(topLeft);
-                connect(topLeft, &QAction::triggered, this, [=]
-                {
-                    this->move(0, 0);
-                });
-
-                menu->addMenu(positionMenu);
-            }
-
-            {
-                QAction *customTitle = new QAction("Custom title...", this);
-
-                connect(customTitle, &QAction::triggered, this, [=]
-                {
-                    const QString newTitle = QInputDialog::getText(this,
-                                                                   "VCS - Enter a custom window title",
-                                                                   "Title (empty restores the default):",
-                                                                   QLineEdit::Normal,
-                                                                   this->windowTitleOverride);
-
-                    if (!newTitle.isNull())
-                    {
-                        this->windowTitleOverride = newTitle;
-                        this->update_window_title();
-                    }
-                });
-
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
-                {
-                    customTitle->setEnabled(false);
-                });
-
-                connect(this, &MainWindow::left_fullscreen, this, [=]
-                {
-                    customTitle->setEnabled(true);
-                });
-
-                menu->addAction(customTitle);
-            }
-
-            {
-                menu->addSeparator();
-
-                QAction *showBorder = new QAction("Show border", this);
-
-                showBorder->setCheckable(true);
-                showBorder->setChecked(this->window_has_border());
-                showBorder->setShortcut(QKeySequence("f1"));
-
-                connect(this, &MainWindow::border_hidden, this, [=]
-                {
-                    showBorder->setChecked(false);
-                });
-
-                connect(this, &MainWindow::border_revealed, this, [=]
-                {
-                    showBorder->setChecked(true);
-                });
-
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
-                {
-                    showBorder->setEnabled(false);
-                });
-
-                connect(this, &MainWindow::left_fullscreen, this, [=]
-                {
-                    showBorder->setEnabled(true);
-                });
-
-                connect(showBorder, &QAction::triggered, this, [this]
-                {
-                    this->toggle_window_border();
-                });
-
-                menu->addAction(showBorder);
-            }
-
-            {
-                menu->addSeparator();
-
-                QAction *fullscreen = new QAction("Fullscreen", this);
-
-                fullscreen->setCheckable(true);
-                fullscreen->setChecked(this->isFullScreen());
-                fullscreen->setShortcut(QKeySequence("f11"));
-
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
-                {
-                    fullscreen->setChecked(true);
-                });
-
-                connect(this, &MainWindow::left_fullscreen, this, [=]
-                {
-                    fullscreen->setChecked(false);
-                });
-
-                connect(fullscreen, &QAction::triggered, this, [this]
-                {
-                    if (this->isFullScreen())
-                    {
-                        this->showNormal();
-                    }
-                    else
-                    {
-                        this->showFullScreen();
-                    }
-                });
-
-                menu->addAction(fullscreen);
-            }
-        }
-
-        // Input...
-        {
-            QMenu *menu = new QMenu("Input", this);
+            QMenu *menu = new QMenu("Capture", this);
             menus.push_back(menu);
 
             QMenu *channel = new QMenu("Channel", this);
@@ -589,6 +395,192 @@ MainWindow::MainWindow(QWidget *parent) :
             record->setShortcut(QKeySequence("ctrl+r"));
             menu->addAction(record);
             connect(record, &QAction::triggered, this, [=]{this->open_record_dialog();});
+        }
+
+        // Window...
+        {
+            QMenu *menu = new QMenu("Window", this);
+            menus.push_back(menu);
+
+            {
+                QMenu *rendererMenu = new QMenu("Renderer", this);
+
+                QActionGroup *group = new QActionGroup(this);
+
+                QAction *opengl = new QAction("OpenGL", this);
+                opengl->setActionGroup(group);
+                opengl->setCheckable(true);
+                rendererMenu->addAction(opengl);
+
+                QAction *software = new QAction("Software", this);
+                software->setActionGroup(group);
+                software->setCheckable(true);
+                rendererMenu->addAction(software);
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    rendererMenu->setEnabled(false);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    rendererMenu->setEnabled(true);
+                });
+
+                connect(opengl, &QAction::triggered, this, [=]
+                {
+                    this->set_opengl_enabled(true);
+                });
+
+                connect(software, &QAction::triggered, this, [=]
+                {
+                    this->set_opengl_enabled(false);
+                });
+
+                if (kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString() == "Software")
+                {
+                    software->setChecked(true);
+                }
+                else
+                {
+                    opengl->setChecked(true);
+                }
+
+                menu->addMenu(rendererMenu);
+            }
+
+            {
+                menu->addSeparator();
+
+                QMenu *positionMenu = new QMenu("Position", this);
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    positionMenu->setEnabled(false);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    positionMenu->setEnabled(true);
+                });
+
+                connect(positionMenu->addAction("Center"), &QAction::triggered, this, [=]
+                {
+                    this->move(this->pos() + (QGuiApplication::primaryScreen()->geometry().center() - this->geometry().center()));
+                });
+
+                QAction *topLeft = new QAction("Top left", this);
+                topLeft->setShortcut(QKeySequence("f2"));
+                positionMenu->addAction(topLeft);
+                connect(topLeft, &QAction::triggered, this, [=]
+                {
+                    this->move(0, 0);
+                });
+
+                menu->addMenu(positionMenu);
+            }
+
+            {
+                QAction *customTitle = new QAction("Custom title...", this);
+
+                connect(customTitle, &QAction::triggered, this, [=]
+                {
+                    const QString newTitle = QInputDialog::getText(this,
+                                                                   "VCS - Enter a custom window title",
+                                                                   "Title (empty restores the default):",
+                                                                   QLineEdit::Normal,
+                                                                   this->windowTitleOverride);
+
+                    if (!newTitle.isNull())
+                    {
+                        this->windowTitleOverride = newTitle;
+                        this->update_window_title();
+                    }
+                });
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    customTitle->setEnabled(false);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    customTitle->setEnabled(true);
+                });
+
+                menu->addAction(customTitle);
+            }
+
+            {
+                menu->addSeparator();
+
+                QAction *showBorder = new QAction("Show border", this);
+
+                showBorder->setCheckable(true);
+                showBorder->setChecked(this->window_has_border());
+                showBorder->setShortcut(QKeySequence("f1"));
+
+                connect(this, &MainWindow::border_hidden, this, [=]
+                {
+                    showBorder->setChecked(false);
+                });
+
+                connect(this, &MainWindow::border_revealed, this, [=]
+                {
+                    showBorder->setChecked(true);
+                });
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    showBorder->setEnabled(false);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    showBorder->setEnabled(true);
+                });
+
+                connect(showBorder, &QAction::triggered, this, [this]
+                {
+                    this->toggle_window_border();
+                });
+
+                menu->addAction(showBorder);
+            }
+
+            {
+                menu->addSeparator();
+
+                QAction *fullscreen = new QAction("Fullscreen", this);
+
+                fullscreen->setCheckable(true);
+                fullscreen->setChecked(this->isFullScreen());
+                fullscreen->setShortcut(QKeySequence("f11"));
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    fullscreen->setChecked(true);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    fullscreen->setChecked(false);
+                });
+
+                connect(fullscreen, &QAction::triggered, this, [this]
+                {
+                    if (this->isFullScreen())
+                    {
+                        this->showNormal();
+                    }
+                    else
+                    {
+                        this->showFullScreen();
+                    }
+                });
+
+                menu->addAction(fullscreen);
+            }
         }
 
         // Help...
