@@ -113,7 +113,6 @@ SOURCES += \
     src/common/propagate/app_events.cpp \
     src/capture/input_channel_v4l.cpp \
     src/capture/ic_v4l_video_parameters.cpp \
-    src/capture/back_buffer.cpp \
     src/record/recording_buffer.cpp \
     src/record/framerate_estimator.cpp \
     src/common/timer/timer.cpp \
@@ -181,7 +180,6 @@ HEADERS += \
     src/common/propagate/app_events.h \
     src/capture/input_channel_v4l.h \
     src/capture/ic_v4l_video_parameters.h \
-    src/capture/back_buffer.h \
     src/record/recording_buffer.h \
     src/record/recording_meta.h \
     src/record/framerate_estimator.h \

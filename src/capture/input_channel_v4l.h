@@ -21,7 +21,6 @@
 #include "capture/capture_api.h"
 #include "common/refresh_rate.h"
 #include "capture/ic_v4l_video_parameters.h"
-#include "capture/back_buffer.h"
 
 struct v4l2_format;
 
@@ -32,8 +31,8 @@ public:
     // it.
     input_channel_v4l_c(capture_api_s *const parentCaptureAPI,
                         const std::string v4lDeviceFileName,
-                        captured_frame_s *const dstFrameBuffer,
-                        capture_back_buffer_s *const backBuffer);
+                        const unsigned numBackBuffers,
+                        captured_frame_s *const dstFrameBuffer);
 
     ~input_channel_v4l_c();
 
@@ -119,9 +118,20 @@ private:
 
     // Prepare the input channel's back buffers for capture.  Returns true on
     // success; false otherwise.
-    bool enqueue_back_buffers(void);
+    bool enqueue_mmap_back_buffers(void);
+    bool dequeue_mmap_back_buffers(void);
 
-    bool dequeue_capture_buffers(void);
+    // Metadata about each mmap() back buffer we've created.
+    struct mmap_metadata
+    {
+        uint8_t *ptr;
+        unsigned length;
+    };
+    std::vector<mmap_metadata> mmapBackBuffers;
+
+    // The number of back buffers our parent capture API asked us to use. Note that
+    // the capture device may not be able to supply this many.
+    const unsigned requestedNumBackBuffers;
 
     // Returns the maximum supported capture resolution for this input channel.
     resolution_s maximum_resolution(void) const;
@@ -148,10 +158,6 @@ private:
     // The frame buffer we'll output captured frames into. Expected to be hosted
     // by the parent capture API
     captured_frame_s *const dstFrameBuffer;
-
-    // The back buffers we'll use during capture. Expected to be hosted by the
-    // parent capture API
-    capture_back_buffer_s *const backBuffer;
 
     // A future holding the return value of capture_thread().
     std::future<int> captureThreadFuture;

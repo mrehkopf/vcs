@@ -9,6 +9,7 @@
 
 #include <poll.h>
 #include <sys/ioctl.h>
+#include <sys/mman.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstring>
@@ -20,12 +21,12 @@
 
 input_channel_v4l_c::input_channel_v4l_c(capture_api_s *const parentCaptureAPI,
                                          const std::string v4lDeviceFileName,
-                                         captured_frame_s *const dstFrameBuffer,
-                                         capture_back_buffer_s *const backBuffer) :
+                                         const unsigned numBackBuffers,
+                                         captured_frame_s *const dstFrameBuffer) :
     captureAPI(parentCaptureAPI),
     v4lDeviceFileName(v4lDeviceFileName),
     dstFrameBuffer(dstFrameBuffer),
-    backBuffer(backBuffer)
+    requestedNumBackBuffers(numBackBuffers)
 {
     INFO(("Establishing a connection to %s.", this->v4lDeviceFileName.c_str()));
 
@@ -155,6 +156,8 @@ bool input_channel_v4l_c::capture_thread__update_video_mode(void)
     return true;
 }
 
+// Returns false on error; true otherwise (e.g. if we got a new frame or if there
+// was no new frame to get).
 bool input_channel_v4l_c::capture_thread__get_next_frame(void)
 {
     pollfd fd;
@@ -172,10 +175,9 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
             return true;
         }
 
-        v4l2_buffer buf;
-        memset(&buf, 0, sizeof(buf));
+        v4l2_buffer buf = {0};
         buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        buf.memory = V4L2_MEMORY_USERPTR;
+        buf.memory = V4L2_MEMORY_MMAP;
 
         // Tell the capture device we want to access the frame buffer's data.
         if (!this->device_ioctl(VIDIOC_DQBUF, &buf))
@@ -197,42 +199,30 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
             }
         }
 
-        // Verify that the buffer is one that we've queued.
-        bool isBufferOurs = false;
-        for (unsigned i = 0; i < this->backBuffer->numPages; i++)
+        // If the hardware is sending us a new frame while we're still unfinished
+        // processing the previous frame, we'll skip this new frame.
+        if (this->captureStatus.numFramesCaptured != this->captureStatus.numFramesProcessed)
         {
-            if (uintptr_t(buf.m.userptr) == uintptr_t(this->backBuffer->page(i).ptr()))
-            {
-                isBufferOurs = true;
+            this->captureStatus.numNewFrameEventsSkipped++;
 
-                break;
-            }
         }
-
-        if (isBufferOurs)
+        else
         {
-            // If the hardware is sending us a new frame while we're still unfinished
-            // processing the previous frame, we'll skip this new frame.
-            if (this->captureStatus.numFramesCaptured != this->captureStatus.numFramesProcessed)
-            {
-                this->captureStatus.numNewFrameEventsSkipped++;
-            }
-            else
-            {
-                std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
+            std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
 
-                this->dstFrameBuffer->r = this->captureStatus.resolution;
-                this->dstFrameBuffer->r.bpp = ((this->captureStatus.pixelFormat == capture_pixel_format_e::rgb_888)? 32 : 16);
-                this->dstFrameBuffer->pixelFormat = this->captureStatus.pixelFormat;
+            const input_channel_v4l_c::mmap_metadata &srcBuffer = this->mmapBackBuffers.at(buf.index);
 
-                // Copy the frame's data into our local buffer so we can work on it.
-                memcpy(this->dstFrameBuffer->pixels.ptr(),
-                       (u8*)buf.m.userptr,
-                       this->dstFrameBuffer->pixels.up_to(this->dstFrameBuffer->pixels.size()));
+            this->dstFrameBuffer->r = this->captureStatus.resolution;
+            this->dstFrameBuffer->r.bpp = ((this->captureStatus.pixelFormat == capture_pixel_format_e::rgb_888)? 32 : 16);
+            this->dstFrameBuffer->pixelFormat = this->captureStatus.pixelFormat;
 
-                this->captureStatus.numFramesCaptured++;
-                this->push_capture_event(capture_event_e::new_frame);
-            }
+            // Copy the frame's data into our local buffer so we can work on it.
+            memcpy(this->dstFrameBuffer->pixels.ptr(),
+                   srcBuffer.ptr,
+                   this->dstFrameBuffer->pixels.up_to(srcBuffer.length));
+
+            this->captureStatus.numFramesCaptured++;
+            this->push_capture_event(capture_event_e::new_frame);
         }
 
         // Tell the capture device that we've finished accessing the buffer.
@@ -282,7 +272,7 @@ bool input_channel_v4l_c::open_device(const std::string &deviceFileName)
     k_assert((this->v4lDeviceFileHandle < 0),
              "Attempting to re-open a capture device before having closed it.");
 
-    this->v4lDeviceFileHandle = open(deviceFileName.c_str(), O_RDWR);
+    this->v4lDeviceFileHandle = open(deviceFileName.c_str(), (O_RDWR | O_NONBLOCK));
 
     if (this->v4lDeviceFileHandle < 0)
     {
@@ -351,8 +341,10 @@ u32 input_channel_v4l_c::vcs_pixel_format_to_v4l_pixel_format(capture_pixel_form
     }
 }
 
-bool input_channel_v4l_c::enqueue_back_buffers(void)
+bool input_channel_v4l_c::enqueue_mmap_back_buffers(void)
 {
+    v4l2_requestbuffers reqBuf = {0};
+
     // Set the capture resolution to the highest possible - it seems this is
     // needed to get the capture device to assign the maximum possible frame
     // size for the buffers.
@@ -378,7 +370,7 @@ bool input_channel_v4l_c::enqueue_back_buffers(void)
         if (!this->device_ioctl(VIDIOC_S_FMT, &format) ||
             !this->device_ioctl(VIDIOC_G_FMT, &format))
         {
-            NBENE(("Failed to set the current capture format for enqueuing capture buffers(error %d).", errno));
+            NBENE(("Failed to set the current capture format for enqueuing capture buffers (error %d).", errno));
             goto fail;
         }
 
@@ -391,39 +383,65 @@ bool input_channel_v4l_c::enqueue_back_buffers(void)
         }
     }
 
-    // Tell the capture device that we've allocated frame buffers for it to use.
+    // Tell the capture device we want it to allocate the back buffers in its,
+    // own memory and that we'll access them via mmap.
     {
-        v4l2_requestbuffers buf;
-        memset(&buf, 0, sizeof(buf));
+        reqBuf.count = this->requestedNumBackBuffers;
+        reqBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        reqBuf.memory = V4L2_MEMORY_MMAP;
 
-        buf.count = this->backBuffer->numPages;
-        buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        buf.memory = V4L2_MEMORY_USERPTR;
-
-        if (!this->device_ioctl(VIDIOC_REQBUFS, &buf))
+        if (!this->device_ioctl(VIDIOC_REQBUFS, &reqBuf))
         {
-            NBENE(("User pointer streaming couldn't be initialized (error %d).", errno));
+            NBENE(("MMAP streaming couldn't be initialized (error %d).", errno));
             goto fail;
         }
     }
 
-    // Enqueue the frame buffers we've allocated.
-    for (unsigned i = 0; i < this->backBuffer->numPages; i++)
+    INFO(("The capture device has created %d back buffer(s).", reqBuf.count));
+
+    // Have the capture device allocate the back buffers in its own memory.
+    for (uint32_t i = 0; i < reqBuf.count; i++)
     {
-        v4l2_buffer buf;
-        memset(&buf, 0, sizeof(buf));
+        v4l2_buffer buffer = {0};
+        input_channel_v4l_c::mmap_metadata bufferMetadata = {0};
 
-        buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        buf.memory = V4L2_MEMORY_USERPTR;
-        buf.index = i;
-        buf.m.userptr = (unsigned long)this->backBuffer->page(i).ptr();
-        buf.length = this->backBuffer->page(i).size();
+        buffer.type = reqBuf.type;
+        buffer.memory = V4L2_MEMORY_MMAP;
+        buffer.index = i;
 
-        if (!this->device_ioctl(VIDIOC_QBUF, &buf))
+        if (!this->device_ioctl(VIDIOC_QUERYBUF, &buffer))
         {
-            NBENE(("Failed to enqueue capture buffers (failed on buffer #%d).", (i + 1)));
+            NBENE(("Failed to allocate back buffers on the capture device (error %d).", errno));
             goto fail;
         }
+
+        const void *mmapPtr = mmap(NULL,
+                                   buffer.length,
+                                   (PROT_READ | PROT_WRITE),
+                                   MAP_SHARED,
+                                   this->v4lDeviceFileHandle,
+                                   buffer.m.offset);
+
+        if (mmapPtr == MAP_FAILED)
+        {
+            NBENE(("Failed to allocate back buffers on the capture device (mmap() returned MAP_FAILED)."));
+            goto fail;
+        }
+
+        buffer.flags = 0;
+        buffer.reserved = 0;
+        buffer.reserved2 = 0;
+
+        if (!this->device_ioctl(VIDIOC_QBUF, &buffer))
+        {
+            NBENE(("Failed to enqueue back buffers (failed on buffer #%d).", (i + 1)));
+            goto fail;
+        }
+
+        bufferMetadata.ptr = (uint8_t*)mmapPtr;
+        bufferMetadata.length = buffer.length;
+
+        this->mmapBackBuffers.push_back(bufferMetadata);
     }
 
     return true;
@@ -432,19 +450,24 @@ bool input_channel_v4l_c::enqueue_back_buffers(void)
     return false;
 }
 
-bool input_channel_v4l_c::dequeue_capture_buffers(void)
+bool input_channel_v4l_c::dequeue_mmap_back_buffers(void)
 {
     v4l2_requestbuffers buf;
     memset(&buf, 0, sizeof(buf));
 
     buf.count = 0; // 0 releases all buffers.
     buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    buf.memory = V4L2_MEMORY_USERPTR;
+    buf.memory = V4L2_MEMORY_MMAP;
 
     if (!this->device_ioctl(VIDIOC_REQBUFS, &buf))
     {
         NBENE(("Stream buffers could not be deallocated (error %d).", errno));
         goto fail;
+    }
+
+    for (const auto &buffer: this->mmapBackBuffers)
+    {
+        munmap(buffer.ptr, buffer.length);
     }
 
     return true;
@@ -493,7 +516,7 @@ bool input_channel_v4l_c::start_capturing()
         }
     }
 
-    if (!this->enqueue_back_buffers())
+    if (!this->enqueue_mmap_back_buffers())
     {
         NBENE(("Failed to enqueue back buffers for capturing."));
 
@@ -515,7 +538,7 @@ bool input_channel_v4l_c::start_capturing()
 
     // Initialize the capture status parameters.
     {
-        v4l2_format format = {};
+        v4l2_format format = {0};
         format.type = V4L2_BUF_TYPE_CAPTURE_SOURCE;
 
         if (ioctl(this->v4lDeviceFileHandle, RGB133_VIDIOC_G_SRC_FMT, &format) >= 0)
@@ -608,7 +631,7 @@ int input_channel_v4l_c::stop_capturing(void)
             }
         }
 
-        this->dequeue_capture_buffers();
+        this->dequeue_mmap_back_buffers();
     }
       
     this->reset_capture_event_flags();

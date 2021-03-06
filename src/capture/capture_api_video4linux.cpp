@@ -37,9 +37,6 @@
 // The latest frame we've received from the capture device.
 static captured_frame_s FRAME_BUFFER;
 
-// A back buffer area for the capture device to capture into.
-static capture_back_buffer_s CAPTURE_BACK_BUFFER;
-
 // The numeric index of the currently-active input channel. This would be 0 for
 // /dev/video0, 4 for /dev/video4, etc.
 static unsigned CURRENT_INPUT_CHANNEL_IDX = 0;
@@ -229,8 +226,6 @@ bool capture_api_video4linux_s::initialize(void)
     FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
     FRAME_BUFFER.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (V4L)");
 
-    CAPTURE_BACK_BUFFER.allocate();
-
     this->set_input_channel(INPUT_CHANNEL_IDX);
 
     return true;
@@ -245,7 +240,6 @@ bool capture_api_video4linux_s::release(void)
     delete this->inputChannel;
 
     FRAME_BUFFER.pixels.release_memory();
-    CAPTURE_BACK_BUFFER.release();
 
     return true;
 }
@@ -540,8 +534,8 @@ bool capture_api_video4linux_s::set_input_channel(const unsigned idx)
     const std::string captureDeviceFileName = (std::string("/dev/video") + std::to_string(idx));
     this->inputChannel = new input_channel_v4l_c(this,
                                                  captureDeviceFileName,
-                                                 &FRAME_BUFFER,
-                                                 &CAPTURE_BACK_BUFFER);
+                                                 3,
+                                                 &FRAME_BUFFER);
 
     CURRENT_INPUT_CHANNEL_IDX = idx;
 
