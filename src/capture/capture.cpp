@@ -56,7 +56,7 @@ void kc_initialize_capture(void)
 
 void kc_release_capture(void)
 {
-    DEBUG(("Releasing the capture API."));
+    INFO(("Releasing the capture API."));
 
     API->release();
 
@@ -68,6 +68,11 @@ void kc_release_capture(void)
 
 bool kc_force_input_resolution(const resolution_s &r)
 {
+    #if CAPTURE_API_VIDEO4LINUX
+        NBENE(("Custom input resolution are not supported with Video4Linux."));
+        return false;
+    #endif
+
     const resolution_s min = kc_capture_api().get_minimum_resolution();
     const resolution_s max = kc_capture_api().get_maximum_resolution();
 

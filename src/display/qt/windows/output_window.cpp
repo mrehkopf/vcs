@@ -262,7 +262,8 @@ MainWindow::MainWindow(QWidget *parent) :
             menu->addSeparator();
             menu->addMenu(dialogs);
 
-            connect(dialogs->addAction("Aliases"), &QAction::triggered, this, [=]{this->open_alias_dialog();});
+            QAction *aliases = new QAction("Aliases", this);
+            dialogs->addAction(aliases);
 
             QAction *resolution = new QAction("Resolution", this);
             resolution->setShortcut(QKeySequence("ctrl+i"));
@@ -276,9 +277,18 @@ MainWindow::MainWindow(QWidget *parent) :
             videoParams->setShortcut(QKeySequence("ctrl+v"));
             dialogs->addAction(videoParams);
 
+            #if CAPTURE_API_VIDEO4LINUX
+                aliases->setEnabled(false);
+                INFO(("Aliases are not supported with Video4Linux."));
+
+                resolution->setEnabled(false);
+                INFO(("Custom input resolutions are not supported with Video4Linux."));
+            #endif
+
             connect(signal, &QAction::triggered, this, [=]{this->open_video_dialog();});
             connect(videoParams, &QAction::triggered, this, [=]{this->open_video_parameter_graph_dialog();});
             connect(resolution, &QAction::triggered, this, [=]{this->open_input_resolution_dialog();});
+            connect(aliases, &QAction::triggered, this, [=]{this->open_alias_dialog();});
         }
 
         // Output...
@@ -302,7 +312,13 @@ MainWindow::MainWindow(QWidget *parent) :
                     scaler->setCheckable(true);
                     upscaler->addAction(scaler);
 
-                    connect(scaler, &QAction::toggled, this, [=](const bool checked){if (checked) ks_set_upscaling_filter(scalerName);});
+                    connect(scaler, &QAction::toggled, this, [=](const bool checked)
+                    {
+                        if (checked)
+                        {
+                            ks_set_upscaling_filter(scalerName);
+                        }
+                    });
 
                     if (QString::fromStdString(scalerName) == defaultUpscalerName)
                     {

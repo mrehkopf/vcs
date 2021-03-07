@@ -62,14 +62,6 @@ capture_event_e capture_api_video4linux_s::pop_capture_event_queue(void)
     }
     else if (this->inputChannel->pop_capture_event(capture_event_e::new_video_mode))
     {
-        this->set_resolution(this->get_source_resolution());
-
-        this->inputChannel->captureStatus.videoParameters.update();
-
-        return capture_event_e::new_video_mode;
-    }
-    else if (this->inputChannel->pop_capture_event(capture_event_e::new_v4l_source_mode))
-    {
         this->set_input_channel(CURRENT_INPUT_CHANNEL_IDX);
 
         return capture_event_e::new_video_mode;
@@ -188,40 +180,6 @@ resolution_s capture_api_video4linux_s::get_source_resolution(void) const
     return {format.fmt.pix.width,
             format.fmt.pix.height,
             32}; /// TODO: Don't assume the bit depth.
-}
-
-bool capture_api_video4linux_s::set_resolution(const resolution_s &r)
-{
-    k_assert((this->inputChannel),
-             "Attempting to set input channel parameters on a null channel.");
-
-    v4l2_format format = {};
-    format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-
-    if (!this->inputChannel->device_ioctl(VIDIOC_G_FMT, &format))
-    {
-        NBENE(("Failed to query the current capture format (error %d).", errno));
-        goto fail;
-    }
-
-    format.fmt.pix.width = r.w;
-    format.fmt.pix.height = r.h;
-    format.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB32;
-
-    if (!this->inputChannel->device_ioctl(VIDIOC_S_FMT, &format) ||
-        !this->inputChannel->device_ioctl(VIDIOC_G_FMT, &format))
-    {
-        NBENE(("Failed to set the current capture format (error %d).", errno));
-        goto fail;
-    }
-
-    k_assert((format.fmt.pix.pixelformat == V4L2_PIX_FMT_RGB32),
-             "Invalid capture pixel format.");
-
-    return true;
-
-    fail:
-    return false;
 }
 
 bool capture_api_video4linux_s::initialize(void)

@@ -46,7 +46,6 @@ enum class capture_event_e
     invalid_signal,
     invalid_device,
     unrecoverable_error,
-    new_v4l_source_mode,
 
     // Total enumerator count; should remain the last item on the list.
     num_enumerators

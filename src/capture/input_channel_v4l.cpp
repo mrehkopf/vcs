@@ -301,7 +301,7 @@ int input_channel_v4l_c::capture_thread(void)
         {
             std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
 
-            this->push_capture_event(capture_event_e::new_v4l_source_mode);
+            this->push_capture_event(capture_event_e::new_video_mode);
 
             // The parent is expected to re-spawn this input channel, so we can exit the
             // capture thread.
