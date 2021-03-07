@@ -233,9 +233,6 @@ bool capture_api_rgbeasy_s::initialize(void)
         goto done;
     }
 
-    // Propagate the current capture video mode to VCS.
-    push_capture_event(capture_event_e::new_video_mode);
-
     done:
     // We can successfully exit if the initialization didn't trigger a request
     // to terminate the program.

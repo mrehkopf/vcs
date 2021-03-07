@@ -41,8 +41,6 @@ void kc_initialize_capture(void)
 
     API->initialize();
 
-    ke_events().capture.newProposedVideoMode.fire();
-
     kt_timer(1000, []
     {
         const unsigned numMissedCurrent = kc_capture_api().get_missed_frames_count();

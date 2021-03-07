@@ -55,14 +55,14 @@ struct resolution_s
 {
     unsigned long w, h, bpp;
 
-    bool operator==(const resolution_s &other)
+    bool operator==(const resolution_s &other) const
     {
         return bool((this->w == other.w) &&
                     (this->h == other.h) &&
                     (this->bpp == other.bpp));
     }
 
-    bool operator!=(const resolution_s &other)
+    bool operator!=(const resolution_s &other) const
     {
         return !(*this == other);
     }

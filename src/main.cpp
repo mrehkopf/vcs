@@ -110,7 +110,10 @@ static capture_event_e process_next_capture_event(void)
     {
         case capture_event_e::unrecoverable_error:
         {
+            NBENE(("The capture device has reported an unrecoverable error."));
+
             ke_events().capture.unrecoverableError.fire();
+            
             break;
         }
         case capture_event_e::new_frame:
@@ -225,11 +228,19 @@ int main(int argc, char *argv[])
     }
 
     INFO(("Entering the main loop."));
-    while (!PROGRAM_EXIT_REQUESTED)
     {
-        process_next_capture_event();
-        kt_update_timers();
-        kd_spin_event_loop();
+        // Propagate the initial video mode to VCS.
+        if (kc_capture_api().has_valid_signal())
+        {
+            ke_events().capture.newProposedVideoMode.fire();
+        }
+
+        while (!PROGRAM_EXIT_REQUESTED)
+        {
+            process_next_capture_event();
+            kt_update_timers();
+            kd_spin_event_loop();
+        }
     }
 
     cleanup_all();
