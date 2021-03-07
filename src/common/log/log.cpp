@@ -48,13 +48,6 @@ void klog_set_logging_enabled(const bool state)
 
 void klog_initialize(void)
 {
-    ke_events().capture.newVideoMode.subscribe([]
-    {
-        const auto resolution = kc_capture_api().get_resolution();
-
-        INFO(("New video mode: %u x %u @ %.3f Hz.", resolution.w, resolution.h, kc_capture_api().get_refresh_rate().value<double>()));
-    });
-
     return;
 }
 

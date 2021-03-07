@@ -58,7 +58,7 @@ static uint CACHE_ALLOC_LOCKED = 0;
 
 static void initialize_cache(void)
 {
-    DEBUG(("Initializing the memory manager..."));
+    INFO(("Initializing the memory manager."));
 
     // Ideally, we'll only call this function once.
     k_assert(MEMORY_CACHE == NULL, "Calling the memory manager initializer with a non-null memory cache.");
@@ -236,7 +236,7 @@ void kmem_lock_cache_alloc(void)
 
 void kmem_deallocate_memory_cache(void)
 {
-    DEBUG(("Releasing the memory cache."));
+    INFO(("Releasing the memory cache."));
 
     k_assert(PROGRAM_EXIT_REQUESTED, "Was asked to release the memory cache before the program had been told to exit.");
 

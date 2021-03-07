@@ -30,7 +30,7 @@ i32 PROGRAM_EXIT_REQUESTED = 0;
 
 static void cleanup_all(void)
 {
-    DEBUG(("Received orders to exit. Initiating cleanup."));
+    INFO(("Received orders to exit. Initiating cleanup."));
 
     kt_release_timers();
     if (krecord_is_recording())
@@ -48,7 +48,7 @@ static void cleanup_all(void)
     // Call this last.
     kmem_deallocate_memory_cache();
 
-    INFO(("Ready to exit."));
+    INFO(("Ready to exit. Bye!"));
     return;
 }
 
@@ -57,6 +57,13 @@ static bool initialize_all(void)
     ke_events().capture.unrecoverableError.subscribe([]
     {
         PROGRAM_EXIT_REQUESTED = true;
+    });
+
+    ke_events().capture.newVideoMode.subscribe([]
+    {
+        const auto resolution = kc_capture_api().get_resolution();
+
+        INFO(("Video mode: %u x %u @ %.3f Hz.", resolution.w, resolution.h, kc_capture_api().get_refresh_rate().value<double>()));
     });
 
     // The capture device has received a new video mode. We'll inspect the

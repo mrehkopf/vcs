@@ -201,7 +201,6 @@ bool capture_api_video4linux_s::set_resolution(const resolution_s &r)
     if (!this->inputChannel->device_ioctl(VIDIOC_G_FMT, &format))
     {
         NBENE(("Failed to query the current capture format (error %d).", errno));
-
         goto fail;
     }
 
@@ -213,7 +212,6 @@ bool capture_api_video4linux_s::set_resolution(const resolution_s &r)
         !this->inputChannel->device_ioctl(VIDIOC_G_FMT, &format))
     {
         NBENE(("Failed to set the current capture format (error %d).", errno));
-
         goto fail;
     }
 

@@ -183,7 +183,7 @@ bool kd_add_log_entry(const log_entry_s e)
 
 void kd_release_output_window(void)
 {
-    DEBUG(("Releasing the display."));
+    INFO(("Releasing the display."));
 
     if (WINDOW == nullptr)
     {

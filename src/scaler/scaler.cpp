@@ -430,7 +430,7 @@ void ks_initialize_scaler(void)
 
 void ks_release_scaler(void)
 {
-    DEBUG(("Releasing the scaler."));
+    INFO(("Releasing the scaler."));
 
     COLORCONV_BUFFER.release_memory();
     OUTPUT_BUFFER.release_memory();
@@ -775,18 +775,26 @@ const std::string& ks_downscaling_filter_name(void)
 
 void ks_set_upscaling_filter(const std::string &name)
 {
-    UPSCALE_FILTER = ks_scaler_for_name_string(name);
+    const auto newScaler = ks_scaler_for_name_string(name);
 
-    DEBUG(("Assigned '%s' as the upscaling filter.", UPSCALE_FILTER->name.c_str()));
+    if (UPSCALE_FILTER != newScaler)
+    {
+        UPSCALE_FILTER = newScaler;
+        DEBUG(("Assigned '%s' as the upscaling filter.", UPSCALE_FILTER->name.c_str()));
+    }
 
     return;
 }
 
 void ks_set_downscaling_filter(const std::string &name)
 {
-    DOWNSCALE_FILTER = ks_scaler_for_name_string(name);
+    const auto newScaler = ks_scaler_for_name_string(name);
 
-    DEBUG(("Assigned '%s' as the downscaling filter.", DOWNSCALE_FILTER->name.c_str()));
+    if (DOWNSCALE_FILTER != newScaler)
+    {
+        DOWNSCALE_FILTER = newScaler;
+        DEBUG(("Assigned '%s' as the downscaling filter.", DOWNSCALE_FILTER->name.c_str()));
+    }
 
     return;
 }

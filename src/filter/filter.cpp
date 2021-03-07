@@ -269,7 +269,7 @@ void kf_delete_filter(const filter_c *const filter)
 
 void kf_release_filters(void)
 {
-    DEBUG(("Releasing custom filtering."));
+    INFO(("Releasing custom filtering."));
 
     MOST_RECENT_FILTER_CHAIN_IDX = -1;
 
@@ -378,7 +378,7 @@ int kf_current_filter_chain_idx(void)
 
 void kf_initialize_filters(void)
 {
-    DEBUG(("Initializing custom filtering."));
+    INFO(("Initializing custom filtering."));
 
     return;
 }
