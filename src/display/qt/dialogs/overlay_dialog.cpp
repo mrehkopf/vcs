@@ -51,11 +51,13 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
             connect(this, &OverlayDialog::overlay_enabled, this, [=]
             {
                 enable->setChecked(true);
+                ui->groupBox_overlayEditor->setEnabled(true);
             });
 
             connect(this, &OverlayDialog::overlay_disabled, this, [=]
             {
                 enable->setChecked(false);
+                ui->groupBox_overlayEditor->setEnabled(false);
             });
 
             connect(enable, &QAction::triggered, this, [=]

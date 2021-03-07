@@ -46,6 +46,8 @@ RecordDialog::RecordDialog(QDialog *parent) :
         ui->tableWidget_status->modify_property("Resolution", "-");
         ui->tableWidget_status->modify_property("File size", "-");
         ui->tableWidget_status->modify_property("Peak buffer usage", "-");
+
+        ui->groupBox_status->setEnabled(false);
     }
 
     // Certain features of recording are not available on certain operating systems;
@@ -176,10 +178,12 @@ RecordDialog::RecordDialog(QDialog *parent) :
             if (krecord_is_recording())
             {
                 this->set_recording_enabled(false);
+                ui->groupBox_status->setEnabled(false);
             }
             else
             {
                 this->set_recording_enabled(true);
+                ui->groupBox_status->setEnabled(true);
             }
 
             ui->pushButton_startStopRecording->setEnabled(true);

@@ -43,12 +43,18 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
             {
                 enable->setChecked(true);
                 update_visualization_options();
+
+                ui->groupBox_parameters->setEnabled(true);
+                ui->groupBox_visualization->setEnabled(true);
             });
 
             connect(this, &AntiTearDialog::anti_tear_disabled, this, [=]
             {
                 enable->setChecked(false);
                 update_visualization_options();
+
+                ui->groupBox_parameters->setEnabled(false);
+                ui->groupBox_visualization->setEnabled(false);
             });
 
             connect(enable, &QAction::triggered, this, [=]
