@@ -41,7 +41,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-272</y>
         <width>391</width>
         <height>765</height>
        </rect>
@@ -602,10 +602,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>&amp;#8627; Blue</string>
-               </property>
-               <property name="textFormat">
-                <enum>Qt::RichText</enum>
+                <string>Blue</string>
                </property>
                <property name="indent">
                 <number>-1</number>
@@ -710,10 +707,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>&amp;#8627; Red</string>
-               </property>
-               <property name="textFormat">
-                <enum>Qt::RichText</enum>
+                <string>Red</string>
                </property>
                <property name="indent">
                 <number>-1</number>
@@ -735,10 +729,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>&amp;#8627; Blue</string>
-               </property>
-               <property name="textFormat">
-                <enum>Qt::RichText</enum>
+                <string>Blue</string>
                </property>
                <property name="indent">
                 <number>-1</number>
@@ -901,10 +892,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>&amp;#8627; Red</string>
-               </property>
-               <property name="textFormat">
-                <enum>Qt::RichText</enum>
+                <string>Red</string>
                </property>
                <property name="indent">
                 <number>-1</number>
@@ -1060,10 +1048,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>&amp;#8627; Green</string>
-               </property>
-               <property name="textFormat">
-                <enum>Qt::RichText</enum>
+                <string>Green</string>
                </property>
                <property name="indent">
                 <number>-1</number>
@@ -1117,10 +1102,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>&amp;#8627; Green</string>
-               </property>
-               <property name="textFormat">
-                <enum>Qt::RichText</enum>
+                <string>Green</string>
                </property>
                <property name="indent">
                 <number>-1</number>
@@ -1583,15 +1565,15 @@
                </property>
               </widget>
              </item>
-             <item row="6" column="1" colspan="3">
-              <widget class="Line" name="line">
+             <item row="11" column="0" colspan="4">
+              <widget class="Line" name="line_2">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
-             <item row="11" column="1" colspan="3">
-              <widget class="Line" name="line_2">
+             <item row="6" column="0" colspan="4">
+              <widget class="Line" name="line">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>

@@ -70,6 +70,12 @@ QGroupBox > QFrame
     margin-right: 6px;
 }
 
+/* Horizontal line.*/
+QGroupBox > QFrame[frameShape="4"]
+{
+    margin-left: 6px;
+}
+
 QScrollArea > QWidget > QWidget
 {
     background-color: transparent;
