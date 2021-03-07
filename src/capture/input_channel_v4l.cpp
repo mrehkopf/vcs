@@ -89,8 +89,7 @@ resolution_s input_channel_v4l_c::maximum_resolution(void) const
 
 resolution_s input_channel_v4l_c::source_resolution(void)
 {
-    v4l2_format format;
-    memset(&format, 0, sizeof(format));
+    v4l2_format format = {0};
 
     format.type = V4L2_BUF_TYPE_CAPTURE_SOURCE;
 
@@ -104,9 +103,9 @@ resolution_s input_channel_v4l_c::source_resolution(void)
             32}; /// TODO: Don't assume the bit depth.
 }
 
-bool input_channel_v4l_c::capture_thread__update_video_mode(void)
+bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
 {
-    v4l2_format format = {};
+    v4l2_format format = {0};
     format.type = V4L2_BUF_TYPE_CAPTURE_SOURCE;
 
     /// TODO: Check for 'no signal' status.
@@ -115,10 +114,6 @@ bool input_channel_v4l_c::capture_thread__update_video_mode(void)
     {
         if (!input_channel_v4l_c::is_format_of_valid_signal(&format))
         {
-            std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
-
-            this->captureStatus.invalidSignal = true;
-
             return true;
         }
 
@@ -130,18 +125,11 @@ bool input_channel_v4l_c::capture_thread__update_video_mode(void)
                 (format.fmt.pix.width != this->captureStatus.resolution.w) ||
                 (format.fmt.pix.height != this->captureStatus.resolution.h))
             {
-                std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
-
-                this->captureStatus.invalidSignal = false;
-                this->captureStatus.noSignal = false;
-                this->captureStatus.refreshRate = currentRefreshRate;
-                this->captureStatus.resolution.w = format.fmt.pix.width;
-                this->captureStatus.resolution.h = format.fmt.pix.height;
-
-                this->push_capture_event(capture_event_e::new_video_mode);
+                return true;
             }
         }
     }
+    // Failed to query the video format.
     else
     {
         std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
@@ -150,10 +138,10 @@ bool input_channel_v4l_c::capture_thread__update_video_mode(void)
 
         this->push_capture_event(capture_event_e::unrecoverable_error);
 
-        return false;
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 // Returns false on error; true otherwise (e.g. if we got a new frame or if there
@@ -305,14 +293,19 @@ bool input_channel_v4l_c::close_device(void)
 int input_channel_v4l_c::capture_thread(void)
 {
     k_assert((this->v4lDeviceFileHandle >= 0),
-             "Attempting to start the capture thread before the device has been opened."); 
+             "Attempting to start the capture thread before the device has been opened.");
 
-    // Keep polling for capture events.
     while (this->run)
     {
-        if (!capture_thread__update_video_mode())
+        if (capture_thread__has_source_mode_changed())
         {
-            return 0;
+            std::lock_guard<std::mutex> lock(captureAPI->captureMutex);
+
+            this->push_capture_event(capture_event_e::new_v4l_source_mode);
+
+            // The parent is expected to re-spawn this input channel, so we can exit the
+            // capture thread.
+            return 1;
         }
 
         if (this->captureStatus.noSignal)
@@ -341,46 +334,51 @@ u32 input_channel_v4l_c::vcs_pixel_format_to_v4l_pixel_format(capture_pixel_form
     }
 }
 
-bool input_channel_v4l_c::enqueue_mmap_back_buffers(void)
+bool input_channel_v4l_c::set_v4l_buffer_resolution(const resolution_s &resolution)
+{
+    v4l2_format format = {0};
+
+    format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+    if (!this->device_ioctl(VIDIOC_G_FMT, &format))
+    {
+        NBENE(("Failed to query the current capture format (error %d).", errno));
+        goto fail;
+    }
+
+    format.fmt.pix.width = resolution.w;
+    format.fmt.pix.height = resolution.h;
+    format.fmt.pix.pixelformat = this->vcs_pixel_format_to_v4l_pixel_format(this->captureStatus.pixelFormat);
+    format.fmt.pix.field = V4L2_FIELD_NONE;
+
+    if (!this->device_ioctl(VIDIOC_S_FMT, &format) ||
+        !this->device_ioctl(VIDIOC_G_FMT, &format))
+    {
+        NBENE(("Failed to set the capture resolution (error %d).", errno));
+        goto fail;
+    }
+
+    if ((format.fmt.pix.width != resolution.w) ||
+        (format.fmt.pix.height != resolution.h) ||
+        (format.fmt.pix.pixelformat != this->vcs_pixel_format_to_v4l_pixel_format(this->captureStatus.pixelFormat)))
+    {
+        NBENE(("Failed to set the capture resolution (error %d).", errno));
+        goto fail;
+    }
+
+    return true;
+
+    fail:
+    return false;
+}
+
+bool input_channel_v4l_c::enqueue_mmap_back_buffers(const resolution_s &resolution)
 {
     v4l2_requestbuffers reqBuf = {0};
 
-    // Set the capture resolution to the highest possible - it seems this is
-    // needed to get the capture device to assign the maximum possible frame
-    // size for the buffers.
+    if (!this->set_v4l_buffer_resolution(resolution))
     {
-        const resolution_s maxCaptureResolution = this->maximum_resolution();
-
-        v4l2_format format;
-        memset(&format, 0, sizeof(format));
-
-        format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-
-        if (!this->device_ioctl(VIDIOC_G_FMT, &format))
-        {
-            NBENE(("Failed to query the current capture format for enqueuing capture buffers (error %d).", errno));
-            goto fail;
-        }
-
-        format.fmt.pix.width = maxCaptureResolution.w;
-        format.fmt.pix.height = maxCaptureResolution.h;
-        format.fmt.pix.pixelformat = this->vcs_pixel_format_to_v4l_pixel_format(this->captureStatus.pixelFormat);
-        format.fmt.pix.field = V4L2_FIELD_NONE;
-
-        if (!this->device_ioctl(VIDIOC_S_FMT, &format) ||
-            !this->device_ioctl(VIDIOC_G_FMT, &format))
-        {
-            NBENE(("Failed to set the current capture format for enqueuing capture buffers (error %d).", errno));
-            goto fail;
-        }
-
-        if ((format.fmt.pix.width != maxCaptureResolution.w) ||
-            (format.fmt.pix.height != maxCaptureResolution.h) ||
-            (format.fmt.pix.pixelformat != this->vcs_pixel_format_to_v4l_pixel_format(this->captureStatus.pixelFormat)))
-        {
-            NBENE(("Failed to initialize the current capture format for enqueuing capture buffers (error %d).", errno));
-            goto fail;
-        }
+        goto fail;
     }
 
     // Tell the capture device we want it to allocate the back buffers in its,
@@ -450,10 +448,39 @@ bool input_channel_v4l_c::enqueue_mmap_back_buffers(void)
     return false;
 }
 
+bool input_channel_v4l_c::streamon(void)
+{
+    v4l2_buf_type bufType = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+    if (!this->device_ioctl(VIDIOC_STREAMON, &bufType))
+    {
+        NBENE(("Couldn't start the capture stream for device \"%s\".",
+               this->v4lDeviceFileName.c_str()));
+
+        return false;
+    }
+
+    return true;
+}
+
+bool input_channel_v4l_c::streamoff(void)
+{
+    v4l2_buf_type bufType = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+    if (!this->device_ioctl(VIDIOC_STREAMOFF, &bufType))
+    {
+        DEBUG(("Couldn't stop the capture stream for device \"%s\".",
+               this->v4lDeviceFileName.c_str()));
+
+        return false;
+    }
+
+    return true;
+}
+
 bool input_channel_v4l_c::dequeue_mmap_back_buffers(void)
 {
-    v4l2_requestbuffers buf;
-    memset(&buf, 0, sizeof(buf));
+    v4l2_requestbuffers buf = {0};
 
     buf.count = 0; // 0 releases all buffers.
     buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -516,24 +543,14 @@ bool input_channel_v4l_c::start_capturing()
         }
     }
 
-    if (!this->enqueue_mmap_back_buffers())
+    if (!this->enqueue_mmap_back_buffers(this->source_resolution()))
     {
-        NBENE(("Failed to enqueue back buffers for capturing."));
-
         goto fail;
     }
 
-    // Start the capture stream.
+    if (!this->streamon())
     {
-        v4l2_buf_type bufType = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-
-        if (!this->device_ioctl(VIDIOC_STREAMON, &bufType))
-        {
-            NBENE(("Couldn't start the capture stream for device \"%s\".",
-                   this->v4lDeviceFileName.c_str()));
-
-            goto fail;
-        }
+        goto fail;
     }
 
     // Initialize the capture status parameters.
@@ -555,8 +572,6 @@ bool input_channel_v4l_c::start_capturing()
                 this->captureStatus.resolution.h = format.fmt.pix.height;
                 this->captureStatus.resolution.bpp = 32;
                 this->captureStatus.refreshRate = refresh_rate_s(format.fmt.pix.priv / 1000.0);
-
-                this->push_capture_event(capture_event_e::new_video_mode);
             }
 
             /// TODO: Handle 'no signal'.
@@ -586,14 +601,18 @@ bool input_channel_v4l_c::start_capturing()
     return true;
 
     fail:
-    this->captureStatus.invalidDevice = true;
-    this->run = false;
-    if (this->captureThreadFuture.valid())
     {
-        this->captureThreadFuture.wait();
+        this->captureStatus.invalidDevice = true;
+        this->run = false;
+
+        if (this->captureThreadFuture.valid())
+        {
+            this->captureThreadFuture.wait();
+        }
+
+        this->reset_capture_event_flags();
+        this->push_capture_event(capture_event_e::signal_lost);
     }
-    this->reset_capture_event_flags();
-    this->push_capture_event(capture_event_e::signal_lost);
     return false;
 }
 
@@ -621,15 +640,7 @@ int input_channel_v4l_c::stop_capturing(void)
 
         // Stop the capture stream. Note that we don't return on error, we just
         // continue to force the capturing to stop.
-        {
-            v4l2_buf_type bufType = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-
-            if (!this->device_ioctl(VIDIOC_STREAMOFF, &bufType))
-            {
-                DEBUG(("Couldn't stop the capture stream for device \"%s\".",
-                    this->v4lDeviceFileName.c_str()));
-            }
-        }
+        this->streamoff();
 
         this->dequeue_mmap_back_buffers();
     }

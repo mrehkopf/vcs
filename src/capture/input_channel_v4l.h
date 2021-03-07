@@ -87,11 +87,6 @@ private:
     // (see captureThreadFuture).
     int capture_thread(void);
 
-    // Checks to see whether there's a new video mode on this input channel.
-    // Sets capture event flags accordingly. Returns true on success; false
-    // otherwise.
-    bool capture_thread__update_video_mode(void);
-
     // Poll the capture devicve for a new frame. Sets capture events flags
     // accordingly. On success, returns true and either copies the new frame's
     // data to dstFrameBuffer or does nothing if no new frame was available. On
@@ -111,15 +106,25 @@ private:
     // Returns true on success; false otherwise.
     bool close_device(void);
 
+    // Returns true if the current video mode (resolution, refresh rate, etc.) has
+    // changed; false otherwise.
+    bool capture_thread__has_source_mode_changed(void);
+
     // Mark the given capture event as having occurred.
     void push_capture_event(capture_event_e event);
+
+    // Sets the resolution of the Video4Linux capture buffers.
+    bool set_v4l_buffer_resolution(const resolution_s &resolution);
 
     void reset_capture_event_flags(void);
 
     // Prepare the input channel's back buffers for capture.  Returns true on
     // success; false otherwise.
-    bool enqueue_mmap_back_buffers(void);
+    bool enqueue_mmap_back_buffers(const resolution_s &resolution);
     bool dequeue_mmap_back_buffers(void);
+
+    bool streamon(void);
+    bool streamoff(void);
 
     // Metadata about each mmap() back buffer we've created.
     struct mmap_metadata

@@ -68,6 +68,12 @@ capture_event_e capture_api_video4linux_s::pop_capture_event_queue(void)
 
         return capture_event_e::new_video_mode;
     }
+    else if (this->inputChannel->pop_capture_event(capture_event_e::new_v4l_source_mode))
+    {
+        this->set_input_channel(CURRENT_INPUT_CHANNEL_IDX);
+
+        return capture_event_e::new_video_mode;
+    }
     else if (this->inputChannel->pop_capture_event(capture_event_e::signal_lost))
     {
         this->inputChannel->captureStatus.videoParameters.update();
