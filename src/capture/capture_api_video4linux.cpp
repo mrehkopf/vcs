@@ -62,14 +62,10 @@ capture_event_e capture_api_video4linux_s::pop_capture_event_queue(void)
     }
     else if (this->inputChannel->pop_capture_event(capture_event_e::new_video_mode))
     {
-        this->set_input_channel(CURRENT_INPUT_CHANNEL_IDX);
-
         return capture_event_e::new_video_mode;
     }
     else if (this->inputChannel->pop_capture_event(capture_event_e::signal_lost))
     {
-        this->inputChannel->captureStatus.videoParameters.update();
-
         return capture_event_e::signal_lost;
     }
     else if (this->inputChannel->pop_capture_event(capture_event_e::invalid_signal))
@@ -184,6 +180,22 @@ resolution_s capture_api_video4linux_s::get_source_resolution(void) const
 
 bool capture_api_video4linux_s::initialize(void)
 {
+    ke_events().capture.newVideoMode.subscribe([this]
+    {
+        // Re-create the input channel for the new video mode.
+        this->set_input_channel(CURRENT_INPUT_CHANNEL_IDX);
+    });
+
+    ke_events().capture.signalLost.subscribe([this]
+    {
+        this->inputChannel->captureStatus.videoParameters.update();
+    });
+
+    ke_events().capture.newInputChannel.subscribe([this]
+    {
+        this->inputChannel->captureStatus.videoParameters.update();
+    });
+
     FRAME_BUFFER.r = {640, 480, 32};
     FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
     FRAME_BUFFER.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (V4L)");
