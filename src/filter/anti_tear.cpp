@@ -309,8 +309,8 @@ static void visualize_settings(captured_frame_s &frame)
         {
             const unsigned long idx = ((x + y * frame.r.w) * 4);
 
-            frame.pixels[idx + 1] *= 0.5;
-            frame.pixels[idx + 2] *= 0.5;
+            frame.pixels[idx + 1] *= 0.75;
+            frame.pixels[idx + 2] *= 0.75;
         }
     }
 
