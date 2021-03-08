@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>354</width>
-    <height>378</height>
+    <height>336</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,7 +43,7 @@
         <x>0</x>
         <y>0</y>
         <width>354</width>
-        <height>378</height>
+        <height>336</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -84,312 +84,10 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QGroupBox" name="groupBox_parameters">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="ParameterGrid" name="parameterGrid_parameters">
             <property name="title">
-             <string>Parameters</string>
+             <string>Anti-tear parameters</string>
             </property>
-            <property name="alignment">
-             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-            </property>
-            <property name="flat">
-             <bool>false</bool>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_2">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>9</number>
-             </property>
-             <item row="3" column="1">
-              <widget class="QSpinBox" name="spinBox_domainSize">
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
-               </property>
-               <property name="maximum">
-                <number>10000</number>
-               </property>
-               <property name="value">
-                <number>8</number>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="label_7">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Step size</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QSpinBox" name="spinBox_threshold">
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
-               </property>
-               <property name="maximum">
-                <number>255</number>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QSpinBox" name="spinBox_rangeDown">
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
-               </property>
-               <property name="maximum">
-                <number>9999</number>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="1">
-              <widget class="QSpinBox" name="spinBox_matchesReqd">
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
-               </property>
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>1000</number>
-               </property>
-               <property name="value">
-                <number>11</number>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QSpinBox" name="spinBox_rangeUp">
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
-               </property>
-               <property name="maximum">
-                <number>9999</number>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="0">
-              <widget class="QLabel" name="label_6">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Matches req'd</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="QSpinBox" name="spinBox_stepSize">
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
-               </property>
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>1024</number>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_2">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Scan end</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Scan start</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_4">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Window size</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_3">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Threshold</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
-              <widget class="QPushButton" name="pushButton_reset_value_scanStart">
-               <property name="minimumSize">
-                <size>
-                 <width>22</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>22</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Reset to default</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QPushButton" name="pushButton_reset_value_scanEnd">
-               <property name="minimumSize">
-                <size>
-                 <width>22</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>22</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Reset to default</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="2">
-              <widget class="QPushButton" name="pushButton_reset_value_threshold">
-               <property name="minimumSize">
-                <size>
-                 <width>22</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>22</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Reset to default</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="2">
-              <widget class="QPushButton" name="pushButton_reset_value_windowSize">
-               <property name="minimumSize">
-                <size>
-                 <width>22</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>22</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Reset to default</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="2">
-              <widget class="QPushButton" name="pushButton_reset_value_stepSize">
-               <property name="minimumSize">
-                <size>
-                 <width>22</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>22</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Reset to default</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="2">
-              <widget class="QPushButton" name="pushButton_reset_value_matchesReqd">
-               <property name="minimumSize">
-                <size>
-                 <width>22</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>22</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Reset to default</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </widget>
           </item>
           <item>
@@ -422,20 +120,20 @@
              <property name="rightMargin">
               <number>9</number>
              </property>
-             <item row="0" column="0">
-              <widget class="QCheckBox" name="checkBox_visualizeRange">
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="checkBox_visualizeTear">
                <property name="text">
-                <string>Scan range</string>
+                <string>Tear lines</string>
                </property>
                <property name="checked">
                 <bool>true</bool>
                </property>
               </widget>
              </item>
-             <item row="1" column="0">
-              <widget class="QCheckBox" name="checkBox_visualizeTear">
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="checkBox_visualizeRange">
                <property name="text">
-                <string>Tear lines</string>
+                <string>Scan range</string>
                </property>
                <property name="checked">
                 <bool>true</bool>
@@ -467,19 +165,15 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ParameterGrid</class>
+   <extends>QGroupBox</extends>
+   <header>QGroupBox_parameter_grid.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <tabstops>
-  <tabstop>spinBox_rangeUp</tabstop>
-  <tabstop>spinBox_rangeDown</tabstop>
-  <tabstop>spinBox_threshold</tabstop>
-  <tabstop>spinBox_domainSize</tabstop>
-  <tabstop>spinBox_stepSize</tabstop>
-  <tabstop>spinBox_matchesReqd</tabstop>
-  <tabstop>pushButton_reset_value_scanStart</tabstop>
-  <tabstop>pushButton_reset_value_scanEnd</tabstop>
-  <tabstop>pushButton_reset_value_threshold</tabstop>
-  <tabstop>pushButton_reset_value_windowSize</tabstop>
-  <tabstop>pushButton_reset_value_stepSize</tabstop>
-  <tabstop>pushButton_reset_value_matchesReqd</tabstop>
   <tabstop>checkBox_visualizeRange</tabstop>
   <tabstop>checkBox_visualizeTear</tabstop>
   <tabstop>scrollArea</tabstop>
