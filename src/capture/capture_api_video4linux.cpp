@@ -535,12 +535,7 @@ bool capture_api_video4linux_s::set_video_signal_parameters(const video_signal_p
 
     const auto set_parameter = [&videoParams](const int value, const ic_v4l_video_parameters_c::parameter_type_e parameterType)
     {
-        if (videoParams.value(parameterType) != value)
-        {
-            return videoParams.set_value(value, parameterType);
-        }
-
-        return true;
+        return videoParams.set_value(value, parameterType);
     };
 
     set_parameter(p.phase,              ic_v4l_video_parameters_c::parameter_type_e::phase);

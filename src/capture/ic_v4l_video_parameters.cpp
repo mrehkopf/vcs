@@ -125,10 +125,10 @@ void ic_v4l_video_parameters_c::update()
             if (ioctl(this->v4lDeviceFileHandle, VIDIOC_QUERYCTRL, &query) == 0)
             {
                 if (!(query.flags & V4L2_CTRL_FLAG_DISABLED) &&
-                        !(query.flags & V4L2_CTRL_FLAG_READ_ONLY) &&
-                        !(query.flags & V4L2_CTRL_FLAG_INACTIVE) &&
-                        !(query.flags & V4L2_CTRL_FLAG_HAS_PAYLOAD) &&
-                        !(query.flags & V4L2_CTRL_FLAG_WRITE_ONLY))
+                    !(query.flags & V4L2_CTRL_FLAG_READ_ONLY) &&
+                    !(query.flags & V4L2_CTRL_FLAG_INACTIVE) &&
+                    !(query.flags & V4L2_CTRL_FLAG_HAS_PAYLOAD) &&
+                    !(query.flags & V4L2_CTRL_FLAG_WRITE_ONLY))
                 {
                     video_parameter_s parameter;
 
