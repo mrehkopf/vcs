@@ -1,0 +1,657 @@
+/* A gray program-wide style for VCS's Qt-based GUI.
+ *
+ * Author: Tarpeeksi Hyvae Soft
+ * Created: March 2021
+ */
+
+*:focus
+{
+    outline: none;
+}
+
+QDialog
+{
+    background-color: #353535;
+    border: none;
+    color: black;
+}
+
+QMessageBox,
+QInputDialog
+{
+    background-color: #454545;
+    padding: 40px;
+    border: none;
+}
+
+QMessageBox QPushButton,
+QInputDialog QPushButton
+{
+    padding: 6px;
+}
+
+QFrame
+{
+    background-color: transparent;
+    border: none;
+    margin-top: 3px;
+}
+
+QScrollArea
+{
+    background-color: transparent;
+    margin-top: 0;
+}
+
+QGraphicsView
+{
+    background-color: #353535;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+}
+
+QGroupBox > QTableWidget,
+QGroupBox > QTreeWidget,
+QGroupBox > QLabel
+{
+    margin-top: 0;
+}
+
+QGroupBox > QTreeWidget,
+QGroupBox > QHBoxLayout
+{
+    margin-top: 6px;
+}
+
+QGroupBox > QFrame,
+QGroupBox > QLabel
+{
+    margin-left: 3px;
+    margin-right: 3px;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+QGroupBox > PropertyTable
+{
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+/* Horizontal line.*/
+QGroupBox > QFrame[frameShape="4"]
+{
+    margin-left: 6px;
+}
+
+QScrollArea > QWidget > QWidget
+{
+    background-color: transparent;
+}
+
+QTabBar::tab
+{
+    /* Note: Tab width is set automatically in code so that the tabs span
+     *       the entire tab bar. You should not specify any left or right
+     *       padding or margin for tabs. Any tab width you specify will be
+     *       overridden by code.*/
+
+    background-color: #959595;
+    color: black;
+    border: none;
+    border-radius: 0px;
+    padding: 5px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+QTabBar::tab:!selected
+{
+    color: #555553;
+}
+
+QTabBar::tab:hover
+{
+    background-color: #9c9c9a;
+}
+
+QTabBar::tab:selected
+{
+    background-color: #b0b0ad;
+    color: black;
+}
+
+QPlainTextEdit
+{
+    border: none;
+    border-radius: 0px;
+    border: 1px solid black;
+    color: black;
+    background-color: whitesmoke;
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+QAbstractButton
+{
+    color: black;
+}
+
+QPushButton,
+QPushButton:flat
+{
+    min-height: 20px;
+    padding: 3px;
+    border-radius: 2px;
+    border: 1px solid black;
+    background-color: transparent;
+    color: #e0e0e0;
+}
+
+QPushButton,
+QPushButton:flat,
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal,
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical
+{
+    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #686868, stop: 1 #474747);
+}
+
+QPushButton:flat
+{
+    padding: 3px;
+    border-radius: 3px;
+    border: none;
+    background-color: transparent;
+    background: transparent;
+}
+
+QPushButton:pressed,
+QPushButton:flat:pressed,
+QPushButton:flat:hover:pressed,
+QScrollBar::add-line:vertical:pressed,
+QScrollBar::sub-line:vertical:pressed,
+QScrollBar::add-line:horizontal:pressed,
+QScrollBar::sub-line:horizontal:pressed
+{
+    background: #474747;
+}
+
+QPushButton:flat
+{
+    border: none;
+}
+
+QPushButton:flat:pressed,
+QPushButton:flat:hover:pressed
+{
+    background: qlineargradient(x1:0 y1:1, x2:0 y2:0, stop:0 rgba(0, 0, 0, 0.0), stop:0.5 rgba(0, 0, 0, 0.3), stop:1 rgba(0, 0, 0, 0.0));
+}
+
+QAbstractScrollArea::corner
+{
+    background-color: #454545;
+}
+
+QComboBox::down-arrow,
+QAbstractButton::menu-indicator
+{
+    image: url(:/res/images/icons/arrow_down.png);
+}
+
+QComboBox::down-arrow:disabled
+{
+    image: url(:/res/images/icons/newie/arrow_down_disabled.png);
+}
+
+QComboBox QAbstractItemView
+{
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    border-radius: 0;
+    color: #101010;
+    border: 1px solid black;
+}
+
+QComboBox::drop-down
+{
+    width: 15px;
+    border: none;
+    border-radius: 0;
+    padding: 3px;
+    border: none;
+    background-color: transparent;
+ }
+
+QTableWidget
+{
+    background-color: transparent;
+    alternate-background-color: rgba(0, 0, 0, 0.065);
+    color: #e0e0e0;
+}
+
+
+QListWidget
+{
+    background-color: rgba(10, 10, 0, 0.1);
+    color: #e5e5e5;
+}
+
+QListWidget::item:selected:active
+{
+    background: rgba(10, 10, 0, 0.1);
+}
+
+QListWidget::item:selected
+{
+    background: rgba(10, 10, 0, 0.1);
+}
+
+QTreeWidget
+{
+    margin: 0;
+    padding: 0;
+    background-color: #454545;
+    border: 1px solid black;
+}
+
+QTreeWidget QAbstractItemView
+{
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+}
+
+QTreeWidget QHeaderView::section
+{
+    padding: 5px;
+    margin: 0;
+    background-color: #555555;
+    color: #d9d9d9;
+    border: none;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+}
+
+QTreeWidget QHeaderView::section:last
+{
+    border-right: none;
+}
+
+QTreeWidget::item:hover
+{
+    background-color: #505050;
+}
+
+QTreeWidget::item:selected
+{
+    background-color: #707070;
+    border: none;
+}
+
+QGroupBox
+{
+    margin: 0px;
+    background-color: #303030;
+    border-radius: 2px;
+    padding-bottom: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
+    border: none;
+}
+
+QGroupBox > QGroupBox
+{
+    margin: 0;
+    margin-top: 3px;
+    padding-top: 1.6em;
+    background-color: #454545;
+    color: #e0e0e0;
+    border: 1px solid black;
+}
+
+QGroupBox::title
+{
+    left: 9px;
+    top: 9px;
+    color: #e0e0e0;
+}
+
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal,
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical
+{
+    background-image: url(:/res/images/icons/newie/grid_pattern.png);
+    background-position: top-left;
+    background-repeat: repeat-xy;
+}
+
+QScrollBar:vertical
+{
+    width: 22px;
+    min-width: 22px;
+    margin: 23px 0 23px -1px;
+    border: none;
+    background-color: #d9d9d9;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+
+QScrollBar::handle:vertical
+{
+    min-height: 22px;
+    background-color: #d4d0c8;
+    border-radius: 0;
+    background-color: #808080;
+    border: none;
+    border-top: 1px solid #353535;
+    border-bottom: 1px solid #353535;
+}
+
+QScrollBar::add-line:vertical
+{
+    height: 22px;
+    width: 22px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+    image: url(:/res/images/icons/newie/arrow_down.png);
+    border: 1px solid black;
+    border-top: none;
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+    margin-left: -1px;
+}
+
+QScrollBar::add-line:vertical:disabled
+{
+    image: url(:/res/images/icons/newie/arrow_down_disabled.png);
+}
+
+QScrollBar::sub-line:vertical
+{
+    height: 22px;
+    width: 22px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+    image: url(:/res/images/icons/newie/arrow_up.png);
+    border: 1px solid black;
+    border-bottom: none;
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    margin-left: -1px;
+}
+
+QScrollBar::sub-line:vertical:disabled
+{
+    image: url(:/res/images/icons/newie/newie/arrow_up_disabled.png);
+}
+
+QScrollBar:horizontal
+{
+    height: 22px;
+    min-height: 22px;
+    border: none;
+    background-color: #d9d9d9;
+    margin: -1px 23px 0 23px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+QScrollBar::handle:horizontal
+{
+    min-width: 22px;
+    border-radius: 0px;
+    background-color: #808080;
+    border-left: 1px solid #353535;
+    border-right: 1px solid #353535;
+}
+
+QScrollBar::add-line:horizontal
+{
+    width: 22px;
+    height: 22px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+    image: url(:/res/images/icons/newie/arrow_right.png);
+    border: 1px solid black;
+    border-left: none;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    margin-bottom: 1px;
+}
+
+QScrollBar::add-line:horizontal:disabled
+{
+    image: url(:/res/images/icons/newie/arrow_right_disabled.png);
+}
+
+QScrollBar::sub-line:horizontal
+{
+    width: 22px;
+    height: 22px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+    image: url(:/res/images/icons/newie/arrow_left.png);
+    border: 1px solid black;
+    border-right: none;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    margin-bottom: 1px;
+}
+
+QGroupBox QScrollBar::sub-line:horizontal,
+QGroupBox QScrollBar::add-line:horizontal
+{
+    height: 26px;
+    margin-bottom: 0px;
+}
+
+QGroupBox QScrollBar:horizontal
+{
+    margin: 0px 23px 0 23px;
+}
+
+QScrollBar::sub-line:horizontal:disabled
+{
+    image: url(:/res/images/icons/newie/arrow_left_disabled.png);
+}
+
+QRadioButton::indicator
+{
+    width: 11px;
+    height: 11px;
+    border: none;
+    margin-top: 1px;
+    border-radius: 6px;
+    background: transparent;
+}
+
+QRadioButton::indicator::!checked
+{
+    background: rgba(0,0,0,0.06);
+    border: none;
+    border-left: 1px solid rgba(0,0,0,0.2);
+    border-top: 1px solid rgba(0,0,0,0.2);
+}
+
+QRadioButton::indicator::checked
+{
+    width: 13px;
+    height: 13px;
+    background: #757575;
+    border: none;
+}
+
+QRadioButton::indicator::checked:disabled
+{
+    background: rgba(5,5,0,0.2);
+}
+
+QCheckBox::indicator,
+QGroupBox::indicator,
+QTreeWidget::indicator
+{
+    width: 13px;
+    height: 13px;
+    margin-top: 1px;
+    border-radius: 2px;
+    background-color: #d9d9d9;
+    border: 1px solid black;
+}
+
+QTreeWidget::indicator
+{
+    margin: 4px;
+}
+
+QCheckBox::indicator::checked,
+QGroupBox::indicator::checked,
+QTreeWidget::indicator::checked
+{
+    image: url(:/res/images/icons/checkbox_check.png);
+}
+
+QCheckBox::indicator::checked:disabled,
+QGroupBox::indicator::checked:disabled,
+QTreeWidget::indicator::checked:disabled
+{
+    image: url(:/res/images/icons/checkbox_check_disabled.png);
+}
+
+QSpinBox,
+QDoubleSpinBox,
+QComboBox,
+QLineEdit,
+QTextEdit,
+QSpinBox:read-only:focus,
+QDoubleSpinBox:read-only:focus,
+QLineEdit:read-only:focus,
+QTextEdit:read-only:focus
+{
+    min-height: 22px;
+    color: black;
+    background-color: #d9d9d9;
+    border-radius: 2px;
+    border: 1px solid black;
+    padding: 2px;
+}
+
+QComboBox
+{
+    padding-left: 4px;
+}
+
+QSpinBox:focus,
+QSpinBox:focus,
+QDoubleSpinBox:focus,
+QLineEdit:focus,
+QTextEdit:focus
+{
+    background-color: white;
+}
+
+QSpinBox::up-button,
+QDoubleSpinBox::up-button,
+QSpinBox::down-button,
+QDoubleSpinBox::down-button
+{
+    border: none;
+}
+
+QSpinBox::up-arrow,
+QDoubleSpinBox::up-arrow
+{
+    image: url(:/res/images/icons/arrow_up.png);
+    border: none;
+}
+
+QSpinBox::up-arrow:disabled,
+QDoubleSpinBox::up-arrow:off
+{
+    image: url(:/res/images/icons/newie/arrow_up_disabled.png);
+    border: none;
+}
+
+QSpinBox::down-arrow,
+QDoubleSpinBox::down-arrow
+{
+    image: url(:/res/images/icons/arrow_down.png);
+    border: none;
+}
+
+QSpinBox::down-arrow:disabled,
+QDoubleSpinBox::down-arrow:off
+{
+    image: url(:/res/images/icons/newie/arrow_down_disabled.png);
+    border: none;
+}
+
+QLabel,
+QRadioButton,
+QCheckBox
+{
+    color: #e0e0e0;
+}
+
+/* Horizontal line.*/
+QFrame[frameShape="4"],
+QFrame[frameShape="4"]:disabled
+{
+    margin: 0;
+    border: none;
+    border-top: 1px solid #353535;
+    border-bottom: 1px solid #555555;
+}
+
+QSpinBox:disabled,
+QDoubleSpinBox:disabled,
+QLineEdit:disabled,
+QComboBox:disabled,
+QPushButton:disabled,
+QLabel:disabled,
+QFrame:disabled,
+QAbstractButton:disabled,
+QCheckBox::indicator:disabled,
+QGroupBox::indicator:disabled,
+QScrollBar::add-line:horizontal:disabled,
+QScrollBar::add-line:vertical:disabled,
+QScrollBar::sub-line:horizontal:disabled,
+QScrollBar::sub-line:vertical:disabled
+{
+    background-color: transparent;
+    border-color: #353535;
+    color: gray;
+}
+
+QSpinBox:disabled,
+QDoubleSpinBox:disabled,
+QLineEdit:disabled,
+QComboBox:disabled,
+QPlainTextEdit:disabled,
+QCheckBox::indicator:disabled,
+QGroupBox::indicator:disabled
+{
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+QGroupBox:disabled
+{
+    color: gray;
+}
+
+QGroupBox::title:disabled
+{
+    color: gray;
+}
+
+QLabel
+{
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    border: none;
+}

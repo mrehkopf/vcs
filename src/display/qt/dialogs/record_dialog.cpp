@@ -178,12 +178,10 @@ RecordDialog::RecordDialog(QDialog *parent) :
             if (krecord_is_recording())
             {
                 this->set_recording_enabled(false);
-                ui->groupBox_status->setEnabled(false);
             }
             else
             {
                 this->set_recording_enabled(true);
-                ui->groupBox_status->setEnabled(true);
             }
 
             ui->pushButton_startStopRecording->setEnabled(true);
@@ -229,6 +227,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
         ke_events().recorder.recordingStarted.subscribe([this]
         {
             this->set_recording_controls_enabled(false);
+            ui->groupBox_status->setEnabled(true);
 
             this->timerUpdateRecordingInfo->start(1000);
 
@@ -243,6 +242,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
         ke_events().recorder.recordingEnded.subscribe([this]
         {
             this->set_recording_controls_enabled(true);
+            ui->groupBox_status->setEnabled(false);
 
             this->timerUpdateRecordingInfo->stop();
 

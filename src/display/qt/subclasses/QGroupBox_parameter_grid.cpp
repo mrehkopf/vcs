@@ -1,6 +1,6 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
- * 
+ *
  * Software: VCS
  *
  */
@@ -72,12 +72,12 @@ void ParameterGrid::add_parameter(const QString name,
         spinBox->setValue(newParam->currentValue);
         spinBox->setButtonSymbols(QAbstractSpinBox::ButtonSymbols::NoButtons);
 
-        auto resetButtonIcon = QIcon(":/res/images/icons/reset.png");
-        resetButtonIcon.addPixmap(QPixmap(":/res/images/icons/reset_disabled.png"), QIcon::Disabled);
+        auto resetButtonIcon = QIcon(":/res/images/icons/newie/reset.png");
+        resetButtonIcon.addPixmap(QPixmap(":/res/images/icons/newie/reset_disabled.png"), QIcon::Disabled);
 
         auto *const resetButton = new QPushButton();
         resetButton->setIcon(resetButtonIcon);
-        resetButton->setFixedWidth(22);
+        resetButton->setFixedWidth(24);
         resetButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
         resetButton->setEnabled(false);
         resetButton->setToolTip("Reset to default");

@@ -57,7 +57,7 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 
     const auto draw_box_shadow = [painter](const QRect &rect, const unsigned lineWidth)
     {
-        painter->setPen(QPen(QColor("#f5f5f0"), lineWidth, Qt::SolidLine));
+        painter->setPen(QPen(QColor("black"), lineWidth, Qt::SolidLine));
         painter->drawLine(rect.x(),
                           rect.y(),
                           rect.x(),
@@ -67,7 +67,7 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
                           rect.x() + (rect.width() - 1),
                           rect.y());
 
-        painter->setPen(QPen(QColor("#808075"), lineWidth, Qt::SolidLine));
+        painter->setPen(QPen(QColor("black"), lineWidth, Qt::SolidLine));
         painter->drawLine(rect.x() + (rect.width()),
                           rect.y(),
                           rect.x() + (rect.width()),
@@ -80,7 +80,7 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 
     // Draw the node's body.
     {
-        const unsigned edgePenThickness = 4;
+        const unsigned edgePenThickness = 1;
 
         painter->setFont(bodyFont);
 
@@ -88,7 +88,7 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
         {
             // Node's background.
             painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor("#d4d0c8")));
+            painter->setBrush(QBrush(QColor("#555555")));
             painter->drawRect(0, 0, this->width, this->height);
             draw_box_shadow(QRect(0, 0, this->width, this->height), edgePenThickness);
 
@@ -96,24 +96,24 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
             painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
             painter->setBrush(QBrush(this->current_background_color(),
                                      (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
-            painter->drawRect(QRect(2, 8, (this->width - 4), 24));
+            painter->drawRect(QRect(1, 8, (this->width - 1), 24));
         }
 
         // Connection points (edges).
         {
             for (const auto &edge: this->edges)
             {
-                painter->setPen(QColor("#d4d0c8"));
-                painter->setBrush(QBrush(QColor("#d4d0c8")));
+                painter->setPen(QColor("#e0e0e0"));
+                painter->setBrush(QBrush(QColor("#e0e0e0")));
                 painter->drawRect(edge.rect);
                 draw_box_shadow(edge.rect, (edgePenThickness / 2));
             }
         }
     }
 
-    const QString clr = (this->current_background_color().lightness() < 128? "white" : "black");
+    const QString textColor = (this->current_background_color().lightness() < 128? "white" : "black");
     painter->setFont(titleFont);
-    painter->setPen(QColor(this->is_enabled()? clr : "black"));
+    painter->setPen(QColor(this->is_enabled()? textColor : "lightgray"));
     painter->drawText(20, 26, title);
 
     return;
@@ -146,7 +146,7 @@ const QColor FilterGraphNode::current_background_color(void)
     const QString currentColor = this->backgroundColor.toLower();
 
     if (currentColor == "red") return QColor("brown");
-    else if (currentColor == "black") return QColor("dimgray");
+    else if (currentColor == "black") return QColor("black");
     else if (currentColor == "blue") return QColor("navy");
     else if (currentColor == "cyan") return QColor("darkcyan");
     else if (currentColor == "magenta") return QColor("mediumvioletred");

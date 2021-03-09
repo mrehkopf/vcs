@@ -695,7 +695,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Apply any custom styling.
     {
         qApp->setWindowIcon(QIcon(":/res/images/icons/appicon.ico"));
-        this->apply_programwide_styling(":/res/stylesheets/appstyle-oldie.qss");
+        this->apply_programwide_styling(":/res/stylesheets/appstyle-newie.qss");
     }
 
     // Subscribe to app events.
