@@ -29,13 +29,12 @@ The VisionAV range of cards should also work, albeit without their audio capture
 
 # User's manual
 
-This is the user's manual for VCS 2.2.
+This is the user's manual for VCS 2.3.
 
 Older versions of the manual are also available:
+- [VCS 2.2](https://github.com/leikareipa/vcs/blob/v2.2.0/README.md#users-manual)
 - [VCS 2.1](https://github.com/leikareipa/vcs/blob/v2.1.0/README.md#users-manual)
 - [VCS 2.0](https://github.com/leikareipa/vcs/blob/v2.0.0/README.md#users-manual)
-- [VCS 1.6](https://github.com/leikareipa/vcs/blob/v1.6.5/README.md#usage)
-- [VCS 1.5](https://github.com/leikareipa/vcs/blob/v1.5.2/README.md#how-to-use-vcs)
 
 ## Table of contents
 - [Setting up](#setting-up)
@@ -208,7 +207,7 @@ The VCS user interface includes a number of dialogs, with which you can adjust t
 
 - [Video presets dialog](#video-presets-dialog)
 - [Alias resolutions dialog](#alias-resolutions-dialog)
-- [Record dialog](#record-dialog)
+- [Video record dialog](#video-record-dialog)
 - [Input resolution dialog](#input-resolution-dialog)
 - [Output resolution dialog](#output-resolution-dialog)
 - [Anti-tear dialog](#anti-tear-dialog)
@@ -219,7 +218,7 @@ To access: Ctrl+V or [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Video...`
 
 The video presets dialog lets you to modify the capture hardware's video signal parameters.
 
-![](images/screenshots/v2.1.0/video-presets-dialog.png)\
+![](images/screenshots/v2.3.0/video-presets-dialog.png)\
 *The video presets dialog - showing controls for adjusting the capture hardware's video signal parameters.*
 
 The parameter values you input will take effect when all of the "Activates when" conditions are met. For instance, if you've set the preset's activation resolution to 800 x 600 and the refresh rate to 59.695 Hz, the video parameters will apply when the capture resolution is 800 x 600 and the capture refresh rate is 59.695 Hz. Or, for instance, you might only assign the preset with a shortcut activation, in which case its parameters will be applied when you activate the shortcut key, but not otherwise.
@@ -235,17 +234,14 @@ To access: [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Aliases...`
 
 With the alias resolutions dialog, you can tell VCS to automatically override certain input resolutions.
 
-![](images/screenshots/v2.1.0/alias-resolutions-dialog.png)\
-*The alias resolutions dialog - showing controls for creating and managing aliases.*
-
 For instance, if you find that your capture hardware is incorrectly initializing 640 x 400 as 512 x 488 (or something of that sort), you can define 640 x 400 as an alias of 512 x 488. Now, whenever the capture hardware sets the input resolution to 512 x 488, VCS will instruct it to change it to 640 x 400.
 
-### Record dialog
+### Video record dialog
 To access: Ctrl+R or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Record...`
 
 The record dialog gives you the option to stream captured frames into a video file.
 
-![](images/screenshots/v2.1.0/video-recorder-dialog.png)\
+![](images/screenshots/v2.3.0/record-dialog.png)\
 *The record dialog - showing controls for recording captured frames into a video file.*
 
 The recording functionality will write frames as they appear in the [output window](#output-window) into a video file. But make note of the following:
@@ -309,7 +305,7 @@ To access: Ctrl+L or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Overlay...`
 
 The overlay dialog lets you define a message to be overlaid on the [output window](#output-window).
 
-![](images/screenshots/v2.1.0/overlay-dialog.png)\
+![](images/screenshots/v2.3.0/overlay-dialog.png)\
 *The overlay dialog - showing controls for overlaying a message on the output window.*
 
 You can combine normal text with pre-set VCS variables and HTML/CSS formatting to create a message to be shown over the output window.
@@ -321,7 +317,7 @@ To access: Ctrl+A or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Anti-tear...`
 
 The anti-tear dialog provides functionality to remove tearing from captured frames.
 
-![](images/screenshots/v2.1.0/anti-tearing-dialog.png)\
+![](images/screenshots/v2.3.0/anti-tear-dialog.png)\
 *The anti-tear dialog - showing controls for adjusting the parameters of VCS's anti-tear engine.*
 
 Under some circumstances, such as when the captured source does not sync its rendering with the refresh rate, you may find that the captured frames contain horizontal tearing. VCS comes with an anti-tear engine to help mitigate this problem.
@@ -349,7 +345,7 @@ To access: Ctrl+F or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Filter graph.
 
 The filter graph dialog allows you to create chains of image filters to be applied to captured frames prior to display in the [output window](#output-window).
 
-![](images/screenshots/v2.1.0/filter-graph-dialog.png)\
+![](images/screenshots/v2.3.0/filter-graph-dialog.png)\
 *The filter graph dialog - showing controls for creating and modifying filter chains.*
 
 The filter graph is made up of nodes that can be connected together in a chain. These nodes come in three varieties: `input gate`, `output gate`, and `filter`.
@@ -704,21 +700,21 @@ You are encouraged to have a fast CPU, since most of VCS's operations are perfor
 **Performance.** On my Intel Xeon E3-1230 v3, VCS performs more than adequately. The table below shows that an input of 640 x 480 can be scaled to 1920 x 1440 at about 300&ndash;400 frames per second, depending on the interpolation used.
 
 | 640 x 480    | Nearest | Linear | Area | Cubic | Lanczos |
-|:------------ |:-------:|:------:|:----:|:-----:|:-------:|
+| ------------ |:-------:|:------:|:----:|:-----:|:-------:|
 | 2x upscaled  | 1100    | 480    | 480  | 280   | 100     |
 | 3x upscaled  | 460     | 340    | 340  | 180   | 50      |
 
 Drawing frames onto the [output window](#output-window) using software rendering is likewise sufficiently fast, as shown in the following table. An input of 640 x 480 can be upscaled by 2x and drawn on screen at roughly 340 frames per second when using nearest-neighbor interpolation.
 
 | 640 x 480       | 1x<br>Nearest | 2x<br>Nearest | 3x<br>Nearest |
-|:--------------- |:-------------:|:-------------:|:-------------:|
+| --------------- |:-------------:|:-------------:|:-------------:|
 | With display    | 1360          | 340           | 150           |
 | Without display | 1910          | 1100          | 510           |
 
 Padding (i.e. aspect ratio correction) can incur a performance penalty with some of the scalers. The following table shows the frame rates associated with scaling a 640 x 480 input into 1920 x 1080 with and without padding to 4:3.
 
 | 480p to 1080p | Nearest | Linear | Area | Cubic | Lanczos |
-|:------------- |:-------:|:------:|:----:|:-----:|:-------:|
+| ------------- |:-------:|:------:|:----:|:-----:|:-------:|
 | Padded / 4:3  | 390     | 270    | 270  | 200   | 80      |
 | No padding    | 820     | 370    | 370  | 210   | 70      |
 
