@@ -302,6 +302,8 @@ static void visualize_settings(captured_frame_s &frame)
         return;
     }
 
+    const unsigned patternDensity = 9;
+
     // Shade the area under the scan range.
     for (unsigned long y = MINY; y < MAXY; y++)
     {
@@ -309,28 +311,34 @@ static void visualize_settings(captured_frame_s &frame)
         {
             const unsigned long idx = ((x + y * frame.r.w) * 4);
 
-            frame.pixels[idx + 1] *= 0.75;
-            frame.pixels[idx + 2] *= 0.75;
+            frame.pixels[idx + 1] *= 0.5;
+            frame.pixels[idx + 2] *= 0.5;
+
+            // Create a dot pattern.
+            if (((y % patternDensity) == 0) &&
+                ((x + y) % (patternDensity * 2)) == 0)
+            {
+                frame.pixels[idx + 0] = ~frame.pixels[idx + 0];
+                frame.pixels[idx + 1] = ~frame.pixels[idx + 1];
+                frame.pixels[idx + 2] = ~frame.pixels[idx + 2];
+            }
         }
     }
 
-    // Indicate with a line where the sampling area starts and ends.
-    u8 color = 255;
+    // Indicate with a line where the scan range starts and ends.
     for (unsigned long x = 0; x < frame.r.w; x++)
     {
-        int idx = (x + MINY * frame.r.w) * 4;
-        frame.pixels[idx + 0] = color;
-        frame.pixels[idx + 1] = !color? 255 : 0;
-        frame.pixels[idx + 2] = !color? 255 : 0;
-
-        idx = (x + (MAXY - 1) * frame.r.w) * 4;
-        frame.pixels[idx + 0] = !color? 255 : 0;
-        frame.pixels[idx + 1] = color;
-        frame.pixels[idx + 2] = !color? 255 : 0;
-
-        if (x % 30 == 0)
+        if (((x / patternDensity) % 2) == 0)
         {
-            color = ~color;
+            int idx = ((x + MINY * frame.r.w) * 4);
+            frame.pixels[idx + 0] = ~frame.pixels[idx + 0];
+            frame.pixels[idx + 1] = ~frame.pixels[idx + 1];
+            frame.pixels[idx + 2] = ~frame.pixels[idx + 2];
+
+            idx = ((x + (MAXY - 1) * frame.r.w) * 4);
+            frame.pixels[idx + 0] = ~frame.pixels[idx + 0];
+            frame.pixels[idx + 1] = ~frame.pixels[idx + 1];
+            frame.pixels[idx + 2] = ~frame.pixels[idx + 2];
         }
     }
 
