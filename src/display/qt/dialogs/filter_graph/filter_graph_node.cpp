@@ -55,9 +55,11 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 
     painter->setRenderHint(QPainter::Antialiasing, false);
 
-    const auto draw_box_shadow = [painter](const QRect &rect, const unsigned lineWidth)
+    const auto draw_rect_outline = [painter, option](const QRect &rect,
+                                                     const QColor &color,
+                                                     const unsigned lineWidth)
     {
-        painter->setPen(QPen(QColor("black"), lineWidth, Qt::SolidLine));
+        painter->setPen(QPen(color, lineWidth, Qt::SolidLine));
         painter->drawLine(rect.x(),
                           rect.y(),
                           rect.x(),
@@ -67,7 +69,7 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
                           rect.x() + (rect.width() - 1),
                           rect.y());
 
-        painter->setPen(QPen(QColor("black"), lineWidth, Qt::SolidLine));
+        painter->setPen(QPen(color, lineWidth, Qt::SolidLine));
         painter->drawLine(rect.x() + (rect.width()),
                           rect.y(),
                           rect.x() + (rect.width()),
@@ -90,7 +92,9 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
             painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
             painter->setBrush(QBrush(QColor("#555555")));
             painter->drawRect(0, 0, this->width, this->height);
-            draw_box_shadow(QRect(0, 0, this->width, this->height), edgePenThickness);
+            draw_rect_outline(QRect(0, 0, this->width, this->height),
+                              QColor((option->state & QStyle::State_Selected)? "#e0e0e0" : "black"),
+                              edgePenThickness);
 
             // Title bar's background.
             painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
@@ -106,7 +110,7 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
                 painter->setPen(QColor("#e0e0e0"));
                 painter->setBrush(QBrush(QColor("#e0e0e0")));
                 painter->drawRect(edge.rect);
-                draw_box_shadow(edge.rect, (edgePenThickness / 2));
+                draw_rect_outline(edge.rect, QColor("black"), edgePenThickness);
             }
         }
     }
