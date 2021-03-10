@@ -85,6 +85,12 @@
           </property>
           <item>
            <widget class="ParameterGrid" name="parameterGrid_parameters">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="title">
              <string>Anti-tear parameters</string>
             </property>
