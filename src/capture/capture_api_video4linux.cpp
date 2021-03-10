@@ -28,6 +28,7 @@
 #include <poll.h>
 #include "capture/capture_api_video4linux.h"
 #include "capture/input_channel_v4l.h"
+#include "capture/video_presets.h")
 #include "capture/ic_v4l_video_parameters.h"
 #include "common/propagate/app_events.h"
 
@@ -194,6 +195,7 @@ bool capture_api_video4linux_s::initialize(void)
     ke_events().capture.newInputChannel.subscribe([this]
     {
         this->inputChannel->captureStatus.videoParameters.update();
+        kvideopreset_apply_current_active_preset();
     });
 
     FRAME_BUFFER.r = {640, 480, 32};
