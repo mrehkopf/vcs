@@ -56,6 +56,8 @@
 // For an optional OpenGL render surface.
 static OGLWidget *OGL_SURFACE = nullptr;
 
+static unsigned CURRENT_OUTPUT_FPS = 0;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -703,6 +705,15 @@ MainWindow::MainWindow(QWidget *parent) :
         ke_events().scaler.newFrame.subscribe([this]
         {
             this->redraw();
+        });
+
+        ke_events().scaler.framesPerSecond.subscribe([this](const unsigned fps)
+        {
+            if (CURRENT_OUTPUT_FPS != fps)
+            {
+                CURRENT_OUTPUT_FPS = fps;
+                this->update_window_title();
+            }
         });
 
         ke_events().scaler.newFrameResolution.subscribe([this]
@@ -1368,7 +1379,6 @@ void MainWindow::update_window_title(void)
         const resolution_s inRes = kc_capture_api().get_resolution();
         const resolution_s outRes = ks_output_resolution();
         const refresh_rate_s refreshRate = kc_capture_api().get_refresh_rate();
-        const int relativeScale = round((outRes.h / (real)inRes.h) * 100); /// FIXME: Doesn't notice if only the width is modified.
 
         QStringList programStatus;
         if (krecord_is_recording())           programStatus << "R";
@@ -1384,7 +1394,7 @@ void MainWindow::update_window_title(void)
         }
         else
         {
-            title = QString("%1%2 - %3%4 x %5 (%6 Hz) scaled to %7 x %8 (~%9%)")
+            title = QString("%1%2 - %3%4 x %5 (%6 Hz) scaled to %7 x %8 (%9 FPS)")
                     .arg(this->areFramesBeingDropped? (missedFramesMarker + " ") : "")
                     .arg(PROGRAM_NAME)
                     .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
@@ -1393,7 +1403,7 @@ void MainWindow::update_window_title(void)
                     .arg(QString::number(refreshRate.value<double>(), 'f', 3))
                     .arg(outRes.w)
                     .arg(outRes.h)
-                    .arg(relativeScale);
+                    .arg(CURRENT_OUTPUT_FPS);
         }
     }
 
