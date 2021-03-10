@@ -154,6 +154,9 @@
              </item>
              <item>
               <widget class="QPushButton" name="pushButton_startStopRecording">
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
                <property name="text">
                 <string>Record</string>
                </property>
