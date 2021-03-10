@@ -129,6 +129,9 @@ public:
 
         // The most recent captured frame has now been processed and is ready for display.
         vcs_event_c newFrame;
+
+        // The number of frames processed (see newFrame) in the last second.
+        vcs_event_with_value_c<unsigned> framesPerSecond;
     } scaler;
 
 private:

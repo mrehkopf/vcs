@@ -31,8 +31,6 @@ static const QString BASE_WINDOW_TITLE = "VCS - Signal Info";
 static QElapsedTimer VIDEO_MODE_UPTIME;
 static QTimer INFO_UPDATE_TIMER;
 
-static QTimer FPS_UPDATE_TIMER;
-
 // How many captured frames we've had to drop. This count is shown to the user
 // in the signal dialog.
 static unsigned NUM_DROPPED_FRAMES = 0;
@@ -40,11 +38,6 @@ static unsigned NUM_DROPPED_FRAMES = 0;
 // How many captured frames the capture API has had to drop, in total. We'll
 // use this value to derive NUM_DROPPED_FRAMES.
 static unsigned GLOBAL_NUM_DROPPED_FRAMES = 0;
-
-// For keeping track of the number of frames VCS is capturing, processing, and
-// displaying per second.
-static unsigned NUM_FRAMES_CAPTURED = 0;
-static unsigned NUM_FRAMES_CAPTURED_PER_SECOND = 0;
 
 SignalDialog::SignalDialog(QWidget *parent) :
     QDialog(parent),
@@ -75,17 +68,8 @@ SignalDialog::SignalDialog(QWidget *parent) :
         {
             VIDEO_MODE_UPTIME.start();
             INFO_UPDATE_TIMER.start(1000);
-            FPS_UPDATE_TIMER.start(1000);
 
             GLOBAL_NUM_DROPPED_FRAMES = kc_capture_api().get_missed_frames_count();
-
-            connect(&FPS_UPDATE_TIMER, &QTimer::timeout, [this]
-            {
-                NUM_FRAMES_CAPTURED_PER_SECOND = NUM_FRAMES_CAPTURED;
-                NUM_FRAMES_CAPTURED = 0;
-
-                ui->tableWidget_propertyTable->modify_property("Frame rate", QString("%1 FPS").arg(QString::number(NUM_FRAMES_CAPTURED_PER_SECOND)));
-            });
 
             connect(&INFO_UPDATE_TIMER, &QTimer::timeout, [this]
             {
@@ -160,14 +144,14 @@ SignalDialog::SignalDialog(QWidget *parent) :
             this->set_controls_enabled(true);
         });
 
+        ke_events().scaler.framesPerSecond.subscribe([this](const unsigned fps)
+        {
+            ui->tableWidget_propertyTable->modify_property("Frame rate", QString("%1 FPS").arg(fps));
+        });
+
         ke_events().capture.newVideoMode.subscribe(update_info);
 
         ke_events().capture.newInputChannel.subscribe(update_info);
-
-        ke_events().scaler.newFrame.subscribe([]
-        {
-            NUM_FRAMES_CAPTURED++;
-        });
     }
 
     return;

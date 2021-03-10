@@ -20,11 +20,15 @@
 #include "filter/filter.h"
 #include "record/record.h"
 #include "scaler/scaler.h"
+#include "common/timer/timer.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/imgproc/imgproc.hpp>
     #include <opencv2/core/core.hpp>
 #endif
+
+// For keeping track of the number of frames scaled per second.
+static unsigned NUM_FRAMES_SCALED_PER_SECOND = 0;
 
 void s_scaler_nearest(SCALER_FUNC_PARAMS);
 void s_scaler_linear(SCALER_FUNC_PARAMS);
@@ -423,6 +427,18 @@ void ks_initialize_scaler(void)
     {
         ks_indicate_no_signal();
         ke_events().display.dirty.fire();
+    });
+
+    ke_events().capture.newFrame.subscribe([]
+    {
+        NUM_FRAMES_SCALED_PER_SECOND++;
+    });
+
+    kt_timer(1000, []
+    {
+        ke_events().scaler.framesPerSecond.fire(NUM_FRAMES_SCALED_PER_SECOND);
+
+        NUM_FRAMES_SCALED_PER_SECOND = 0;
     });
 
     return;
