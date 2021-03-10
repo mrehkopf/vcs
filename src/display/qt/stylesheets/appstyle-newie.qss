@@ -325,14 +325,25 @@ QGroupBox::title
     color: #e0e0e0;
 }
 
-QScrollBar::add-page:horizontal,
-QScrollBar::sub-page:horizontal,
-QScrollBar::add-page:vertical,
-QScrollBar::sub-page:vertical
+QScrollBar::add-page,
+QScrollBar::sub-page
 {
     background-image: url(:/res/images/icons/newie/grid_pattern.png);
     background-position: top-left;
     background-repeat: repeat-xy;
+}
+
+QScrollBar::add-page:disabled,
+QScrollBar::sub-page:disabled
+{
+    background-image: url();
+}
+
+QScrollBar::handle:disabled:horizontal,
+QScrollBar::handle:disabled:vertical
+{
+    background-color: transparent;
+    border: none;
 }
 
 QScrollBar:vertical
@@ -622,10 +633,9 @@ QFrame:disabled,
 QAbstractButton:disabled,
 QCheckBox::indicator:disabled,
 QGroupBox::indicator:disabled,
-QScrollBar::add-line:horizontal:disabled,
-QScrollBar::add-line:vertical:disabled,
-QScrollBar::sub-line:horizontal:disabled,
-QScrollBar::sub-line:vertical:disabled
+QScrollBar::add-line:disabled,
+QScrollBar::sub-line:disabled,
+QScrollBar:disabled
 {
     background-color: transparent;
     border-color: #353535;
@@ -636,6 +646,7 @@ QSpinBox:disabled,
 QDoubleSpinBox:disabled,
 QLineEdit:disabled,
 QComboBox:disabled,
+QScrollBar:disabled,
 QPlainTextEdit:disabled,
 QCheckBox::indicator:disabled,
 QGroupBox::indicator:disabled
