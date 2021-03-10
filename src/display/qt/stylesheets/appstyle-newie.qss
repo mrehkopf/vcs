@@ -156,6 +156,7 @@ QPushButton:flat
 
 QPushButton,
 QPushButton:flat,
+QTreeWidget QHeaderView::section,
 QScrollBar::add-line:horizontal,
 QScrollBar::sub-line:horizontal,
 QScrollBar::add-line:vertical,
@@ -238,7 +239,6 @@ QTableWidget
     color: #e0e0e0;
 }
 
-
 QListWidget
 {
     background-color: rgba(10, 10, 0, 0.1);
@@ -270,25 +270,43 @@ QTreeWidget QAbstractItemView
     padding: 0;
 }
 
-QTreeWidget QHeaderView::section
+QDialog[objectName="AliasDialog"] QGroupBox > QFrame
 {
-    padding: 5px;
-    margin: 0;
-    background-color: #555555;
-    color: #d9d9d9;
+    padding: 0;
+    border-radius: 2px;
+}
+
+QTreeWidget QHeaderView
+{
     border: none;
     border-bottom: 1px solid black;
+}
+
+QTreeWidget QHeaderView::section
+{
+    padding: 4px;
+    padding-left: 8px;
+    margin: 0;
+    color: #d9d9d9;
+    border: none;
     border-right: 1px solid black;
+}
+
+QTreeWidget QHeaderView::section:first
+{
+    border-top-left-radius: 2px;
 }
 
 QTreeWidget QHeaderView::section:last
 {
     border-right: none;
+    border-top-right-radius: 2px;
 }
 
 QTreeWidget::item:hover
 {
     background-color: #505050;
+
 }
 
 QTreeWidget::item:selected
@@ -360,7 +378,6 @@ QScrollBar:vertical
 QScrollBar::handle:vertical
 {
     min-height: 22px;
-    background-color: #d4d0c8;
     border-radius: 0;
     background-color: #808080;
     border: none;
