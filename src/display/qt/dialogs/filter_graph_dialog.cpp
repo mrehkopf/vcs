@@ -1,6 +1,7 @@
 #include <QGraphicsProxyWidget>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QStatusBar>
 #include <QMenuBar>
 #include <QTimer>
 #include <functional>
@@ -24,6 +25,20 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
     this->setWindowTitle(this->dialogBaseTitle);
     this->setWindowFlags(Qt::Window);
+
+    // Construct the status bar.
+    {
+        auto *const bar = new QStatusBar();
+        this->layout()->addWidget(bar);
+
+        auto *const viewScale = new QLabel("Scale: 1.0");
+        connect(ui->graphicsView, &InteractibleNodeGraphView::scale_changed, this, [=](const double newScale)
+        {
+            viewScale->setText(QString("Scale: %1").arg(QString::number(newScale, 'f', 1)));
+        });
+
+        bar->addPermanentWidget(viewScale);
+    }
 
     // Create the dialog's menu bar.
     {
@@ -112,7 +127,10 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         {
             QMenu *viewMenu = new QMenu("View", this);
 
-            connect(viewMenu->addAction("Reset zoom"), &QAction::triggered, this, [=]{ ui->graphicsView->set_scale(1); });
+            connect(viewMenu->addAction("Reset zoom"), &QAction::triggered, this, [=]
+            {
+                ui->graphicsView->set_scale(1);
+            });
 
             this->menubar->addMenu(viewMenu);
         }

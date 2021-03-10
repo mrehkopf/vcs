@@ -34,7 +34,7 @@ InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphic
 
 void InteractibleNodeGraphView::mousePressEvent(QMouseEvent *event)
 {
-    // Dragging with the middle button will translate the view.
+    // Dragging with the middle button translates the view.
     if (event->button() == Qt::MiddleButton)
     {
         lastKnownMouseMiddleDragPos = event->pos();
@@ -162,8 +162,9 @@ void InteractibleNodeGraphView::populate_edge_click_menu(node_edge_s *const edge
 void InteractibleNodeGraphView::set_scale(double newScale)
 {
     this->viewScale = std::max(this->minViewScale, std::min(this->maxViewScale, newScale));
-
     this->setTransform(QTransform(this->viewScale, 0, 0, this->viewScale, 0, 0));
+
+    emit this->scale_changed(this->viewScale);
 
     return;
 }

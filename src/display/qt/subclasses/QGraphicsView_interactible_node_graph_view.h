@@ -18,6 +18,10 @@ public:
 
     void set_scale(const double newScale);
 
+signals:
+    // Emitted when the node graph's view is zoomed in or out (i.e. scaled up or down).
+    void scale_changed(const double newScale);
+
 private:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -33,9 +37,9 @@ private:
 
     // For zooming the view.
     const double defaultViewScale = 1;
-    const double viewScaleStepSize = 0.15;
+    const double viewScaleStepSize = 0.1;
     const double minViewScale = this->viewScaleStepSize;
-    const double maxViewScale = 1.95;
+    const double maxViewScale = 2;
     double viewScale = this->defaultViewScale;
 };
 

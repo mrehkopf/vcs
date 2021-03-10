@@ -51,6 +51,11 @@ QGraphicsView
     border-radius: 0;
 }
 
+QDialog[objectName="FilterGraphDialog"] QStatusBar::item
+{
+    border: 0px;
+}
+
 QGroupBox > QTableWidget,
 QGroupBox > QTreeWidget,
 QGroupBox > QLabel
