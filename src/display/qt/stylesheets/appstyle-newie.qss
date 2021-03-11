@@ -27,7 +27,7 @@ QInputDialog
 QMessageBox QPushButton,
 QInputDialog QPushButton
 {
-    padding: 6px;
+    padding: 6px 14px;
 }
 
 QFrame
