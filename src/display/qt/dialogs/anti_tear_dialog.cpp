@@ -81,8 +81,8 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
         {
             const auto defaults = kat_default_settings();
 
-            ui->parameterGrid_parameters->add_parameter("Scan start", defaults.rangeUp, 0, 640);
-            ui->parameterGrid_parameters->add_parameter("Scan end", defaults.rangeDown, 0, 640);
+            ui->parameterGrid_parameters->add_parameter("Scan start", defaults.scanStart, 0, 640);
+            ui->parameterGrid_parameters->add_parameter("Scan end", defaults.scanEnd, 0, 640);
             ui->parameterGrid_parameters->add_spacer();
             ui->parameterGrid_parameters->add_parameter("Threshold", defaults.threshold, 0, 255);
             ui->parameterGrid_parameters->add_parameter("Window size", defaults.windowLen, 0, 640);
@@ -130,8 +130,8 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
     {
         const anti_tear_options_s defaults = kat_default_settings();
 
-        ui->parameterGrid_parameters->set_value("Scan start", kpers_value_of(INI_GROUP_ANTI_TEAR, "range_up", defaults.rangeUp).toInt());
-        ui->parameterGrid_parameters->set_value("Scan end", kpers_value_of(INI_GROUP_ANTI_TEAR, "range_down", defaults.rangeDown).toInt());
+        ui->parameterGrid_parameters->set_value("Scan start", kpers_value_of(INI_GROUP_ANTI_TEAR, "scan_start", defaults.scanStart).toInt());
+        ui->parameterGrid_parameters->set_value("Scan end", kpers_value_of(INI_GROUP_ANTI_TEAR, "scan_end", defaults.scanEnd).toInt());
         ui->parameterGrid_parameters->set_value("Threshold", kpers_value_of(INI_GROUP_ANTI_TEAR, "threshold", defaults.threshold).toInt());
         ui->parameterGrid_parameters->set_value("Window size", kpers_value_of(INI_GROUP_ANTI_TEAR, "window_len", defaults.windowLen).toInt());
         ui->parameterGrid_parameters->set_value("Step size", kpers_value_of(INI_GROUP_ANTI_TEAR, "step_size", defaults.windowLen).toInt());
@@ -152,8 +152,8 @@ AntiTearDialog::~AntiTearDialog()
     // Save persistent settings.
     {
         kpers_set_value(INI_GROUP_GEOMETRY, "anti_tear", this->size());
-        kpers_set_value(INI_GROUP_ANTI_TEAR, "range_up", ui->parameterGrid_parameters->value("Scan start"));
-        kpers_set_value(INI_GROUP_ANTI_TEAR, "range_down", ui->parameterGrid_parameters->value("Scan end"));
+        kpers_set_value(INI_GROUP_ANTI_TEAR, "range_up", ui->parameterGrid_parameters->value("Scan end"));
+        kpers_set_value(INI_GROUP_ANTI_TEAR, "range_down", ui->parameterGrid_parameters->value("Scan start"));
         kpers_set_value(INI_GROUP_ANTI_TEAR, "threshold", ui->parameterGrid_parameters->value("Threshold"));
         kpers_set_value(INI_GROUP_ANTI_TEAR, "window_len", ui->parameterGrid_parameters->value("Window size"));
         kpers_set_value(INI_GROUP_ANTI_TEAR, "matches_reqd", ui->parameterGrid_parameters->value("Matches req'd"));

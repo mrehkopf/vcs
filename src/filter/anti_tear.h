@@ -29,8 +29,8 @@ struct tear_frame_s
 struct anti_tear_options_s
 {
     real threshold;
-    u32 rangeUp;
-    u32 rangeDown;
+    u32 scanStart;
+    u32 scanEnd;
     u32 windowLen;
     u32 stepSize;
     u32 matchesReqd;

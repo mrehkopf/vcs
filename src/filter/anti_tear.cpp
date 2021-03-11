@@ -637,8 +637,8 @@ void kat_initialize_anti_tear(void)
 
     DEFAULT_SETTINGS.matchesReqd = 11;
     DEFAULT_SETTINGS.stepSize = STEP_SIZE;
-    DEFAULT_SETTINGS.rangeDown = MINY;
-    DEFAULT_SETTINGS.rangeUp = MAXY_OFFS;
+    DEFAULT_SETTINGS.scanStart = MINY;
+    DEFAULT_SETTINGS.scanEnd = MAXY_OFFS;
     DEFAULT_SETTINGS.threshold = THRESHOLD;
     DEFAULT_SETTINGS.windowLen = DOMAIN_SIZE;
 
