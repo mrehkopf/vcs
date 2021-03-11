@@ -485,7 +485,8 @@ void kat_set_domain_size(const u32 ds)
 
 void kat_set_step_size(const u32 s)
 {
-    STEP_SIZE = s;
+    // A step size of 0 would cause an infinite loop.
+    STEP_SIZE = std::max(1u, s);
 
     reset_all_buffers();
 
@@ -520,26 +521,11 @@ u8* kat_anti_tear(u8 *const pixels, const resolution_s &r)
 
     // Update the range over which we'll operate.
     MAXY = (int(frame.r.h - MAXY_OFFS) < 0)? 0 : (frame.r.h - MAXY_OFFS);
-    if (MAXY <= MINY)
-    {
-        MAXY = (MINY + 1);
-    }
-    if (MAXY > frame.r.h)
-    {
-        MAXY = frame.r.h;
-    }
-    if (MAXY < 1)
-    {
-        MAXY = 1;
-    }
-    if (MINY >= MAXY)
-    {
-        MINY = (MAXY - 1);
-    }
-    if (MINY >= frame.r.h)
-    {
-        MINY = (frame.r.h - 1);
-    }
+    if (MAXY <= MINY) MAXY = (MINY + 1);
+    if (MAXY > frame.r.h) MAXY = frame.r.h;
+    if (MAXY < 1) MAXY = 1;
+    if (MINY >= MAXY) MINY = (MAXY - 1);
+    if (MINY >= frame.r.h) MINY = (frame.r.h - 1);
 
     // We can only properly anti-tear if the resolution doesn't change in the
     // meantine. If it changed, just bail out.

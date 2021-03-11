@@ -86,7 +86,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
             ui->parameterGrid_parameters->add_spacer();
             ui->parameterGrid_parameters->add_parameter("Threshold", defaults.threshold, 0, 255);
             ui->parameterGrid_parameters->add_parameter("Window size", defaults.windowLen, 0, 640);
-            ui->parameterGrid_parameters->add_parameter("Step size", defaults.stepSize, 0, 640);
+            ui->parameterGrid_parameters->add_parameter("Step size", defaults.stepSize, 1, 640);
             ui->parameterGrid_parameters->add_parameter("Matches req'd", defaults.matchesReqd, 0, 99);
         }
     }
