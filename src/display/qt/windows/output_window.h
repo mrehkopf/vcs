@@ -106,6 +106,17 @@ public:
 
     bool apply_programwide_styling(const QString &filename);
 
+    OutputResolutionDialog* outout_resolution_dialiog(void) const { return this->outputResolutionDlg; }
+    InputResolutionDialog* input_resolution_dialog(void)    const { return this->inputResolutionDlg; }
+    VideoParameterDialog* video_presets_dialog(void)        const { return this->videoParamDlg; }
+    FilterGraphDialog* filter_graph_dialog(void)            const { return this->filterGraphDlg; }
+    AntiTearDialog* anti_tear_dialog(void)                  const { return this->antitearDlg; }
+    OverlayDialog* overlay_dialog(void)                     const { return this->overlayDlg; }
+    RecordDialog* recordDialog(void)                        const { return this->recordDlg; }
+    SignalDialog* signal_info_dialog(void)                  const { return this->signalDlg; }
+    AliasDialog* alias_resolutions_dialog(void)             const { return this->aliasDlg; }
+    AboutDialog* about_dialog(void)                         const { return this->aboutDlg; }
+
 signals:
     void entered_fullscreen(void);
     void left_fullscreen(void);
