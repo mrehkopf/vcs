@@ -123,18 +123,6 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             this->menubar->addMenu(addMenu);
         }
 
-        // View...
-        {
-            QMenu *viewMenu = new QMenu("View", this);
-
-            connect(viewMenu->addAction("Reset zoom"), &QAction::triggered, this, [=]
-            {
-                ui->graphicsView->set_scale(1);
-            });
-
-            this->menubar->addMenu(viewMenu);
-        }
-
         this->layout()->setMenuBar(menubar);
     }
 
