@@ -35,7 +35,7 @@ ParameterGrid::~ParameterGrid()
     return;
 }
 
-void ParameterGrid::add_spacer(void)
+void ParameterGrid::add_separator(void)
 {
     auto *const line = new QFrame();
     line->setFrameShape(QFrame::HLine);
@@ -118,10 +118,10 @@ void ParameterGrid::add_combobox(const QString name,
     return;
 }
 
-void ParameterGrid::add_parameter(const QString name,
-                                  const int valueInitial,
-                                  const int valueMin,
-                                  const int valueMax)
+void ParameterGrid::add_scroller(const QString name,
+                                 const int valueInitial,
+                                 const int valueMin,
+                                 const int valueMax)
 {
     auto *const newParam = new ParameterGrid::parameter_meta_s;
     newParam->name = name;

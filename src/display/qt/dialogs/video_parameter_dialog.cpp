@@ -172,21 +172,21 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         ui->spinBox_resolutionY->setMinimum(int(minres.w));
         ui->spinBox_resolutionY->setMaximum(int(maxres.w));
 
-        ui->parameterGrid_videoParams->add_parameter("Hor. size");
-        ui->parameterGrid_videoParams->add_parameter("Hor. position");
-        ui->parameterGrid_videoParams->add_parameter("Ver. position");
-        ui->parameterGrid_videoParams->add_parameter("Black level");
-        ui->parameterGrid_videoParams->add_parameter("Phase");
-        ui->parameterGrid_videoParams->add_spacer();
-        ui->parameterGrid_videoParams->add_parameter("Brightness");
-        ui->parameterGrid_videoParams->add_parameter("Red br.");
-        ui->parameterGrid_videoParams->add_parameter("Green br.");
-        ui->parameterGrid_videoParams->add_parameter("Blue br.");
-        ui->parameterGrid_videoParams->add_spacer();
-        ui->parameterGrid_videoParams->add_parameter("Contrast");
-        ui->parameterGrid_videoParams->add_parameter("Red ct.");
-        ui->parameterGrid_videoParams->add_parameter("Green ct.");
-        ui->parameterGrid_videoParams->add_parameter("Blue ct.");
+        ui->parameterGrid_videoParams->add_scroller("Hor. size");
+        ui->parameterGrid_videoParams->add_scroller("Hor. position");
+        ui->parameterGrid_videoParams->add_scroller("Ver. position");
+        ui->parameterGrid_videoParams->add_scroller("Black level");
+        ui->parameterGrid_videoParams->add_scroller("Phase");
+        ui->parameterGrid_videoParams->add_separator();
+        ui->parameterGrid_videoParams->add_scroller("Brightness");
+        ui->parameterGrid_videoParams->add_scroller("Red br.");
+        ui->parameterGrid_videoParams->add_scroller("Green br.");
+        ui->parameterGrid_videoParams->add_scroller("Blue br.");
+        ui->parameterGrid_videoParams->add_separator();
+        ui->parameterGrid_videoParams->add_scroller("Contrast");
+        ui->parameterGrid_videoParams->add_scroller("Red ct.");
+        ui->parameterGrid_videoParams->add_scroller("Green ct.");
+        ui->parameterGrid_videoParams->add_scroller("Blue ct.");
     }
 
     // Connect the GUI controls to consequences for changing their values.

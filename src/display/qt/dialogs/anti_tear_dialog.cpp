@@ -81,15 +81,15 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
         {
             const auto defaults = kat_default_settings();
 
-            ui->parameterGrid_parameters->add_parameter("Scan start", defaults.scanStart, 0, 640);
-            ui->parameterGrid_parameters->add_parameter("Scan end", defaults.scanEnd, 0, 640);
+            ui->parameterGrid_parameters->add_scroller("Scan start", defaults.scanStart, 0, 640);
+            ui->parameterGrid_parameters->add_scroller("Scan end", defaults.scanEnd, 0, 640);
             ui->parameterGrid_parameters->add_combobox("Scan hint", {"Look for one tear per frame",
                                                                      "Look for multiple tears per frame"});
-            ui->parameterGrid_parameters->add_spacer();
-            ui->parameterGrid_parameters->add_parameter("Threshold", defaults.threshold, 0, 255);
-            ui->parameterGrid_parameters->add_parameter("Window size", defaults.windowLen, 1, 640);
-            ui->parameterGrid_parameters->add_parameter("Step size", defaults.stepSize, 1, 640);
-            ui->parameterGrid_parameters->add_parameter("Matches req'd", defaults.matchesReqd, 1, 200);
+            ui->parameterGrid_parameters->add_separator();
+            ui->parameterGrid_parameters->add_scroller("Threshold", defaults.threshold, 0, 255);
+            ui->parameterGrid_parameters->add_scroller("Window size", defaults.windowLen, 1, 640);
+            ui->parameterGrid_parameters->add_scroller("Step size", defaults.stepSize, 1, 640);
+            ui->parameterGrid_parameters->add_scroller("Matches req'd", defaults.matchesReqd, 1, 200);
         }
     }
 

@@ -25,15 +25,18 @@ public:
 
     ~ParameterGrid();
 
-    void add_spacer(void);
+    // A horizontal visual separator between grid elements; e.g. a line.
+    void add_separator(void);
 
+    // A drop-down combobox; for selecting from pre-set options.
     void add_combobox(const QString name,
                       const std::list<QString> items);
 
-    void add_parameter(const QString name,
-                       const int valueInitial = 1,
-                       const int valueMin = 0,
-                       const int valueMax = 999);
+    // A scroll bar with a synced spin box; for selecting a value on an interval.
+    void add_scroller(const QString name,
+                      const int valueInitial = 1,
+                      const int valueMin = 0,
+                      const int valueMax = 999);
 
     int value(const QString &parameterName) const;
     int default_value(const QString &parameterName) const;
