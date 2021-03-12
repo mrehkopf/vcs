@@ -338,7 +338,7 @@ QGroupBox > QGroupBox
 
 QGroupBox[objectName="groupBox_videoPresetName"]
 {
-    margin-top: -1px;
+    margin-top: 0;
 }
 
 QGroupBox::title

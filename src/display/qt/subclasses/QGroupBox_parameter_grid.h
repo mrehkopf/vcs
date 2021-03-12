@@ -14,6 +14,7 @@
 class QSpinBox;
 class QScrollBar;
 class QPushButton;
+class QComboBox;
 
 class ParameterGrid : public QGroupBox
 {
@@ -25,6 +26,9 @@ public:
     ~ParameterGrid();
 
     void add_spacer(void);
+
+    void add_combobox(const QString name,
+                      const std::list<QString> items);
 
     void add_parameter(const QString name,
                        const int valueInitial = 1,
@@ -45,21 +49,31 @@ signals:
     void parameter_value_changed(const QString &parameterName);
 
 private:
-    struct parameter_meta
+    enum class parameter_type_e
     {
-        QString name;
+        unknown,
+        scroller,
+        combobox,
+
+    };
+
+    struct parameter_meta_s
+    {
+        parameter_type_e type = parameter_type_e::unknown;
+        QString name = "";
         QSpinBox *guiSpinBox = nullptr;
         QScrollBar *guiScrollBar = nullptr;
         QPushButton *guiResetButton = nullptr;
+        QComboBox *guiComboBox = nullptr;
         int defaultValue = 0;
         int currentValue = 0;
         int minimumValue = 0;
         int maximumValue = 0;
     };
 
-    ParameterGrid::parameter_meta* parameter(const QString &parameterName) const;
+    ParameterGrid::parameter_meta_s* parameter(const QString &parameterName) const;
 
-    std::vector<parameter_meta*> parameters;
+    std::vector<parameter_meta_s*> parameters;
 };
 
 #endif
