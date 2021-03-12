@@ -37,6 +37,7 @@ static u32 DOMAIN_SIZE = 8;
 static u32 STEP_SIZE = 1;
 static u32 MATCHES_REQD = 11;
 static u32 THRESHOLD = 3;
+static anti_tear_scan_hint_e SCAN_HINT = anti_tear_scan_hint_e::look_for_one_tear;
 
 static bool VISUALIZE = false;
 static bool VISUALIZE_TEAR = true;
@@ -94,8 +95,8 @@ static void reset_all_buffers(void)
     reset_buffer(&BUFFER_PRIMARY);
     reset_buffer(&BUFFER_SECONDARY);
 
-    memset(TEAR_STRIP, 0, sizeof(int) * MAX_OUTPUT_HEIGHT);
-    memset(&CURRENT_TEARS, 0, sizeof(frame_tears_s));
+    std::memset(TEAR_STRIP, 0, sizeof(int) * MAX_OUTPUT_HEIGHT);
+    std::memset(&CURRENT_TEARS, 0, sizeof(frame_tears_s));
 
     return;
 }
@@ -198,34 +199,25 @@ static void validate_tear_strip(void)
     return;
 }
 
-#if 0 // Not used at the moment; but since the anti-tear code is still work-in-progress, let's leave this up for now.
-    static void cleanup_tear_strip(void)
-    {
-        int numTears = 0;
-        bool curBlockType = TEAR_STRIP[0];
-
-        for (uint y = 1; y < MAXY; y++)
-        {
-            // Clean up isolated islands.
-            /*if (TEAR_STRIP[i] != curBlockType &&
-                (TEAR_STRIP[i - 1] == curBlockType &&
-                 TEAR_STRIP[i + 1] == curBlockType))
-            {
-                TEAR_STRIP[i] = curBlockType;
-            }*/
-        }
-
-        done:
-        return;
-    }
-#endif
-
-static void update_tear_strip(const captured_frame_s &frame)
+static void scan_for_tears(const captured_frame_s &frame)
 {
-    memset(TEAR_STRIP, 0, sizeof(int) * MAXY);
-    memset(&CURRENT_TEARS, 0, sizeof(frame_tears_s));
+    std::memset(TEAR_STRIP, 0, sizeof(int) * MAXY);
+    std::memset(&CURRENT_TEARS, 0, sizeof(frame_tears_s));
 
-    // Loop over the vertical range set by the user.
+    // A given frame's pixels can be of two types: ones that have changed from last
+    // frame, and ones that haven't. Image tearing happens when only some of the frame's
+    // pixels have updated between frames, such that the frame is in effect displaying two
+    // or more partial images interleaved.
+    //
+    // We'll try to find and flag (into TEAR_STRIP) the horizontal pixel rows that have
+    // changed since last frame. Rows that haven't changed are marked in TEAR_STRIP as
+    // 0, while rows that have changed are marked as 1.
+    //
+    // We assume that the frame fills in from bottom to top (high Y to low Y); and we'll
+    // scan its pixels from top to bottom (low Y to high Y). That means that e.g. if the
+    // frame contains one tear, the first row of new pixels we come across marks the
+    // tear, any rows before it were of the previous frame, and all rows down are of the
+    // new frame.
     for (size_t y = MINY; y < MAXY; y++)
     {
         u32 x = 0;
@@ -269,7 +261,29 @@ static void update_tear_strip(const captured_frame_s &frame)
             // the previous frame, i.e. that it's new data.
             if (matches >= MATCHES_REQD)
             {
-                TEAR_STRIP[y] = 1;
+                switch (SCAN_HINT)
+                {
+                    // The frame may contain more than one tear, so we need to
+                    // keep looping to flag all rows.
+                    case anti_tear_scan_hint_e::look_for_multiple_tears:
+                    {
+                        TEAR_STRIP[y] = 1;
+
+                        break;
+                    }
+                    // The frame is expected to contain at most one tear, so now
+                    // that we've found it, we can mark the rest of the rows as
+                    // being of the new frame and stop looping.
+                    case anti_tear_scan_hint_e::look_for_one_tear:
+                    {
+                        for (unsigned row = y; row < MAXY; row++)
+                        {
+                            TEAR_STRIP[row] = 1;
+                        }
+
+                        goto scanning_done;
+                    }
+                }
 
                 break;
             }
@@ -280,6 +294,7 @@ static void update_tear_strip(const captured_frame_s &frame)
 
     //at_cleanup_tear_strip();
 
+    scanning_done:
     validate_tear_strip();
 
     return;
@@ -287,7 +302,7 @@ static void update_tear_strip(const captured_frame_s &frame)
 
 static void save_as_previous_frame(const captured_frame_s &frame)
 {
-    memcpy(PREV_FRAME.ptr(), frame.pixels.ptr(), frame.r.w * frame.r.h * (frame.r.bpp / 8));
+    std::memcpy(PREV_FRAME.ptr(), frame.pixels.ptr(), frame.r.w * frame.r.h * (frame.r.bpp / 8));
     PREV_FRAME_RES = frame.r;
 
     return;
@@ -385,7 +400,7 @@ static bool copy_new_frame_data(const captured_frame_s &frame)
                                          for (; y < term; y++)\
                                          {\
                                              const int idx = (y * frame.r.w) * (frame.r.bpp / 8);\
-                                             memcpy(buffer.pixels + idx, frame.pixels.ptr() + idx, frame.r.w * (frame.r.bpp / 8));\
+                                             std::memcpy(buffer.pixels + idx, frame.pixels.ptr() + idx, frame.r.w * (frame.r.bpp / 8));\
                                          }\
                                          if (buffer.newDataStart == 0)\
                                          {\
@@ -455,6 +470,13 @@ void kat_set_visualization(const bool visualize,
     return;
 }
 
+void kat_set_scan_hint(const anti_tear_scan_hint_e newHint)
+{
+    SCAN_HINT = newHint;
+
+    return;
+}
+
 void kat_set_range(const u32 min, const u32 max)
 {
     MINY = min;
@@ -502,6 +524,8 @@ void kat_set_matches_required(const u32 mr)
     return;
 }
 
+static bool skip = false;
+
 u8* kat_anti_tear(u8 *const pixels, const resolution_s &r)
 {
     captured_frame_s frame;
@@ -538,7 +562,7 @@ u8* kat_anti_tear(u8 *const pixels, const resolution_s &r)
     }
 
     // Find which areas of the frame have changed since last time.
-    update_tear_strip(frame);
+    scan_for_tears(frame);
 
     // Save this frame for comparing the next frame against.
     save_as_previous_frame(frame);
@@ -627,6 +651,7 @@ void kat_initialize_anti_tear(void)
     DEFAULT_SETTINGS.scanEnd = MAXY_OFFS;
     DEFAULT_SETTINGS.threshold = THRESHOLD;
     DEFAULT_SETTINGS.windowLen = DOMAIN_SIZE;
+    DEFAULT_SETTINGS.scanHint = SCAN_HINT;
 
     return;
 }

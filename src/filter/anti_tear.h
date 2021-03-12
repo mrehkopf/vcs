@@ -12,6 +12,12 @@
 struct captured_frame_s;
 struct resolution_s;
 
+enum class anti_tear_scan_hint_e
+{
+    look_for_one_tear,
+    look_for_multiple_tears,
+};
+
 struct frame_tears_s
 {
     u32 numTears;       // How many tears we have.
@@ -34,6 +40,7 @@ struct anti_tear_options_s
     u32 windowLen;
     u32 stepSize;
     u32 matchesReqd;
+    anti_tear_scan_hint_e scanHint;
 };
 
 void kat_initialize_anti_tear(void);
@@ -41,6 +48,8 @@ void kat_initialize_anti_tear(void);
 void kat_set_buffer_updates_disabled(const bool disabled);
 
 void kat_release_anti_tear(void);
+
+void kat_set_scan_hint(const anti_tear_scan_hint_e newHint);
 
 const anti_tear_options_s& kat_default_settings(void);
 
