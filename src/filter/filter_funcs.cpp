@@ -26,7 +26,6 @@ static const unsigned NUM_COLOR_CHANNELS = (32 / 8);
 #define VALIDATE_FILTER_INPUT  k_assert(r->bpp == 32, "This filter expects 32-bit source color.");\
                                if (pixels == nullptr || params == nullptr || r == nullptr) return;
 
-
 // Counts the number of unique frames per second, i.e. frames in which the pixels
 // change between frames by less than a set threshold (which is to account for
 // analog capture artefacts).

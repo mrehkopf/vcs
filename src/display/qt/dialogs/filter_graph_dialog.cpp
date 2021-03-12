@@ -80,10 +80,15 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
         // Nodes...
         {
-            QMenu *addMenu = new QMenu("Filters", this);
+            QMenu *filtersMenu = new QMenu("Filters", this);
 
             // Insert the names of all available filter types.
             {
+                QMenu *enhanceMenu = new QMenu("Enhance", this);
+                QMenu *reduceMenu = new QMenu("Reduce", this);
+                QMenu *distortMenu = new QMenu("Distort", this);
+                QMenu *metaMenu = new QMenu("Information", this);
+
                 std::vector<const filter_c::filter_metadata_s*> knownFilterTypes = kf_known_filter_types();
 
                 std::sort(knownFilterTypes.begin(), knownFilterTypes.end(), [](const filter_c::filter_metadata_s *a, const filter_c::filter_metadata_s *b)
@@ -100,27 +105,45 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                         continue;
                     }
 
-                    connect(addMenu->addAction(QString::fromStdString(filter->name)), &QAction::triggered, this,
+                    connect(filtersMenu->addAction(QString::fromStdString(filter->name)), &QAction::triggered, this,
                             [=]{this->add_filter_node(filter->type);});
                 }
 
-                addMenu->addSeparator();
+                filtersMenu->addSeparator();
 
                 // Add filters.
-                for (const auto filter: knownFilterTypes)
                 {
-                    if ((filter->type == filter_type_enum_e::output_gate) ||
-                        (filter->type == filter_type_enum_e::input_gate))
-                    {
-                        continue;
-                    }
+                    filtersMenu->addMenu(enhanceMenu);
+                    filtersMenu->addMenu(reduceMenu);
+                    filtersMenu->addMenu(distortMenu);
+                    filtersMenu->addMenu(metaMenu);
 
-                    connect(addMenu->addAction(QString::fromStdString(filter->name)), &QAction::triggered, this,
-                            [=]{this->add_filter_node(filter->type);});
+                    for (const auto filter: knownFilterTypes)
+                    {
+                        if ((filter->type == filter_type_enum_e::output_gate) ||
+                            (filter->type == filter_type_enum_e::input_gate))
+                        {
+                            continue;
+                        }
+
+                        auto *const action = new QAction(QString::fromStdString(filter->name));
+
+                        switch (filter->category)
+                        {
+                            case filter_category_e::distort: distortMenu->addAction(action); break;
+                            case filter_category_e::enhance: enhanceMenu->addAction(action); break;
+                            case filter_category_e::reduce: reduceMenu->addAction(action); break;
+                            case filter_category_e::meta: metaMenu->addAction(action); break;
+                            default: k_assert(0, "Unknown filter category."); break;
+                        }
+
+                        connect(action, &QAction::triggered, this,
+                                [=]{this->add_filter_node(filter->type);});
+                    }
                 }
             }
 
-            this->menubar->addMenu(addMenu);
+            this->menubar->addMenu(filtersMenu);
         }
 
         this->layout()->setMenuBar(menubar);

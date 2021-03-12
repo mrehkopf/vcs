@@ -84,6 +84,9 @@ struct filter_widget_s;
  * 
  * These types correspond in name to the filter functions of the filter
  * functions interface, @ref src/filter/filter_funcs.h.
+ *
+ * @see
+ * filter_category_e
  * 
  * @note
  * Types @a input_gate and @a output_gate are special cases. They aren't filter
@@ -110,6 +113,7 @@ enum class filter_type_enum_e
     crop,
     flip,
     rotate,
+    delta_tiles,
 
     // Special cases. Gates are nodes that in a filter chain only pass or
     // reject images based on their original (input) and scaled (output)
@@ -118,6 +122,32 @@ enum class filter_type_enum_e
     // by the filters in the chain.
     input_gate,
     output_gate,
+};
+
+/*!
+ * @brief
+ * Enumerates the categories of filter types.
+ *
+ * These categories exist e.g. for the benefit of the GUI, allowing it to
+ * more intuitively order the filter types in menus.
+ *
+ * @see
+ * filter_type_enum_e
+ */
+enum class filter_category_e
+{
+    // Filters that reduce the frame's fidelity; e.g. blur, decimate.
+    reduce,
+
+    // Filters that enhance the frame's fidelity; e.g. sharpen, denoise.
+    enhance,
+
+    // Filters that modify the frame's geometry; e.g. rotation, cropping.
+    distort,
+
+    // Filters that provide information about the frame; e.g. noise level,
+    // frame rate estimate.
+    meta,
 };
 
 /*!
@@ -148,6 +178,8 @@ public:
          * sufficiently user-friendly.
          */
         std::string name;
+
+        filter_category_e category;
 
         filter_type_enum_e type;
 

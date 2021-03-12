@@ -27,24 +27,91 @@ static bool FILTERING_ENABLED = false;
 // Note: Each filter is identified by a UUID string. A UUID must be unique to a filter.
 // The UUID of a filter must never be changed - a filter must remain identifiable with
 // its initially-set UUID.
-//
 static const std::unordered_map<std::string, const filter_c::filter_metadata_s> KNOWN_FILTER_TYPES =
 {
-    {"a5426f2e-b060-48a9-adf8-1646a2d3bd41", {"Blur",                filter_type_enum_e::blur,                   filter_func_blur                   }},
-    {"fc85a109-c57a-4317-994f-786652231773", {"Delta histogram",     filter_type_enum_e::delta_histogram,        filter_func_delta_histogram        }},
-    {"badb0129-f48c-4253-a66f-b0ec94e225a0", {"Frame rate estimate", filter_type_enum_e::unique_count,           filter_func_unique_count           }},
-    {"03847778-bb9c-4e8c-96d5-0c10335c4f34", {"Unsharp mask",        filter_type_enum_e::unsharp_mask,           filter_func_unsharp_mask           }},
-    {"eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03", {"Decimate",            filter_type_enum_e::decimate,               filter_func_decimate               }},
-    {"94adffac-be42-43ac-9839-9cc53a6d615c", {"Denoise (temporal)",  filter_type_enum_e::denoise_temporal,       filter_func_denoise_temporal       }},
-    {"e31d5ee3-f5df-4e7c-81b8-227fc39cbe76", {"Denoise (NL means)",  filter_type_enum_e::denoise_nonlocal_means, filter_func_denoise_nonlocal_means }},
-    {"1c25bbb1-dbf4-4a03-93a1-adf24b311070", {"Sharpen",             filter_type_enum_e::sharpen,                filter_func_sharpen                }},
-    {"de60017c-afe5-4e5e-99ca-aca5756da0e8", {"Median",              filter_type_enum_e::median,                 filter_func_median                 }},
-    {"2448cf4a-112d-4d70-9fc1-b3e9176b6684", {"Crop",                filter_type_enum_e::crop,                   filter_func_crop                   }},
-    {"80a3ac29-fcec-4ae0-ad9e-bbd8667cc680", {"Flip",                filter_type_enum_e::flip,                   filter_func_flip                   }},
-    {"140c514d-a4b0-4882-abc6-b4e9e1ff4451", {"Rotate",              filter_type_enum_e::rotate,                 filter_func_rotate                 }},
+    {"a5426f2e-b060-48a9-adf8-1646a2d3bd41",
+    {"Blur",
+     filter_category_e::reduce,
+     filter_type_enum_e::blur,
+     filter_func_blur}},
 
-    {"136deb34-ac79-46b1-a09c-d57dcfaa84ad", {"Input gate",          filter_type_enum_e::input_gate,             nullptr                            }},
-    {"be8443e2-4355-40fd-aded-63cebcbfb8ce", {"Output gate",         filter_type_enum_e::output_gate,            nullptr                            }},
+    {"fc85a109-c57a-4317-994f-786652231773",
+    {"Delta histogram",
+     filter_category_e::meta,
+     filter_type_enum_e::delta_histogram,
+     filter_func_delta_histogram}},
+
+    {"badb0129-f48c-4253-a66f-b0ec94e225a0",
+    {"Framerate estimate",
+     filter_category_e::meta,
+     filter_type_enum_e::unique_count,
+     filter_func_unique_count}},
+
+    {"03847778-bb9c-4e8c-96d5-0c10335c4f34",
+    {"Unsharp mask",
+     filter_category_e::enhance,
+     filter_type_enum_e::unsharp_mask,
+     filter_func_unsharp_mask}},
+
+    {"eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03",
+    {"Decimate",
+     filter_category_e::reduce,
+     filter_type_enum_e::decimate,
+     filter_func_decimate}},
+
+    {"94adffac-be42-43ac-9839-9cc53a6d615c",
+    {"Denoise (temporal)",
+     filter_category_e::enhance,
+     filter_type_enum_e::denoise_temporal,
+     filter_func_denoise_temporal}},
+
+    {"e31d5ee3-f5df-4e7c-81b8-227fc39cbe76",
+    {"Denoise (non-linear means)",
+     filter_category_e::enhance,
+     filter_type_enum_e::denoise_nonlocal_means,
+     filter_func_denoise_nonlocal_means}},
+
+    {"1c25bbb1-dbf4-4a03-93a1-adf24b311070",
+    {"Sharpen",
+     filter_category_e::enhance,
+     filter_type_enum_e::sharpen,
+     filter_func_sharpen}},
+
+    {"de60017c-afe5-4e5e-99ca-aca5756da0e8",
+    {"Median",
+     filter_category_e::reduce,
+     filter_type_enum_e::median,
+     filter_func_median}},
+
+    {"2448cf4a-112d-4d70-9fc1-b3e9176b6684",
+    {"Crop",
+     filter_category_e::distort,
+     filter_type_enum_e::crop,
+     filter_func_crop}},
+
+    {"80a3ac29-fcec-4ae0-ad9e-bbd8667cc680",
+    {"Flip",
+     filter_category_e::distort,
+     filter_type_enum_e::flip,
+     filter_func_flip}},
+
+    {"140c514d-a4b0-4882-abc6-b4e9e1ff4451",
+    {"Rotate",
+     filter_category_e::distort,
+     filter_type_enum_e::rotate,
+     filter_func_rotate}},
+
+    {"136deb34-ac79-46b1-a09c-d57dcfaa84ad",
+    {"Input gate",
+     filter_category_e::meta,
+     filter_type_enum_e::input_gate,
+     nullptr}},
+
+    {"be8443e2-4355-40fd-aded-63cebcbfb8ce",
+    {"Output gate",
+     filter_category_e::meta,
+     filter_type_enum_e::output_gate,
+     nullptr}},
 };
 
 // All filters the user has added to the filter graph.
