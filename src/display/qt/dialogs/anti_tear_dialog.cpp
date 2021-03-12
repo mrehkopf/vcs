@@ -83,11 +83,13 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 
             ui->parameterGrid_parameters->add_parameter("Scan start", defaults.scanStart, 0, 640);
             ui->parameterGrid_parameters->add_parameter("Scan end", defaults.scanEnd, 0, 640);
+            ui->parameterGrid_parameters->add_combobox("Scan hint", {"Look for one tear per frame",
+                                                                     "Look for multiple tears per frame"});
             ui->parameterGrid_parameters->add_spacer();
             ui->parameterGrid_parameters->add_parameter("Threshold", defaults.threshold, 0, 255);
-            ui->parameterGrid_parameters->add_parameter("Window size", defaults.windowLen, 0, 640);
+            ui->parameterGrid_parameters->add_parameter("Window size", defaults.windowLen, 1, 640);
             ui->parameterGrid_parameters->add_parameter("Step size", defaults.stepSize, 1, 640);
-            ui->parameterGrid_parameters->add_parameter("Matches req'd", defaults.matchesReqd, 0, 99);
+            ui->parameterGrid_parameters->add_parameter("Matches req'd", defaults.matchesReqd, 1, 200);
         }
     }
 
@@ -116,6 +118,15 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
             else if (parameterName == "Window size") kat_set_domain_size(newValue);
             else if (parameterName == "Step size") kat_set_step_size(newValue);
             else if (parameterName == "Matches req'd") kat_set_matches_required(newValue);
+            else if (parameterName == "Scan hint")
+            {
+                switch (newValue)
+                {
+                    case 0: kat_set_scan_hint(anti_tear_scan_hint_e::look_for_one_tear); break;
+                    case 1: kat_set_scan_hint(anti_tear_scan_hint_e::look_for_multiple_tears); break;
+                    default: k_assert(0, "Unknown scan methoid."); break;
+                }
+            }
             else k_assert(0, "Unknown parameter identifier");
         });
 
