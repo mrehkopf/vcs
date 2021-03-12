@@ -80,7 +80,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
         // Nodes...
         {
-            QMenu *addMenu = new QMenu("Nodes", this);
+            QMenu *addMenu = new QMenu("Filters", this);
 
             // Insert the names of all available filter types.
             {
