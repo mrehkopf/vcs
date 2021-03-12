@@ -21,13 +21,13 @@ uint INPUT_CHANNEL_IDX = 0;
 uint FRAME_SKIP = 0;
 
 // Name of (and path to) the capture parameter file on disk.
-static std::string PARAMS_FILE_NAME = "";
+static std::string VIDEO_PRESETS_FILE_NAME = "";
 
 // Name of (and path to) the alias file on disk.
 static std::string ALIAS_FILE_NAME = "";
 
 // Name of (and path to) the filter set file on disk.
-static std::string FILTERS_FILE_NAME = "";
+static std::string FILTER_GRAPH_FILE_NAME = "";
 
 bool kcom_parse_command_line(const int argc, char *const argv[])
 {
@@ -71,7 +71,7 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
             case 'v':   // Location of the video presets file.
             case 'm':   // ('m' provided for legacy compatibility)
             {
-                PARAMS_FILE_NAME = optarg;
+                VIDEO_PRESETS_FILE_NAME = optarg;
 
                 break;
             }
@@ -83,7 +83,7 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
             }
             case 'f':   // Location of the filter graph file.
             {
-                FILTERS_FILE_NAME = optarg;
+                FILTER_GRAPH_FILE_NAME = optarg;
 
                 break;
             }
@@ -93,17 +93,38 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
     return true;
 }
 
-const std::string& kcom_alias_file_name(void)
+void kcom_override_filter_graph_file_name(const std::string newFilename)
+{
+    FILTER_GRAPH_FILE_NAME = newFilename;
+
+    return;
+}
+
+void kcom_override_aliases_file_name(const std::string newFilename)
+{
+    ALIAS_FILE_NAME = newFilename;
+
+    return;
+}
+
+void kcom_override_video_presets_file_name(const std::string newFilename)
+{
+    VIDEO_PRESETS_FILE_NAME = newFilename;
+
+    return;
+}
+
+const std::string& kcom_aliases_file_name(void)
 {
     return ALIAS_FILE_NAME;
 }
 
-const std::string& kcom_filters_file_name(void)
+const std::string& kcom_filter_graph_file_name(void)
 {
-    return FILTERS_FILE_NAME;
+    return FILTER_GRAPH_FILE_NAME;
 }
 
-const std::string& kcom_params_file_name(void)
+const std::string& kcom_video_presets_file_name(void)
 {
-    return PARAMS_FILE_NAME;
+    return VIDEO_PRESETS_FILE_NAME;
 }

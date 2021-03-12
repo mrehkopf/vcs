@@ -36,6 +36,12 @@ public:
 
     bool is_filter_graph_enabled(void);
 
+    // Loads the filter graph from the most recent used graph file. Returns true
+    // if the graph was loaded; false otherwise.
+    bool restore_persistent_graph(void);
+
+    bool load_graph_from_file(const QString &filename);
+
 signals:
     // Emitted when the filter graph's enabled status is toggled.
     void filter_graph_enabled(void);

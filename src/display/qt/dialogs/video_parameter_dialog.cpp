@@ -105,12 +105,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 QString filename = QFileDialog::getOpenFileName(this, "Load video presets from...", "",
                                                                 "Video presets (*.vcs-video);;All files(*.*)");
 
-                if (filename.isEmpty())
-                {
-                    return;
-                }
-
-                this->load_presets_from_file(filename);
+                this->load_presets_from_file(filename.toStdString());
             });
 
             connect(deletePreset, &QAction::triggered, this, [=]
@@ -130,10 +125,11 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             connect(deleteAllPresets, &QAction::triggered, this, [=]
             {
                 if (QMessageBox::warning(this, "Confirm deletion of all presets",
-                                          "Do you really want to delete ALL presets?",
-                                          (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes)
+                                         "Do you really want to delete ALL presets?",
+                                         (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes)
                 {
                     this->remove_all_video_presets_from_list();
+                    this->set_video_presets_source_filename("");
                     kvideopreset_remove_all_presets();
                     kvideopreset_apply_current_active_preset();
                 }
@@ -345,18 +341,10 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
     {
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "video_parameters", this->size()).toSize());
 
-        // If the user didn't provide a video presets file on the command line, see
-        // if they don't have a file specified in the persistent settings.
-        if (kcom_params_file_name().empty())
+        if (kcom_video_presets_file_name().empty())
         {
             const QString presetsSourceFile = kpers_value_of(INI_GROUP_VIDEO_PRESETS, "presets_source_file", QString()).toString();
-
-            if (!presetsSourceFile.isEmpty() &&
-                !this->load_presets_from_file(presetsSourceFile))
-            {
-                kd_show_headless_error_message("Could not load file", "The video presets file was inaccessible.");
-                kpers_set_value(INI_GROUP_VIDEO_PRESETS, "presets_source_file", "");
-            }
+            kcom_override_video_presets_file_name(presetsSourceFile.toStdString());
         }
     }
 
@@ -397,20 +385,20 @@ VideoParameterDialog::~VideoParameterDialog()
     return;
 }
 
-bool VideoParameterDialog::load_presets_from_file(const QString &filename)
+bool VideoParameterDialog::load_presets_from_file(const std::string &filename)
 {
-    if (filename.isEmpty())
+    if (filename.empty())
     {
         return false;
     }
 
-    const auto presets = kdisk_load_video_presets(filename.toStdString());
+    const auto presets = kdisk_load_video_presets(filename);
 
     if (!presets.empty())
     {
         kvideopreset_assign_presets(presets);
         this->assign_presets(presets);
-        this->set_video_presets_source_filename(filename);
+        this->set_video_presets_source_filename(QString::fromStdString(filename));
 
         /// TODO: remove_unsaved_changes_flag();
 
@@ -446,9 +434,15 @@ void VideoParameterDialog::update_current_present_list_text(void)
 
 void VideoParameterDialog::set_video_presets_source_filename(const QString &filename)
 {
-    const QString baseFilename = QFileInfo(filename).baseName();
-
-    this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg(baseFilename));
+    if (filename.isEmpty())
+    {
+        this->setWindowTitle(this->dialogBaseTitle);
+    }
+    else
+    {
+        const QString baseFilename = QFileInfo(filename).baseName();
+        this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg(baseFilename));
+    }
 
     kpers_set_value(INI_GROUP_VIDEO_PRESETS, "presets_source_file", filename);
 

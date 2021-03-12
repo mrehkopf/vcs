@@ -12,6 +12,7 @@
 #include <QSpinBox>
 #include <QDebug>
 #include <QLabel>
+#include "common/command_line/command_line.h"
 #include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/display.h"
@@ -47,12 +48,38 @@ AliasDialog::AliasDialog(QWidget *parent) :
         {
             QMenu *fileMenu = new QMenu("Aliases", this);
 
-            fileMenu->addAction("Add new", this, SLOT(add_alias()));
+            connect(fileMenu->addAction("Add"), &QAction::triggered, this, [=]{ this->add_alias(); });
             fileMenu->addSeparator();
-            fileMenu->addAction("Delete selected", this, SLOT(remove_selected_aliases()));
+            connect(fileMenu->addAction("Delete all"), &QAction::triggered, this, [=]
+            {
+                if (QMessageBox::warning(this, "Confirm deletion of all aliases",
+                                         "Do you really want to delete ALL aliases?",
+                                         (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes)
+                {
+                    this->remove_all_aliases();
+                    this->set_aliases_source_filename("");
+                }
+            });
+            connect(fileMenu->addAction("Delete selected"), &QAction::triggered, this, [=]{ this->remove_selected_aliases(); });
             fileMenu->addSeparator();
-            fileMenu->addAction("Load...", this, SLOT(load_aliases()));
-            fileMenu->addAction("Save as...", this, SLOT(save_aliases()));
+            connect(fileMenu->addAction("Load..."), &QAction::triggered, this, [=]
+            {
+                QString filename = QFileDialog::getOpenFileName(this,
+                                                                "Select the file to load aliases from", "",
+                                                                "Alias files (*.vcs-alias);;"
+                                                                "All files(*.*)");
+
+                this->load_aliases_from_file(filename);
+            });
+            connect(fileMenu->addAction("Save as..."), &QAction::triggered, this, [=]
+            {
+                QString filename = QFileDialog::getSaveFileName(this,
+                                                                "Select the file to save the aliases into", "",
+                                                                "Alias files (*.vcs-alias);;"
+                                                                "All files(*.*)");
+
+                this->save_aliases_to_file(filename);
+            });
 
             this->menubar->addMenu(fileMenu);
         }
@@ -63,6 +90,12 @@ AliasDialog::AliasDialog(QWidget *parent) :
     // Restore persistent settings.
     {
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "aliases", this->size()).toSize());
+
+        if (kcom_aliases_file_name().empty())
+        {
+            const QString aliasesSourceFilename = kpers_value_of(INI_GROUP_ALIAS_RESOLUTIONS, "aliases_source_file", QString()).toString();
+            kcom_override_aliases_file_name(aliasesSourceFilename.toStdString());
+        }
     }
 
     return;
@@ -209,9 +242,24 @@ void AliasDialog::add_alias(void)
     return;
 }
 
+void AliasDialog::remove_all_aliases(void)
+{
+    const auto allItems = ui->treeWidget_knownAliases->findItems("*", Qt::MatchWildcard);
+
+    for (auto item: allItems)
+    {
+        delete item;
+    }
+
+    this->broadcast_aliases();
+
+    return;
+}
+
 void AliasDialog::remove_selected_aliases(void)
 {
     const auto selectedItems = ui->treeWidget_knownAliases->selectedItems();
+
     for (auto item: selectedItems)
     {
         delete item;
@@ -222,13 +270,8 @@ void AliasDialog::remove_selected_aliases(void)
     return;
 }
 
-void AliasDialog::load_aliases()
+void AliasDialog::load_aliases_from_file(const QString &filename)
 {
-    QString filename = QFileDialog::getOpenFileName(this,
-                                                    "Select the file to load aliases from", "",
-                                                    "Alias files (*.vcs-alias);;"
-                                                    "All files(*.*)");
-
     if (filename.isEmpty())
     {
         return;
@@ -239,6 +282,7 @@ void AliasDialog::load_aliases()
     if (!aliases.empty())
     {
         ka_set_aliases(aliases);
+        this->set_aliases_source_filename(filename);
         this->assign_aliases(aliases);
 
         /// TODO: remove_unsaved_changes_flag();
@@ -247,13 +291,8 @@ void AliasDialog::load_aliases()
     return;
 }
 
-void AliasDialog::save_aliases()
+void AliasDialog::save_aliases_to_file(QString &filename)
 {
-    QString filename = QFileDialog::getSaveFileName(this,
-                                                    "Select the file to save the aliases into", "",
-                                                    "Alias files (*.vcs-alias);;"
-                                                    "All files(*.*)");
-
     if (filename.isEmpty())
     {
         return;
@@ -268,18 +307,26 @@ void AliasDialog::save_aliases()
 
     if (kdisk_save_aliases(ka_aliases(), filename.toStdString()))
     {
-        this->set_alias_source_filename(filename);
+        this->set_aliases_source_filename(filename);
     }
 
     return;
 }
 
-void AliasDialog::set_alias_source_filename(const QString &filename)
+void AliasDialog::set_aliases_source_filename(const QString &filename)
 {
-    const QString baseFilename = QFileInfo(filename).baseName();
+    if (filename.isEmpty())
+    {
+        this->setWindowTitle(this->dialogBaseTitle);
+    }
+    else
+    {
+        const QString baseFilename = QFileInfo(filename).baseName();
+        this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle)
+                                               .arg(baseFilename));
+    }
 
-    this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle)
-                                           .arg(baseFilename));
+    kpers_set_value(INI_GROUP_ALIAS_RESOLUTIONS, "aliases_source_file", filename);
 
     return;
 }

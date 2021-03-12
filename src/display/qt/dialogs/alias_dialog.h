@@ -30,19 +30,20 @@ public:
 
     void add_alias_to_list(const mode_alias_s a);
 
-private slots:
-    void load_aliases();
-
-    void save_aliases();
-
-    void remove_selected_aliases();
-
-    void add_alias();
+    void load_aliases_from_file(const QString &filename);
 
 private:
     Ui::AliasDialog *ui;
 
-    void set_alias_source_filename(const QString &filename);
+    void save_aliases_to_file(QString &filename);
+
+    void remove_selected_aliases(void);
+
+    void remove_all_aliases(void);
+
+    void add_alias(void);
+
+    void set_aliases_source_filename(const QString &filename);
 
     void broadcast_aliases();
 

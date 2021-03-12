@@ -14,6 +14,7 @@
 #include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/widgets/filter_widgets.h"
 #include "display/qt/persistent_settings.h"
+#include "common/command_line/command_line.h"
 #include "common/disk/disk.h"
 #include "ui_filter_graph_dialog.h"
 
@@ -70,9 +71,21 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             filterGraphMenu->addAction(enable);
 
             filterGraphMenu->addSeparator();
-            connect(filterGraphMenu->addAction("New"), &QAction::triggered, this, [=]{this->reset_graph();});
+            connect(filterGraphMenu->addAction("New"), &QAction::triggered, this, [=]
+            {
+                this->reset_graph();
+                this->set_filter_graph_source_filename("");
+            });
             filterGraphMenu->addSeparator();
-            connect(filterGraphMenu->addAction("Load..."), &QAction::triggered, this, [=]{this->load_filters();});
+            connect(filterGraphMenu->addAction("Load..."), &QAction::triggered, this, [=]
+            {
+                QString filename = QFileDialog::getOpenFileName(this,
+                                                                "Select a file containing the filter graph to be loaded", "",
+                                                                "Filter graphs (*.vcs-filter-graph);;"
+                                                                "All files(*.*)");
+
+                this->load_graph_from_file(filename);
+            });
             connect(filterGraphMenu->addAction("Save as..."), &QAction::triggered, this, [=]{this->save_filters();});
 
             this->menubar->addMenu(filterGraphMenu);
@@ -179,13 +192,19 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         });
     }
 
+    this->reset_graph(true);
+
     // Restore persistent settings.
     {
         this->set_filter_graph_enabled(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", kf_is_filtering_enabled()).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "filter_graph", this->size()).toSize());
-    }
 
-    this->reset_graph(true);
+        if (kcom_filter_graph_file_name().empty())
+        {
+            const QString graphSourceFilename = kpers_value_of(INI_GROUP_FILTER_GRAPH, "graph_source_file", QString("sdxcf")).toString();
+            kcom_override_filter_graph_file_name(graphSourceFilename.toStdString());
+        }
+    }
 
     return;
 }
@@ -216,16 +235,11 @@ void FilterGraphDialog::reset_graph(const bool autoAccept)
     return;
 }
 
-void FilterGraphDialog::load_filters(void)
+bool FilterGraphDialog::load_graph_from_file(const QString &filename)
 {
-    QString filename = QFileDialog::getOpenFileName(this,
-                                                    "Select a file containing the filter graph to be loaded", "",
-                                                    "Filter graphs (*.vcs-filter-graph);;"
-                                                    "All files(*.*)");
-
     if (filename.isEmpty())
     {
-        return;
+        return false;
     }
 
     const auto filterData = kdisk_load_filter_graph(filename.toStdString());
@@ -234,9 +248,11 @@ void FilterGraphDialog::load_filters(void)
     {
         this->set_filter_graph_source_filename(filename);
         this->set_filter_graph_options(filterData.second);
+
+        return true;
     }
 
-    return;
+    return false;
 }
 
 void FilterGraphDialog::save_filters(void)
@@ -410,13 +426,21 @@ void FilterGraphDialog::refresh_filter_graph(void)
 
 void FilterGraphDialog::set_filter_graph_source_filename(const QString &sourceFilename)
 {
-    const QString baseFilename = QFileInfo(sourceFilename).baseName();
-
-    this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg(baseFilename));
+    if (sourceFilename.isEmpty())
+    {
+        this->setWindowTitle(this->dialogBaseTitle);
+    }
+    else
+    {
+        const QString baseFilename = QFileInfo(sourceFilename).baseName();
+        this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg(baseFilename));
+    }
 
     // Kludge fix for the filter graph not repainting itself properly when new nodes
     // are loaded in. Let's just force it to do so.
     this->refresh_filter_graph();
+
+    kpers_set_value(INI_GROUP_FILTER_GRAPH, "graph_source_file", sourceFilename);
 
     return;
 }

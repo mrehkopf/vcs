@@ -12,6 +12,9 @@
 #include <cassert>
 #include <thread>
 #include "display/qt/windows/output_window.h"
+#include "display/qt/dialogs/video_parameter_dialog.h"
+#include "display/qt/dialogs/filter_graph_dialog.h"
+#include "display/qt/dialogs/alias_dialog.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "filter/filter.h"
@@ -246,6 +249,27 @@ void kd_refresh_filter_chains(void)
     /// TODO.
 
     return;
+}
+
+void kd_load_video_presets(const std::string &filename)
+{
+    k_assert(WINDOW, "Tried to query the display before it had been initialized.");
+
+    WINDOW->video_presets_dialog()->load_presets_from_file(filename);
+}
+
+void kd_load_filter_graph(const std::string &filename)
+{
+    k_assert(WINDOW, "Tried to query the display before it had been initialized.");
+
+    WINDOW->filter_graph_dialog()->load_graph_from_file(QString::fromStdString(filename));
+}
+
+void kd_load_aliases(const std::string &filename)
+{
+    k_assert(WINDOW, "Tried to query the display before it had been initialized.");
+
+    WINDOW->alias_resolutions_dialog()->load_aliases_from_file(QString::fromStdString(filename));
 }
 
 bool kd_is_fullscreen(void)

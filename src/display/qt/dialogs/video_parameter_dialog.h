@@ -42,6 +42,10 @@ public:
     // Called to inform the dialog of a new source file for video presets.
     void assign_presets(const std::vector<video_preset_s*> &presets);
 
+    // Attempts to load the presets stored in the given file. Returns true on
+    // success; false otherwise.
+    bool load_presets_from_file(const std::string &filename);
+
 signals:
     // Emitted when the last item in the preset list is removed.
     void preset_list_became_empty(void);
@@ -69,10 +73,6 @@ private:
     void remove_all_video_presets_from_list(void);
 
     void set_video_presets_source_filename(const QString &filename);
-
-    // Attempts to load the presets stored in the given file. Returns true on
-    // success; false otherwise.
-    bool load_presets_from_file(const QString &filename);
 
     // Whether the filter graph is enabled.
     bool isEnabled = false;

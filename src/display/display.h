@@ -223,6 +223,28 @@ FilterGraphNode* kd_add_filter_graph_node(const filter_type_enum_e &filterType, 
 void kd_redraw_output_window(void);
 
 /*!
+ * Asks the GUI to load video presets from the given file.
+ *
+ * The GUI is expected to inform VCS's video presets subsystem of the new
+ * presets.
+ */
+void kd_load_video_presets(const std::string &filename);
+
+/*!
+ * Asks the GUI to load a filter graph from the given file.
+ *
+ * The GUI is expected to inform VCS's filter subsystem of the new graph.
+ */
+void kd_load_filter_graph(const std::string &filename);
+
+/*!
+ * Asks the GUI to load alias resolutions from the given file.
+ *
+ * The GUI is expected to inform VCS's alias subsystem of the new aliases.
+ */
+void kd_load_aliases(const std::string &filename);
+
+/*!
  * Tells the GUI to indicate to the user that VCS has started (if @p isActive
  * is true) or stopped (if @p isActive is false) recording captured frames into
  * video.

@@ -18,6 +18,8 @@
 #define INI_GROUP_OVERLAY               "OVERLAY"
 #define INI_GROUP_APP                   "APP"
 #define INI_GROUP_VIDEO_PRESETS         "VIDEO_PRESETS"
+#define INI_GROUP_FILTER_GRAPH          "FILTER_GRAPH"
+#define INI_GROUP_ALIAS_RESOLUTIONS     "ALIAS_RESOLUTIONS"
 
 QVariant kpers_value_of(const QString &group, const QString &name, const QVariant &defaultValue = QVariant());
 

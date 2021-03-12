@@ -73,6 +73,7 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
             }
 
             const auto newNode = kd_add_filter_graph_node(filterType, (const u8*)params.data());
+            k_assert(newNode, "Failed to create a new filter node instance.");
             graphNodes->push_back(newNode);
         }
 

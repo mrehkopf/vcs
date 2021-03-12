@@ -285,6 +285,8 @@ std::pair<std::vector<FilterGraphNode*>,
 
     ke_events().file.loadedFilterGraph.fire();
 
+    INFO(("Loaded %u filter graph node(s).", graphNodes.size()));
+
     return {graphNodes, graphOptions};
 
     fail:
