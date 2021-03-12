@@ -47,71 +47,37 @@ QRectF FilterGraphNode::boundingRect(void) const
 
 void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    (void)option;
     (void)widget;
 
     QFont bodyFont = painter->font();
     QFont titleFont = painter->font();
 
-    painter->setRenderHint(QPainter::Antialiasing, false);
-
-    const auto draw_rect_outline = [painter, option](const QRect &rect,
-                                                     const QColor &color,
-                                                     const unsigned lineWidth)
-    {
-        painter->setPen(QPen(color, lineWidth, Qt::SolidLine));
-        painter->drawLine(rect.x(),
-                          rect.y(),
-                          rect.x(),
-                          rect.y() + (rect.height() - 1));
-        painter->drawLine(rect.x(),
-                          rect.y(),
-                          rect.x() + (rect.width() - 1),
-                          rect.y());
-
-        painter->setPen(QPen(color, lineWidth, Qt::SolidLine));
-        painter->drawLine(rect.x() + (rect.width()),
-                          rect.y(),
-                          rect.x() + (rect.width()),
-                          rect.y() + (rect.height()));
-        painter->drawLine(rect.x(),
-                          rect.y() + (rect.height()),
-                          rect.x() + (rect.width()),
-                          rect.y() + (rect.height()));
-    };
+    const unsigned edgePenThickness = 1;
+    const unsigned borderRadius = 3;
 
     // Draw the node's body.
     {
-        const unsigned edgePenThickness = 1;
-
         painter->setFont(bodyFont);
 
         // Background.
         {
             // Node's background.
-            painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
+            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "#e0e0e0" : "black"), edgePenThickness, Qt::SolidLine));
             painter->setBrush(QBrush(QColor("#555555")));
-            painter->drawRect(0, 0, this->width, this->height);
-            draw_rect_outline(QRect(0, 0, this->width, this->height),
-                              QColor((option->state & QStyle::State_Selected)? "#e0e0e0" : "black"),
-                              edgePenThickness);
+            painter->drawRoundedRect(QRect(0, 0, this->width, this->height), borderRadius, borderRadius);
 
             // Title bar's background.
             painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
-            painter->setBrush(QBrush(this->current_background_color(),
-                                     (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
-            painter->drawRect(QRect(1, 8, (this->width - 1), 24));
+            painter->setBrush(QBrush(this->current_background_color(), (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
+            painter->drawRoundedRect(QRect(6, 8, (this->width - 12), 24), borderRadius, borderRadius);
         }
 
         // Connection points (edges).
+        for (const auto &edge: this->edges)
         {
-            for (const auto &edge: this->edges)
-            {
-                painter->setPen(QColor("#e0e0e0"));
-                painter->setBrush(QBrush(QColor("#e0e0e0")));
-                painter->drawRect(edge.rect);
-                draw_rect_outline(edge.rect, QColor("black"), edgePenThickness);
-            }
+            painter->setPen(QPen(QColor("black"), edgePenThickness, Qt::SolidLine));
+            painter->setBrush(QBrush(QColor("#e0e0e0")));
+            painter->drawRoundedRect(edge.rect, borderRadius, borderRadius);
         }
     }
 
