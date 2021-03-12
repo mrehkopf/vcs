@@ -11,7 +11,7 @@
 
 QDialog
 {
-    background-color: #353535;
+    background-color: #303030;
     border: none;
     color: black;
 }
@@ -336,6 +336,11 @@ QGroupBox > QGroupBox
     border: 1px solid black;
 }
 
+QGroupBox[objectName="groupBox_videoPresetName"]
+{
+    margin-top: -1px;
+}
+
 QGroupBox::title
 {
     left: 9px;
@@ -631,13 +636,24 @@ QCheckBox
 }
 
 /* Horizontal line.*/
-QFrame[frameShape="4"],
-QFrame[frameShape="4"]:disabled
+QGroupBox > QFrame[frameShape="4"],
+QGroupBox > QFrame[frameShape="4"]:disabled
 {
     margin: 0;
     border: none;
     border-top: 1px solid #353535;
     border-bottom: 1px solid #555555;
+}
+
+/* Horizontal line outside of group boxes.*/
+QFrame[frameShape="4"]
+{
+    margin: 0;
+    margin-left: 7px;
+    margin-right: 29px;
+    border: none;
+    border-bottom: 1px solid black;
+    max-height: 0;
 }
 
 QSpinBox:disabled,

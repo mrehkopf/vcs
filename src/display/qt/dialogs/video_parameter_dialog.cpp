@@ -1,4 +1,3 @@
-#include <QGraphicsProxyWidget>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QMenuBar>
@@ -162,7 +161,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
         ui->groupBox_activation->setEnabled(false);
         ui->groupBox_presetList->setEnabled(false);
-        ui->groupBox_presetName->setEnabled(false);
+        ui->groupBox_videoPresetName->setEnabled(false);
         ui->parameterGrid_videoParams->setEnabled(false);
 
         const auto minres = kc_capture_api().get_minimum_resolution();
@@ -503,7 +502,7 @@ void VideoParameterDialog::remove_all_video_presets_from_list(void)
 
     ui->groupBox_activation->setEnabled(false);
     ui->groupBox_presetList->setEnabled(false);
-    ui->groupBox_presetName->setEnabled(false);
+    ui->groupBox_videoPresetName->setEnabled(false);
     ui->parameterGrid_videoParams->setEnabled(false);
     ui->lineEdit_presetName->clear();
 
@@ -529,7 +528,7 @@ void VideoParameterDialog::remove_video_preset_from_list(const video_preset_s *c
     {
         ui->groupBox_activation->setEnabled(false);
         ui->groupBox_presetList->setEnabled(false);
-        ui->groupBox_presetName->setEnabled(false);
+        ui->groupBox_videoPresetName->setEnabled(false);
         ui->parameterGrid_videoParams->setEnabled(false);
         ui->lineEdit_presetName->clear();
 
@@ -554,7 +553,7 @@ void VideoParameterDialog::add_video_preset_to_list(const video_preset_s *const 
     {
         ui->groupBox_activation->setEnabled(true);
         ui->groupBox_presetList->setEnabled(true);
-        ui->groupBox_presetName->setEnabled(true);
+        ui->groupBox_videoPresetName->setEnabled(true);
         ui->parameterGrid_videoParams->setEnabled(true);
 
         emit this->preset_list_no_longer_empty();
