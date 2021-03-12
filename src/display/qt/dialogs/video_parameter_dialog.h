@@ -68,7 +68,11 @@ private:
 
     void remove_all_video_presets_from_list(void);
 
-    void set_video_params_source_filename(const QString &filename);
+    void set_video_presets_source_filename(const QString &filename);
+
+    // Attempts to load the presets stored in the given file. Returns true on
+    // success; false otherwise.
+    bool load_presets_from_file(const QString &filename);
 
     // Whether the filter graph is enabled.
     bool isEnabled = false;

@@ -9,6 +9,7 @@
 #include "display/qt/subclasses/QGroupBox_parameter_grid.h"
 #include "display/qt/dialogs/video_parameter_dialog.h"
 #include "display/qt/persistent_settings.h"
+#include "common/command_line/command_line.h"
 #include "common/propagate/app_events.h"
 #include "common/refresh_rate.h"
 #include "common/disk/disk.h"
@@ -93,7 +94,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
                 if (kdisk_save_video_presets(kvideopreset_all_presets(), filename.toStdString()))
                 {
-                    this->set_video_params_source_filename(filename);
+                    this->set_video_presets_source_filename(filename);
 
                     /// TODO: remove_unsaved_changes_flag();
                 }
@@ -109,16 +110,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                     return;
                 }
 
-                const auto presets = kdisk_load_video_presets(filename.toStdString());
-
-                if (!presets.empty())
-                {
-                    kvideopreset_assign_presets(presets);
-                    this->assign_presets(presets);
-                    this->set_video_params_source_filename(QFileInfo(filename).baseName());
-
-                    /// TODO: remove_unsaved_changes_flag();
-                }
+                this->load_presets_from_file(filename);
             });
 
             connect(deletePreset, &QAction::triggered, this, [=]
@@ -352,6 +344,20 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
     // Restore persistent settings.
     {
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "video_parameters", this->size()).toSize());
+
+        // If the user didn't provide a video presets file on the command line, see
+        // if they don't have a file specified in the persistent settings.
+        if (kcom_params_file_name().empty())
+        {
+            const QString presetsSourceFile = kpers_value_of(INI_GROUP_VIDEO_PRESETS, "presets_source_file", QString()).toString();
+
+            if (!presetsSourceFile.isEmpty() &&
+                !this->load_presets_from_file(presetsSourceFile))
+            {
+                kd_show_headless_error_message("Could not load file", "The video presets file was inaccessible.");
+                kpers_set_value(INI_GROUP_VIDEO_PRESETS, "presets_source_file", "");
+            }
+        }
     }
 
     // Subscribe to app events.
@@ -391,6 +397,29 @@ VideoParameterDialog::~VideoParameterDialog()
     return;
 }
 
+bool VideoParameterDialog::load_presets_from_file(const QString &filename)
+{
+    if (filename.isEmpty())
+    {
+        return false;
+    }
+
+    const auto presets = kdisk_load_video_presets(filename.toStdString());
+
+    if (!presets.empty())
+    {
+        kvideopreset_assign_presets(presets);
+        this->assign_presets(presets);
+        this->set_video_presets_source_filename(filename);
+
+        /// TODO: remove_unsaved_changes_flag();
+
+        return true;
+    }
+
+    return false;
+}
+
 void VideoParameterDialog::assign_presets(const std::vector<video_preset_s*> &presets)
 {
     this->remove_all_video_presets_from_list();
@@ -415,11 +444,13 @@ void VideoParameterDialog::update_current_present_list_text(void)
     return;
 }
 
-void VideoParameterDialog::set_video_params_source_filename(const QString &filename)
+void VideoParameterDialog::set_video_presets_source_filename(const QString &filename)
 {
     const QString baseFilename = QFileInfo(filename).baseName();
 
     this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg(baseFilename));
+
+    kpers_set_value(INI_GROUP_VIDEO_PRESETS, "presets_source_file", filename);
 
     return;
 }
