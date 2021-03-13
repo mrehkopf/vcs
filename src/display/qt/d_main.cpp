@@ -170,7 +170,7 @@ void kd_refresh_filter_chains(void)
 void kd_load_video_presets(const std::string &filename)
 {
     ASSERT_WINDOW_IS_NOT_NULL;
-    WINDOW->video_presets_dialog()->load_presets_from_file(filename);
+    WINDOW->video_presets_dialog()->load_presets_from_file(QString::fromStdString(filename));
 }
 
 void kd_load_filter_graph(const std::string &filename)

@@ -42,14 +42,21 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         {
             QMenu *presetMenu = new QMenu("Presets", this->menubar);
 
-            QAction *savePresets = new QAction("Save as...", presetMenu);
-            QAction *loadPresets = new QAction("Load...", presetMenu);
-            QAction *deleteAllPresets = new QAction("Delete all", presetMenu);
+            QAction *savePresets = new QAction("Save", presetMenu);
+            QAction *savePresetsAs = new QAction("Save as...", presetMenu);
+            QAction *loadPresets = new QAction("Open...", presetMenu);
+            QAction *closeFile = new QAction("Close file", presetMenu);
 
-            presetMenu->addAction(loadPresets);
+            savePresets->setData("");
+            savePresets->setEnabled(false);
+            closeFile->setEnabled(false);
+
+            presetMenu->addAction(savePresetsAs);
             presetMenu->addAction(savePresets);
             presetMenu->addSeparator();
-            presetMenu->addAction(deleteAllPresets);
+            presetMenu->addAction(loadPresets);
+            presetMenu->addSeparator();
+            presetMenu->addAction(closeFile);
 
             connect(this, &VideoParameterDialog::preset_list_became_empty, this, [=]
             {
@@ -60,9 +67,6 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 ui->parameterGrid_videoParams->setEnabled(false);
                 ui->pushButton_deletePreset->setEnabled(false);
                 ui->lineEdit_presetName->clear();
-
-                savePresets->setEnabled(false);
-                deleteAllPresets->setEnabled(false);
             });
 
             connect(this, &VideoParameterDialog::preset_list_no_longer_empty, this, [=]
@@ -73,32 +77,14 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 ui->groupBox_videoPresetName->setEnabled(true);
                 ui->parameterGrid_videoParams->setEnabled(true);
                 ui->pushButton_deletePreset->setEnabled(true);
-
-                savePresets->setEnabled(true);
-                deleteAllPresets->setEnabled(true);
             });
 
-            connect(savePresets, &QAction::triggered, this, [=]
+            connect(savePresetsAs, &QAction::triggered, this, [=]
             {
                 QString filename = QFileDialog::getSaveFileName(this, "Save video presets as...", "",
                                                                 "Video presets (*.vcs-video);;All files (*.*)");
 
-                if (filename.isEmpty())
-                {
-                    return;
-                }
-
-                if (!QStringList({"vcs-video"}).contains(QFileInfo(filename).suffix()))
-                {
-                    filename.append(".vcs-video");
-                }
-
-                if (kdisk_save_video_presets(kvideopreset_all_presets(), filename.toStdString()))
-                {
-                    this->set_video_presets_source_filename(filename);
-
-                    /// TODO: remove_unsaved_changes_flag();
-                }
+                this->save_video_presets_to_file(filename);
             });
 
             connect(loadPresets, &QAction::triggered, this, [=]
@@ -106,7 +92,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 QString filename = QFileDialog::getOpenFileName(this, "Load video presets from...", "",
                                                                 "Video presets (*.vcs-video);;All files(*.*)");
 
-                this->load_presets_from_file(filename.toStdString());
+                this->load_presets_from_file(filename);
             });
 
             connect(ui->pushButton_deletePreset, &QPushButton::clicked, this, [=]
@@ -129,17 +115,39 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 this->add_video_preset_to_list(newPreset);
             });
 
-            connect(deleteAllPresets, &QAction::triggered, this, [=]
+            connect(this, &VideoParameterDialog::new_presets_source_file, this, [=](const QString &filename)
             {
-                if (QMessageBox::warning(this, "Confirm deletion of all presets",
-                                         "Do you really want to delete ALL presets?",
-                                         (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes)
+                savePresets->setEnabled(!filename.isEmpty());
+                savePresets->setData(filename);
+                savePresets->setText(filename.isEmpty()
+                                     ? "Save"
+                                     : QString("Save \"%1\"").arg(QFileInfo(filename).fileName()));
+
+                closeFile->setEnabled(!filename.isEmpty());
+                closeFile->setText(filename.isEmpty()
+                                   ? "Close file"
+                                   : QString("Close \"%1\"").arg(QFileInfo(filename).fileName()));
+            });
+
+            connect(closeFile, &QAction::triggered, this, [=]
+            {
+                this->remove_all_video_presets_from_list();
+                this->set_video_presets_source_filename("");
+                kvideopreset_remove_all_presets();
+                kvideopreset_apply_current_active_preset();
+                this->set_video_presets_source_filename("");
+            });
+
+            connect(savePresets, &QAction::triggered, this, [=]
+            {
+                const QString filename = savePresets->data().toString();
+
+                if (filename.isEmpty())
                 {
-                    this->remove_all_video_presets_from_list();
-                    this->set_video_presets_source_filename("");
-                    kvideopreset_remove_all_presets();
-                    kvideopreset_apply_current_active_preset();
+                    return;
                 }
+
+                this->save_video_presets_to_file(filename);
             });
 
             this->menubar->addMenu(presetMenu);
@@ -406,20 +414,44 @@ VideoParameterDialog::~VideoParameterDialog()
     return;
 }
 
-bool VideoParameterDialog::load_presets_from_file(const std::string &filename)
+bool VideoParameterDialog::save_video_presets_to_file(QString filename)
 {
-    if (filename.empty())
+    if (filename.isEmpty())
     {
         return false;
     }
 
-    const auto presets = kdisk_load_video_presets(filename);
+    if (!QStringList({"vcs-video"}).contains(QFileInfo(filename).suffix()))
+    {
+        filename.append(".vcs-video");
+    }
+
+    if (kdisk_save_video_presets(kvideopreset_all_presets(), filename.toStdString()))
+    {
+        this->set_video_presets_source_filename(filename);
+
+        /// TODO: remove_unsaved_changes_flag();
+
+        return true;
+    }
+
+    return false;
+}
+
+bool VideoParameterDialog::load_presets_from_file(const QString &filename)
+{
+    if (filename.isEmpty())
+    {
+        return false;
+    }
+
+    const auto presets = kdisk_load_video_presets(filename.toStdString());
 
     if (!presets.empty())
     {
         kvideopreset_assign_presets(presets);
         this->assign_presets(presets);
-        this->set_video_presets_source_filename(QString::fromStdString(filename));
+        this->set_video_presets_source_filename(filename);
 
         /// TODO: remove_unsaved_changes_flag();
 
@@ -466,6 +498,8 @@ void VideoParameterDialog::set_video_presets_source_filename(const QString &file
     }
 
     kpers_set_value(INI_GROUP_VIDEO_PRESETS, "presets_source_file", filename);
+
+    emit this->new_presets_source_file(filename);
 
     return;
 }

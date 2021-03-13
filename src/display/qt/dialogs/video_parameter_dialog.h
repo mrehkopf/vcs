@@ -44,7 +44,9 @@ public:
 
     // Attempts to load the presets stored in the given file. Returns true on
     // success; false otherwise.
-    bool load_presets_from_file(const std::string &filename);
+    bool load_presets_from_file(const QString &filename);
+
+   bool save_video_presets_to_file(QString filename);
 
 signals:
     // Emitted when the last item in the preset list is removed.
@@ -56,6 +58,9 @@ signals:
     // Emitted when the user has requested that a different preset be shown in
     // the GUI.
     void preset_change_requested(const unsigned newPresetId);
+
+    // Emitted when presets are loaded from or saved to a file.
+    void new_presets_source_file(const QString &filename);
 
 private:
     void add_video_preset_to_list(const video_preset_s *const preset);
