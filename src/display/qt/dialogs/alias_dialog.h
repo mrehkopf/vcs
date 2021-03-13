@@ -35,7 +35,7 @@ public:
 private:
     Ui::AliasDialog *ui;
 
-    void save_aliases_to_file(QString &filename);
+    void save_aliases_to_file(QString filename);
 
     void remove_selected_aliases(void);
 

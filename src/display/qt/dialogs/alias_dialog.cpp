@@ -291,7 +291,7 @@ void AliasDialog::load_aliases_from_file(const QString &filename)
     return;
 }
 
-void AliasDialog::save_aliases_to_file(QString &filename)
+void AliasDialog::save_aliases_to_file(QString filename)
 {
     if (filename.isEmpty())
     {
