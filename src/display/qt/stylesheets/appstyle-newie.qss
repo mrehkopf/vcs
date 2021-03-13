@@ -80,14 +80,8 @@ QGroupBox > QLabel
 
 QGroupBox > PropertyTable
 {
-    margin-left: 3px;
-    margin-right: 3px;
-}
-
-/* Horizontal line.*/
-QGroupBox > QFrame[frameShape="4"]
-{
     margin-left: 6px;
+    margin-right: 6px;
 }
 
 QScrollArea > QWidget > QWidget
@@ -130,7 +124,7 @@ QTabBar::tab:selected
 QPlainTextEdit
 {
     border: none;
-    border-radius: 0px;
+    border-radius: 2px;
     border: 1px solid black;
     color: black;
     background-color: whitesmoke;
@@ -329,11 +323,19 @@ QGroupBox
 QGroupBox > QGroupBox
 {
     margin: 0;
+    padding-left: 6px;
+    padding-right: 8px;
     margin-top: 3px;
     padding-top: 1.6em;
     background-color: #454545;
     color: #e0e0e0;
     border: 1px solid black;
+}
+
+QDialog[objectName="AliasDialog"] QGroupBox > QGroupBox
+{
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 QGroupBox[objectName="groupBox_videoPresetName"]
@@ -576,6 +578,7 @@ QTextEdit:read-only:focus
     border-radius: 2px;
     border: 1px solid black;
     padding: 2px;
+    margin-left: 2px;
 }
 
 QComboBox
@@ -633,6 +636,8 @@ QRadioButton,
 QCheckBox
 {
     color: #e0e0e0;
+    margin-left: 2px;
+    margin-right: 2px;
 }
 
 /* Horizontal line.*/
@@ -640,6 +645,7 @@ QGroupBox > QFrame[frameShape="4"],
 QGroupBox > QFrame[frameShape="4"]:disabled
 {
     margin: 0;
+    margin-left: 10px;
     border: none;
     border-top: 1px solid #353535;
     border-bottom: 1px solid #555555;
@@ -695,12 +701,4 @@ QGroupBox:disabled
 QGroupBox::title:disabled
 {
     color: gray;
-}
-
-QLabel
-{
-    margin: 0;
-    padding: 0;
-    text-align: left;
-    border: none;
 }
