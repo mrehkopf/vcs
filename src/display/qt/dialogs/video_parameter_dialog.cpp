@@ -7,6 +7,7 @@
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/subclasses/QGroupBox_parameter_grid.h"
+#include "display/qt/subclasses/QMenu_dialog_file_menu.h"
 #include "display/qt/dialogs/video_parameter_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "common/command_line/command_line.h"
@@ -38,119 +39,49 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
     {
         this->menubar = new QMenuBar(this);
 
-        // Video parameters...
+        // File...
         {
-            QMenu *presetMenu = new QMenu("Presets", this->menubar);
+            auto *const file = new DialogFileMenu;
 
-            QAction *savePresets = new QAction("Save", presetMenu);
-            QAction *savePresetsAs = new QAction("Save as...", presetMenu);
-            QAction *loadPresets = new QAction("Open...", presetMenu);
-            QAction *closeFile = new QAction("Close file", presetMenu);
+            this->menubar->addMenu(file);
 
-            savePresets->setData("");
-            savePresets->setEnabled(false);
-            closeFile->setEnabled(false);
-
-            presetMenu->addAction(savePresetsAs);
-            presetMenu->addAction(savePresets);
-            presetMenu->addSeparator();
-            presetMenu->addAction(loadPresets);
-            presetMenu->addSeparator();
-            presetMenu->addAction(closeFile);
-
-            connect(this, &VideoParameterDialog::preset_list_became_empty, this, [=]
+            connect(this, &VideoParameterDialog::new_presets_source_file, this, [=](const QString &filename)
             {
-                ui->groupBox_activation->setEnabled(false);
-                ui->comboBox_presetList->setEnabled(false);
-                ui->pushButton_deletePreset->setEnabled(false);
-                ui->groupBox_videoPresetName->setEnabled(false);
-                ui->parameterGrid_videoParams->setEnabled(false);
-                ui->pushButton_deletePreset->setEnabled(false);
-                ui->lineEdit_presetName->clear();
+                file->report_new_source_file(filename);
             });
 
-            connect(this, &VideoParameterDialog::preset_list_no_longer_empty, this, [=]
+            connect(file, &DialogFileMenu::user_wants_to_save, this, [=](const QString &filename)
             {
-                ui->groupBox_activation->setEnabled(true);
-                ui->comboBox_presetList->setEnabled(true);
-                ui->pushButton_deletePreset->setEnabled(true);
-                ui->groupBox_videoPresetName->setEnabled(true);
-                ui->parameterGrid_videoParams->setEnabled(true);
-                ui->pushButton_deletePreset->setEnabled(true);
-            });
-
-            connect(savePresetsAs, &QAction::triggered, this, [=]
-            {
-                QString filename = QFileDialog::getSaveFileName(this, "Save video presets as...", "",
-                                                                "Video presets (*.vcs-video);;All files (*.*)");
-
                 this->save_video_presets_to_file(filename);
             });
 
-            connect(loadPresets, &QAction::triggered, this, [=]
+            connect(file, &DialogFileMenu::user_wants_to_open, this, [=]
             {
-                QString filename = QFileDialog::getOpenFileName(this, "Load video presets from...", "",
+                QString filename = QFileDialog::getOpenFileName(this,
+                                                                "Load video presets from...",
+                                                                "",
                                                                 "Video presets (*.vcs-video);;All files(*.*)");
 
                 this->load_presets_from_file(filename);
             });
 
-            connect(ui->pushButton_deletePreset, &QPushButton::clicked, this, [=]
+            connect(file, &DialogFileMenu::user_wants_to_save_as, this, [=](const QString &originalFilename)
             {
-                if (this->currentPreset &&
-                    (QMessageBox::question(this, "Confirm preset deletion",
-                                           "Do you want to delete this preset?",
-                                           (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes))
-                {
-                    const auto presetToDelete = this->currentPreset;
-                    this->remove_video_preset_from_list(presetToDelete);
-                    kvideopreset_remove_preset(presetToDelete->id);
-                    kvideopreset_apply_current_active_preset();
-                }
+                QString filename = QFileDialog::getSaveFileName(this,
+                                                                "Save video presets as...",
+                                                                originalFilename,
+                                                                "Video presets (*.vcs-video);;All files (*.*)");
+
+                this->save_video_presets_to_file(filename);
             });
 
-            connect(ui->pushButton_addNewPreset, &QPushButton::clicked, this, [=]
-            {
-                const video_preset_s *const newPreset = kvideopreset_create_new_preset();
-                this->add_video_preset_to_list(newPreset);
-            });
-
-            connect(this, &VideoParameterDialog::new_presets_source_file, this, [=](const QString &filename)
-            {
-                savePresets->setEnabled(!filename.isEmpty());
-                savePresets->setData(filename);
-                savePresets->setText(filename.isEmpty()
-                                     ? "Save"
-                                     : QString("Save \"%1\"").arg(QFileInfo(filename).fileName()));
-
-                closeFile->setEnabled(!filename.isEmpty());
-                closeFile->setText(filename.isEmpty()
-                                   ? "Close file"
-                                   : QString("Close \"%1\"").arg(QFileInfo(filename).fileName()));
-            });
-
-            connect(closeFile, &QAction::triggered, this, [=]
+            connect(file, &DialogFileMenu::user_wants_to_close, this, [=]
             {
                 this->remove_all_video_presets_from_list();
                 this->set_video_presets_source_filename("");
                 kvideopreset_remove_all_presets();
                 kvideopreset_apply_current_active_preset();
-                this->set_video_presets_source_filename("");
             });
-
-            connect(savePresets, &QAction::triggered, this, [=]
-            {
-                const QString filename = savePresets->data().toString();
-
-                if (filename.isEmpty())
-                {
-                    return;
-                }
-
-                this->save_video_presets_to_file(filename);
-            });
-
-            this->menubar->addMenu(presetMenu);
         }
 
         this->layout()->setMenuBar(menubar);
@@ -195,6 +126,47 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
     // Connect the GUI controls to consequences for changing their values.
     {
+        connect(this, &VideoParameterDialog::preset_list_became_empty, this, [=]
+        {
+            ui->groupBox_activation->setEnabled(false);
+            ui->comboBox_presetList->setEnabled(false);
+            ui->pushButton_deletePreset->setEnabled(false);
+            ui->groupBox_videoPresetName->setEnabled(false);
+            ui->parameterGrid_videoParams->setEnabled(false);
+            ui->pushButton_deletePreset->setEnabled(false);
+            ui->lineEdit_presetName->clear();
+        });
+
+        connect(this, &VideoParameterDialog::preset_list_no_longer_empty, this, [=]
+        {
+            ui->groupBox_activation->setEnabled(true);
+            ui->comboBox_presetList->setEnabled(true);
+            ui->pushButton_deletePreset->setEnabled(true);
+            ui->groupBox_videoPresetName->setEnabled(true);
+            ui->parameterGrid_videoParams->setEnabled(true);
+            ui->pushButton_deletePreset->setEnabled(true);
+        });
+
+        connect(ui->pushButton_deletePreset, &QPushButton::clicked, this, [=]
+        {
+            if (this->currentPreset &&
+                (QMessageBox::question(this, "Confirm preset deletion",
+                                       "Do you want to delete this preset?",
+                                       (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes))
+            {
+                const auto presetToDelete = this->currentPreset;
+                this->remove_video_preset_from_list(presetToDelete);
+                kvideopreset_remove_preset(presetToDelete->id);
+                kvideopreset_apply_current_active_preset();
+            }
+        });
+
+        connect(ui->pushButton_addNewPreset, &QPushButton::clicked, this, [=]
+        {
+            const video_preset_s *const newPreset = kvideopreset_create_new_preset();
+            this->add_video_preset_to_list(newPreset);
+        });
+
         #define OVERLOAD_DOUBLE static_cast<void (QDoubleSpinBox::*)(double)>
 
         connect(ui->doubleSpinBox_refreshRateValue, OVERLOAD_DOUBLE(&QDoubleSpinBox::valueChanged), this, [this](const double value)
