@@ -581,6 +581,11 @@ QTextEdit:read-only:focus
     margin-left: 2px;
 }
 
+QGroupBox[objectName="groupBox_presetList"] QComboBox
+{
+    margin-left: 0;
+}
+
 QComboBox
 {
     padding-left: 4px;

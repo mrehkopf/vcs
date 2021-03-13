@@ -74,7 +74,7 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <property name="spacing">
-            <number>4</number>
+            <number>6</number>
            </property>
            <item>
             <widget class="QPushButton" name="pushButton_addNewPreset">
@@ -86,18 +86,18 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>35</width>
+               <width>25</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>35</width>
+               <width>25</width>
                <height>16777215</height>
               </size>
              </property>
              <property name="toolTip">
-              <string>Add preset</string>
+              <string>Add new preset</string>
              </property>
              <property name="text">
               <string/>
@@ -119,13 +119,13 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>23</width>
+               <width>25</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>23</width>
+               <width>25</width>
                <height>16777215</height>
               </size>
              </property>
@@ -299,7 +299,7 @@
                 <bool>true</bool>
                </property>
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
@@ -318,7 +318,7 @@
                 <bool>true</bool>
                </property>
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
@@ -344,13 +344,13 @@
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>25</width>
+                 <width>22</width>
                  <height>0</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>25</width>
+                 <width>22</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -394,13 +394,13 @@
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>25</width>
+                 <width>22</width>
                  <height>0</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>25</width>
+                 <width>22</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -456,13 +456,13 @@
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>25</width>
+                 <width>22</width>
                  <height>0</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>25</width>
+                 <width>22</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -486,7 +486,7 @@
                 <bool>true</bool>
                </property>
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
