@@ -31,5 +31,9 @@
         <file>images/icons/newie/arrow_down_disabled.png</file>
         <file>images/icons/newie/arrow_up.png</file>
         <file>images/icons/newie/arrow_down.png</file>
+        <file>images/icons/newie/delete.png</file>
+        <file>images/icons/newie/delete_disabled.png</file>
+        <file>images/icons/newie/plus.png</file>
+        <file>images/icons/newie/plus_disabled.png</file>
     </qresource>
 </RCC>

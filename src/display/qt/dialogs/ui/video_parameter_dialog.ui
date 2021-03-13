@@ -71,20 +71,87 @@
          <bool>false</bool>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
-         <property name="leftMargin">
-          <number>9</number>
-         </property>
-         <property name="topMargin">
-          <number>9</number>
-         </property>
-         <property name="rightMargin">
-          <number>9</number>
-         </property>
-         <property name="bottomMargin">
-          <number>9</number>
-         </property>
          <item>
-          <widget class="QComboBox" name="comboBox_presetList"/>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="spacing">
+            <number>4</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="pushButton_addNewPreset">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>35</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>35</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Add preset</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../../res.qrc">
+               <normaloff>:/res/images/icons/newie/plus.png</normaloff>
+               <disabledoff>:/res/images/icons/newie/plus_disabled.png</disabledoff>:/res/images/icons/newie/plus.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_deletePreset">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>23</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>23</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Delete preset</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../../res.qrc">
+               <normaloff>:/res/images/icons/newie/delete.png</normaloff>
+               <disabledoff>:/res/images/icons/newie/delete_disabled.png</disabledoff>:/res/images/icons/newie/delete.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>10</width>
+               <height>12</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="comboBox_presetList"/>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -106,7 +173,7 @@
         <x>0</x>
         <y>0</y>
         <width>405</width>
-        <height>409</height>
+        <height>407</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -600,6 +667,8 @@
   <tabstop>comboBox_shortcutSecondKey</tabstop>
   <tabstop>scrollArea</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../../res.qrc"/>
+ </resources>
  <connections/>
 </ui>

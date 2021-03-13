@@ -42,39 +42,40 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         {
             QMenu *presetMenu = new QMenu("Presets", this->menubar);
 
-            QAction *addPreset = new QAction("Add new", presetMenu);
             QAction *savePresets = new QAction("Save as...", presetMenu);
             QAction *loadPresets = new QAction("Load...", presetMenu);
-            QAction *deletePreset = new QAction("Delete current", presetMenu);
             QAction *deleteAllPresets = new QAction("Delete all", presetMenu);
 
-            presetMenu->addAction(addPreset);
-            presetMenu->addSeparator();
-            presetMenu->addAction(deleteAllPresets);
-            presetMenu->addAction(deletePreset);
-            presetMenu->addSeparator();
             presetMenu->addAction(loadPresets);
             presetMenu->addAction(savePresets);
+            presetMenu->addSeparator();
+            presetMenu->addAction(deleteAllPresets);
 
             connect(this, &VideoParameterDialog::preset_list_became_empty, this, [=]
             {
+                ui->groupBox_activation->setEnabled(false);
+                ui->comboBox_presetList->setEnabled(false);
+                ui->pushButton_deletePreset->setEnabled(false);
+                ui->groupBox_videoPresetName->setEnabled(false);
+                ui->parameterGrid_videoParams->setEnabled(false);
+                ui->pushButton_deletePreset->setEnabled(false);
+                ui->lineEdit_presetName->clear();
+
                 savePresets->setEnabled(false);
-                deletePreset->setEnabled(false);
                 deleteAllPresets->setEnabled(false);
             });
 
             connect(this, &VideoParameterDialog::preset_list_no_longer_empty, this, [=]
             {
+                ui->groupBox_activation->setEnabled(true);
+                ui->comboBox_presetList->setEnabled(true);
+                ui->pushButton_deletePreset->setEnabled(true);
+                ui->groupBox_videoPresetName->setEnabled(true);
+                ui->parameterGrid_videoParams->setEnabled(true);
+                ui->pushButton_deletePreset->setEnabled(true);
+
                 savePresets->setEnabled(true);
-                deletePreset->setEnabled(true);
                 deleteAllPresets->setEnabled(true);
-            });
-
-            connect(addPreset, &QAction::triggered, this, [=]
-            {
-                const video_preset_s *const newPreset = kvideopreset_create_new_preset();
-
-                this->add_video_preset_to_list(newPreset);
             });
 
             connect(savePresets, &QAction::triggered, this, [=]
@@ -108,7 +109,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 this->load_presets_from_file(filename.toStdString());
             });
 
-            connect(deletePreset, &QAction::triggered, this, [=]
+            connect(ui->pushButton_deletePreset, &QPushButton::clicked, this, [=]
             {
                 if (this->currentPreset &&
                     (QMessageBox::question(this, "Confirm preset deletion",
@@ -120,6 +121,12 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                     kvideopreset_remove_preset(presetToDelete->id);
                     kvideopreset_apply_current_active_preset();
                 }
+            });
+
+            connect(ui->pushButton_addNewPreset, &QPushButton::clicked, this, [=]
+            {
+                const video_preset_s *const newPreset = kvideopreset_create_new_preset();
+                this->add_video_preset_to_list(newPreset);
             });
 
             connect(deleteAllPresets, &QAction::triggered, this, [=]
@@ -148,7 +155,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         ui->lineEdit_presetName->setValidator(new QRegExpValidator(QRegExp("[^{}]*"), this));
 
         ui->groupBox_activation->setEnabled(false);
-        ui->groupBox_presetList->setEnabled(false);
+        ui->comboBox_presetList->setEnabled(false);
+        ui->pushButton_deletePreset->setEnabled(false);
         ui->groupBox_videoPresetName->setEnabled(false);
         ui->parameterGrid_videoParams->setEnabled(false);
 
@@ -525,12 +533,6 @@ void VideoParameterDialog::remove_all_video_presets_from_list(void)
         return;
     }
 
-    ui->groupBox_activation->setEnabled(false);
-    ui->groupBox_presetList->setEnabled(false);
-    ui->groupBox_videoPresetName->setEnabled(false);
-    ui->parameterGrid_videoParams->setEnabled(false);
-    ui->lineEdit_presetName->clear();
-
     this->currentPreset = nullptr;
 
     ui->comboBox_presetList->clear();
@@ -551,12 +553,6 @@ void VideoParameterDialog::remove_video_preset_from_list(const video_preset_s *c
     // controls.
     if ((ui->comboBox_presetList->count() == 1))
     {
-        ui->groupBox_activation->setEnabled(false);
-        ui->groupBox_presetList->setEnabled(false);
-        ui->groupBox_videoPresetName->setEnabled(false);
-        ui->parameterGrid_videoParams->setEnabled(false);
-        ui->lineEdit_presetName->clear();
-
         this->currentPreset = nullptr;
 
         emit this->preset_list_became_empty();
@@ -571,16 +567,8 @@ void VideoParameterDialog::remove_video_preset_from_list(const video_preset_s *c
 
 void VideoParameterDialog::add_video_preset_to_list(const video_preset_s *const preset)
 {
-    // If this is the first preset to the added to an empty list, enable the
-    // dialog's preset controls - which will have been disabled while there were
-    // no presets in the list.
     if (ui->comboBox_presetList->count() == 0)
     {
-        ui->groupBox_activation->setEnabled(true);
-        ui->groupBox_presetList->setEnabled(true);
-        ui->groupBox_videoPresetName->setEnabled(true);
-        ui->parameterGrid_videoParams->setEnabled(true);
-
         emit this->preset_list_no_longer_empty();
     }
 
