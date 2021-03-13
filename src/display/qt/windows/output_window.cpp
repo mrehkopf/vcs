@@ -1314,43 +1314,6 @@ void MainWindow::set_keyboard_shortcuts(void)
     return;
 }
 
-void MainWindow::signal_new_known_alias(const mode_alias_s a)
-{
-    k_assert(this->aliasDlg != nullptr, "");
-    aliasDlg->add_alias_to_list(a);
-
-    return;
-}
-
-void MainWindow::clear_filter_graph(void)
-{
-    k_assert(this->filterGraphDlg != nullptr, "");
-    filterGraphDlg->clear_filter_graph();
-
-    return;
-}
-
-void MainWindow::recalculate_filter_graph_chains(void)
-{
-    k_assert(this->filterGraphDlg != nullptr, "");
-    filterGraphDlg->recalculate_filter_chains();
-}
-
-void MainWindow::disable_output_size_controls(const bool areDisabled)
-{
-    k_assert(this->outputResolutionDlg != nullptr, "");
-    outputResolutionDlg->disable_output_size_controls(areDisabled);
-
-    return;
-}
-
-FilterGraphNode* MainWindow::add_filter_graph_node(const filter_type_enum_e &filterType,
-                                                   const u8 *const initialParameterValues)
-{
-    k_assert(this->filterGraphDlg != nullptr, "");
-    return this->filterGraphDlg->add_filter_graph_node(filterType, initialParameterValues);
-}
-
 void MainWindow::update_window_title(void)
 {
     QString title = PROGRAM_NAME;
@@ -1412,53 +1375,11 @@ void MainWindow::update_window_title(void)
     return;
 }
 
-void MainWindow::set_capture_info_as_no_signal()
-{
-    update_window_title();
-
-    k_assert(this->signalDlg != nullptr, "");
-    this->signalDlg->set_controls_enabled(false);
-
-    return;
-}
-
-void MainWindow::set_capture_info_as_receiving_signal()
-{
-    k_assert(this->signalDlg != nullptr, "");
-    this->signalDlg->set_controls_enabled(true);
-
-    return;
-}
-
-void MainWindow::update_video_mode_params(void)
-{
-    k_assert(this->signalDlg != nullptr, "");
-    //this->signalDlg->update_controls();
-
-    return;
-}
-
-void MainWindow::set_filter_graph_source_filename(const std::string &sourceFilename)
-{
-    k_assert(this->filterGraphDlg != nullptr, "");
-    //this->filterGraphDlg->set_filter_graph_source_filename(sourceFilename);
-
-    return;
-}
-
 void MainWindow::update_gui_state()
 {
     // Manually spin the event loop.
     QCoreApplication::sendPostedEvents();
     QCoreApplication::processEvents();
-
-    return;
-}
-
-void MainWindow::clear_known_aliases()
-{
-    k_assert(this->aliasDlg != nullptr, "");
-    this->aliasDlg->clear_known_aliases();
 
     return;
 }

@@ -46,19 +46,11 @@ public:
 
     void add_gui_log_entry(const log_entry_s e);
 
-    void set_capture_info_as_no_signal(void);
-
-    void set_capture_info_as_receiving_signal(void);
-
     void update_window_size(void);
 
     // Updates the window title with the current status of capture and that of the program
     // in general.
     void update_window_title(void);
-
-    void signal_new_known_alias(const mode_alias_s a);
-
-    void clear_known_aliases(void);
 
     void open_overlay_dialog(void);
 
@@ -69,16 +61,6 @@ public:
     // Returns the current overlay as a QImage, or a null QImage if the overlay
     // should not be shown at this time.
     QImage overlay_image(void);
-
-    void update_video_mode_params(void);
-
-    void clear_filter_graph(void);
-
-    void recalculate_filter_graph_chains(void);
-
-    FilterGraphNode* add_filter_graph_node(const filter_type_enum_e &filterType, const u8 * const initialParameterValues);
-
-    void set_filter_graph_source_filename(const std::string &sourceFilename);
 
     void open_filter_graph_dialog(void);
 
@@ -102,11 +84,9 @@ public:
 
     void open_video_parameter_graph_dialog(void);
 
-    void disable_output_size_controls(const bool areDisabled);
-
     bool apply_programwide_styling(const QString &filename);
 
-    OutputResolutionDialog* outout_resolution_dialiog(void) const { return this->outputResolutionDlg; }
+    OutputResolutionDialog* output_resolution_dialog(void) const { return this->outputResolutionDlg; }
     InputResolutionDialog* input_resolution_dialog(void)    const { return this->inputResolutionDlg; }
     VideoParameterDialog* video_presets_dialog(void)        const { return this->videoParamDlg; }
     FilterGraphDialog* filter_graph_dialog(void)            const { return this->filterGraphDlg; }
