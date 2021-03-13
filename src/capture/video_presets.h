@@ -25,7 +25,8 @@ struct video_preset_s
 
     video_signal_parameters_s videoParameters = {};
 
-    // Internal identifier for this particular video preset. Not user-facing.
+    // Internal identifier for this particular video preset. Not user-facing. Used
+    // to tell presets apart.
     unsigned id = 0;
 
     // A user-facing, user-created string describing what this video preset is

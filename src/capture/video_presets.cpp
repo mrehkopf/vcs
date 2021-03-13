@@ -196,10 +196,9 @@ video_preset_s* kvideopreset_create_new_preset(void)
     video_preset_s *const preset = new video_preset_s;
 
     preset->id = RUNNING_PRESET_ID++;
-    preset->name = "";
-    preset->activatesWithResolution = true;
+    preset->name = ("Preset " + std::to_string(RUNNING_PRESET_ID));
+    preset->activatesWithResolution = false;
     preset->activationResolution = {640, 480, 32};
-
     preset->videoParameters = kc_capture_api().get_default_video_signal_parameters();
 
     PRESETS.push_back(preset);
