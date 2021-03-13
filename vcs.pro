@@ -56,6 +56,7 @@ RESOURCES += \
 
 SOURCES += \
     src/display/qt/subclasses/QGroupBox_parameter_grid.cpp \
+    src/display/qt/subclasses/QMenu_dialog_file_menu.cpp \
     src/display/qt/windows/output_window.cpp \
     src/display/qt/dialogs/resolution_dialog.cpp \
     src/display/qt/d_main.cpp \
@@ -124,6 +125,7 @@ HEADERS += \
     src/capture/null_rgbeasy.h \
     src/common/types.h \
     src/display/qt/subclasses/QGroupBox_parameter_grid.h \
+    src/display/qt/subclasses/QMenu_dialog_file_menu.h \
     src/display/qt/windows/output_window.h \
     src/display/qt/dialogs/resolution_dialog.h \
     src/scaler/scaler.h \
