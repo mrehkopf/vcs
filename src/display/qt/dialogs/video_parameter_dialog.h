@@ -53,8 +53,16 @@ signals:
     // Emitted when an item is added to an empty preset list.
     void preset_list_no_longer_empty(void);
 
+    // Emitted when the user has requested that a different preset be shown in
+    // the GUI.
+    void preset_change_requested(const unsigned newPresetId);
+
 private:
     void add_video_preset_to_list(const video_preset_s *const preset);
+
+    // Returns the index in the list of presets of the preset with the given id.
+    // Asserts on failure.
+    unsigned find_preset_idx_in_list(const unsigned presetId);
 
     void update_preset_control_ranges(void);
 

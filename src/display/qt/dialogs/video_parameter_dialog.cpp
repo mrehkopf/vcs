@@ -313,22 +313,35 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             this->update_preset_controls_with_current_preset_data();
         });
 
-        connect(ui->comboBox_presetList, OVERLOAD_QSTRING(&QComboBox::currentIndexChanged), this, [this]()
+        connect(this, &VideoParameterDialog::preset_change_requested, this, [this](const unsigned presetId)
         {
-            if (ui->comboBox_presetList->count() > 0)
-            {
-                this->currentPreset = kvideopreset_get_preset_ptr(ui->comboBox_presetList->currentData().toUInt());
-                this->update_preset_controls_with_current_preset_data();
-                this->update_current_present_list_text();
-            }
+            this->currentPreset = kvideopreset_get_preset_ptr(presetId);
+            this->update_preset_controls_with_current_preset_data();
+            this->update_current_present_list_text();
 
             kvideopreset_apply_current_active_preset();
         });
 
+        connect(ui->comboBox_presetList, OVERLOAD_QSTRING(&QComboBox::currentIndexChanged), this, [this]()
+        {
+            if (ui->comboBox_presetList->count() <= 0)
+            {
+                return;
+            }
+
+            emit this->preset_change_requested(ui->comboBox_presetList->currentData().toUInt());
+        });
+
         connect(ui->comboBox_refreshRateComparison, OVERLOAD_QSTRING(&QComboBox::currentIndexChanged), this, [this](const QString &text)
         {
-            if (text == "Exact") ui->doubleSpinBox_refreshRateValue->setDecimals(refresh_rate_s::numDecimalsPrecision);
-            else ui->doubleSpinBox_refreshRateValue->setDecimals(0);
+            if (text == "Exact")
+            {
+                ui->doubleSpinBox_refreshRateValue->setDecimals(refresh_rate_s::numDecimalsPrecision);
+            }
+            else
+            {
+                ui->doubleSpinBox_refreshRateValue->setDecimals(0);
+            }
 
             if (this->currentPreset)
             {
@@ -520,7 +533,7 @@ QString VideoParameterDialog::make_preset_list_text(const video_preset_s *const 
 
     if (combinedText.isEmpty())
     {
-        combinedText = "(Null preset)";
+        combinedText = "(Empty preset)";
     }
 
     return combinedText;
@@ -534,12 +547,30 @@ void VideoParameterDialog::remove_all_video_presets_from_list(void)
     }
 
     this->currentPreset = nullptr;
-
     ui->comboBox_presetList->clear();
-
     emit this->preset_list_became_empty();
 
     return;
+}
+
+unsigned VideoParameterDialog::find_preset_idx_in_list(const unsigned presetId)
+{
+    int presetListIdx = -1;
+
+    for (int i = 0; i < ui->comboBox_presetList->count(); i++)
+    {
+        const int itemPresetId = ui->comboBox_presetList->itemData(i).toUInt();
+
+        if (kvideopreset_get_preset_ptr(itemPresetId)->id == presetId)
+        {
+            presetListIdx = i;
+            break;
+        }
+    }
+
+    k_assert((presetListIdx >= 0), "Invalid list index.");
+
+    return unsigned(presetListIdx);
 }
 
 void VideoParameterDialog::remove_video_preset_from_list(const video_preset_s *const preset)
@@ -549,20 +580,15 @@ void VideoParameterDialog::remove_video_preset_from_list(const video_preset_s *c
         return;
     }
 
-    // If this is the last preset to be removed, disable the dialog's preset
-    // controls.
-    if ((ui->comboBox_presetList->count() == 1))
+    ui->comboBox_presetList->removeItem(this->find_preset_idx_in_list(preset->id));
+
+    if (!ui->comboBox_presetList->count())
     {
         this->currentPreset = nullptr;
-
         emit this->preset_list_became_empty();
     }
 
-    const int presetListIdx = ui->comboBox_presetList->findText(this->make_preset_list_text(preset));
-
-    k_assert((presetListIdx >= 0), "Invalid list index.");
-
-    ui->comboBox_presetList->removeItem(presetListIdx);
+    return;
 }
 
 void VideoParameterDialog::add_video_preset_to_list(const video_preset_s *const preset)
@@ -572,12 +598,31 @@ void VideoParameterDialog::add_video_preset_to_list(const video_preset_s *const 
         emit this->preset_list_no_longer_empty();
     }
 
-    const QString presetText = this->make_preset_list_text(preset);
+    // Make sure there would be no duplicate preset IDs in the preset list.
+    for (int i = 0; i < ui->comboBox_presetList->count(); i++)
+    {
+        const unsigned itemPresetId = ui->comboBox_presetList->itemData(i).toUInt();
+        k_assert((itemPresetId != preset->id), "Detected a duplicate preset id.");
+    }
 
+    const QString presetText = this->make_preset_list_text(preset);
     ui->comboBox_presetList->addItem(presetText, preset->id);
 
-    // Select the item we added.
-    ui->comboBox_presetList->setCurrentIndex(ui->comboBox_presetList->count() - 1);
+    // Select the item we added (we assume it was added to the bottom of the list).
+    {
+        const unsigned newIdx = (ui->comboBox_presetList->count() - 1);
+
+        // If the list isn't already at the index, we'll make it so, which in turn
+        // is expected to automatically emit a preset_change_requested() signal.
+        if (ui->comboBox_presetList->currentIndex() != newIdx)
+        {
+            ui->comboBox_presetList->setCurrentIndex(newIdx);
+        }
+        else
+        {
+            emit this->preset_change_requested(preset->id);
+        }
+    }
 
     return;
 }
