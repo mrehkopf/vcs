@@ -172,20 +172,6 @@ void kd_refresh_filter_chains(void);
 void kd_recalculate_filter_graph_chains(void);
 
 /*!
- * Tells the GUI that the current filter chains in VCS have been loaded from a
- * file by the given name.
- */
-void kd_set_filter_graph_source_filename(const std::string &sourceFilename);
-
-/*!
- * Tells the GUI that its filter graph should adopt the given options.
- * 
- * The GUI filter graph is expected to be a dialog of some sort - e.g. a visual
- * node graph - in which the user can create and modify filter chains.
- */
-void kd_set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);
-
-/*!
  * Tells the GUI to create and add into its filter graph a new node with the
  * given properties.
  * 
@@ -245,17 +231,6 @@ void kd_load_filter_graph(const std::string &filename);
 void kd_load_aliases(const std::string &filename);
 
 /*!
- * Tells the GUI to indicate to the user that VCS has started (if @p isActive
- * is true) or stopped (if @p isActive is false) recording captured frames into
- * video.
- * 
- * From the moment this function is called with @p isActive set to true to the
- * moment it's called with @p isActive set to false, the GUI may indicate to
- * the user that recording is ongoing.
- */
-void kd_set_video_recording_is_active(const bool isActive);
-
-/*!
  * Asks the GUI to refresh the output window's title bar text.
  * 
  * VCS assumes that the output window's title bar displays certain information
@@ -293,24 +268,6 @@ void kd_update_output_window_title(void);
  * kd_update_output_window_title()
  */
 void kd_update_output_window_size(void);
-
-/*!
- * @warning
- * This function is currently unused and should be ignored until further
- * notice. It may be renamed or removed in a future version of VCS.
- */
-void kd_update_video_mode_params(void);
-
-/*!
- * Informs the GUI that aspects about the capture device's current video signal
- * have changed; for instance, as a result of the device having received a new
- * video mode.
- * 
- * If the GUI provides a view to information about the current video signal, it
- * should fetch the updated signal parameters from the capture interface,
- * @ref src/capture/capture.h, and display them accordingly.
- */
-void kd_update_capture_signal_info(void);
 
 /*!
  * Asks the GUI to execute one spin of its event loop.
@@ -407,22 +364,6 @@ void kd_add_alias(const mode_alias_s a);
  * kd_add_alias()
  */
 void kd_clear_aliases(void);
-
-/*!
- * Informs the GUI of the current capture device having either lost its signal
- * (if @p receivingASignal is false) or gained a new signal (if
- * @p receivingASignal is true).
- * 
- * In case of a lost signal, the GUI might e.g. display a "No signal" message,
- * until VCS calls this function again with @p receivingASignal set to true.
- */
-void kd_set_capture_signal_reception_status(const bool receivingASignal);
-
-/*!
- * Tells the GUI that the current video presets in VCS have been loaded from a
- * file by the given name.
- */
-void kd_set_video_presets_filename(const std::string &filename);
 
 /*!
  * Returns true if the output window is in fullscreen mode; false

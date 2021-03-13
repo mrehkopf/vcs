@@ -42,7 +42,6 @@ static MainWindow *WINDOW = nullptr;
 
 #define ASSERT_WINDOW_IS_NOT_NULL k_assert(WINDOW, "Tried to query the display before it had been initialized.");
 
-
 void kd_clear_filter_graph(void)
 {
     ASSERT_WINDOW_IS_NOT_NULL;
@@ -104,48 +103,6 @@ void kd_add_alias(const mode_alias_s a)
     return;
 }
 
-void kd_set_video_presets_filename(const std::string &filename)
-{
-    k_assert(0, "An unimplemented function was called.");
-
-    return;
-}
-
-void kd_update_video_mode_params(void)
-{
-    k_assert(0, "An unimplemented function was called.");
-
-    return;
-}
-
-void kd_set_filter_graph_source_filename(const std::string &sourceFilename)
-{
-    k_assert(0, "An unimplemented function was called.");
-
-    return;
-}
-
-void kd_set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions)
-{
-    k_assert(0, "An unimplemented function was called.");
-
-    return;
-}
-
-void kd_update_capture_signal_info(void)
-{
-    k_assert(0, "An unimplemented function was called.");
-
-    return;
-}
-
-void kd_set_capture_signal_reception_status(const bool receivingASignal)
-{
-    k_assert(0, "An unimplemented function was called.");
-
-    return;
-}
-
 bool kd_add_log_entry(const log_entry_s e)
 {
     (void)e;
@@ -179,13 +136,6 @@ void kd_spin_event_loop(void)
 {
     ASSERT_WINDOW_IS_NOT_NULL;
     WINDOW->update_gui_state();
-
-    return;
-}
-
-void kd_set_video_recording_is_active(const bool isActive)
-{
-    k_assert(0, "An unimplemented function was called.");
 
     return;
 }
