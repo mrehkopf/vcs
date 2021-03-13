@@ -137,8 +137,8 @@
              </property>
              <property name="icon">
               <iconset resource="../../res.qrc">
-               <normaloff>:/res/images/icons/newie/delete.png</normaloff>
-               <disabledoff>:/res/images/icons/newie/delete_disabled.png</disabledoff>:/res/images/icons/newie/delete.png</iconset>
+               <normaloff>:/res/images/icons/newie/minus.png</normaloff>
+               <disabledoff>:/res/images/icons/newie/minus_disabled.png</disabledoff>:/res/images/icons/newie/minus.png</iconset>
              </property>
              <property name="iconSize">
               <size>
