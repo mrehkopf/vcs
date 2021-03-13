@@ -18,6 +18,12 @@ DialogFileMenu::DialogFileMenu(QWidget *parent) : QMenu(parent)
     QAction *open = new QAction("Open...", this);
     QAction *close = new QAction("Close file", this);
 
+    // Initial state when no file has been opened.
+    save->setEnabled(false);
+    saveAs->setEnabled(true);
+    open->setEnabled(true);
+    close->setEnabled(false);
+
     this->addAction(save);
     this->addAction(saveAs);
     this->addSeparator();
