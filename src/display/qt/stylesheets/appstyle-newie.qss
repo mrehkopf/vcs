@@ -354,8 +354,27 @@ QScrollBar::add-page,
 QScrollBar::sub-page
 {
     background-image: url(:/res/images/icons/newie/grid_pattern.png);
-    background-position: top-left;
     background-repeat: repeat-xy;
+}
+
+QScrollBar::add-page:horizontal
+{
+    background-position: right;
+}
+
+QScrollBar::sub-page:horizontal
+{
+    background-position: left;
+}
+
+QScrollBar::sub-page:vertical
+{
+    background-position: top;
+}
+
+QScrollBar::add-page:vertical
+{
+    background-position: bottom;
 }
 
 QScrollBar::add-page:disabled,
@@ -368,6 +387,7 @@ QScrollBar::handle:disabled:horizontal,
 QScrollBar::handle:disabled:vertical
 {
     background-color: transparent;
+    background-image: url();
     border: none;
 }
 
@@ -377,7 +397,7 @@ QScrollBar:vertical
     min-width: 22px;
     margin: 23px 0 23px -1px;
     border: none;
-    background-color: #d9d9d9;
+    background-color: #c9c9c9;
     border-left: 1px solid black;
     border-right: 1px solid black;
 }
@@ -390,6 +410,10 @@ QScrollBar::handle:vertical
     border: none;
     border-top: 1px solid #353535;
     border-bottom: 1px solid #353535;
+
+    background-image: url(:/res/images/icons/newie/handle_grip_horizontal.png);
+    background-position: center;
+    background-repeat: none;
 }
 
 QScrollBar::add-line:vertical
@@ -435,7 +459,7 @@ QScrollBar:horizontal
     height: 22px;
     min-height: 22px;
     border: none;
-    background-color: #d9d9d9;
+    background-color: #c9c9c9;
     margin: -1px 23px 0 23px;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
@@ -448,6 +472,10 @@ QScrollBar::handle:horizontal
     background-color: #808080;
     border-left: 1px solid #353535;
     border-right: 1px solid #353535;
+
+    background-image: url(:/res/images/icons/newie/handle_grip_vertical.png);
+    background-position: center;
+    background-repeat: none;
 }
 
 QScrollBar::add-line:horizontal
