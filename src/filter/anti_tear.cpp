@@ -524,8 +524,6 @@ void kat_set_matches_required(const u32 mr)
     return;
 }
 
-static bool skip = false;
-
 u8* kat_anti_tear(u8 *const pixels, const resolution_s &r)
 {
     captured_frame_s frame;
