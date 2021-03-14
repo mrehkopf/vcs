@@ -9,8 +9,12 @@
 #include "display/qt/subclasses/QMenu_dialog_file_menu.h"
 #include "common/globals.h"
 
-DialogFileMenu::DialogFileMenu(QWidget *parent) : QMenu(parent)
+DialogFileMenu::DialogFileMenu(VCSBaseDialog *const parentDialog) :
+    QMenu(parentDialog),
+    parentDialog(parentDialog)
 {
+    k_assert(parentDialog, "A base dialog pointer is required.");
+
     this->setTitle("File");
 
     QAction *save = new QAction("Save", this);
@@ -51,7 +55,7 @@ DialogFileMenu::DialogFileMenu(QWidget *parent) : QMenu(parent)
         emit this->user_wants_to_close(close->data().toString());
     });
 
-    connect(this, &DialogFileMenu::new_source_file, this, [=](const QString &filename)
+    connect(this->parentDialog, &VCSBaseDialog::data_filename_changed, this, [=](const QString &filename)
     {
         const QString shortFilename = QFileInfo(filename).fileName();
 
@@ -68,14 +72,8 @@ DialogFileMenu::DialogFileMenu(QWidget *parent) : QMenu(parent)
     return;
 }
 
-DialogFileMenu::~DialogFileMenu()
+DialogFileMenu::~DialogFileMenu(void)
 {
     return;
 }
 
-void DialogFileMenu::report_new_source_file(const QString &newFilename)
-{
-    emit this->new_source_file(newFilename);
-
-    return;
-}

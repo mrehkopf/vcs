@@ -9,22 +9,18 @@
 #define VCS_DISPLAY_QT_SUBCLASSES_QMENU_DIALOG_FILE_MENU_H
 
 #include <QMenu>
+#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 
 class DialogFileMenu : public QMenu
 {
     Q_OBJECT
 
 public:
-    explicit DialogFileMenu(QWidget *parent = 0);
+    explicit DialogFileMenu(VCSBaseDialog *const parentDialog);
     
-    ~DialogFileMenu();
-
-    void report_new_source_file(const QString &newFilename);
+    ~DialogFileMenu(void);
 
 signals:
-    // Gets emitted when this->filename is changed.
-    void new_source_file(const QString &filename);
-
     // Emitted when the corresponding actions are triggered.
     void user_wants_to_save_as(const QString &originalFilename);
     void user_wants_to_save(const QString &filename);
@@ -32,6 +28,7 @@ signals:
     void user_wants_to_close(const QString &filename);
 
 private:
+    VCSBaseDialog *const parentDialog;
 };
 
 #endif
