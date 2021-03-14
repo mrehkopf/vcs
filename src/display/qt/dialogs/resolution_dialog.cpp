@@ -14,7 +14,7 @@
 #include "ui_resolution_dialog.h"
 
 ResolutionDialog::ResolutionDialog(const QString title, resolution_s *const r, QWidget *parent) :
-    QDialog(parent),
+    VCSBaseDialog(parent),
     ui(new Ui::ResolutionDialog),
     resolution(r)
 {
@@ -23,11 +23,9 @@ ResolutionDialog::ResolutionDialog(const QString title, resolution_s *const r, Q
 
     ui->setupUi(this);
 
-    this->setWindowTitle(title);
-    ui->groupBox->setTitle(title);
+    this->set_name(title);
 
-    // Don't show the context help '?' button in the window bar.
-    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    ui->groupBox->setTitle(title);
 
     // Set the GUI controls to their proper initial values.
     {
@@ -66,7 +64,7 @@ ResolutionDialog::ResolutionDialog(const QString title, resolution_s *const r, Q
     return;
 }
 
-ResolutionDialog::~ResolutionDialog()
+ResolutionDialog::~ResolutionDialog(void)
 {
     delete ui;
     ui = nullptr;
