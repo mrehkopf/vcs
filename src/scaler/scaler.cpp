@@ -796,7 +796,6 @@ void ks_set_upscaling_filter(const std::string &name)
     if (UPSCALE_FILTER != newScaler)
     {
         UPSCALE_FILTER = newScaler;
-        DEBUG(("Assigned '%s' as the upscaling filter.", UPSCALE_FILTER->name.c_str()));
     }
 
     return;
@@ -809,7 +808,6 @@ void ks_set_downscaling_filter(const std::string &name)
     if (DOWNSCALE_FILTER != newScaler)
     {
         DOWNSCALE_FILTER = newScaler;
-        DEBUG(("Assigned '%s' as the downscaling filter.", DOWNSCALE_FILTER->name.c_str()));
     }
 
     return;
