@@ -21,58 +21,45 @@
 #include "ui_anti_tear_dialog.h"
 
 AntiTearDialog::AntiTearDialog(QWidget *parent) :
-    QDialog(parent),
+    VCSBaseDialog(parent),
     ui(new Ui::AntiTearDialog)
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Anti-tear");
+    this->set_name("Anti-tear");
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     // Create the dialog's menu bar.
     {
-        this->menubar = new QMenuBar(this);
+        this->menuBar = new QMenuBar(this);
 
         // Anti-tear...
         {
-            QMenu *antitearMenu = new QMenu("Anti-tear", this->menubar);
+            QMenu *antitearMenu = new QMenu("Anti-tear", this->menuBar);
 
-            QAction *enable = new QAction("Enabled", this->menubar);
+            QAction *enable = new QAction("Enabled", this->menuBar);
             enable->setCheckable(true);
-            enable->setChecked(this->isEnabled);
+            enable->setChecked(this->is_enabled());
 
-            connect(this, &AntiTearDialog::anti_tear_enabled, this, [=]
+            connect(this, &VCSBaseDialog::enabled_state_set, this, [=](const bool isEnabled)
             {
-                enable->setChecked(true);
-                update_visualization_options();
-
-                ui->parameterGrid_parameters->setEnabled(true);
-                ui->groupBox_visualization->setEnabled(true);
-            });
-
-            connect(this, &AntiTearDialog::anti_tear_disabled, this, [=]
-            {
-                enable->setChecked(false);
-                update_visualization_options();
-
-                ui->parameterGrid_parameters->setEnabled(false);
-                ui->groupBox_visualization->setEnabled(false);
+                enable->setChecked(isEnabled);
             });
 
             connect(enable, &QAction::triggered, this, [=]
             {
-                this->set_anti_tear_enabled(!this->isEnabled);
+                this->set_enabled(!this->is_enabled());
             });
 
             antitearMenu->addAction(enable);
 
-            this->menubar->addMenu(antitearMenu);
+            this->menuBar->addMenu(antitearMenu);
         }
 
 
-        this->layout()->setMenuBar(this->menubar);
+        this->layout()->setMenuBar(this->menuBar);
     }
 
     // Set GUI controls to their initial values.
@@ -108,6 +95,16 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 
     // Connect the GUI controls to consequences for changing their values.
     {
+        connect(this, &AntiTearDialog::enabled_state_set, this, [this](const bool isEnabled)
+        {
+            kat_set_anti_tear_enabled(isEnabled);
+            kd_update_output_window_title();
+
+            ui->parameterGrid_parameters->setEnabled(isEnabled);
+            ui->groupBox_visualization->setEnabled(isEnabled);
+            this->update_visualization_options();
+        });
+
         connect(ui->parameterGrid_parameters, &ParameterGrid::parameter_value_changed, this, [this](const QString &parameterName)
         {
             const auto newValue = ui->parameterGrid_parameters->value(parameterName);
@@ -149,22 +146,22 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
         ui->parameterGrid_parameters->set_value("Matches req'd", kpers_value_of(INI_GROUP_ANTI_TEAR, "matches_reqd", defaults.matchesReqd).toInt());
         ui->checkBox_visualizeRange->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "visualize_range", true).toBool());
         ui->checkBox_visualizeTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "visualize_tear", true).toBool());
-        this->set_anti_tear_enabled(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", kat_is_anti_tear_enabled()).toBool());
+        this->set_enabled(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", kat_is_anti_tear_enabled()).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "anti_tear", this->size()).toSize());
     }
 
-    update_visualization_options();
+    this->update_visualization_options();
 
     return;
 }
 
-AntiTearDialog::~AntiTearDialog()
+AntiTearDialog::~AntiTearDialog(void)
 {
     // Save persistent settings.
     {
         kpers_set_value(INI_GROUP_GEOMETRY, "anti_tear", this->size());
-        kpers_set_value(INI_GROUP_ANTI_TEAR, "range_up", ui->parameterGrid_parameters->value("Scan end"));
-        kpers_set_value(INI_GROUP_ANTI_TEAR, "range_down", ui->parameterGrid_parameters->value("Scan start"));
+        kpers_set_value(INI_GROUP_ANTI_TEAR, "scan_end", ui->parameterGrid_parameters->value("Scan end"));
+        kpers_set_value(INI_GROUP_ANTI_TEAR, "scan_start", ui->parameterGrid_parameters->value("Scan start"));
         kpers_set_value(INI_GROUP_ANTI_TEAR, "threshold", ui->parameterGrid_parameters->value("Threshold"));
         kpers_set_value(INI_GROUP_ANTI_TEAR, "window_len", ui->parameterGrid_parameters->value("Window size"));
         kpers_set_value(INI_GROUP_ANTI_TEAR, "matches_reqd", ui->parameterGrid_parameters->value("Matches req'd"));
@@ -172,7 +169,7 @@ AntiTearDialog::~AntiTearDialog()
         kpers_set_value(INI_GROUP_ANTI_TEAR, "visualize_range", ui->checkBox_visualizeRange->isChecked());
         kpers_set_value(INI_GROUP_ANTI_TEAR, "visualize_tear", ui->checkBox_visualizeTear->isChecked());
         kpers_set_value(INI_GROUP_ANTI_TEAR, "direction", 0);
-        kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", this->isEnabled);
+        kpers_set_value(INI_GROUP_ANTI_TEAR, "enabled", this->is_enabled());
     }
 
     delete ui;
@@ -182,34 +179,9 @@ AntiTearDialog::~AntiTearDialog()
 
 void AntiTearDialog::update_visualization_options(void)
 {
-    kat_set_visualization(this->isEnabled,
+    kat_set_visualization(this->is_enabled(),
                           ui->checkBox_visualizeTear->isChecked(),
                           ui->checkBox_visualizeRange->isChecked());
-
-    return;
-}
-
-bool AntiTearDialog::is_anti_tear_enabled(void)
-{
-    return this->isEnabled;
-}
-
-void AntiTearDialog::set_anti_tear_enabled(const bool enabled)
-{
-    this->isEnabled = enabled;
-
-    kat_set_anti_tear_enabled(isEnabled);
-
-    if (!this->isEnabled)
-    {
-        emit this->anti_tear_disabled();
-    }
-    else
-    {
-        emit this->anti_tear_enabled();
-    }
-
-    kd_update_output_window_title();
 
     return;
 }

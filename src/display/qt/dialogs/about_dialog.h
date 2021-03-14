@@ -1,13 +1,13 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_ABOUT_DIALOG_H
 #define VCS_DISPLAY_QT_DIALOGS_ABOUT_DIALOG_H
 
-#include <QDialog>
+#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 
 namespace Ui {
 class AboutDialog;
 }
 
-class AboutDialog : public QDialog
+class AboutDialog : public VCSBaseDialog
 {
     Q_OBJECT
 

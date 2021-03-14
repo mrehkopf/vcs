@@ -23,15 +23,12 @@
 #endif
 
 RecordDialog::RecordDialog(QDialog *parent) :
-    QDialog(parent),
+    VCSBaseDialog(parent),
     ui(new Ui::RecordDialog)
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Video Recorder");
-
-    // Don't show the context help '?' button in the window bar.
-    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    this->set_name("Video Record");
 
     this->timerUpdateRecordingInfo = new QTimer(this);
     connect(this->timerUpdateRecordingInfo, &QTimer::timeout,
@@ -121,53 +118,6 @@ RecordDialog::RecordDialog(QDialog *parent) :
         }
     }
 
-    // Create the dialog's menu bar.
-    {
-        this->menubar = new QMenuBar(this);
-
-        // Record...
-        {
-            QMenu *recordMenu = new QMenu("Recorder", this->menubar);
-
-            QAction *enable = new QAction("Enabled", this->menubar);
-            enable->setCheckable(true);
-            enable->setChecked(this->isEnabled);
-
-            connect(this, &RecordDialog::recording_enabled, this, [=]
-            {
-                enable->setChecked(true);
-                this->isEnabled = true;
-            });
-
-            connect(this, &RecordDialog::recording_disabled, this, [=]
-            {
-                enable->setChecked(false);
-                this->isEnabled = false;
-            });
-
-            connect(this, &RecordDialog::recording_could_not_be_enabled, this, [=]
-            {
-                enable->setChecked(false);
-            });
-
-            connect(this, &RecordDialog::recording_could_not_be_disabled, this, [=]
-            {
-                enable->setChecked(true);
-            });
-
-            connect(enable, &QAction::triggered, this, [=]
-            {
-                this->set_recording_enabled(!this->isEnabled);
-            });
-
-            recordMenu->addAction(enable);
-
-            this->menubar->addMenu(recordMenu);
-        }
-
-        this->layout()->setMenuBar(menubar);
-    }
-
     // Connect the GUI controls to consequences for changing their values.
     {
         connect(ui->pushButton_startStopRecording, &QPushButton::clicked, this, [this]
@@ -175,14 +125,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
             // We'll set the button to disabled to prevent double-clicks.
             ui->pushButton_startStopRecording->setEnabled(false);
 
-            if (krecord_is_recording())
-            {
-                this->set_recording_enabled(false);
-            }
-            else
-            {
-                this->set_recording_enabled(true);
-            }
+            this->set_enabled(!krecord_is_recording());
 
             ui->pushButton_startStopRecording->setEnabled(true);
         });
@@ -196,6 +139,49 @@ RecordDialog::RecordDialog(QDialog *parent) :
             if (filename.isEmpty()) return;
 
             ui->lineEdit_recordingFilename->setText(filename);
+        });
+
+        connect(this, &VCSBaseDialog::enabled_state_set, this, [=](const bool isEnabled)
+        {
+            if (!isEnabled)
+            {
+                krecord_stop_recording();
+
+                if (krecord_is_recording())
+                {
+                    emit this->recording_could_not_be_disabled();
+                }
+            }
+            // Start recording.
+            else
+            {
+                // This could fail if the codec we want isn't available on the system.
+                if (!apply_x264_registry_settings())
+                {
+                    emit this->recording_could_not_be_enabled();
+                }
+                else
+                {
+                    // Remove the existing output file, if any. Without this, the file size
+                    // reported in VCS's GUI during recording may be inaccurate on some
+                    // platforms.
+                    QFile(ui->lineEdit_recordingFilename->text()).remove();
+
+                    const resolution_s videoResolution = ks_output_resolution();
+
+                    krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
+                                            videoResolution.w,
+                                            videoResolution.h,
+                                            ui->spinBox_recordingFramerate->value());
+
+                    if (krecord_is_recording())
+                    {
+                        emit this->recording_could_not_be_enabled();
+                    }
+                }
+            }
+
+            kd_update_output_window_title();
         });
     }
 
@@ -453,62 +439,4 @@ bool RecordDialog::apply_x264_registry_settings(void)
 #endif
 
     return true;
-}
-
-void RecordDialog::set_recording_enabled(const bool enabled)
-{
-    if (!enabled)
-    {
-        krecord_stop_recording();
-
-        if (!krecord_is_recording())
-        {
-            emit this->recording_disabled();
-        }
-        else
-        {
-            emit this->recording_could_not_be_disabled();
-        }
-    }
-    // Start recording.
-    else
-    {
-        // This could fail if the codec we want isn't available on the system.
-        if (!apply_x264_registry_settings())
-        {
-            emit this->recording_could_not_be_enabled();
-        }
-        else
-        {
-            // Remove the existing output file, if any. Without this, the file size
-            // reported in VCS's GUI during recording may be inaccurate on some
-            // platforms.
-            QFile(ui->lineEdit_recordingFilename->text()).remove();
-
-            const resolution_s videoResolution = ks_output_resolution();
-
-            krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
-                                    videoResolution.w,
-                                    videoResolution.h,
-                                    ui->spinBox_recordingFramerate->value());
-
-            if (krecord_is_recording())
-            {
-                emit this->recording_enabled();
-            }
-            else
-            {
-                emit this->recording_could_not_be_enabled();
-            }
-        }
-    }
-
-    kd_update_output_window_title();
-
-    return;
-}
-
-bool RecordDialog::is_recording_enabled(void)
-{
-    return this->isEnabled;
 }

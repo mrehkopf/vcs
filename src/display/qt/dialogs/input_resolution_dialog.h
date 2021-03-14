@@ -1,13 +1,13 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_INPUT_RESOLUTION_DIALOG_H
 #define VCS_DISPLAY_QT_DIALOGS_INPUT_RESOLUTION_DIALOG_H
 
-#include <QDialog>
+#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 
 namespace Ui {
 class InputResolutionDialog;
 }
 
-class InputResolutionDialog : public QDialog
+class InputResolutionDialog : public VCSBaseDialog
 {
     Q_OBJECT
 

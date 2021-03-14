@@ -22,6 +22,7 @@ class RecordDialog;
 class SignalDialog;
 class AliasDialog;
 class AboutDialog;
+class VCSBaseDialog;
 
 struct signal_info_s;
 struct mode_alias_s;
@@ -116,7 +117,7 @@ private:
     void keyPressEvent(QKeyEvent *event);
     void changeEvent(QEvent *event);
     void paintEvent(QPaintEvent *);
-    void closeEvent(QCloseEvent *);
+    void closeEvent(QCloseEvent *event);
     void enterEvent(QEvent *event);
     void leaveEvent(QEvent *event);
     void wheelEvent(QWheelEvent *event);
@@ -141,7 +142,7 @@ private:
 
     // A master list of all the dialogs that this window spawns. Will be filled in
     // when we create the dialog instances.
-    QVector<QDialog*> dialogs;
+    QVector<VCSBaseDialog*> dialogs;
 
     mouse_activity_monitor_c mouseActivityMonitor;
 

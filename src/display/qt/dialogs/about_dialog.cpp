@@ -13,12 +13,12 @@
 #include "ui_about_dialog.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
-    QDialog(parent),
+    VCSBaseDialog(parent),
     ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - About");
+    this->set_name("About");
 
     // Don't show the context help '?' button in the window bar.
     this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);

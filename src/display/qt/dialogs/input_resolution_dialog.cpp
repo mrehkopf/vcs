@@ -13,15 +13,12 @@
 #include "ui_input_resolution_dialog.h"
 
 InputResolutionDialog::InputResolutionDialog(QWidget *parent) :
-    QDialog(parent),
+    VCSBaseDialog(parent),
     ui(new Ui::InputResolutionDialog)
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Capture Resolution");
-
-    // Don't show the context help '?' button in the window bar.
-    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    this->set_name("Capture Resolution");
 
     // Wire up the buttons for forcing the capture input resolution.
     for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)

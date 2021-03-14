@@ -28,6 +28,7 @@
 #include <QLabel>
 #include <cmath>
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
+#include"display/qt/subclasses/QDialog_vcs_base_dialog.h"
 #include "display/qt/dialogs/linux_device_selector_dialog.h"
 #include "display/qt/dialogs/output_resolution_dialog.h"
 #include "display/qt/dialogs/video_parameter_dialog.h"
@@ -1008,9 +1009,11 @@ void MainWindow::set_opengl_enabled(const bool enabled)
     return;
 }
 
-void MainWindow::closeEvent(QCloseEvent*)
+void MainWindow::closeEvent(QCloseEvent *event)
 {
     PROGRAM_EXIT_REQUESTED = 1;
+
+    event->ignore();
 
     return;
 }
@@ -1150,7 +1153,7 @@ QImage MainWindow::overlay_image(void)
 {
     if (!kc_capture_api().has_no_signal() &&
         overlayDlg != nullptr &&
-        overlayDlg->is_overlay_enabled())
+        overlayDlg->is_enabled())
     {
         return overlayDlg->overlay_as_qimage();
     }
@@ -1279,10 +1282,10 @@ void MainWindow::set_keyboard_shortcuts(void)
     }
 
     // Make Ctrl + Shift + <x> toggle the various dialogs' functionality on/off.
-    connect(keyboardShortcut("ctrl+shift+f"), &QShortcut::activated, [=]{this->filterGraphDlg->set_filter_graph_enabled(!this->filterGraphDlg->is_filter_graph_enabled());});
-    connect(keyboardShortcut("ctrl+shift+l"), &QShortcut::activated, [=]{this->overlayDlg->set_overlay_enabled(!this->overlayDlg->is_overlay_enabled());});
-    connect(keyboardShortcut("ctrl+shift+a"), &QShortcut::activated, [=]{this->antitearDlg->set_anti_tear_enabled(!this->antitearDlg->is_anti_tear_enabled());});
-    connect(keyboardShortcut("ctrl+shift+r"), &QShortcut::activated, [=]{this->recordDlg->set_recording_enabled(!this->recordDlg->is_recording_enabled());});
+    connect(keyboardShortcut("ctrl+shift+f"), &QShortcut::activated, [=]{this->filterGraphDlg->set_enabled(!this->filterGraphDlg->isEnabled());});
+    connect(keyboardShortcut("ctrl+shift+l"), &QShortcut::activated, [=]{this->overlayDlg->set_enabled(!this->overlayDlg->is_enabled());});
+    connect(keyboardShortcut("ctrl+shift+a"), &QShortcut::activated, [=]{this->antitearDlg->set_enabled(!this->antitearDlg->is_enabled());});
+    connect(keyboardShortcut("ctrl+shift+r"), &QShortcut::activated, [=]{this->recordDlg->set_enabled(!this->recordDlg->is_enabled());});
 
     // Ctrl + function keys maps to video presets.
     for (uint i = 1; i <= 12; i++)
@@ -1344,10 +1347,10 @@ void MainWindow::update_window_title(void)
         const refresh_rate_s refreshRate = kc_capture_api().get_refresh_rate();
 
         QStringList programStatus;
-        if (krecord_is_recording())           programStatus << "R";
-        if (kf_is_filtering_enabled())        programStatus << "F";
-        if (overlayDlg->is_overlay_enabled()) programStatus << "O";
-        if (kat_is_anti_tear_enabled())       programStatus << "A";
+        if (krecord_is_recording())      programStatus << "R";
+        if (kf_is_filtering_enabled())   programStatus << "F";
+        if (overlayDlg->is_enabled())    programStatus << "O";
+        if (kat_is_anti_tear_enabled())  programStatus << "A";
 
         if (!this->windowTitleOverride.isEmpty())
         {

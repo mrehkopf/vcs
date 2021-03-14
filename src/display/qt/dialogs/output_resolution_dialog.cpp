@@ -8,15 +8,12 @@
 #include "ui_output_resolution_dialog.h"
 
 OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
-    QDialog(parent),
+    VCSBaseDialog(parent),
     ui(new Ui::OutputResolutionDialog)
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Output Resolution");
-
-    // Don't show the context help '?' button in the window bar.
-    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    this->set_name("Ouput resolution");
 
     disable_output_size_controls(false);
 

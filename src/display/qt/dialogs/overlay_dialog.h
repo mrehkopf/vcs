@@ -8,7 +8,7 @@
 #define VCS_DISPLAY_QT_DIALOGS_OVERLAY_DIALOG_H
 
 #include <QTextDocument>
-#include <QDialog>
+#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 
 class QMenu;
 class QMenuBar;
@@ -17,7 +17,7 @@ namespace Ui {
 class OverlayDialog;
 }
 
-class OverlayDialog : public QDialog
+class OverlayDialog : public VCSBaseDialog
 {
     Q_OBJECT
 
@@ -29,15 +29,6 @@ public:
 
     void set_overlay_max_width(const uint width);
 
-    void set_overlay_enabled(const bool enabled);
-
-    bool is_overlay_enabled(void);
-
-signals:
-    // Emitted when the overlay's enabled status is toggled.
-    void overlay_enabled(void);
-    void overlay_disabled(void);
-
 private:
     void insert_text_into_overlay_editor(const QString &text);
 
@@ -45,13 +36,8 @@ private:
 
     Ui::OverlayDialog *ui;
 
-    // Whether the overlay is enabled.
-    bool isEnabled = false;
-
     // Used to render the overlay's HTML into an image.
     QTextDocument overlayDocument;
-
-    QMenuBar *menubar = nullptr;
 };
 
 #endif

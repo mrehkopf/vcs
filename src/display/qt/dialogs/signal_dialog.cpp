@@ -25,8 +25,6 @@
 #include "common/disk/disk.h"
 #include "ui_signal_dialog.h"
 
-static const QString BASE_WINDOW_TITLE = "VCS - Signal Info";
-
 // Used to keep track of how long we've had a particular video mode set.
 static QElapsedTimer VIDEO_MODE_UPTIME;
 static QTimer INFO_UPDATE_TIMER;
@@ -40,15 +38,12 @@ static unsigned NUM_DROPPED_FRAMES = 0;
 static unsigned GLOBAL_NUM_DROPPED_FRAMES = 0;
 
 SignalDialog::SignalDialog(QWidget *parent) :
-    QDialog(parent),
+    VCSBaseDialog(parent),
     ui(new Ui::SignalDialog)
 {
     ui->setupUi(this);
 
-    this->setWindowTitle(BASE_WINDOW_TITLE);
-
-    // Don't show the context help '?' button in the window bar.
-    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    this->set_name("Signal Info");
 
     // Set the GUI controls to their proper initial values.
     {

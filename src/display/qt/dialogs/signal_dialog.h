@@ -7,7 +7,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_SIGNAL_DIALOG_H
 #define VCS_DISPLAY_QT_DIALOGS_SIGNAL_DIALOG_H
 
-#include <QDialog>
+#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 
 class QMenuBar;
 
@@ -20,7 +20,7 @@ struct capture_color_settings_s;
 struct signal_info_s;
 struct resolution_s;
 
-class SignalDialog : public QDialog
+class SignalDialog : public VCSBaseDialog
 {
     Q_OBJECT
 

@@ -30,19 +30,16 @@ enum data_role
 };
 
 AliasDialog::AliasDialog(QWidget *parent) :
-    QDialog(parent),
+    VCSBaseDialog(parent),
     ui(new Ui::AliasDialog)
 {
     ui->setupUi(this);
 
-    this->setWindowTitle(this->dialogBaseTitle);
-
-    // Don't show the context help '?' button in the window bar.
-    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    this->set_name("Alias Resolutions");
 
     // Create the dialog's menu bar.
     {
-        this->menubar = new QMenuBar(this);
+        this->menuBar = new QMenuBar(this);
 
         // Alias resolutions...
         {
@@ -57,7 +54,7 @@ AliasDialog::AliasDialog(QWidget *parent) :
                                          (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes)
                 {
                     this->remove_all_aliases();
-                    this->set_aliases_source_filename("");
+                    this->set_data_filename("");
                 }
             });
             connect(fileMenu->addAction("Delete selected"), &QAction::triggered, this, [=]{ this->remove_selected_aliases(); });
@@ -81,10 +78,18 @@ AliasDialog::AliasDialog(QWidget *parent) :
                 this->save_aliases_to_file(filename);
             });
 
-            this->menubar->addMenu(fileMenu);
+            this->menuBar->addMenu(fileMenu);
         }
 
-        this->layout()->setMenuBar(menubar);
+        this->layout()->setMenuBar(this->menuBar);
+    }
+
+    // Connect GUI controls to consequences for changing their values.
+    {
+        connect(this, &VCSBaseDialog::data_filename_changed, this, [=](const QString &newFilename)
+        {
+            kpers_set_value(INI_GROUP_ALIAS_RESOLUTIONS, "aliases_source_file", newFilename);
+        });
     }
 
     // Restore persistent settings.
@@ -282,7 +287,7 @@ void AliasDialog::load_aliases_from_file(const QString &filename)
     if (!aliases.empty())
     {
         ka_set_aliases(aliases);
-        this->set_aliases_source_filename(filename);
+        this->set_data_filename(filename);
         this->assign_aliases(aliases);
 
         /// TODO: remove_unsaved_changes_flag();
@@ -307,26 +312,8 @@ void AliasDialog::save_aliases_to_file(QString filename)
 
     if (kdisk_save_aliases(ka_aliases(), filename.toStdString()))
     {
-        this->set_aliases_source_filename(filename);
+        this->set_data_filename(filename);
     }
-
-    return;
-}
-
-void AliasDialog::set_aliases_source_filename(const QString &filename)
-{
-    if (filename.isEmpty())
-    {
-        this->setWindowTitle(this->dialogBaseTitle);
-    }
-    else
-    {
-        const QString baseFilename = QFileInfo(filename).baseName();
-        this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle)
-                                               .arg(baseFilename));
-    }
-
-    kpers_set_value(INI_GROUP_ALIAS_RESOLUTIONS, "aliases_source_file", filename);
 
     return;
 }

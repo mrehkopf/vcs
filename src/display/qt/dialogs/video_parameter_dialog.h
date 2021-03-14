@@ -1,9 +1,9 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_VIDEO_PARAMETER_DIALOG_H
 #define VCS_DISPLAY_QT_DIALOGS_VIDEO_PARAMETER_DIALOG_H
 
-#include <QDialog>
 #include "filter/filter.h"
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
+#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 
 class InteractibleNodeGraph;
 class VideoGraphNode;
@@ -31,7 +31,7 @@ namespace Ui {
 class VideoParameterDialog;
 }
 
-class VideoParameterDialog : public QDialog
+class VideoParameterDialog : public VCSBaseDialog
 {
     Q_OBJECT
 
@@ -46,7 +46,7 @@ public:
     // success; false otherwise.
     bool load_presets_from_file(const QString &filename);
 
-   bool save_video_presets_to_file(QString filename);
+    bool save_video_presets_to_file(QString filename);
 
 signals:
     // Emitted when the last item in the preset list is removed.
@@ -85,14 +85,8 @@ private:
 
     void remove_all_video_presets_from_list(void);
 
-    void set_video_presets_source_filename(const QString &filename);
-
-    // Whether the filter graph is enabled.
-    bool isEnabled = false;
-
     Ui::VideoParameterDialog *ui;
 
-    QMenuBar *menubar = nullptr;
     InteractibleNodeGraph *graphicsScene = nullptr;
 
     // All the nodes that are currently in the graph.
@@ -102,10 +96,6 @@ private:
     video_preset_s *currentPreset = nullptr;
 
     unsigned numNodesAdded = 0;
-
-    // The dialog's title, without any additional information that may be appended,
-    // like the name of the file from which the dialog's current data was loaded.
-    const QString dialogBaseTitle = "VCS - Video Presets";
 };
 
 #endif

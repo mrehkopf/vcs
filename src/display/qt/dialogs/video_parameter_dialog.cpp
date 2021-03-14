@@ -25,30 +25,22 @@
 static bool CONTROLS_LIVE_UPDATE = true;
 
 VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
-    QDialog(parent),
+    VCSBaseDialog(parent),
     ui(new Ui::VideoParameterDialog)
 {
     ui->setupUi(this);
 
-    this->setWindowTitle(this->dialogBaseTitle);
-
-    // Don't show the context help '?' button in the window bar.
-    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    this->set_name("Video Presets");
 
     // Create the dialog's menu bar.
     {
-        this->menubar = new QMenuBar(this);
+        this->menuBar = new QMenuBar(this);
 
         // File...
         {
-            auto *const file = new DialogFileMenu;
+            auto *const file = new DialogFileMenu(this);
 
-            this->menubar->addMenu(file);
-
-            connect(this, &VideoParameterDialog::new_presets_source_file, this, [=](const QString &filename)
-            {
-                file->report_new_source_file(filename);
-            });
+            this->menuBar->addMenu(file);
 
             connect(file, &DialogFileMenu::user_wants_to_save, this, [=](const QString &filename)
             {
@@ -78,13 +70,13 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             connect(file, &DialogFileMenu::user_wants_to_close, this, [=]
             {
                 this->remove_all_video_presets_from_list();
-                this->set_video_presets_source_filename("");
+                this->set_data_filename("");
                 kvideopreset_remove_all_presets();
                 kvideopreset_apply_current_active_preset();
             });
         }
 
-        this->layout()->setMenuBar(menubar);
+        this->layout()->setMenuBar(this->menuBar);
     }
 
     // Set the GUI controls to their proper initial values.
@@ -126,6 +118,11 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
     // Connect the GUI controls to consequences for changing their values.
     {
+        connect(this, &VCSBaseDialog::data_filename_changed, this, [=](const QString &newFilename)
+        {
+            kpers_set_value(INI_GROUP_VIDEO_PRESETS, "presets_source_file", newFilename);
+        });
+
         connect(this, &VideoParameterDialog::preset_list_became_empty, this, [=]
         {
             ui->groupBox_activation->setEnabled(false);
@@ -205,7 +202,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
         #undef OVERLOAD_INT
 
-        connect(ui->parameterGrid_videoParams, &ParameterGrid::parameter_value_changed, this, [this](const QString &parameterName)
+        connect(ui->parameterGrid_videoParams, &ParameterGrid::parameter_value_changed, this, [this]
         {
             this->broadcast_current_preset_parameters();
         });
@@ -400,7 +397,7 @@ bool VideoParameterDialog::save_video_presets_to_file(QString filename)
 
     if (kdisk_save_video_presets(kvideopreset_all_presets(), filename.toStdString()))
     {
-        this->set_video_presets_source_filename(filename);
+        this->set_data_filename(filename);
 
         /// TODO: remove_unsaved_changes_flag();
 
@@ -423,7 +420,7 @@ bool VideoParameterDialog::load_presets_from_file(const QString &filename)
     {
         kvideopreset_assign_presets(presets);
         this->assign_presets(presets);
-        this->set_video_presets_source_filename(filename);
+        this->set_data_filename(filename);
 
         /// TODO: remove_unsaved_changes_flag();
 
@@ -453,25 +450,6 @@ void VideoParameterDialog::assign_presets(const std::vector<video_preset_s*> &pr
 void VideoParameterDialog::update_current_present_list_text(void)
 {
     ui->comboBox_presetList->setItemText(ui->comboBox_presetList->currentIndex(), this->make_preset_list_text(this->currentPreset));
-
-    return;
-}
-
-void VideoParameterDialog::set_video_presets_source_filename(const QString &filename)
-{
-    if (filename.isEmpty())
-    {
-        this->setWindowTitle(this->dialogBaseTitle);
-    }
-    else
-    {
-        const QString baseFilename = QFileInfo(filename).baseName();
-        this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg(baseFilename));
-    }
-
-    kpers_set_value(INI_GROUP_VIDEO_PRESETS, "presets_source_file", filename);
-
-    emit this->new_presets_source_file(filename);
 
     return;
 }
@@ -509,7 +487,7 @@ QString VideoParameterDialog::make_preset_list_text(const video_preset_s *const 
 
     if (preset->activatesWithShortcut)
     {
-        text << QString("[Ctrl+F%1]").arg(QString::number(ui->comboBox_shortcutSecondKey->currentIndex() + 1));
+        text << QString("(Ctrl+F%1)").arg(QString::number(ui->comboBox_shortcutSecondKey->currentIndex() + 1));
     }
 
     if (preset->activatesWithResolution)

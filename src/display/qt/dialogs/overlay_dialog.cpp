@@ -23,7 +23,7 @@
 #include "ui_overlay_dialog.h"
 
 OverlayDialog::OverlayDialog(QWidget *parent) :
-    QDialog(parent),
+    VCSBaseDialog(parent),
     ui(new Ui::OverlayDialog)
 {
     overlayDocument.setDefaultFont(QGuiApplication::font());
@@ -31,52 +31,45 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
     ui->setupUi(this);
 
-    this->setWindowTitle("VCS - Overlay");
-
-    // Don't show the context help '?' button in the window bar.
-    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    this->set_name("Overlay");
 
     // Create the dialog's menu bar.
     {
-        this->menubar = new QMenuBar(this);
+        this->menuBar = new QMenuBar(this);
 
         // Overlay...
         {
-            QMenu *overlayMenu = new QMenu("Overlay", this->menubar);
+            QMenu *overlayMenu = new QMenu("Overlay", this->menuBar);
 
-            QAction *enable = new QAction("Enabled", this->menubar);
+            QAction *enable = new QAction("Enabled", this->menuBar);
             enable->setCheckable(true);
-            enable->setChecked(this->isEnabled);
+            enable->setChecked(this->is_enabled());
 
-            connect(this, &OverlayDialog::overlay_enabled, this, [=]
+            connect(this, &VCSBaseDialog::enabled_state_set, this, [=](const bool isEnabled)
             {
-                enable->setChecked(true);
-                ui->groupBox_overlayEditor->setEnabled(true);
-            });
+                enable->setChecked(isEnabled);
+                ui->groupBox_overlayEditor->setEnabled(isEnabled);
 
-            connect(this, &OverlayDialog::overlay_disabled, this, [=]
-            {
-                enable->setChecked(false);
-                ui->groupBox_overlayEditor->setEnabled(false);
+                kd_update_output_window_title();
             });
 
             connect(enable, &QAction::triggered, this, [=]
             {
-                this->set_overlay_enabled(!this->isEnabled);
+                this->set_enabled(!this->is_enabled());
             });
 
             overlayMenu->addAction(enable);
 
-            this->menubar->addMenu(overlayMenu);
+            this->menuBar->addMenu(overlayMenu);
         }
 
         // Variables...
         {
-            QMenu *variablesMenu = new QMenu("Variables", this->menubar);
+            QMenu *variablesMenu = new QMenu("Variables", this->menuBar);
 
             // Capture input.
             {
-                QMenu *inputMenu = new QMenu("Input", this->menubar);
+                QMenu *inputMenu = new QMenu("Input", this->menuBar);
 
                 connect(inputMenu->addAction("Resolution"), &QAction::triggered, this, [=]
                 {
@@ -93,7 +86,7 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
             // Capture output.
             {
-                QMenu *outputMenu = new QMenu("Output", this->menubar);
+                QMenu *outputMenu = new QMenu("Output", this->menuBar);
 
                 connect(outputMenu->addAction("Resolution"), &QAction::triggered, this, [=]
                 {
@@ -112,7 +105,7 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
             // System.
             {
-                QMenu *systemMenu = new QMenu("System", this->menubar);
+                QMenu *systemMenu = new QMenu("System", this->menuBar);
 
                 connect(systemMenu->addAction("Time"), &QAction::triggered, this, [=]
                 {
@@ -127,12 +120,12 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
                 variablesMenu->addMenu(systemMenu);
             }
 
-            this->menubar->addMenu(variablesMenu);
+            this->menuBar->addMenu(variablesMenu);
         }
 
         // Formatting...
         {
-            QMenu *formattingMenu = new QMenu("Formatting", this->menubar);
+            QMenu *formattingMenu = new QMenu("Formatting", this->menuBar);
 
             connect(formattingMenu->addAction("Line break"), &QAction::triggered, this, [=]
             {
@@ -157,7 +150,7 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
             // Align.
             {
-                QMenu *alignMenu = new QMenu("Align", this->menubar);
+                QMenu *alignMenu = new QMenu("Align", this->menuBar);
 
                 connect(alignMenu->addAction("Left"), &QAction::triggered, this, [=]
                 {
@@ -177,16 +170,16 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
                 formattingMenu->addMenu(alignMenu);
             }
 
-            this->menubar->addMenu(formattingMenu);
+            this->menuBar->addMenu(formattingMenu);
         }
 
-        this->layout()->setMenuBar(menubar);
+        this->layout()->setMenuBar(this->menuBar);
     }
 
     // Restore persistent settings.
     {
         ui->plainTextEdit->setPlainText(kpers_value_of(INI_GROUP_OVERLAY, "content", "").toString());
-        this->set_overlay_enabled(kpers_value_of(INI_GROUP_OVERLAY, "enabled", false).toBool());
+        this->set_enabled(kpers_value_of(INI_GROUP_OVERLAY, "enabled", false).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "overlay", this->size()).toSize());
     }
 
@@ -197,7 +190,7 @@ OverlayDialog::~OverlayDialog()
 {
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_OVERLAY, "enabled", this->isEnabled);
+        kpers_set_value(INI_GROUP_OVERLAY, "enabled", this->is_enabled());
         kpers_set_value(INI_GROUP_OVERLAY, "content", ui->plainTextEdit->toPlainText());
         kpers_set_value(INI_GROUP_GEOMETRY, "overlay", this->size());
     }
@@ -211,24 +204,6 @@ OverlayDialog::~OverlayDialog()
 void OverlayDialog::set_overlay_max_width(const uint width)
 {
     overlayDocument.setTextWidth(width);
-
-    return;
-}
-
-void OverlayDialog::set_overlay_enabled(const bool enabled)
-{
-    this->isEnabled = enabled;
-
-    if (!this->isEnabled)
-    {
-        emit this->overlay_disabled();
-    }
-    else
-    {
-        emit this->overlay_enabled();
-    }
-
-    kd_update_output_window_title();
 
     return;
 }
@@ -275,9 +250,4 @@ QString OverlayDialog::parsed_overlay_string(void)
     parsed.replace("$systemDate",       QDateTime::currentDateTime().date().toString());
 
     return ("<font style=\"font-size: large; color: white; background-color: black;\">" + parsed + "</font>");
-}
-
-bool OverlayDialog::is_overlay_enabled(void)
-{
-    return this->isEnabled;
 }

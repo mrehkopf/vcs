@@ -7,7 +7,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_ALIAS_DIALOG_H
 #define VCS_DISPLAY_QT_DIALOGS_ALIAS_DIALOG_H
 
-#include <QDialog>
+#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 
 class QMenuBar;
 
@@ -17,7 +17,7 @@ class AliasDialog;
 
 struct mode_alias_s;
 
-class AliasDialog : public QDialog
+class AliasDialog : public VCSBaseDialog
 {
     Q_OBJECT
 
@@ -43,8 +43,6 @@ private:
 
     void add_alias(void);
 
-    void set_aliases_source_filename(const QString &filename);
-
     void broadcast_aliases();
 
     void adjust_treewidget_column_size();
@@ -55,11 +53,6 @@ private:
 
     void assign_aliases(const std::vector<mode_alias_s> &aliases);
 
-    QMenuBar *menubar = nullptr;
-
-    // The dialog's title, without any additional information that may be appended,
-    // like the name of the file from which the dialog's current data was loaded.
-    const QString dialogBaseTitle = "VCS - Alias Resolutions";
 };
 
 #endif

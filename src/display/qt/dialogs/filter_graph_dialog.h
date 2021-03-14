@@ -1,7 +1,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_FILTER_GRAPH_DIALOG_H
 #define VCS_DISPLAY_QT_DIALOGS_FILTER_GRAPH_DIALOG_H
 
-#include <QDialog>
+#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 #include "filter/filter.h"
 
 class InteractibleNodeGraph;
@@ -12,7 +12,7 @@ namespace Ui {
 class FilterGraphDialog;
 }
 
-class FilterGraphDialog : public QDialog
+class FilterGraphDialog : public VCSBaseDialog
 {
     Q_OBJECT
 
@@ -32,43 +32,25 @@ public:
 
     void set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);
 
-    void set_filter_graph_enabled(const bool enabled);
-
-    bool is_filter_graph_enabled(void);
-
     // Loads the filter graph from the most recent used graph file. Returns true
     // if the graph was loaded; false otherwise.
     bool restore_persistent_graph(void);
 
     bool load_graph_from_file(const QString &filename);
 
-signals:
-    // Emitted when the filter graph's enabled status is toggled.
-    void filter_graph_enabled(void);
-    void filter_graph_disabled(void);
-
 private:
     void reset_graph(const bool autoAccept = false);
     void save_filters(void);
     void load_filters(void);
 
-    void set_filter_graph_source_filename(const QString &filename);
-
-    // Whether the filter graph is enabled.
-    bool isEnabled = false;
-
     Ui::FilterGraphDialog *ui;
-    QMenuBar *menubar = nullptr;
+
     InteractibleNodeGraph *graphicsScene = nullptr;
 
     // All the nodes that are currently in the graph.
     std::vector<FilterGraphNode*> inputGateNodes;
 
     unsigned numNodesAdded = 0;
-
-    // The dialog's title, without any additional information that may be appended,
-    // like the name of the file from which the dialog's current data was loaded.
-    const QString dialogBaseTitle = "VCS - Filter Graph";
 };
 
 #endif

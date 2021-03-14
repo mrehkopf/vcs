@@ -19,12 +19,13 @@
 #include "ui_filter_graph_dialog.h"
 
 FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
-    QDialog(parent),
+    VCSBaseDialog(parent),
     ui(new Ui::FilterGraphDialog)
 {
     ui->setupUi(this);
 
-    this->setWindowTitle(this->dialogBaseTitle);
+    this->set_name("Filter Graph");
+
     this->setWindowFlags(Qt::Window);
 
     // Construct the status bar.
@@ -43,40 +44,38 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
     // Create the dialog's menu bar.
     {
-        this->menubar = new QMenuBar(this);
+        this->menuBar = new QMenuBar(this);
 
         // Graph...
         {
-            QMenu *filterGraphMenu = new QMenu("Graph", this->menubar);
+            QMenu *filterGraphMenu = new QMenu("Graph", this->menuBar);
 
-            QAction *enable = new QAction("Enabled", this->menubar);
+            QAction *enable = new QAction("Enabled", this->menuBar);
             enable->setCheckable(true);
-            enable->setChecked(this->isEnabled);
+            enable->setChecked(this->is_enabled());
 
-            connect(this, &FilterGraphDialog::filter_graph_enabled, this, [=]
+            connect(this, &VCSBaseDialog::enabled_state_set, this, [=](const bool isEnabled)
             {
-                enable->setChecked(true);
-            });
-
-            connect(this, &FilterGraphDialog::filter_graph_disabled, this, [=]
-            {
-                enable->setChecked(false);
+                enable->setChecked(isEnabled);
             });
 
             connect(enable, &QAction::triggered, this, [=]
             {
-                this->set_filter_graph_enabled(!this->isEnabled);
+                this->set_enabled(!this->is_enabled());
             });
 
             filterGraphMenu->addAction(enable);
 
             filterGraphMenu->addSeparator();
+
             connect(filterGraphMenu->addAction("New"), &QAction::triggered, this, [=]
             {
                 this->reset_graph();
-                this->set_filter_graph_source_filename("");
+                this->set_data_filename("");
             });
+
             filterGraphMenu->addSeparator();
+
             connect(filterGraphMenu->addAction("Load..."), &QAction::triggered, this, [=]
             {
                 QString filename = QFileDialog::getOpenFileName(this,
@@ -86,9 +85,13 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
                 this->load_graph_from_file(filename);
             });
-            connect(filterGraphMenu->addAction("Save as..."), &QAction::triggered, this, [=]{this->save_filters();});
 
-            this->menubar->addMenu(filterGraphMenu);
+            connect(filterGraphMenu->addAction("Save as..."), &QAction::triggered, this, [=]
+            {
+                this->save_filters();
+            });
+
+            this->menuBar->addMenu(filterGraphMenu);
         }
 
         // Nodes...
@@ -156,10 +159,28 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                 }
             }
 
-            this->menubar->addMenu(filtersMenu);
+            this->menuBar->addMenu(filtersMenu);
         }
 
-        this->layout()->setMenuBar(menubar);
+        this->layout()->setMenuBar(this->menuBar);
+    }
+
+    // Connect the GUI components to consequences for changing their values.
+    {
+        connect(this, &VCSBaseDialog::enabled_state_set, this, [=](const bool isEnabled)
+        {
+            kf_set_filtering_enabled(isEnabled);
+            kd_update_output_window_title();
+        });
+
+        connect(this, &VCSBaseDialog::data_filename_changed, this, [=](const QString &newFilename)
+        {
+            // Kludge fix for the filter graph not repainting itself properly when new nodes
+            // are loaded in. Let's just force it to do so.
+            this->refresh_filter_graph();
+
+            kpers_set_value(INI_GROUP_FILTER_GRAPH, "graph_source_file", newFilename);
+        });
     }
 
     // Create and configure the graphics scene.
@@ -196,12 +217,12 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
     // Restore persistent settings.
     {
-        this->set_filter_graph_enabled(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", kf_is_filtering_enabled()).toBool());
+        this->set_enabled(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", kf_is_filtering_enabled()).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "filter_graph", this->size()).toSize());
 
         if (kcom_filter_graph_file_name().empty())
         {
-            const QString graphSourceFilename = kpers_value_of(INI_GROUP_FILTER_GRAPH, "graph_source_file", QString("sdxcf")).toString();
+            const QString graphSourceFilename = kpers_value_of(INI_GROUP_FILTER_GRAPH, "graph_source_file", QString("")).toString();
             kcom_override_filter_graph_file_name(graphSourceFilename.toStdString());
         }
     }
@@ -210,10 +231,10 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 }
 
 FilterGraphDialog::~FilterGraphDialog()
-{
+{ 
     // Save persistent settings.
     {
-        kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", this->isEnabled);
+        kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", this->is_enabled());
         kpers_set_value(INI_GROUP_GEOMETRY, "filter_graph", this->size());
     }
 
@@ -246,7 +267,7 @@ bool FilterGraphDialog::load_graph_from_file(const QString &filename)
 
     if (!filterData.first.empty())
     {
-        this->set_filter_graph_source_filename(filename);
+        this->set_data_filename(filename);
         this->set_filter_graph_options(filterData.second);
 
         return true;
@@ -292,7 +313,7 @@ void FilterGraphDialog::save_filters(void)
 
     if (kdisk_save_filter_graph(filterNodes, graphOptions, filename.toStdString()))
     {
-        this->set_filter_graph_source_filename(filename);
+        this->set_data_filename(filename);
     }
 
     return;
@@ -412,35 +433,12 @@ void FilterGraphDialog::clear_filter_graph(void)
     this->inputGateNodes.clear();
     this->numNodesAdded = 0;
 
-    this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg("Unsaved graph"));
-
     return;
 }
 
 void FilterGraphDialog::refresh_filter_graph(void)
 {
     this->graphicsScene->update_scene_connections();
-
-    return;
-}
-
-void FilterGraphDialog::set_filter_graph_source_filename(const QString &sourceFilename)
-{
-    if (sourceFilename.isEmpty())
-    {
-        this->setWindowTitle(this->dialogBaseTitle);
-    }
-    else
-    {
-        const QString baseFilename = QFileInfo(sourceFilename).baseName();
-        this->setWindowTitle(QString("%1 - %2").arg(this->dialogBaseTitle).arg(baseFilename));
-    }
-
-    // Kludge fix for the filter graph not repainting itself properly when new nodes
-    // are loaded in. Let's just force it to do so.
-    this->refresh_filter_graph();
-
-    kpers_set_value(INI_GROUP_FILTER_GRAPH, "graph_source_file", sourceFilename);
 
     return;
 }
@@ -456,32 +454,6 @@ void FilterGraphDialog::set_filter_graph_options(const std::vector<filter_graph_
 
     return;
 }
-
-void FilterGraphDialog::set_filter_graph_enabled(const bool enabled)
-{
-    this->isEnabled = enabled;
-
-    if (!this->isEnabled)
-    {
-        emit this->filter_graph_disabled();
-    }
-    else
-    {
-        emit this->filter_graph_enabled();
-    }
-
-    kf_set_filtering_enabled(this->isEnabled);
-
-    kd_update_output_window_title();
-
-    return;
-}
-
-bool FilterGraphDialog::is_filter_graph_enabled(void)
-{
-    return this->isEnabled;
-}
-
 
 FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const filter_type_enum_e &filterType,
                                                           const u8 *const initialParameterValues)
