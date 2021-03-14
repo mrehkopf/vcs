@@ -116,10 +116,9 @@ void kd_release_output_window(void)
 {
     INFO(("Releasing the display."));
 
-    if (WINDOW)
+    if (!WINDOW)
     {
-        DEBUG(("Expected the display to have been acquired before releasing it. "
-               "Ignoring this call."));
+        DEBUG(("Expected the display to have been acquired before releasing it. Ignoring this call."));
     }
     else
     {
