@@ -121,7 +121,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
                 {
                     case 0: kat_set_scan_hint(anti_tear_scan_hint_e::look_for_one_tear); break;
                     case 1: kat_set_scan_hint(anti_tear_scan_hint_e::look_for_multiple_tears); break;
-                    default: k_assert(0, "Unknown scan methoid."); break;
+                    default: k_assert(0, "Unknown scan method."); break;
                 }
             }
             else k_assert(0, "Unknown parameter identifier");
