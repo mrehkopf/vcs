@@ -53,12 +53,12 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
             this->menuBar->addMenu(file);
 
-            connect(file, &DialogFileMenu::user_wants_to_save, this, [=](const QString &filename)
+            connect(file, &DialogFileMenu::save, this, [=](const QString &filename)
             {
                 this->save_graph_into_file(filename);
             });
 
-            connect(file, &DialogFileMenu::user_wants_to_open, this, [=]
+            connect(file, &DialogFileMenu::open, this, [=]
             {
                 QString filename = QFileDialog::getOpenFileName(this,
                                                                 "Select a file containing the filter graph to be loaded", "",
@@ -68,7 +68,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                 this->load_graph_from_file(filename);
             });
 
-            connect(file, &DialogFileMenu::user_wants_to_save_as, this, [=](const QString &originalFilename)
+            connect(file, &DialogFileMenu::save_as, this, [=](const QString &originalFilename)
             {
                 QString filename = QFileDialog::getSaveFileName(this,
                                                                 "Select a file to save the filter graph into",
@@ -79,7 +79,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                 this->save_graph_into_file(filename);
             });
 
-            connect(file, &DialogFileMenu::user_wants_to_close, this, [=]
+            connect(file, &DialogFileMenu::close, this, [=]
             {
                 this->reset_graph(true);
                 this->set_data_filename("");

@@ -42,12 +42,12 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
             this->menuBar->addMenu(file);
 
-            connect(file, &DialogFileMenu::user_wants_to_save, this, [=](const QString &filename)
+            connect(file, &DialogFileMenu::save, this, [=](const QString &filename)
             {
                 this->save_video_presets_to_file(filename);
             });
 
-            connect(file, &DialogFileMenu::user_wants_to_open, this, [=]
+            connect(file, &DialogFileMenu::open, this, [=]
             {
                 QString filename = QFileDialog::getOpenFileName(this,
                                                                 "Load video presets from...",
@@ -57,7 +57,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 this->load_presets_from_file(filename);
             });
 
-            connect(file, &DialogFileMenu::user_wants_to_save_as, this, [=](const QString &originalFilename)
+            connect(file, &DialogFileMenu::save_as, this, [=](const QString &originalFilename)
             {
                 QString filename = QFileDialog::getSaveFileName(this,
                                                                 "Save video presets as...",
@@ -67,7 +67,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 this->save_video_presets_to_file(filename);
             });
 
-            connect(file, &DialogFileMenu::user_wants_to_close, this, [=]
+            connect(file, &DialogFileMenu::close, this, [=]
             {
                 this->remove_all_video_presets_from_list();
                 this->set_data_filename("");

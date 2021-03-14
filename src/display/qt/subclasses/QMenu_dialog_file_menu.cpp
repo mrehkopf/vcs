@@ -37,22 +37,22 @@ DialogFileMenu::DialogFileMenu(VCSBaseDialog *const parentDialog) :
 
     connect(saveAs, &QAction::triggered, this, [=]
     {
-        emit this->user_wants_to_save_as(save->data().toString());
+        emit this->save_as(save->data().toString());
     });
 
     connect(save, &QAction::triggered, this, [=]
     {
-        emit this->user_wants_to_save(save->data().toString());
+        emit this->save(save->data().toString());
     });
 
     connect(open, &QAction::triggered, this, [=]
     {
-        emit this->user_wants_to_open();
+        emit this->open();
     });
 
     connect(close, &QAction::triggered, this, [=]
     {
-        emit this->user_wants_to_close(close->data().toString());
+        emit this->close(close->data().toString());
     });
 
     connect(this->parentDialog, &VCSBaseDialog::data_filename_changed, this, [=](const QString &filename)

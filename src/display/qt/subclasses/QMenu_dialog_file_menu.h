@@ -22,10 +22,10 @@ public:
 
 signals:
     // Emitted when the corresponding actions are triggered.
-    void user_wants_to_save_as(const QString &originalFilename);
-    void user_wants_to_save(const QString &filename);
-    void user_wants_to_open(void);
-    void user_wants_to_close(const QString &filename);
+    void save_as(const QString &originalFilename);
+    void save(const QString &filename);
+    void open(void);
+    void close(const QString &filename);
 
 private:
     VCSBaseDialog *const parentDialog;
