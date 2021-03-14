@@ -20,24 +20,84 @@ InputResolutionDialog::InputResolutionDialog(QWidget *parent) :
 
     this->set_name("Capture Resolution");
 
-    // Wire up the buttons for forcing the capture input resolution.
-    for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)
+    // Connect GUI controls to consequences for operating them.
     {
-        QWidget *const w = ui->frame_inputForceButtons->layout()->itemAt(i)->widget();
-
-        k_assert(w->objectName().startsWith("pushButton"), "Expected all widgets in this layout to be pushbuttons.");
-
-        // Store the unique id of this button, so we can later identify it.
-        ((QPushButton*)w)->setProperty("butt_id", i);
-
-        // Load in any custom resolutions the user may have set earlier.
-        if (kpers_contains(INI_GROUP_INPUT, QString("force_res_%1").arg(i)))
+        // Wire up buttons for forcing the capture input resolution.
+        for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)
         {
-            ((QPushButton*)w)->setText(kpers_value_of(INI_GROUP_INPUT, QString("force_res_%1").arg(i)).toString());
+            QPushButton *const button = qobject_cast<QPushButton*>(ui->frame_inputForceButtons->layout()->itemAt(i)->widget());
+
+            if (!button)
+            {
+                continue;
+            }
+
+            // Sanity check. Buttons that force the resolution have no label text but
+            // include the "resolution" dynamic property. Auxiliary buttons don't define
+            // the property but have a label text. Other buttons are considered malformed.
+            k_assert((!button->text().isEmpty() ||
+                      button->property("resolution").isValid()),
+                     "Detected a malformed input resolution button.");
+
+            // Ignore non-resolution-setting buttons.
+            if (!button->property("resolution").isValid())
+            {
+                continue;
+            }
+
+            // Load in any custom resolution the user may have set for this button.
+            if (kpers_contains(INI_GROUP_INPUT, QString("force_res_%1").arg(i)))
+            {
+                const QSize customResolution = kpers_value_of(INI_GROUP_INPUT, QString("force_res_%1").arg(i)).toSize();
+
+                if (customResolution.isValid())
+                {
+                    button->setProperty("resolution", customResolution);
+                }
+            }
+
+            this->update_button_text(button);
+
+            connect(button, &QPushButton::clicked, this, [this, button]
+            {
+                const QSize buttonResolution = button->property("resolution").toSize();
+                k_assert(buttonResolution.isValid(), "Detected a malformed input resolution button.");
+
+                // If the Alt key is pressed while clicking the button, let the user specify
+                // a new resolution for the button.
+                if (QGuiApplication::keyboardModifiers() & Qt::AltModifier)
+                {
+                    resolution_s customResolution = {unsigned(buttonResolution.width()),
+                                                     unsigned(buttonResolution.height())};
+
+                    if (ResolutionDialog("Assign an input resolution", &customResolution, parentWidget()).exec() != QDialog::Rejected)
+                    {
+                        button->setProperty("resolution", QSize(customResolution.w, customResolution.h));
+
+                        this->update_button_text(button);
+
+                        kpers_set_value(INI_GROUP_INPUT,
+                                        QString("force_res_%1").arg(button->property("button_idx").toUInt()),
+                                        button->property("resolution"));
+                    }
+                }
+                else
+                {
+                    kc_force_input_resolution({unsigned(buttonResolution.width()),
+                                               unsigned(buttonResolution.height())});
+                }
+            });
         }
 
-        connect((QPushButton*)w, &QPushButton::clicked,
-                this, [this,w]{this->parse_capture_resolution_button_press(w);});
+        connect(ui->pushButton_setCustomResolution, &QPushButton::clicked, this, [this]
+        {
+            resolution_s customResolution = {1920, 1080};
+
+            if (ResolutionDialog("Force a capture resolution", &customResolution, parentWidget()).exec() == QDialog::Accepted)
+            {
+                kc_force_input_resolution(customResolution);
+            }
+        });
     }
 
     // Restore persistent settings.
@@ -48,7 +108,7 @@ InputResolutionDialog::InputResolutionDialog(QWidget *parent) :
     return;
 }
 
-InputResolutionDialog::~InputResolutionDialog()
+InputResolutionDialog::~InputResolutionDialog(void)
 {
     // Save persistent settings.
     {
@@ -60,93 +120,37 @@ InputResolutionDialog::~InputResolutionDialog()
     return;
 }
 
-// Gets called when a button for forcing the input resolution is pressed in the GUI.
-// Will then decide which input resolution to force based on which button was pressed.
-void InputResolutionDialog::parse_capture_resolution_button_press(QWidget *button)
+void InputResolutionDialog::update_button_text(QPushButton *const button)
 {
-    QStringList sl;
-    resolution_s res = {0, 0, 0};
+    const QSize buttonResolution = button->property("resolution").toSize();
 
-    k_assert(button->objectName().contains("pushButton"),
-             "Expected a button widget, but received something else.");
-
-    // Query the user for a custom resolution.
-    /// TODO. Get a more reliable way.
-    if (((QPushButton*)button)->text() == "Other...")
+    if (buttonResolution.isValid())
     {
-        res.w = 1920;
-        res.h = 1080;
-        if (ResolutionDialog("Force a capture resolution",
-                             &res, parentWidget()).exec() == QDialog::Rejected)
-        {
-            // If the user canceled.
-            goto done;
-        }
-
-        goto assign_resolution;
+        button->setText(QString("%1 \u00d7 %2").arg(buttonResolution.width()). arg(buttonResolution.height()));
     }
 
-    // Extract the resolution from the button name. The name is expected to be
-    // of the form e.g. '640 x 480' or '640x480'.
-    sl = ((QPushButton*)button)->text().split('x');
-    if (sl.size() < 2)
-    {
-        DEBUG(("Unexpected number of parameters in a button name. Expected at least width and height."));
-        goto done;
-    }
-    else
-    {
-        res.w = sl.at(0).toUInt();
-        res.h = sl.at(1).toUInt();
-    }
-
-    // If alt is pressed while clicking the button, let the user specify a new
-    // resolution for the button.
-    if (QGuiApplication::keyboardModifiers() & Qt::AltModifier)
-    {
-        // Pop up a dialog asking the user for the new resolution.
-        if (ResolutionDialog("Assign an input resolution",
-                             &res, parentWidget()).exec() != QDialog::Rejected)
-        {
-            const QString resolutionStr = QString("%1 x %2").arg(res.w).arg(res.h);
-
-            ((QPushButton*)button)->setText(resolutionStr);
-
-            // Save the new resolution into the ini.
-            kpers_set_value(INI_GROUP_INPUT,
-                            QString("force_res_%1").arg(((QPushButton*)button)->property("butt_id").toUInt()),
-                            resolutionStr);
-
-            DEBUG(("Assigned a new resolution (%u x %u) for an input force button.",
-                   res.w, res.h));
-        }
-
-        goto done;
-    }
-
-    assign_resolution:
-    DEBUG(("Received a request via the GUI to set the input resolution to %u x %u.", res.w, res.h));
-    kc_force_input_resolution(res);
-
-    done:
     return;
 }
 
-void InputResolutionDialog::activate_capture_res_button(const uint buttonIdx)
+void InputResolutionDialog::activate_resolution_button(const uint buttonIdx)
 {
     for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)
     {
-        QWidget *const w = ui->frame_inputForceButtons->layout()->itemAt(i)->widget();
+        QPushButton *const button = qobject_cast<QPushButton*>(ui->frame_inputForceButtons->layout()->itemAt(i)->widget());
 
-        /// A bit kludgy, but...
-        if (w->objectName().endsWith(QString::number(buttonIdx)))
+        if (!button)
         {
-            parse_capture_resolution_button_press(w);
+            continue;
+        }
+
+        if (button->property("button_idx").toUInt() == buttonIdx)
+        {
+            button->click();
             return;
         }
     }
 
-    NBENE(("Failed to find input resolution button #%u.", buttonIdx));
+    NBENE(("Failed to find an input resolution button at index #%u.", buttonIdx));
 
     return;
 }

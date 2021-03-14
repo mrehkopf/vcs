@@ -13,12 +13,13 @@ class InputResolutionDialog : public VCSBaseDialog
 
 public:
     explicit InputResolutionDialog(QWidget *parent = 0);
-    ~InputResolutionDialog();
 
-    void activate_capture_res_button(const uint buttonIdx);
+    ~InputResolutionDialog(void);
+
+    void activate_resolution_button(const uint buttonIdx);
 
 private:
-    void parse_capture_resolution_button_press(QWidget *button);
+    void update_button_text(QPushButton *const button);
 
     Ui::InputResolutionDialog *ui;
 };
