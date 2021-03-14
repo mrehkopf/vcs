@@ -212,6 +212,11 @@ void AliasDialog::add_alias_to_list(const mode_alias_s a)
         QSpinBox *x = new QSpinBox;
         QSpinBox *y = new QSpinBox;
 
+        QLabel *separator = new QLabel("x");
+
+        separator->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+        separator->setAlignment((Qt::AlignVCenter | Qt::AlignHCenter));
+
         x->setMinimum(1);
         y->setMinimum(1);
 
@@ -240,6 +245,7 @@ void AliasDialog::add_alias_to_list(const mode_alias_s a)
         });
 
         layout->addWidget(x);
+        layout->addWidget(separator);
         layout->addWidget(y);
 
         return container;
