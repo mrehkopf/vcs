@@ -41,7 +41,7 @@ private:
 
     void remove_all_aliases(void);
 
-    void add_alias(void);
+    void add_new_alias(void);
 
     void broadcast_aliases();
 

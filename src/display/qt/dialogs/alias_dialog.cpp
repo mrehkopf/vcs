@@ -82,24 +82,38 @@ AliasDialog::AliasDialog(QWidget *parent) :
             });
         }
 
-        // Alias resolutions...
-        {
-            QMenu *fileMenu = new QMenu("Aliases", this);
-
-            connect(fileMenu->addAction("Add"), &QAction::triggered, this, [=]{ this->add_alias(); });
-
-            fileMenu->addSeparator();
-
-            connect(fileMenu->addAction("Delete selected"), &QAction::triggered, this, [=]{ this->remove_selected_aliases(); });
-
-            this->menuBar->addMenu(fileMenu);
-        }
-
         this->layout()->setMenuBar(this->menuBar);
+    }
+
+    // Initialize GUI controls to their starting values.
+    {
+        // This button is enabled when there are items selected, disabled otherwise.
+        ui->pushButton_deleteSelectedAliases->setEnabled(false);
     }
 
     // Connect GUI controls to consequences for changing their values.
     {
+        connect(ui->pushButton_addAlias, &QPushButton::clicked, this, [=]
+        {
+            this->add_new_alias();
+        });
+
+        connect(ui->pushButton_deleteSelectedAliases, &QPushButton::clicked, this, [=]
+        {
+            if ((ui->treeWidget_knownAliases->selectedItems().count() > 0) &&
+                (QMessageBox::question(this, "Confirm alias deletion",
+                                       "Do you want to delete the selected alias(es)?",
+                                       (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes))
+            {
+                this->remove_selected_aliases();
+            }
+        });
+
+        connect(ui->treeWidget_knownAliases, &QTreeWidget::itemSelectionChanged, this, [=]
+        {
+            ui->pushButton_deleteSelectedAliases->setEnabled(ui->treeWidget_knownAliases->selectedItems().count() > 0);
+        });
+
         connect(this, &VCSBaseDialog::data_filename_changed, this, [=](const QString &newFilename)
         {
             kpers_set_value(INI_GROUP_ALIAS_RESOLUTIONS, "aliases_source_file", newFilename);
@@ -248,7 +262,7 @@ void AliasDialog::clear_known_aliases(void)
     return;
 }
 
-void AliasDialog::add_alias(void)
+void AliasDialog::add_new_alias(void)
 {
     mode_alias_s newAlias;
     newAlias.from = {1, 1, 0};
