@@ -20,7 +20,7 @@ DialogFileMenu::DialogFileMenu(VCSBaseDialog *const parentDialog) :
     QAction *save = new QAction("Save", this);
     QAction *saveAs = new QAction("Save as...", this);
     QAction *open = new QAction("Open...", this);
-    QAction *close = new QAction("Close file", this);
+    QAction *close = new QAction("Close", this);
 
     // Initial state when no file has been opened.
     save->setEnabled(false);
@@ -65,7 +65,7 @@ DialogFileMenu::DialogFileMenu(VCSBaseDialog *const parentDialog) :
         close->setEnabled(!filename.isEmpty());
         close->setData(filename);
         close->setText(filename.isEmpty()
-                       ? "Close file"
+                       ? "Close"
                        : QString("Close \"%1\"").arg(shortFilename));
     });
 

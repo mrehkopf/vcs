@@ -11,6 +11,7 @@
 #include "display/qt/dialogs/filter_graph/output_gate_node.h"
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
+#include "display/qt/subclasses/QMenu_dialog_file_menu.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/widgets/filter_widgets.h"
 #include "display/qt/persistent_settings.h"
@@ -46,6 +47,45 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
     {
         this->menuBar = new QMenuBar(this);
 
+        // File...
+        {
+            auto *const file = new DialogFileMenu(this);
+
+            this->menuBar->addMenu(file);
+
+            connect(file, &DialogFileMenu::user_wants_to_save, this, [=](const QString &filename)
+            {
+                this->save_graph_into_file(filename);
+            });
+
+            connect(file, &DialogFileMenu::user_wants_to_open, this, [=]
+            {
+                QString filename = QFileDialog::getOpenFileName(this,
+                                                                "Select a file containing the filter graph to be loaded", "",
+                                                                "Filter graphs (*.vcs-filter-graph);;"
+                                                                "All files(*.*)");
+
+                this->load_graph_from_file(filename);
+            });
+
+            connect(file, &DialogFileMenu::user_wants_to_save_as, this, [=](const QString &originalFilename)
+            {
+                QString filename = QFileDialog::getSaveFileName(this,
+                                                                "Select a file to save the filter graph into",
+                                                                originalFilename,
+                                                                "Filter graph files (*.vcs-filter-graph);;"
+                                                                "All files(*.*)");
+
+                this->save_graph_into_file(filename);
+            });
+
+            connect(file, &DialogFileMenu::user_wants_to_close, this, [=]
+            {
+                this->reset_graph(true);
+                this->set_data_filename("");
+            });
+        }
+
         // Graph...
         {
             QMenu *filterGraphMenu = new QMenu("Graph", this->menuBar);
@@ -65,31 +105,6 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             });
 
             filterGraphMenu->addAction(enable);
-
-            filterGraphMenu->addSeparator();
-
-            connect(filterGraphMenu->addAction("New"), &QAction::triggered, this, [=]
-            {
-                this->reset_graph();
-                this->set_data_filename("");
-            });
-
-            filterGraphMenu->addSeparator();
-
-            connect(filterGraphMenu->addAction("Load..."), &QAction::triggered, this, [=]
-            {
-                QString filename = QFileDialog::getOpenFileName(this,
-                                                                "Select a file containing the filter graph to be loaded", "",
-                                                                "Filter graphs (*.vcs-filter-graph);;"
-                                                                "All files(*.*)");
-
-                this->load_graph_from_file(filename);
-            });
-
-            connect(filterGraphMenu->addAction("Save as..."), &QAction::triggered, this, [=]
-            {
-                this->save_filters();
-            });
 
             this->menuBar->addMenu(filterGraphMenu);
         }
@@ -231,7 +246,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 }
 
 FilterGraphDialog::~FilterGraphDialog()
-{ 
+{
     // Save persistent settings.
     {
         kpers_set_value(INI_GROUP_OUTPUT, "custom_filtering", this->is_enabled());
@@ -276,13 +291,8 @@ bool FilterGraphDialog::load_graph_from_file(const QString &filename)
     return false;
 }
 
-void FilterGraphDialog::save_filters(void)
+void FilterGraphDialog::save_graph_into_file(QString filename)
 {
-    QString filename = QFileDialog::getSaveFileName(this,
-                                                    "Select a file to save the filter graph into", "",
-                                                    "Filter files (*.vcs-filter-graph);;"
-                                                    "All files(*.*)");
-
     if (filename.isEmpty())
     {
         return;

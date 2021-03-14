@@ -40,8 +40,8 @@ public:
 
 private:
     void reset_graph(const bool autoAccept = false);
-    void save_filters(void);
-    void load_filters(void);
+
+    void save_graph_into_file(QString filename);
 
     Ui::FilterGraphDialog *ui;
 
