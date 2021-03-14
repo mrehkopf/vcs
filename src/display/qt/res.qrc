@@ -37,7 +37,6 @@
         <file>images/icons/newie/plus_disabled.png</file>
         <file>images/icons/newie/minus_disabled.png</file>
         <file>images/icons/newie/minus.png</file>
-        <file>images/icons/newie/handle_grip_vertical.png</file>
-        <file>images/icons/newie/handle_grip_horizontal.png</file>
+        <file>images/icons/newie/handle_grip.png</file>
     </qresource>
 </RCC>

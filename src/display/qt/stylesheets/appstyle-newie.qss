@@ -404,14 +404,14 @@ QScrollBar:vertical
 
 QScrollBar::handle:vertical
 {
-    min-height: 22px;
+    min-height: 24px;
     border-radius: 0;
     background-color: #808080;
     border: none;
     border-top: 1px solid #353535;
     border-bottom: 1px solid #353535;
 
-    background-image: url(:/res/images/icons/newie/handle_grip_horizontal.png);
+    background-image: url(:/res/images/icons/newie/handle_grip.png);
     background-position: center;
     background-repeat: none;
 }
@@ -467,13 +467,13 @@ QScrollBar:horizontal
 
 QScrollBar::handle:horizontal
 {
-    min-width: 22px;
+    min-width: 24px;
     border-radius: 0px;
     background-color: #808080;
     border-left: 1px solid #353535;
     border-right: 1px solid #353535;
 
-    background-image: url(:/res/images/icons/newie/handle_grip_vertical.png);
+    background-image: url(:/res/images/icons/newie/handle_grip.png);
     background-position: center;
     background-repeat: none;
 }
