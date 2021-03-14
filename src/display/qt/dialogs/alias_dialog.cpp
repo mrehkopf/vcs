@@ -12,6 +12,7 @@
 #include <QSpinBox>
 #include <QDebug>
 #include <QLabel>
+#include "display/qt/subclasses/QMenu_dialog_file_menu.h"
 #include "common/command_line/command_line.h"
 #include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/persistent_settings.h"
@@ -41,42 +42,55 @@ AliasDialog::AliasDialog(QWidget *parent) :
     {
         this->menuBar = new QMenuBar(this);
 
-        // Alias resolutions...
+        // File...
         {
-            QMenu *fileMenu = new QMenu("Aliases", this);
+            auto *const file = new DialogFileMenu(this);
 
-            connect(fileMenu->addAction("Add"), &QAction::triggered, this, [=]{ this->add_alias(); });
-            fileMenu->addSeparator();
-            connect(fileMenu->addAction("Delete all"), &QAction::triggered, this, [=]
+            this->menuBar->addMenu(file);
+
+            connect(file, &DialogFileMenu::save, this, [=](const QString &filename)
             {
-                if (QMessageBox::warning(this, "Confirm deletion of all aliases",
-                                         "Do you really want to delete ALL aliases?",
-                                         (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes)
-                {
-                    this->remove_all_aliases();
-                    this->set_data_filename("");
-                }
+                this->save_aliases_to_file(filename);
             });
-            connect(fileMenu->addAction("Delete selected"), &QAction::triggered, this, [=]{ this->remove_selected_aliases(); });
-            fileMenu->addSeparator();
-            connect(fileMenu->addAction("Load..."), &QAction::triggered, this, [=]
+
+            connect(file, &DialogFileMenu::open, this, [=]
             {
                 QString filename = QFileDialog::getOpenFileName(this,
-                                                                "Select the file to load aliases from", "",
+                                                                "Select the file to load aliases from",
+                                                                "",
                                                                 "Alias files (*.vcs-alias);;"
                                                                 "All files(*.*)");
 
                 this->load_aliases_from_file(filename);
             });
-            connect(fileMenu->addAction("Save as..."), &QAction::triggered, this, [=]
+
+            connect(file, &DialogFileMenu::save_as, this, [=](const QString &originalFilename)
             {
                 QString filename = QFileDialog::getSaveFileName(this,
-                                                                "Select the file to save the aliases into", "",
+                                                                "Select the file to save the aliases into",
+                                                                originalFilename,
                                                                 "Alias files (*.vcs-alias);;"
                                                                 "All files(*.*)");
 
                 this->save_aliases_to_file(filename);
             });
+
+            connect(file, &DialogFileMenu::close, this, [=]
+            {
+                this->remove_all_aliases();
+                this->set_data_filename("");
+            });
+        }
+
+        // Alias resolutions...
+        {
+            QMenu *fileMenu = new QMenu("Aliases", this);
+
+            connect(fileMenu->addAction("Add"), &QAction::triggered, this, [=]{ this->add_alias(); });
+
+            fileMenu->addSeparator();
+
+            connect(fileMenu->addAction("Delete selected"), &QAction::triggered, this, [=]{ this->remove_selected_aliases(); });
 
             this->menuBar->addMenu(fileMenu);
         }
@@ -106,7 +120,7 @@ AliasDialog::AliasDialog(QWidget *parent) :
     return;
 }
 
-AliasDialog::~AliasDialog()
+AliasDialog::~AliasDialog(void)
 {
     // Save persistent settings.
     {
@@ -227,7 +241,7 @@ void AliasDialog::add_alias_to_list(const mode_alias_s a)
     return;
 }
 
-void AliasDialog::clear_known_aliases()
+void AliasDialog::clear_known_aliases(void)
 {
     ui->treeWidget_knownAliases->clear();
 

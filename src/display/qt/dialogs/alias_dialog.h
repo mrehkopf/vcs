@@ -24,9 +24,9 @@ class AliasDialog : public VCSBaseDialog
 public:
     explicit AliasDialog(QWidget *parent = 0);
 
-    ~AliasDialog();
+    ~AliasDialog(void);
 
-    void clear_known_aliases();
+    void clear_known_aliases(void);
 
     void add_alias_to_list(const mode_alias_s a);
 
