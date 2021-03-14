@@ -43,7 +43,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->set_name("Signal Info");
+    this->set_name("Signal info");
 
     // Set the GUI controls to their proper initial values.
     {

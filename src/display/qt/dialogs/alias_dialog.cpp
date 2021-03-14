@@ -36,7 +36,7 @@ AliasDialog::AliasDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->set_name("Alias Resolutions");
+    this->set_name("Alias resolutions");
 
     // Create the dialog's menu bar.
     {

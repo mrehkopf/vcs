@@ -28,7 +28,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
 {
     ui->setupUi(this);
 
-    this->set_name("Video Record");
+    this->set_name("Video recorder");
 
     this->timerUpdateRecordingInfo = new QTimer(this);
     connect(this->timerUpdateRecordingInfo, &QTimer::timeout,

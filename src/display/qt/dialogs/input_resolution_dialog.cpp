@@ -18,7 +18,7 @@ InputResolutionDialog::InputResolutionDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->set_name("Capture Resolution");
+    this->set_name("Capture resolution");
 
     // Connect GUI controls to consequences for operating them.
     {

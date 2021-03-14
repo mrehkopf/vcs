@@ -30,7 +30,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->set_name("Video Presets");
+    this->set_name("Video presets");
 
     // Create the dialog's menu bar.
     {

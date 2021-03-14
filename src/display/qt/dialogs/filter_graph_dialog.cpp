@@ -25,7 +25,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->set_name("Filter Graph");
+    this->set_name("Filter graph");
 
     this->setWindowFlags(Qt::Window);
 
