@@ -60,7 +60,7 @@ static const std::unordered_map<std::string, const filter_c::filter_metadata_s> 
      filter_func_decimate}},
 
     {"94adffac-be42-43ac-9839-9cc53a6d615c",
-    {"Denoise (temporal)",
+    {"Denoise (pixel gate)",
      filter_category_e::enhance,
      filter_type_enum_e::denoise_temporal,
      filter_func_denoise_temporal}},
