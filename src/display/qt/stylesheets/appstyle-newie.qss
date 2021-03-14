@@ -84,6 +84,12 @@ QGroupBox > PropertyTable
     margin-right: 6px;
 }
 
+QDialog[objectName="InputResolutionDialog"] QFrame
+{
+    margin: 6px;
+    margin-bottom: 9px;
+}
+
 QScrollArea > QWidget > QWidget
 {
     background-color: transparent;
