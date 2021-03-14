@@ -86,7 +86,10 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>x</string>
+              <string>&amp;times;</string>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::RichText</enum>
              </property>
             </widget>
            </item>

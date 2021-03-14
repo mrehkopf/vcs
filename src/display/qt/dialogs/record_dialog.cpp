@@ -300,8 +300,8 @@ void RecordDialog::update_recording_metainfo(void)
                                                                                         .arg(QString::number(minutes).rightJustified(2, '0'))
                                                                                         .arg(QString::number(seconds).rightJustified(2, '0')));
 
-        ui->tableWidget_status->modify_property("Resolution", QString("%1 x %2").arg(krecord_video_resolution().w)
-                                                                                .arg(krecord_video_resolution().h));
+        ui->tableWidget_status->modify_property("Resolution", QString("%1 \u00d7 %2").arg(krecord_video_resolution().w)
+                                                                                     .arg(krecord_video_resolution().h));
 
         const uint fileBytesize = QFileInfo(krecord_video_filename().c_str()).size();
         {

@@ -1278,7 +1278,7 @@ void MainWindow::set_keyboard_shortcuts(void)
     for (uint i = 1; i <= 9; i++)
     {
         connect(keyboardShortcut(QString("ctrl+%1").arg(QString::number(i)).toStdString()),
-                &QShortcut::activated, [=]{this->inputResolutionDlg->activate_capture_res_button(i);});
+                &QShortcut::activated, [=]{this->inputResolutionDlg->activate_resolution_button(i);});
     }
 
     // Make Ctrl + Shift + <x> toggle the various dialogs' functionality on/off.
@@ -1360,7 +1360,7 @@ void MainWindow::update_window_title(void)
         }
         else
         {
-            title = QString("%1%2 - %3%4 x %5 (%6 Hz) scaled to %7 x %8 (%9 FPS)")
+            title = QString("%1%2 - %3%4 \u00d7 %5 (%6 Hz) scaled to %7 \u00d7 %8 (%9 FPS)")
                     .arg(this->areFramesBeingDropped? (missedFramesMarker + " ") : "")
                     .arg(PROGRAM_NAME)
                     .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")

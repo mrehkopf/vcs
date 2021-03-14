@@ -85,6 +85,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         // these characters shouldn't occur in preset names.
         ui->lineEdit_presetName->setValidator(new QRegExpValidator(QRegExp("[^{}]*"), this));
 
+        ui->pushButton_resolutionSeparator->setText("\u00d7");
+
         ui->groupBox_activation->setEnabled(false);
         ui->comboBox_presetList->setEnabled(false);
         ui->pushButton_deletePreset->setEnabled(false);
@@ -492,8 +494,8 @@ QString VideoParameterDialog::make_preset_list_text(const video_preset_s *const 
 
     if (preset->activatesWithResolution)
     {
-        text << QString("%1 x %2").arg(QString::number(preset->activationResolution.w))
-                                  .arg(QString::number(preset->activationResolution.h));
+        text << QString("%1 \u00d7 %2").arg(QString::number(preset->activationResolution.w))
+                                       .arg(QString::number(preset->activationResolution.h));
     }
 
     if (preset->activatesWithRefreshRate)

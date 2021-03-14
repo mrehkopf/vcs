@@ -212,8 +212,10 @@ void AliasDialog::add_alias_to_list(const mode_alias_s a)
         QSpinBox *x = new QSpinBox;
         QSpinBox *y = new QSpinBox;
 
-        QLabel *separator = new QLabel("x");
+        QLabel *separator = new QLabel("&times;");
 
+        separator->setTextFormat(Qt::RichText);
+        separator->setStyleSheet("margin-bottom: .25em;");
         separator->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
         separator->setAlignment((Qt::AlignVCenter | Qt::AlignHCenter));
 

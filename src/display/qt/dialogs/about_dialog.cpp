@@ -42,8 +42,8 @@ AboutDialog::AboutDialog(QWidget *parent) :
         const resolution_s &minres = kc_capture_api().get_minimum_resolution();
         const resolution_s &maxres = kc_capture_api().get_maximum_resolution();
 
-        ui->tableWidget_captureDeviceFeatures->modify_property("Minimum resolution", QString("%1 x %2").arg(minres.w).arg(minres.h));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Maximum resolution", QString("%1 x %2").arg(maxres.w).arg(maxres.h));
+        ui->tableWidget_captureDeviceFeatures->modify_property("Minimum resolution", QString("%1 \u00d7 %2").arg(minres.w).arg(minres.h));
+        ui->tableWidget_captureDeviceFeatures->modify_property("Maximum resolution", QString("%1 \u00d7 %2").arg(maxres.w).arg(maxres.h));
         ui->tableWidget_captureDeviceFeatures->modify_property("Input channels",     QString::number(kc_capture_api().get_device_maximum_input_count()));
         ui->tableWidget_captureDeviceFeatures->modify_property("Firmware",           QString::fromStdString(kc_capture_api().get_device_firmware_version()));
         ui->tableWidget_captureDeviceFeatures->modify_property("Driver",             QString::fromStdString(kc_capture_api().get_device_driver_version()));

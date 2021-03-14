@@ -242,8 +242,8 @@ QString OverlayDialog::parsed_overlay_string(void)
     const auto inRes = kc_capture_api().get_resolution();
     const auto outRes = ks_output_resolution();
 
-    parsed.replace("$inputResolution",  QString("%1 x %2").arg(inRes.w).arg(inRes.h));
-    parsed.replace("$outputResolution", QString("%1 x %2").arg(outRes.w).arg(outRes.h));
+    parsed.replace("$inputResolution",  QString("%1 \u00d7 %2").arg(inRes.w).arg(inRes.h));
+    parsed.replace("$outputResolution", QString("%1 \u00d7 %2").arg(outRes.w).arg(outRes.h));
     parsed.replace("$inputHz",          QString::number(kc_capture_api().get_refresh_rate().value<unsigned>()));
     parsed.replace("$areFramesDropped", ((kc_capture_api().get_missed_frames_count() > 0)? "Dropping frames" : ""));
     parsed.replace("$systemTime",       QDateTime::currentDateTime().time().toString());

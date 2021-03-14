@@ -118,6 +118,9 @@
          </item>
          <item row="0" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <property name="spacing">
+            <number>0</number>
+           </property>
            <item>
             <widget class="QSpinBox" name="spinBox_outputResX">
              <property name="enabled">
@@ -155,7 +158,10 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>x</string>
+              <string>&amp;times;</string>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::RichText</enum>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
