@@ -28,7 +28,7 @@
 #include <poll.h>
 #include "capture/capture_api_video4linux.h"
 #include "capture/input_channel_v4l.h"
-#include "capture/video_presets.h")
+#include "capture/video_presets.h"
 #include "capture/ic_v4l_video_parameters.h"
 #include "common/propagate/app_events.h"
 
