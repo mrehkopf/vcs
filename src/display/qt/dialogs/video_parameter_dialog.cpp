@@ -422,16 +422,15 @@ bool VideoParameterDialog::load_presets_from_file(const QString &filename)
 
     const auto presets = kdisk_load_video_presets(filename.toStdString());
 
+    this->set_data_filename(filename);
+
     if (!presets.empty())
     {
         kvideopreset_assign_presets(presets);
         this->assign_presets(presets);
-        this->set_data_filename(filename);
-
-        return true;
     }
 
-    return false;
+    return true;
 }
 
 void VideoParameterDialog::assign_presets(const std::vector<video_preset_s*> &presets)
