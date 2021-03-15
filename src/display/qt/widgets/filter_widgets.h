@@ -31,6 +31,21 @@ struct filter_widget_s : public QObject
     // for adjusting the radius of a blur filter.
     virtual void create_widget(void) = 0;
 
+    template <unsigned Offset, typename T>
+    T parameter(void)
+    {
+        k_assert(this->parameterArray, "Expected a non-null filter data array.");
+        return *(T*)&(this->parameterArray[Offset]);
+    }
+
+    template <unsigned Offset, typename T>
+    void set_parameter(const T value)
+    {
+        k_assert(this->parameterArray, "Expected a non-null filter data array.");
+        *(T*)&(this->parameterArray[Offset]) = value;
+        emit this->parameter_changed();
+    }
+
     // The user-facing name of this filter - e.g. "Blur" for a blur filter.
     const QString title;
 
@@ -42,6 +57,10 @@ struct filter_widget_s : public QObject
 
     // The default width of the widget.
     const unsigned minWidth;
+
+signals:
+    // Emitted when the widget's parameter data is changed.
+    void parameter_changed(void);
 
 private:
     Q_OBJECT

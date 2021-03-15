@@ -597,17 +597,17 @@ private:
         QLabel *labelRed = new QLabel("Red:", frame);
         QSpinBox *spinRed = new QSpinBox(frame);
         spinRed->setRange(0, 255);
-        spinRed->setValue(this->parameterArray[OFFS_RED]);
+        spinRed->setValue(this->parameter<OFFS_RED, u8>());
 
         QLabel *labelGreen = new QLabel("Green:", frame);
         QSpinBox *spinGreen = new QSpinBox(frame);
         spinGreen->setRange(0, 255);
-        spinGreen->setValue(this->parameterArray[OFFS_GREEN]);
+        spinGreen->setValue(this->parameter<OFFS_GREEN, u8>());
 
         QLabel *labelBlue = new QLabel("Blue:", frame);
         QSpinBox *spinBlue = new QSpinBox(frame);
         spinBlue->setRange(0, 255);
-        spinBlue->setValue(this->parameterArray[OFFS_BLUE]);
+        spinBlue->setValue(this->parameter<OFFS_BLUE, u8>());
 
         QFormLayout *l = new QFormLayout(frame);
         l->addRow(labelRed, spinRed);
@@ -621,19 +621,19 @@ private:
             connect(spinRed, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
             [this](const int newValue)
             {
-                this->parameterArray[OFFS_RED] = newValue;
+                this->set_parameter<OFFS_RED, u8>(newValue);
             });
 
             connect(spinGreen, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
             [this](const int newValue)
             {
-                this->parameterArray[OFFS_GREEN] = newValue;
+                this->set_parameter<OFFS_GREEN, u8>(newValue);
             });
 
             connect(spinBlue, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
             [this](const int newValue)
             {
-                this->parameterArray[OFFS_BLUE] = newValue;
+                this->set_parameter<OFFS_BLUE, u8>(newValue);
             });
         }
 
