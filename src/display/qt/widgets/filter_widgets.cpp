@@ -535,7 +535,7 @@ void filter_widget_unsharp_mask_s::create_widget(void)
     // Radius.
     QLabel *radiusLabel = new QLabel("Radius", frame);
     QSpinBox *radiusdSpin = new QSpinBox(frame);
-    radiusdSpin->setRange(0, 255);
+    radiusdSpin->setRange(1, 255);
     radiusdSpin->setValue(this->parameter<OFFS_RADIUS, u8>() / 10);
 
     QFormLayout *l = new QFormLayout(frame);
