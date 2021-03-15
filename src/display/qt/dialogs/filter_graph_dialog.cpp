@@ -136,8 +136,10 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                         continue;
                     }
 
-                    connect(filtersMenu->addAction(QString::fromStdString(filter->name)), &QAction::triggered, this,
-                            [=]{this->add_filter_node(filter->type);});
+                    connect(filtersMenu->addAction(QString::fromStdString(filter->name)), &QAction::triggered, this, [=]
+                    {
+                        this->add_filter_node(filter->type);
+                    });
                 }
 
                 filtersMenu->addSeparator();
@@ -194,6 +196,8 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             // are loaded in. Let's just force it to do so.
             this->refresh_filter_graph();
 
+            this->set_unsaved_changes(false);
+
             kpers_set_value(INI_GROUP_FILTER_GRAPH, "graph_source_file", newFilename);
         });
     }
@@ -205,14 +209,26 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
         ui->graphicsView->setScene(this->graphicsScene);
 
-        connect(this->graphicsScene, &InteractibleNodeGraph::edgeConnectionAdded, this, [this]{this->recalculate_filter_chains();});
-        connect(this->graphicsScene, &InteractibleNodeGraph::edgeConnectionRemoved, this, [this]{this->recalculate_filter_chains();});
+        connect(this->graphicsScene, &InteractibleNodeGraph::edgeConnectionAdded, this, [this]
+        {
+            emit this->data_changed();
+            this->recalculate_filter_chains();
+        });
+
+        connect(this->graphicsScene, &InteractibleNodeGraph::edgeConnectionRemoved, this, [this]
+        {
+            emit this->data_changed();
+            this->recalculate_filter_chains();
+        });
+
         connect(this->graphicsScene, &InteractibleNodeGraph::nodeRemoved, this, [this](InteractibleNodeGraphNode *const node)
         {
             FilterGraphNode *const filterNode = dynamic_cast<FilterGraphNode*>(node);
 
             if (filterNode)
             {
+                emit this->data_changed();
+
                 if (filterNode->associatedFilter->metaData.type == filter_type_enum_e::input_gate)
                 {
                     this->inputGateNodes.erase(std::find(inputGateNodes.begin(), inputGateNodes.end(), filterNode));
@@ -335,50 +351,65 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_enum_e typ
                                                     const u8 *const initialParameterValues)
 {
     const filter_c *const newFilter = kf_create_new_filter_instance(type, initialParameterValues);
+    k_assert(newFilter, "Failed to add a new filter node.");
+
     const unsigned filterWidgetWidth = (newFilter->guiWidget->widget->width() + 20);
     const unsigned filterWidgetHeight = (newFilter->guiWidget->widget->height() + 35);
     const QString nodeTitle = QString("%1. %2").arg(this->numNodesAdded+1).arg(newFilter->guiWidget->title);
 
-    k_assert(newFilter, "Failed to add a new filter node.");
-
     FilterGraphNode *newNode = nullptr;
 
-    switch (type)
+    // Initialize the node.
     {
-        case filter_type_enum_e::input_gate: newNode = new InputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
-        case filter_type_enum_e::output_gate: newNode = new OutputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
-        default: newNode = new FilterNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
-    }
-
-    newNode->associatedFilter = newFilter;
-    newNode->setFlags(newNode->flags() | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsSelectable);
-    this->graphicsScene->addItem(newNode);
-
-    QGraphicsProxyWidget* nodeWidgetProxy = new QGraphicsProxyWidget(newNode);
-    nodeWidgetProxy->setWidget(newFilter->guiWidget->widget);
-    nodeWidgetProxy->widget()->move(10, 30);
-
-    if (type == filter_type_enum_e::input_gate)
-    {
-        this->inputGateNodes.push_back(newNode);
-    }
-
-    newNode->moveBy(rand()%20, rand()%20);
-
-    real maxZ = 0;
-    const auto sceneItems = this->graphicsScene->items();
-    for (auto item: sceneItems)
-    {
-        if (item->zValue() > maxZ)
+        switch (type)
         {
-            maxZ = item->zValue();
+            case filter_type_enum_e::input_gate: newNode = new InputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
+            case filter_type_enum_e::output_gate: newNode = new OutputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
+            default: newNode = new FilterNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
         }
-    }
-    newNode->setZValue(maxZ+1);
 
-    ui->graphicsView->centerOn(newNode);
+        newNode->associatedFilter = newFilter;
+        newNode->setFlags(newNode->flags() | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsSelectable);
+        this->graphicsScene->addItem(newNode);
+
+        QGraphicsProxyWidget* nodeWidgetProxy = new QGraphicsProxyWidget(newNode);
+        nodeWidgetProxy->setWidget(newFilter->guiWidget->widget);
+        nodeWidgetProxy->widget()->move(10, 30);
+
+        if (type == filter_type_enum_e::input_gate)
+        {
+            this->inputGateNodes.push_back(newNode);
+        }
+
+        newNode->moveBy(rand()%20, rand()%20);
+    }
+
+    // Make sure the node shows up top.
+    {
+        double maxZ = 0;
+
+        const auto sceneItems = this->graphicsScene->items();
+
+        for (auto item: sceneItems)
+        {
+            if (item->zValue() > maxZ)
+            {
+                maxZ = item->zValue();
+            }
+        }
+
+        newNode->setZValue(maxZ + 1);
+
+        ui->graphicsView->centerOn(newNode);
+    }
+
+    connect(newFilter->guiWidget, &filter_widget_s::parameter_changed, this, [this]
+    {
+        this->data_changed();
+    });
 
     this->numNodesAdded++;
+    emit this->data_changed();
 
     return newNode;
 }
