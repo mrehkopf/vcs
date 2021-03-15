@@ -16,6 +16,11 @@ VCSBaseDialog::VCSBaseDialog(QWidget *parent) : QDialog(parent)
         this->update_window_title();
     });
 
+    connect(this, &VCSBaseDialog::data_changed, this, [this]
+    {
+        this->set_unsaved_changes(true);
+    });
+
     return;
 }
 

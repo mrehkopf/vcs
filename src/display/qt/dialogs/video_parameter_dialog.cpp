@@ -120,11 +120,6 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
     // Connect the GUI controls to consequences for changing their values.
     {
-        connect(this, &VideoParameterDialog::data_changed, this, [this]
-        {
-            this->set_unsaved_changes(true);
-        });
-
         connect(this, &VCSBaseDialog::data_filename_changed, this, [this](const QString &newFilename)
         {
             this->set_unsaved_changes(false);
