@@ -598,25 +598,25 @@ u8* kat_anti_tear(u8 *const pixels, const resolution_s &r)
     // becomes the primary one.
     if (BUFFER_PRIMARY.isDone)
     {
-        u8 *const p = BUFFER_PRIMARY.pixels;
+        u8 *const untornPixels = BUFFER_PRIMARY.pixels;
+
         captured_frame_s f;
         f.r = frame.r;
-        f.pixels.point_to(p, (f.r.w * f.r.h * (f.r.bpp / 8)));
+        f.pixels.point_to(untornPixels, (f.r.w * f.r.h * (f.r.bpp / 8)));
 
         visualize_tearing(f);
         visualize_settings(f);
 
         reset_buffer(&BUFFER_PRIMARY);
 
-        #define SWITCH_BUFFERS(a, b) tear_frame_s tmp = (a);\
-                                     (a) = (b);\
-                                     (b) = tmp;
+        // Flip the buffers.
+        {
+            tear_frame_s tmp = BUFFER_PRIMARY;
+            BUFFER_PRIMARY = BUFFER_SECONDARY;
+            BUFFER_SECONDARY = tmp;
+        }
 
-        SWITCH_BUFFERS(BUFFER_PRIMARY, BUFFER_SECONDARY);
-
-        #undef SWITCH_BUFFERS
-
-        return p;
+        return untornPixels;
     }
 
     // No frame was ready for display, so signal to keep displaying the frame that
