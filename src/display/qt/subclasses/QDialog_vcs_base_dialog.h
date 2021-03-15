@@ -23,9 +23,13 @@ public:
 
     bool is_enabled(void) const;
 
+    bool has_unsaved_changes(void) const;
+
     void set_enabled(const bool isEnabled);
 
     void set_name(const QString &newName);
+
+    const QString& name(void) const;
 
     void set_data_filename(const QString &filename);
 

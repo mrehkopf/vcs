@@ -11,7 +11,7 @@
 
 VCSBaseDialog::VCSBaseDialog(QWidget *parent) : QDialog(parent)
 {
-    connect(this, &VCSBaseDialog::unsaved_changes_flag_changed, this, [this](const bool areUnsavedChanges)
+    connect(this, &VCSBaseDialog::unsaved_changes_flag_changed, this, [this]
     {
         this->update_window_title();
     });
@@ -27,6 +27,16 @@ VCSBaseDialog::VCSBaseDialog(QWidget *parent) : QDialog(parent)
 VCSBaseDialog::~VCSBaseDialog(void)
 {
     return;
+}
+
+const QString& VCSBaseDialog::name(void) const
+{
+    return this->_name;
+}
+
+bool VCSBaseDialog::has_unsaved_changes(void) const
+{
+    return this->_areUnsavedChanges;
 }
 
 bool VCSBaseDialog::is_enabled(void) const

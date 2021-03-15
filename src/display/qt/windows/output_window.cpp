@@ -1011,9 +1011,33 @@ void MainWindow::set_opengl_enabled(const bool enabled)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    PROGRAM_EXIT_REQUESTED = 1;
-
+    // The main loop will close the window if it detects PROGRAM_EXIT_REQUESTED.
     event->ignore();
+
+    // If there are unsaved changes, ask the user to confirm to exit.
+    {
+        QStringList dialogsWithUnsavedChanges;
+
+        for (const VCSBaseDialog *dialog: this->dialogs)
+        {
+            if (dialog->has_unsaved_changes())
+            {
+                dialogsWithUnsavedChanges << QString("* %1").arg(dialog->name());
+            }
+        }
+
+        if (dialogsWithUnsavedChanges.count() &&
+            (QMessageBox::question(this, "Confirm VCS exit",
+                                   "The following dialogs have unsaved changes:"
+                                   "<br><br>" + dialogsWithUnsavedChanges.join("<br>") +
+                                   "<br><br>Exit and discard their changes?",
+                                   (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::No))
+        {
+            return;
+        }
+    }
+
+    PROGRAM_EXIT_REQUESTED = 1;
 
     return;
 }
