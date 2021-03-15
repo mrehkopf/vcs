@@ -96,13 +96,14 @@ AliasDialog::AliasDialog(QWidget *parent) :
         connect(ui->pushButton_addAlias, &QPushButton::clicked, this, [=]
         {
             this->add_new_alias();
+            emit this->data_changed();
         });
 
         connect(ui->pushButton_deleteSelectedAliases, &QPushButton::clicked, this, [=]
         {
             if ((ui->treeWidget_knownAliases->selectedItems().count() > 0) &&
                 (QMessageBox::question(this, "Confirm alias deletion",
-                                       "Do you want to delete the selected alias(es)?",
+                                       "Delete the selected alias(es)?",
                                        (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes))
             {
                 this->remove_selected_aliases();
@@ -116,6 +117,7 @@ AliasDialog::AliasDialog(QWidget *parent) :
 
         connect(this, &VCSBaseDialog::data_filename_changed, this, [=](const QString &newFilename)
         {
+            this->set_unsaved_changes(false);
             kpers_set_value(INI_GROUP_ALIAS_RESOLUTIONS, "aliases_source_file", newFilename);
         });
     }
@@ -225,9 +227,6 @@ void AliasDialog::add_alias_to_list(const mode_alias_s a)
         x->setMaximum(MAX_OUTPUT_WIDTH);
         y->setMaximum(MAX_OUTPUT_HEIGHT);
 
-        x->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        y->setButtonSymbols(QAbstractSpinBox::NoButtons);
-
         x->setValue(width);
         y->setValue(height);
 
@@ -237,13 +236,25 @@ void AliasDialog::add_alias_to_list(const mode_alias_s a)
         connect(x, &QSpinBox::editingFinished, [this, parentItem, x, column]
         {
             parentItem->setData(column, data_role::width, x->value());
+            emit this->data_changed();
             this->broadcast_aliases();
         });
 
         connect(y, &QSpinBox::editingFinished, [this, parentItem, y, column]
         {
             parentItem->setData(column, data_role::height, y->value());
+            emit this->data_changed();
             this->broadcast_aliases();
+        });
+
+        connect(x, QOverload<int>::of(&QSpinBox::valueChanged), this, [this]
+        {
+            emit this->data_changed();
+        });
+
+        connect(y, QOverload<int>::of(&QSpinBox::valueChanged), this, [this]
+        {
+            emit this->data_changed();
         });
 
         layout->addWidget(x);
@@ -289,6 +300,7 @@ void AliasDialog::remove_all_aliases(void)
 
     for (auto item: allItems)
     {
+        emit this->data_changed();
         delete item;
     }
 
@@ -303,6 +315,7 @@ void AliasDialog::remove_selected_aliases(void)
 
     for (auto item: selectedItems)
     {
+        emit this->data_changed();
         delete item;
     }
 
