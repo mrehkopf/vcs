@@ -6,6 +6,7 @@
  */
 
 #include <QFileInfo>
+#include <QMessageBox>
 #include "display/qt/subclasses/QMenu_dialog_file_menu.h"
 #include "common/globals.h"
 
@@ -52,6 +53,15 @@ DialogFileMenu::DialogFileMenu(VCSBaseDialog *const parentDialog) :
 
     connect(close, &QAction::triggered, this, [=]
     {
+        if (parentDialog->has_unsaved_changes() &&
+            (QMessageBox::question(parentDialog,
+                                   "Close file?",
+                                   "This file has unsaved changes. Close it anyway?",
+                                   (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::No))
+        {
+            return;
+        }
+
         emit this->close(close->data().toString());
     });
 
