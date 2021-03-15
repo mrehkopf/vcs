@@ -77,7 +77,7 @@ private:
 
     void broadcast_current_preset_parameters(void);
 
-    void update_current_present_list_text(void);
+    void update_current_preset_list_text(void);
 
     void resort_preset_list(void);
 
