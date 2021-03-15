@@ -29,27 +29,38 @@ public:
 
     void set_data_filename(const QString &filename);
 
+    void set_unsaved_changes(const bool areUnsavedChanges);
+
     const QString& data_filename(void) const;
 
 signals:
-    // Emitted when the dialog's enabled state is set via this->set_enabled().
+    // Emitted when the dialog's enabled state is set. Note that this is emitted regardless
+    // of the state's previous value.
     void enabled_state_set(const bool isEnabled);
 
-    // Emitted when set_data_filename() is called.
+    // Emitted when the dialog's unsaved changes flag is modified. Note that this is emitted
+    // regardless of the flag's previous value.
+    void unsaved_changes_flag_changed(const bool areUnsavedChanges);
+
+    // Emitted when the dialog's data file name is modified. Note that this is emitted
+    // regardless of the name's previous value.
     void data_filename_changed(const QString &newName);
+
+    // Emitted when any of the dialog's data changes. However, it's up to the dialog to
+    // emit this signal; the base class doesn't.
+    void data_changed(void);
 
 protected:
     void update_window_title(void);
-
-    void save_data_file(const QString &filename);
-
-    void load_data_file(const QString &filename);
 
     QMenuBar *menuBar = nullptr;
 
 private:
     // Whether the dialog's functionality is enabled in VCS.
     bool _isEnabled = false;
+
+    // Indicates whether modifications to the dialog's data have been saved.
+    bool _areUnsavedChanges = false;
 
     // The dialog's name, to be shown in its window title.
     QString _name = "";

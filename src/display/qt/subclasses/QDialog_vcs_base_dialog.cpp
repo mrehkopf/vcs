@@ -11,6 +11,11 @@
 
 VCSBaseDialog::VCSBaseDialog(QWidget *parent) : QDialog(parent)
 {
+    connect(this, &VCSBaseDialog::unsaved_changes_flag_changed, this, [this](const bool areUnsavedChanges)
+    {
+        this->update_window_title();
+    });
+
     return;
 }
 
@@ -49,6 +54,12 @@ void VCSBaseDialog::set_data_filename(const QString &filename)
     return;
 }
 
+void VCSBaseDialog::set_unsaved_changes(const bool areUnsavedChanges)
+{
+    this->_areUnsavedChanges = areUnsavedChanges;
+    emit this->unsaved_changes_flag_changed(areUnsavedChanges);
+}
+
 const QString& VCSBaseDialog::data_filename(void) const
 {
     return this->_dataFilename;
@@ -56,15 +67,20 @@ const QString& VCSBaseDialog::data_filename(void) const
 
 void VCSBaseDialog::update_window_title(void)
 {
+    QString title = "";
+    const QString unsavedChangesMarker = (this->_areUnsavedChanges? "*" : "");
+
     if (this->_dataFilename.isEmpty())
     {
-        this->setWindowTitle(QString("%1 - %2").arg(this->_name).arg(PROGRAM_NAME));
+        title = QString("%1 - %2").arg(this->_name).arg(PROGRAM_NAME);
     }
     else
     {
         const QString baseFilename = QFileInfo(this->_dataFilename).baseName();
-        this->setWindowTitle(QString("%1 - %2 - %3").arg(baseFilename).arg(this->_name).arg(PROGRAM_NAME));
+        title = QString("%1 - %2 - %3").arg(baseFilename).arg(this->_name).arg(PROGRAM_NAME);
     }
+
+    this->setWindowTitle(unsavedChangesMarker + title);
 
     return;
 }
