@@ -303,8 +303,11 @@ bool FilterGraphDialog::load_graph_from_file(const QString &filename)
 
         return true;
     }
-
-    return false;
+    else
+    {
+        this->set_data_filename("");
+        return false;
+    }
 }
 
 void FilterGraphDialog::save_graph_into_file(QString filename)

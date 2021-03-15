@@ -61,6 +61,11 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
             FAIL_IF_FIRST_CELL_IS_NOT("id");
             const filter_type_enum_e filterType = kf_filter_type_for_id(rowData.at(row).at(1).toStdString());
 
+            if (filterType == filter_type_enum_e::unknown)
+            {
+                goto fail;
+            }
+
             row++;
             FAIL_IF_FIRST_CELL_IS_NOT("parameterData");
             const unsigned numParameters = rowData.at(row).at(1).toUInt();

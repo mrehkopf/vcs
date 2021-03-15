@@ -113,7 +113,6 @@ enum class filter_type_enum_e
     crop,
     flip,
     rotate,
-    delta_tiles,
 
     // Special cases. Gates are nodes that in a filter chain only pass or
     // reject images based on their original (input) and scaled (output)
@@ -122,6 +121,9 @@ enum class filter_type_enum_e
     // by the filters in the chain.
     input_gate,
     output_gate,
+
+    // Special case. Signals that we don't recognize a given filter's type.
+    unknown,
 };
 
 /*!

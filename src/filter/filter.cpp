@@ -149,7 +149,11 @@ std::string kf_filter_name_for_id(const std::string id)
 
 filter_type_enum_e kf_filter_type_for_id(const std::string id)
 {
-    return KNOWN_FILTER_TYPES.at(id).type;
+    const auto filter = KNOWN_FILTER_TYPES.find(id);
+
+    return (filter == KNOWN_FILTER_TYPES.end())
+           ? filter_type_enum_e::unknown
+           : (*filter).second.type;
 }
 
 std::string kf_filter_id_for_type(const filter_type_enum_e type)
