@@ -165,6 +165,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         {
             const video_preset_s *const newPreset = kvideopreset_create_new_preset();
             this->add_video_preset_to_list(newPreset);
+            emit this->data_changed();
         });
 
         #define OVERLOAD_DOUBLE static_cast<void (QDoubleSpinBox::*)(double)>
@@ -604,7 +605,6 @@ void VideoParameterDialog::add_video_preset_to_list(const video_preset_s *const 
     const QString presetText = this->make_preset_list_text(preset);
 
     ui->comboBox_presetList->addItem(presetText, preset->id);
-    emit this->data_changed();
 
     // Select the item we added (we assume it was added to the bottom of the list).
     {
