@@ -13,6 +13,7 @@
 #include <QSpinBox>
 #include <QScrollBar>
 #include "display/qt/subclasses/QGroupBox_parameter_grid.h"
+#include "display/qt/utility.h"
 #include "common/globals.h"
 
 ParameterGrid::ParameterGrid(QWidget *parent) : QGroupBox(parent)
@@ -90,9 +91,6 @@ void ParameterGrid::add_combobox(const QString name,
             layout->addWidget(label, rowIdx, 0);
             layout->addWidget(comboBox, rowIdx, 1, 1, 2);
             layout->addWidget(resetButton, rowIdx, 3);
-
-            newParam->guiComboBox = comboBox;
-            newParam->guiResetButton = resetButton;
         }
 
         // Create component reactivity.
@@ -108,7 +106,31 @@ void ParameterGrid::add_combobox(const QString name,
                 newParam->currentValue = newIndex;
                 resetButton->setEnabled((newIndex != newParam->defaultValue));
 
-                emit this->parameter_value_changed(newParam->name);
+                emit this->parameter_value_changed(newParam->name, newIndex);
+                emit this->parameter_value_changed_by_user(newParam->name, newIndex);
+            });
+
+            connect(this, &ParameterGrid::parameter_value_changed_programmatically, this, [=](const QString &parameterName, const int newValue)
+            {
+                if (parameterName == newParam->name)
+                {
+                    const auto blockCombo = block_widget_signals_c(comboBox);
+
+                    newParam->currentValue = newValue;
+                    comboBox->setCurrentIndex(newValue);
+                    resetButton->setEnabled((newValue != newParam->defaultValue));
+                }
+
+                emit this->parameter_value_changed(parameterName, newValue);
+            });
+
+            connect(this, &ParameterGrid::parameter_default_value_changed_programmatically, this, [=](const QString &parameterName, const int newDefault)
+            {
+                if (parameterName == newParam->name)
+                {
+                    newParam->defaultValue = newDefault;
+                    resetButton->setEnabled((newParam->currentValue != newDefault));
+                }
             });
         }
     }
@@ -170,10 +192,6 @@ void ParameterGrid::add_scroller(const QString name,
             layout->addWidget(spinBox, rowIdx, 1);
             layout->addWidget(scrollBar, rowIdx, 2);
             layout->addWidget(resetButton, rowIdx, 3);
-
-            newParam->guiSpinBox = spinBox;
-            newParam->guiScrollBar = scrollBar;
-            newParam->guiResetButton = resetButton;
         }
 
         // Create component reactivity.
@@ -191,11 +209,62 @@ void ParameterGrid::add_scroller(const QString name,
             connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [=](const int newValue)
             {
                 newParam->currentValue = newValue;
-
                 scrollBar->setValue(newValue);
                 resetButton->setEnabled((newValue != newParam->defaultValue));
 
-                emit this->parameter_value_changed(newParam->name);
+                emit this->parameter_value_changed(newParam->name, newValue);
+                emit this->parameter_value_changed_by_user(newParam->name, newValue);
+            });
+
+            connect(this, &ParameterGrid::parameter_value_changed_programmatically, this, [=](const QString &parameterName, const int newValue)
+            {
+                if (parameterName == newParam->name)
+                {
+                    const auto blockSpin = block_widget_signals_c(spinBox);
+                    const auto blockScroll = block_widget_signals_c(scrollBar);
+
+                    newParam->currentValue = newValue;
+                    spinBox->setValue(newValue);
+                    scrollBar->setValue(newValue);
+                    resetButton->setEnabled((newValue != newParam->defaultValue));
+                }
+
+                emit this->parameter_value_changed(newParam->name, newValue);
+            });
+
+            connect(this, &ParameterGrid::parameter_default_value_changed_programmatically, this, [=](const QString &parameterName, const int newDefault)
+            {
+                if (parameterName == newParam->name)
+                {
+                    newParam->defaultValue = newDefault;
+                    resetButton->setEnabled((newParam->currentValue != newDefault));
+                }
+            });
+
+            connect(this, &ParameterGrid::parameter_minimum_value_changed_programmatically, this, [=](const QString &parameterName, const int newMin)
+            {
+                if (parameterName == newParam->name)
+                {
+                    const auto blockSpin = block_widget_signals_c(spinBox);
+                    const auto blockScroll = block_widget_signals_c(scrollBar);
+
+                    newParam->minimumValue = newMin;
+                    spinBox->setMinimum(newMin);
+                    scrollBar->setMinimum(newMin);
+                }
+            });
+
+            connect(this, &ParameterGrid::parameter_maximum_value_changed_programmatically, this, [=](const QString &parameterName, const int newMax)
+            {
+                if (parameterName == newParam->name)
+                {
+                    const auto blockSpin = block_widget_signals_c(spinBox);
+                    const auto blockScroll = block_widget_signals_c(scrollBar);
+
+                    newParam->minimumValue = newMax;
+                    spinBox->setMaximum(newMax);
+                    scrollBar->setMaximum(newMax);
+                }
             });
         }
     }
@@ -243,36 +312,14 @@ int ParameterGrid::minimum_value(const QString &parameterName) const
 
 void ParameterGrid::set_value(const QString &parameterName, const int newValue)
 {
-    auto *const parameter = this->parameter(parameterName);
-
-    k_assert((parameter->type != ParameterGrid::parameter_type_e::unknown),
-             "Detected a parameter with no known type.");
-
-    switch (parameter->type)
-    {
-        case ParameterGrid::parameter_type_e::scroller:
-        {
-            this->parameter(parameterName)->guiSpinBox->setValue(newValue);
-            break;
-        }
-        case ParameterGrid::parameter_type_e::combobox:
-        {
-            parameter->currentValue = newValue;
-            emit this->parameter_value_changed(parameterName);
-            break;
-        }
-        default: k_assert(0, "Unknown parameter type."); break;
-    }
+    emit this->parameter_value_changed_programmatically(parameterName, newValue);
 
     return;
 }
 
 void ParameterGrid::set_default_value(const QString &parameterName, const int newDefault)
 {
-    auto *parameter = this->parameter(parameterName);
-
-    parameter->defaultValue = newDefault;
-    parameter->guiResetButton->setEnabled((parameter->currentValue != newDefault));
+    emit this->parameter_default_value_changed_programmatically(parameterName, newDefault);
 
     return;
 }
@@ -284,9 +331,7 @@ void ParameterGrid::set_maximum_value(const QString &parameterName, const int ne
     k_assert((parameter->type == ParameterGrid::parameter_type_e::scroller),
              "Only scroller type parameter can have a maximum value.");
 
-    parameter->maximumValue = newMax;
-    parameter->guiSpinBox->setMaximum(newMax);
-    parameter->guiScrollBar->setMaximum(newMax);
+    emit this->parameter_maximum_value_changed_programmatically(parameterName, newMax);
 
     return;
 }
@@ -298,9 +343,7 @@ void ParameterGrid::set_minimum_value(const QString &parameterName, const int ne
     k_assert((parameter->type == ParameterGrid::parameter_type_e::scroller),
              "Only scroller type parameter can have a minimum value.");
 
-    parameter->minimumValue = newMin;
-    parameter->guiSpinBox->setMinimum(newMin);
-    parameter->guiScrollBar->setMinimum(newMin);
+    emit this->parameter_minimum_value_changed_programmatically(parameterName, newMin);
 
     return;
 }

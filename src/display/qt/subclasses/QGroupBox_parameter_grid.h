@@ -49,7 +49,19 @@ public:
     void set_minimum_value(const QString &parameterName, const int newMin);
 
 signals:
-    void parameter_value_changed(const QString &parameterName);
+    // Emitted when a parameter's value is changed either by the user via the
+    // GUI or by a call to this->set_value().
+    void parameter_value_changed(const QString &parameterName, const int newValue);
+
+    // Emitted when a parameter's value is changed by the user via the GUI.
+    void parameter_value_changed_by_user(const QString &parameterName, const int newValue);
+
+    // Emitted when a parameter's value is changed by a call to this->set_value().
+    void parameter_value_changed_programmatically(const QString &parameterName, const int newValue);
+
+    void parameter_default_value_changed_programmatically(const QString &parameterName, const int newDefault);
+    void parameter_minimum_value_changed_programmatically(const QString &parameterName, const int newMin);
+    void parameter_maximum_value_changed_programmatically(const QString &parameterName, const int newMax);
 
 private:
     enum class parameter_type_e
@@ -64,10 +76,6 @@ private:
     {
         parameter_type_e type = parameter_type_e::unknown;
         QString name = "";
-        QSpinBox *guiSpinBox = nullptr;
-        QScrollBar *guiScrollBar = nullptr;
-        QPushButton *guiResetButton = nullptr;
-        QComboBox *guiComboBox = nullptr;
         int defaultValue = 0;
         int currentValue = 0;
         int minimumValue = 0;
