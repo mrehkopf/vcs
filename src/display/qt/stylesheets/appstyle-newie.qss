@@ -21,13 +21,14 @@ QInputDialog
 {
     background-color: #454545;
     padding: 40px;
-    border: none;
+    border: 2px dashed black;
+    margin: 0;
 }
 
 QMessageBox QPushButton,
 QInputDialog QPushButton
 {
-    padding: 6px 14px;
+    padding: 4px 14px;
 }
 
 QFrame
@@ -44,6 +45,7 @@ QScrollArea
 }
 
 QGraphicsView
+
 {
     background-color: #353535;
     margin: 0;
@@ -138,58 +140,6 @@ QPlainTextEdit
     margin-right: 6px;
 }
 
-QAbstractButton
-{
-    color: black;
-}
-
-QPushButton,
-QPushButton:flat
-{
-    min-height: 20px;
-    padding: 3px;
-    border-radius: 2px;
-    border: 1px solid black;
-    background-color: transparent;
-    color: #e0e0e0;
-}
-
-QPushButton,
-QPushButton:flat,
-QTreeWidget QHeaderView::section,
-QScrollBar::add-line:horizontal,
-QScrollBar::sub-line:horizontal,
-QScrollBar::add-line:vertical,
-QScrollBar::sub-line:vertical
-{
-    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #686868, stop: 1 #474747);
-}
-
-QPushButton:flat
-{
-    padding: 3px;
-    border-radius: 3px;
-    border: none;
-    background-color: transparent;
-    background: transparent;
-}
-
-QPushButton:pressed,
-QPushButton:flat:pressed,
-QPushButton:flat:hover:pressed,
-QScrollBar::add-line:vertical:pressed,
-QScrollBar::sub-line:vertical:pressed,
-QScrollBar::add-line:horizontal:pressed,
-QScrollBar::sub-line:horizontal:pressed
-{
-    background: #474747;
-}
-
-QPushButton:flat
-{
-    border: none;
-}
-
 QPushButton:flat:pressed,
 QPushButton:flat:hover:pressed
 {
@@ -204,7 +154,7 @@ QAbstractScrollArea::corner
 QComboBox::down-arrow,
 QAbstractButton::menu-indicator
 {
-    image: url(:/res/images/icons/arrow_down.png);
+    image: url(:/res/images/icons/newie/arrow_down.png);
 }
 
 QComboBox::down-arrow:disabled
@@ -230,7 +180,7 @@ QComboBox::drop-down
     padding: 3px;
     border: none;
     background-color: transparent;
- }
+}
 
 QTableWidget
 {
@@ -245,11 +195,7 @@ QListWidget
     color: #e5e5e5;
 }
 
-QListWidget::item:selected:active
-{
-    background: rgba(10, 10, 0, 0.1);
-}
-
+QListWidget::item:selected:active,
 QListWidget::item:selected
 {
     background: rgba(10, 10, 0, 0.1);
@@ -740,4 +686,53 @@ QGroupBox:disabled
 QGroupBox::title:disabled
 {
     color: gray;
+}
+
+QPushButton,
+QPushButton:flat
+{
+    min-height: 20px;
+    padding: 3px;
+    border-radius: 2px;
+    border: 1px solid black;
+    background-color: transparent;
+    color: #e0e0e0;
+}
+
+QComboBox,
+QPushButton,
+QPushButton:flat,
+QTreeWidget QHeaderView::section,
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal,
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical
+{
+    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #686868, stop: 1 #474747);
+    color: #e0e0e0;
+}
+
+QPushButton:flat
+{
+    padding: 3px;
+    border-radius: 3px;
+    border: none;
+    background-color: transparent;
+    background: transparent;
+}
+
+QPushButton:pressed,
+QPushButton:flat:pressed,
+QPushButton:flat:hover:pressed,
+QScrollBar::add-line:vertical:pressed,
+QScrollBar::sub-line:vertical:pressed,
+QScrollBar::add-line:horizontal:pressed,
+QScrollBar::sub-line:horizontal:pressed
+{
+    background: #474747;
+}
+
+QPushButton:flat
+{
+    border: none;
 }
