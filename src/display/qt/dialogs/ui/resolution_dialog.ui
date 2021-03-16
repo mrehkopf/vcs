@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>318</width>
-    <height>134</height>
+    <height>133</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -109,20 +109,11 @@
           </layout>
          </item>
          <item>
-          <spacer name="verticalSpacer_2">
+          <widget class="Line" name="line">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>4</height>
-            </size>
-           </property>
-          </spacer>
+          </widget>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
