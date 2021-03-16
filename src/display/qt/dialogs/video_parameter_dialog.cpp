@@ -150,7 +150,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         connect(ui->pushButton_deletePreset, &QPushButton::clicked, this, [this]
         {
             if (this->currentPreset &&
-                (QMessageBox::question(this, "Confirm preset deletion",
+                (QMessageBox::question(this, "Confirm deletion",
                                        "Delete this preset?",
                                        (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes))
             {
