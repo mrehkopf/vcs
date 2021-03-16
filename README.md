@@ -124,9 +124,50 @@ The menu bar will be displayed when you hover the mouse cursor over the output w
 
 The menu bar is divided into four categories: `File`, `Input`, `Output`, and `About`. The following is a list of the options available.
 
-##### Menu bar: File
-`File` &rarr; `Exit`\
-Exit VCS.
+##### Menu bar: Capture
+`Capture` &rarr; `Channel`\
+Set the hardware capture channel. Depending on the capabilities of your capture hardware, channels #1 through #2 are available.
+
+`Capture` &rarr; `Color depth`\
+Set the color depth with which frames are captured. This is a hardware-level setting: the capture hardware will convert each frame to this color depth before uploading it to system memory - thus lower color depths consume less bandwidth. Prior to display, VCS will convert the frames to the color depth of the [output window](#output-window).
+ 
+`Capture` &rarr; `Dialogs` &rarr; `Video`\
+Open the [video & color](#video-&-color-dialog) dialog.
+
+`Capture` &rarr; `Dialogs` &rarr; `Aliases`\
+Open the [alias resolutions](#alias-resolutions-dialog) dialog.
+
+`Capture` &rarr; `Dialogs` &rarr; `Resolution`\
+Open the [input resolution](#input-resolution-dialog) dialog.
+
+##### Menu bar: Output
+`Output` &rarr; `Aspect ratio`\
+Set the aspect ratio to display captured frames in. Letterboxing will be used to achieve the desired ratio.
+
+- `Native`: Display frames in the full size of the [output window](#output-window), without letterboxing.
+- `Traditional 4:3`: Use 4:3 aspect ratio for resolutions that historically might have been meant to be displayed as such. These include 720 x 400, 640 x 400, and 320 x 200.
+- `Always 4:3`: Display all frames in 4:3 aspect ratio.
+
+`Output` &rarr; `Upscaler`\
+Set the scaler to be used when frames are upscaled to fit the [output window](#output-window).
+
+`Output` &rarr; `Downscaler`\
+Set the scaler to be used when frames are downscaled to fit the [output window](#output-window).
+
+`Output` &rarr; `Dialogs` &rarr; `Video recorder`\
+Open the [record](#record-dialog) dialog.
+
+`Output` &rarr; `Dialogs` &rarr; `Overlay`\
+Open the [overlay](#overlay-dialog) dialog.
+
+`Output` &rarr; `Dialogs` &rarr; `Anti-tear`\
+Open the [anti-tear](#anti-tear-dialog) dialog.
+
+`Output` &rarr; `Dialogs` &rarr; `Resolution`\
+Open the [output resolution](#output-resolution-dialog) dialog.
+
+`Output` &rarr; `Dialogs` &rarr; `Filter graph`\
+Open the [filter graph](#filter-graph-dialog) dialog.
 
 ##### Menu bar: Window
 `Window` &rarr; `Renderer`\
@@ -153,51 +194,6 @@ Place the [output window](#output-window) into fullscreen mode. For best results
 
 Note: The fullscreen feature may not work properly on certain distributions of Linux.
 
-##### Menu bar: Input
-`Input` &rarr; `Channel`\
-Set the hardware capture channel. Depending on the capabilities of your capture hardware, channels #1 through #2 are available.
-
-`Input` &rarr; `Color depth`\
-Set the color depth with which frames are captured. This is a hardware-level setting: the capture hardware will convert each frame to this color depth before uploading it to system memory - thus lower color depths consume less bandwidth. Prior to display, VCS will convert the frames to the color depth of the [output window](#output-window).
- 
-`Input` &rarr; `Video...`\
-Open the [video & color](#video-&-color-dialog) dialog.
-
-`Input` &rarr; `Aliases...`\
-Open the [alias resolutions](#alias-resolutions-dialog) dialog.
-
-`Input` &rarr; `Resolution...`\
-Open the [input resolution](#input-resolution-dialog) dialog.
-
-##### Menu bar: Output
-`Output` &rarr; `Aspect ratio`\
-Set the aspect ratio to display captured frames in. Letterboxing will be used to achieve the desired ratio.
-
-- `Native`: Display frames in the full size of the [output window](#output-window), without letterboxing.
-- `Traditional 4:3`: Use 4:3 aspect ratio for resolutions that historically might have been meant to be displayed as such. These include 720 x 400, 640 x 400, and 320 x 200.
-- `Always 4:3`: Display all frames in 4:3 aspect ratio.
-
-`Output` &rarr; `Upscaler`\
-Set the scaler to be used when frames are upscaled to fit the [output window](#output-window).
-
-`Output` &rarr; `Downscaler`\
-Set the scaler to be used when frames are downscaled to fit the [output window](#output-window).
-
-`Output` &rarr; `Record...`\
-Open the [record](#record-dialog) dialog.
-
-`Output` &rarr; `Overlay...`\
-Open the [overlay](#overlay-dialog) dialog.
-
-`Output` &rarr; `Anti-tear...`\
-Open the [anti-tear](#anti-tear-dialog) dialog.
-
-`Output` &rarr; `Resolution...`\
-Open the [output resolution](#output-resolution-dialog) dialog.
-
-`Output` &rarr; `Filter graph`\
-Open the [filter graph](#filter-graph-dialog) dialog.
-
 ##### Menu bar: Help
 `Help` &rarr; `About...`\
 Display information about VCS and the capture hardware.
@@ -214,7 +210,7 @@ The VCS user interface includes a number of dialogs, with which you can adjust t
 - [Filter graph dialog](#filter-graph-dialog)
 
 ### Video presets dialog
-To access: Ctrl+V or [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Video...`
+To access: Ctrl+V or [Menu bar](#menu-bar) &rarr; `Capture` &rarr; `Dialogs` &rarr; `Video`
 
 The video presets dialog lets you to modify the capture hardware's video signal parameters.
 
@@ -230,14 +226,14 @@ If you want your settings to persist after you exit VCS, remember to save them f
 Saved settings can be restored via `File` &rarr; `Load settings...`.
 
 ### Alias resolutions dialog
-To access: [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Aliases...`
+To access: [Menu bar](#menu-bar) &rarr; `Capture` &rarr; `Dialogs` &rarr; `Aliases...`
 
 With the alias resolutions dialog, you can tell VCS to automatically override certain input resolutions.
 
 For instance, if you find that your capture hardware is incorrectly initializing 640 x 400 as 512 x 488 (or something of that sort), you can define 640 x 400 as an alias of 512 x 488. Now, whenever the capture hardware sets the input resolution to 512 x 488, VCS will instruct it to change it to 640 x 400.
 
 ### Video record dialog
-To access: Ctrl+R or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Record...`
+To access: Ctrl+R or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Dialogs` &rarr; `Record...`
 
 The record dialog gives you the option to stream captured frames into a video file.
 
@@ -273,7 +269,7 @@ If the recorder dialog indicates that frames are being dropped while recording, 
 - During recording, frames will be saved to disk in batches. If you get a bunch of frames dropped every couple of seconds but no drops otherwise, insufficient disk performance may be the reason (i.e. writing the batch of frames takes too long).
 
 ### Input resolution dialog
-To access: Ctrl+I or [Menu bar](#menu-bar) &rarr; `Input` &rarr; `Resolution...`
+To access: Ctrl+I or [Menu bar](#menu-bar) &rarr; `Capture` &rarr; `Dialogs` &rarr; `Resolution...`
 
 The input resolution dialog lets you override the capture hardware's current capture resolution.
 
@@ -286,7 +282,7 @@ The dialog's buttons will tell the capture hardware to set a particular input re
 You can change a button's assigned resolution by clicking on it while holding down the Alt key.
 
 ### Output resolution dialog
-To access: Ctrl+O or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Resolution...`
+To access: Ctrl+O or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Dialogs` &rarr; `Resolution...`
 
 The output resolution dialog lets you resize the output window. This also resizes the frames being displayed in the window.
 
@@ -301,7 +297,7 @@ Normally, the size of the [output window](#output-window) will match the capture
 **Relative scale.** Scale the size of the output window up or down by a percentage of its base size. The base size is either the capture resolution, or, if enabled, the override resolution.
 
 ### Overlay dialog
-To access: Ctrl+L or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Overlay...`
+To access: Ctrl+L or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Dialogs` &rarr; `Overlay...`
 
 The overlay dialog lets you define a message to be overlaid on the [output window](#output-window).
 
@@ -313,7 +309,7 @@ You can combine normal text with pre-set VCS variables and HTML/CSS formatting t
 - Note: The overlay will not be included in videos recorded using VCS's built-in recording functionality (see the [record dialog](#record-dialog)).
 
 ### Anti-tear dialog
-To access: Ctrl+A or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Anti-tear...`
+To access: Ctrl+A or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Dialogs` &rarr; `Anti-tear...`
 
 The anti-tear dialog provides functionality to remove tearing from captured frames.
 
@@ -341,7 +337,7 @@ Anti-tearing can be considered an experimental feature of VCS. It works quite we
 **Matches req'd.** Set how many times on a row of pixels the sums of the sampling window need to exceed the threshold for that row of pixels to be considered new data.
 
 ### Filter graph dialog
-To access: Ctrl+F or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Filter graph...`
+To access: Ctrl+F or [Menu bar](#menu-bar) &rarr; `Output` &rarr; `Dialogs` &rarr; `Filter graph...`
 
 The filter graph dialog allows you to create chains of image filters to be applied to captured frames prior to display in the [output window](#output-window).
 
