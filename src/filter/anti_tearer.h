@@ -18,9 +18,9 @@ class anti_tearer_c
     friend class anti_tear_one_per_frame_c;
 
 public:
-    virtual ~anti_tearer_c(void);
-    
     void initialize(const resolution_s &maxResolution);
+
+    void release(void);
 
     // Returns the present buffer's pixels.
     u8* pixels(void) const;
@@ -58,7 +58,7 @@ protected:
 
     // We'll use these buffers to accumulate torn pixel data and so to reconstruct
     // torn frames.
-    std::vector<heap_bytes_s<u8>> buffers = std::vector<heap_bytes_s<u8>>(3);
+    std::vector<heap_bytes_s<u8>> buffers = std::vector<heap_bytes_s<u8>>(2);
 
     // Buffers for constructing whole frames from partial torn ones. For
     // instance, the back buffer might be where torn frames are accumulates,

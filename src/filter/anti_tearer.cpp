@@ -8,12 +8,14 @@
 #include <cstring>
 #include "filter/anti_tearer.h"
 
-anti_tearer_c::~anti_tearer_c(void)
+void anti_tearer_c::release(void)
 {
-    for (auto &buffer: this->buffers)
-    {
-        buffer.release_memory();
-    }
+    this->backBuffer = nullptr;
+    this->frontBuffer = nullptr;
+
+    this->buffers.at(0).release_memory();
+    this->buffers.at(1).release_memory();
+    this->presentBuffer.pixels.release_memory();
 
     return;
 }
@@ -22,16 +24,12 @@ void anti_tearer_c::initialize(const resolution_s &maxResolution)
 {
     const unsigned requiredBufferSize = maxResolution.w * maxResolution.h * (maxResolution.bpp / 8);
 
-    for (auto &buffer: this->buffers)
-    {
-        buffer.alloc(requiredBufferSize);
-    }
+    this->buffers.at(0).alloc(requiredBufferSize);
+    this->buffers.at(1).alloc(requiredBufferSize);
+    this->presentBuffer.pixels.alloc(requiredBufferSize);
 
-    k_assert((this->buffers.size() >= 3), "Too few buffers.");
     this->backBuffer = this->buffers[0].ptr();
     this->frontBuffer = this->buffers[1].ptr();
-    this->presentBuffer.pixels.point_to(this->buffers[2].ptr(), requiredBufferSize);
-
     this->presentBuffer.r = {0, 0, 32};
 
     this->onePerFrame.initialize(this);

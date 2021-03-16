@@ -21,7 +21,8 @@ class anti_tear_one_per_frame_c
 public:
     void initialize(anti_tearer_c *const base);
 
-    void process(const captured_frame_s *const frame, const bool visualizeTear,
+    void process(const captured_frame_s *const frame,
+                 const bool visualizeTear,
                  const bool visualizeScanRange);
 
     void visualize_scan_range(void);

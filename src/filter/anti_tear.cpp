@@ -617,9 +617,9 @@ void kat_initialize_anti_tear(void)
 {
     const resolution_s &maxres = kc_capture_api().get_maximum_resolution();
 
-    ANTI_TEARER.initialize({maxres.w, maxres.h, EXPECTED_BIT_DEPTH});
-
     INFO(("Initializing the anti-tear engine for %u x %u max.", maxres.w, maxres.h));
+
+    ANTI_TEARER.initialize({maxres.w, maxres.h, EXPECTED_BIT_DEPTH});
 
     const u32 backBufferSize = maxres.w * maxres.h * (EXPECTED_BIT_DEPTH / 8);
     BACK_BUFFER_STORAGE.alloc(backBufferSize * 2, "Anti-tearing backbuffers");
@@ -649,6 +649,8 @@ const anti_tear_options_s& kat_default_settings(void)
 void kat_release_anti_tear(void)
 {
     INFO(("Releasing the anti-tear engine."));
+
+    ANTI_TEARER.release();
 
     BACK_BUFFER_STORAGE.release_memory();
     PREV_FRAME.release_memory();
