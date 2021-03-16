@@ -159,7 +159,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                             continue;
                         }
 
-                        auto *const action = new QAction(QString::fromStdString(filter->name));
+                        auto *const action = new QAction(QString::fromStdString(filter->name), filtersMenu);
 
                         switch (filter->category)
                         {
