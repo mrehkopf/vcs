@@ -1306,7 +1306,7 @@ void MainWindow::set_keyboard_shortcuts(void)
     }
 
     // Make Ctrl + Shift + <x> toggle the various dialogs' functionality on/off.
-    connect(keyboardShortcut("ctrl+shift+f"), &QShortcut::activated, [=]{this->filterGraphDlg->set_enabled(!this->filterGraphDlg->isEnabled());});
+    connect(keyboardShortcut("ctrl+shift+f"), &QShortcut::activated, [=]{this->filterGraphDlg->set_enabled(!this->filterGraphDlg->is_enabled());});
     connect(keyboardShortcut("ctrl+shift+l"), &QShortcut::activated, [=]{this->overlayDlg->set_enabled(!this->overlayDlg->is_enabled());});
     connect(keyboardShortcut("ctrl+shift+a"), &QShortcut::activated, [=]{this->antitearDlg->set_enabled(!this->antitearDlg->is_enabled());});
     connect(keyboardShortcut("ctrl+shift+r"), &QShortcut::activated, [=]{this->recordDlg->set_enabled(!this->recordDlg->is_enabled());});
