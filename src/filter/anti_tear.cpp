@@ -9,6 +9,7 @@
  */
 
 #include <cstring>
+#include "filter/anti_tearer.h"
 #include "filter/anti_tear.h"
 #include "display/display.h"
 #include "capture/capture_api.h"
@@ -76,6 +77,8 @@ static resolution_s PREV_FRAME_RES = {0};
 // A vertical strip that describes for each row whether it's data matches that of
 // the previous frame (0) or is new (1).
 static int TEAR_STRIP[MAX_OUTPUT_HEIGHT];
+
+static anti_tearer_c ANTI_TEARER;
 
 static void reset_buffer(tear_frame_s *const b)
 {
@@ -201,23 +204,10 @@ static void validate_tear_strip(void)
 
 static void scan_for_tears(const captured_frame_s &frame)
 {
-    std::memset(TEAR_STRIP, 0, sizeof(int) * MAXY);
-    std::memset(&CURRENT_TEARS, 0, sizeof(frame_tears_s));
+    memset(TEAR_STRIP, 0, sizeof(int) * MAXY);
+    memset(&CURRENT_TEARS, 0, sizeof(frame_tears_s));
 
-    // A given frame's pixels can be of two types: ones that have changed from last
-    // frame, and ones that haven't. Image tearing happens when only some of the frame's
-    // pixels have updated between frames, such that the frame is in effect displaying two
-    // or more partial images interleaved.
-    //
-    // We'll try to find and flag (into TEAR_STRIP) the horizontal pixel rows that have
-    // changed since last frame. Rows that haven't changed are marked in TEAR_STRIP as
-    // 0, while rows that have changed are marked as 1.
-    //
-    // We assume that the frame fills in from bottom to top (high Y to low Y); and we'll
-    // scan its pixels from top to bottom (low Y to high Y). That means that e.g. if the
-    // frame contains one tear, the first row of new pixels we come across marks the
-    // tear, any rows before it were of the previous frame, and all rows down are of the
-    // new frame.
+    // Loop over the vertical range set by the user.
     for (size_t y = MINY; y < MAXY; y++)
     {
         u32 x = 0;
@@ -261,29 +251,7 @@ static void scan_for_tears(const captured_frame_s &frame)
             // the previous frame, i.e. that it's new data.
             if (matches >= MATCHES_REQD)
             {
-                switch (SCAN_HINT)
-                {
-                    // The frame may contain more than one tear, so we need to
-                    // keep looping to flag all rows.
-                    case anti_tear_scan_hint_e::look_for_multiple_tears:
-                    {
-                        TEAR_STRIP[y] = 1;
-
-                        break;
-                    }
-                    // The frame is expected to contain at most one tear, so now
-                    // that we've found it, we can mark the rest of the rows as
-                    // being of the new frame and stop looping.
-                    case anti_tear_scan_hint_e::look_for_one_tear:
-                    {
-                        for (unsigned row = y; row < MAXY; row++)
-                        {
-                            TEAR_STRIP[row] = 1;
-                        }
-
-                        goto scanning_done;
-                    }
-                }
+                TEAR_STRIP[y] = 1;
 
                 break;
             }
@@ -294,7 +262,6 @@ static void scan_for_tears(const captured_frame_s &frame)
 
     //at_cleanup_tear_strip();
 
-    scanning_done:
     validate_tear_strip();
 
     return;
@@ -482,6 +449,9 @@ void kat_set_range(const u32 min, const u32 max)
     MINY = min;
     MAXY_OFFS = max;
 
+    ANTI_TEARER.startRow = min;
+    ANTI_TEARER.endRow = max;
+
     reset_all_buffers();
 
     return;
@@ -491,6 +461,8 @@ void kat_set_threshold(const u32 t)
 {
     THRESHOLD = t;
 
+    ANTI_TEARER.threshold = t;
+
     reset_all_buffers();
 
     return;
@@ -499,6 +471,8 @@ void kat_set_threshold(const u32 t)
 void kat_set_domain_size(const u32 ds)
 {
     DOMAIN_SIZE = ds;
+
+    ANTI_TEARER.windowLength = ds;
 
     reset_all_buffers();
 
@@ -510,6 +484,8 @@ void kat_set_step_size(const u32 s)
     // A step size of 0 would cause an infinite loop.
     STEP_SIZE = std::max(1u, s);
 
+    ANTI_TEARER.stepSize = std::max(1u, s);
+
     reset_all_buffers();
 
     return;
@@ -518,6 +494,8 @@ void kat_set_step_size(const u32 s)
 void kat_set_matches_required(const u32 mr)
 {
     MATCHES_REQD = mr;
+
+    ANTI_TEARER.matchesRequired = mr;
 
     reset_all_buffers();
 
@@ -539,6 +517,13 @@ u8* kat_anti_tear(u8 *const pixels, const resolution_s &r)
     if (!ANTI_TEARING_ENABLED)
     {
         return pixels;
+    }
+
+    /// This code is work in progress.
+    if (SCAN_HINT == anti_tear_scan_hint_e::look_for_one_tear)
+    {
+        ANTI_TEARER.onePerFrame.process(&frame, VISUALIZE_TEAR, VISUALIZE_RANGE);
+        return ANTI_TEARER.pixels();
     }
 
     // Update the range over which we'll operate.
@@ -631,6 +616,8 @@ u8* kat_anti_tear(u8 *const pixels, const resolution_s &r)
 void kat_initialize_anti_tear(void)
 {
     const resolution_s &maxres = kc_capture_api().get_maximum_resolution();
+
+    ANTI_TEARER.initialize({maxres.w, maxres.h, EXPECTED_BIT_DEPTH});
 
     INFO(("Initializing the anti-tear engine for %u x %u max.", maxres.w, maxres.h));
 
