@@ -356,8 +356,8 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_enum_e typ
     const filter_c *const newFilter = kf_create_new_filter_instance(type, initialParameterValues);
     k_assert(newFilter, "Failed to add a new filter node.");
 
-    const unsigned filterWidgetWidth = (newFilter->guiWidget->widget->width() + 20);
-    const unsigned filterWidgetHeight = (newFilter->guiWidget->widget->height() + 35);
+    const unsigned filterWidgetWidth = (newFilter->guiWidget->widget->width() + 10);
+    const unsigned filterWidgetHeight = (newFilter->guiWidget->widget->height() + 29);
     const QString nodeTitle = QString("%1. %2").arg(this->numNodesAdded+1).arg(newFilter->guiWidget->title);
 
     FilterGraphNode *newNode = nullptr;
@@ -377,7 +377,7 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_enum_e typ
 
         QGraphicsProxyWidget* nodeWidgetProxy = new QGraphicsProxyWidget(newNode);
         nodeWidgetProxy->setWidget(newFilter->guiWidget->widget);
-        nodeWidgetProxy->widget()->move(10, 30);
+        nodeWidgetProxy->widget()->move(0, 27);
 
         if (type == filter_type_enum_e::input_gate)
         {
