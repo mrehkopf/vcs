@@ -71,7 +71,7 @@ When running VCS for the first time, the first thing you may want to do is adjus
 ## Output window
 The central point of the VCS user interface is the output window, where captured frames are displayed as they arrive from the capture hardware.
 
-![](images/screenshots/v2.0.0/output-window.png)\
+![](images/screenshots/v2.3.0/output-window.png)\
 *The output window - showing a Windows 98 desktop being captured on Linux.*
 
 ### Interacting with the output window
