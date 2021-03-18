@@ -41,12 +41,6 @@ protected:
                                const unsigned fromRow,
                                const unsigned toRow);
 
-    // Scans the given frame for a tear. If a tear is found, returns the pixel row
-    // on which it starts. Otherwise, returns -1.
-    int find_tear_row(const captured_frame_s *const frame,
-                      unsigned startY,
-                      unsigned endY);
-
     // Scans the given frame's rowIdx'th row to find whether the row's pixels have
     // chaned since the last full frame.
     bool is_pixel_row_new(const unsigned rowIdx,

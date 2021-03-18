@@ -62,23 +62,6 @@ void anti_tearer_c::copy_frame_pixel_rows(u8 *const dstBuffer,
     return;
 }
 
-int anti_tearer_c::find_tear_row(const captured_frame_s *const frame,
-                                 unsigned startY,
-                                 unsigned endY)
-{
-    for (unsigned rowIdx = startY; rowIdx < endY; rowIdx++)
-    {
-        if (this->is_pixel_row_new(rowIdx, frame))
-        {
-            // If the new row of pixels is at the top of the frame, there's no
-            // tearing (we assume the frame fills in from bottom to top).
-            return ((rowIdx == startY)? -1 : rowIdx);
-        }
-    }
-
-    return -1;
-}
-
 bool anti_tearer_c::is_pixel_row_new(const unsigned rowIdx,
                                      const captured_frame_s *const frame)
 {

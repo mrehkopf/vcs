@@ -25,12 +25,18 @@ public:
                  const bool visualizeTear,
                  const bool visualizeScanRange);
 
-    void visualize_scan_range(void);
-
 private:
     void present_pixels(u8 *const srcBuffer,
                         const resolution_s &resolution,
                         const bool visualizeScanRange);
+
+    void visualize_scan_range(void);
+
+    // Scans the given frame for a tear. If a tear is found, returns the pixel row
+    // on which it starts. Otherwise, returns -1.
+    int find_tear_row(const captured_frame_s *const frame,
+                      unsigned startRow,
+                      unsigned endRow);
 
     enum class next_action_e
     {
