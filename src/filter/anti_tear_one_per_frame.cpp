@@ -36,6 +36,8 @@ void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame,
                                         const bool visualizeTear,
                                         const bool visualizeScanRange)
 {
+    bool frameFullyCopied = false;
+
     switch (this->nextAction)
     {
         // If we found a tear last frame, finish copying its data from this new frame
@@ -57,7 +59,7 @@ void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame,
             }
 
             this->nextAction = next_action_e::scan_for_tear;
-            this->latestTearRow = -1;
+            frameFullyCopied = true;
 
             // Fall through to scan for the next tear.
             __attribute__ ((fallthrough));
@@ -78,7 +80,7 @@ void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame,
                 this->nextAction = next_action_e::copy_rest_of_pixel_data;
             }
             // Otherwise, we assume the frame is not torn and is suitable for display.
-            else
+            else if (!frameFullyCopied)
             {
                 this->base->copy_frame_pixel_rows(this->base->frontBuffer, frame, 0, frame->r.h);
                 this->present_pixels(this->base->frontBuffer, frame->r, visualizeScanRange);
