@@ -36,15 +36,17 @@ public:
     unsigned matchesRequired = 11;
 
 protected:
-    void copy_frame_pixel_rows(u8 *const dstBuffer,
-                               const captured_frame_s *const srcFrame,
+    void copy_frame_pixel_rows(const captured_frame_s *const srcFrame,
+                               u8 *const dstBuffer,
                                const unsigned fromRow,
                                const unsigned toRow);
 
     // Scans the given frame's rowIdx'th row to find whether the row's pixels have
     // chaned since the last full frame.
-    bool is_pixel_row_new(const unsigned rowIdx,
-                          const captured_frame_s *const frame);
+    bool has_pixel_row_changed(const unsigned rowIdx,
+                               const u8 *const newPixels,
+                               const u8 *const prevPixels,
+                               const resolution_s &resolution);
 
     // Copies the given buffer's pixels into the present buffer.
     void present_pixels(const u8 *const srcBuffer,

@@ -42,8 +42,8 @@ u8* anti_tearer_c::pixels(void) const
     return this->presentBuffer.pixels.ptr();
 }
 
-void anti_tearer_c::copy_frame_pixel_rows(u8 *const dstBuffer,
-                                          const captured_frame_s *const srcFrame,
+void anti_tearer_c::copy_frame_pixel_rows(const captured_frame_s *const srcFrame,
+                                          u8 *const dstBuffer,
                                           const unsigned fromRow,
                                           const unsigned toRow)
 {
@@ -62,15 +62,17 @@ void anti_tearer_c::copy_frame_pixel_rows(u8 *const dstBuffer,
     return;
 }
 
-bool anti_tearer_c::is_pixel_row_new(const unsigned rowIdx,
-                                     const captured_frame_s *const frame)
+bool anti_tearer_c::has_pixel_row_changed(const unsigned rowIdx,
+                                          const u8 *const newPixels,
+                                          const u8 *const prevPixels,
+                                          const resolution_s &resolution)
 {
     unsigned x = 0;
     unsigned matches = 0;
     const unsigned threshold = (this->windowLength * this->threshold);
 
     // Slide a sampling window across this horizontal row of pixels.
-    while ((x + this->windowLength) < frame->r.w)
+    while ((x + this->windowLength) < resolution.w)
     {
         int oldR = 0, oldG = 0, oldB = 0;
         int newR = 0, newG = 0, newB = 0;
@@ -79,16 +81,16 @@ bool anti_tearer_c::is_pixel_row_new(const unsigned rowIdx,
         // within this sampling window.
         for (size_t w = 0; w < this->windowLength; w++)
         {
-            const unsigned bpp = (frame->r.bpp / 8);
-            const unsigned idx = (((x + w) + rowIdx * frame->r.w) * bpp);
+            const unsigned bpp = (resolution.bpp / 8);
+            const unsigned idx = (((x + w) + rowIdx * resolution.w) * bpp);
 
-            oldB += this->frontBuffer[idx + 0];
-            oldG += this->frontBuffer[idx + 1];
-            oldR += this->frontBuffer[idx + 2];
+            oldB += prevPixels[idx + 0];
+            oldG += prevPixels[idx + 1];
+            oldR += prevPixels[idx + 2];
 
-            newB += frame->pixels[idx + 0];
-            newG += frame->pixels[idx + 1];
-            newR += frame->pixels[idx + 2];
+            newB += newPixels[idx + 0];
+            newG += newPixels[idx + 1];
+            newR += newPixels[idx + 2];
         }
 
         // If the averages differ by enough. Essentially by having used an
