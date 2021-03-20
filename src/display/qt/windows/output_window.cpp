@@ -163,8 +163,9 @@ MainWindow::MainWindow(QWidget *parent) :
                 c24->setChecked(true);
                 colorDepth->addAction(c24);
 
-                // Note: on Linux, we don't currently support any other capture color depth than RGB888.
-                #ifndef __linux__
+                // Note: the Video4Linux capture API currently supports no other capture
+                // color format besides RGB888.
+                #ifndef CAPTURE_API_VIDEO4LINUX
                     QAction *c16 = new QAction("16-bit (RGB 565)", this);
                     c16->setActionGroup(group);
                     c16->setCheckable(true);
