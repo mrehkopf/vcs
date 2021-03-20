@@ -1371,10 +1371,10 @@ void MainWindow::update_window_title(void)
         const refresh_rate_s refreshRate = kc_capture_api().get_refresh_rate();
 
         QStringList programStatus;
-        if (krecord_is_recording())      programStatus << "R";
-        if (kf_is_filtering_enabled())   programStatus << "F";
-        if (overlayDlg->is_enabled())    programStatus << "O";
-        if (kat_is_anti_tear_enabled())  programStatus << "A";
+        if (recordDlg->is_enabled())      programStatus << "R";
+        if (filterGraphDlg->is_enabled()) programStatus << "F";
+        if (overlayDlg->is_enabled())     programStatus << "O";
+        if (antitearDlg->is_enabled())    programStatus << "A";
 
         if (!this->windowTitleOverride.isEmpty())
         {

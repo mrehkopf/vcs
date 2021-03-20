@@ -590,12 +590,7 @@ void ks_scale_frame(const captured_frame_s &frame)
         pixelData = COLORCONV_BUFFER.ptr();
     }
 
-    // If the anti-tearer returns nullptr, we're supposed to not update the display
-    // with the new frame and instead just ignore it.
-    if (!(pixelData = kat_anti_tear(pixelData, frameRes)))
-    {
-        goto done;
-    }
+    pixelData = kat_anti_tear(pixelData, frameRes);
 
     /// TODO: If anti-tearing has visualization options turned on, we'd ideally
     /// draw them AFTER applying filtering.

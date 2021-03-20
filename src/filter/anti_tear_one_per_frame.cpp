@@ -37,9 +37,7 @@ void anti_tear_one_per_frame_c::present_front_buffer(const resolution_s &resolut
     return;
 }
 
-void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame,
-                                        const bool visualizeTear,
-                                        const bool visualizeScanRange)
+void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame)
 {
     bool nonTornFrameAlreadyCopied = false;
 
@@ -51,7 +49,7 @@ void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame,
         {
             this->base->copy_frame_pixel_rows(frame, this->base->backBuffer, 0, this->latestTearRow);
             std::swap(this->base->backBuffer, this->base->frontBuffer);
-            this->present_front_buffer(frame->r, visualizeTear, visualizeScanRange);
+            this->present_front_buffer(frame->r, this->base->visualizeTears, this->base->visualizeScanRange);
 
             this->nextAction = next_action_e::scan_for_tear;
             nonTornFrameAlreadyCopied = true;
@@ -64,7 +62,7 @@ void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame,
         {
             this->scanEndRow = std::max(0ul, (frame->r.h - this->base->endRow));
             this->scanStartRow = std::min(this->base->startRow, this->scanEndRow);
-            this->latestTearRow = this->find_first_new_row(frame);
+            this->latestTearRow = this->find_first_new_row_idx(frame);
 
             k_assert((this->latestTearRow <= int(frame->r.h)), "Tear row overflows frame's height.");
 
@@ -78,7 +76,7 @@ void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame,
             else if (!nonTornFrameAlreadyCopied)
             {
                 this->base->copy_frame_pixel_rows(frame, this->base->frontBuffer, 0, frame->r.h);
-                this->present_front_buffer(frame->r, false, visualizeScanRange);
+                this->present_front_buffer(frame->r, false, this->base->visualizeScanRange);
             }
 
             break;
@@ -88,7 +86,7 @@ void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame,
     return;
 }
 
-int anti_tear_one_per_frame_c::find_first_new_row(const captured_frame_s *frame)
+int anti_tear_one_per_frame_c::find_first_new_row_idx(const captured_frame_s *frame)
 {
     k_assert((this->scanEndRow <= frame->r.h), "Invalid arguments.");
 
@@ -103,8 +101,9 @@ int anti_tear_one_per_frame_c::find_first_new_row(const captured_frame_s *frame)
     int prevRow = this->scanStartRow;
     int rowDelta = std::floor((this->scanEndRow - this->scanStartRow) / 2);
 
-    // Scan the frame's horizontal pixel rows by iteratively splitting the
-    // vertical range in the direction of the tear.
+    // Scan the frame's horizontal pixel rows by iteratively splitting the vertical
+    // range in the direction of the tear. Note: we assume that the frame will only
+    // contain at most one tear.
     for (int curRow = (this->scanStartRow + rowDelta); std::abs(rowDelta) > 0; curRow += rowDelta)
     {
         const bool isNewRow = this->base->has_pixel_row_changed(curRow, frame->pixels.ptr(), this->base->frontBuffer, frame->r);

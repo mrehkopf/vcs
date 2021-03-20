@@ -11,29 +11,34 @@
 #include <vector>
 #include "capture/capture.h"
 #include "common/types.h"
+#include "filter/anti_tear.h"
 #include "filter/anti_tear_one_per_frame.h"
+#include "filter/anti_tear_multiple_per_frame.h"
 
 class anti_tearer_c
 {
     friend class anti_tear_one_per_frame_c;
+    friend class anti_tear_multiple_per_frame_c;
 
 public:
     void initialize(const resolution_s &maxResolution);
 
     void release(void);
 
-    // Returns the present buffer's pixels.
-    u8* pixels(void) const;
-
-    anti_tear_one_per_frame_c onePerFrame;
+    // Applies anti-tearing to a copy of the given pixels. Returns a pointer to the copy.
+    u8* process(u8 *const pixels,
+                const resolution_s &resolution);
 
     // Anti-tearing parameters.
     unsigned startRow = 0;
     unsigned endRow = 0; // Rows from the bottom up, i.e. (height - x).
-    unsigned threshold = 3;
-    unsigned stepSize = 1;
-    unsigned windowLength = 8;
-    unsigned matchesRequired = 11;
+    unsigned threshold = KAT_DEFAULT_THRESHOLD;
+    unsigned stepSize = KAT_DEFAULT_STEP_SIZE;
+    unsigned windowLength = KAT_DEFAULT_WINDOW_LENGTH;
+    unsigned matchesRequired = KAT_DEFAULT_NUM_MATCHES_REQUIRED;
+    bool visualizeTears = KAT_DEFAULT_VISUALIZE_TEARS;
+    bool visualizeScanRange = KAT_DEFAULT_VISUALIZE_SCAN_RANGE;
+    anti_tear_scan_hint_e scanHint = anti_tear_scan_hint_e::look_for_one_tear;
 
 protected:
     void copy_frame_pixel_rows(const captured_frame_s *const srcFrame,
@@ -52,6 +57,9 @@ protected:
     void present_pixels(const u8 *const srcBuffer,
                         const resolution_s &resolution);
 
+    anti_tear_one_per_frame_c onePerFrame;
+    anti_tear_multiple_per_frame_c multiplePerFrame;
+
     // We'll use these buffers to accumulate torn pixel data and so to reconstruct
     // torn frames.
     std::vector<heap_bytes_s<u8>> buffers = std::vector<heap_bytes_s<u8>>(2);
@@ -66,6 +74,9 @@ protected:
     // the latest de-torn frame. Note that this image might hold additional
     // things, like anti-tear parameter visualization.
     captured_frame_s presentBuffer;
+
+    // The maximum size of frames that we can anti-tear.
+    resolution_s maximumResolution;
 };
 
 #endif

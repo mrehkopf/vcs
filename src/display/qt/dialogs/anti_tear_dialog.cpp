@@ -64,19 +64,17 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 
     // Set GUI controls to their initial values.
     {
-        // Parameters.
-        {
-            const auto defaults = kat_default_settings();
+        ui->checkBox_visualizeRange->setChecked(KAT_DEFAULT_VISUALIZE_SCAN_RANGE);
+        ui->checkBox_visualizeTear->setCheckable(KAT_DEFAULT_VISUALIZE_TEARS);
 
-            ui->parameterGrid_parameters->add_scroller("Scan start", defaults.scanStart, 0, 640);
-            ui->parameterGrid_parameters->add_scroller("Scan end", defaults.scanEnd, 0, 640);
-            ui->parameterGrid_parameters->add_combobox("Scan hint", {"Look for one tear per frame",
-                                                                     "Look for multiple tears per frame"});
-            ui->parameterGrid_parameters->add_scroller("Threshold", defaults.threshold, 0, 255);
-            ui->parameterGrid_parameters->add_scroller("Window size", defaults.windowLen, 1, 640);
-            ui->parameterGrid_parameters->add_scroller("Step size", defaults.stepSize, 1, 640);
-            ui->parameterGrid_parameters->add_scroller("Matches req'd", defaults.matchesReqd, 1, 200);
-        }
+        ui->parameterGrid_parameters->add_scroller("Scan start", 0, 0, 640);
+        ui->parameterGrid_parameters->add_scroller("Scan end", 0, 0, 640);
+        ui->parameterGrid_parameters->add_combobox("Scan hint", {"Look for one tear per frame",
+                                                                 "Look for multiple tears per frame"});
+        ui->parameterGrid_parameters->add_scroller("Threshold", KAT_DEFAULT_THRESHOLD, 0, 255);
+        ui->parameterGrid_parameters->add_scroller("Window size", KAT_DEFAULT_WINDOW_LENGTH, 1, 640);
+        ui->parameterGrid_parameters->add_scroller("Step size", KAT_DEFAULT_STEP_SIZE, 1, 640);
+        ui->parameterGrid_parameters->add_scroller("Matches req'd", KAT_DEFAULT_NUM_MATCHES_REQUIRED, 1, 200);
     }
 
     // Subscribe to app events.
@@ -135,17 +133,15 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 
     // Restore persistent settings.
     {
-        const anti_tear_options_s defaults = kat_default_settings();
-
-        ui->parameterGrid_parameters->set_value("Scan start", kpers_value_of(INI_GROUP_ANTI_TEAR, "scan_start", defaults.scanStart).toInt());
-        ui->parameterGrid_parameters->set_value("Scan end", kpers_value_of(INI_GROUP_ANTI_TEAR, "scan_end", defaults.scanEnd).toInt());
-        ui->parameterGrid_parameters->set_value("Threshold", kpers_value_of(INI_GROUP_ANTI_TEAR, "threshold", defaults.threshold).toInt());
-        ui->parameterGrid_parameters->set_value("Window size", kpers_value_of(INI_GROUP_ANTI_TEAR, "window_len", defaults.windowLen).toInt());
-        ui->parameterGrid_parameters->set_value("Step size", kpers_value_of(INI_GROUP_ANTI_TEAR, "step_size", defaults.windowLen).toInt());
-        ui->parameterGrid_parameters->set_value("Matches req'd", kpers_value_of(INI_GROUP_ANTI_TEAR, "matches_reqd", defaults.matchesReqd).toInt());
-        ui->checkBox_visualizeRange->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "visualize_range", true).toBool());
-        ui->checkBox_visualizeTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "visualize_tear", true).toBool());
-        this->set_enabled(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", kat_is_anti_tear_enabled()).toBool());
+        ui->parameterGrid_parameters->set_value("Scan start", kpers_value_of(INI_GROUP_ANTI_TEAR, "scan_start", 0).toInt());
+        ui->parameterGrid_parameters->set_value("Scan end", kpers_value_of(INI_GROUP_ANTI_TEAR, "scan_end", 0).toInt());
+        ui->parameterGrid_parameters->set_value("Threshold", kpers_value_of(INI_GROUP_ANTI_TEAR, "threshold", KAT_DEFAULT_THRESHOLD).toInt());
+        ui->parameterGrid_parameters->set_value("Window size", kpers_value_of(INI_GROUP_ANTI_TEAR, "window_len", KAT_DEFAULT_WINDOW_LENGTH).toInt());
+        ui->parameterGrid_parameters->set_value("Step size", kpers_value_of(INI_GROUP_ANTI_TEAR, "step_size", KAT_DEFAULT_STEP_SIZE).toInt());
+        ui->parameterGrid_parameters->set_value("Matches req'd", kpers_value_of(INI_GROUP_ANTI_TEAR, "matches_reqd", KAT_DEFAULT_NUM_MATCHES_REQUIRED).toInt());
+        ui->checkBox_visualizeRange->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "visualize_range", KAT_DEFAULT_VISUALIZE_SCAN_RANGE).toBool());
+        ui->checkBox_visualizeTear->setChecked(kpers_value_of(INI_GROUP_ANTI_TEAR, "visualize_tear", KAT_DEFAULT_VISUALIZE_TEARS).toBool());
+        this->set_enabled(kpers_value_of(INI_GROUP_ANTI_TEAR, "enabled", this->is_enabled()).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "anti_tear", this->size()).toSize());
     }
 
@@ -178,8 +174,7 @@ AntiTearDialog::~AntiTearDialog(void)
 
 void AntiTearDialog::update_visualization_options(void)
 {
-    kat_set_visualization(this->is_enabled(),
-                          ui->checkBox_visualizeTear->isChecked(),
+    kat_set_visualization(ui->checkBox_visualizeTear->isChecked(),
                           ui->checkBox_visualizeRange->isChecked());
 
     return;

@@ -64,6 +64,7 @@ SOURCES += \
     src/display/qt/dialogs/overlay_dialog.cpp \
     src/display/qt/dialogs/alias_dialog.cpp \
     src/display/qt/dialogs/anti_tear_dialog.cpp \
+    src/filter/anti_tear_multiple_per_frame.cpp \
     src/filter/anti_tear_one_per_frame.cpp \
     src/filter/anti_tearer.cpp \
     src/scaler/scaler.cpp \
@@ -132,6 +133,7 @@ HEADERS += \
     src/display/qt/subclasses/QMenu_dialog_file_menu.h \
     src/display/qt/windows/output_window.h \
     src/display/qt/dialogs/resolution_dialog.h \
+    src/filter/anti_tear_multiple_per_frame.h \
     src/filter/anti_tear_one_per_frame.h \
     src/filter/anti_tearer.h \
     src/scaler/scaler.h \

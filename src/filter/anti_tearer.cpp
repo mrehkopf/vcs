@@ -24,6 +24,8 @@ void anti_tearer_c::initialize(const resolution_s &maxResolution)
 {
     const unsigned requiredBufferSize = maxResolution.w * maxResolution.h * (maxResolution.bpp / 8);
 
+    this->maximumResolution = maxResolution;
+
     this->buffers.at(0).alloc(requiredBufferSize);
     this->buffers.at(1).alloc(requiredBufferSize);
     this->presentBuffer.pixels.alloc(requiredBufferSize);
@@ -33,12 +35,30 @@ void anti_tearer_c::initialize(const resolution_s &maxResolution)
     this->presentBuffer.r = {0, 0, 32};
 
     this->onePerFrame.initialize(this);
+    this->multiplePerFrame.initialize(this);
 
     return;
 }
 
-u8* anti_tearer_c::pixels(void) const
+u8* anti_tearer_c::process(u8 *const pixels,
+                           const resolution_s &resolution)
 {
+    k_assert(pixels != nullptr,
+             "The anti-tear engine expected a pixel buffer, but received null.");
+
+    k_assert((resolution.bpp == this->presentBuffer.r.bpp),
+             "The anti-tear engine expected a certain bit depth, but the input frame did not comply.");
+
+    captured_frame_s frame;
+    frame.r = resolution;
+    frame.pixels.point_to(pixels, (frame.r.w * frame.r.h * (frame.r.bpp / 8)));
+
+    switch (this->scanHint)
+    {
+        case anti_tear_scan_hint_e::look_for_multiple_tears: this->multiplePerFrame.process(&frame); break;
+        case anti_tear_scan_hint_e::look_for_one_tear: this->onePerFrame.process(&frame); break;
+    }
+
     return this->presentBuffer.pixels.ptr();
 }
 
