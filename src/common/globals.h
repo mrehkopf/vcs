@@ -18,7 +18,7 @@
 #include <cassert>
 
 const char PROGRAM_NAME[] = "VCS";
-const char PROGRAM_VERSION_STRING[] = "2.3.0";
+const char PROGRAM_VERSION_STRING[] = "2.3.1";
 
 // Whether this build is a developmental (non-stable, non-release) version.
 const bool IS_DEV_VERSION = true;
