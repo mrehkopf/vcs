@@ -183,7 +183,7 @@ void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
     std::pair<const std::vector<const filter_c*>*, unsigned> openMatch = {nullptr, 0};
     const resolution_s outputRes = ks_output_resolution();
 
-    static const auto apply_chain = [=](const std::vector<const filter_c*> &chain, const unsigned idx)
+    static const auto apply_chain = [&pixels, &r](const std::vector<const filter_c*> &chain, const unsigned idx)
     {
         // The gate filters are expected to be #first and #last, while the actual
         // applicable filters are the ones in-between.
