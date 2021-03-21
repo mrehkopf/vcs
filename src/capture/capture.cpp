@@ -41,7 +41,7 @@ void kc_initialize_capture(void)
 
     API->initialize();
 
-    kt_timer(1000, []
+    kt_timer(1000, [](const unsigned)
     {
         const unsigned numMissedCurrent = kc_capture_api().get_missed_frames_count();
         const unsigned numMissedFrames = (numMissedCurrent- LAST_KNOWN_MISSED_FRAMES_COUNT);

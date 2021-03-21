@@ -18,7 +18,6 @@ static const double TARGET_REFRESH_RATE = 60;
 // Keep track of the actual achieved refresh rate.
 static unsigned NUM_FRAMES_PER_SECOND = 0;
 static double CURRENT_REFRESH_RATE = 0;
-static auto REFRESH_RATE_TIMER = std::chrono::steady_clock::now();
 
 static bool CAPTURE_EVENT_FLAGS[(int)capture_event_e::num_enumerators];
 
@@ -45,20 +44,17 @@ bool capture_api_virtual_s::initialize(void)
     this->frameBuffer.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (virtual)");
 
     // Animate the screen's test pattern.
-    kt_timer(std::round(1000 / TARGET_REFRESH_RATE), [this]
+    kt_timer(std::round(1000 / TARGET_REFRESH_RATE), [this](const unsigned)
     {
         this->refresh_test_pattern();
         push_capture_event(capture_event_e::new_frame);
     });
 
-    kt_timer(1000, []
+    kt_timer(1000, [](const unsigned elapsedMs)
     {
-        const auto timeNow = std::chrono::steady_clock::now();
-        const auto realMsElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - REFRESH_RATE_TIMER).count();
-        const double newRefreshRate = (NUM_FRAMES_PER_SECOND * (1000.0 / realMsElapsed));
+        const double newRefreshRate = (NUM_FRAMES_PER_SECOND * (1000.0 / elapsedMs));
 
         NUM_FRAMES_PER_SECOND = 0;
-        REFRESH_RATE_TIMER = std::chrono::steady_clock::now();
 
         if (CURRENT_REFRESH_RATE != newRefreshRate)
         {

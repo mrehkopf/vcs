@@ -33,7 +33,7 @@ void kt_release_timers(void)
     return;
 }
 
-void kt_timer(const unsigned intervalMs, std::function<void(void)> functionToRun)
+void kt_timer(const unsigned intervalMs, std::function<void(const unsigned elapsedMs)> functionToRun)
 {
     ACTIVE_TIMERS.push_back(timer_c(intervalMs, functionToRun));
 

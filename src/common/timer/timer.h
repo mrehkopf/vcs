@@ -31,7 +31,7 @@
 class timer_c
 {
 public:
-    timer_c(const unsigned intervalMs, std::function<void(void)> func) :
+    timer_c(const unsigned intervalMs, std::function<void(const unsigned elapsedMs)> func) :
         intervalMs(intervalMs),
         timeoutFunction(func)
     {
@@ -45,10 +45,9 @@ public:
         const auto timeNow = std::chrono::system_clock::now();
         const unsigned msSinceLastTimeout = std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - this->timeOfLastTimeout).count();
 
-        if ((msSinceLastTimeout >= 0) &&
-            (unsigned(msSinceLastTimeout) >= this->intervalMs))
+        if (unsigned(msSinceLastTimeout) >= this->intervalMs)
         {
-            this->timeoutFunction();
+            this->timeoutFunction(msSinceLastTimeout);
             this->timeOfLastTimeout = timeNow;
         }
 
@@ -57,7 +56,7 @@ public:
 
     const unsigned intervalMs;
 
-    const std::function<void(void)> timeoutFunction;
+    const std::function<void(const unsigned elapsedMs)> timeoutFunction;
 
 private:
     std::chrono::system_clock::time_point timeOfLastTimeout = {};
@@ -65,7 +64,7 @@ private:
 
 // Runs the given function at the given interval (+ the function's time of
 // execution). The timer can't be stopped.
-void kt_timer(const unsigned intervalMs, std::function<void(void)> func);
+void kt_timer(const unsigned intervalMs, std::function<void(const unsigned elapsedMs)> func);
 
 void kt_initialize_timers(void);
 

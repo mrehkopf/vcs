@@ -434,7 +434,7 @@ void ks_initialize_scaler(void)
         NUM_FRAMES_SCALED_PER_SECOND++;
     });
 
-    kt_timer(1000, []
+    kt_timer(1000, [](const unsigned)
     {
         ke_events().scaler.framesPerSecond.fire(NUM_FRAMES_SCALED_PER_SECOND);
 
