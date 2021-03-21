@@ -65,7 +65,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
     // Set GUI controls to their initial values.
     {
         ui->checkBox_visualizeRange->setChecked(KAT_DEFAULT_VISUALIZE_SCAN_RANGE);
-        ui->checkBox_visualizeTear->setCheckable(KAT_DEFAULT_VISUALIZE_TEARS);
+        ui->checkBox_visualizeTear->setChecked(KAT_DEFAULT_VISUALIZE_TEARS);
 
         ui->parameterGrid_parameters->add_scroller("Scan start", 0, 0, 640);
         ui->parameterGrid_parameters->add_scroller("Scan end", 0, 0, 640);
