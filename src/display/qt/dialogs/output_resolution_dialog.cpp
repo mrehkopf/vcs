@@ -104,6 +104,16 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
 
     // Subscribe to app events.
     {
+        ke_events().capture.newVideoMode.subscribe([this]
+        {
+            if (!ui->checkBox_forceOutputRes->isChecked())
+            {
+                const auto captureResolution = kc_capture_api().get_resolution();
+                ui->spinBox_outputResX->setValue(captureResolution.w);
+                ui->spinBox_outputResY->setValue(captureResolution.h);
+            }
+        });
+
         ke_events().recorder.recordingStarted.subscribe([this]
         {
             // Disable any GUI functionality that would let the user change the current
