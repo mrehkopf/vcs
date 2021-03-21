@@ -28,6 +28,7 @@ struct capture_api_virtual_s : public capture_api_s
     video_signal_parameters_s get_minimum_video_signal_parameters(void) const override { return video_signal_parameters_s{}; }
     video_signal_parameters_s get_maximum_video_signal_parameters(void) const override { return video_signal_parameters_s{}; }
     bool set_resolution(const resolution_s &r) override;
+    bool set_pixel_format(const capture_pixel_format_e pf) override;
     resolution_s get_resolution(void) const override             { return this->frameBuffer.r; }
     resolution_s get_minimum_resolution(void) const override     { return this->minResolution; }
     resolution_s get_maximum_resolution(void) const override     { return this->maxResolution; }
@@ -40,7 +41,7 @@ struct capture_api_virtual_s : public capture_api_s
     bool has_invalid_signal(void) const override                 { return false; }
     bool has_invalid_device(void) const override                 { return false; }
     bool has_no_signal(void) const override                      { return false; }
-    capture_pixel_format_e get_pixel_format(void) const override { return this->defaultPixelFormat; }
+    capture_pixel_format_e get_pixel_format(void) const override { return this->frameBuffer.pixelFormat; }
     capture_event_e pop_capture_event_queue(void) override;
     const captured_frame_s& get_frame_buffer(void) const override;
 
@@ -54,6 +55,8 @@ struct capture_api_virtual_s : public capture_api_s
     bool device_supports_yuv(void) const override                { return true; }
 
 private:
+    void refresh_test_pattern(void);
+
     const resolution_s maxResolution = resolution_s{MAX_CAPTURE_WIDTH, MAX_CAPTURE_HEIGHT, 32};
     const resolution_s minResolution = resolution_s{320, 200, 32};
     const capture_pixel_format_e defaultPixelFormat = capture_pixel_format_e::rgb_888;

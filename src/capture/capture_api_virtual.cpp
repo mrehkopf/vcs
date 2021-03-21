@@ -41,30 +41,13 @@ static bool pop_capture_event(const capture_event_e event)
 bool capture_api_virtual_s::initialize(void)
 {
     this->frameBuffer.r = {640, 480, 32};
-    this->frameBuffer.pixelFormat = this->defaultPixelFormat;
+    this->frameBuffer.pixelFormat = capture_pixel_format_e::rgb_888;
     this->frameBuffer.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (virtual)");
 
     // Animate the screen's test pattern.
     kt_timer(std::round(1000 / TARGET_REFRESH_RATE), [this]
     {
-        static unsigned numFramesGenerated = 0;
-
-        numFramesGenerated++;
-        NUM_FRAMES_PER_SECOND++;
-
-        for (unsigned y = 0; y < this->frameBuffer.r.h; y++)
-        {
-            for (unsigned x = 0; x < this->frameBuffer.r.w; x++)
-            {
-                const unsigned idx = ((x + y * this->frameBuffer.r.w) * (this->frameBuffer.r.bpp / 8));
-
-                this->frameBuffer.pixels[idx + 0] = ((numFramesGenerated + x) % 256);
-                this->frameBuffer.pixels[idx + 1] = ((numFramesGenerated + y) % 256);
-                this->frameBuffer.pixels[idx + 2] = 150;
-                this->frameBuffer.pixels[idx + 3] = 255;
-            }
-        }
-
+        this->refresh_test_pattern();
         push_capture_event(capture_event_e::new_frame);
     });
 
@@ -90,6 +73,87 @@ bool capture_api_virtual_s::initialize(void)
 bool capture_api_virtual_s::release(void)
 {
     this->frameBuffer.pixels.release_memory();
+
+    return true;
+}
+
+void capture_api_virtual_s::refresh_test_pattern(void)
+{
+    static unsigned numFramesGenerated = 0;
+
+    numFramesGenerated++;
+    NUM_FRAMES_PER_SECOND++;
+
+    for (unsigned y = 0; y < this->frameBuffer.r.h; y++)
+    {
+        for (unsigned x = 0; x < this->frameBuffer.r.w; x++)
+        {
+            const unsigned idx = ((x + y * this->frameBuffer.r.w) * (this->frameBuffer.r.bpp / 8));
+            const u8 red = ((numFramesGenerated + x) % 256);
+            const u8 green = ((numFramesGenerated + y) % 256);
+            const u8 blue = 150;
+            const u8 alpha = 255;
+
+            switch (this->frameBuffer.pixelFormat)
+            {
+                case capture_pixel_format_e::rgb_888:
+                {
+                    this->frameBuffer.pixels[idx + 0] = red;
+                    this->frameBuffer.pixels[idx + 1] = green;
+                    this->frameBuffer.pixels[idx + 2] = blue;
+                    this->frameBuffer.pixels[idx + 3] = alpha;
+
+                    break;
+                }
+                case capture_pixel_format_e::rgb_565:
+                {
+                    const u16 pixel = (((blue  / 8) << 11) |
+                                       ((green / 4) << 5)  |
+                                       ((red   / 8) << 0));
+
+                    *((u16*)&this->frameBuffer.pixels[idx]) = pixel;
+
+                    break;
+                }
+                case capture_pixel_format_e::rgb_555:
+                {
+                    const u16 pixel = (((alpha / 256) << 11) |
+                                       ((blue  / 8)   << 10) |
+                                       ((green / 8)   << 5)  |
+                                       ((red   / 8)   << 0));
+
+                    *((u16*)&this->frameBuffer.pixels[idx]) = pixel;
+
+                    break;
+                }
+                default: break;
+            }
+        }
+    }
+
+    return;
+}
+
+bool capture_api_virtual_s::set_pixel_format(const capture_pixel_format_e pf)
+{
+    switch (pf)
+    {
+        case capture_pixel_format_e::rgb_888:
+        {
+            this->frameBuffer.r.bpp = 32;
+            break;
+        }
+        case capture_pixel_format_e::rgb_565:
+        case capture_pixel_format_e::rgb_555:
+        {
+            this->frameBuffer.r.bpp = 16;
+            break;
+        }
+    }
+
+    this->frameBuffer.pixelFormat = pf;
+
+    push_capture_event(capture_event_e::new_video_mode);
 
     return true;
 }
