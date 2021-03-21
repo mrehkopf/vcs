@@ -104,11 +104,13 @@ int anti_tear_one_per_frame_c::find_first_new_row_idx(const captured_frame_s *fr
     // Scan the frame's horizontal pixel rows by iteratively splitting the vertical
     // range in the direction of the tear. Note: we assume that the frame will only
     // contain at most one tear.
-    for (int curRow = (this->scanStartRow + rowDelta); std::abs(rowDelta) > 0; curRow += rowDelta)
+    for (int curRow = (this->scanStartRow + rowDelta); curRow != firstNewRow; curRow += rowDelta)
     {
         const bool isNewRow = this->base->has_pixel_row_changed(curRow, frame->pixels.ptr(), this->base->frontBuffer, frame->r);
+        const int sign = (isNewRow? -1 : 1);
+
         firstNewRow = (isNewRow? curRow : firstNewRow);
-        rowDelta = (std::floor(std::abs(curRow - prevRow) / 2) * (isNewRow? -1 : 1));
+        rowDelta = (sign * std::max(1.0, std::floor(std::abs(curRow - prevRow) / 2.0)));
         prevRow = curRow;
     }
 
