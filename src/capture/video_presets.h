@@ -138,7 +138,9 @@ void kvideopreset_apply_current_active_preset(void);
 
 video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId);
 
-video_preset_s* kvideopreset_create_new_preset(void);
+// If 'duplicateDataSrc' is a non-null pointer to an existing video preset
+// object, its parameter values will be copied into the created preset.
+video_preset_s* kvideopreset_create_new_preset(const video_preset_s *const duplicateDataSrc = nullptr);
 
 bool kvideopreset_remove_preset(const unsigned presetId);
 

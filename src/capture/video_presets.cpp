@@ -191,15 +191,24 @@ void kvideopreset_assign_presets(const std::vector<video_preset_s*> &presets)
     return;
 }
 
-video_preset_s* kvideopreset_create_new_preset(void)
+video_preset_s* kvideopreset_create_new_preset(const video_preset_s *const duplicateDataSrc)
 {
     video_preset_s *const preset = new video_preset_s;
+    const std::string baseName = (duplicateDataSrc? "Duplicate preset" : "Preset");
+
+    if (duplicateDataSrc)
+    {
+        *preset = *duplicateDataSrc;
+    }
+    else
+    {
+        preset->activatesWithResolution = false;
+        preset->activationResolution = {640, 480, 32};
+        preset->videoParameters = kc_capture_api().get_default_video_signal_parameters();
+    }
 
     preset->id = RUNNING_PRESET_ID++;
-    preset->name = ("Preset " + std::to_string(RUNNING_PRESET_ID));
-    preset->activatesWithResolution = false;
-    preset->activationResolution = {640, 480, 32};
-    preset->videoParameters = kc_capture_api().get_default_video_signal_parameters();
+    preset->name = (baseName + " " + std::to_string(RUNNING_PRESET_ID));
 
     PRESETS.push_back(preset);
 
