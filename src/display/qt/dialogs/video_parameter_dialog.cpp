@@ -163,7 +163,9 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
         connect(ui->pushButton_addNewPreset, &QPushButton::clicked, this, [this]
         {
-            const video_preset_s *const newPreset = kvideopreset_create_new_preset();
+            const bool duplicateCurrent = (QGuiApplication::keyboardModifiers() & Qt::AltModifier);
+            video_preset_s *const newPreset = kvideopreset_create_new_preset(duplicateCurrent? this->currentPreset : nullptr);
+
             this->add_video_preset_to_list(newPreset);
             emit this->data_changed();
         });
