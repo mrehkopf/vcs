@@ -1,6 +1,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_VIDEO_PARAMETER_DIALOG_H
 #define VCS_DISPLAY_QT_DIALOGS_VIDEO_PARAMETER_DIALOG_H
 
+#include <deque>
 #include "filter/filter.h"
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
@@ -63,12 +64,6 @@ signals:
     void new_presets_source_file(const QString &filename);
 
 private:
-    void add_video_preset_to_list(const video_preset_s *const preset);
-
-    // Returns the index in the list of presets of the preset with the given id.
-    // Asserts on failure.
-    unsigned find_preset_idx_in_list(const unsigned presetId);
-
     void update_preset_control_ranges(void);
 
     void update_preset_controls_with_current_preset_data(void);
@@ -77,13 +72,7 @@ private:
 
     void broadcast_current_preset_parameters(void);
 
-    void update_current_preset_list_text(void);
-
     void resort_preset_list(void);
-
-    void remove_video_preset_from_list(const video_preset_s *const preset);
-
-    void remove_all_video_presets_from_list(void);
 
     Ui::VideoParameterDialog *ui;
 
@@ -91,9 +80,6 @@ private:
 
     // All the nodes that are currently in the graph.
     std::vector<FilterGraphNode*> inputGateNodes;
-
-    // The video preset we're currently editing.
-    video_preset_s *currentPreset = nullptr;
 
     unsigned numNodesAdded = 0;
 };

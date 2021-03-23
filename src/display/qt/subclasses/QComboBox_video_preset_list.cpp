@@ -36,7 +36,7 @@ VideoPresetList::~VideoPresetList(void)
     return;
 }
 
-void VideoPresetList::clear(void)
+void VideoPresetList::remove_all_presets(void)
 {
     if (this->count() <= 0)
     {
@@ -44,6 +44,7 @@ void VideoPresetList::clear(void)
     }
 
     this->clear();
+    this->presetSelectionHistory.clear();
 
     emit this->list_became_empty();
 

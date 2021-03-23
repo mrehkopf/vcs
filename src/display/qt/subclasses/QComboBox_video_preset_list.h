@@ -30,7 +30,7 @@ public:
     // action will be taken.
     void remove_preset(const unsigned presetId);
 
-    void clear(void);
+    void remove_all_presets(void);
 
     void sort_alphabetically(void);
 

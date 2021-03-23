@@ -34,15 +34,15 @@ struct video_preset_s
     std::string name = "";
 
     bool activatesWithResolution = false;
-    resolution_s activationResolution = {640, 480, 32};
+    resolution_s activationResolution = {0, 0, 32};
 
     bool activatesWithRefreshRate = false;
-    refresh_rate_s activationRefreshRate = 60;
+    refresh_rate_s activationRefreshRate = 0;
     refresh_rate_comparison_e refreshRateComparator = refresh_rate_comparison_e::equals;
 
     // Only handled by the GUI.
     bool activatesWithShortcut = false;
-    std::string activationShortcut = "ctrl+f1";
+    std::string activationShortcut = "Ctrl+F1";
 
     // Returns the strength of activation, expressed as an integer, of this preset
     // to the given capture conditions (resolution, refresh rate, etc.). The activation

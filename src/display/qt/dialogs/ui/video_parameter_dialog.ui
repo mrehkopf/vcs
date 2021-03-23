@@ -155,7 +155,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="comboBox_presetList"/>
+            <widget class="VideoPresetList" name="comboBox_presetList"/>
            </item>
           </layout>
          </item>
@@ -655,6 +655,11 @@
    <extends>QGroupBox</extends>
    <header>QGroupBox_parameter_grid.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VideoPresetList</class>
+   <extends>QComboBox</extends>
+   <header>QComboBox_video_preset_list.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
