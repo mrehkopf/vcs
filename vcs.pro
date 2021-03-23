@@ -55,6 +55,7 @@ RESOURCES += \
     src/display/qt/res.qrc
 
 SOURCES += \
+    src/display/qt/subclasses/QComboBox_video_preset_list.cpp \
     src/display/qt/subclasses/QDialog_vcs_base_dialog.cpp \
     src/display/qt/subclasses/QGroupBox_parameter_grid.cpp \
     src/display/qt/subclasses/QMenu_dialog_file_menu.cpp \
@@ -128,6 +129,7 @@ HEADERS += \
     src/common/globals.h \
     src/capture/null_rgbeasy.h \
     src/common/types.h \
+    src/display/qt/subclasses/QComboBox_video_preset_list.h \
     src/display/qt/subclasses/QDialog_vcs_base_dialog.h \
     src/display/qt/subclasses/QGroupBox_parameter_grid.h \
     src/display/qt/subclasses/QMenu_dialog_file_menu.h \
