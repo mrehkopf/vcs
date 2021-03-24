@@ -116,7 +116,7 @@ void filter_func_unique_count(FILTER_FUNC_PARAMS)
         {
             case 0: textColor = cv::Scalar(0, 255, 255); break;
             case 1: textColor = cv::Scalar(255, 0, 255); break;
-            case 2: textColor = cv::Scalar(0, 255, 0); break;
+            case 2: textColor = cv::Scalar(0, 0, 0); break;
             case 3: textColor = cv::Scalar(255, 255, 255); break;
         }
 
