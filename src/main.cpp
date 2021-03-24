@@ -9,7 +9,7 @@
 #include <mutex>
 #include "display/qt/windows/output_window.h"
 #include "common/command_line/command_line.h"
-#include "filter/anti_tear.h"
+#include "anti_tear/anti_tear.h"
 #include "common/propagate/app_events.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"

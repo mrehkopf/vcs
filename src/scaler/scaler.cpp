@@ -10,7 +10,7 @@
 #include <cstring>
 #include <vector>
 #include <cmath>
-#include "filter/anti_tear.h"
+#include "anti_tear/anti_tear.h"
 #include "common/propagate/app_events.h"
 #include "capture/capture_api.h"
 #include "capture/capture.h"

@@ -6,8 +6,8 @@
  */
 
 #include <cstring>
-#include "filter/anti_tearer.h"
-#include "filter/anti_tear_frame.h"
+#include "anti_tear/anti_tearer.h"
+#include "anti_tear/anti_tear_frame.h"
 
 void anti_tearer_c::release(void)
 {
@@ -23,7 +23,7 @@ void anti_tearer_c::release(void)
 
 void anti_tearer_c::initialize(const resolution_s &maxResolution)
 {
-    const unsigned requiredBufferSize = maxResolution.w * maxResolution.h * (maxResolution.bpp / 8);
+    const unsigned requiredBufferSize = (maxResolution.w * maxResolution.h * (maxResolution.bpp / 8));
 
     this->maximumResolution = maxResolution;
 

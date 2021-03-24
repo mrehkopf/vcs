@@ -43,7 +43,7 @@
 #include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/dialogs/about_dialog.h"
 #include "display/qt/persistent_settings.h"
-#include "filter/anti_tear.h"
+#include "anti_tear/anti_tear.h"
 #include "common/propagate/app_events.h"
 #include "capture/video_presets.h"
 #include "capture/capture_api.h"

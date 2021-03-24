@@ -67,16 +67,16 @@ SOURCES += \
     src/display/qt/dialogs/overlay_dialog.cpp \
     src/display/qt/dialogs/alias_dialog.cpp \
     src/display/qt/dialogs/anti_tear_dialog.cpp \
-    src/filter/anti_tear_multiple_per_frame.cpp \
-    src/filter/anti_tear_one_per_frame.cpp \
-    src/filter/anti_tearer.cpp \
+    src/anti_tear/anti_tear_multiple_per_frame.cpp \
+    src/anti_tear/anti_tear_one_per_frame.cpp \
+    src/anti_tear/anti_tearer.cpp \
     src/scaler/scaler.cpp \
     src/main.cpp \
     src/common/log/log.cpp \
     src/filter/filter.cpp \
     src/common/command_line/command_line.cpp \
     src/capture/capture.cpp \
-    src/filter/anti_tear.cpp \
+    src/anti_tear/anti_tear.cpp \
     src/display/qt/persistent_settings.cpp \
     src/common/memory/memory.cpp \
     src/record/record.cpp \
@@ -137,16 +137,16 @@ HEADERS += \
     src/display/qt/subclasses/QMenu_dialog_file_menu.h \
     src/display/qt/windows/output_window.h \
     src/display/qt/dialogs/resolution_dialog.h \
-    src/filter/anti_tear_multiple_per_frame.h \
-    src/filter/anti_tear_one_per_frame.h \
-    src/filter/anti_tearer.h \
+    src/anti_tear/anti_tear_multiple_per_frame.h \
+    src/anti_tear/anti_tear_one_per_frame.h \
+    src/anti_tear/anti_tearer.h \
     src/scaler/scaler.h \
     src/capture/capture.h \
     src/display/display.h \
     src/common/log/log.h \
     src/display/qt/dialogs/overlay_dialog.h \
     src/display/qt/dialogs/alias_dialog.h \
-    src/filter/anti_tear.h \
+    src/anti_tear/anti_tear.h \
     src/display/qt/dialogs/anti_tear_dialog.h \
     src/filter/filter.h \
     src/common/command_line/command_line.h \

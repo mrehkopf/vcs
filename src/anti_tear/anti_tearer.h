@@ -11,10 +11,10 @@
 #include <vector>
 #include "capture/capture.h"
 #include "common/types.h"
-#include "filter/anti_tear.h"
-#include "filter/anti_tear_frame.h"
-#include "filter/anti_tear_one_per_frame.h"
-#include "filter/anti_tear_multiple_per_frame.h"
+#include "anti_tear/anti_tear.h"
+#include "anti_tear/anti_tear_frame.h"
+#include "anti_tear/anti_tear_one_per_frame.h"
+#include "anti_tear/anti_tear_multiple_per_frame.h"
 
 class anti_tearer_c
 {

@@ -13,7 +13,7 @@
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "common/propagate/app_events.h"
-#include "filter/anti_tear.h"
+#include "anti_tear/anti_tear.h"
 #include "capture/capture.h"
 #include "capture/capture_api.h"
 #include "display/display.h"

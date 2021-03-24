@@ -7,9 +7,9 @@
 
 #include <cstring>
 #include <cmath>
-#include "filter/anti_tear_frame.h"
-#include "filter/anti_tear_one_per_frame.h"
-#include "filter/anti_tearer.h"
+#include "anti_tear/anti_tear_frame.h"
+#include "anti_tear/anti_tear_one_per_frame.h"
+#include "anti_tear/anti_tearer.h"
 #include "capture/capture.h"
 
 void anti_tear_one_per_frame_c::initialize(anti_tearer_c *const parent)
