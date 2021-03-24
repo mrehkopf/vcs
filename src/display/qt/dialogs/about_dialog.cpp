@@ -26,10 +26,9 @@ AboutDialog::AboutDialog(QWidget *parent) :
     {
         ui->groupBox_aboutVCS->setTitle("VCS " + QString(PROGRAM_VERSION_STRING));
 
-        if (IS_DEV_VERSION)
-        {
+        #ifndef RELEASE_BUILD
             ui->groupBox_aboutVCS->setTitle(ui->groupBox_aboutVCS->title() + "~dev");
-        }
+        #endif
     }
 
     // We'll set this label visible only when there's a new version of VCS available.

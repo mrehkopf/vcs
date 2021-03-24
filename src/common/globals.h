@@ -20,9 +20,6 @@
 const char PROGRAM_NAME[] = "VCS";
 const char PROGRAM_VERSION_STRING[] = "2.3.1";
 
-// Whether this build is a developmental (non-stable, non-release) version.
-const bool IS_DEV_VERSION = true;
-
 // The minimum and maximum resolution we can output frames in.
 const uint MIN_OUTPUT_WIDTH = 200;
 const uint MIN_OUTPUT_HEIGHT = 100;

@@ -649,6 +649,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->raise();
 
     // Check over the network whether there are updates available for VCS.
+    #ifdef RELEASE_BUILD
     {
         QNetworkAccessManager *network = new QNetworkAccessManager(this);
         connect(network, &QNetworkAccessManager::finished, [=](QNetworkReply *reply)
@@ -675,12 +676,10 @@ MainWindow::MainWindow(QWidget *parent) :
         });
 
         // Make the request.
-        if (!IS_DEV_VERSION)
-        {
-            const QString url = QString("http://www.tarpeeksihyvaesoft.com/vcs/is_newer_version_available.php?uv=%1").arg(PROGRAM_VERSION_STRING);
-            network->get(QNetworkRequest(QUrl(url)));
-        }
+        const QString url = QString("http://www.tarpeeksihyvaesoft.com/vcs/is_newer_version_available.php?uv=%1").arg(PROGRAM_VERSION_STRING);
+        network->get(QNetworkRequest(QUrl(url)));
     }
+    #endif
 
     connect(&this->mouseActivityMonitor, &mouse_activity_monitor_c::activated, this, [=]
     {

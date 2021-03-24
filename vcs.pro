@@ -1,7 +1,13 @@
-# Comment out to disable OpenCV. You'll have no filtering or scaler, but you also don't need to provide the dependencies.
+# Whether this build of VCS is intended for release (defined) or is developmental,
+# non-stable etc. (undefined/commented out).
+#DEFINES += RELEASE_BUILD
+
+# Comment out to disable OpenCV. You'll have no filtering or scaler, but you also
+# don't need to provide the dependencies.
 DEFINES += USE_OPENCV
 
-# Enable non-critical asserts. May perform slower, but will e.g. look to guard against buffer overflow in memory access.
+# Enable non-critical asserts. May perform slower, but will e.g. look to guard
+# against buffer overflow in memory access.
 #DEFINES += ENFORCE_OPTIONAL_ASSERTS
 
 linux {
