@@ -71,7 +71,7 @@ int anti_tear_one_per_frame_c::find_first_new_row_idx(const anti_tear_frame_s *c
                                                       const unsigned startRow,
                                                       const unsigned endRow)
 {
-    k_assert((startRow <= frame->resolution.h), "Invalid arguments.");
+    k_assert((startRow < frame->resolution.h), "The starting row overflows the target resolution.");
 
     // The image is expected to be filled in from bottom to top, so if
     // the first row is new, there can be no tear.
@@ -80,7 +80,7 @@ int anti_tear_one_per_frame_c::find_first_new_row_idx(const anti_tear_frame_s *c
         return -1;
     }
 
-    int firstNewRow = endRow;
+    int firstNewRow = (endRow + 1);
     int prevRow = startRow;
     int rowDelta = ((endRow - startRow) / 2);
 
@@ -97,7 +97,7 @@ int anti_tear_one_per_frame_c::find_first_new_row_idx(const anti_tear_frame_s *c
         prevRow = curRow;
     }
 
-    return ((unsigned(firstNewRow) >= endRow)? -1 : firstNewRow);
+    return ((unsigned(firstNewRow) > endRow)? -1 : firstNewRow);
 }
 
 void anti_tear_one_per_frame_c::visualize_current_tear(void)

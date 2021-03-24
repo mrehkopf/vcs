@@ -87,8 +87,8 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
         {
             const auto screenHeight = kc_capture_api().get_resolution().h;
 
-            ui->parameterGrid_parameters->set_maximum_value("Scan start", screenHeight);
-            ui->parameterGrid_parameters->set_maximum_value("Scan end", screenHeight);
+            ui->parameterGrid_parameters->set_maximum_value("Scan start", (screenHeight - 1));
+            ui->parameterGrid_parameters->set_maximum_value("Scan end", (screenHeight - 1));
             ui->parameterGrid_parameters->set_maximum_value("Window size", screenHeight);
             ui->parameterGrid_parameters->set_maximum_value("Step size", screenHeight);
         });

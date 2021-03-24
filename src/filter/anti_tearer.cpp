@@ -56,8 +56,10 @@ u8* anti_tearer_c::process(u8 *const pixels,
 
     anti_tear_frame_s frame(resolution, pixels);
 
-    this->scanEndRow = std::max(0ul, (frame.resolution.h - this->scanEndOffset));
-    this->scanStartRow = std::min(this->scanStartOffset, this->scanEndRow);
+    const unsigned long minValidRowIdx = 0;
+    const unsigned long maxValidRowIdx = (frame.resolution.h - 1);
+    this->scanEndRow = std::max(minValidRowIdx, std::min((frame.resolution.h - this->scanEndOffset - 1), maxValidRowIdx));
+    this->scanStartRow = std::min(ulong(this->scanEndRow), std::min(maxValidRowIdx, ulong(this->scanStartOffset)));
 
     if (this->scanDirection == anti_tear_scan_direction_e::up)
     {
@@ -115,6 +117,7 @@ void anti_tearer_c::visualize_tears(const anti_tear_frame_s &frame)
 
 void anti_tearer_c::visualize_scan_range(const anti_tear_frame_s &frame)
 {
+    const unsigned numBytesPerPixel = (frame.resolution.bpp / 8);
     const unsigned patternDensity = 9;
 
     // Shade the area under the scan range.
@@ -122,7 +125,7 @@ void anti_tearer_c::visualize_scan_range(const anti_tear_frame_s &frame)
     {
         for (unsigned x = 0; x < frame.resolution.w; x++)
         {
-            const unsigned idx = ((x + y * frame.resolution.w) * 4);
+            const unsigned idx = ((x + y * frame.resolution.w) * numBytesPerPixel);
 
             frame.pixels[idx + 1] *= 0.5;
             frame.pixels[idx + 2] *= 0.5;
@@ -143,12 +146,12 @@ void anti_tearer_c::visualize_scan_range(const anti_tear_frame_s &frame)
     {
         if (((x / patternDensity) % 2) == 0)
         {
-            int idx = ((x + this->scanStartRow * frame.resolution.w) * 4);
+            int idx = ((x + this->scanStartRow * frame.resolution.w) * numBytesPerPixel);
             frame.pixels[idx + 0] = ~frame.pixels[idx + 0];
             frame.pixels[idx + 1] = ~frame.pixels[idx + 1];
             frame.pixels[idx + 2] = ~frame.pixels[idx + 2];
 
-            idx = ((x + (this->scanEndRow - 1) * frame.resolution.w) * 4);
+            idx = ((x + this->scanEndRow * frame.resolution.w) * numBytesPerPixel);
             frame.pixels[idx + 0] = ~frame.pixels[idx + 0];
             frame.pixels[idx + 1] = ~frame.pixels[idx + 1];
             frame.pixels[idx + 2] = ~frame.pixels[idx + 2];
