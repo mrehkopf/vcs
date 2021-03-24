@@ -42,7 +42,7 @@ static const std::unordered_map<std::string, const filter_c::filter_metadata_s> 
      filter_func_delta_histogram}},
 
     {"badb0129-f48c-4253-a66f-b0ec94e225a0",
-    {"Framerate estimate",
+    {"Frame rate",
      filter_category_e::meta,
      filter_type_enum_e::unique_count,
      filter_func_unique_count}},
