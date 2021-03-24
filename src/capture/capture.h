@@ -54,6 +54,7 @@ enum class capture_event_e
 struct captured_frame_s
 {
     resolution_s r;
+
     capture_pixel_format_e pixelFormat;
 
     heap_bytes_s<u8> pixels;
@@ -61,6 +62,19 @@ struct captured_frame_s
     // Will be set to true after the frame's data has been processed for
     // display and is no longer needed.
     bool processed = false;
+
+    captured_frame_s(const resolution_s resolution = {0, 0, 0},
+                     u8 *const pixels = nullptr,
+                     const capture_pixel_format_e pixelFormat = capture_pixel_format_e::rgb_888)
+    {
+        this->r = resolution;
+        this->pixelFormat = pixelFormat;
+
+        if (pixels)
+        {
+            this->pixels.point_to(pixels, (resolution.w * resolution.h * (resolution.bpp / 8)));
+        }
+    }
 };
 
 struct signal_info_s

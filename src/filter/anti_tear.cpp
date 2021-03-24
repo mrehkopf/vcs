@@ -81,8 +81,8 @@ void kat_set_scan_hint(const anti_tear_scan_hint_e newHint)
 
 void kat_set_range(const u32 min, const u32 max)
 {
-    ANTI_TEARER.startRow = min;
-    ANTI_TEARER.endRow = max;
+    ANTI_TEARER.scanStartOffset = min;
+    ANTI_TEARER.scanEndOffset = max;
 
     return;
 }

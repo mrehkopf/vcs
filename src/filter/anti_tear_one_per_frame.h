@@ -25,15 +25,16 @@ public:
     void process(const captured_frame_s *const frame);
 
 private:
-    void present_front_buffer(const resolution_s &resolution, const bool visualizeTear, const bool visualizeScanRange);
-
     void visualize_scan_range(void);
 
     void visualize_current_tear(void);
 
-    // Scans the given frame for a tear. If a tear is found, returns the pixel row
-    // on which it starts. Otherwise, returns -1.
-    int find_first_new_row_idx(const captured_frame_s *frame);
+    // Scans the given frame for a tear within the given row range. If a tear is found,
+    // returns the index of the pixel row on which the tear starts. Otherwise, returns
+    // -1.
+    int find_first_new_row_idx(const captured_frame_s *const frame,
+                               const unsigned startRow,
+                               const unsigned endRow);
 
     enum class next_action_e
     {
@@ -42,10 +43,6 @@ private:
     } nextAction = next_action_e::scan_for_tear;
 
     int latestTearRow = -1;
-
-    // The range of the latest tear scan we've done.
-    unsigned scanStartRow = 0;
-    unsigned scanEndRow = 0;
 
     anti_tearer_c *base;
 };

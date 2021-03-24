@@ -13,8 +13,8 @@ void anti_tearer_c::release(void)
     this->backBuffer = nullptr;
     this->frontBuffer = nullptr;
 
-    this->buffers.at(0).release_memory();
-    this->buffers.at(1).release_memory();
+    this->buffers[0].release_memory();
+    this->buffers[1].release_memory();
     this->presentBuffer.pixels.release_memory();
 
     return;
@@ -26,8 +26,8 @@ void anti_tearer_c::initialize(const resolution_s &maxResolution)
 
     this->maximumResolution = maxResolution;
 
-    this->buffers.at(0).alloc(requiredBufferSize);
-    this->buffers.at(1).alloc(requiredBufferSize);
+    this->buffers[0].alloc(requiredBufferSize);
+    this->buffers[1].alloc(requiredBufferSize);
     this->presentBuffer.pixels.alloc(requiredBufferSize);
 
     this->backBuffer = this->buffers[0].ptr();
@@ -49,9 +49,10 @@ u8* anti_tearer_c::process(u8 *const pixels,
     k_assert((resolution.bpp == this->presentBuffer.r.bpp),
              "The anti-tear engine expected a certain bit depth, but the input frame did not comply.");
 
-    captured_frame_s frame;
-    frame.r = resolution;
-    frame.pixels.point_to(pixels, (frame.r.w * frame.r.h * (frame.r.bpp / 8)));
+    captured_frame_s frame(resolution, pixels);
+
+    this->scanEndRow = std::max(0ul, (frame.r.h - this->scanEndOffset));
+    this->scanStartRow = std::min(this->scanStartOffset, this->scanEndRow);
 
     switch (this->scanHint)
     {
@@ -59,7 +60,83 @@ u8* anti_tearer_c::process(u8 *const pixels,
         case anti_tear_scan_hint_e::look_for_one_tear: this->onePerFrame.process(&frame); break;
     }
 
+    return this->present_front_buffer(frame.r);
+}
+
+u8* anti_tearer_c::present_front_buffer(const resolution_s &resolution)
+{
+    this->presentBuffer.r = resolution;
+
+    std::memcpy(this->presentBuffer.pixels.ptr(), this->frontBuffer, (resolution.w * resolution.h * (resolution.bpp / 8)));
+
+    if (this->visualizeScanRange)
+    {
+        this->visualize_scan_range(this->presentBuffer);
+    }
+
+    if (this->visualizeTears)
+    {
+        this->visualize_tears(this->presentBuffer);
+    }
+
     return this->presentBuffer.pixels.ptr();
+}
+
+void anti_tearer_c::visualize_tears(const captured_frame_s &frame)
+{
+    for (const auto &tornRow:this->tornRowIndices)
+    {
+        const unsigned bpp = (frame.r.bpp / 8);
+        const unsigned idx = (tornRow * frame.r.w * bpp);
+        std::memset((frame.pixels.ptr() + idx), 255, (frame.r.w * bpp));
+    }
+
+    return;
+}
+
+void anti_tearer_c::visualize_scan_range(const captured_frame_s &frame)
+{
+    const unsigned patternDensity = 9;
+
+    // Shade the area under the scan range.
+    for (unsigned y = this->scanStartRow; y < this->scanEndRow; y++)
+    {
+        for (unsigned x = 0; x < frame.r.w; x++)
+        {
+            const unsigned idx = ((x + y * frame.r.w) * 4);
+
+            frame.pixels[idx + 1] *= 0.5;
+            frame.pixels[idx + 2] *= 0.5;
+
+            // Create a dot pattern.
+            if (((y % patternDensity) == 0) &&
+                ((x + y) % (patternDensity * 2)) == 0)
+            {
+                frame.pixels[idx + 0] = ~frame.pixels[idx + 0];
+                frame.pixels[idx + 1] = ~frame.pixels[idx + 1];
+                frame.pixels[idx + 2] = ~frame.pixels[idx + 2];
+            }
+        }
+    }
+
+    // Indicate with a line where the scan range starts and ends.
+    for (unsigned x = 0; x < frame.r.w; x++)
+    {
+        if (((x / patternDensity) % 2) == 0)
+        {
+            int idx = ((x + this->scanStartRow * frame.r.w) * 4);
+            frame.pixels[idx + 0] = ~frame.pixels[idx + 0];
+            frame.pixels[idx + 1] = ~frame.pixels[idx + 1];
+            frame.pixels[idx + 2] = ~frame.pixels[idx + 2];
+
+            idx = ((x + (this->scanEndRow - 1) * frame.r.w) * 4);
+            frame.pixels[idx + 0] = ~frame.pixels[idx + 0];
+            frame.pixels[idx + 1] = ~frame.pixels[idx + 1];
+            frame.pixels[idx + 2] = ~frame.pixels[idx + 2];
+        }
+    }
+
+    return;
 }
 
 void anti_tearer_c::copy_frame_pixel_rows(const captured_frame_s *const srcFrame,
@@ -80,6 +157,23 @@ void anti_tearer_c::copy_frame_pixel_rows(const captured_frame_s *const srcFrame
     std::memcpy((dstBuffer + idx), (srcFrame->pixels.ptr() + idx), numBytes);
 
     return;
+}
+
+int anti_tearer_c::find_first_new_row_idx(const captured_frame_s *const frame,
+                                          const unsigned startRow,
+                                          const unsigned endRow)
+{
+    for (unsigned rowIdx = startRow; rowIdx < endRow; rowIdx++)
+    {
+        if (this->has_pixel_row_changed(rowIdx, frame->pixels.ptr(), this->frontBuffer, frame->r))
+        {
+            // If the new row of pixels is at the top of the frame, there's no
+            // tearing (we assume the frame fills in from bottom to top).
+            return ((rowIdx == startRow)? -1 : rowIdx);
+        }
+    }
+
+    return -1;
 }
 
 bool anti_tearer_c::has_pixel_row_changed(const unsigned rowIdx,
@@ -136,13 +230,4 @@ bool anti_tearer_c::has_pixel_row_changed(const unsigned rowIdx,
     }
 
     return false;
-}
-
-void anti_tearer_c::present_pixels(const u8 *const srcBuffer,
-                                   const resolution_s &resolution)
-{
-    this->presentBuffer.r = resolution;
-    std::memcpy(this->presentBuffer.pixels.ptr(), srcBuffer, (resolution.w * resolution.h * (resolution.bpp / 8)));
-
-    return;
 }
