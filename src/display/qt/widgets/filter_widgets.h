@@ -360,7 +360,10 @@ private:
 
 struct filter_widget_unique_count_s : public filter_widget_s
 {
-    enum data_offset_e { OFFS_THRESHOLD = 0, OFFS_CORNER = 1 };
+    enum data_offset_e { OFFS_THRESHOLD = 0,
+                         OFFS_CORNER = 1,
+                         OFFS_BG_COLOR = 2,
+                         OFFS_TEXT_COLOR = 3,};
 
     filter_widget_unique_count_s(u8 *const parameterArray, const u8 *const initialParameterValues) :
         filter_widget_s(filter_type_enum_e::unique_count, parameterArray, initialParameterValues)

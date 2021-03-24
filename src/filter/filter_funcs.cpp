@@ -39,6 +39,8 @@ void filter_func_unique_count(FILTER_FUNC_PARAMS)
 
     const u8 threshold = params[filter_widget_unique_count_s::OFFS_THRESHOLD];
     const u8 corner = params[filter_widget_unique_count_s::OFFS_CORNER];
+    const u8 bgColorType = params[filter_widget_unique_count_s::OFFS_BG_COLOR];
+    const u8 textColorType = params[filter_widget_unique_count_s::OFFS_TEXT_COLOR];
 
     static u32 uniqueFramesProcessed = 0;
     static u32 uniqueFramesPerSecond = 0;
@@ -48,9 +50,9 @@ void filter_func_unique_count(FILTER_FUNC_PARAMS)
     {
         const u32 idx = i * NUM_COLOR_CHANNELS;
 
-        if (abs(pixels[idx + 0] - prevPixels[idx + 0]) > threshold ||
-            abs(pixels[idx + 1] - prevPixels[idx + 1]) > threshold ||
-            abs(pixels[idx + 2] - prevPixels[idx + 2]) > threshold)
+        if ((abs(pixels[idx + 0] - prevPixels[idx + 0]) >= threshold) ||
+            (abs(pixels[idx + 1] - prevPixels[idx + 1]) >= threshold) ||
+            (abs(pixels[idx + 2] - prevPixels[idx + 2]) >= threshold))
         {
             uniqueFramesProcessed++;
 
@@ -70,28 +72,55 @@ void filter_func_unique_count(FILTER_FUNC_PARAMS)
 
     // Draw the counter into the frame.
     {
+        const unsigned margin = 7;
         std::string counterString = std::to_string(uniqueFramesPerSecond);
         cv::Size textSize = cv::getTextSize(counterString, cv::FONT_HERSHEY_DUPLEX, 1, 2, nullptr);
+        cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
 
-        const auto cornerPos = [&]()->cv::Point
+        const cv::Point cornerPos = ([&]()
         {
             switch (corner)
             {
                 // Top right.
-                case 1: return cv::Point((r->w - textSize.width), (textSize.height + 3));
+                case 1: return cv::Point((r->w - textSize.width - margin), (textSize.height + margin));
 
                 // Bottom right.
-                case 2: return cv::Point((r->w - textSize.width), (r->h - 5));
+                case 2: return cv::Point((r->w - textSize.width - margin), (r->h - margin));
 
                 // Bottom left.
-                case 3: return cv::Point(0, (r->h - 5));
+                case 3: return cv::Point(margin, (r->h - margin));
 
-                default: return cv::Point(0, (textSize.height + 3));
+                // Top left.
+                default: return cv::Point(margin, (textSize.height + margin));
             }
-        }();
+        })();
 
-        cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
-        cv::putText(output, counterString, cornerPos, cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 255, 255), 2, cv::LINE_AA);
+        if (bgColorType)
+        {
+            cv::Scalar bgColor;
+            const cv::Point bgRectTopLeft = cv::Point(cornerPos.x - margin, cornerPos.y + margin);
+            const cv::Point bgRectBottomRight = cv::Point((cornerPos.x + textSize.width + margin), (cornerPos.y - textSize.height - margin));
+
+            switch (bgColorType)
+            {
+                case 1: bgColor = cv::Scalar(0, 0, 0); break;
+                case 2: bgColor = cv::Scalar(255, 255, 255); break;
+            }
+
+            cv::rectangle(output, bgRectTopLeft, bgRectBottomRight, bgColor, cv::FILLED);
+        }
+
+        cv::Scalar textColor;
+
+        switch (textColorType)
+        {
+            case 0: textColor = cv::Scalar(0, 255, 255); break;
+            case 1: textColor = cv::Scalar(255, 0, 255); break;
+            case 2: textColor = cv::Scalar(0, 255, 0); break;
+            case 3: textColor = cv::Scalar(255, 255, 255); break;
+        }
+
+        cv::putText(output, counterString, cornerPos, cv::FONT_HERSHEY_DUPLEX, 1, textColor, 2, cv::LINE_AA);
     }
 #endif
 

@@ -645,6 +645,8 @@ void filter_widget_unique_count_s::reset_parameter_data(void)
 
     this->parameterArray[OFFS_THRESHOLD] = 20;
     this->parameterArray[OFFS_CORNER] = 0;
+    this->parameterArray[OFFS_BG_COLOR] = 0;
+    this->parameterArray[OFFS_TEXT_COLOR] = 0;
 
     return;
 }
@@ -669,8 +671,27 @@ void filter_widget_unique_count_s::create_widget()
     cornerList->addItem("Bottom left");
     cornerList->setCurrentIndex(this->parameter<OFFS_CORNER, u8>());
 
+    // Text color.
+    QLabel *textColorLabel = new QLabel("Text", frame);
+    QComboBox *textColorList = new QComboBox(frame);
+    textColorList->addItem("Yellow");
+    textColorList->addItem("Purple");
+    textColorList->addItem("Black");
+    textColorList->addItem("White");
+    textColorList->setCurrentIndex(this->parameter<OFFS_TEXT_COLOR, u8>());
+
+    // Background color.
+    QLabel *bgColorLabel = new QLabel("Background", frame);
+    QComboBox *bgColorList = new QComboBox(frame);
+    bgColorList->addItem("Transparent");
+    bgColorList->addItem("Black");
+    bgColorList->addItem("White");
+    bgColorList->setCurrentIndex(this->parameter<OFFS_BG_COLOR, u8>());
+
     QFormLayout *l = new QFormLayout(frame);
     l->addRow(cornerLabel, cornerList);
+    l->addRow(textColorLabel, textColorList);
+    l->addRow(bgColorLabel, bgColorList);
     l->addRow(thresholdLabel, thresholdSpin);
 
     connect(thresholdSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
@@ -678,9 +699,19 @@ void filter_widget_unique_count_s::create_widget()
         this->set_parameter<OFFS_THRESHOLD, u8>(newValue);
     });
 
-    connect(cornerList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int newIndex)
+    connect(cornerList, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](const int newIndex)
     {
         this->set_parameter<OFFS_CORNER, u8>(newIndex);
+    });
+
+    connect(bgColorList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int newIndex)
+    {
+        this->set_parameter<OFFS_BG_COLOR, u8>(newIndex);
+    });
+
+    connect(textColorList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int newIndex)
+    {
+        this->set_parameter<OFFS_TEXT_COLOR, u8>(newIndex);
     });
 
     frame->adjustSize();
