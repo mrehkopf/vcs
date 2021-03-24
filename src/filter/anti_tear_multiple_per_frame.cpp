@@ -22,7 +22,7 @@ void anti_tear_multiple_per_frame_c::initialize(anti_tearer_c *const parent)
 void anti_tear_multiple_per_frame_c::process(const captured_frame_s *const frame,
                                              const bool untornFrameAlreadyCopied)
 {
-    this->prevTearRow = std::min(this->prevTearRow, unsigned(frame->r.h));
+    this->prevTearRow = std::min(this->prevTearRow, this->base->scanEndRow);
 
     const int firstNewRowIdx = this->base->find_first_new_row_idx(frame, this->base->scanStartRow, this->prevTearRow);
     k_assert((firstNewRowIdx <= int(frame->r.h)), "Tear row overflows frame's height.");
