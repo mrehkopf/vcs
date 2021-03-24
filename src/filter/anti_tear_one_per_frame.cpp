@@ -7,6 +7,7 @@
 
 #include <cstring>
 #include <cmath>
+#include "filter/anti_tear_frame.h"
 #include "filter/anti_tear_one_per_frame.h"
 #include "filter/anti_tearer.h"
 #include "capture/capture.h"
@@ -18,7 +19,7 @@ void anti_tear_one_per_frame_c::initialize(anti_tearer_c *const parent)
     return;
 }
 
-void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame)
+void anti_tear_one_per_frame_c::process(const anti_tear_frame_s *const frame)
 {
     bool nonTornFrameAlreadyCopied = false;
 
@@ -43,19 +44,19 @@ void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame)
         {
             this->latestTearRow = this->find_first_new_row_idx(frame, this->base->scanStartRow, this->base->scanEndRow);
 
-            k_assert((this->latestTearRow <= int(frame->r.h)), "Tear row overflows frame's height.");
+            k_assert((this->latestTearRow <= int(frame->resolution.h)), "Tear row overflows frame's height.");
 
             // If we found a tear.
             if (this->latestTearRow >= 0)
             {
-                this->base->copy_frame_pixel_rows(frame, this->base->backBuffer, this->latestTearRow, frame->r.h);
+                this->base->copy_frame_pixel_rows(frame, this->base->backBuffer, this->latestTearRow, frame->resolution.h);
                 this->nextAction = next_action_e::copy_rest_of_pixel_data;
                 this->base->tornRowIndices.push_back(this->latestTearRow);
             }
             // Otherwise, we assume the frame is not torn and can be presented as-is.
             else if (!nonTornFrameAlreadyCopied)
             {
-                this->base->copy_frame_pixel_rows(frame, this->base->frontBuffer, 0, frame->r.h);
+                this->base->copy_frame_pixel_rows(frame, this->base->frontBuffer, 0, frame->resolution.h);
                 this->base->tornRowIndices.clear();
             }
 
@@ -66,15 +67,15 @@ void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame)
     return;
 }
 
-int anti_tear_one_per_frame_c::find_first_new_row_idx(const captured_frame_s *const frame,
+int anti_tear_one_per_frame_c::find_first_new_row_idx(const anti_tear_frame_s *const frame,
                                                       const unsigned startRow,
                                                       const unsigned endRow)
 {
-    k_assert((startRow <= frame->r.h), "Invalid arguments.");
+    k_assert((startRow <= frame->resolution.h), "Invalid arguments.");
 
     // The image is expected to be filled in from bottom to top, so if
     // the first row is new, there can be no tear.
-    if (this->base->has_pixel_row_changed(startRow, frame->pixels.ptr(), this->base->frontBuffer, frame->r))
+    if (this->base->has_pixel_row_changed(startRow, frame->pixels.ptr(), this->base->frontBuffer, frame->resolution))
     {
         return -1;
     }
@@ -87,7 +88,7 @@ int anti_tear_one_per_frame_c::find_first_new_row_idx(const captured_frame_s *co
     // the vertical range in half in the direction of the tear.
     for (int curRow = (startRow + rowDelta); curRow != firstNewRow; curRow += rowDelta)
     {
-        const bool isNewRow = this->base->has_pixel_row_changed(curRow, frame->pixels.ptr(), this->base->frontBuffer, frame->r);
+        const bool isNewRow = this->base->has_pixel_row_changed(curRow, frame->pixels.ptr(), this->base->frontBuffer, frame->resolution);
         const unsigned numRowsSkipped = std::abs(curRow - prevRow);
         const int sign = (isNewRow? -1 : 1);
 
@@ -101,13 +102,13 @@ int anti_tear_one_per_frame_c::find_first_new_row_idx(const captured_frame_s *co
 
 void anti_tear_one_per_frame_c::visualize_current_tear(void)
 {
-    captured_frame_s &frame = this->base->presentBuffer;
+    anti_tear_frame_s &frame = this->base->presentBuffer;
 
     if (this->latestTearRow >= 0)
     {
-        const unsigned bpp = (frame.r.bpp / 8);
-        const unsigned idx = (this->latestTearRow * frame.r.w * bpp);
-        std::memset((this->base->presentBuffer.pixels.ptr() + idx), 255, (frame.r.w * bpp));
+        const unsigned bpp = (frame.resolution.bpp / 8);
+        const unsigned idx = (this->latestTearRow * frame.resolution.w * bpp);
+        std::memset((this->base->presentBuffer.pixels.ptr() + idx), 255, (frame.resolution.w * bpp));
     }
 
     return;

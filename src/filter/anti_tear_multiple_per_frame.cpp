@@ -7,6 +7,7 @@
 
 #include <cstring>
 #include <cmath>
+#include "filter/anti_tear_frame.h"
 #include "filter/anti_tear_one_per_frame.h"
 #include "filter/anti_tearer.h"
 #include "capture/capture.h"
@@ -19,13 +20,14 @@ void anti_tear_multiple_per_frame_c::initialize(anti_tearer_c *const parent)
     return;
 }
 
-void anti_tear_multiple_per_frame_c::process(const captured_frame_s *const frame,
-                                             const bool untornFrameAlreadyCopied)
+void anti_tear_multiple_per_frame_c::process(const anti_tear_frame_s *const frame,
+                                             const bool untornFrameAlreadyCopied,
+                                             const unsigned recursiveCount)
 {
     this->prevTearRow = std::min(this->prevTearRow, this->base->scanEndRow);
 
     const int firstNewRowIdx = this->base->find_first_new_row_idx(frame, this->base->scanStartRow, this->prevTearRow);
-    k_assert((firstNewRowIdx <= int(frame->r.h)), "Tear row overflows frame's height.");
+    k_assert((firstNewRowIdx <= int(frame->resolution.h)), "Tear row overflows frame's height.");
 
     // If we found a tear.
     if (firstNewRowIdx >= 0)
@@ -39,10 +41,13 @@ void anti_tear_multiple_per_frame_c::process(const captured_frame_s *const frame
         {
             std::swap(this->base->backBuffer, this->base->frontBuffer);
             this->base->tornRowIndices.clear();
-            this->prevTearRow = frame->r.h;
+            this->prevTearRow = frame->resolution.h;
 
-            // The bottom of the frame might have new pixel data, so keep scanning.
-            this->process(frame, true);
+            // The bottom of the frame might have new pixel data, so scan again.
+            if (recursiveCount < 1)
+            {
+                this->process(frame, true, (recursiveCount + 1));
+            }
         }
         else
         {
@@ -51,15 +56,11 @@ void anti_tear_multiple_per_frame_c::process(const captured_frame_s *const frame
     }
     // Otherwise, we assume we've reconstructed all tears in this frame, and the
     // frame is ready to be presented.
-    else
+    else if (!untornFrameAlreadyCopied)
     {
-        if (!untornFrameAlreadyCopied)
-        {
-            this->base->copy_frame_pixel_rows(frame, this->base->frontBuffer, 0, frame->r.h);
-            this->base->tornRowIndices.clear();
-        }
-
-        this->prevTearRow = frame->r.h;
+        this->base->copy_frame_pixel_rows(frame, this->base->frontBuffer, 0, frame->resolution.h);
+        this->base->tornRowIndices.clear();
+        this->prevTearRow = frame->resolution.h;
     }
 
     return;

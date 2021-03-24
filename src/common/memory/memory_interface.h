@@ -52,7 +52,7 @@ struct heap_bytes_s
     // For e.g. memset() and the like; run the length value through this function
     // to verify that it's not out of bounds.
     //
-    uint up_to(const uint size)
+    uint up_to(const uint size) const
     {
         k_assert((size <= this->size()), "Possible memory access out of bounds.");
 

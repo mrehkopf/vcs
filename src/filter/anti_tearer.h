@@ -12,6 +12,7 @@
 #include "capture/capture.h"
 #include "common/types.h"
 #include "filter/anti_tear.h"
+#include "filter/anti_tear_frame.h"
 #include "filter/anti_tear_one_per_frame.h"
 #include "filter/anti_tear_multiple_per_frame.h"
 
@@ -46,7 +47,7 @@ protected:
     // to the present buffer.
     u8* present_front_buffer(const resolution_s &resolution);
 
-    void copy_frame_pixel_rows(const captured_frame_s *const srcFrame,
+    void copy_frame_pixel_rows(const anti_tear_frame_s *const srcFrame,
                                u8 *const dstBuffer,
                                const unsigned fromRow,
                                const unsigned toRow);
@@ -61,35 +62,30 @@ protected:
     // Scans the given frame for a tear within the given row range. If a tear is found,
     // returns the index of the pixel row on which the tear starts. Otherwise, returns
     // -1.
-    int find_first_new_row_idx(const captured_frame_s *const frame,
+    int find_first_new_row_idx(const anti_tear_frame_s *const frame,
                                const unsigned scanStartOffset,
                                const unsigned scanEndOffset);
 
     // Draws a visual indicator of the current scan range into the given frame.
-    void visualize_scan_range(const captured_frame_s &frame);
+    void visualize_scan_range(const anti_tear_frame_s &frame);
 
     // Draws a visual indicator of the most recently found tears into the given frame.
-    void visualize_tears(const captured_frame_s &frame);
-
-    // Flips the given frame's image vertically.
-    void flip(captured_frame_s *const frame);
+    void visualize_tears(const anti_tear_frame_s &frame);
 
     anti_tear_one_per_frame_c onePerFrame;
     anti_tear_multiple_per_frame_c multiplePerFrame;
 
     // Buffers for constructing whole frames from torn ones. The back buffer
     // accumulates torn frame fragments, and the front buffer stores the latest
-    // fully reconstructed frame. The scratch buffer is storage for temporary
-    // pixel processing, e.g. flipping frames.
-    heap_bytes_s<u8> buffers[3];
+    // fully reconstructed frame.
+    heap_bytes_s<u8> buffers[2];
     u8 *backBuffer = nullptr;
     u8 *frontBuffer = nullptr;
-    u8 *scratchBuffer = nullptr;
 
     // Holds the pixels the anti-tearer considers ready for display; e.g.
     // the latest de-torn frame. Note that this image might hold additional
     // things, like anti-tear parameter visualization.
-    captured_frame_s presentBuffer;
+    anti_tear_frame_s presentBuffer;
 
     // The maximum size of frames that we can anti-tear.
     resolution_s maximumResolution;
