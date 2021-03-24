@@ -16,6 +16,8 @@
 #define KAT_DEFAULT_STEP_SIZE 1
 #define KAT_DEFAULT_VISUALIZE_TEARS false
 #define KAT_DEFAULT_VISUALIZE_SCAN_RANGE false
+#define KAT_DEFAULT_SCAN_DIRECTION anti_tear_scan_direction_e::down
+#define KAT_DEFAULT_SCAN_HINT anti_tear_scan_hint_e::look_for_one_tear
 
 struct resolution_s;
 
@@ -25,11 +27,19 @@ enum class anti_tear_scan_hint_e
     look_for_multiple_tears,
 };
 
+enum class anti_tear_scan_direction_e
+{
+    up,
+    down,
+};
+
 void kat_initialize_anti_tear(void);
 
 void kat_release_anti_tear(void);
 
 void kat_set_scan_hint(const anti_tear_scan_hint_e newHint);
+
+void kat_set_scan_direction(const anti_tear_scan_direction_e newDirection);
 
 void kat_set_range(const u32 min, const u32 max);
 

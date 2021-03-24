@@ -15,6 +15,7 @@ void anti_tearer_c::release(void)
 
     this->buffers[0].release_memory();
     this->buffers[1].release_memory();
+    this->buffers[2].release_memory();
     this->presentBuffer.pixels.release_memory();
 
     return;
@@ -26,12 +27,14 @@ void anti_tearer_c::initialize(const resolution_s &maxResolution)
 
     this->maximumResolution = maxResolution;
 
-    this->buffers[0].alloc(requiredBufferSize);
-    this->buffers[1].alloc(requiredBufferSize);
-    this->presentBuffer.pixels.alloc(requiredBufferSize);
+    this->buffers[0].alloc(requiredBufferSize, "Anti-tearing buffer #1");
+    this->buffers[1].alloc(requiredBufferSize, "Anti-tearing buffer #2");
+    this->buffers[2].alloc(requiredBufferSize, "Anti-tearing scratch buffer");
+    this->presentBuffer.pixels.alloc(requiredBufferSize, "Anti-tearing present buffer.");
 
     this->backBuffer = this->buffers[0].ptr();
     this->frontBuffer = this->buffers[1].ptr();
+    this->scratchBuffer = this->buffers[2].ptr();
     this->presentBuffer.r = {0, 0, 32};
 
     this->onePerFrame.initialize(this);
@@ -43,16 +46,25 @@ void anti_tearer_c::initialize(const resolution_s &maxResolution)
 u8* anti_tearer_c::process(u8 *const pixels,
                            const resolution_s &resolution)
 {
-    k_assert(pixels != nullptr,
+    k_assert((pixels != nullptr),
              "The anti-tear engine expected a pixel buffer, but received null.");
 
     k_assert((resolution.bpp == this->presentBuffer.r.bpp),
              "The anti-tear engine expected a certain bit depth, but the input frame did not comply.");
 
+    k_assert((resolution.w <= this->maximumResolution.w) &&
+             (resolution.h <= this->maximumResolution.h),
+             "The frame is too large to apply anti-tearing.");
+
     captured_frame_s frame(resolution, pixels);
 
     this->scanEndRow = std::max(0ul, (frame.r.h - this->scanEndOffset));
     this->scanStartRow = std::min(this->scanStartOffset, this->scanEndRow);
+
+    if (this->scanDirection == anti_tear_scan_direction_e::up)
+    {
+        this->flip(&frame);
+    }
 
     switch (this->scanHint)
     {
@@ -63,11 +75,30 @@ u8* anti_tearer_c::process(u8 *const pixels,
     return this->present_front_buffer(frame.r);
 }
 
+void anti_tearer_c::flip(captured_frame_s *const frame)
+{
+    for (unsigned y = 0; y < (frame->r.h / 2); y++)
+    {
+        const unsigned bpp = (frame->r.bpp / 8);
+        const unsigned idx1 = (y * frame->r.w * bpp);
+        const unsigned idx2 = ((frame->r.h - 1 - y) * frame->r.w * bpp);
+        const unsigned numBytes = (frame->r.w * bpp);
+
+        std::memcpy(this->scratchBuffer,          (frame->pixels.ptr() + idx1), numBytes);
+        std::memcpy((frame->pixels.ptr() + idx1), (frame->pixels.ptr() + idx2), numBytes);
+        std::memcpy((frame->pixels.ptr() + idx2), this->scratchBuffer, numBytes);
+    }
+
+    return;
+}
+
 u8* anti_tearer_c::present_front_buffer(const resolution_s &resolution)
 {
     this->presentBuffer.r = resolution;
 
-    std::memcpy(this->presentBuffer.pixels.ptr(), this->frontBuffer, (resolution.w * resolution.h * (resolution.bpp / 8)));
+    std::memcpy(this->presentBuffer.pixels.ptr(),
+                this->frontBuffer,
+                this->presentBuffer.pixels.up_to(resolution.w * resolution.h * (resolution.bpp / 8)));
 
     if (this->visualizeScanRange)
     {
@@ -77,6 +108,11 @@ u8* anti_tearer_c::present_front_buffer(const resolution_s &resolution)
     if (this->visualizeTears)
     {
         this->visualize_tears(this->presentBuffer);
+    }
+
+    if (this->scanDirection == anti_tear_scan_direction_e::up)
+    {
+        this->flip(&this->presentBuffer);
     }
 
     return this->presentBuffer.pixels.ptr();
@@ -181,6 +217,10 @@ bool anti_tearer_c::has_pixel_row_changed(const unsigned rowIdx,
                                           const u8 *const prevPixels,
                                           const resolution_s &resolution)
 {
+    k_assert((newPixels && prevPixels), "Expected non-null pixel data.");
+
+    k_assert((rowIdx < resolution.h), "Row index overflowing the pixel data.");
+
     unsigned x = 0;
     unsigned matches = 0;
     const unsigned threshold = (this->windowLength * this->threshold);

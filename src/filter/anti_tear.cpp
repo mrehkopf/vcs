@@ -79,6 +79,13 @@ void kat_set_scan_hint(const anti_tear_scan_hint_e newHint)
     return;
 }
 
+void kat_set_scan_direction(const anti_tear_scan_direction_e newDirection)
+{
+    ANTI_TEARER.scanDirection = newDirection;
+
+    return;
+}
+
 void kat_set_range(const u32 min, const u32 max)
 {
     ANTI_TEARER.scanStartOffset = min;

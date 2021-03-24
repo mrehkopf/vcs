@@ -56,6 +56,7 @@ void anti_tear_one_per_frame_c::process(const captured_frame_s *const frame)
             else if (!nonTornFrameAlreadyCopied)
             {
                 this->base->copy_frame_pixel_rows(frame, this->base->frontBuffer, 0, frame->r.h);
+                this->base->tornRowIndices.clear();
             }
 
             break;

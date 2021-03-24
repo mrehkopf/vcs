@@ -32,13 +32,14 @@ public:
     // Anti-tearing parameters.
     unsigned scanStartOffset = 0;
     unsigned scanEndOffset = 0; // Rows from the bottom up, i.e. (height - x).
+    anti_tear_scan_direction_e scanDirection = KAT_DEFAULT_SCAN_DIRECTION;
+    anti_tear_scan_hint_e scanHint = KAT_DEFAULT_SCAN_HINT;
     unsigned threshold = KAT_DEFAULT_THRESHOLD;
     unsigned stepSize = KAT_DEFAULT_STEP_SIZE;
     unsigned windowLength = KAT_DEFAULT_WINDOW_LENGTH;
     unsigned matchesRequired = KAT_DEFAULT_NUM_MATCHES_REQUIRED;
     bool visualizeTears = KAT_DEFAULT_VISUALIZE_TEARS;
     bool visualizeScanRange = KAT_DEFAULT_VISUALIZE_SCAN_RANGE;
-    anti_tear_scan_hint_e scanHint = anti_tear_scan_hint_e::look_for_one_tear;
 
 protected:
     // Copies the front buffer's pixels into the present buffer and returns a pointer
@@ -70,15 +71,20 @@ protected:
     // Draws a visual indicator of the most recently found tears into the given frame.
     void visualize_tears(const captured_frame_s &frame);
 
+    // Flips the given frame's image vertically.
+    void flip(captured_frame_s *const frame);
+
     anti_tear_one_per_frame_c onePerFrame;
     anti_tear_multiple_per_frame_c multiplePerFrame;
 
     // Buffers for constructing whole frames from torn ones. The back buffer
     // accumulates torn frame fragments, and the front buffer stores the latest
-    // fully reconstructed frame.
-    heap_bytes_s<u8> buffers[2];
+    // fully reconstructed frame. The scratch buffer is storage for temporary
+    // pixel processing, e.g. flipping frames.
+    heap_bytes_s<u8> buffers[3];
     u8 *backBuffer = nullptr;
     u8 *frontBuffer = nullptr;
+    u8 *scratchBuffer = nullptr;
 
     // Holds the pixels the anti-tearer considers ready for display; e.g.
     // the latest de-torn frame. Note that this image might hold additional
