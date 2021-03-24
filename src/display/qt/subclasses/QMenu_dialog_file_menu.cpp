@@ -5,6 +5,8 @@
  *
  */
 
+#include <QApplication>
+#include <QStyle>
 #include <QFileInfo>
 #include <QMessageBox>
 #include "display/qt/subclasses/QMenu_dialog_file_menu.h"
@@ -22,6 +24,10 @@ DialogFileMenu::DialogFileMenu(VCSBaseDialog *const parentDialog) :
     QAction *saveAs = new QAction("Save as...", this);
     QAction *open = new QAction("Open...", this);
     QAction *close = new QAction("Close", this);
+
+    save->setIcon(qApp->style()->standardIcon(QStyle::SP_DialogSaveButton));
+    open->setIcon(qApp->style()->standardIcon(QStyle::SP_DialogOpenButton));
+    close->setIcon(qApp->style()->standardIcon(QStyle::SP_DialogCloseButton));
 
     // Initial state when no file has been opened.
     save->setEnabled(false);
