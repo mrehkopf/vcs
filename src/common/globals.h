@@ -51,9 +51,8 @@ const u32 FILTER_PARAMETER_ARRAY_LENGTH = 16;
                                                 throw std::runtime_error(error_string);\
                                             }
 
-// For assertions in performance-critical sections; not guaranteed to evaluate
-// to an assertion in release-oriented buids.
-#ifdef ENFORCE_OPTIONAL_ASSERTS
+// Assertions in e.g. performance-critical code.
+#ifndef RELEASE_BUILD
     #define k_assert_optional k_assert
 #else
     #define k_assert_optional(...)

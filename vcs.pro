@@ -6,10 +6,6 @@
 # don't need to provide the dependencies.
 DEFINES += USE_OPENCV
 
-# Enable non-critical asserts. May perform slower, but will e.g. look to guard
-# against buffer overflow in memory access.
-#DEFINES += ENFORCE_OPTIONAL_ASSERTS
-
 linux {
     DEFINES += CAPTURE_API_VIDEO4LINUX
 
