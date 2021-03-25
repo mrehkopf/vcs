@@ -59,7 +59,7 @@ u8* anti_tearer_c::process(u8 *const pixels,
     const unsigned long minValidRowIdx = 0;
     const unsigned long maxValidRowIdx = (frame.resolution.h - 1);
     this->scanEndRow = std::max(minValidRowIdx, std::min((frame.resolution.h - this->scanEndOffset - 1), maxValidRowIdx));
-    this->scanStartRow = std::min(ulong(this->scanEndRow), std::min(maxValidRowIdx, ulong(this->scanStartOffset)));
+    this->scanStartRow = std::min((unsigned long)(this->scanEndRow), std::min(maxValidRowIdx, (unsigned long)(this->scanStartOffset)));
 
     if (this->scanDirection == anti_tear_scan_direction_e::up)
     {
