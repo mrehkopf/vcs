@@ -91,6 +91,4 @@ void ks_set_upscaling_filter(const std::string &name);
 
 const scaling_filter_s* ks_scaler_for_name_string(const std::string &name);
 
-resolution_s ks_scaler_output_resolution(void);
-
 #endif
