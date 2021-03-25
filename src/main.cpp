@@ -196,6 +196,10 @@ int main(int argc, char *argv[])
 {
     printf("VCS %s\n---------+\n", PROGRAM_VERSION_STRING);
 
+    #ifndef RELEASE_BUILD
+        printf("NON-RELEASE BUILD\n");
+    #endif
+
     // We want to be sure that the capture hardware is released in a controlled
     // manner, if possible, in the event of a runtime failure. (Not releasing the
     // hardware on program termination may cause a degradation in its subsequent
