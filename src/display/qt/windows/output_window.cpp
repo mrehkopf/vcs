@@ -21,6 +21,7 @@
 #include <QTreeWidget>
 #include <QMessageBox>
 #include <QMouseEvent>
+#include <QFileDialog>
 #include <QShortcut>
 #include <QPainter>
 #include <QScreen>
@@ -290,7 +291,49 @@ MainWindow::MainWindow(QWidget *parent) :
         QMenu *outputMenu = new QMenu("Output", this);
         {
             const std::vector<std::string> scalerNames = ks_list_of_scaling_filter_names();
-            k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");  
+            k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
+
+            connect(outputMenu->addAction("Screenshot..."), &QAction::triggered, this, [this]
+            {
+                QString filename = QFileDialog::getSaveFileName(this,
+                                                                "Save screenshot",
+                                                                "",
+                                                                "Image files (*.png *.jpeg *.bmp *.ppm)");
+
+                if (QFileInfo(filename).suffix().isEmpty())
+                {
+                    filename.append(".png");
+                }
+
+                if (!filename.isEmpty())
+                {
+                    const QImage frameImage = ([]()->QImage
+                    {
+                        const resolution_s r = ks_output_resolution();
+                        const u8 *const fb = ks_scaler_output_as_raw_ptr();
+
+                        if (fb == nullptr)
+                        {
+                            DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
+                            return QImage();
+                        }
+                        else return QImage(fb, r.w, r.h, QImage::Format_RGB32);
+                    })();
+
+                    if (frameImage.save(filename))
+                    {
+                        DEBUG(("Screenshotted into \"%s\".", filename.toStdString().c_str()));
+                    }
+                    else
+                    {
+                        DEBUG(("Could not screenshot into \"%s\". Possibly an unrecognized file format.",
+                               filename.toStdString().c_str()));
+                    }
+                }
+
+            });
+
+            outputMenu->addSeparator();
 
             QMenu *upscaler = new QMenu("Upscaler", this);
             {
@@ -594,6 +637,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         this->contextMenu->addMenu(captureMenu);
         this->contextMenu->addMenu(outputMenu);
+        this->contextMenu->addSeparator();
         this->contextMenu->addMenu(windowMenu);
         this->contextMenu->addSeparator();
         connect(this->contextMenu->addAction("About..."), &QAction::triggered, this, [=]{this->open_about_dialog();});
