@@ -457,6 +457,55 @@ MainWindow::MainWindow(QWidget *parent) :
         QMenu *windowMenu = new QMenu("Window", this);
         {
             {
+                QMenu *rendererMenu = new QMenu("Renderer", this);
+
+                QActionGroup *group = new QActionGroup(this);
+
+                QAction *opengl = new QAction("OpenGL", this);
+                opengl->setActionGroup(group);
+                opengl->setCheckable(true);
+                rendererMenu->addAction(opengl);
+
+                QAction *software = new QAction("Software", this);
+                software->setActionGroup(group);
+                software->setCheckable(true);
+                rendererMenu->addAction(software);
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    rendererMenu->setEnabled(false);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    rendererMenu->setEnabled(true);
+                });
+
+                connect(opengl, &QAction::triggered, this, [=]
+                {
+                    this->set_opengl_enabled(true);
+                });
+
+                connect(software, &QAction::triggered, this, [=]
+                {
+                    this->set_opengl_enabled(false);
+                });
+
+                if (kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString() == "Software")
+                {
+                    software->setChecked(true);
+                }
+                else
+                {
+                    opengl->setChecked(true);
+                }
+
+                windowMenu->addMenu(rendererMenu);
+            }
+
+            {
+                windowMenu->addSeparator();
+
                 QAction *showBorder = new QAction("Border", this);
 
                 showBorder->setCheckable(true);
@@ -524,81 +573,36 @@ MainWindow::MainWindow(QWidget *parent) :
             }
 
             {
-                QMenu *positionMenu = new QMenu("Position", this);
+                QAction *center = new QAction("Center", this);
 
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
-                {
-                    positionMenu->setEnabled(false);
-                });
+                QAction *topLeft = new QAction("Top left", this);
+                topLeft->setShortcut(QKeySequence("f2"));
 
-                connect(this, &MainWindow::left_fullscreen, this, [=]
-                {
-                    positionMenu->setEnabled(true);
-                });
-
-                connect(positionMenu->addAction("Center"), &QAction::triggered, this, [=]
+                connect(center, &QAction::triggered, this, [=]
                 {
                     this->move(this->pos() + (QGuiApplication::primaryScreen()->geometry().center() - this->geometry().center()));
                 });
 
-                QAction *topLeft = new QAction("Top left", this);
-                topLeft->setShortcut(QKeySequence("f2"));
-                positionMenu->addAction(topLeft);
                 connect(topLeft, &QAction::triggered, this, [=]
                 {
                     this->move(0, 0);
                 });
 
-                windowMenu->addMenu(positionMenu);
-            }
-
-            {
-                windowMenu->addSeparator();
-
-                QMenu *rendererMenu = new QMenu("Renderer", this);
-
-                QActionGroup *group = new QActionGroup(this);
-
-                QAction *opengl = new QAction("OpenGL", this);
-                opengl->setActionGroup(group);
-                opengl->setCheckable(true);
-                rendererMenu->addAction(opengl);
-
-                QAction *software = new QAction("Software", this);
-                software->setActionGroup(group);
-                software->setCheckable(true);
-                rendererMenu->addAction(software);
-
                 connect(this, &MainWindow::entered_fullscreen, this, [=]
                 {
-                    rendererMenu->setEnabled(false);
+                    center->setEnabled(false);
+                    topLeft->setEnabled(false);
                 });
 
                 connect(this, &MainWindow::left_fullscreen, this, [=]
                 {
-                    rendererMenu->setEnabled(true);
+                    center->setEnabled(true);
+                    topLeft->setEnabled(true);
                 });
 
-                connect(opengl, &QAction::triggered, this, [=]
-                {
-                    this->set_opengl_enabled(true);
-                });
-
-                connect(software, &QAction::triggered, this, [=]
-                {
-                    this->set_opengl_enabled(false);
-                });
-
-                if (kpers_value_of(INI_GROUP_OUTPUT, "renderer", "Software").toString() == "Software")
-                {
-                    software->setChecked(true);
-                }
-                else
-                {
-                    opengl->setChecked(true);
-                }
-
-                windowMenu->addMenu(rendererMenu);
+                windowMenu->addSeparator();
+                windowMenu->addAction(center);
+                windowMenu->addAction(topLeft);
             }
 
             {
