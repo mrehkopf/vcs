@@ -309,8 +309,8 @@ MainWindow::MainWindow(QWidget *parent) :
                 {
                     const QImage frameImage = ([]()->QImage
                     {
-                        const resolution_s r = ks_output_resolution();
-                        const u8 *const fb = ks_scaler_output_as_raw_ptr();
+                        const resolution_s r = ks_scaler_output_resolution();
+                        const u8 *const fb = ks_scaler_output_pixels_ptr();
 
                         if (fb == nullptr)
                         {
@@ -812,8 +812,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::update_context_menu_eyedropper(const QPoint &scalerOutputPos)
 {
-    const resolution_s &resolution = ks_output_resolution();
-    const u8 *const pixels = ks_scaler_output_as_raw_ptr();
+    const resolution_s &resolution = ks_scaler_output_resolution();
+    const u8 *const pixels = ks_scaler_output_pixels_ptr();
 
     if (((unsigned long)scalerOutputPos.x() >= resolution.w) ||
         ((unsigned long)scalerOutputPos.y() >= resolution.h))
@@ -1200,8 +1200,8 @@ void MainWindow::paintEvent(QPaintEvent *)
     // Convert the output buffer into a QImage frame.
     const QImage frameImage = ([]()->QImage
     {
-        const resolution_s r = ks_output_resolution();
-        const u8 *const fb = ks_scaler_output_as_raw_ptr();
+        const resolution_s r = ks_scaler_output_resolution();
+        const u8 *const fb = ks_scaler_output_pixels_ptr();
 
         if (fb == nullptr)
         {
@@ -1375,7 +1375,7 @@ void MainWindow::update_window_title(void)
         const QString missedFramesMarker = "{!}";
 
         const resolution_s inRes = kc_capture_api().get_resolution();
-        const resolution_s outRes = ks_output_resolution();
+        const resolution_s outRes = ks_scaler_output_resolution();
         const refresh_rate_s refreshRate = kc_capture_api().get_refresh_rate();
 
         QStringList programStatus;
@@ -1421,7 +1421,7 @@ void MainWindow::update_gui_state()
 
 void MainWindow::update_window_size(void)
 {
-    const resolution_s r = ks_output_resolution();
+    const resolution_s r = ks_scaler_output_resolution();
 
     this->setFixedSize(r.w, r.h);
     overlayDlg->set_overlay_max_width(r.w);

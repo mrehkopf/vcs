@@ -76,8 +76,8 @@ void OGLWidget::resizeGL(int w, int h)
 void OGLWidget::paintGL()
 {
     // Draw the output frame.
-    const resolution_s r = ks_output_resolution();
-    const u8 *const fb = ks_scaler_output_as_raw_ptr();
+    const resolution_s r = ks_scaler_output_resolution();
+    const u8 *const fb = ks_scaler_output_pixels_ptr();
     if (fb != nullptr)
     {
         this->glDisable(GL_BLEND);

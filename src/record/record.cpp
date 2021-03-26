@@ -308,8 +308,8 @@ void krecord_record_current_frame(void)
     }
 
     // Get the current output frame.
-    const resolution_s resolution = ks_output_resolution();
-    const u8 *const frameData = ks_scaler_output_as_raw_ptr();
+    const resolution_s resolution = ks_scaler_output_resolution();
+    const u8 *const frameData = ks_scaler_output_pixels_ptr();
     if (frameData == nullptr) return;
 
     k_assert((resolution.w == RECORDING.resolution.w &&

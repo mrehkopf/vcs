@@ -93,7 +93,7 @@ resolution_s ks_resolution_to_aspect(const resolution_s &r)
     return a;
 }
 
-resolution_s ks_output_base_resolution(void)
+resolution_s ks_scaler_output_base_resolution(void)
 {
     return BASE_RESOLUTION;
 }
@@ -101,7 +101,7 @@ resolution_s ks_output_base_resolution(void)
 // Returns the resolution at which the scaler will output after performing all the actions
 // (e.g. relative scaling or aspect ratio correction) that it has been asked to.
 //
-resolution_s ks_output_resolution(void)
+resolution_s ks_scaler_output_resolution(void)
 {
     // While recording video, the output resolution is required to stay locked
     // to the video resolution.
@@ -519,7 +519,7 @@ void ks_scale_frame(const captured_frame_s &frame)
 {
     u8 *pixelData = frame.pixels.ptr();
     resolution_s frameRes = frame.r; /// Temp hack. May want to modify the .bpp value.
-    resolution_s outputRes = ks_output_resolution();
+    resolution_s outputRes = ks_scaler_output_resolution();
 
     const resolution_s minres = kc_capture_api().get_minimum_resolution();
     const resolution_s maxres = kc_capture_api().get_maximum_resolution();
@@ -722,7 +722,7 @@ void ks_clear_scaler_output_buffer(void)
     return;
 }
 
-const u8* ks_scaler_output_as_raw_ptr(void)
+const u8* ks_scaler_output_pixels_ptr(void)
 {
     return OUTPUT_BUFFER.ptr();
 }

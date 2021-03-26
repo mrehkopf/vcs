@@ -59,8 +59,8 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
 
                 kd_update_output_window_size();
 
-                ui->spinBox_outputResX->setValue(ks_output_base_resolution().w);
-                ui->spinBox_outputResY->setValue(ks_output_base_resolution().h);
+                ui->spinBox_outputResX->setValue(ks_scaler_output_base_resolution().w);
+                ui->spinBox_outputResY->setValue(ks_scaler_output_base_resolution().h);
             }
         });
 

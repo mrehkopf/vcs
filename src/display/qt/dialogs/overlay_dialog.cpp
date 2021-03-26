@@ -211,7 +211,7 @@ void OverlayDialog::set_overlay_max_width(const uint width)
 // Renders the overlay into a QImage, and returns the image.
 QImage OverlayDialog::overlay_as_qimage(void)
 {
-    const resolution_s outputRes = ks_output_resolution();
+    const resolution_s outputRes = ks_scaler_output_resolution();
 
     QImage image = QImage(outputRes.w, outputRes.h, QImage::Format_ARGB32_Premultiplied);
     image.fill(QColor(0, 0, 0, 0));
@@ -240,7 +240,7 @@ QString OverlayDialog::parsed_overlay_string(void)
     QString parsed = ui->plainTextEdit->toPlainText();
 
     const auto inRes = kc_capture_api().get_resolution();
-    const auto outRes = ks_output_resolution();
+    const auto outRes = ks_scaler_output_resolution();
 
     parsed.replace("$inputResolution",  QString("%1 \u00d7 %2").arg(inRes.w).arg(inRes.h));
     parsed.replace("$outputResolution", QString("%1 \u00d7 %2").arg(outRes.w).arg(outRes.h));

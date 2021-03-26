@@ -35,13 +35,16 @@ enum class aspect_mode_e
 
 struct scaling_filter_s
 {
-    std::string name;   // The public name of the filter. Shown in the GUI etc.
-    void (*scale)(SCALER_FUNC_PARAMS);  // The function that executes this scaler with the given pixels.
+    // The public name of the filter. Shown in the GUI etc.
+    std::string name;
+
+    // The function that executes this scaler with the given pixels.
+    void (*scale)(SCALER_FUNC_PARAMS);
 };
 
-resolution_s ks_output_base_resolution(void);
+resolution_s ks_scaler_output_base_resolution(void);
 
-resolution_s ks_output_resolution(void);
+resolution_s ks_scaler_output_resolution(void);
 
 bool ks_is_forced_aspect_enabled(void);
 
@@ -73,7 +76,7 @@ void ks_indicate_invalid_signal(void);
 
 void ks_clear_scaler_output_buffer(void);
 
-const u8* ks_scaler_output_as_raw_ptr(void);
+const u8* ks_scaler_output_pixels_ptr(void);
 
 const std::string &ks_upscaling_filter_name(void);
 
