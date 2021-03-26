@@ -28,7 +28,7 @@
 #include <QLabel>
 #include <cmath>
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
-#include"display/qt/subclasses/QDialog_vcs_base_dialog.h"
+#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 #include "display/qt/dialogs/linux_device_selector_dialog.h"
 #include "display/qt/dialogs/output_resolution_dialog.h"
 #include "display/qt/dialogs/video_parameter_dialog.h"
@@ -70,16 +70,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->centralwidget->setMouseTracking(true);
     ui->centralwidget->setFocusPolicy(Qt::StrongFocus);
 
-    ui->menuBar->setMouseTracking(true);
-    ui->menuBar->setFocusPolicy(Qt::StrongFocus);
-
     // Set up a layout for the central widget, so we can add the OpenGL
-    // render surface to it when OpenGL is enabled.
+    // render surface to it when/if OpenGL is enabled.
     QVBoxLayout *const mainLayout = new QVBoxLayout(ui->centralwidget);
     mainLayout->setMargin(0);
     mainLayout->setSpacing(0);
-
-    ui->menuBar->setVisible(false);
 
     // Set up the child dialogs.
     {
@@ -106,15 +101,12 @@ MainWindow::MainWindow(QWidget *parent) :
                       << recordDlg;
     }
 
-    // Create the window's menu bar.
+    // Create the window's context menu.
     {
-        std::vector<QMenu*> menus;
+        this->contextMenu = new QMenu(this);
 
-        // Capture...
+        QMenu *captureMenu = new QMenu("Capture", this);
         {
-            QMenu *menu = new QMenu("Capture", this);
-            menus.push_back(menu);
-
             QMenu *dialogs = new QMenu("Dialogs", this);
 
             QMenu *channel = new QMenu("Channel", this);
@@ -182,7 +174,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 connect(c24, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_888);});
             }
 
-            QMenu *deinterlacing = new QMenu("De-interlace", this);
+            QMenu *deinterlacing = new QMenu("De-interlacing", this);
             {
                 deinterlacing->setEnabled(kc_capture_api().device_supports_deinterlacing());
 
@@ -260,11 +252,11 @@ MainWindow::MainWindow(QWidget *parent) :
                 }
             }
 
-            menu->addMenu(channel);
-            menu->addMenu(colorDepth);
-            menu->addMenu(deinterlacing);
-            menu->addSeparator();
-            menu->addMenu(dialogs);
+            captureMenu->addMenu(channel);
+            captureMenu->addMenu(colorDepth);
+            captureMenu->addMenu(deinterlacing);
+            captureMenu->addSeparator();
+            captureMenu->addMenu(dialogs);
 
             QAction *aliases = new QAction("Aliases", this);
             dialogs->addAction(aliases);
@@ -295,11 +287,8 @@ MainWindow::MainWindow(QWidget *parent) :
             connect(aliases, &QAction::triggered, this, [=]{this->open_alias_dialog();});
         }
 
-        // Output...
+        QMenu *outputMenu = new QMenu("Output", this);
         {
-            QMenu *menu = new QMenu("Output", this);
-            menus.push_back(menu);
-
             const std::vector<std::string> scalerNames = ks_list_of_scaling_filter_names();
             k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");  
 
@@ -389,12 +378,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
             QMenu *dialogs = new QMenu("Dialogs", this);
 
-            menu->addMenu(aspectRatio);
-            menu->addSeparator();
-            menu->addMenu(upscaler);
-            menu->addMenu(downscaler);
-            menu->addSeparator();
-            menu->addMenu(dialogs);
+            outputMenu->addMenu(aspectRatio);
+            outputMenu->addSeparator();
+            outputMenu->addMenu(upscaler);
+            outputMenu->addMenu(downscaler);
+            outputMenu->addSeparator();
+            outputMenu->addMenu(dialogs);
 
             QAction *overlay = new QAction("Overlay", this);
             overlay->setShortcut(QKeySequence("ctrl+l"));
@@ -422,11 +411,8 @@ MainWindow::MainWindow(QWidget *parent) :
             connect(record, &QAction::triggered, this, [=]{this->open_record_dialog();});
         }
 
-        // Window...
+        QMenu *windowMenu = new QMenu("Window", this);
         {
-            QMenu *menu = new QMenu("Window", this);
-            menus.push_back(menu);
-
             {
                 QAction *showBorder = new QAction("Border", this);
 
@@ -459,7 +445,7 @@ MainWindow::MainWindow(QWidget *parent) :
                     this->toggle_window_border();
                 });
 
-                menu->addAction(showBorder);
+                windowMenu->addAction(showBorder);
             }
 
             {
@@ -491,7 +477,7 @@ MainWindow::MainWindow(QWidget *parent) :
                     }
                 });
 
-                menu->addAction(fullscreen);
+                windowMenu->addAction(fullscreen);
             }
 
             {
@@ -520,11 +506,11 @@ MainWindow::MainWindow(QWidget *parent) :
                     this->move(0, 0);
                 });
 
-                menu->addMenu(positionMenu);
+                windowMenu->addMenu(positionMenu);
             }
 
             {
-                menu->addSeparator();
+                windowMenu->addSeparator();
 
                 QMenu *rendererMenu = new QMenu("Renderer", this);
 
@@ -569,11 +555,11 @@ MainWindow::MainWindow(QWidget *parent) :
                     opengl->setChecked(true);
                 }
 
-                menu->addMenu(rendererMenu);
+                windowMenu->addMenu(rendererMenu);
             }
 
             {
-                menu->addSeparator();
+                windowMenu->addSeparator();
 
                 QAction *customTitle = new QAction("Set title...", this);
 
@@ -602,33 +588,26 @@ MainWindow::MainWindow(QWidget *parent) :
                     customTitle->setEnabled(true);
                 });
 
-                menu->addAction(customTitle);
+                windowMenu->addAction(customTitle);
             }
         }
 
-        // Help...
+        this->contextMenu->addMenu(captureMenu);
+        this->contextMenu->addMenu(outputMenu);
+        this->contextMenu->addMenu(windowMenu);
+        this->contextMenu->addSeparator();
+        connect(this->contextMenu->addAction("About..."), &QAction::triggered, this, [=]{this->open_about_dialog();});
+
+        // Ensure that action shortcuts can be used regardless of which dialog has focus.
+        for (const auto *menu: {captureMenu, outputMenu, windowMenu})
         {
-            QMenu *menu = new QMenu("Help", this);
-            menus.push_back(menu);
-
-            connect(menu->addAction("About..."), &QAction::triggered, this, [=]{this->open_about_dialog();});
-        }
-
-        for (QMenu *const menu: menus)
-        {
-            ui->menuBar->addMenu(menu);
-            connect(menu, &QMenu::aboutToHide, this, [=]{ui->centralwidget->setFocus(); this->mouseActivityMonitor.report_activity();});
-
-            // Ensure that action shortcuts can be used regardless of which dialog
-            // has focus.
             this->addActions(menu->actions());
+
             for (auto dialog: this->dialogs)
             {
                 dialog->addActions(menu->actions());
             }
         }
-
-        connect(this->menuBar(), &QMenuBar::hovered, this, [=]{this->mouseActivityMonitor.report_activity();});
     }
 
     // We intend to repaint the entire window every time we update it, so ask for no automatic fill.
@@ -680,20 +659,6 @@ MainWindow::MainWindow(QWidget *parent) :
         network->get(QNetworkRequest(QUrl(url)));
     }
     #endif
-
-    connect(&this->mouseActivityMonitor, &mouse_activity_monitor_c::activated, this, [=]
-    {
-        this->menuBar()->setVisible(true);
-    });
-
-    connect(&this->mouseActivityMonitor, &mouse_activity_monitor_c::inactivated, this, [=]
-    {
-        // Hide the menu bar only if the mouse cursor isnät hovering over it at the moment.
-        if (!this->menuBar()->hasFocus())
-        {
-            this->menuBar()->setVisible(false);
-        }
-    });
 
     // Apply any custom styling.
     {
@@ -1042,25 +1007,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     return;
 }
 
-void MainWindow::enterEvent(QEvent *event)
-{
-    if (ui->centralwidget->hasFocus())
-    {
-        this->mouseActivityMonitor.report_activity();
-    }
-
-    (void)event;
-
-    return;
-}
-
-void MainWindow::leaveEvent(QEvent *event)
-{
-    (void)event;
-
-    return;
-}
-
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
@@ -1096,11 +1042,6 @@ void MainWindow::changeEvent(QEvent *event)
 static QPoint PREV_MOUSE_POS; /// Temp. Used to track mouse movement delta across frames.
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    if (ui->centralwidget->hasFocus())
-    {
-        this->mouseActivityMonitor.report_activity();
-    }
-
     // If the cursor is over the capture window and the left mouse button is being
     // held down, drag the window. Note: We disable dragging in fullscreen mode,
     // since really you shouldn't be able to drag a fullscreen window.
@@ -1118,26 +1059,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    this->mouseActivityMonitor.report_activity();
-
     ui->centralwidget->setFocus();
 
     if (event->button() == Qt::LeftButton)
     {
         PREV_MOUSE_POS = event->globalPos();
-    }
-
-    return;
-}
-
-void MainWindow::mouseReleaseEvent(QMouseEvent *event)
-{
-    this->mouseActivityMonitor.report_activity();
-
-    if (event->button() == Qt::MidButton)
-    {
-        // If the capture window is pressed with the middle mouse button, show the overlay dialog.
-        open_overlay_dialog();
     }
 
     return;
@@ -1223,7 +1149,7 @@ void MainWindow::paintEvent(QPaintEvent *)
     if (!kc_capture_api().has_no_signal() &&
         this->isActiveWindow() &&
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
-        (QGuiApplication::mouseButtons() & Qt::RightButton))
+        (QGuiApplication::mouseButtons() & Qt::MidButton))
     {
         if (magnifyingGlass == nullptr)
         {
@@ -1457,6 +1383,13 @@ void MainWindow::toggle_window_border()
 
         emit this->border_hidden();
     }
+}
+
+void MainWindow::contextMenuEvent(QContextMenuEvent *event)
+{
+    this->contextMenu->popup(event->globalPos());
+
+    return;
 }
 
 void MainWindow::add_gui_log_entry(const log_entry_s e)

@@ -8,7 +8,6 @@
 #define VCS_DISPLAY_QT_WINDOWS_OUTPUT_WINDOW_H
 
 #include <QMainWindow>
-#include "display/qt/utility.h"
 #include "display/display.h"
 #include "common/globals.h"
 
@@ -110,16 +109,14 @@ private slots:
     void toggle_window_border(void);
 
 private:
+    void contextMenuEvent(QContextMenuEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void keyPressEvent(QKeyEvent *event);
     void changeEvent(QEvent *event);
     void paintEvent(QPaintEvent *);
     void closeEvent(QCloseEvent *event);
-    void enterEvent(QEvent *event);
-    void leaveEvent(QEvent *event);
     void wheelEvent(QWheelEvent *event);
 
     void set_keyboard_shortcuts(void);
@@ -128,6 +125,10 @@ private:
     bool load_font(const QString &filename);
 
     Ui::MainWindow *ui = nullptr;
+
+    // The menu items shown when the user right-clicks this window.
+    std::vector<QMenu*> contextMenuSubmenus;
+    QMenu *contextMenu;
 
     OutputResolutionDialog *outputResolutionDlg = nullptr;
     InputResolutionDialog *inputResolutionDlg = nullptr;
@@ -143,8 +144,6 @@ private:
     // A master list of all the dialogs that this window spawns. Will be filled in
     // when we create the dialog instances.
     QVector<VCSBaseDialog*> dialogs;
-
-    mouse_activity_monitor_c mouseActivityMonitor;
 
     // Set to true when the user has selected to close the
     // main window.
