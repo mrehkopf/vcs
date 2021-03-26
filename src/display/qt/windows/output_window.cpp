@@ -635,12 +635,23 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         }
 
+        QAction *about = new QAction("About...", this);
+        {
+            connect(about, &QAction::triggered, this, [=]{this->open_about_dialog();});
+        }
+
+        this->contextMenuEyedropper = new QAction("0, 0, 0");
+        this->contextMenuEyedropper->setEnabled(false);
+        this->contextMenuEyedropper->setIcon(QIcon(":/res/images/icons/newie/eyedropper.png"));
+
         this->contextMenu->addMenu(captureMenu);
         this->contextMenu->addMenu(outputMenu);
         this->contextMenu->addSeparator();
         this->contextMenu->addMenu(windowMenu);
         this->contextMenu->addSeparator();
-        connect(this->contextMenu->addAction("About..."), &QAction::triggered, this, [=]{this->open_about_dialog();});
+        this->contextMenu->addAction(about);
+        this->contextMenu->addSeparator();
+        this->contextMenu->addAction(this->contextMenuEyedropper);
 
         // Ensure that action shortcuts can be used regardless of which dialog has focus.
         for (const auto *menu: {captureMenu, outputMenu, windowMenu})
@@ -791,6 +802,29 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
     }
+
+    return;
+}
+
+void MainWindow::update_context_menu_eyedropper(const QPoint &scalerOutputPos)
+{
+    const resolution_s &resolution = ks_output_resolution();
+    const u8 *const pixels = ks_scaler_output_as_raw_ptr();
+
+    if (((unsigned long)scalerOutputPos.x() >= resolution.w) ||
+        ((unsigned long)scalerOutputPos.y() >= resolution.h))
+    {
+        this->contextMenuEyedropper->setText("No eyedrop");
+        return;
+    }
+
+    const unsigned idx = ((scalerOutputPos.x() + scalerOutputPos.y() * resolution.w) * (resolution.bpp / 8));
+
+    const u8 red =   pixels[idx + 2];
+    const u8 green = pixels[idx + 1];
+    const u8 blue =  pixels[idx + 0];
+
+    this->contextMenuEyedropper->setText(QString("%1, %2, %3").arg(red).arg(green).arg(blue));
 
     return;
 }
@@ -1431,6 +1465,7 @@ void MainWindow::toggle_window_border()
 
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
+    this->update_context_menu_eyedropper(this->mapFromGlobal(event->globalPos()));
     this->contextMenu->popup(event->globalPos());
 
     return;

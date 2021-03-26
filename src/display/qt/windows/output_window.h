@@ -22,6 +22,7 @@ class SignalDialog;
 class AliasDialog;
 class AboutDialog;
 class VCSBaseDialog;
+class QAction;
 
 struct signal_info_s;
 struct mode_alias_s;
@@ -124,6 +125,8 @@ private:
     // Load the font pointed to by the given filename, and make it available to the program.
     bool load_font(const QString &filename);
 
+    void update_context_menu_eyedropper(const QPoint &scalerOutputPos);
+
     Ui::MainWindow *ui = nullptr;
 
     // The menu items shown when the user right-clicks this window.
@@ -159,6 +162,10 @@ private:
     // are being dropped; false otherwise. The value gets updated at some interval,
     // e.g. 1 second.
     bool areFramesBeingDropped = false;
+
+    // Displayed in the window's context menu; shows the color values of the
+    // pixel under the cursor where the context menu was spawned.
+    QAction *contextMenuEyedropper;
 
     const Qt::WindowFlags defaultWindowFlags = (Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 };
