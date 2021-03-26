@@ -252,7 +252,6 @@ QTreeWidget QHeaderView::section:last
 QTreeWidget::item:hover
 {
     background-color: #494949;
-
 }
 
 QTreeWidget::item:selected
@@ -632,7 +631,7 @@ QGroupBox > QFrame[frameShape="4"]:disabled
     margin: 0;
     margin-left: 10px;
     border: none;
-    border-top: 1px solid #353535;
+    border-top: 2px solid #353535;
     border-bottom: 1px solid #555555;
 }
 
