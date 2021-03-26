@@ -106,7 +106,7 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         this->contextMenu = new QMenu(this);
 
-        QMenu *captureMenu = new QMenu("Capture", this);
+        QMenu *captureMenu = new QMenu("Input", this);
         {
             QMenu *dialogs = new QMenu("Dialogs", this);
 
