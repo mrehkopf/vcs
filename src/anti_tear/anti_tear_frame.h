@@ -30,9 +30,19 @@ struct anti_tear_frame_s
         return;
     }
 
+    bool is_valid(void)
+    {
+        return (this->pixels.ptr() &&
+                (this->resolution.w <= MAX_OUTPUT_WIDTH) &&
+                (this->resolution.h <= MAX_OUTPUT_HEIGHT) &&
+                (this->resolution.bpp <= MAX_OUTPUT_BPP));
+    }
+
     void flip_vertically(void)
     {
-        u8 scratch[MAX_OUTPUT_WIDTH];
+        k_assert(this->is_valid(), "Invalid frame.");
+
+        u8 scratch[MAX_OUTPUT_WIDTH * (MAX_OUTPUT_BPP / 8)];
 
         for (unsigned y = 0; y < (this->resolution.h / 2); y++)
         {
