@@ -552,36 +552,16 @@ struct filter_widget_solid_fill_s : public filter_widget_s
     // parameters being the fill color's red, green, and blue values.
     // The red value is thus in this->parameterArray[0], the green value
     // in this->parameterArray[1], etc.
-    enum data_offset_e { OFFS_RED = 0, OFFS_GREEN = 1, OFFS_BLUE = 2 };
+    enum parameter_offset_e { OFFS_RED = 0, OFFS_GREEN = 1, OFFS_BLUE = 2 };
 
     filter_widget_solid_fill_s(u8 *const parameterArray,
                                const u8 *const initialParameterValues) :
         filter_widget_s(filter_type_enum_e::solid_fill,
                         parameterArray,
-                        initialParameterValues)
-    {
-        if (!initialParameterValues) this->reset_parameter_data();
-        create_widget();
-        return;
-    }
-
-    // Give the filter's parameters default starting values.
-    void reset_parameter_data(void) override
-    {
-        memset(this->parameterArray, 0, FILTER_PARAMETER_ARRAY_LENGTH);
-
-        // Default to a light blue color.
-        this->parameterArray[OFFS_RED] = 0;
-        this->parameterArray[OFFS_GREEN] = 150;
-        this->parameterArray[OFFS_BLUE] = 255;
-
-        return;
-    }
-
-private:
-    Q_OBJECT
-    
-    void create_widget(void) override
+                        initialParameterValues,
+                        {filter_widget_s::make_parameter<PARAM_RED, u8>(0),
+                         filter_widget_s::make_parameter<PARAM_GREEN, u8>(150),
+                         filter_widget_s::make_parameter<PARAM_BLUE, u8>(255)})
     {
         // Create a frame that will group together the widget's
         // contents.
@@ -593,17 +573,17 @@ private:
         QLabel *labelRed = new QLabel("Red:", frame);
         QSpinBox *spinRed = new QSpinBox(frame);
         spinRed->setRange(0, 255);
-        spinRed->setValue(this->parameter<OFFS_RED, u8>());
+        spinRed->setValue(this->parameter(PARAM_RED));
 
         QLabel *labelGreen = new QLabel("Green:", frame);
         QSpinBox *spinGreen = new QSpinBox(frame);
         spinGreen->setRange(0, 255);
-        spinGreen->setValue(this->parameter<OFFS_GREEN, u8>());
+        spinGreen->setValue(this->parameter(PARAM_GREEN));
 
         QLabel *labelBlue = new QLabel("Blue:", frame);
         QSpinBox *spinBlue = new QSpinBox(frame);
         spinBlue->setRange(0, 255);
-        spinBlue->setValue(this->parameter<OFFS_BLUE, u8>());
+        spinBlue->setValue(this->parameter(PARAM_BLUE));
 
         QFormLayout *l = new QFormLayout(frame);
         l->addRow(labelRed, spinRed);
@@ -614,22 +594,22 @@ private:
         // operates the controls. Changes will be reflected in the
         // captured frames in real-time.
         {
-            connect(spinRed, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            connect(spinRed, QOverload<int>::of(&QSpinBox::valueChanged),
             [this](const int newValue)
             {
-                this->set_parameter<OFFS_RED, u8>(newValue);
+                this->set_parameter(OFFS_RED, newValue);
             });
 
-            connect(spinGreen, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            connect(spinGreen, QOverload<int>::of(&QSpinBox::valueChanged),
             [this](const int newValue)
             {
-                this->set_parameter<OFFS_GREEN, u8>(newValue);
+                this->set_parameter(OFFS_GREEN, newValue);
             });
 
-            connect(spinBlue, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            connect(spinBlue, QOverload<int>::of(&QSpinBox::valueChanged),
             [this](const int newValue)
             {
-                this->set_parameter<OFFS_BLUE, u8>(newValue);
+                this->set_parameter(OFFS_BLUE, newValue);
             });
         }
 
@@ -638,6 +618,9 @@ private:
 
         return;
     }
+
+private:
+    Q_OBJECT
 };
 ```
 

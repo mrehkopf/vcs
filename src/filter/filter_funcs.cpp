@@ -37,10 +37,10 @@ void filter_func_unique_count(FILTER_FUNC_PARAMS)
 #ifdef USE_OPENCV
     static heap_bytes_s<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Unique count filter buffer");
 
-    const u8 threshold = params[filter_widget_unique_count_s::OFFS_THRESHOLD];
-    const u8 corner = params[filter_widget_unique_count_s::OFFS_CORNER];
-    const u8 bgColorType = params[filter_widget_unique_count_s::OFFS_BG_COLOR];
-    const u8 textColorType = params[filter_widget_unique_count_s::OFFS_TEXT_COLOR];
+    const u8 threshold = params[filter_widget_unique_count_s::PARAM_THRESHOLD];
+    const u8 corner = params[filter_widget_unique_count_s::PARAM_CORNER];
+    const u8 bgColorType = params[filter_widget_unique_count_s::PARAM_BG_COLOR];
+    const u8 textColorType = params[filter_widget_unique_count_s::PARAM_TEXT_COLOR];
 
     static u32 uniqueFramesProcessed = 0;
     static u32 uniqueFramesPerSecond = 0;
@@ -134,10 +134,10 @@ void filter_func_denoise_nonlocal_means(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
     #if USE_OPENCV
-        const u8 h = params[filter_widget_denoise_nonlocal_means_s::OFFS_H];
-        const u8 hColor = params[filter_widget_denoise_nonlocal_means_s::OFFS_H_COLOR];
-        const u8 templateWindowSize = params[filter_widget_denoise_nonlocal_means_s::OFFS_TEMPLATE_WINDOW_SIZE];
-        const u8 searchWindowSize = params[filter_widget_denoise_nonlocal_means_s::OFFS_SEARCH_WINDOW_SIZE];
+        const u8 h = params[filter_widget_denoise_nonlocal_means_s::PARAM_H];
+        const u8 hColor = params[filter_widget_denoise_nonlocal_means_s::PARAM_H_COLOR];
+        const u8 templateWindowSize = params[filter_widget_denoise_nonlocal_means_s::PARAM_TEMPLATE_WINDOW_SIZE];
+        const u8 searchWindowSize = params[filter_widget_denoise_nonlocal_means_s::PARAM_SEARCH_WINDOW_SIZE];
 
         cv::Mat input = cv::Mat(r->h, r->w, CV_8UC4, pixels);
         cv::fastNlMeansDenoisingColored(input, input, h, hColor, templateWindowSize, searchWindowSize);
@@ -154,7 +154,7 @@ void filter_func_denoise_temporal(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    const u8 threshold = params[filter_widget_denoise_temporal_s::OFFS_THRESHOLD];
+    const u8 threshold = params[filter_widget_denoise_temporal_s::PARAM_THRESHOLD];
     static heap_bytes_s<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Denoising filter buffer");
 
     for (uint i = 0; i < (r->h * r->w); i++)
@@ -249,8 +249,8 @@ void filter_func_unsharp_mask(FILTER_FUNC_PARAMS)
 
 #ifdef USE_OPENCV
     static heap_bytes_s<u8> TMP_BUF(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Unsharp mask buffer");
-    const real str = params[filter_widget_unsharp_mask_s::OFFS_STRENGTH] / 100.0;
-    const real rad = params[filter_widget_unsharp_mask_s::OFFS_RADIUS] / 10.0;
+    const real str = params[filter_widget_unsharp_mask_s::PARAM_STRENGTH] / 100.0;
+    const real rad = params[filter_widget_unsharp_mask_s::PARAM_RADIUS] / 10.0;
 
     cv::Mat tmp = cv::Mat(r->h, r->w, CV_8UC4, TMP_BUF.ptr());
     cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
@@ -285,8 +285,8 @@ void filter_func_decimate(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    const u8 factor = params[filter_widget_decimate_s::OFFS_FACTOR];
-    const u8 type = params[filter_widget_decimate_s::OFFS_TYPE];
+    const u8 factor = params[filter_widget_decimate_s::PARAM_FACTOR];
+    const u8 type = params[filter_widget_decimate_s::PARAM_TYPE];
 
     for (u32 y = 0; y < r->h; y += factor)
     {
@@ -345,14 +345,14 @@ void filter_func_crop(FILTER_FUNC_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
-    uint x = *(u16*)&(params[filter_widget_crop_s::OFFS_X]);
-    uint y = *(u16*)&(params[filter_widget_crop_s::OFFS_Y]);
-    uint w = *(u16*)&(params[filter_widget_crop_s::OFFS_WIDTH]);
-    uint h = *(u16*)&(params[filter_widget_crop_s::OFFS_HEIGHT]);
+    uint x = *(u16*)&(params[filter_widget_crop_s::PARAM_X]);
+    uint y = *(u16*)&(params[filter_widget_crop_s::PARAM_Y]);
+    uint w = *(u16*)&(params[filter_widget_crop_s::PARAM_WIDTH]);
+    uint h = *(u16*)&(params[filter_widget_crop_s::PARAM_HEIGHT]);
 
     #ifdef USE_OPENCV
         int scaler = -1;
-        switch (params[filter_widget_crop_s::OFFS_SCALER])
+        switch (params[filter_widget_crop_s::PARAM_SCALER])
         {
             case 0: scaler = cv::INTER_LINEAR; break;
             case 1: scaler = cv::INTER_NEAREST; break;
@@ -394,7 +394,7 @@ void filter_func_flip(FILTER_FUNC_PARAMS)
     static heap_bytes_s<u8> scratch(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Flip filter scratch buffer");
 
     // 0 = vertical, 1 = horizontal, -1 = both.
-    const uint axis = ((params[filter_widget_flip_s::OFFS_AXIS] == 2)? -1 : params[filter_widget_flip_s::OFFS_AXIS]);
+    const uint axis = ((params[filter_widget_flip_s::PARAM_AXIS] == 2)? -1 : params[filter_widget_flip_s::PARAM_AXIS]);
 
     #ifdef USE_OPENCV
         cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
@@ -415,8 +415,8 @@ void filter_func_rotate(FILTER_FUNC_PARAMS)
 
     static heap_bytes_s<u8> scratch(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Rotate filter scratch buffer");
 
-    const double angle = (*(i16*)&(params[filter_widget_rotate_s::OFFS_ROT]) / 10.0);
-    const double scale = (*(i16*)&(params[filter_widget_rotate_s::OFFS_SCALE]) / 100.0);
+    const double angle = (*(i16*)&(params[filter_widget_rotate_s::PARAM_ROT]) / 10.0);
+    const double scale = (*(i16*)&(params[filter_widget_rotate_s::PARAM_SCALE]) / 100.0);
 
     #ifdef USE_OPENCV
         cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
@@ -438,7 +438,7 @@ void filter_func_median(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    const u8 kernelS = params[filter_widget_median_s::OFFS_KERNEL_SIZE];
+    const u8 kernelS = params[filter_widget_median_s::PARAM_KERNEL_SIZE];
 
     cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
     cv::medianBlur(output, output, kernelS);
@@ -452,11 +452,11 @@ void filter_func_blur(FILTER_FUNC_PARAMS)
     VALIDATE_FILTER_INPUT
 
 #ifdef USE_OPENCV
-    const real kernelS = (params[filter_widget_blur_s::OFFS_KERNEL_SIZE] / 10.0);
+    const real kernelS = (params[filter_widget_blur_s::PARAM_KERNEL_SIZE] / 10.0);
 
     cv::Mat output = cv::Mat(r->h, r->w, CV_8UC4, pixels);
 
-    if (params[filter_widget_blur_s::OFFS_TYPE] == filter_widget_blur_s::FILTER_TYPE_GAUSSIAN)
+    if (params[filter_widget_blur_s::PARAM_TYPE] == filter_widget_blur_s::FILTER_TYPE_GAUSSIAN)
     {
         cv::GaussianBlur(output, output, cv::Size(0, 0), kernelS);
     }
