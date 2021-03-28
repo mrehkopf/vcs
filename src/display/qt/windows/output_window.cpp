@@ -644,7 +644,7 @@ MainWindow::MainWindow(QWidget *parent) :
             connect(about, &QAction::triggered, this, [=]{this->open_about_dialog();});
         }
 
-        this->contextMenuEyedropper = new QAction("0, 0, 0");
+        this->contextMenuEyedropper = new QAction("0, 0, 0", this);
         this->contextMenuEyedropper->setEnabled(false);
         this->contextMenuEyedropper->setIcon(QIcon(":/res/images/icons/newie/eyedropper.png"));
 
