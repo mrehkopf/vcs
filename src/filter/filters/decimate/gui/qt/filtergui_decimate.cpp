@@ -11,12 +11,9 @@
 
 filtergui_decimate_c::filtergui_decimate_c(filter_c *const filter) : filtergui_c(filter)
 {
-    QFrame *frame = new QFrame();
-    frame->setMinimumWidth(this->minWidth);
-
     // Factor.
-    QLabel *factorLabel = new QLabel("Factor", frame);
-    QComboBox *factorList = new QComboBox(frame);
+    QLabel *factorLabel = new QLabel("Factor", this->widget);
+    QComboBox *factorList = new QComboBox(this->widget);
     factorList->addItem("2");
     factorList->addItem("4");
     factorList->addItem("8");
@@ -24,13 +21,13 @@ filtergui_decimate_c::filtergui_decimate_c(filter_c *const filter) : filtergui_c
     factorList->setCurrentIndex((std::round(std::sqrt(this->filter->parameter(filter_decimate_c::PARAM_FACTOR))) - 1));
 
     // Sampling.
-    QLabel *radiusLabel = new QLabel("Sampling", frame);
-    QComboBox *samplingList = new QComboBox(frame);
+    QLabel *radiusLabel = new QLabel("Sampling", this->widget);
+    QComboBox *samplingList = new QComboBox(this->widget);
     samplingList->addItem("Nearest");
     samplingList->addItem("Average");
     samplingList->setCurrentIndex(this->filter->parameter(filter_decimate_c::PARAM_TYPE));
 
-    QFormLayout *l = new QFormLayout(frame);
+    QFormLayout *l = new QFormLayout(this->widget);
     l->addRow(factorLabel, factorList);
     l->addRow(radiusLabel, samplingList);
 
@@ -44,8 +41,7 @@ filtergui_decimate_c::filtergui_decimate_c(filter_c *const filter) : filtergui_c
         this->set_parameter(filter_decimate_c::PARAM_TYPE, newIndex);
     });
 
-    frame->adjustSize();
-    this->widget = frame;
+    this->widget->adjustSize();
 
     return;
 }

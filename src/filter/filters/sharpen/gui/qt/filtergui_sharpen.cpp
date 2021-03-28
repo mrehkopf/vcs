@@ -11,17 +11,13 @@
 
 filtergui_sharpen_c::filtergui_sharpen_c(filter_c *const filter) : filtergui_c(filter)
 {
-    QFrame *frame = new QFrame();
-    frame->setMinimumWidth(this->minWidth);
-
     QLabel *noneLabel = new QLabel(this->noParamsMsg);
     noneLabel->setAlignment(Qt::AlignHCenter);
 
-    QHBoxLayout *l = new QHBoxLayout(frame);
+    QHBoxLayout *l = new QHBoxLayout(this->widget);
     l->addWidget(noneLabel);
 
-    frame->adjustSize();
-    this->widget = frame;
+    this->widget->adjustSize();
 
     return;
 }

@@ -11,37 +11,34 @@
 
 filtergui_crop_c::filtergui_crop_c(filter_c *const filter) : filtergui_c(filter)
 {
-    QFrame *frame = new QFrame();
-    frame->setMinimumWidth(this->minWidth);
-
-    QLabel *xLabel = new QLabel("X", frame);
-    QSpinBox *xSpin = new QSpinBox(frame);
+    QLabel *xLabel = new QLabel("X", this->widget);
+    QSpinBox *xSpin = new QSpinBox(this->widget);
     xSpin->setRange(0, MAX_CAPTURE_WIDTH);
     xSpin->setValue(this->filter->parameter(filter_crop_c::PARAM_X));
 
-    QLabel *yLabel = new QLabel("Y", frame);
-    QSpinBox *ySpin = new QSpinBox(frame);
+    QLabel *yLabel = new QLabel("Y", this->widget);
+    QSpinBox *ySpin = new QSpinBox(this->widget);
     ySpin->setRange(0, MAX_CAPTURE_HEIGHT);
     ySpin->setValue(this->filter->parameter(filter_crop_c::PARAM_Y));
 
-    QLabel *widthLabel = new QLabel("Width", frame);
-    QSpinBox *widthSpin = new QSpinBox(frame);
+    QLabel *widthLabel = new QLabel("Width", this->widget);
+    QSpinBox *widthSpin = new QSpinBox(this->widget);
     widthSpin->setRange(0, MAX_CAPTURE_WIDTH);
     widthSpin->setValue(this->filter->parameter(filter_crop_c::PARAM_WIDTH));
 
-    QLabel *heightLabel = new QLabel("Height", frame);
-    QSpinBox *heightSpin = new QSpinBox(frame);
+    QLabel *heightLabel = new QLabel("Height", this->widget);
+    QSpinBox *heightSpin = new QSpinBox(this->widget);
     heightSpin->setRange(0, MAX_CAPTURE_HEIGHT);
     heightSpin->setValue(this->filter->parameter(filter_crop_c::PARAM_HEIGHT));
 
-    QLabel *scalerLabel = new QLabel("Scaler", frame);
-    QComboBox *scalerList = new QComboBox(frame);
+    QLabel *scalerLabel = new QLabel("Scaler", this->widget);
+    QComboBox *scalerList = new QComboBox(this->widget);
     scalerList->addItem("Linear");
     scalerList->addItem("Nearest");
     scalerList->addItem("(Don't scale)");
     scalerList->setCurrentIndex(this->filter->parameter(filter_crop_c::PARAM_SCALER));
 
-    QFormLayout *l = new QFormLayout(frame);
+    QFormLayout *l = new QFormLayout(this->widget);
     l->addRow(xLabel, xSpin);
     l->addRow(yLabel, ySpin);
     l->addRow(widthLabel, widthSpin);
@@ -73,8 +70,7 @@ filtergui_crop_c::filtergui_crop_c(filter_c *const filter) : filtergui_c(filter)
         this->set_parameter(filter_crop_c::PARAM_SCALER, newIndex);
     });
 
-    frame->adjustSize();
-    this->widget = frame;
+    this->widget->adjustSize();
 
     return;
 }

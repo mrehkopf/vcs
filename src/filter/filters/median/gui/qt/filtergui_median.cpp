@@ -11,16 +11,13 @@
 
 filtergui_median_c::filtergui_median_c(filter_c *const filter) : filtergui_c(filter)
 {
-    QFrame *frame = new QFrame();
-    frame->setMinimumWidth(this->minWidth);
-
     // Median radius.
-    QLabel *radiusLabel = new QLabel("Radius", frame);
-    QSpinBox *radiusSpin = new QSpinBox(frame);
+    QLabel *radiusLabel = new QLabel("Radius", this->widget);
+    QSpinBox *radiusSpin = new QSpinBox(this->widget);
     radiusSpin->setRange(0, 99);
     radiusSpin->setValue(this->filter->parameter(filter_median_c::PARAM_KERNEL_SIZE) / 2);
 
-    QFormLayout *l = new QFormLayout(frame);
+    QFormLayout *l = new QFormLayout(this->widget);
     l->addRow(radiusLabel, radiusSpin);
 
     connect(radiusSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
@@ -28,8 +25,7 @@ filtergui_median_c::filtergui_median_c(filter_c *const filter) : filtergui_c(fil
         this->set_parameter(filter_median_c::PARAM_KERNEL_SIZE, ((newValue * 2) + 1));
     });
 
-    frame->adjustSize();
-    this->widget = frame;
+    this->widget->adjustSize();
 
     return;
 }

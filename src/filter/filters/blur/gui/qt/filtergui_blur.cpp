@@ -11,24 +11,21 @@
 
 filtergui_blur_c::filtergui_blur_c(filter_c *const filter) : filtergui_c(filter)
 {
-    QFrame *frame = new QFrame();
-    frame->setMinimumWidth(this->minWidth);
-
     // Blur type.
-    QLabel *typeLabel = new QLabel("Type", frame);
-    QComboBox *typeList = new QComboBox(frame);
+    QLabel *typeLabel = new QLabel("Type", this->widget);
+    QComboBox *typeList = new QComboBox(this->widget);
     typeList->addItem("Box");
     typeList->addItem("Gaussian");
     typeList->setCurrentIndex(this->filter->parameter(filter_blur_c::PARAM_TYPE));
 
     // Blur radius.
-    QLabel *radiusLabel = new QLabel("Radius", frame);
-    QDoubleSpinBox *radiusSpin = new QDoubleSpinBox(frame);
+    QLabel *radiusLabel = new QLabel("Radius", this->widget);
+    QDoubleSpinBox *radiusSpin = new QDoubleSpinBox(this->widget);
     radiusSpin->setRange(0.1, 25);
     radiusSpin->setDecimals(1);
     radiusSpin->setValue(this->filter->parameter(filter_blur_c::PARAM_KERNEL_SIZE) / 10.0);
 
-    QFormLayout *l = new QFormLayout(frame);
+    QFormLayout *l = new QFormLayout(this->widget);
     l->addRow(typeLabel, typeList);
     l->addRow(radiusLabel, radiusSpin);
 
@@ -42,8 +39,7 @@ filtergui_blur_c::filtergui_blur_c(filter_c *const filter) : filtergui_c(filter)
         this->set_parameter(filter_blur_c::PARAM_TYPE, ((currentIdx < 0)? 0 : currentIdx));
     });
 
-    frame->adjustSize();
-    this->widget = frame;
+    this->widget->adjustSize();
 
     return;
 }

@@ -11,17 +11,14 @@
 
 filtergui_flip_c::filtergui_flip_c(filter_c *const filter) : filtergui_c(filter)
 {
-    QFrame *frame = new QFrame();
-    frame->setMinimumWidth(this->minWidth);
-
-    QLabel *axisLabel = new QLabel("Axis", frame);
-    QComboBox *axisList = new QComboBox(frame);
+    QLabel *axisLabel = new QLabel("Axis", this->widget);
+    QComboBox *axisList = new QComboBox(this->widget);
     axisList->addItem("Vertical");
     axisList->addItem("Horizontal");
     axisList->addItem("Both");
     axisList->setCurrentIndex(this->filter->parameter(filter_flip_c::PARAM_AXIS));
 
-    QFormLayout *l = new QFormLayout(frame);
+    QFormLayout *l = new QFormLayout(this->widget);
     l->addRow(axisLabel, axisList);
 
     connect(axisList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int newIndex)
@@ -29,8 +26,7 @@ filtergui_flip_c::filtergui_flip_c(filter_c *const filter) : filtergui_c(filter)
         this->set_parameter(filter_flip_c::PARAM_AXIS, newIndex);
     });
 
-    frame->adjustSize();
-    this->widget = frame;
+    this->widget->adjustSize();
 
     return;
 }

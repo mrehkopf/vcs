@@ -11,16 +11,13 @@
 
 filtergui_denoise_pixel_gate_c::filtergui_denoise_pixel_gate_c(filter_c *const filter) : filtergui_c(filter)
 {
-    QFrame *frame = new QFrame();
-    frame->setMinimumWidth(this->minWidth);
-
     // Denoising threshold.
-    QLabel *thresholdLabel = new QLabel("Threshold", frame);
-    QSpinBox *thresholdSpin = new QSpinBox(frame);
+    QLabel *thresholdLabel = new QLabel("Threshold", this->widget);
+    QSpinBox *thresholdSpin = new QSpinBox(this->widget);
     thresholdSpin->setRange(0, 255);
     thresholdSpin->setValue(this->filter->parameter(filter_denoise_pixel_gate_c::PARAM_THRESHOLD));
 
-    QFormLayout *l = new QFormLayout(frame);
+    QFormLayout *l = new QFormLayout(this->widget);
     l->addRow(thresholdLabel, thresholdSpin);
 
     connect(thresholdSpin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](const int newValue)
@@ -28,8 +25,7 @@ filtergui_denoise_pixel_gate_c::filtergui_denoise_pixel_gate_c(filter_c *const f
         this->set_parameter(filter_denoise_pixel_gate_c::PARAM_THRESHOLD, newValue);
     });
 
-    frame->adjustSize();
-    this->widget = frame;
+    this->widget->adjustSize();
 
     return;
 }

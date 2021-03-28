@@ -11,31 +11,28 @@
 
 filtergui_denoise_nonlocal_means_c::filtergui_denoise_nonlocal_means_c(filter_c *const filter) : filtergui_c(filter)
 {
-    QFrame *frame = new QFrame();
-    frame->setMinimumWidth(this->minWidth);
+    QLabel *hLabel = new QLabel("Luminance", this->widget);
+    QLabel *hColorLabel = new QLabel("Color", this->widget);
+    QLabel *templateWindowLabel = new QLabel("Template wnd.", this->widget);
+    QLabel *searchWindowLabel = new QLabel("Search wnd.", this->widget);
 
-    QLabel *hLabel = new QLabel("Luminance", frame);
-    QLabel *hColorLabel = new QLabel("Color", frame);
-    QLabel *templateWindowLabel = new QLabel("Template wnd.", frame);
-    QLabel *searchWindowLabel = new QLabel("Search wnd.", frame);
-
-    QSpinBox *hSpin = new QSpinBox(frame);
+    QSpinBox *hSpin = new QSpinBox(this->widget);
     hSpin->setRange(0, 255);
     hSpin->setValue(this->filter->parameter(filter_denoise_nonlocal_means_c::PARAM_H));
 
-    QSpinBox *hColorSpin = new QSpinBox(frame);
+    QSpinBox *hColorSpin = new QSpinBox(this->widget);
     hColorSpin->setRange(0, 255);
     hColorSpin->setValue(this->filter->parameter(filter_denoise_nonlocal_means_c::PARAM_H_COLOR));
 
-    QSpinBox *templateWindowSpin = new QSpinBox(frame);
+    QSpinBox *templateWindowSpin = new QSpinBox(this->widget);
     templateWindowSpin->setRange(0, 255);
     templateWindowSpin->setValue(this->filter->parameter(filter_denoise_nonlocal_means_c::PARAM_TEMPLATE_WINDOW_SIZE));
 
-    QSpinBox *searchWindowSpin = new QSpinBox(frame);
+    QSpinBox *searchWindowSpin = new QSpinBox(this->widget);
     searchWindowSpin->setRange(0, 255);
     searchWindowSpin->setValue(this->filter->parameter(filter_denoise_nonlocal_means_c::PARAM_SEARCH_WINDOW_SIZE));
 
-    QFormLayout *layout = new QFormLayout(frame);
+    QFormLayout *layout = new QFormLayout(this->widget);
     layout->addRow(hColorLabel, hColorSpin);
     layout->addRow(hLabel, hSpin);
     layout->addRow(searchWindowLabel, searchWindowSpin);
@@ -61,8 +58,7 @@ filtergui_denoise_nonlocal_means_c::filtergui_denoise_nonlocal_means_c(filter_c 
         this->set_parameter(filter_denoise_nonlocal_means_c::PARAM_SEARCH_WINDOW_SIZE, newValue);
     });
 
-    frame->adjustSize();
-    this->widget = frame;
+    this->widget->adjustSize();
 
     return;
 }

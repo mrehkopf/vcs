@@ -11,23 +11,20 @@
 
 filtergui_rotate_c::filtergui_rotate_c(filter_c *const filter) : filtergui_c(filter)
 {
-    QFrame *frame = new QFrame();
-    frame->setMinimumWidth(this->minWidth);
-
-    QLabel *rotLabel = new QLabel("Angle", frame);
-    QDoubleSpinBox *rotSpin = new QDoubleSpinBox(frame);
+    QLabel *rotLabel = new QLabel("Angle", this->widget);
+    QDoubleSpinBox *rotSpin = new QDoubleSpinBox(this->widget);
     rotSpin->setDecimals(1);
     rotSpin->setRange(-360, 360);
     rotSpin->setValue(this->filter->parameter(filter_rotate_c::PARAM_ROT) / 10.0);
 
-    QLabel *scaleLabel = new QLabel("Scale", frame);
-    QDoubleSpinBox *scaleSpin = new QDoubleSpinBox(frame);
+    QLabel *scaleLabel = new QLabel("Scale", this->widget);
+    QDoubleSpinBox *scaleSpin = new QDoubleSpinBox(this->widget);
     scaleSpin->setDecimals(2);
     scaleSpin->setRange(0.01, 20);
     scaleSpin->setSingleStep(0.1);
     scaleSpin->setValue(this->filter->parameter(filter_rotate_c::PARAM_SCALE) / 100.0);
 
-    QFormLayout *l = new QFormLayout(frame);
+    QFormLayout *l = new QFormLayout(this->widget);
     l->addRow(rotLabel, rotSpin);
     l->addRow(scaleLabel, scaleSpin);
 
@@ -41,8 +38,7 @@ filtergui_rotate_c::filtergui_rotate_c(filter_c *const filter) : filtergui_c(fil
         this->set_parameter(filter_rotate_c::PARAM_SCALE, (newValue * 100));
     });
 
-    frame->adjustSize();
-    this->widget = frame;
+    this->widget->adjustSize();
 
     return;
 }
