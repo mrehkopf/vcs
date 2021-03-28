@@ -10,12 +10,12 @@
 
 #include "filter/filters/qt_filtergui.h"
 
-struct filtergui_rotate_c : public filtergui_c
+class filtergui_rotate_c : public filtergui_c
 {
-    filtergui_rotate_c(filter_c *const filter);
-
-private:
     Q_OBJECT
+
+public:
+    filtergui_rotate_c(filter_c *const filter);
 };
 
 #endif

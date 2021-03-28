@@ -10,12 +10,12 @@
 
 #include "filter/filters/qt_filtergui.h"
 
-struct filtergui_median_c : public filtergui_c
+class filtergui_median_c : public filtergui_c
 {
-    filtergui_median_c(filter_c *const filter);
-
-private:
     Q_OBJECT
+
+public:
+    filtergui_median_c(filter_c *const filter);
 };
 
 #endif

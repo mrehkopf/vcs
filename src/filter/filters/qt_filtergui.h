@@ -21,8 +21,10 @@
 #include "filter/filter.h"
 #include "common/types.h"
 
-struct filtergui_c : public QObject
+class filtergui_c : public QObject
 {
+    Q_OBJECT
+    
 protected:
     // The parent filter to this filter GUI widget.
     filter_c *const filter;
@@ -62,9 +64,6 @@ public:
 signals:
     // Emitted when the widget's parameter data is changed.
     void parameter_changed(void);
-
-private:
-    Q_OBJECT
 };  
 
 #endif

@@ -10,12 +10,12 @@
 
 #include "filter/filters/qt_filtergui.h"
 
-struct filtergui_crop_c : public filtergui_c
+class filtergui_crop_c : public filtergui_c
 {
-    filtergui_crop_c(filter_c *const filter);
-
-private:
     Q_OBJECT
+
+public:
+    filtergui_crop_c(filter_c *const filter);
 };
 
 #endif

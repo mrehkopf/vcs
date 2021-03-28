@@ -34,7 +34,7 @@ filtergui_blur_c::filtergui_blur_c(filter_c *const filter) : filtergui_c(filter)
 
     connect(radiusSpin, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](const double newValue)
     {
-        this->set_parameter(filter_blur_c::PARAM_KERNEL_SIZE, round(newValue * 10.0));
+        this->set_parameter(filter_blur_c::PARAM_KERNEL_SIZE, std::round(newValue * 10.0));
     });
 
     connect(typeList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](const int currentIdx)

@@ -21,7 +21,7 @@ filtergui_decimate_c::filtergui_decimate_c(filter_c *const filter) : filtergui_c
     factorList->addItem("4");
     factorList->addItem("8");
     factorList->addItem("16");
-    factorList->setCurrentIndex((round(sqrt(this->filter->parameter(filter_decimate_c::PARAM_FACTOR))) - 1));
+    factorList->setCurrentIndex((std::round(std::sqrt(this->filter->parameter(filter_decimate_c::PARAM_FACTOR))) - 1));
 
     // Sampling.
     QLabel *radiusLabel = new QLabel("Sampling", frame);
