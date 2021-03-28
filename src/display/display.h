@@ -44,7 +44,7 @@
 struct log_entry_s;
 struct mode_alias_s;
 class FilterGraphNode;
-enum class filter_type_enum_e;
+enum class filter_type_e;
 
 /*!
  * @brief
@@ -180,13 +180,11 @@ void kd_recalculate_filter_graph_chains(void);
  * 
  * @p initialParameterValues is an array of bytes that defines the parameters
  * of the node's filter instance (c.f. the @ref filter_c class of the filter
- * interface, @ref src/filter/filter.h). Assuming VCS's default GUI, you can
- * find which parameters are included in this array for each filter type by
- * inspecting @ref src/display/qt/widgets/filter_widgets.cpp.
+ * interface, @ref src/filter/filter.h).
  * 
  * Returns a pointer to the created node; or @a nullptr if no node was created.
  */
-FilterGraphNode* kd_add_filter_graph_node(const filter_type_enum_e &filterType, const u8 *const initialParameterValues);
+FilterGraphNode* kd_add_filter_graph_node(const filter_type_e &filterType, const u8 *const initialParameterValues);
 
 /*!
  * Asks the GUI to repaint its output window (e.g. because there's a new output

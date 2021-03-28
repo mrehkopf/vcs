@@ -11,7 +11,6 @@
 #include <QString>
 #include <QDebug>
 #include <QFile>
-#include "display/qt/widgets/filter_widgets.h"
 #include "display/qt/dialogs/filter_graph/filter_graph_node.h"
 #include "common/disk/file_streamer.h"
 #include "common/disk/file_reader.h"

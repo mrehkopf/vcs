@@ -59,7 +59,7 @@ bool file_reader::filter_graph::version_a::read(const std::string &filename,
         {
             row++;
             FAIL_IF_FIRST_CELL_IS_NOT("id");
-            const filter_type_enum_e filterType = kf_filter_type_for_id(rowData.at(row).at(1).toStdString());
+            const filter_type_e filterType = kf_filter_type_for_id(rowData.at(row).at(1).toStdString());
 
             row++;
             FAIL_IF_FIRST_CELL_IS_NOT("parameterData");

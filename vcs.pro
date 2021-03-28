@@ -70,6 +70,35 @@ SOURCES += \
     src/anti_tear/anti_tear_multiple_per_frame.cpp \
     src/anti_tear/anti_tear_one_per_frame.cpp \
     src/anti_tear/anti_tearer.cpp \
+    src/filter/filters/blur/filter_blur.cpp \
+    src/filter/filters/blur/gui/qt/filtergui_blur.cpp \
+    src/filter/filters/crop/filter_crop.cpp \
+    src/filter/filters/crop/gui/qt/filtergui_crop.cpp \
+    src/filter/filters/decimate/filter_decimate.cpp \
+    src/filter/filters/decimate/gui/qt/filtergui_decimate.cpp \
+    src/filter/filters/delta_histogram/filter_delta_histogram.cpp \
+    src/filter/filters/delta_histogram/gui/qt/filtergui_delta_histogram.cpp \
+    src/filter/filters/denoise_nonlocal_means/filter_denoise_nonlocal_means.cpp \
+    src/filter/filters/denoise_nonlocal_means/gui/qt/filtergui_denoise_nonlocal_means.cpp \
+    src/filter/filters/denoise_pixel_gate/filter_denoise_pixel_gate.cpp \
+    src/filter/filters/denoise_pixel_gate/gui/qt/filtergui_denoise_pixel_gate.cpp \
+    src/filter/filters/flip/filter_flip.cpp \
+    src/filter/filters/flip/gui/qt/filtergui_flip.cpp \
+    src/filter/filters/frame_rate/filter_frame_rate.cpp \
+    src/filter/filters/frame_rate/gui/qt/filtergui_frame_rate.cpp \
+    src/filter/filters/input_gate/filter_input_gate.cpp \
+    src/filter/filters/input_gate/gui/qt/filtergui_input_gate.cpp \
+    src/filter/filters/median/filter_median.cpp \
+    src/filter/filters/median/gui/qt/filtergui_median.cpp \
+    src/filter/filters/output_gate/filter_output_gate.cpp \
+    src/filter/filters/output_gate/gui/qt/filtergui_output_gate.cpp \
+    src/filter/filters/qt_filtergui.cpp \
+    src/filter/filters/rotate/filter_rotate.cpp \
+    src/filter/filters/rotate/gui/qt/filtergui_rotate.cpp \
+    src/filter/filters/sharpen/filter_sharpen.cpp \
+    src/filter/filters/sharpen/gui/qt/filtergui_sharpen.cpp \
+    src/filter/filters/unsharp_mask/filter_unsharp_mask.cpp \
+    src/filter/filters/unsharp_mask/gui/qt/filtergui_unsharp_mask.cpp \
     src/scaler/scaler.cpp \
     src/main.cpp \
     src/common/log/log.cpp \
@@ -83,7 +112,6 @@ SOURCES += \
     src/common/disk/disk.cpp \
     src/capture/alias.cpp \
     src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.cpp \
-    src/display/qt/widgets/filter_widgets.cpp \
     src/display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.cpp \
     src/display/qt/subclasses/QGraphicsScene_interactible_node_graph.cpp \
     src/display/qt/subclasses/QGraphicsView_interactible_node_graph_view.cpp \
@@ -98,7 +126,6 @@ SOURCES += \
     src/display/qt/subclasses/QTableWidget_property_table.cpp \
     src/display/qt/dialogs/signal_dialog.cpp \
     src/capture/capture_api_video4linux.cpp \
-    src/filter/filter_funcs.cpp \
     src/common/disk/file_writers/file_writer_filter_graph_version_b.cpp \
     src/common/disk/file_reader.cpp \
     src/common/disk/file_readers/file_reader_filter_graph_version_b.cpp \
@@ -140,6 +167,36 @@ HEADERS += \
     src/anti_tear/anti_tear_multiple_per_frame.h \
     src/anti_tear/anti_tear_one_per_frame.h \
     src/anti_tear/anti_tearer.h \
+    src/filter/filters/blur/filter_blur.h \
+    src/filter/filters/blur/gui/qt/filtergui_blur.h \
+    src/filter/filters/crop/filter_crop.h \
+    src/filter/filters/crop/gui/qt/filtergui_crop.h \
+    src/filter/filters/decimate/filter_decimate.h \
+    src/filter/filters/decimate/gui/qt/filtergui_decimate.h \
+    src/filter/filters/delta_histogram/filter_delta_histogram.h \
+    src/filter/filters/delta_histogram/gui/qt/filtergui_delta_histogram.h \
+    src/filter/filters/denoise_nonlocal_means/filter_denoise_nonlocal_means.h \
+    src/filter/filters/denoise_nonlocal_means/gui/qt/filtergui_denoise_nonlocal_means.h \
+    src/filter/filters/denoise_pixel_gate/filter_denoise_pixel_gate.h \
+    src/filter/filters/denoise_pixel_gate/gui/qt/filtergui_denoise_pixel_gate.h \
+    src/filter/filters/filters.h \
+    src/filter/filters/flip/filter_flip.h \
+    src/filter/filters/flip/gui/qt/filtergui_flip.h \
+    src/filter/filters/frame_rate/filter_frame_rate.h \
+    src/filter/filters/frame_rate/gui/qt/filtergui_frame_rate.h \
+    src/filter/filters/input_gate/filter_input_gate.h \
+    src/filter/filters/input_gate/gui/qt/filtergui_input_gate.h \
+    src/filter/filters/median/filter_median.h \
+    src/filter/filters/median/gui/qt/filtergui_median.h \
+    src/filter/filters/output_gate/filter_output_gate.h \
+    src/filter/filters/output_gate/gui/qt/filtergui_output_gate.h \
+    src/filter/filters/qt_filtergui.h \
+    src/filter/filters/rotate/filter_rotate.h \
+    src/filter/filters/rotate/gui/qt/filtergui_rotate.h \
+    src/filter/filters/sharpen/filter_sharpen.h \
+    src/filter/filters/sharpen/gui/qt/filtergui_sharpen.h \
+    src/filter/filters/unsharp_mask/filter_unsharp_mask.h \
+    src/filter/filters/unsharp_mask/gui/qt/filtergui_unsharp_mask.h \
     src/scaler/scaler.h \
     src/capture/capture.h \
     src/display/display.h \
@@ -159,7 +216,6 @@ HEADERS += \
     src/common/disk/disk.h \
     src/capture/alias.h \
     src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.h \
-    src/display/qt/widgets/filter_widgets.h \
     src/display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h \
     src/display/qt/subclasses/QGraphicsScene_interactible_node_graph.h \
     src/display/qt/subclasses/QGraphicsView_interactible_node_graph_view.h \
@@ -175,7 +231,6 @@ HEADERS += \
     src/display/qt/subclasses/QTableWidget_property_table.h \
     src/display/qt/dialogs/signal_dialog.h \
     src/capture/capture_api_video4linux.h \
-    src/filter/filter_funcs.h \
     src/common/disk/file_writers/file_writer_filter_graph.h \
     src/common/disk/file_readers/file_reader_filter_graph.h \
     src/common/disk/file_reader.h \

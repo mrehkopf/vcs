@@ -25,7 +25,7 @@ bool file_writer::filter_graph::version_b::write(const std::string &filename,
 
         for (FilterGraphNode *const node: nodes)
         {
-            outFile << "id,{" << QString::fromStdString(kf_filter_id_for_type(node->associatedFilter->metaData.type)) << "}\n";
+            outFile << "id,{" << QString::fromStdString(node->associatedFilter->uuid()) << "}\n";
 
             outFile << "parameterData," << FILTER_PARAMETER_ARRAY_LENGTH;
             for (unsigned i = 0; i < FILTER_PARAMETER_ARRAY_LENGTH; i++)

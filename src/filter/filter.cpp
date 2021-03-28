@@ -7,112 +7,21 @@
  *
  */
 
-#include <unordered_map>
 #include <cstring>
 #include <vector>
 #include <cmath>
 #include <map>
-#include "display/qt/widgets/filter_widgets.h"
 #include "display/display.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "filter/filter.h"
-#include "filter/filter_funcs.h"
+#include "filter/filters/filters.h"
 
 // Whether filters (if any are activated) should be applied to incoming frames.
 static bool FILTERING_ENABLED = false;
 
-// All filter types available to the user.
-//
-// Note: Each filter is identified by a UUID string. A UUID must be unique to a filter.
-// The UUID of a filter must never be changed - a filter must remain identifiable with
-// its initially-set UUID.
-static const std::unordered_map<std::string, const filter_c::filter_metadata_s> KNOWN_FILTER_TYPES =
-{
-    {"a5426f2e-b060-48a9-adf8-1646a2d3bd41",
-    {"Blur",
-     filter_category_e::reduce,
-     filter_type_enum_e::blur,
-     filter_func_blur}},
-
-    {"fc85a109-c57a-4317-994f-786652231773",
-    {"Delta histogram",
-     filter_category_e::meta,
-     filter_type_enum_e::delta_histogram,
-     filter_func_delta_histogram}},
-
-    {"badb0129-f48c-4253-a66f-b0ec94e225a0",
-    {"Frame rate",
-     filter_category_e::meta,
-     filter_type_enum_e::unique_count,
-     filter_func_unique_count}},
-
-    {"03847778-bb9c-4e8c-96d5-0c10335c4f34",
-    {"Unsharp mask",
-     filter_category_e::enhance,
-     filter_type_enum_e::unsharp_mask,
-     filter_func_unsharp_mask}},
-
-    {"eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03",
-    {"Decimate",
-     filter_category_e::reduce,
-     filter_type_enum_e::decimate,
-     filter_func_decimate}},
-
-    {"94adffac-be42-43ac-9839-9cc53a6d615c",
-    {"Denoise (pixel gate)",
-     filter_category_e::enhance,
-     filter_type_enum_e::denoise_temporal,
-     filter_func_denoise_temporal}},
-
-    {"e31d5ee3-f5df-4e7c-81b8-227fc39cbe76",
-    {"Denoise (non-linear means)",
-     filter_category_e::enhance,
-     filter_type_enum_e::denoise_nonlocal_means,
-     filter_func_denoise_nonlocal_means}},
-
-    {"1c25bbb1-dbf4-4a03-93a1-adf24b311070",
-    {"Sharpen",
-     filter_category_e::enhance,
-     filter_type_enum_e::sharpen,
-     filter_func_sharpen}},
-
-    {"de60017c-afe5-4e5e-99ca-aca5756da0e8",
-    {"Median",
-     filter_category_e::reduce,
-     filter_type_enum_e::median,
-     filter_func_median}},
-
-    {"2448cf4a-112d-4d70-9fc1-b3e9176b6684",
-    {"Crop",
-     filter_category_e::distort,
-     filter_type_enum_e::crop,
-     filter_func_crop}},
-
-    {"80a3ac29-fcec-4ae0-ad9e-bbd8667cc680",
-    {"Flip",
-     filter_category_e::distort,
-     filter_type_enum_e::flip,
-     filter_func_flip}},
-
-    {"140c514d-a4b0-4882-abc6-b4e9e1ff4451",
-    {"Rotate",
-     filter_category_e::distort,
-     filter_type_enum_e::rotate,
-     filter_func_rotate}},
-
-    {"136deb34-ac79-46b1-a09c-d57dcfaa84ad",
-    {"Input gate",
-     filter_category_e::meta,
-     filter_type_enum_e::input_gate,
-     nullptr}},
-
-    {"be8443e2-4355-40fd-aded-63cebcbfb8ce",
-    {"Output gate",
-     filter_category_e::meta,
-     filter_type_enum_e::output_gate,
-     nullptr}},
-};
+// This will contain a list of the filter types available to the program.
+static std::vector<const filter_c*> KNOWN_FILTER_TYPES;
 
 // All filters the user has added to the filter graph.
 static std::vector<filter_c*> FILTER_POOL;
@@ -127,48 +36,42 @@ static std::vector<std::vector<const filter_c*>> FILTER_CHAINS;
 // resolution.
 static int MOST_RECENT_FILTER_CHAIN_IDX = -1;
 
-std::string kf_filter_name_for_type(const filter_type_enum_e type)
+void kf_initialize_filters(void)
 {
-    for (const auto filterType: KNOWN_FILTER_TYPES)
+    INFO(("Initializing custom filtering."));
+
+    KNOWN_FILTER_TYPES =
     {
-        if (filterType.second.type == type)
+        new filter_blur_c(),
+        new filter_delta_histogram_c(),
+        new filter_frame_rate_c(),
+        new filter_unsharp_mask_c(),
+        new filter_decimate_c(),
+        new filter_denoise_pixel_gate_c(),
+        new filter_denoise_nonlocal_means_c(),
+        new filter_sharpen_c(),
+        new filter_median_c(),
+        new filter_crop_c(),
+        new filter_flip_c(),
+        new filter_rotate_c(),
+        new filter_input_gate_c(),
+        new filter_output_gate_c(),
+    };
+
+    return;
+}
+
+filter_type_e kf_filter_type_for_id(const std::string id)
+{
+    for (const auto *filter: KNOWN_FILTER_TYPES)
+    {
+        if (filter->uuid() == id)
         {
-            return filterType.second.name;
+            return filter->type();
         }
     }
 
-    k_assert(0, "Unable to find a name for the given filter type.");
-
-    return "(unknown)";
-}
-
-std::string kf_filter_name_for_id(const std::string id)
-{
-    return kf_filter_name_for_type(kf_filter_type_for_id(id));
-}
-
-filter_type_enum_e kf_filter_type_for_id(const std::string id)
-{
-    const auto filter = KNOWN_FILTER_TYPES.find(id);
-
-    return (filter == KNOWN_FILTER_TYPES.end())
-           ? filter_type_enum_e::unknown
-           : (*filter).second.type;
-}
-
-std::string kf_filter_id_for_type(const filter_type_enum_e type)
-{
-    for (const auto filterType: KNOWN_FILTER_TYPES)
-    {
-        if (filterType.second.type == type)
-        {
-            return filterType.first;
-        }
-    }
-
-    k_assert(0, "Unable to find an id for the given filter type.");
-
-    return "(unknown)";
+    return filter_type_e::unknown;
 }
 
 // Apply to the given pixel buffer the chain of filters (if any) whose input gate
@@ -189,7 +92,7 @@ void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
         // applicable filters are the ones in-between.
         for (unsigned c = 1; c < (chain.size() - 1); c++)
         {
-            chain[c]->metaData.apply(pixels, &r, chain[c]->parameterData.ptr());
+            chain[c]->apply(pixels, r);
         }
 
         MOST_RECENT_FILTER_CHAIN_IDX = idx;
@@ -250,23 +153,16 @@ void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
     return;
 }
 
-std::vector<const filter_c::filter_metadata_s*> kf_known_filter_types(void)
+const std::vector<const filter_c*>& kf_known_filter_types(void)
 {
-    std::vector<const filter_c::filter_metadata_s*> filtersMetadata;
-
-    for (const auto &filter: KNOWN_FILTER_TYPES)
-    {
-        filtersMetadata.push_back(&filter.second);
-    }
-
-    return filtersMetadata;
+    return KNOWN_FILTER_TYPES;
 }
 
 void kf_add_filter_chain(std::vector<const filter_c*> newChain)
 {
     k_assert((newChain.size() >= 2) &&
-             (newChain.at(0)->metaData.type == filter_type_enum_e::input_gate) &&
-             (newChain.at(newChain.size()-1)->metaData.type == filter_type_enum_e::output_gate),
+             (newChain.at(0)->type() == filter_type_e::input_gate) &&
+             (newChain.at(newChain.size()-1)->type() == filter_type_e::output_gate),
              "Detected a malformed filter chain.");
 
     FILTER_CHAINS.push_back(newChain);
@@ -282,15 +178,6 @@ void kf_remove_all_filter_chains(void)
     return;
 }
 
-const filter_c* kf_create_new_filter_instance(const char *const id)
-{
-    filter_c *filter = new filter_c(id);
-
-    FILTER_POOL.push_back(filter);
-
-    return filter;
-}
-
 void kf_delete_filter_instance(const filter_c *const filter)
 {
     const auto entry = std::find(FILTER_POOL.begin(), FILTER_POOL.end(), filter);
@@ -304,38 +191,35 @@ void kf_delete_filter_instance(const filter_c *const filter)
     return;
 }
 
-const filter_c* kf_create_new_filter_instance(const filter_type_enum_e type,
-                                              const u8 *const initialParameterValues)
+const filter_c* kf_create_new_filter_instance(const filter_type_e type,
+                                                const u8 *const initialParameterValues)
 {
-    filter_c *newFilterInstance = nullptr;
+    filter_c *filter = nullptr;
 
-    for (const auto filter: KNOWN_FILTER_TYPES)
+    switch (type)
     {
-        if (filter.second.type == type)
-        {
-            newFilterInstance = new filter_c(filter.first, initialParameterValues);
-            break;
-        }
+        case filter_type_e::blur:                   filter = new filter_blur_c(initialParameterValues); break;
+        case filter_type_e::delta_histogram:        filter = new filter_delta_histogram_c(initialParameterValues); break;
+        case filter_type_e::frame_rate:             filter = new filter_frame_rate_c(initialParameterValues); break;
+        case filter_type_e::unsharp_mask:           filter = new filter_unsharp_mask_c(initialParameterValues); break;
+        case filter_type_e::decimate:               filter = new filter_decimate_c(initialParameterValues); break;
+        case filter_type_e::denoise_pixel_gate:     filter = new filter_denoise_pixel_gate_c(initialParameterValues); break;
+        case filter_type_e::denoise_nonlocal_means: filter = new filter_denoise_nonlocal_means_c(initialParameterValues); break;
+        case filter_type_e::sharpen:                filter = new filter_sharpen_c(initialParameterValues); break;
+        case filter_type_e::median:                 filter = new filter_median_c(initialParameterValues); break;
+        case filter_type_e::crop:                   filter = new filter_crop_c(initialParameterValues); break;
+        case filter_type_e::flip:                   filter = new filter_flip_c(initialParameterValues); break;
+        case filter_type_e::rotate:                 filter = new filter_rotate_c(initialParameterValues); break;
+
+        case filter_type_e::input_gate:             filter = new filter_input_gate_c(initialParameterValues); break;
+        case filter_type_e::output_gate:            filter = new filter_output_gate_c(initialParameterValues); break;
+
+        case filter_type_e::unknown:                filter = nullptr; break;
     }
 
-    k_assert(newFilterInstance, "Failed to create a filter of the given type.");
+    FILTER_POOL.push_back(filter);
 
-    FILTER_POOL.push_back(newFilterInstance);
-
-    return newFilterInstance;
-}
-
-void kf_delete_filter(const filter_c *const filter)
-{
-    const auto filterEntry = std::find(FILTER_POOL.begin(), FILTER_POOL.end(), filter);
-
-    k_assert(filterEntry != FILTER_POOL.end(),"Was asked to delete an unknown filter.");
-
-    FILTER_POOL.erase(filterEntry);
-
-    kd_refresh_filter_chains();
-
-    return;
+    return filter;
 }
 
 void kf_release_filters(void)
@@ -344,7 +228,12 @@ void kf_release_filters(void)
 
     MOST_RECENT_FILTER_CHAIN_IDX = -1;
 
-    for (auto filter: FILTER_POOL)
+    for (auto *filter: FILTER_POOL)
+    {
+        delete filter;
+    }
+
+    for (const auto *filter: KNOWN_FILTER_TYPES)
     {
         delete filter;
     }
@@ -447,55 +336,45 @@ int kf_current_filter_chain_idx(void)
     return MOST_RECENT_FILTER_CHAIN_IDX;
 }
 
-void kf_initialize_filters(void)
+filter_c::filter_c(const u8 *const initialParameterArray,
+                   const std::vector<filter_c::parameter_s> &parameters)
 {
-    INFO(("Initializing custom filtering."));
+    this->parameterData.alloc(FILTER_PARAMETER_ARRAY_LENGTH);
 
-    return;
-}
-
-filter_c::filter_c(const std::string &id, const u8 *initialParameterValues) :
-    metaData(KNOWN_FILTER_TYPES.at(id)),
-    parameterData(heap_bytes_s<u8>(FILTER_PARAMETER_ARRAY_LENGTH, "Filter parameter data")),
-    guiWidget(create_gui_widget(initialParameterValues))
-{
-    return;
-}
-
-filter_c::~filter_c()
-{
-    delete this->guiWidget;
-    this->parameterData.release_memory();
-
-    return;
-}
-
-filter_widget_s *filter_c::create_gui_widget(const u8 *const initialParameterValues)
-{
-    u8 *const paramArray = this->parameterData.ptr();
-
-    #define arguments paramArray, initialParameterValues
-
-    switch (this->metaData.type)
+    if (initialParameterArray)
     {
-        case filter_type_enum_e::blur:                   return new filter_widget_blur_s(arguments);
-        case filter_type_enum_e::rotate:                 return new filter_widget_rotate_s(arguments);
-        case filter_type_enum_e::crop:                   return new filter_widget_crop_s(arguments);
-        case filter_type_enum_e::flip:                   return new filter_widget_flip_s(arguments);
-        case filter_type_enum_e::median:                 return new filter_widget_median_s(arguments);
-        case filter_type_enum_e::denoise_temporal:       return new filter_widget_denoise_temporal_s(arguments);
-        case filter_type_enum_e::denoise_nonlocal_means: return new filter_widget_denoise_nonlocal_means_s(arguments);
-        case filter_type_enum_e::sharpen:                return new filter_widget_sharpen_s(arguments);
-        case filter_type_enum_e::unsharp_mask:           return new filter_widget_unsharp_mask_s(arguments);
-        case filter_type_enum_e::decimate:               return new filter_widget_decimate_s(arguments);
-        case filter_type_enum_e::delta_histogram:        return new filter_widget_delta_histogram_s(arguments);
-        case filter_type_enum_e::unique_count:           return new filter_widget_unique_count_s(arguments);
-
-        case filter_type_enum_e::input_gate:             return new filter_widget_input_gate_s(arguments);
-        case filter_type_enum_e::output_gate:            return new filter_widget_output_gate_s(arguments);
-
-        default: k_assert(0, "No GUI widget is yet available for the given filter type.");
+        std::memcpy(this->parameterData.ptr(),
+                    initialParameterArray,
+                    this->parameterData.up_to(FILTER_PARAMETER_ARRAY_LENGTH));
+    }
+    else
+    {
+        memset(this->parameterData.ptr(),
+               0,
+               this->parameterData.up_to(FILTER_PARAMETER_ARRAY_LENGTH));
     }
 
-    #undef arguments
+    for (const auto &parameter: parameters)
+    {
+        k_assert((this->parameters.find(parameter.offset) == this->parameters.end()),
+                 "Duplicate parameter offset.");
+
+        this->parameters[parameter.offset] = parameter;
+
+        if (!initialParameterArray)
+        {
+            this->set_parameter(parameter.offset, parameter.defaultValue);
+        }
+    }
+
+    return;
+}
+
+filter_c::~filter_c(void)
+{
+    this->parameterData.release_memory();
+
+    delete this->guiWidget;
+
+    return;
 }

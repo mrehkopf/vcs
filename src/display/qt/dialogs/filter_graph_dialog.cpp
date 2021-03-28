@@ -13,8 +13,8 @@
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/subclasses/QMenu_dialog_file_menu.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
-#include "display/qt/widgets/filter_widgets.h"
 #include "display/qt/persistent_settings.h"
+#include "filter/filters/qt_filtergui.h"
 #include "common/command_line/command_line.h"
 #include "common/disk/disk.h"
 #include "ui_filter_graph_dialog.h"
@@ -120,25 +120,25 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                 QMenu *distortMenu = new QMenu("Distort", this);
                 QMenu *metaMenu = new QMenu("Information", this);
 
-                std::vector<const filter_c::filter_metadata_s*> knownFilterTypes = kf_known_filter_types();
+                auto knownFilterTypes = kf_known_filter_types();
 
-                std::sort(knownFilterTypes.begin(), knownFilterTypes.end(), [](const filter_c::filter_metadata_s *a, const filter_c::filter_metadata_s *b)
+                std::sort(knownFilterTypes.begin(), knownFilterTypes.end(), [](const filter_c *a, const filter_c *b)
                 {
-                    return a->name < b->name;
+                    return a->name() < b->name();
                 });
 
                 // Add gates.
                 for (const auto filter: knownFilterTypes)
                 {
-                    if ((filter->type != filter_type_enum_e::output_gate) &&
-                        (filter->type != filter_type_enum_e::input_gate))
+                    if ((filter->type() != filter_type_e::output_gate) &&
+                        (filter->type() != filter_type_e::input_gate))
                     {
                         continue;
                     }
 
-                    connect(filtersMenu->addAction(QString::fromStdString(filter->name)), &QAction::triggered, this, [=]
+                    connect(filtersMenu->addAction(QString::fromStdString(filter->name())), &QAction::triggered, this, [=]
                     {
-                        this->add_filter_node(filter->type);
+                        this->add_filter_node(filter->type());
                     });
                 }
 
@@ -153,15 +153,15 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
                     for (const auto filter: knownFilterTypes)
                     {
-                        if ((filter->type == filter_type_enum_e::output_gate) ||
-                            (filter->type == filter_type_enum_e::input_gate))
+                        if ((filter->type() == filter_type_e::output_gate) ||
+                            (filter->type() == filter_type_e::input_gate))
                         {
                             continue;
                         }
 
-                        auto *const action = new QAction(QString::fromStdString(filter->name), filtersMenu);
+                        auto *const action = new QAction(QString::fromStdString(filter->name()), filtersMenu);
 
-                        switch (filter->category)
+                        switch (filter->category())
                         {
                             case filter_category_e::distort: distortMenu->addAction(action); break;
                             case filter_category_e::enhance: enhanceMenu->addAction(action); break;
@@ -170,8 +170,10 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                             default: k_assert(0, "Unknown filter category."); break;
                         }
 
-                        connect(action, &QAction::triggered, this,
-                                [=]{this->add_filter_node(filter->type);});
+                        connect(action, &QAction::triggered, this, [=]
+                        {
+                            this->add_filter_node(filter->type());
+                        });
                     }
                 }
             }
@@ -229,7 +231,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             {
                 emit this->data_changed();
 
-                if (filterNode->associatedFilter->metaData.type == filter_type_enum_e::input_gate)
+                if (filterNode->associatedFilter->type() == filter_type_e::input_gate)
                 {
                     this->inputGateNodes.erase(std::find(inputGateNodes.begin(), inputGateNodes.end(), filterNode));
                 }
@@ -350,11 +352,11 @@ void FilterGraphDialog::save_graph_into_file(QString filename)
 
 // Adds a new instance of the given filter type into the node graph. Returns a
 // pointer to the new node.
-FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_enum_e type,
+FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_e type,
                                                     const u8 *const initialParameterValues)
 {
     const filter_c *const newFilter = kf_create_new_filter_instance(type, initialParameterValues);
-    k_assert(newFilter, "Failed to add a new filter node.");
+    k_assert((newFilter && newFilter->guiWidget), "Failed to create a new filter node.");
 
     const unsigned filterWidgetWidth = (newFilter->guiWidget->widget->width() + 10);
     const unsigned filterWidgetHeight = (newFilter->guiWidget->widget->height() + 29);
@@ -366,8 +368,8 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_enum_e typ
     {
         switch (type)
         {
-            case filter_type_enum_e::input_gate: newNode = new InputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
-            case filter_type_enum_e::output_gate: newNode = new OutputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
+            case filter_type_e::input_gate: newNode = new InputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
+            case filter_type_e::output_gate: newNode = new OutputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
             default: newNode = new FilterNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
         }
 
@@ -379,7 +381,7 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_enum_e typ
         nodeWidgetProxy->setWidget(newFilter->guiWidget->widget);
         nodeWidgetProxy->widget()->move(0, 27);
 
-        if (type == filter_type_enum_e::input_gate)
+        if (type == filter_type_e::input_gate)
         {
             this->inputGateNodes.push_back(newNode);
         }
@@ -406,7 +408,7 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_enum_e typ
         ui->graphicsView->centerOn(newNode);
     }
 
-    connect(newFilter->guiWidget, &filter_widget_s::parameter_changed, this, [this]
+    connect(newFilter->guiWidget, &filtergui_c::parameter_changed, this, [this]
     {
         this->data_changed();
     });
@@ -447,7 +449,7 @@ void FilterGraphDialog::recalculate_filter_chains(void)
             accumulatedFilterChain.push_back(node->associatedFilter);
         }
 
-        if (node->associatedFilter->metaData.type == filter_type_enum_e::output_gate)
+        if (node->associatedFilter->type() == filter_type_e::output_gate)
         {
             kf_add_filter_chain(accumulatedFilterChain);
             return;
@@ -499,7 +501,7 @@ void FilterGraphDialog::set_filter_graph_options(const std::vector<filter_graph_
     return;
 }
 
-FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const filter_type_enum_e &filterType,
+FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const filter_type_e &filterType,
                                                           const u8 *const initialParameterValues)
 {
     return add_filter_node(filterType, initialParameterValues);
