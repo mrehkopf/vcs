@@ -109,7 +109,9 @@ FilterGUIForQt::FilterGUIForQt(const filter_c *const filter,
                 }
             }
 
-            widgetLayout->addRow(new QLabel(QString::fromStdString(field.label), this), rowContainer);
+            auto *const label = (field.label.empty()? nullptr : new QLabel(QString::fromStdString(field.label), this));
+
+            widgetLayout->addRow(label, rowContainer);
         }
     }
 
