@@ -38,7 +38,7 @@ struct capture_api_virtual_s : public capture_api_s
     bool set_input_channel(const unsigned idx) override;
     uint get_color_depth(void) const override                    { return (unsigned)this->frameBuffer.r.bpp; }
     bool is_capturing(void) const override                       { return false; }
-    bool has_invalid_signal(void) const override                 { return false; }
+    bool has_invalid_signal(void) const override;
     bool has_invalid_device(void) const override                 { return false; }
     bool has_no_signal(void) const override                      { return false; }
     capture_pixel_format_e get_pixel_format(void) const override { return this->frameBuffer.pixelFormat; }

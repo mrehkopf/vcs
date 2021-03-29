@@ -21,6 +21,8 @@ static double CURRENT_REFRESH_RATE = 0;
 
 static bool CAPTURE_EVENT_FLAGS[(int)capture_event_e::num_enumerators];
 
+static bool IS_VALID_SIGNAL = true;
+
 static void push_capture_event(const capture_event_e event)
 {
     CAPTURE_EVENT_FLAGS[(int)event] = true;
@@ -46,8 +48,19 @@ bool capture_api_virtual_s::initialize(void)
     // Animate the screen's test pattern.
     kt_timer(std::round(1000 / TARGET_REFRESH_RATE), [this](const unsigned)
     {
-        this->refresh_test_pattern();
-        push_capture_event(capture_event_e::new_frame);
+        if ((this->get_resolution().bpp > MAX_CAPTURE_BPP) ||
+            (this->get_resolution().w > MAX_CAPTURE_WIDTH) ||
+            (this->get_resolution().h > MAX_CAPTURE_HEIGHT))
+        {
+            IS_VALID_SIGNAL = false;
+            push_capture_event(capture_event_e::invalid_signal);
+        }
+        else
+        {
+            IS_VALID_SIGNAL = true;
+            this->refresh_test_pattern();
+            push_capture_event(capture_event_e::new_frame);
+        }
     });
 
     kt_timer(1000, [](const unsigned elapsedMs)
@@ -186,6 +199,11 @@ bool capture_api_virtual_s::set_input_channel(const unsigned idx)
     return true;
 }
 
+bool capture_api_virtual_s::has_invalid_signal(void) const
+{
+    return !IS_VALID_SIGNAL;
+}
+
 const captured_frame_s& capture_api_virtual_s::get_frame_buffer(void) const
 {
     return this->frameBuffer;
@@ -193,7 +211,11 @@ const captured_frame_s& capture_api_virtual_s::get_frame_buffer(void) const
 
 capture_event_e capture_api_virtual_s::pop_capture_event_queue(void)
 {
-    if (pop_capture_event(capture_event_e::new_video_mode))
+    if (pop_capture_event(capture_event_e::invalid_signal))
+    {
+        return capture_event_e::invalid_signal;
+    }
+    else if (pop_capture_event(capture_event_e::new_video_mode))
     {
         return capture_event_e::new_video_mode;
     }
