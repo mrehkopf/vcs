@@ -70,14 +70,14 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
             FAIL_IF_FIRST_CELL_IS_NOT("parameterData");
             const unsigned numParameters = rowData.at(row).at(1).toUInt();
 
-            std::vector<u8> params;
+            std::vector<std::pair<unsigned, double>> params;
             params.reserve(numParameters);
             for (unsigned p = 0; p < numParameters; p++)
             {
-                params.push_back(rowData.at(row).at(2+p).toUInt());
+                params.push_back({p, rowData.at(row).at(2+p).toDouble()});
             }
 
-            const auto newNode = kd_add_filter_graph_node(filterType, (const u8*)params.data());
+            const auto newNode = kd_add_filter_graph_node(filterType, params);
             k_assert(newNode, "Failed to create a new filter node instance.");
             graphNodes->push_back(newNode);
         }

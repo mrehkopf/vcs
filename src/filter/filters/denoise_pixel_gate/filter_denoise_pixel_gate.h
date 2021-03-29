@@ -14,11 +14,11 @@
 class filter_denoise_pixel_gate_c : public filter_c
 {
 public:
-    enum parameter_offset_e { PARAM_THRESHOLD = 0};
+    enum { PARAM_THRESHOLD };
                          
-    filter_denoise_pixel_gate_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray,
-                 {filter_c::make_parameter<u8, PARAM_THRESHOLD>(5)})
+    filter_denoise_pixel_gate_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({{PARAM_THRESHOLD, 5}},
+                 initialParameterValues)
     {
         this->guiDescription = new filtergui_denoise_pixel_gate_c(this);
     }

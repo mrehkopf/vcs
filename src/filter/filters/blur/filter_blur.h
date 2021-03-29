@@ -14,13 +14,16 @@
 class filter_blur_c : public filter_c
 {
 public:
-    enum parameter_offset_e { PARAM_TYPE = 0, PARAM_KERNEL_SIZE = 1 };
-    enum { BLUR_BOX = 0, BLUR_GAUSSIAN = 1 };
+    enum { PARAM_TYPE,
+           PARAM_KERNEL_SIZE };
+
+    enum { BLUR_BOX = 0,
+           BLUR_GAUSSIAN = 1 };
     
-    filter_blur_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray,
-                 {filter_c::make_parameter<u8, PARAM_KERNEL_SIZE>(10),
-                  filter_c::make_parameter<u8, PARAM_TYPE>(BLUR_GAUSSIAN)})
+    filter_blur_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({{PARAM_KERNEL_SIZE, 1},
+                  {PARAM_TYPE, BLUR_GAUSSIAN}},
+                 initialParameterValues)
     {
         this->guiDescription = new filtergui_blur_c(this);
     }

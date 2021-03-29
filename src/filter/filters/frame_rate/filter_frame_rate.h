@@ -14,17 +14,22 @@
 class filter_frame_rate_c : public filter_c
 {
 public:
-    enum parameter_offset_e { PARAM_THRESHOLD = 0,
-                              PARAM_CORNER = 1,
-                              PARAM_BG_COLOR = 2,
-                              PARAM_TEXT_COLOR = 3,};
+    enum { PARAM_THRESHOLD,
+           PARAM_CORNER,
+           PARAM_BG_COLOR,
+           PARAM_TEXT_COLOR,};
 
-    filter_frame_rate_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray,
-                 {filter_c::make_parameter<u8, PARAM_THRESHOLD>(20),
-                  filter_c::make_parameter<u8, PARAM_CORNER>(0),
-                  filter_c::make_parameter<u8, PARAM_BG_COLOR>(0),
-                  filter_c::make_parameter<u8, PARAM_TEXT_COLOR>(0)})
+    enum { TOP_LEFT = 0,
+           TOP_RIGHT = 1,
+           BOTTOM_RIGHT = 2,
+           BOTTOM_LEFT = 3 };
+
+    filter_frame_rate_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({{PARAM_THRESHOLD, 20},
+                  {PARAM_CORNER, 0},
+                  {PARAM_BG_COLOR, 0},
+                  {PARAM_TEXT_COLOR, 0}},
+                 initialParameterValues)
     {
         this->guiDescription = new filtergui_frame_rate_c(this);
     }

@@ -24,9 +24,11 @@ public:
 
     void clear_filter_graph(void);
 
-    FilterGraphNode* add_filter_graph_node(const filter_type_e &filterType, const u8 * const initialParameterValues);
+    FilterGraphNode* add_filter_graph_node(const filter_type_e &filterType,
+                                           const std::vector<std::pair<unsigned, double>> &initialParameterValues = {});
 
-    FilterGraphNode* add_filter_node(const filter_type_e type, const u8 *const initialParameterValues = nullptr);
+    FilterGraphNode* add_filter_node(const filter_type_e type,
+                                     const std::vector<std::pair<unsigned, double>> &initialParameterValues = {});
 
     void refresh_filter_graph(void);
 

@@ -14,11 +14,11 @@
 class filter_flip_c : public filter_c
 {
 public:
-    enum parameter_offset_e { PARAM_AXIS = 0 };
+    enum { PARAM_AXIS };
 
-    filter_flip_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray,
-                 {filter_c::make_parameter<u8, PARAM_AXIS>(0)})
+    filter_flip_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({{PARAM_AXIS, 0}},
+                 initialParameterValues)
     {
         this->guiDescription = new filtergui_flip_c(this);
     }

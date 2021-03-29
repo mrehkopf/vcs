@@ -67,7 +67,7 @@ void kd_disable_output_size_controls(const bool areDisabled)
 }
 
 FilterGraphNode* kd_add_filter_graph_node(const filter_type_e &filterType,
-                                          const u8 *const initialParameterValues)
+                                          const std::vector<std::pair<unsigned, double>> &initialParameterValues)
 {
     if (WINDOW)
     {

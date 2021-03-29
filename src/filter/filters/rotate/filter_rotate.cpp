@@ -19,8 +19,8 @@ void filter_rotate_c::apply(FILTER_FUNC_PARAMS) const
 
     static heap_bytes_s<u8> scratch(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Rotate filter scratch buffer");
 
-    const double angle = (this->parameter(PARAM_ROT) / 10.0);
-    const double scale = (this->parameter(PARAM_SCALE) / 100.0);
+    const double angle = this->parameter(PARAM_ROT);
+    const double scale = this->parameter(PARAM_SCALE);
 
     #ifdef USE_OPENCV
         cv::Mat output = cv::Mat(r.h, r.w, CV_8UC4, pixels);

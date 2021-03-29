@@ -19,10 +19,10 @@ void filter_denoise_nonlocal_means_c::apply(FILTER_FUNC_PARAMS) const
     VALIDATE_FILTER_INPUT
 
     #if USE_OPENCV
-        const u8 h = this->parameter(PARAM_H);
-        const u8 hColor = this->parameter(PARAM_H_COLOR);
-        const u8 templateWindowSize = this->parameter(PARAM_TEMPLATE_WINDOW_SIZE);
-        const u8 searchWindowSize = this->parameter(PARAM_SEARCH_WINDOW_SIZE);
+        const double h = this->parameter(PARAM_H);
+        const double hColor = this->parameter(PARAM_H_COLOR);
+        const double templateWindowSize = this->parameter(PARAM_TEMPLATE_WINDOW_SIZE);
+        const double searchWindowSize = this->parameter(PARAM_SEARCH_WINDOW_SIZE);
 
         cv::Mat input = cv::Mat(r.h, r.w, CV_8UC4, pixels);
         cv::fastNlMeansDenoisingColored(input, input, h, hColor, templateWindowSize, searchWindowSize);

@@ -14,19 +14,19 @@
 class filter_crop_c : public filter_c
 {
 public:
-    enum parameter_offset_e { PARAM_X = 0,
-                              PARAM_Y = 2,
-                              PARAM_WIDTH = 4,
-                              PARAM_HEIGHT = 6,
-                              PARAM_SCALER = 8 };
+    enum { PARAM_X,
+           PARAM_Y,
+           PARAM_WIDTH,
+           PARAM_HEIGHT,
+           PARAM_SCALER };
 
-    filter_crop_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray,
-                 {filter_c::make_parameter<u16, PARAM_X>(0),
-                  filter_c::make_parameter<u16, PARAM_Y>(0),
-                  filter_c::make_parameter<u16, PARAM_WIDTH>(640),
-                  filter_c::make_parameter<u16, PARAM_HEIGHT>(480),
-                  filter_c::make_parameter<u8,  PARAM_SCALER>(0)})
+    filter_crop_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({{PARAM_X, 0},
+                  {PARAM_Y, 0},
+                  {PARAM_WIDTH, 640},
+                  {PARAM_HEIGHT, 480},
+                  {PARAM_SCALER, 0}},
+                 initialParameterValues)
     {
         this->guiDescription = new filtergui_crop_c(this);
     }

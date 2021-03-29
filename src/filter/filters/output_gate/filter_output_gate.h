@@ -14,12 +14,13 @@
 class filter_output_gate_c : public filter_c
 {
 public:
-    enum parameter_offset_e { PARAM_WIDTH = 0, PARAM_HEIGHT = 2};
+    enum { PARAM_WIDTH,
+           PARAM_HEIGHT };
 
-    filter_output_gate_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray,
-                 {filter_c::make_parameter<u16, PARAM_WIDTH>(640),
-                  filter_c::make_parameter<u16, PARAM_HEIGHT>(480)})
+    filter_output_gate_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({{PARAM_WIDTH, 640},
+                  {PARAM_HEIGHT, 480}},
+                 initialParameterValues)
     {
         this->guiDescription = new filtergui_output_gate_c(this);
     }

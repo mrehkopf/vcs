@@ -18,7 +18,7 @@ void filter_blur_c::apply(FILTER_FUNC_PARAMS) const
     VALIDATE_FILTER_INPUT
 
     #ifdef USE_OPENCV
-        const double kernelSize = (this->parameter(PARAM_KERNEL_SIZE) / 10.0);
+        const double kernelSize = this->parameter(PARAM_KERNEL_SIZE);
 
         cv::Mat output = cv::Mat(r.h, r.w, CV_8UC4, pixels);
 

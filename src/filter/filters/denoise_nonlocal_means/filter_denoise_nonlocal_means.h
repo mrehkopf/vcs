@@ -14,17 +14,17 @@
 class filter_denoise_nonlocal_means_c : public filter_c
 {
 public:
-    enum parameter_offset_e { PARAM_H = 0,
-                              PARAM_H_COLOR = 1,
-                              PARAM_TEMPLATE_WINDOW_SIZE = 2,
-                              PARAM_SEARCH_WINDOW_SIZE = 3};
+    enum { PARAM_H,
+           PARAM_H_COLOR,
+           PARAM_TEMPLATE_WINDOW_SIZE,
+           PARAM_SEARCH_WINDOW_SIZE};
 
-    filter_denoise_nonlocal_means_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray,
-                 {filter_c::make_parameter<u8, PARAM_H>(10),
-                  filter_c::make_parameter<u8, PARAM_H_COLOR>(10),
-                  filter_c::make_parameter<u8, PARAM_TEMPLATE_WINDOW_SIZE>(7),
-                  filter_c::make_parameter<u8, PARAM_SEARCH_WINDOW_SIZE>(21)})
+    filter_denoise_nonlocal_means_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({{PARAM_H, 10},
+                  {PARAM_H_COLOR, 10},
+                  {PARAM_TEMPLATE_WINDOW_SIZE, 7},
+                  {PARAM_SEARCH_WINDOW_SIZE, 21}},
+                 initialParameterValues)
     {
         this->guiDescription = new filtergui_denoise_nonlocal_means_c(this);
     }

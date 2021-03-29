@@ -14,8 +14,8 @@
 class filter_sharpen_c : public filter_c
 {
 public:
-    filter_sharpen_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray)
+    filter_sharpen_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({}, initialParameterValues)
     {
         this->guiDescription = new filtergui_sharpen_c(this);
     }

@@ -37,11 +37,6 @@ const uint MAX_CAPTURE_HEIGHT = 1536;
 const uint MAX_CAPTURE_BPP = 32;
 const u32 MAX_NUM_BYTES_IN_CAPTURED_FRAME = (MAX_CAPTURE_WIDTH * MAX_CAPTURE_HEIGHT * u64(MAX_CAPTURE_BPP / 8));
 
-// How many bytes to allocate for each frame filter's parameter data array.
-// (The array holds the filter's parameter values, e.g. radius for a
-// blur filter.)
-const u32 FILTER_PARAMETER_ARRAY_LENGTH = 16;
-
 #define NUM_ELEMENTS(array) int((sizeof(array) / sizeof((array)[0])))
 
 #define k_assert(condition, error_string)   if (!(condition))\

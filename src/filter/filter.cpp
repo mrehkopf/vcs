@@ -55,6 +55,7 @@ void kf_initialize_filters(void)
         new filter_crop_c(),
         new filter_flip_c(),
         new filter_rotate_c(),
+        new filter_kernel_3x3_c(),
         new filter_input_gate_c(),
         new filter_output_gate_c(),
     };
@@ -109,11 +110,11 @@ void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
     {
         const auto &filterChain = FILTER_CHAINS[i];
 
-        const unsigned inputGateWidth = *(u16*)&(filterChain.front()->parameterData[0]);
-        const unsigned inputGateHeight = *(u16*)&(filterChain.front()->parameterData[2]);
+        const unsigned inputGateWidth = filterChain.front()->parameter(filter_input_gate_c::PARAM_WIDTH);
+        const unsigned inputGateHeight = filterChain.front()->parameter(filter_input_gate_c::PARAM_HEIGHT);
 
-        const unsigned outputGateWidth = *(u16*)&(filterChain.back()->parameterData[0]);
-        const unsigned outputGateHeight = *(u16*)&(filterChain.back()->parameterData[2]);
+        const unsigned outputGateWidth = filterChain.back()->parameter(filter_output_gate_c::PARAM_WIDTH);
+        const unsigned outputGateHeight = filterChain.back()->parameter(filter_output_gate_c::PARAM_HEIGHT);
 
         // A gate size of 0 in either dimension means pass all values. Otherwise, the
         // value must match the corresponding size of the frame or output.
@@ -193,7 +194,7 @@ void kf_delete_filter_instance(const filter_c *const filter)
 }
 
 filter_c* kf_create_new_filter_instance(const filter_type_e type,
-                                        const u8 *const initialParameterValues)
+                                        const std::vector<std::pair<unsigned, double>> &initialParameterValues)
 {
     filter_c *filter = nullptr;
 
@@ -211,10 +212,9 @@ filter_c* kf_create_new_filter_instance(const filter_type_e type,
         case filter_type_e::crop:                   filter = new filter_crop_c(initialParameterValues); break;
         case filter_type_e::flip:                   filter = new filter_flip_c(initialParameterValues); break;
         case filter_type_e::rotate:                 filter = new filter_rotate_c(initialParameterValues); break;
-
+        case filter_type_e::kernel_3x3:             filter = new filter_kernel_3x3_c(initialParameterValues); break;
         case filter_type_e::input_gate:             filter = new filter_input_gate_c(initialParameterValues); break;
         case filter_type_e::output_gate:            filter = new filter_output_gate_c(initialParameterValues); break;
-
         case filter_type_e::unknown:                filter = nullptr; break;
     }
 
@@ -337,35 +337,19 @@ int kf_current_filter_chain_idx(void)
     return MOST_RECENT_FILTER_CHAIN_IDX;
 }
 
-filter_c::filter_c(const u8 *const initialParameterArray,
-                   const std::vector<filter_c::parameter_s> &parameters)
+filter_c::filter_c(const std::vector<std::pair<unsigned, double>> &parameters,
+                   const std::vector<std::pair<unsigned, double>> &overrideParameterValues)
 {
-    this->parameterData.alloc(FILTER_PARAMETER_ARRAY_LENGTH);
-
-    if (initialParameterArray)
-    {
-        std::memcpy(this->parameterData.ptr(),
-                    initialParameterArray,
-                    this->parameterData.up_to(FILTER_PARAMETER_ARRAY_LENGTH));
-    }
-    else
-    {
-        memset(this->parameterData.ptr(),
-               0,
-               this->parameterData.up_to(FILTER_PARAMETER_ARRAY_LENGTH));
-    }
+    this->parameterValues.resize(parameters.size());
 
     for (const auto &parameter: parameters)
     {
-        k_assert((this->parameters.find(parameter.offset) == this->parameters.end()),
-                 "Duplicate parameter offset.");
+        this->set_parameter(parameter.first, parameter.second);
+    }
 
-        this->parameters[parameter.offset] = parameter;
-
-        if (!initialParameterArray)
-        {
-            this->set_parameter(parameter.offset, parameter.defaultValue);
-        }
+    for (const auto &parameter: overrideParameterValues)
+    {
+        this->set_parameter(parameter.first, parameter.second);
     }
 
     return;
@@ -373,8 +357,6 @@ filter_c::filter_c(const u8 *const initialParameterArray,
 
 filter_c::~filter_c(void)
 {
-    this->parameterData.release_memory();
-
     delete this->guiDescription;
 
     return;
@@ -383,4 +365,24 @@ filter_c::~filter_c(void)
 const std::vector<filtergui_field_s>& filter_c::gui_description(void) const
 {
     return this->guiDescription->guiFields;
+}
+
+unsigned filter_c::num_parameters(void) const
+{
+    return this->parameterValues.size();
+}
+
+double filter_c::parameter(const unsigned offset) const
+{
+    return this->parameterValues.at(offset);
+}
+
+void filter_c::set_parameter(const unsigned offset, const double value)
+{
+    if (offset < this->parameterValues.size())
+    {
+        this->parameterValues.at(offset) = value;
+    }
+
+    return;
 }

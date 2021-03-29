@@ -27,10 +27,10 @@ bool file_writer::filter_graph::version_b::write(const std::string &filename,
         {
             outFile << "id,{" << QString::fromStdString(node->associatedFilter->uuid()) << "}\n";
 
-            outFile << "parameterData," << FILTER_PARAMETER_ARRAY_LENGTH;
-            for (unsigned i = 0; i < FILTER_PARAMETER_ARRAY_LENGTH; i++)
+            outFile << "parameterData," << node->associatedFilter->num_parameters();
+            for (unsigned i = 0; i < node->associatedFilter->num_parameters(); i++)
             {
-                outFile << QString(",%1").arg(node->associatedFilter->parameterData[i]);
+                outFile << QString(",{%1}").arg(node->associatedFilter->parameter(i));
             }
             outFile << "\n";
         }

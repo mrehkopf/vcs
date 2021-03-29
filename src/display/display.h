@@ -178,13 +178,10 @@ void kd_recalculate_filter_graph_chains(void);
  * The GUI filter graph is expected to be a dialog of some sort - e.g. a visual
  * node graph - in which the user can create and modify filter chains.
  * 
- * @p initialParameterValues is an array of bytes that defines the parameters
- * of the node's filter instance (c.f. the @ref filter_c class of the filter
- * interface, @ref src/filter/filter.h).
- * 
  * Returns a pointer to the created node; or @a nullptr if no node was created.
  */
-FilterGraphNode* kd_add_filter_graph_node(const filter_type_e &filterType, const u8 *const initialParameterValues);
+FilterGraphNode* kd_add_filter_graph_node(const filter_type_e &filterType,
+                                          const std::vector<std::pair<unsigned, double>> &initialParameterValues);
 
 /*!
  * Asks the GUI to repaint its output window (e.g. because there's a new output

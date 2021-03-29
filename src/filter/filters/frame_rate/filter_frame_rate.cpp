@@ -23,10 +23,10 @@ void filter_frame_rate_c::apply(FILTER_FUNC_PARAMS) const
     #ifdef USE_OPENCV
         static heap_bytes_s<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Unique count filter buffer");
 
-        const u8 threshold = this->parameter(PARAM_THRESHOLD);
-        const u8 corner =this->parameter(PARAM_CORNER);
-        const u8 bgColorType = this->parameter(PARAM_BG_COLOR);
-        const u8 textColorType = this->parameter(PARAM_TEXT_COLOR);
+        const unsigned threshold = this->parameter(PARAM_THRESHOLD);
+        const unsigned corner = this->parameter(PARAM_CORNER);
+        const unsigned bgColorType = this->parameter(PARAM_BG_COLOR);
+        const unsigned textColorType = this->parameter(PARAM_TEXT_COLOR);
 
         static u32 uniqueFramesProcessed = 0;
         static u32 uniqueFramesPerSecond = 0;
@@ -67,14 +67,9 @@ void filter_frame_rate_c::apply(FILTER_FUNC_PARAMS) const
             {
                 switch (corner)
                 {
-                    // Top right.
-                    case 1: return cv::Point((r.w - textSize.width - margin), (textSize.height + margin));
-
-                    // Bottom right.
-                    case 2: return cv::Point((r.w - textSize.width - margin), (r.h - margin));
-
-                    // Bottom left.
-                    case 3: return cv::Point(margin, (r.h - margin));
+                    case TOP_RIGHT: return cv::Point((r.w - textSize.width - margin), (textSize.height + margin));
+                    case BOTTOM_RIGHT: return cv::Point((r.w - textSize.width - margin), (r.h - margin));
+                    case BOTTOM_LEFT: return cv::Point(margin, (r.h - margin));
 
                     // Top left.
                     default: return cv::Point(margin, (textSize.height + margin));

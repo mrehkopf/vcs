@@ -25,8 +25,8 @@ filtergui_unsharp_mask_c::filtergui_unsharp_mask_c(filter_c *const filter)
     {
         auto *const radius = new filtergui_spinbox_s;
 
-        radius->get_value = [=]{return (filter->parameter(filter_unsharp_mask_c::PARAM_RADIUS) / 10);};
-        radius->set_value = [=](const double value){filter->set_parameter(filter_unsharp_mask_c::PARAM_RADIUS, (value * 10));};
+        radius->get_value = [=]{return filter->parameter(filter_unsharp_mask_c::PARAM_RADIUS);};
+        radius->set_value = [=](const double value){filter->set_parameter(filter_unsharp_mask_c::PARAM_RADIUS, value);};
         radius->minValue = 1;
         radius->maxValue = 255;
 

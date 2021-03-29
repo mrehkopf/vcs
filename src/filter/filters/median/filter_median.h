@@ -14,11 +14,11 @@
 class filter_median_c : public filter_c
 {
 public:
-    enum parameter_offset_e { PARAM_KERNEL_SIZE = 0 };
+    enum { PARAM_KERNEL_SIZE };
 
-    filter_median_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray,
-                 {filter_c::make_parameter<u8, PARAM_KERNEL_SIZE>(3)})
+    filter_median_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({{PARAM_KERNEL_SIZE, 3}},
+                 initialParameterValues)
     {
         this->guiDescription = new filtergui_median_c(this);
     }

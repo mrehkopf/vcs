@@ -14,13 +14,13 @@
 class filter_unsharp_mask_c : public filter_c
 {
 public:
-    enum parameter_offset_e { PARAM_STRENGTH = 0,
-                              PARAM_RADIUS = 1 };
+    enum { PARAM_STRENGTH,
+           PARAM_RADIUS };
 
-    filter_unsharp_mask_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray,
-                 {filter_c::make_parameter<u8, PARAM_STRENGTH>(50),
-                  filter_c::make_parameter<u8, PARAM_RADIUS>(10)})
+    filter_unsharp_mask_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({{PARAM_STRENGTH, 5},
+                  {PARAM_RADIUS, 1}},
+                 initialParameterValues)
     {
         this->guiDescription = new filtergui_unsharp_mask_c(this);
     }

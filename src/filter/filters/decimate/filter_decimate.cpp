@@ -12,8 +12,8 @@ void filter_decimate_c::apply(FILTER_FUNC_PARAMS) const
     VALIDATE_FILTER_INPUT
 
     #ifdef USE_OPENCV
-        const u8 factor = this->parameter(PARAM_FACTOR);
-        const u8 type = this->parameter(PARAM_TYPE);
+        const unsigned factor = this->parameter(PARAM_FACTOR);
+        const unsigned type = this->parameter(PARAM_TYPE);
         const unsigned numColorChannels = (r.bpp / 8);
 
         for (u32 y = 0; y < r.h; y += factor)

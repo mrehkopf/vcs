@@ -124,6 +124,7 @@ enum class filter_type_e
     crop,
     flip,
     rotate,
+    kernel_3x3,
 
     // Special cases. Gates are nodes that in a filter chain only pass or
     // reject images based on their original (input) and scaled (output)
@@ -173,56 +174,18 @@ enum class filter_category_e
 class filter_c
 {
 public:
-    struct parameter_s
-    {
-        // Byte offset in the filter's parameter array where this parameter starts.
-        unsigned offset = 0;
-
-        // Number of bytes occupied by this parameter in the filter's parameter array.
-        unsigned byteSize = 1;
-
-        uint32_t defaultValue = 0;
-    };
-
-    filter_c(const u8 *const initialParameterArray = nullptr,
-             const std::vector<filter_c::parameter_s> &parameters = {});
+    filter_c(const std::vector<std::pair<unsigned /*parameter idx*/, double /*initial value*/>> &parameters = {},
+             const std::vector<std::pair<unsigned /*parameter idx*/, double /*override value*/>> &overrideParameterValues = {});
 
     virtual ~filter_c(void);
 
     const std::vector<filtergui_field_s>& gui_description(void) const;
 
-    uint32_t parameter(const unsigned offset) const
-    {
-        k_assert(this->parameterData.ptr(), "Expected a non-null parameter array.");
+    unsigned num_parameters(void) const;
 
-        const auto &parameter = this->parameters.at(offset);
+    double parameter(const unsigned offset) const;
 
-        uint32_t value = 0;
-
-        for (unsigned i = 0; i < parameter.byteSize; i++)
-        {
-            value |= (this->parameterData[offset + i] << (i * 8));
-        }
-
-        return value;
-    }
-
-    void set_parameter(const unsigned offset,
-                       const uint32_t value)
-    {
-        k_assert(this->parameterData.ptr(), "Expected a non-null parameter array.");
-
-        const auto &parameter = this->parameters.at(offset);
-
-        k_assert(!(value >> (parameter.byteSize * 8)), "Parameter value overflows allocated byte size.");
-
-        for (unsigned i = 0; i < parameter.byteSize; i++)
-        {
-            this->parameterData[parameter.offset + i] = (value >> (i * 8));
-        }
-
-        return;
-    }
+    void set_parameter(const unsigned offset, const double value);
 
     virtual std::string name(void) const = 0;
 
@@ -241,12 +204,6 @@ public:
     virtual void apply(FILTER_FUNC_PARAMS) const = 0;
 
     /*!
-     * A byte array containing the parameter values of this filter instance;
-     * e.g. radius for a blur filter.
-     */
-    heap_bytes_s<u8> parameterData;
-
-    /*!
      * The filter's GUI widget, which provides the end-user with controls for
      * adjusting the filter's parameters.
      *
@@ -256,23 +213,8 @@ public:
      */
     filtergui_c *guiDescription = nullptr;
 
-protected:
-    template <typename T, unsigned Offset>
-    static filter_c::parameter_s make_parameter(const unsigned defaultValue)
-    {
-        filter_c::parameter_s param;
-
-        param.offset = Offset;
-        param.byteSize = sizeof(T);
-        param.defaultValue = defaultValue;
-
-        return param;
-    }
-
-    // The parameters recognized by this filter.
-    std::unordered_map<unsigned /*offset*/, filter_c::parameter_s> parameters;
-
 private:
+    std::vector<double> parameterValues;
 };
 
 /*!
@@ -360,17 +302,14 @@ const std::vector<const filter_c *>& kf_known_filter_types(void);
  * @ref filter_type_enum_e type is identified by the given type and with the
  * given initial parameter values.
  *
- * @p initialParameterValues is an array of bytes that defines the filter's
- * starting parameter values (the end-user can still alter them via the
- * filter's GUI widget).
- *
  * Returns a pointer to the created instance; or @a nullptr on error. The
  * caller can use the pointer - if valid - as an element in a filter chain.
  *
  * @see
  * kf_add_filter_chain()
  */
-filter_c* kf_create_new_filter_instance(const filter_type_e type, const u8 *const initialParameterValues = nullptr);
+filter_c* kf_create_new_filter_instance(const filter_type_e type,
+                                        const std::vector<std::pair<unsigned, double>> &initialParameterValues = {});
 
 /*!
  * Asks the filter subsystem to delete the given instance of @ref filter_c.

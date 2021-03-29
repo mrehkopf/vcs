@@ -14,13 +14,13 @@
 class filter_rotate_c : public filter_c
 {
 public:
-    enum parameter_offset_e { PARAM_ROT = 0,
-                              PARAM_SCALE = 2 };
+    enum { PARAM_ROT,
+           PARAM_SCALE };
 
-    filter_rotate_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray,
-                 {filter_c::make_parameter<u16, PARAM_SCALE>(100),
-                  filter_c::make_parameter<u16, PARAM_ROT>(0)})
+    filter_rotate_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({{PARAM_SCALE, 1},
+                  {PARAM_ROT, 0}},
+                 initialParameterValues)
     {
         this->guiDescription = new filtergui_rotate_c(this);
     }

@@ -14,8 +14,8 @@
 class filter_delta_histogram_c : public filter_c
 {
 public:
-    filter_delta_histogram_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray)
+    filter_delta_histogram_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({}, initialParameterValues)
     {
         this->guiDescription = new filtergui_delta_histogram_c(this);
     }

@@ -14,13 +14,16 @@
 class filter_decimate_c : public filter_c
 {
 public:
-    enum parameter_offset_e { PARAM_TYPE = 0, PARAM_FACTOR = 1 };
-    enum { SAMPLE_NEAREST = 0, SAMPLE_AVERAGE = 1 };
+    enum { PARAM_TYPE,
+           PARAM_FACTOR };
 
-    filter_decimate_c(const u8 *const initialParameterArray = nullptr) :
-        filter_c(initialParameterArray,
-                 {filter_c::make_parameter<u8, PARAM_FACTOR>(1),
-                  filter_c::make_parameter<u8, PARAM_TYPE>(SAMPLE_AVERAGE)})
+    enum { SAMPLE_NEAREST = 0,
+           SAMPLE_AVERAGE = 1 };
+
+    filter_decimate_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+        filter_c({{PARAM_FACTOR, 1},
+                  {PARAM_TYPE, SAMPLE_AVERAGE}},
+                 initialParameterValues)
     {
         this->guiDescription = new filtergui_decimate_c(this);
     }

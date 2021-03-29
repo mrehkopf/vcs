@@ -355,7 +355,7 @@ void FilterGraphDialog::save_graph_into_file(QString filename)
 // Adds a new instance of the given filter type into the node graph. Returns a
 // pointer to the new node.
 FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_e type,
-                                                    const u8 *const initialParameterValues)
+                                                    const std::vector<std::pair<unsigned, double>> &initialParameterValues)
 {
     filter_c *const filter = kf_create_new_filter_instance(type, initialParameterValues);
     k_assert(filter, "Failed to create a new filter node.");
@@ -506,7 +506,7 @@ void FilterGraphDialog::set_filter_graph_options(const std::vector<filter_graph_
 }
 
 FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const filter_type_e &filterType,
-                                                          const u8 *const initialParameterValues)
+                                                          const std::vector<std::pair<unsigned, double>> &initialParameterValues)
 {
     return add_filter_node(filterType, initialParameterValues);
 }
