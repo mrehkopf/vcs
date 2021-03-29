@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 2018, 2020 Tarpeeksi Hyvae Soft
  *
  * Software: VCS
@@ -74,6 +74,7 @@
 #include <functional>
 #include <cstring>
 #include "common/memory/memory_interface.h"
+#include "filter/filtergui.h"
 #include "display/display.h"
 #include "common/globals.h"
 
@@ -188,6 +189,8 @@ public:
 
     virtual ~filter_c(void);
 
+    const std::vector<filtergui_field_s>& gui_description(void) const;
+
     uint32_t parameter(const unsigned offset) const
     {
         k_assert(this->parameterData.ptr(), "Expected a non-null parameter array.");
@@ -244,10 +247,14 @@ public:
     heap_bytes_s<u8> parameterData;
 
     /*!
-     * The filter's GUI widget, which provides the end-user with controls
-     * for adjusting the filter's parameters.
+     * The filter's GUI widget, which provides the end-user with controls for
+     * adjusting the filter's parameters.
+     *
+     * The widget is provided as a framework-independent description of the
+     * components that the widget should have. It's then up to VCS's chosen GUI
+     * framework to interpret the instructions to create the actual widget.
      */
-    filtergui_c *guiWidget = nullptr;
+    filtergui_c *guiDescription = nullptr;
 
 protected:
     template <typename T, unsigned Offset>
@@ -363,7 +370,7 @@ const std::vector<const filter_c *>& kf_known_filter_types(void);
  * @see
  * kf_add_filter_chain()
  */
-const filter_c *kf_create_new_filter_instance(const filter_type_e type, const u8 *const initialParameterValues = nullptr);
+filter_c* kf_create_new_filter_instance(const filter_type_e type, const u8 *const initialParameterValues = nullptr);
 
 /*!
  * Asks the filter subsystem to delete the given instance of @ref filter_c.

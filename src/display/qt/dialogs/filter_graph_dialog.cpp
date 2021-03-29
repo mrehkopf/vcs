@@ -4,6 +4,7 @@
 #include <QStatusBar>
 #include <QMenuBar>
 #include <QTimer>
+#include <QLabel>
 #include <functional>
 #include "display/qt/dialogs/filter_graph/filter_graph_node.h"
 #include "display/qt/dialogs/filter_graph/filter_node.h"
@@ -12,9 +13,10 @@
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/subclasses/QMenu_dialog_file_menu.h"
+#include "display/qt/subclasses/QFrame_filtergui_for_qt.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/persistent_settings.h"
-#include "filter/filters/qt_filtergui.h"
+#include "filter/filtergui.h"
 #include "common/command_line/command_line.h"
 #include "common/disk/disk.h"
 #include "ui_filter_graph_dialog.h"
@@ -355,12 +357,14 @@ void FilterGraphDialog::save_graph_into_file(QString filename)
 FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_e type,
                                                     const u8 *const initialParameterValues)
 {
-    const filter_c *const newFilter = kf_create_new_filter_instance(type, initialParameterValues);
-    k_assert((newFilter && newFilter->guiWidget), "Failed to create a new filter node.");
+    filter_c *const filter = kf_create_new_filter_instance(type, initialParameterValues);
+    k_assert(filter, "Failed to create a new filter node.");
 
-    const unsigned filterWidgetWidth = (newFilter->guiWidget->widget->width() + 10);
-    const unsigned filterWidgetHeight = (newFilter->guiWidget->widget->height() + 29);
-    const QString nodeTitle = QString("%1. %2").arg(this->numNodesAdded+1).arg(newFilter->guiWidget->title);
+    FilterGUIForQt *const guiWidget = new FilterGUIForQt(filter);
+
+    const unsigned filterWidgetWidth = (guiWidget->width() + 10);
+    const unsigned filterWidgetHeight = (guiWidget->height() + 29);
+    const QString nodeTitle = QString("%1. %2").arg(this->numNodesAdded+1).arg(QString::fromStdString(filter->name()));
 
     FilterGraphNode *newNode = nullptr;
 
@@ -373,12 +377,12 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_e type,
             default: newNode = new FilterNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
         }
 
-        newNode->associatedFilter = newFilter;
+        newNode->associatedFilter = filter;
         newNode->setFlags(newNode->flags() | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsSelectable);
         this->graphicsScene->addItem(newNode);
 
         QGraphicsProxyWidget* nodeWidgetProxy = new QGraphicsProxyWidget(newNode);
-        nodeWidgetProxy->setWidget(newFilter->guiWidget->widget);
+        nodeWidgetProxy->setWidget(guiWidget);
         nodeWidgetProxy->widget()->move(0, 27);
 
         if (type == filter_type_e::input_gate)
@@ -408,7 +412,7 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const filter_type_e type,
         ui->graphicsView->centerOn(newNode);
     }
 
-    connect(newFilter->guiWidget, &filtergui_c::parameter_changed, this, [this]
+    connect(guiWidget, &FilterGUIForQt::parameter_changed, this, [this]
     {
         this->data_changed();
     });

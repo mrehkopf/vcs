@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_ROTATE_FILTER_ROTATE_H
 
 #include "filter/filter.h"
-#include "filter/filters/rotate/gui/qt/filtergui_rotate.h"
+#include "filter/filters/rotate/gui/filtergui_rotate.h"
 
 class filter_rotate_c : public filter_c
 {
@@ -22,7 +22,7 @@ public:
                  {filter_c::make_parameter<u16, PARAM_SCALE>(100),
                   filter_c::make_parameter<u16, PARAM_ROT>(0)})
     {
-        this->guiWidget = new filtergui_rotate_c(this);
+        this->guiDescription = new filtergui_rotate_c(this);
     }
 
     std::string uuid(void) const override { return "140c514d-a4b0-4882-abc6-b4e9e1ff4451"; }

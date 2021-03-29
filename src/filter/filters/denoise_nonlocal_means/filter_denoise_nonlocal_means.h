@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_DENOISE_NONLOCAL_MEANS_FILTER_DENOISE_NONLOCAL_MEANS_H
 
 #include "filter/filter.h"
-#include "filter/filters/denoise_nonlocal_means/gui/qt/filtergui_denoise_nonlocal_means.h"
+#include "filter/filters/denoise_nonlocal_means/gui/filtergui_denoise_nonlocal_means.h"
 
 class filter_denoise_nonlocal_means_c : public filter_c
 {
@@ -26,7 +26,7 @@ public:
                   filter_c::make_parameter<u8, PARAM_TEMPLATE_WINDOW_SIZE>(7),
                   filter_c::make_parameter<u8, PARAM_SEARCH_WINDOW_SIZE>(21)})
     {
-        this->guiWidget = new filtergui_denoise_nonlocal_means_c(this);
+        this->guiDescription = new filtergui_denoise_nonlocal_means_c(this);
     }
 
     std::string uuid(void) const override { return "e31d5ee3-f5df-4e7c-81b8-227fc39cbe76"; }

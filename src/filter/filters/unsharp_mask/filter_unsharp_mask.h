@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_UNSHARP_MASK_FILTER_UNSHARP_MASK_H
 
 #include "filter/filter.h"
-#include "filter/filters/unsharp_mask/gui/qt/filtergui_unsharp_mask.h"
+#include "filter/filters/unsharp_mask/gui/filtergui_unsharp_mask.h"
 
 class filter_unsharp_mask_c : public filter_c
 {
@@ -22,7 +22,7 @@ public:
                  {filter_c::make_parameter<u8, PARAM_STRENGTH>(50),
                   filter_c::make_parameter<u8, PARAM_RADIUS>(10)})
     {
-        this->guiWidget = new filtergui_unsharp_mask_c(this);
+        this->guiDescription = new filtergui_unsharp_mask_c(this);
     }
 
     std::string uuid(void) const override { return "03847778-bb9c-4e8c-96d5-0c10335c4f34"; }

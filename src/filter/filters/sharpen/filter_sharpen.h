@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_SHARPEN_FILTER_SHARPEN_H
 
 #include "filter/filter.h"
-#include "filter/filters/sharpen/gui/qt/filtergui_sharpen.h"
+#include "filter/filters/sharpen/gui/filtergui_sharpen.h"
 
 class filter_sharpen_c : public filter_c
 {
@@ -17,7 +17,7 @@ public:
     filter_sharpen_c(const u8 *const initialParameterArray = nullptr) :
         filter_c(initialParameterArray)
     {
-        this->guiWidget = new filtergui_sharpen_c(this);
+        this->guiDescription = new filtergui_sharpen_c(this);
     }
 
     std::string uuid(void) const override { return "1c25bbb1-dbf4-4a03-93a1-adf24b311070"; }

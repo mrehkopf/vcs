@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_INPUT_GATE_FILTER_INPUT_GATE_H
 
 #include "filter/filter.h"
-#include "filter/filters/input_gate/gui/qt/filtergui_input_gate.h"
+#include "filter/filters/input_gate/gui/filtergui_input_gate.h"
 
 class filter_input_gate_c : public filter_c
 {
@@ -21,7 +21,7 @@ public:
                  {filter_c::make_parameter<u16, PARAM_WIDTH>(640),
                   filter_c::make_parameter<u16, PARAM_HEIGHT>(480)})
     {
-        this->guiWidget = new filtergui_input_gate_c(this);
+        this->guiDescription = new filtergui_input_gate_c(this);
     }
 
     std::string uuid(void) const override { return "136deb34-ac79-46b1-a09c-d57dcfaa84ad"; }

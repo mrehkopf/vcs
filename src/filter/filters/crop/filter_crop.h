@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_CROP_FILTER_CROP_H
 
 #include "filter/filter.h"
-#include "filter/filters/crop/gui/qt/filtergui_crop.h"
+#include "filter/filters/crop/gui/filtergui_crop.h"
 
 class filter_crop_c : public filter_c
 {
@@ -28,7 +28,7 @@ public:
                   filter_c::make_parameter<u16, PARAM_HEIGHT>(480),
                   filter_c::make_parameter<u8,  PARAM_SCALER>(0)})
     {
-        this->guiWidget = new filtergui_crop_c(this);
+        this->guiDescription = new filtergui_crop_c(this);
     }
 
     void apply(FILTER_FUNC_PARAMS) const override;

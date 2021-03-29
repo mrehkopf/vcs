@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_MEDIAN_FILTER_MEDIAN_H
 
 #include "filter/filter.h"
-#include "filter/filters/median/gui/qt/filtergui_median.h"
+#include "filter/filters/median/gui/filtergui_median.h"
 
 class filter_median_c : public filter_c
 {
@@ -20,7 +20,7 @@ public:
         filter_c(initialParameterArray,
                  {filter_c::make_parameter<u8, PARAM_KERNEL_SIZE>(3)})
     {
-        this->guiWidget = new filtergui_median_c(this);
+        this->guiDescription = new filtergui_median_c(this);
     }
 
     std::string uuid(void) const override { return "de60017c-afe5-4e5e-99ca-aca5756da0e8"; }

@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_DECIMATE_FILTER_DECIMATE_H
 
 #include "filter/filter.h"
-#include "filter/filters/decimate/gui/qt/filtergui_decimate.h"
+#include "filter/filters/decimate/gui/filtergui_decimate.h"
 
 class filter_decimate_c : public filter_c
 {
@@ -19,10 +19,10 @@ public:
 
     filter_decimate_c(const u8 *const initialParameterArray = nullptr) :
         filter_c(initialParameterArray,
-                 {filter_c::make_parameter<u8, PARAM_FACTOR>(2),
+                 {filter_c::make_parameter<u8, PARAM_FACTOR>(1),
                   filter_c::make_parameter<u8, PARAM_TYPE>(SAMPLE_AVERAGE)})
     {
-        this->guiWidget = new filtergui_decimate_c(this);
+        this->guiDescription = new filtergui_decimate_c(this);
     }
 
     void apply(FILTER_FUNC_PARAMS) const override;

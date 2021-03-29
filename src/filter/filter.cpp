@@ -7,6 +7,7 @@
  *
  */
 
+#include <algorithm>
 #include <cstring>
 #include <vector>
 #include <cmath>
@@ -191,8 +192,8 @@ void kf_delete_filter_instance(const filter_c *const filter)
     return;
 }
 
-const filter_c* kf_create_new_filter_instance(const filter_type_e type,
-                                                const u8 *const initialParameterValues)
+filter_c* kf_create_new_filter_instance(const filter_type_e type,
+                                        const u8 *const initialParameterValues)
 {
     filter_c *filter = nullptr;
 
@@ -374,7 +375,12 @@ filter_c::~filter_c(void)
 {
     this->parameterData.release_memory();
 
-    delete this->guiWidget;
+    delete this->guiDescription;
 
     return;
+}
+
+const std::vector<filtergui_field_s>& filter_c::gui_description(void) const
+{
+    return this->guiDescription->guiFields;
 }

@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_FLIP_FILTER_FLIP_H
 
 #include "filter/filter.h"
-#include "filter/filters/flip/gui/qt/filtergui_flip.h"
+#include "filter/filters/flip/gui/filtergui_flip.h"
 
 class filter_flip_c : public filter_c
 {
@@ -20,7 +20,7 @@ public:
         filter_c(initialParameterArray,
                  {filter_c::make_parameter<u8, PARAM_AXIS>(0)})
     {
-        this->guiWidget = new filtergui_flip_c(this);
+        this->guiDescription = new filtergui_flip_c(this);
     }
 
     std::string uuid(void) const override { return "80a3ac29-fcec-4ae0-ad9e-bbd8667cc680"; }

@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_BLUR_FILTER_BLUR_H
 
 #include "filter/filter.h"
-#include "filter/filters/blur/gui/qt/filtergui_blur.h"
+#include "filter/filters/blur/gui/filtergui_blur.h"
 
 class filter_blur_c : public filter_c
 {
@@ -22,7 +22,7 @@ public:
                  {filter_c::make_parameter<u8, PARAM_KERNEL_SIZE>(10),
                   filter_c::make_parameter<u8, PARAM_TYPE>(BLUR_GAUSSIAN)})
     {
-        this->guiWidget = new filtergui_blur_c(this);
+        this->guiDescription = new filtergui_blur_c(this);
     }
 
     void apply(FILTER_FUNC_PARAMS) const override;

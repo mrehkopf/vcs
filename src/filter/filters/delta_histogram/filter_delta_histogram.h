@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_DELTA_HISTGRAM_FILTER_DELTA_HISTOGRAM_H
 
 #include "filter/filter.h"
-#include "filter/filters/delta_histogram/gui/qt/filtergui_delta_histogram.h"
+#include "filter/filters/delta_histogram/gui/filtergui_delta_histogram.h"
 
 class filter_delta_histogram_c : public filter_c
 {
@@ -17,7 +17,7 @@ public:
     filter_delta_histogram_c(const u8 *const initialParameterArray = nullptr) :
         filter_c(initialParameterArray)
     {
-        this->guiWidget = new filtergui_delta_histogram_c(this);
+        this->guiDescription = new filtergui_delta_histogram_c(this);
     }
 
     void apply(FILTER_FUNC_PARAMS) const override;

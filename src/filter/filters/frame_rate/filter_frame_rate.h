@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_FRAME_RATE_FILTER_FRAME_RATE_H
 
 #include "filter/filter.h"
-#include "filter/filters/frame_rate/gui/qt/filtergui_frame_rate.h"
+#include "filter/filters/frame_rate/gui/filtergui_frame_rate.h"
 
 class filter_frame_rate_c : public filter_c
 {
@@ -26,7 +26,7 @@ public:
                   filter_c::make_parameter<u8, PARAM_BG_COLOR>(0),
                   filter_c::make_parameter<u8, PARAM_TEXT_COLOR>(0)})
     {
-        this->guiWidget = new filtergui_frame_rate_c(this);
+        this->guiDescription = new filtergui_frame_rate_c(this);
     }
 
     std::string uuid(void) const override { return "badb0129-f48c-4253-a66f-b0ec94e225a0"; }

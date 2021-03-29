@@ -9,7 +9,7 @@
 #define VCS_FILTER_FILTERS_DENOISE_PIXEL_GATE_FILTER_DENOISE_PIXEL_GATE_H
 
 #include "filter/filter.h"
-#include "filter/filters/denoise_pixel_gate/gui/qt/filtergui_denoise_pixel_gate.h"
+#include "filter/filters/denoise_pixel_gate/gui/filtergui_denoise_pixel_gate.h"
 
 class filter_denoise_pixel_gate_c : public filter_c
 {
@@ -20,7 +20,7 @@ public:
         filter_c(initialParameterArray,
                  {filter_c::make_parameter<u8, PARAM_THRESHOLD>(5)})
     {
-        this->guiWidget = new filtergui_denoise_pixel_gate_c(this);
+        this->guiDescription = new filtergui_denoise_pixel_gate_c(this);
     }
 
     std::string uuid(void) const override { return "94adffac-be42-43ac-9839-9cc53a6d615c"; }
