@@ -26,7 +26,7 @@
 // How many bytes to pre-allocate for the memory cache. Note that the cache
 // currently has no ability to grow itself, so this amount must be sufficient
 // for the whole of the program's execution.
-static uint MEMORY_CACHE_SIZE = 512/*MB*/ * 1024 * 1024;
+static uint MEMORY_CACHE_SIZE = 384/*MB*/ * 1024 * 1024;
 
 // The memory manager isn't prepared for multithreading, so discourage its use in
 // that context. We'll grab the id of whatever thread initializes this, and later
