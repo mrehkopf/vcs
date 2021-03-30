@@ -90,6 +90,8 @@ SOURCES += \
     src/filter/filters/frame_rate/gui/filtergui_frame_rate.cpp \
     src/filter/filters/input_gate/filter_input_gate.cpp \
     src/filter/filters/input_gate/gui/filtergui_input_gate.cpp \
+    src/filter/filters/kernel_3x3/filter_kernel_3x3.cpp \
+    src/filter/filters/kernel_3x3/gui/filtergui_kernel_3x3.cpp \
     src/filter/filters/median/filter_median.cpp \
     src/filter/filters/median/gui/filtergui_median.cpp \
     src/filter/filters/output_gate/filter_output_gate.cpp \
@@ -189,6 +191,8 @@ HEADERS += \
     src/filter/filters/frame_rate/gui/filtergui_frame_rate.h \
     src/filter/filters/input_gate/filter_input_gate.h \
     src/filter/filters/input_gate/gui/filtergui_input_gate.h \
+    src/filter/filters/kernel_3x3/filter_kernel_3x3.h \
+    src/filter/filters/kernel_3x3/gui/filtergui_kernel_3x3.h \
     src/filter/filters/median/filter_median.h \
     src/filter/filters/median/gui/filtergui_median.h \
     src/filter/filters/output_gate/filter_output_gate.h \
