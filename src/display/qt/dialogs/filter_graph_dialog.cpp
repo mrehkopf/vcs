@@ -37,9 +37,15 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         this->layout()->addWidget(bar);
 
         auto *const viewScale = new QLabel("Scale: 1.0");
+
         connect(ui->graphicsView, &InteractibleNodeGraphView::scale_changed, this, [=](const double newScale)
         {
             viewScale->setText(QString("Scale: %1").arg(QString::number(newScale, 'f', 1)));
+        });
+
+        connect(ui->graphicsView, &InteractibleNodeGraphView::right_clicked_on_background, this, [=](const QPoint &globalPos)
+        {
+            this->filtersMenu->popup(globalPos);
         });
 
         bar->addPermanentWidget(viewScale);
@@ -113,7 +119,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
         // Nodes...
         {
-            QMenu *filtersMenu = new QMenu("Filters", this);
+            this->filtersMenu = new QMenu("Filters", this);
 
             // Insert the names of all available filter types.
             {

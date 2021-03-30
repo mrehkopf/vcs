@@ -22,6 +22,8 @@ signals:
     // Emitted when the node graph's view is zoomed in or out (i.e. scaled up or down).
     void scale_changed(const double newScale);
 
+    void right_clicked_on_background(const QPoint &globalPos);
+
 private:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);

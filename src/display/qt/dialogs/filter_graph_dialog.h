@@ -7,6 +7,7 @@
 class InteractibleNodeGraph;
 class FilterGraphNode;
 class QMenuBar;
+class QMenu;
 
 namespace Ui {
 class FilterGraphDialog;
@@ -48,6 +49,10 @@ private:
     Ui::FilterGraphDialog *ui;
 
     InteractibleNodeGraph *graphicsScene = nullptr;
+
+    // Contains actions corresponding to all the filters that can be added to the
+    // filter graph.
+    QMenu *filtersMenu = nullptr;
 
     // All the nodes that are currently in the graph.
     std::vector<FilterGraphNode*> inputGateNodes;

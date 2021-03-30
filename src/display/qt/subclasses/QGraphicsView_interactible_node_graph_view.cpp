@@ -71,6 +71,9 @@ void InteractibleNodeGraphView::mousePressEvent(QMouseEvent *event)
                 return;
             }
         }
+
+        // Otherwise, the click was over the background.
+        emit this->right_clicked_on_background(event->globalPos());
     }
     // Pressing the left mouse button over the scene's background starts a rubberband selection.
     else if (event->button() == Qt::LeftButton)
