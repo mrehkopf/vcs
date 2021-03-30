@@ -191,9 +191,7 @@ void FilterGraphNode::generate_right_click_menu(void)
     // Add options to change the node's color.
     if (!this->background_color_list().empty())
     {
-        this->rightClickMenu->addSeparator();
-
-        QMenu *colorMenu = new QMenu("Background color", this->rightClickMenu);
+        QMenu *colorMenu = new QMenu("Background", this->rightClickMenu);
 
         for (const auto &color : this->backgroundColorList)
         {
@@ -213,7 +211,7 @@ void FilterGraphNode::generate_right_click_menu(void)
     {
         this->rightClickMenu->addSeparator();
 
-        connect(this->rightClickMenu->addAction("Remove this node"), &QAction::triggered, this, [=]
+        connect(this->rightClickMenu->addAction("Remove"), &QAction::triggered, this, [=]
         {
             dynamic_cast<InteractibleNodeGraph*>(this->scene())->remove_node(this);
         });
