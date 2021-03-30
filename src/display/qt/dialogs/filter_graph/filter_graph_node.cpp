@@ -82,9 +82,10 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
     }
 
     // Draw the title.
+    const QString elidedTitle = QFontMetrics(titleFont).elidedText(this->title, Qt::ElideRight, (this->width - 42));
     painter->setFont(titleFont);
     painter->setPen(QColor(this->is_enabled()? "white" : "lightgray"));
-    painter->drawText((this->input_edge()? 22 : 14), 26, title);
+    painter->drawText((this->input_edge()? 22 : 14), 26, elidedTitle);
 
     return;
 }
