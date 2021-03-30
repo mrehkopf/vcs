@@ -21,10 +21,10 @@ const char PROGRAM_NAME[] = "VCS";
 const char PROGRAM_VERSION_STRING[] = "2.3.2";
 
 // The minimum and maximum resolution we can output frames in.
-const uint MIN_OUTPUT_WIDTH = 200;
+const uint MIN_OUTPUT_WIDTH = 160;
 const uint MIN_OUTPUT_HEIGHT = 100;
 const uint MAX_OUTPUT_WIDTH = 4096;
-const uint MAX_OUTPUT_HEIGHT = 4096;
+const uint MAX_OUTPUT_HEIGHT = 2160;
 const uint MAX_OUTPUT_BPP = 32;
 const u32 MAX_NUM_BYTES_IN_OUTPUT_FRAME = (MAX_OUTPUT_WIDTH * MAX_OUTPUT_HEIGHT * u64(MAX_OUTPUT_BPP / 8));
 
@@ -32,8 +32,8 @@ const u32 MAX_NUM_BYTES_IN_OUTPUT_FRAME = (MAX_OUTPUT_WIDTH * MAX_OUTPUT_HEIGHT 
 // device in.
 const uint MIN_CAPTURE_WIDTH = 1;
 const uint MIN_CAPTURE_HEIGHT = 1;
-const uint MAX_CAPTURE_WIDTH = 2048;
-const uint MAX_CAPTURE_HEIGHT = 1536;
+const uint MAX_CAPTURE_WIDTH = 1920;
+const uint MAX_CAPTURE_HEIGHT = 1080;
 const uint MAX_CAPTURE_BPP = 32;
 const u32 MAX_NUM_BYTES_IN_CAPTURED_FRAME = (MAX_CAPTURE_WIDTH * MAX_CAPTURE_HEIGHT * u64(MAX_CAPTURE_BPP / 8));
 
