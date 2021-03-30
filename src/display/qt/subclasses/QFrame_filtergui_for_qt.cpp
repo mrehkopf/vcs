@@ -9,6 +9,7 @@
 #include <QHBoxLayout>
 #include <QFormLayout>
 #include <QComboBox>
+#include <QCheckBox>
 #include <QWidget>
 #include <QFrame>
 #include <QLabel>
@@ -55,6 +56,24 @@ FilterGUIForQt::FilterGUIForQt(const filter_c *const filter,
                         label->setStyleSheet("margin-bottom: .25em;");
 
                         containerLayout->addWidget(label);
+
+                        break;
+                    }
+                    case filtergui_component_e::checkbox:
+                    {
+                        auto *const c = ((filtergui_checkbox_s*)component);
+                        auto *const checkbox = new QCheckBox(this);
+
+                        checkbox->setChecked(c->get_value());
+                        checkbox->setText(QString::fromStdString(c->label));
+
+                        connect(checkbox, &QCheckBox::toggled, [=](const bool isChecked)
+                        {
+                            c->set_value(isChecked);
+                            emit this->parameter_changed();
+                        });
+
+                        containerLayout->addWidget(checkbox);
 
                         break;
                     }

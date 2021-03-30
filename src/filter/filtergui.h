@@ -23,6 +23,7 @@ enum class filtergui_component_e
     spinbox,
     doublespinbox,
     combobox,
+    checkbox,
 };
 
 struct filtergui_component_s
@@ -40,6 +41,13 @@ struct filtergui_label_s : public filtergui_component_s
     filtergui_component_e type(void) const override { return filtergui_component_e::label; }
 
     std::string text;
+};
+
+struct filtergui_checkbox_s : public filtergui_component_s
+{
+    filtergui_component_e type(void) const override { return filtergui_component_e::checkbox; }
+
+    std::string label;
 };
 
 struct filtergui_spinbox_s : public filtergui_component_s
