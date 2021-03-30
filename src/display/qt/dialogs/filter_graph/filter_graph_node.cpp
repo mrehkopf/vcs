@@ -62,7 +62,7 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
         // Background.
         {
             // Node's background.
-            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "#e0e0e0" : this->current_background_color()), edgePenThickness, Qt::SolidLine));
+            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "#c0c0c0" : this->current_background_color()), edgePenThickness, Qt::SolidLine));
             painter->setBrush(QBrush(QColor("#555555")));
             painter->drawRoundedRect(QRect(0, 0, this->width, this->height), borderRadius, borderRadius);
 
