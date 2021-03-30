@@ -431,8 +431,8 @@ void FilterGraphDialog::recalculate_filter_chains(void)
 {
     kf_remove_all_filter_chains();
 
-    const std::function<void(FilterGraphNode *const, std::vector<const filter_c*>)> traverse_filter_node =
-          [&](FilterGraphNode *const node, std::vector<const filter_c*> accumulatedFilterChain)
+    const std::function<void(FilterGraphNode *const, std::vector<filter_c*>)> traverse_filter_node =
+          [&](FilterGraphNode *const node, std::vector<filter_c*> accumulatedFilterChain)
     {
         k_assert((node && node->associatedFilter), "Trying to visit an invalid node.");
 

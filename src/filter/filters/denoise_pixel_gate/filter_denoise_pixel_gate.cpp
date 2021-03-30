@@ -9,7 +9,7 @@
 
 // Reduces temporal image noise by requiring that pixels between frames vary by at
 // least a threshold value before being updated on screen.
-void filter_denoise_pixel_gate_c::apply(FILTER_FUNC_PARAMS) const
+void filter_denoise_pixel_gate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 

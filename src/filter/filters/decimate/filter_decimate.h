@@ -20,7 +20,7 @@ public:
     enum { SAMPLE_NEAREST = 0,
            SAMPLE_AVERAGE = 1 };
 
-    filter_decimate_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+    filter_decimate_c(FILTER_CTOR_FUNCTION_PARAMS) :
         filter_c({{PARAM_FACTOR, 1},
                   {PARAM_TYPE, SAMPLE_AVERAGE}},
                  initialParameterValues)
@@ -28,7 +28,7 @@ public:
         this->guiDescription = new filtergui_decimate_c(this);
     }
 
-    void apply(FILTER_FUNC_PARAMS) const override;
+    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 
     std::string uuid(void) const override { return "eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03"; }
     std::string name(void) const override { return "Decimate"; }

@@ -29,7 +29,7 @@ public:
                     const unsigned height = 130);
     virtual ~FilterGraphNode();
 
-    const filter_c *associatedFilter = nullptr;
+    filter_c *associatedFilter = nullptr;
 
     // Convenience functions that can be used to access the node's (default) input and output edge.
     virtual node_edge_s* input_edge(void) { return nullptr; }

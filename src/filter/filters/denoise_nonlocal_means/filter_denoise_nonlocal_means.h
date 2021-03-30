@@ -19,7 +19,7 @@ public:
            PARAM_TEMPLATE_WINDOW_SIZE,
            PARAM_SEARCH_WINDOW_SIZE};
 
-    filter_denoise_nonlocal_means_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+    filter_denoise_nonlocal_means_c(FILTER_CTOR_FUNCTION_PARAMS) :
         filter_c({{PARAM_H, 10},
                   {PARAM_H_COLOR, 10},
                   {PARAM_TEMPLATE_WINDOW_SIZE, 7},
@@ -34,7 +34,7 @@ public:
     filter_type_e type(void) const override { return filter_type_e::denoise_nonlocal_means; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
 
-    void apply(FILTER_FUNC_PARAMS) const override;
+    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 
 private:
 };

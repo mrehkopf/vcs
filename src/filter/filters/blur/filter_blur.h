@@ -20,7 +20,7 @@ public:
     enum { BLUR_BOX = 0,
            BLUR_GAUSSIAN = 1 };
     
-    filter_blur_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+    filter_blur_c(FILTER_CTOR_FUNCTION_PARAMS) :
         filter_c({{PARAM_KERNEL_SIZE, 1},
                   {PARAM_TYPE, BLUR_GAUSSIAN}},
                  initialParameterValues)
@@ -28,7 +28,7 @@ public:
         this->guiDescription = new filtergui_blur_c(this);
     }
 
-    void apply(FILTER_FUNC_PARAMS) const override;
+    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 
     std::string name(void) const override { return "Blur"; }
     std::string uuid(void) const override { return "a5426f2e-b060-48a9-adf8-1646a2d3bd41"; }

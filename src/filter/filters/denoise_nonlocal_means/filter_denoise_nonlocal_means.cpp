@@ -14,7 +14,7 @@
 #endif
 
 // Quite slow.
-void filter_denoise_nonlocal_means_c::apply(FILTER_FUNC_PARAMS) const
+void filter_denoise_nonlocal_means_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 

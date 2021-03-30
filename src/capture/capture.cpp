@@ -87,7 +87,7 @@ bool kc_force_input_resolution(const resolution_s &r)
         r.h > max.h ||
         r.h < min.h)
     {
-        NBENE(("Was asked to set an input resolution which is not supported by the capture card (%u x %u). Ignoring the request.",
+        NBENE(("Was asked to set an unsupported input resolution (%u x %u). Ignoring the request.",
                r.w, r.h));
         return false;
     }

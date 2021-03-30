@@ -17,7 +17,7 @@ public:
     enum { PARAM_ROT,
            PARAM_SCALE };
 
-    filter_rotate_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+    filter_rotate_c(FILTER_CTOR_FUNCTION_PARAMS) :
         filter_c({{PARAM_SCALE, 1},
                   {PARAM_ROT, 0}},
                  initialParameterValues)
@@ -30,7 +30,7 @@ public:
     filter_type_e type(void) const override { return filter_type_e::rotate; }
     filter_category_e category(void) const override { return filter_category_e::distort; }
 
-    void apply(FILTER_FUNC_PARAMS) const override;
+    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 
 private:
 };

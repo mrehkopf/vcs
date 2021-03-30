@@ -16,7 +16,7 @@ class filter_median_c : public filter_c
 public:
     enum { PARAM_KERNEL_SIZE };
 
-    filter_median_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+    filter_median_c(FILTER_CTOR_FUNCTION_PARAMS) :
         filter_c({{PARAM_KERNEL_SIZE, 3}},
                  initialParameterValues)
     {
@@ -28,7 +28,7 @@ public:
     filter_type_e type(void) const override { return filter_type_e::median; }
     filter_category_e category(void) const override { return filter_category_e::reduce; }
 
-    void apply(FILTER_FUNC_PARAMS) const override;
+    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 
 private:
 };

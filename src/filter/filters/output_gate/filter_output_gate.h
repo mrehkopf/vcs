@@ -17,7 +17,7 @@ public:
     enum { PARAM_WIDTH,
            PARAM_HEIGHT };
 
-    filter_output_gate_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+    filter_output_gate_c(FILTER_CTOR_FUNCTION_PARAMS) :
         filter_c({{PARAM_WIDTH, 640},
                   {PARAM_HEIGHT, 480}},
                  initialParameterValues)
@@ -30,7 +30,7 @@ public:
     filter_type_e type(void) const override { return filter_type_e::output_gate; }
     filter_category_e category(void) const override { return filter_category_e::meta; }
 
-    void apply(FILTER_FUNC_PARAMS) const override;
+    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 
 private:
 };

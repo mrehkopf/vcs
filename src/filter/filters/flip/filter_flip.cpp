@@ -14,7 +14,7 @@
 #endif
 
 // Flips the frame horizontally and/or vertically.
-void filter_flip_c::apply(FILTER_FUNC_PARAMS) const
+void filter_flip_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 

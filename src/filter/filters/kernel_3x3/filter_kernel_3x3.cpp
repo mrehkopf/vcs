@@ -13,7 +13,7 @@
     #include <opencv2/core/core.hpp>
 #endif
 
-void filter_kernel_3x3_c::apply(FILTER_FUNC_PARAMS) const
+void filter_kernel_3x3_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 

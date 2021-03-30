@@ -7,7 +7,7 @@
 
 #include "filter/filters/decimate/filter_decimate.h"
 
-void filter_decimate_c::apply(FILTER_FUNC_PARAMS) const
+void filter_decimate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 

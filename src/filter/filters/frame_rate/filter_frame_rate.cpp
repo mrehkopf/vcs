@@ -16,21 +16,20 @@
 // Counts the number of unique frames per second, i.e. frames in which the pixels
 // change between frames by less than a set threshold (which is to account for
 // analog capture artefacts).
-void filter_frame_rate_c::apply(FILTER_FUNC_PARAMS) const
+void filter_frame_rate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
     #ifdef USE_OPENCV
-        static heap_bytes_s<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Unique count filter buffer");
+        static heap_bytes_s<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Frame rate filter buffer");
+        static u32 uniqueFramesProcessed = 0;
+        static u32 uniqueFramesPerSecond = 0;
+        static auto timeElapsed = std::chrono::system_clock::now();
 
         const unsigned threshold = this->parameter(PARAM_THRESHOLD);
         const unsigned corner = this->parameter(PARAM_CORNER);
         const unsigned bgColorType = this->parameter(PARAM_BG_COLOR);
         const unsigned textColorType = this->parameter(PARAM_TEXT_COLOR);
-
-        static u32 uniqueFramesProcessed = 0;
-        static u32 uniqueFramesPerSecond = 0;
-        static time_t timer = time(NULL);
 
         for (u32 i = 0; i < (r.w * r.h); i++)
         {
@@ -41,19 +40,21 @@ void filter_frame_rate_c::apply(FILTER_FUNC_PARAMS) const
                 (abs(pixels[idx + 2] - prevPixels[idx + 2]) >= threshold))
             {
                 uniqueFramesProcessed++;
-
                 break;
             }
         }
 
-        memcpy(prevPixels.ptr(), pixels, prevPixels.up_to(r.w * r.h * (r.bpp / 8)));
+        memcpy(prevPixels.ptr(),
+               pixels,
+               prevPixels.up_to(r.w * r.h * (r.bpp / 8)));
 
-        const double secsElapsed = difftime(time(NULL), timer);
+        const auto timeNow = std::chrono::system_clock::now();
+        const double secsElapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - timeElapsed).count() / 1000.0);
         if (secsElapsed >= 1)
         {
-            uniqueFramesPerSecond = round(uniqueFramesProcessed / secsElapsed);
+            uniqueFramesPerSecond = std::round(uniqueFramesProcessed / secsElapsed);
             uniqueFramesProcessed = 0;
-            timer = time(NULL);
+            timeElapsed = std::chrono::system_clock::now();
         }
 
         // Draw the counter into the frame.
@@ -76,7 +77,7 @@ void filter_frame_rate_c::apply(FILTER_FUNC_PARAMS) const
                 }
             })();
 
-            if (bgColorType)
+            if (bgColorType != BG_TRANSPARENT)
             {
                 cv::Scalar bgColor;
                 const cv::Point bgRectTopLeft = cv::Point(cornerPos.x - margin, cornerPos.y + margin);
@@ -84,8 +85,8 @@ void filter_frame_rate_c::apply(FILTER_FUNC_PARAMS) const
 
                 switch (bgColorType)
                 {
-                    case 1: bgColor = cv::Scalar(0, 0, 0); break;
-                    case 2: bgColor = cv::Scalar(255, 255, 255); break;
+                    case BG_BLACK: bgColor = cv::Scalar(0, 0, 0); break;
+                    case BG_WHITE: bgColor = cv::Scalar(255, 255, 255); break;
                 }
 
                 cv::rectangle(output, bgRectTopLeft, bgRectBottomRight, bgColor, cv::FILLED);
@@ -95,10 +96,10 @@ void filter_frame_rate_c::apply(FILTER_FUNC_PARAMS) const
 
             switch (textColorType)
             {
-                case 0: textColor = cv::Scalar(0, 255, 255); break;
-                case 1: textColor = cv::Scalar(255, 0, 255); break;
-                case 2: textColor = cv::Scalar(0, 0, 0); break;
-                case 3: textColor = cv::Scalar(255, 255, 255); break;
+                case TEXT_YELLOW: textColor = cv::Scalar(0, 255, 255); break;
+                case TEXT_PURPLE: textColor = cv::Scalar(255, 0, 255); break;
+                case TEXT_BLACK:  textColor = cv::Scalar(0, 0, 0); break;
+                case TEXT_WHITE:  textColor = cv::Scalar(255, 255, 255); break;
             }
 
             cv::putText(output, counterString, cornerPos, cv::FONT_HERSHEY_DUPLEX, 1, textColor, 2, cv::LINE_AA);

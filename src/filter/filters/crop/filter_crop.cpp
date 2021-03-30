@@ -15,7 +15,7 @@
 
 // Takes a subregion of the frame and either scales it up to fill the whole frame or
 // fills its surroundings with black.
-void filter_crop_c::apply(FILTER_FUNC_PARAMS) const
+void filter_crop_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 

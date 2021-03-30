@@ -7,7 +7,7 @@
 
 #include "filter/filters/input_gate/filter_input_gate.h"
 
-void filter_input_gate_c::apply(FILTER_FUNC_PARAMS) const
+void filter_input_gate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 {
     /// Input gates do not modify pixel data.
 

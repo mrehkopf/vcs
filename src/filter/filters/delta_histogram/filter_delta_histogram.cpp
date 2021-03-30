@@ -14,7 +14,7 @@
 #endif
 
 // Draws a histogram by color value of the number of pixels changed between frames.
-void filter_delta_histogram_c::apply(FILTER_FUNC_PARAMS) const
+void filter_delta_histogram_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 

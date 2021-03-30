@@ -20,7 +20,7 @@ public:
            PARAM_HEIGHT,
            PARAM_SCALER };
 
-    filter_crop_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+    filter_crop_c(FILTER_CTOR_FUNCTION_PARAMS) :
         filter_c({{PARAM_X, 0},
                   {PARAM_Y, 0},
                   {PARAM_WIDTH, 640},
@@ -31,7 +31,7 @@ public:
         this->guiDescription = new filtergui_crop_c(this);
     }
 
-    void apply(FILTER_FUNC_PARAMS) const override;
+    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 
     std::string uuid(void) const override { return "2448cf4a-112d-4d70-9fc1-b3e9176b6684"; }
     std::string name(void) const override { return "Crop"; }

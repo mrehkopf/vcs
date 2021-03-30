@@ -24,7 +24,7 @@ public:
            PARAM_32,
            PARAM_33,};
 
-    filter_kernel_3x3_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+    filter_kernel_3x3_c(FILTER_CTOR_FUNCTION_PARAMS) :
         filter_c({{PARAM_11, 0},
                   {PARAM_12, 0},
                   {PARAM_13, 0},
@@ -44,7 +44,7 @@ public:
     filter_type_e type(void) const override { return filter_type_e::kernel_3x3; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
 
-    void apply(FILTER_FUNC_PARAMS) const override;
+    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 
 private:
 };

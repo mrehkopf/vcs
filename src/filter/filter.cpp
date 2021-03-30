@@ -30,7 +30,7 @@ static std::vector<filter_c*> FILTER_POOL;
 // Sets of filters, starting with an input gate, followed by a number of filters,
 // and ending with an output gate. These chains will be used to filter incoming
 // frames.
-static std::vector<std::vector<const filter_c*>> FILTER_CHAINS;
+static std::vector<std::vector<filter_c*>> FILTER_CHAINS;
 
 // The index in the list of filter chains of the chain that was most recently used.
 // Generally, this will be the filter chain that matches the current input/output
@@ -84,11 +84,11 @@ void kf_apply_filter_chain(u8 *const pixels, const resolution_s &r)
 
     k_assert((r.bpp == 32), "Filters can only be applied to 32-bit pixel data.");
 
-    std::pair<const std::vector<const filter_c*>*, unsigned> partialMatch = {nullptr, 0};
-    std::pair<const std::vector<const filter_c*>*, unsigned> openMatch = {nullptr, 0};
+    std::pair<const std::vector<filter_c*>*, unsigned> partialMatch = {nullptr, 0};
+    std::pair<const std::vector<filter_c*>*, unsigned> openMatch = {nullptr, 0};
     const resolution_s outputRes = ks_scaler_output_resolution();
 
-    static const auto apply_chain = [&pixels, &r](const std::vector<const filter_c*> &chain, const unsigned idx)
+    static const auto apply_chain = [&pixels, &r](const std::vector<filter_c*> &chain, const unsigned idx)
     {
         // The gate filters are expected to be #first and #last, while the actual
         // applicable filters are the ones in-between.
@@ -160,7 +160,7 @@ const std::vector<const filter_c*>& kf_known_filter_types(void)
     return KNOWN_FILTER_TYPES;
 }
 
-void kf_add_filter_chain(std::vector<const filter_c*> newChain)
+void kf_add_filter_chain(std::vector<filter_c*> newChain)
 {
     k_assert((newChain.size() >= 2) &&
              (newChain.at(0)->type() == filter_type_e::input_gate) &&

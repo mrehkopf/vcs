@@ -14,7 +14,7 @@
 class filter_sharpen_c : public filter_c
 {
 public:
-    filter_sharpen_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+    filter_sharpen_c(FILTER_CTOR_FUNCTION_PARAMS) :
         filter_c({}, initialParameterValues)
     {
         this->guiDescription = new filtergui_sharpen_c(this);
@@ -25,7 +25,7 @@ public:
     filter_type_e type(void) const override { return filter_type_e::sharpen; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
 
-    void apply(FILTER_FUNC_PARAMS) const override;
+    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 
 private:
 };

@@ -78,16 +78,22 @@
 #include "display/display.h"
 #include "common/globals.h"
 
-// The parameters to filter types' apply() function.
-#define FILTER_FUNC_PARAMS u8 *const pixels /*32-bit BGRA*/, const resolution_s &r
+// The parameters to filters' apply() function.
+#define FILTER_APPLY_FUNCTION_PARAMS u8 *const pixels /*32-bit BGRA*/, const resolution_s &r
+
+// The parameters to filters' constructor.
+#define FILTER_CTOR_FUNCTION_PARAMS const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}
 
 // Call this macro in filters' apply() functions to veryfy that the function
 // arguments are valid.
-#define VALIDATE_FILTER_INPUT k_assert(r.bpp == 32, "This filter expects pixels to be in 32-bit color.");\
-                              if (!pixels) return;
-
-
-struct filtergui_c;
+#define VALIDATE_FILTER_INPUT \
+{\
+    k_assert(((r.bpp == 32) &&\
+              (r.w <= MAX_CAPTURE_WIDTH) &&\
+              (r.h <= MAX_CAPTURE_HEIGHT)),\
+             "Unsupported frame format.");\
+    if (!pixels) return;\
+}
 
 /*!
  * @brief
@@ -201,7 +207,7 @@ public:
      * This function is allowed only to alter the image's pixel values, not
      * e.g. its size.
      */
-    virtual void apply(FILTER_FUNC_PARAMS) const = 0;
+    virtual void apply(FILTER_APPLY_FUNCTION_PARAMS) = 0;
 
     /*!
      * The filter's GUI widget, which provides the end-user with controls for
@@ -246,7 +252,7 @@ void kf_release_filters(void);
  * kf_create_new_filter_instance(const char *const),
  * kf_create_new_filter_instance(const filter_type_enum_e , const u8 *const)
  */
-void kf_add_filter_chain(std::vector<const filter_c *> newChain);
+void kf_add_filter_chain(std::vector<filter_c*> newChain);
 
 /*!
  * Asks the filter subsystem to clear its list of known filter chains. This
@@ -324,7 +330,7 @@ filter_c* kf_create_new_filter_instance(const filter_type_e type,
  * kf_create_new_filter_instance(const char *const),
  * kf_create_new_filter_instance(const filter_type_enum_e , const u8 *const)
  */
-void kf_delete_filter_instance(const filter_c * const filter);
+void kf_delete_filter_instance(const filter_c *const filter);
 
 /*!
  * Toggle the filter subsystem on/off.

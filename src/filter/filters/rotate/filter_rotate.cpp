@@ -13,7 +13,7 @@
     #include <opencv2/core/core.hpp>
 #endif
 
-void filter_rotate_c::apply(FILTER_FUNC_PARAMS) const
+void filter_rotate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 

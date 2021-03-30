@@ -14,13 +14,13 @@
 class filter_delta_histogram_c : public filter_c
 {
 public:
-    filter_delta_histogram_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+    filter_delta_histogram_c(FILTER_CTOR_FUNCTION_PARAMS) :
         filter_c({}, initialParameterValues)
     {
         this->guiDescription = new filtergui_delta_histogram_c(this);
     }
 
-    void apply(FILTER_FUNC_PARAMS) const override;
+    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 
     std::string uuid(void) const override { return "fc85a109-c57a-4317-994f-786652231773"; }
     std::string name(void) const override { return "Delta histogram"; }

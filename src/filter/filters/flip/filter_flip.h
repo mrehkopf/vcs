@@ -16,7 +16,7 @@ class filter_flip_c : public filter_c
 public:
     enum { PARAM_AXIS };
 
-    filter_flip_c(const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}) :
+    filter_flip_c(FILTER_CTOR_FUNCTION_PARAMS) :
         filter_c({{PARAM_AXIS, 0}},
                  initialParameterValues)
     {
@@ -28,7 +28,7 @@ public:
     filter_type_e type(void) const override { return filter_type_e::flip; }
     filter_category_e category(void) const override { return filter_category_e::distort; }
 
-    void apply(FILTER_FUNC_PARAMS) const override;
+    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 
 private:
 };
