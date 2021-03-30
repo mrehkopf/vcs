@@ -20,8 +20,8 @@ public:
     {
         this->edges =
         {
-            node_edge_s(node_edge_s::direction_e::in, QRect(-11, 8, 24, 24), this),
-            node_edge_s(node_edge_s::direction_e::out, QRect(this->width-11, 8, 24, 24), this),
+            node_edge_s(node_edge_s::direction_e::in, QRect(-8, 6, 24, 28), this),
+            node_edge_s(node_edge_s::direction_e::out, QRect(this->width-16, 6, 24, 28), this),
         };
 
         return;

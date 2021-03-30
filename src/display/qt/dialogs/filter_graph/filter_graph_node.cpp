@@ -37,7 +37,7 @@ FilterGraphNode::~FilterGraphNode()
 
 QRectF FilterGraphNode::boundingRect(void) const
 {
-    const int margin = 20;
+    const int margin = 7;
 
     return QRectF(-margin,
                   -margin,
@@ -52,7 +52,7 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
     QFont bodyFont = painter->font();
     QFont titleFont = painter->font();
 
-    const unsigned edgePenThickness = 1;
+    const unsigned edgePenThickness = 2;
     const unsigned borderRadius = 3;
 
     // Draw the node's body.
@@ -76,15 +76,16 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
         for (const auto &edge: this->edges)
         {
             painter->setPen(QPen(QColor("black"), edgePenThickness, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor("#e0e0e0")));
+            painter->setBrush(QBrush(QColor("lightseagreen")));
             painter->drawRoundedRect(edge.rect, borderRadius, borderRadius);
         }
     }
 
+    // Draw the title.
     const QString textColor = (this->current_background_color().lightness() < 128? "white" : "black");
     painter->setFont(titleFont);
     painter->setPen(QColor(this->is_enabled()? textColor : "lightgray"));
-    painter->drawText(20, 26, title);
+    painter->drawText((this->input_edge()? 22 : 14), 26, title);
 
     return;
 }
