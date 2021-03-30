@@ -17,10 +17,10 @@ void recording_buffer_s::initialize(const size_t frameCapacity)
 
     for (auto &buffer: this->frameData)
     {
-        buffer.alloc(maxFrameSize);
+        buffer.alloc(maxFrameSize, "Video recording frame buffer.");
     }
 
-    this->scratchBuffer.alloc(maxFrameSize);
+    this->scratchBuffer.alloc(maxFrameSize, "Video recording scratch buffer.");
 
     this->reset();
 
