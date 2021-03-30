@@ -39,7 +39,7 @@ filtergui_crop_c::filtergui_crop_c(filter_c *const filter)
         width->get_value = [=]{return filter->parameter(filter_crop_c::PARAM_WIDTH);};
         width->set_value = [=](const double value){filter->set_parameter(filter_crop_c::PARAM_WIDTH, value);};
         width->maxValue = MAX_CAPTURE_WIDTH;
-        width->minValue = 0;
+        width->minValue = 1;
 
         this->guiFields.push_back({"Width", {width}});
     }
@@ -50,7 +50,7 @@ filtergui_crop_c::filtergui_crop_c(filter_c *const filter)
         height->get_value = [=]{return filter->parameter(filter_crop_c::PARAM_HEIGHT);};
         height->set_value = [=](const double value){filter->set_parameter(filter_crop_c::PARAM_HEIGHT, value);};
         height->maxValue = MAX_CAPTURE_HEIGHT;
-        height->minValue = 0;
+        height->minValue = 1;
 
         this->guiFields.push_back({"Height", {height}});
     }
