@@ -48,9 +48,10 @@ public:
         this->guiDescription = new filtergui_anti_tear_c(this);
     }
 
+    CLONABLE_FILTER_TYPE(filter_anti_tear_c)
+
     std::string uuid(void) const override { return "11c27e0a-a000-41e9-a134-7579073c7dc5"; }
     std::string name(void) const override { return "Anti-tear"; }
-    filter_type_e type(void) const override { return filter_type_e::anti_tear; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
 
     void apply(FILTER_APPLY_FUNCTION_PARAMS) override;

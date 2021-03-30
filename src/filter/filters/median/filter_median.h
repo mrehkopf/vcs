@@ -23,9 +23,10 @@ public:
         this->guiDescription = new filtergui_median_c(this);
     }
 
+    CLONABLE_FILTER_TYPE(filter_median_c)
+
     std::string uuid(void) const override { return "de60017c-afe5-4e5e-99ca-aca5756da0e8"; }
     std::string name(void) const override { return "Median"; }
-    filter_type_e type(void) const override { return filter_type_e::median; }
     filter_category_e category(void) const override { return filter_category_e::reduce; }
 
     void apply(FILTER_APPLY_FUNCTION_PARAMS) override;

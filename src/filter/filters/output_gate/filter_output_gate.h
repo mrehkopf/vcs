@@ -25,10 +25,11 @@ public:
         this->guiDescription = new filtergui_output_gate_c(this);
     }
 
+    CLONABLE_FILTER_TYPE(filter_output_gate_c)
+
     std::string uuid(void) const override { return "be8443e2-4355-40fd-aded-63cebcbfb8ce"; }
     std::string name(void) const override { return "Output gate"; }
-    filter_type_e type(void) const override { return filter_type_e::output_gate; }
-    filter_category_e category(void) const override { return filter_category_e::meta; }
+    filter_category_e category(void) const override { return filter_category_e::gate_output; }
 
     void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 

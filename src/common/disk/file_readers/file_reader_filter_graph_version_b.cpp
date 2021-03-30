@@ -59,9 +59,9 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
         {
             row++;
             FAIL_IF_FIRST_CELL_IS_NOT("id");
-            const filter_type_e filterType = kf_filter_type_for_id(rowData.at(row).at(1).toStdString());
+            const auto filterTypeUuid = rowData.at(row).at(1).toStdString();
 
-            if (filterType == filter_type_e::unknown)
+            if (!kf_is_known_filter_type(filterTypeUuid))
             {
                 goto fail;
             }
@@ -77,7 +77,7 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
                 params.push_back({p, rowData.at(row).at(2+p).toDouble()});
             }
 
-            const auto newNode = kd_add_filter_graph_node(filterType, params);
+            const auto newNode = kd_add_filter_graph_node(filterTypeUuid, params);
             k_assert(newNode, "Failed to create a new filter node instance.");
             graphNodes->push_back(newNode);
         }

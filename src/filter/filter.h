@@ -84,6 +84,13 @@
 // The parameters to filters' constructor.
 #define FILTER_CTOR_FUNCTION_PARAMS const std::vector<std::pair<unsigned, double>> &initialParameterValues = {}
 
+#define CLONABLE_FILTER_TYPE(filter_child_class) \
+    filter_c* create_clone(void) const override\
+    {\
+        k_assert((typeid(filter_child_class) == typeid(*this)), "Type mismatch in duplicator.");\
+        return new filter_child_class(this->parameters());\
+    }\
+
 // Call this macro in filters' apply() functions to veryfy that the function
 // arguments are valid.
 #define VALIDATE_FILTER_INPUT \
@@ -94,56 +101,6 @@
              "Unsupported frame format.");\
     if (!pixels) return;\
 }
-
-/*!
- * @brief
- * Enumerates the available filter types.
- *
- * These types correspond in name to the filter functions of the filter
- * functions interface, @ref src/filter/filter_funcs.h.
- *
- * @see
- * filter_category_e
- *
- * @note
- * Types @a input_gate and @a output_gate are special cases. They aren't filter
- * types as such but rather conditions used by filter chains to decide whether
- * a particular captured frame should be processed by the chain. "Filters" of
- * type @a input_gate specify a resolution in which a given frame must have
- * been captured in order to be processed by the chain, and "filters" of type
- * @a output_gate specify a resolution which must match that currently returned
- * by ks_output_resolution() - the resolution to which VCS will scale the
- * frame - in order for the frame to be processed by the chain. Each frame must
- * satisfy both conditions for the filter chain to act on it.
- */
-enum class filter_type_e
-{
-    blur,
-    delta_histogram,
-    frame_rate,
-    unsharp_mask,
-    decimate,
-    denoise_pixel_gate,
-    denoise_nonlocal_means,
-    sharpen,
-    median,
-    crop,
-    flip,
-    rotate,
-    kernel_3x3,
-    anti_tear,
-
-    // Special cases. Gates are nodes that in a filter chain only pass or
-    // reject images based on their original (input) and scaled (output)
-    // resolutions. An image whose input and output resolutions don't match a
-    // filter chain's input and output gates' resolution won't be operated on
-    // by the filters in the chain.
-    input_gate,
-    output_gate,
-
-    // Special case. Signals that we don't recognize a given filter's type.
-    unknown,
-};
 
 /*!
  * @brief
@@ -169,6 +126,9 @@ enum class filter_category_e
     // Filters that provide information about the frame; e.g. noise level,
     // frame rate estimate.
     meta,
+
+    gate_input,
+    gate_output,
 };
 
 /*!
@@ -192,13 +152,17 @@ public:
 
     double parameter(const unsigned offset) const;
 
+    std::vector<std::pair<unsigned, double>> parameters(void) const;
+
     void set_parameter(const unsigned offset, const double value);
+
+    void set_parameters(const std::vector<std::pair<unsigned, double>> &parameters);
+
+    virtual filter_c* create_clone(void) const = 0;
 
     virtual std::string name(void) const = 0;
 
     virtual std::string uuid(void) const = 0;
-
-    virtual filter_type_e type(void) const = 0;
 
     virtual filter_category_e category(void) const = 0;
 
@@ -268,14 +232,6 @@ void kf_add_filter_chain(std::vector<filter_c*> newChain);
 void kf_remove_all_filter_chains(void);
 
 /*!
- * Returns the filter type associated with the given filter id string.
- *
- * @see
- * kf_filter_name_for_type()
- */
-filter_type_e kf_filter_type_for_id(const std::string id);
-
-/*!
  * Applies to the @p pixels of an image whose resolution is @p r the first
  * known filter chain whose input condition matches @p r and whose output
  * condition matches VCS's current output resolution as given from
@@ -315,7 +271,7 @@ const std::vector<const filter_c *>& kf_known_filter_types(void);
  * @see
  * kf_add_filter_chain()
  */
-filter_c* kf_create_new_filter_instance(const filter_type_e type,
+filter_c* kf_create_new_filter_instance(const std::string &filterTypeUuid,
                                         const std::vector<std::pair<unsigned, double>> &initialParameterValues = {});
 
 /*!
@@ -332,6 +288,12 @@ filter_c* kf_create_new_filter_instance(const filter_type_e type,
  * kf_create_new_filter_instance(const filter_type_enum_e , const u8 *const)
  */
 void kf_delete_filter_instance(const filter_c *const filter);
+
+/*!
+ * Returns true if the given filter UUID corresponds to a known filter; false
+ * otherwise.
+ */
+bool kf_is_known_filter_type(const std::string &filterTypeUuid);
 
 /*!
  * Toggle the filter subsystem on/off.

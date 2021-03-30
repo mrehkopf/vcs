@@ -44,7 +44,6 @@
 struct log_entry_s;
 struct mode_alias_s;
 class FilterGraphNode;
-enum class filter_type_e;
 
 /*!
  * @brief
@@ -180,7 +179,7 @@ void kd_recalculate_filter_graph_chains(void);
  * 
  * Returns a pointer to the created node; or @a nullptr if no node was created.
  */
-FilterGraphNode* kd_add_filter_graph_node(const filter_type_e &filterType,
+FilterGraphNode* kd_add_filter_graph_node(const std::string &filterTypeUuid,
                                           const std::vector<std::pair<unsigned, double>> &initialParameterValues);
 
 /*!

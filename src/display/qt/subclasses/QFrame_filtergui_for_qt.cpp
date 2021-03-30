@@ -147,8 +147,8 @@ FilterGUIForQt::FilterGUIForQt(const filter_c *const filter,
         }
     }
 
-    this->setMinimumWidth(((filter->type() == filter_type_e::input_gate) ||
-                           (filter->type() == filter_type_e::output_gate))
+    this->setMinimumWidth(((filter->category() == filter_category_e::gate_input) ||
+                           (filter->category() == filter_category_e::gate_output))
                           ? 200
                           : 220);
     this->adjustSize();

@@ -39,9 +39,10 @@ public:
         this->guiDescription = new filtergui_kernel_3x3_c(this);
     }
 
+    CLONABLE_FILTER_TYPE(filter_kernel_3x3_c)
+
     std::string uuid(void) const override { return "95027807-978b-4371-9a14-f6166efc64d9"; }
     std::string name(void) const override { return "Kernel (3 \u00d7 3)"; }
-    filter_type_e type(void) const override { return filter_type_e::kernel_3x3; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
 
     void apply(FILTER_APPLY_FUNCTION_PARAMS) override;

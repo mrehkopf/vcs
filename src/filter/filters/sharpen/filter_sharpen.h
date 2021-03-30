@@ -20,9 +20,10 @@ public:
         this->guiDescription = new filtergui_sharpen_c(this);
     }
 
+    CLONABLE_FILTER_TYPE(filter_sharpen_c)
+
     std::string uuid(void) const override { return "1c25bbb1-dbf4-4a03-93a1-adf24b311070"; }
     std::string name(void) const override { return "Sharpen"; }
-    filter_type_e type(void) const override { return filter_type_e::sharpen; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
 
     void apply(FILTER_APPLY_FUNCTION_PARAMS) override;

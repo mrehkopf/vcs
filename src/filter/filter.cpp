@@ -8,10 +8,10 @@
  */
 
 #include <algorithm>
+#include <functional>
 #include <cstring>
 #include <vector>
 #include <cmath>
-#include <map>
 #include "display/display.h"
 #include "capture/capture.h"
 #include "common/globals.h"
@@ -62,19 +62,6 @@ void kf_initialize_filters(void)
     };
 
     return;
-}
-
-filter_type_e kf_filter_type_for_id(const std::string id)
-{
-    for (const auto *filter: KNOWN_FILTER_TYPES)
-    {
-        if (filter->uuid() == id)
-        {
-            return filter->type();
-        }
-    }
-
-    return filter_type_e::unknown;
 }
 
 // Apply to the given pixel buffer the chain of filters (if any) whose input gate
@@ -164,8 +151,8 @@ const std::vector<const filter_c*>& kf_known_filter_types(void)
 void kf_add_filter_chain(std::vector<filter_c*> newChain)
 {
     k_assert((newChain.size() >= 2) &&
-             (newChain.at(0)->type() == filter_type_e::input_gate) &&
-             (newChain.at(newChain.size()-1)->type() == filter_type_e::output_gate),
+             (newChain.at(0)->category() == filter_category_e::gate_input) &&
+             (newChain.at(newChain.size()-1)->category() == filter_category_e::gate_output),
              "Detected a malformed filter chain.");
 
     FILTER_CHAINS.push_back(newChain);
@@ -194,35 +181,39 @@ void kf_delete_filter_instance(const filter_c *const filter)
     return;
 }
 
-filter_c* kf_create_new_filter_instance(const filter_type_e type,
+filter_c* kf_create_new_filter_instance(const std::string &filterTypeUuid,
                                         const std::vector<std::pair<unsigned, double>> &initialParameterValues)
 {
     filter_c *filter = nullptr;
 
-    switch (type)
+    for (auto &filterType: KNOWN_FILTER_TYPES)
     {
-        case filter_type_e::blur:                   filter = new filter_blur_c(initialParameterValues); break;
-        case filter_type_e::delta_histogram:        filter = new filter_delta_histogram_c(initialParameterValues); break;
-        case filter_type_e::frame_rate:             filter = new filter_frame_rate_c(initialParameterValues); break;
-        case filter_type_e::unsharp_mask:           filter = new filter_unsharp_mask_c(initialParameterValues); break;
-        case filter_type_e::decimate:               filter = new filter_decimate_c(initialParameterValues); break;
-        case filter_type_e::denoise_pixel_gate:     filter = new filter_denoise_pixel_gate_c(initialParameterValues); break;
-        case filter_type_e::denoise_nonlocal_means: filter = new filter_denoise_nonlocal_means_c(initialParameterValues); break;
-        case filter_type_e::sharpen:                filter = new filter_sharpen_c(initialParameterValues); break;
-        case filter_type_e::median:                 filter = new filter_median_c(initialParameterValues); break;
-        case filter_type_e::crop:                   filter = new filter_crop_c(initialParameterValues); break;
-        case filter_type_e::flip:                   filter = new filter_flip_c(initialParameterValues); break;
-        case filter_type_e::rotate:                 filter = new filter_rotate_c(initialParameterValues); break;
-        case filter_type_e::kernel_3x3:             filter = new filter_kernel_3x3_c(initialParameterValues); break;
-        case filter_type_e::anti_tear:              filter = new filter_anti_tear_c(initialParameterValues); break;
-        case filter_type_e::input_gate:             filter = new filter_input_gate_c(initialParameterValues); break;
-        case filter_type_e::output_gate:            filter = new filter_output_gate_c(initialParameterValues); break;
-        case filter_type_e::unknown:                filter = nullptr; break;
+        if (filterType->uuid() == filterTypeUuid)
+        {
+            filter = filterType->create_clone();
+            filter->set_parameters(initialParameterValues);
+            break;
+        }
     }
+
+    k_assert(filter, "Unknown filter type.");
 
     FILTER_POOL.push_back(filter);
 
     return filter;
+}
+
+bool kf_is_known_filter_type(const std::string &filterTypeUuid)
+{
+    for (auto &filterType: KNOWN_FILTER_TYPES)
+    {
+        if (filterType->uuid() == filterTypeUuid)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void kf_release_filters(void)
@@ -387,4 +378,26 @@ void filter_c::set_parameter(const unsigned offset, const double value)
     }
 
     return;
+}
+
+void filter_c::set_parameters(const std::vector<std::pair<unsigned, double>> &parameters)
+{
+    for (const auto &parameter: parameters)
+    {
+        this->set_parameter(parameter.first, parameter.second);
+    }
+
+    return;
+}
+
+std::vector<std::pair<unsigned, double>> filter_c::parameters(void) const
+{
+    auto params = std::vector<std::pair<unsigned, double>>{};
+
+    for (unsigned i = 0; i < this->parameterValues.size(); i++)
+    {
+        params.push_back({i, this->parameterValues[i]});
+    }
+
+    return params;
 }

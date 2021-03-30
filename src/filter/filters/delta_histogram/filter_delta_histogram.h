@@ -20,11 +20,12 @@ public:
         this->guiDescription = new filtergui_delta_histogram_c(this);
     }
 
+    CLONABLE_FILTER_TYPE(filter_delta_histogram_c)
+
     void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
 
     std::string uuid(void) const override { return "fc85a109-c57a-4317-994f-786652231773"; }
     std::string name(void) const override { return "Delta histogram"; }
-    filter_type_e type(void) const override { return filter_type_e::delta_histogram; }
     filter_category_e category(void) const override { return filter_category_e::meta; }
 
 private:

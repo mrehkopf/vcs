@@ -66,12 +66,12 @@ void kd_disable_output_size_controls(const bool areDisabled)
     return;
 }
 
-FilterGraphNode* kd_add_filter_graph_node(const filter_type_e &filterType,
+FilterGraphNode* kd_add_filter_graph_node(const std::string &filterTypeUuid,
                                           const std::vector<std::pair<unsigned, double>> &initialParameterValues)
 {
     if (WINDOW)
     {
-        return WINDOW->filter_graph_dialog()->add_filter_graph_node(filterType, initialParameterValues);
+        return WINDOW->filter_graph_dialog()->add_filter_graph_node(filterTypeUuid, initialParameterValues);
     }
 
     return nullptr;

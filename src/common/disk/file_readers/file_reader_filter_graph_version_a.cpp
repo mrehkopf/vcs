@@ -59,7 +59,7 @@ bool file_reader::filter_graph::version_a::read(const std::string &filename,
         {
             row++;
             FAIL_IF_FIRST_CELL_IS_NOT("id");
-            const filter_type_e filterType = kf_filter_type_for_id(rowData.at(row).at(1).toStdString());
+            const auto filterTypeUuid = rowData.at(row).at(1).toStdString();
 
             row++;
             FAIL_IF_FIRST_CELL_IS_NOT("parameterData");
@@ -72,7 +72,7 @@ bool file_reader::filter_graph::version_a::read(const std::string &filename,
                 params.push_back({p, rowData.at(row).at(2+p).toDouble()});
             }
 
-            const auto newNode = kd_add_filter_graph_node(filterType, params);
+            const auto newNode = kd_add_filter_graph_node(filterTypeUuid, params);
             graphNodes->push_back(newNode);
         }
 

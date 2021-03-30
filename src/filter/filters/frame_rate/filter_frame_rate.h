@@ -44,9 +44,10 @@ public:
         this->guiDescription = new filtergui_frame_rate_c(this);
     }
 
+    CLONABLE_FILTER_TYPE(filter_frame_rate_c)
+
     std::string uuid(void) const override { return "badb0129-f48c-4253-a66f-b0ec94e225a0"; }
     std::string name(void) const override { return "Frame rate"; }
-    filter_type_e type(void) const override { return filter_type_e::frame_rate; }
     filter_category_e category(void) const override { return filter_category_e::meta; }
 
     void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
