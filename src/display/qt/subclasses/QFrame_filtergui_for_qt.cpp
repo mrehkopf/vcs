@@ -45,6 +45,19 @@ FilterGUIForQt::FilterGUIForQt(const filter_c *const filter,
             {
                 switch (component->type())
                 {
+                    case filtergui_component_e::label:
+                    {
+                        auto *const c = ((filtergui_label_s*)component);
+                        auto *const label = new QLabel(QString::fromStdString(c->text), this);
+
+                        label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+                        label->setAlignment(Qt::AlignCenter);
+                        label->setStyleSheet("margin-bottom: .25em;");
+
+                        containerLayout->addWidget(label);
+
+                        break;
+                    }
                     case filtergui_component_e::combobox:
                     {
                         auto *const c = ((filtergui_combobox_s*)component);
@@ -115,12 +128,7 @@ FilterGUIForQt::FilterGUIForQt(const filter_c *const filter,
         }
     }
 
-    this->setMinimumWidth((filter->type() == filter_type_e::input_gate)
-                          ? 170
-                          : (filter->type() == filter_type_e::output_gate)
-                          ? 170
-                          : 200);
-
+    this->setMinimumWidth(200);
     this->adjustSize();
 
     return;

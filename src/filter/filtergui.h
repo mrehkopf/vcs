@@ -19,6 +19,7 @@ class filter_c;
 // The possible types of GUI components.
 enum class filtergui_component_e
 {
+    label,
     spinbox,
     doublespinbox,
     combobox,
@@ -32,6 +33,13 @@ struct filtergui_component_s
 
     std::function<void(const double)> set_value;
     std::function<double(void)> get_value;
+};
+
+struct filtergui_label_s : public filtergui_component_s
+{
+    filtergui_component_e type(void) const override { return filtergui_component_e::label; }
+
+    std::string text;
 };
 
 struct filtergui_spinbox_s : public filtergui_component_s
