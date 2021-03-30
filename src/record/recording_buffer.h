@@ -45,8 +45,8 @@
 struct recording_buffer_s
 {
     // Frames larger than this can't be stored in the buffer.
-    const unsigned maxWidth = 2048;
-    const unsigned maxHeight = 2048;
+    const unsigned maxWidth = 1024;
+    const unsigned maxHeight = 768;
 
     // Allocate memory for the buffer, etc.
     void initialize(const size_t frameCapacity = 10);

@@ -35,7 +35,7 @@
     static cv::VideoWriter VIDEO_WRITER;
 #endif
 
-static const unsigned RECORDING_BUFFER_CAPACITY = 20;
+static const unsigned RECORDING_BUFFER_CAPACITY = 10;
 
 static recording_buffer_s RECORDING_BUFFER;
 
