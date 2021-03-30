@@ -27,7 +27,6 @@ DialogFileMenu::DialogFileMenu(VCSBaseDialog *const parentDialog) :
 
     save->setIcon(qApp->style()->standardIcon(QStyle::SP_DialogSaveButton));
     open->setIcon(qApp->style()->standardIcon(QStyle::SP_DialogOpenButton));
-    close->setIcon(qApp->style()->standardIcon(QStyle::SP_DialogCloseButton));
 
     // Initial state when no file has been opened.
     save->setEnabled(false);
