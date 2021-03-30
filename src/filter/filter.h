@@ -131,6 +131,7 @@ enum class filter_type_e
     flip,
     rotate,
     kernel_3x3,
+    anti_tear,
 
     // Special cases. Gates are nodes that in a filter chain only pass or
     // reject images based on their original (input) and scaled (output)

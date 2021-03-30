@@ -37,11 +37,11 @@ u8* kat_anti_tear(u8 *const pixels, const resolution_s &r)
 
 void kat_initialize_anti_tear(void)
 {
-    const resolution_s &maxres = kc_capture_api().get_maximum_resolution();
+    const resolution_s &maxres = {MAX_CAPTURE_WIDTH, MAX_CAPTURE_HEIGHT, MAX_CAPTURE_BPP};
 
     INFO(("Initializing the anti-tear engine for %u x %u max.", maxres.w, maxres.h));
 
-    ANTI_TEARER.initialize({maxres.w, maxres.h, EXPECTED_BIT_DEPTH});
+    ANTI_TEARER.initialize(maxres);
 
     return;
 }
@@ -54,7 +54,6 @@ void kat_release_anti_tear(void)
 
     return;
 }
-
 
 void kat_set_anti_tear_enabled(const bool state)
 {

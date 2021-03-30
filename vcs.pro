@@ -71,6 +71,8 @@ SOURCES += \
     src/anti_tear/anti_tear_multiple_per_frame.cpp \
     src/anti_tear/anti_tear_one_per_frame.cpp \
     src/anti_tear/anti_tearer.cpp \
+    src/filter/filters/anti_tear/filter_anti_tear.cpp \
+    src/filter/filters/anti_tear/gui/filtergui_anti_tear.cpp \
     src/filter/filters/blur/filter_blur.cpp \
     src/filter/filters/blur/gui/filtergui_blur.cpp \
     src/filter/filters/crop/filter_crop.cpp \
@@ -171,6 +173,8 @@ HEADERS += \
     src/anti_tear/anti_tear_multiple_per_frame.h \
     src/anti_tear/anti_tear_one_per_frame.h \
     src/anti_tear/anti_tearer.h \
+    src/filter/filters/anti_tear/filter_anti_tear.h \
+    src/filter/filters/anti_tear/gui/filtergui_anti_tear.h \
     src/filter/filters/blur/filter_blur.h \
     src/filter/filters/blur/gui/filtergui_blur.h \
     src/filter/filters/crop/filter_crop.h \

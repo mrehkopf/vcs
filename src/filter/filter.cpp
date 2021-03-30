@@ -56,6 +56,7 @@ void kf_initialize_filters(void)
         new filter_flip_c(),
         new filter_rotate_c(),
         new filter_kernel_3x3_c(),
+        new filter_anti_tear_c(),
         new filter_input_gate_c(),
         new filter_output_gate_c(),
     };
@@ -213,6 +214,7 @@ filter_c* kf_create_new_filter_instance(const filter_type_e type,
         case filter_type_e::flip:                   filter = new filter_flip_c(initialParameterValues); break;
         case filter_type_e::rotate:                 filter = new filter_rotate_c(initialParameterValues); break;
         case filter_type_e::kernel_3x3:             filter = new filter_kernel_3x3_c(initialParameterValues); break;
+        case filter_type_e::anti_tear:              filter = new filter_anti_tear_c(initialParameterValues); break;
         case filter_type_e::input_gate:             filter = new filter_input_gate_c(initialParameterValues); break;
         case filter_type_e::output_gate:            filter = new filter_output_gate_c(initialParameterValues); break;
         case filter_type_e::unknown:                filter = nullptr; break;
