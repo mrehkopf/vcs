@@ -648,14 +648,14 @@ MainWindow::MainWindow(QWidget *parent) :
         this->contextMenuEyedropper->setEnabled(false);
         this->contextMenuEyedropper->setIcon(QIcon(":/res/images/icons/newie/eyedropper.png"));
 
+        this->contextMenu->addAction(this->contextMenuEyedropper);
+        this->contextMenu->addSeparator();
         this->contextMenu->addMenu(captureMenu);
         this->contextMenu->addMenu(outputMenu);
         this->contextMenu->addSeparator();
         this->contextMenu->addMenu(windowMenu);
         this->contextMenu->addSeparator();
         this->contextMenu->addAction(about);
-        this->contextMenu->addSeparator();
-        this->contextMenu->addAction(this->contextMenuEyedropper);
 
         // Ensure that action shortcuts can be used regardless of which dialog has focus.
         for (const auto *menu: {captureMenu, outputMenu, windowMenu})
