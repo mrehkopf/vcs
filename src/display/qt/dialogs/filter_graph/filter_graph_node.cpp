@@ -62,13 +62,13 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
         // Background.
         {
             // Node's background.
-            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "#e0e0e0" : "black"), edgePenThickness, Qt::SolidLine));
+            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "#e0e0e0" : this->current_background_color()), edgePenThickness, Qt::SolidLine));
             painter->setBrush(QBrush(QColor("#555555")));
             painter->drawRoundedRect(QRect(0, 0, this->width, this->height), borderRadius, borderRadius);
 
             // Title bar's background.
             painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
-            painter->setBrush(QBrush(this->current_background_color(), (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
+            painter->setBrush(QBrush(QColor("black"), (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
             painter->drawRoundedRect(QRect(6, 8, (this->width - 12), 24), borderRadius, borderRadius);
         }
 
@@ -82,9 +82,8 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
     }
 
     // Draw the title.
-    const QString textColor = (this->current_background_color().lightness() < 128? "white" : "black");
     painter->setFont(titleFont);
-    painter->setPen(QColor(this->is_enabled()? textColor : "lightgray"));
+    painter->setPen(QColor(this->is_enabled()? "white" : "lightgray"));
     painter->drawText((this->input_edge()? 22 : 14), 26, title);
 
     return;
@@ -116,10 +115,8 @@ const QColor FilterGraphNode::current_background_color(void)
 {
     const QString currentColor = this->backgroundColor.toLower();
 
-    if (currentColor == "red") return QColor("brown");
-    else if (currentColor == "black") return QColor("black");
-    else if (currentColor == "blue") return QColor("navy");
-    else if (currentColor == "cyan") return QColor("darkcyan");
+    if (currentColor == "black") return QColor("black");
+    else if (currentColor == "green") return QColor("lawngreen");
     else if (currentColor == "magenta") return QColor("mediumvioletred");
 
     return this->backgroundColor;
