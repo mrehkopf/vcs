@@ -61,6 +61,15 @@ void kf_initialize_filters(void)
         new filter_output_gate_c(),
     };
 
+    for (unsigned i = 0; i < KNOWN_FILTER_TYPES.size(); i++)
+    {
+        for (unsigned c = (i + 1); c < KNOWN_FILTER_TYPES.size(); c++)
+        {
+            k_assert((KNOWN_FILTER_TYPES.at(i)->uuid() != KNOWN_FILTER_TYPES.at(c)->uuid()),
+                     "Duplicate filter UUIDs detected.");
+        }
+    }
+
     return;
 }
 
