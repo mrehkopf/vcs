@@ -90,13 +90,15 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
     return;
 }
 
-void FilterGraphNode::set_background_color(const QString colorName)
+void FilterGraphNode::set_background_color(const QString &colorName)
 {
     // If we recognize this color name.
     if (this->backgroundColorList.indexOf(colorName) >= 0)
     {
         this->backgroundColor = colorName;
         this->update();
+
+        emit this->background_color_changed(colorName);
     }
 
     return;
@@ -128,19 +130,10 @@ bool FilterGraphNode::is_enabled(void) const
     return this->isEnabled;
 }
 
-void FilterGraphNode::set_enabled(const bool enabled)
+void FilterGraphNode::set_enabled(const bool isEnabled)
 {
-    this->isEnabled = enabled;
-
-    if (enabled)
-    {
-
-        emit this->enabled();
-    }
-    else
-    {
-        emit this->disabled();
-    }
+    this->isEnabled = isEnabled;
+    emit this->enabled_state_set(isEnabled);
 
     dynamic_cast<InteractibleNodeGraph*>(this->scene())->update();
 
@@ -170,14 +163,9 @@ void FilterGraphNode::generate_right_click_menu(void)
         enabled->setCheckable(true);
         enabled->setChecked(this->isEnabled);
 
-        connect(this, &FilterGraphNode::enabled, this, [=]
+        connect(this, &FilterGraphNode::enabled_state_set, this, [=](const bool isEnabled)
         {
-            enabled->setChecked(true);
-        });
-
-        connect(this, &FilterGraphNode::disabled, this, [=]
-        {
-            enabled->setChecked(false);
+            enabled->setChecked(isEnabled);
         });
 
         connect(enabled, &QAction::triggered, this, [=]

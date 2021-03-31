@@ -35,20 +35,20 @@ public:
     virtual node_edge_s* input_edge(void) { return nullptr; }
     virtual node_edge_s* output_edge(void) { return nullptr; }
 
-    void set_background_color(const QString colorName);
+    void set_background_color(const QString &colorName);
     const QList<QString>& background_color_list(void);
     const QString& current_background_color_name(void);
     const QColor current_background_color(void);
     bool is_enabled(void) const;
 
-    void set_enabled(const bool isDisabled);
+    void set_enabled(const bool isEnabled);
 
     QRectF boundingRect(void) const;
 
 signals:
-    // Emitted when the node's enabled status is toggled.
-    void enabled(void);
-    void disabled(void);
+    void enabled_state_set(const bool isEnabled);
+
+    void background_color_changed(const QString &newColor);
 
 protected:
     const filter_node_type_e filterType;

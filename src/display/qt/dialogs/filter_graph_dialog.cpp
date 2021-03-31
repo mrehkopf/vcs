@@ -254,9 +254,9 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         });
     }
 
-    this->reset_graph(true);
 
     // Restore persistent settings.
+    this->reset_graph(true);
     {
         this->set_enabled(kpers_value_of(INI_GROUP_OUTPUT, "custom_filtering", kf_is_filtering_enabled()).toBool());
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "filter_graph", this->size()).toSize());
@@ -419,6 +419,16 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const std::string &filterTyp
     }
 
     connect(guiWidget, &FilterGUIForQt::parameter_changed, this, [this]
+    {
+        this->data_changed();
+    });
+
+    connect(newNode, &FilterGraphNode::background_color_changed, this, [this]
+    {
+        this->data_changed();
+    });
+
+    connect(newNode, &FilterGraphNode::enabled_state_set, this, [this]
     {
         this->data_changed();
     });
