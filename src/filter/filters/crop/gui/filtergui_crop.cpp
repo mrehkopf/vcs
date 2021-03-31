@@ -56,13 +56,13 @@ filtergui_crop_c::filtergui_crop_c(filter_c *const filter)
     }
 
     {
-        auto *const blurType = new filtergui_combobox_s;
+        auto *const scaler = new filtergui_combobox_s;
 
-        blurType->get_value = [=]{return filter->parameter(filter_crop_c::PARAM_SCALER);};
-        blurType->set_value = [=](const double value){filter->set_parameter(filter_crop_c::PARAM_SCALER, value);};
-        blurType->items = {"Linear", "Nearest", "(Don't scale)"};
+        scaler->get_value = [=]{return filter->parameter(filter_crop_c::PARAM_SCALER);};
+        scaler->set_value = [=](const double value){filter->set_parameter(filter_crop_c::PARAM_SCALER, value);};
+        scaler->items = {"Linear", "Nearest", "None"};
 
-        this->guiFields.push_back({"Scaler", {blurType}});
+        this->guiFields.push_back({"Scaler", {scaler}});
     }
     
     return;

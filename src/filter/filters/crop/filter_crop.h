@@ -20,12 +20,16 @@ public:
            PARAM_HEIGHT,
            PARAM_SCALER };
 
+    enum { SCALE_LINEAR,
+           SCALE_NEAREST,
+           SCALE_NONE };
+
     filter_crop_c(FILTER_CTOR_FUNCTION_PARAMS) :
         filter_c({{PARAM_X, 0},
                   {PARAM_Y, 0},
                   {PARAM_WIDTH, 640},
                   {PARAM_HEIGHT, 480},
-                  {PARAM_SCALER, 0}},
+                  {PARAM_SCALER, SCALE_NONE}},
                  initialParameterValues)
     {
         this->guiDescription = new filtergui_crop_c(this);

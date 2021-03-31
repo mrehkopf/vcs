@@ -30,9 +30,9 @@ void filter_crop_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 
         switch (scalerType)
         {
-            case 0: cvScaler = cv::INTER_LINEAR; break;
-            case 1: cvScaler = cv::INTER_NEAREST; break;
-            case 2: cvScaler = -1 /*Don't scale.*/; break;
+            case SCALE_LINEAR:  cvScaler = cv::INTER_LINEAR; break;
+            case SCALE_NEAREST: cvScaler = cv::INTER_NEAREST; break;
+            case SCALE_NONE:    cvScaler = -1; break;
             default: k_assert(0, "Unknown scaler type for the crop filter."); break;
         }
 
