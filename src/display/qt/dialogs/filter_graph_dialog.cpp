@@ -389,7 +389,7 @@ FilterGraphNode* FilterGraphDialog::add_filter_node(const std::string &filterTyp
 
         QGraphicsProxyWidget* nodeWidgetProxy = new QGraphicsProxyWidget(newNode);
         nodeWidgetProxy->setWidget(guiWidget);
-        nodeWidgetProxy->widget()->move(0, 27);
+        nodeWidgetProxy->widget()->move(2, 27);
 
         if (filter->category() == filter_category_e::gate_input)
         {

@@ -74,7 +74,7 @@ QGroupBox > QHBoxLayout
 QGroupBox > QFrame,
 QGroupBox > QLabel
 {
-    margin-left: 3px;
+    margin-left: 2px;
     margin-right: 3px;
     padding-left: 3px;
     padding-right: 3px;
@@ -274,7 +274,7 @@ QGroupBox
 QGroupBox > QGroupBox
 {
     margin: 0;
-    padding-left: 6px;
+    padding-left: 8px;
     padding-right: 8px;
     margin-top: 3px;
     padding-top: 1.6em;
@@ -557,7 +557,6 @@ QTextEdit:read-only:focus
     border-radius: 2px;
     border: 1px solid black;
     padding: 2px;
-    margin-left: 2px;
 }
 
 QGroupBox[objectName="groupBox_presetList"] QComboBox
@@ -620,7 +619,6 @@ QRadioButton,
 QCheckBox
 {
     color: #e0e0e0;
-    margin-left: 2px;
     margin-right: 2px;
 }
 
@@ -629,9 +627,9 @@ QGroupBox > QFrame[frameShape="4"],
 QGroupBox > QFrame[frameShape="4"]:disabled
 {
     margin: 0;
-    margin-left: 10px;
+    margin-left: 9px;
     border: none;
-    border-top: 2px solid #353535;
+    border-top: 2px solid #303030;
     border-bottom: 1px solid #555555;
 }
 
