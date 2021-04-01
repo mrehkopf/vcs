@@ -114,7 +114,7 @@ void ParameterGrid::add_combobox(const QString name,
             {
                 if (parameterName == newParam->name)
                 {
-                    const auto blockCombo = block_widget_signals_c(comboBox);
+                    const QSignalBlocker blocker(comboBox);
 
                     newParam->currentValue = newValue;
                     comboBox->setCurrentIndex(newValue);
@@ -220,8 +220,8 @@ void ParameterGrid::add_scroller(const QString name,
             {
                 if (parameterName == newParam->name)
                 {
-                    const auto blockSpin = block_widget_signals_c(spinBox);
-                    const auto blockScroll = block_widget_signals_c(scrollBar);
+                    const QSignalBlocker blockSpin(spinBox);
+                    const QSignalBlocker blockScroll(scrollBar);
 
                     newParam->currentValue = newValue;
                     spinBox->setValue(newValue);
@@ -245,8 +245,8 @@ void ParameterGrid::add_scroller(const QString name,
             {
                 if (parameterName == newParam->name)
                 {
-                    const auto blockSpin = block_widget_signals_c(spinBox);
-                    const auto blockScroll = block_widget_signals_c(scrollBar);
+                    const QSignalBlocker blockSpin(spinBox);
+                    const QSignalBlocker blockScroll(scrollBar);
 
                     newParam->minimumValue = newMin;
                     spinBox->setMinimum(newMin);
@@ -258,8 +258,8 @@ void ParameterGrid::add_scroller(const QString name,
             {
                 if (parameterName == newParam->name)
                 {
-                    const auto blockSpin = block_widget_signals_c(spinBox);
-                    const auto blockScroll = block_widget_signals_c(scrollBar);
+                    const QSignalBlocker blockSpin(spinBox);
+                    const QSignalBlocker blockScroll(scrollBar);
 
                     newParam->minimumValue = newMax;
                     spinBox->setMaximum(newMax);
