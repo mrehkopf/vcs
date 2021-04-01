@@ -34,6 +34,8 @@ void recording_buffer_s::release(void)
         buffer.release_memory();
     }
 
+    this->scratchBuffer.release_memory();
+
     return;
 }
 
