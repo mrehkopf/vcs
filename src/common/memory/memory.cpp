@@ -38,7 +38,7 @@ struct mem_allocation_s
 {
     char reason[64];    // For what purpose the memory was needed.
     const void *memory;
-    uint numBytes;
+    uint32_t numBytes;
     bool isInUse;       // Set to false if the owner asks the memory manager to release the memory.
     bool isReused;      // Whether this allocation used to belong to someone else who since had it released.
 };
@@ -236,25 +236,23 @@ void kmem_lock_cache_alloc(void)
 
 void kmem_deallocate_memory_cache(void)
 {
-    INFO(("Releasing the memory cache."));
+    const unsigned numMBAllocated = (TOTAL_BYTES_ALLOCATED / 1024);
+    const unsigned percentUtilization = int((double(TOTAL_BYTES_ALLOCATED) / MEMORY_CACHE_SIZE) * 100);
+
+    INFO(("Releasing the memory cache at %d%% utilization (%u KB).", percentUtilization, numMBAllocated));
 
     k_assert(PROGRAM_EXIT_REQUESTED, "Was asked to release the memory cache before the program had been told to exit.");
 
-    DEBUG(("Taking stock of allocations in the memory cache (estimated values)."));
-    DEBUG(("Allocated:\t%d KB (%d%% utilization).", (TOTAL_BYTES_ALLOCATED / 1024), int((real(TOTAL_BYTES_ALLOCATED) / MEMORY_CACHE_SIZE) * 100)));
-    DEBUG(("Released:\t%d KB.", (TOTAL_BYTES_RELEASED / 1024)));
-    DEBUG(("Balance:\t%d bytes.", (TOTAL_BYTES_ALLOCATED - TOTAL_BYTES_RELEASED)));
-
-    /*for (uint i = 0; i < NUM_ALLOC_TABLE_ELEMENTS; i++)
-    {
-        if ((ALLOC_TABLE[i].memory != NULL) &&
-            ALLOC_TABLE[i].isInUse)
+    #ifndef RELEASE_BUILD
+        for (uint i = 0; i < NUM_ALLOC_TABLE_ELEMENTS; i++)
         {
-            DEBUG(("Unreleased memory: %p, %u bytes. Stated purpose: '%s'.", ALLOC_TABLE[i].memory, ALLOC_TABLE[i].numBytes, ALLOC_TABLE[i].reason));
+            if (ALLOC_TABLE[i].memory &&
+                ALLOC_TABLE[i].isInUse)
+            {
+                DEBUG(("ORPHANED: %u bytes at %p (\"%s\")", ALLOC_TABLE[i].numBytes, ALLOC_TABLE[i].memory, ALLOC_TABLE[i].reason));
+            }
         }
-    }*/
-
-    DEBUG(("(Unreleased allocations will be freed automatically.)"));
+    #endif
 
     free(MEMORY_CACHE);
 
