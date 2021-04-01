@@ -282,10 +282,10 @@ MainWindow::MainWindow(QWidget *parent) :
                 INFO(("Custom input resolutions are not supported with Video4Linux."));
             #endif
 
-            connect(signal, &QAction::triggered, this, [=]{this->open_video_dialog();});
-            connect(videoParams, &QAction::triggered, this, [=]{this->open_video_parameter_graph_dialog();});
-            connect(resolution, &QAction::triggered, this, [=]{this->open_input_resolution_dialog();});
-            connect(aliases, &QAction::triggered, this, [=]{this->open_alias_dialog();});
+            connect(signal, &QAction::triggered, this, [=]{this->signalDlg->open();});
+            connect(videoParams, &QAction::triggered, this, [=]{this->videoParamDlg->open();});
+            connect(resolution, &QAction::triggered, this, [=]{this->inputResolutionDlg->open();});
+            connect(aliases, &QAction::triggered, this, [=]{this->aliasDlg->open();});
         }
 
         QMenu *outputMenu = new QMenu("Output", this);
@@ -431,27 +431,27 @@ MainWindow::MainWindow(QWidget *parent) :
             QAction *overlay = new QAction("Overlay", this);
             overlay->setShortcut(QKeySequence("ctrl+l"));
             dialogs->addAction(overlay);
-            connect(overlay, &QAction::triggered, this, [=]{this->open_overlay_dialog();});
+            connect(overlay, &QAction::triggered, this, [=]{this->overlayDlg->open();});
 
             QAction *antiTear = new QAction("Anti-tear", this);
             antiTear->setShortcut(QKeySequence("ctrl+a"));
             dialogs->addAction(antiTear);
-            connect(antiTear, &QAction::triggered, this, [=]{this->open_antitear_dialog();});
+            connect(antiTear, &QAction::triggered, this, [=]{this->antitearDlg->open();});
 
             QAction *resolution = new QAction("Resolution", this);
             resolution->setShortcut(QKeySequence("ctrl+o"));
             dialogs->addAction(resolution);
-            connect(resolution, &QAction::triggered, this, [=]{this->open_output_resolution_dialog();});
+            connect(resolution, &QAction::triggered, this, [=]{this->outputResolutionDlg->open();});
 
             QAction *filter = new QAction("Filter graph", this);
             filter->setShortcut(QKeySequence("ctrl+f"));
             dialogs->addAction(filter);
-            connect(filter, &QAction::triggered, this, [=]{this->open_filter_graph_dialog();});
+            connect(filter, &QAction::triggered, this, [=]{this->filterGraphDlg->open();});
 
             QAction *record = new QAction("Video recorder", this);
             record->setShortcut(QKeySequence("ctrl+r"));
             dialogs->addAction(record);
-            connect(record, &QAction::triggered, this, [=]{this->open_record_dialog();});
+            connect(record, &QAction::triggered, this, [=]{this->recordDlg->open();});
         }
 
         QMenu *windowMenu = new QMenu("Window", this);
@@ -641,7 +641,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         QAction *about = new QAction("About...", this);
         {
-            connect(about, &QAction::triggered, this, [=]{this->open_about_dialog();});
+            connect(about, &QAction::triggered, this, [=]{this->aboutDlg->open();});
         }
 
         this->contextMenuEyedropper = new QAction("0, 0, 0", this);
@@ -907,106 +907,6 @@ bool MainWindow::load_font(const QString &filename)
     }
 
     return true;
-}
-
-void MainWindow::open_filter_graph_dialog(void)
-{
-    k_assert(this->filterGraphDlg != nullptr, "");
-    this->filterGraphDlg->show();
-    this->filterGraphDlg->activateWindow();
-    this->filterGraphDlg->raise();
-
-    return;
-}
-
-void MainWindow::open_output_resolution_dialog(void)
-{
-    k_assert(this->outputResolutionDlg != nullptr, "");
-    this->outputResolutionDlg->show();
-    this->outputResolutionDlg->activateWindow();
-    this->outputResolutionDlg->raise();
-
-    return;
-}
-
-void MainWindow::open_input_resolution_dialog(void)
-{
-    k_assert(this->inputResolutionDlg != nullptr, "");
-    this->inputResolutionDlg->show();
-    this->inputResolutionDlg->activateWindow();
-    this->inputResolutionDlg->raise();
-
-    return;
-}
-
-void MainWindow::open_video_parameter_graph_dialog(void)
-{
-    k_assert(this->videoParamDlg != nullptr, "");
-    this->videoParamDlg->show();
-    this->videoParamDlg->activateWindow();
-    this->videoParamDlg->raise();
-
-    return;
-}
-
-void MainWindow::open_video_dialog(void)
-{
-    k_assert(this->signalDlg != nullptr, "");
-    this->signalDlg->show();
-    this->signalDlg->activateWindow();
-    this->signalDlg->raise();
-
-    return;
-}
-
-void MainWindow::open_overlay_dialog(void)
-{
-    k_assert(this->overlayDlg != nullptr, "");
-    this->overlayDlg->show();
-    this->overlayDlg->activateWindow();
-    this->overlayDlg->raise();
-
-    return;
-}
-
-void MainWindow::open_record_dialog(void)
-{
-    k_assert(this->recordDlg != nullptr, "");
-    this->recordDlg->show();
-    this->recordDlg->activateWindow();
-    this->recordDlg->raise();
-
-    return;
-}
-
-void MainWindow::open_about_dialog(void)
-{
-    k_assert(this->aboutDlg != nullptr, "");
-    this->aboutDlg->show();
-    this->aboutDlg->activateWindow();
-    this->aboutDlg->raise();
-
-    return;
-}
-
-void MainWindow::open_alias_dialog(void)
-{
-    k_assert(this->aliasDlg != nullptr, "");
-    this->aliasDlg->show();
-    this->aliasDlg->activateWindow();
-    this->aliasDlg->raise();
-
-    return;
-}
-
-void MainWindow::open_antitear_dialog(void)
-{
-    k_assert(this->antitearDlg != nullptr, "");
-    this->antitearDlg->show();
-    this->antitearDlg->activateWindow();
-    this->antitearDlg->raise();
-
-    return;
 }
 
 void MainWindow::redraw(void)

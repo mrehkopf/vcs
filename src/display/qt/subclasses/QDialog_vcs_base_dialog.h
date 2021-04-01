@@ -21,6 +21,8 @@ public:
 
     virtual ~VCSBaseDialog(void);
 
+    void open(void) override;
+
     bool is_enabled(void) const;
 
     bool has_unsaved_changes(void) const;

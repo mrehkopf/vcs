@@ -53,8 +53,6 @@ public:
     // in general.
     void update_window_title(void);
 
-    void open_overlay_dialog(void);
-
     void set_opengl_enabled(const bool enabled);
 
     void redraw(void);
@@ -63,27 +61,9 @@ public:
     // should not be shown at this time.
     QImage overlay_image(void);
 
-    void open_filter_graph_dialog(void);
-
-    void open_antitear_dialog(void);
-
-    void open_video_dialog(void);
-
-    void open_alias_dialog(void);
-
-    void open_about_dialog(void);
-
-    void open_record_dialog(void);
-
-    void open_output_resolution_dialog(void);
-
     // Returns true if the user is allowed to scale the output resolution by using the
     // mouse wheel over the capture window.
     bool is_mouse_wheel_scaling_allowed(void);
-
-    void open_input_resolution_dialog(void);
-
-    void open_video_parameter_graph_dialog(void);
 
     bool apply_programwide_styling(const QString &filename);
 

@@ -29,6 +29,15 @@ VCSBaseDialog::~VCSBaseDialog(void)
     return;
 }
 
+void VCSBaseDialog::open(void)
+{
+    this->show();
+    this->activateWindow();
+    this->raise();
+
+    return;
+}
+
 const QString& VCSBaseDialog::name(void) const
 {
     return this->_name;
