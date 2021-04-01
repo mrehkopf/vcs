@@ -45,7 +45,7 @@ bool capture_api_virtual_s::initialize(void)
     this->frameBuffer.pixelFormat = capture_pixel_format_e::rgb_888;
     this->frameBuffer.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (virtual)");
 
-    // Animate the screen's test pattern.
+    // Simulate the capturing of a new frame.
     kt_timer(std::round(1000 / TARGET_REFRESH_RATE), [this](const unsigned)
     {
         if ((this->get_resolution().bpp > MAX_CAPTURE_BPP) ||
