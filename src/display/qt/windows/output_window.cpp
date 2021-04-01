@@ -1121,13 +1121,16 @@ void MainWindow::changeEvent(QEvent *event)
     QWidget::changeEvent(event);
 }
 
-static QPoint PREV_MOUSE_POS; /// Temp. Used to track mouse movement delta across frames.
+/// Temp. Used to track mouse movement delta across frames.
+static bool LEFT_MOUSE_BUTTON_DOWN = false;
+static QPoint PREV_MOUSE_POS;
+
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     // If the cursor is over the capture window and the left mouse button is being
     // held down, drag the window. Note: We disable dragging in fullscreen mode,
     // since really you shouldn't be able to drag a fullscreen window.
-    if ((QApplication::mouseButtons() & Qt::LeftButton) &&
+    if (LEFT_MOUSE_BUTTON_DOWN &&
         !this->isFullScreen())
     {
         QPoint delta = (event->globalPos() - PREV_MOUSE_POS);
@@ -1145,11 +1148,23 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::LeftButton)
     {
+        LEFT_MOUSE_BUTTON_DOWN = true;
         PREV_MOUSE_POS = event->globalPos();
     }
 
     return;
 }
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        LEFT_MOUSE_BUTTON_DOWN = false;
+    }
+
+    return;
+}
+
 
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
