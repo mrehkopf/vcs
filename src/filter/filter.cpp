@@ -56,6 +56,7 @@ void kf_initialize_filters(void)
         new filter_flip_c(),
         new filter_rotate_c(),
         new filter_kernel_3x3_c(),
+        new filter_color_depth_c(),
         new filter_anti_tear_c(),
         new filter_input_gate_c(),
         new filter_output_gate_c(),

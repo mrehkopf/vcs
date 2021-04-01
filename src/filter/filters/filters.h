@@ -22,6 +22,7 @@
 #include "filter/filters/unsharp_mask/filter_unsharp_mask.h"
 #include "filter/filters/kernel_3x3/filter_kernel_3x3.h"
 #include "filter/filters/anti_tear/filter_anti_tear.h"
+#include "filter/filters/color_depth/filter_color_depth.h"
 #include "filter/filters/input_gate/filter_input_gate.h"
 #include "filter/filters/output_gate/filter_output_gate.h"
 

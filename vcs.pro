@@ -75,6 +75,8 @@ SOURCES += \
     src/filter/filters/anti_tear/gui/filtergui_anti_tear.cpp \
     src/filter/filters/blur/filter_blur.cpp \
     src/filter/filters/blur/gui/filtergui_blur.cpp \
+    src/filter/filters/color_depth/filter_color_depth.cpp \
+    src/filter/filters/color_depth/gui/filtergui_color_depth.cpp \
     src/filter/filters/crop/filter_crop.cpp \
     src/filter/filters/crop/gui/filtergui_crop.cpp \
     src/filter/filters/decimate/filter_decimate.cpp \
@@ -177,6 +179,8 @@ HEADERS += \
     src/filter/filters/anti_tear/gui/filtergui_anti_tear.h \
     src/filter/filters/blur/filter_blur.h \
     src/filter/filters/blur/gui/filtergui_blur.h \
+    src/filter/filters/color_depth/filter_color_depth.h \
+    src/filter/filters/color_depth/gui/filtergui_color_depth.h \
     src/filter/filters/crop/filter_crop.h \
     src/filter/filters/crop/gui/filtergui_crop.h \
     src/filter/filters/decimate/filter_decimate.h \
