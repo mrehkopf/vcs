@@ -23,7 +23,7 @@ const char PROGRAM_VERSION_STRING[] = "2.4.0";
 // The minimum and maximum resolution we can output frames in.
 const uint MIN_OUTPUT_WIDTH = 160;
 const uint MIN_OUTPUT_HEIGHT = 100;
-const uint MAX_OUTPUT_WIDTH = 4096;
+const uint MAX_OUTPUT_WIDTH = 3840;
 const uint MAX_OUTPUT_HEIGHT = 2160;
 const uint MAX_OUTPUT_BPP = 32;
 const u32 MAX_NUM_BYTES_IN_OUTPUT_FRAME = (MAX_OUTPUT_WIDTH * MAX_OUTPUT_HEIGHT * u64(MAX_OUTPUT_BPP / 8));
@@ -39,12 +39,13 @@ const u32 MAX_NUM_BYTES_IN_CAPTURED_FRAME = (MAX_CAPTURE_WIDTH * MAX_CAPTURE_HEI
 
 #define NUM_ELEMENTS(array) int((sizeof(array) / sizeof((array)[0])))
 
-#define k_assert(condition, error_string)   if (!(condition))\
-                                            {\
-                                                DEBUG_(("Assertion failure in %s:%d: \"%s\"", __FILE__, __LINE__, error_string));\
-                                                kd_show_headless_assert_error_message(error_string, __FILE__, __LINE__);\
-                                                throw std::runtime_error(error_string);\
-                                            }
+#define k_assert(condition, error_string) \
+    if (!(condition))\
+    {\
+        DEBUG_(("Assertion failure in %s:%d: \"%s\"", __FILE__, __LINE__, error_string));\
+        kd_show_headless_assert_error_message(error_string, __FILE__, __LINE__);\
+        throw std::runtime_error(error_string);\
+    }
 
 // Assertions in e.g. performance-critical code.
 #ifndef RELEASE_BUILD
