@@ -93,7 +93,8 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 void FilterGraphNode::set_background_color(const QString &colorName)
 {
     // If we recognize this color name.
-    if (this->backgroundColorList.indexOf(colorName) >= 0)
+    if ((this->backgroundColorList.indexOf(colorName) >= 0) &&
+        (this->backgroundColor != colorName))
     {
         this->backgroundColor = colorName;
         this->update();
