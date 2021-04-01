@@ -232,7 +232,7 @@ To access: Ctrl+V or [Context menu](#context-menu) &rarr; `Input` &rarr; `Dialog
 
 The video presets dialog lets you to modify the capture devices's video signal parameters.
 
-![](images/screenshots/v2.3.0/video-presets-dialog.png)\
+![](images/screenshots/v2.4.0/video-presets-dialog.png)\
 *The video presets dialog - showing controls for adjusting the capture device's video signal parameters.*
 
 A given video preset's parameters will be applied when all of its "Activates with" conditions are met. For instance, if you've defined a preset's activation resolution as 800 x 600 and have disabled the other activating conditions, the preset's parameters will be applied when the capture video mode is 800 x 600.
@@ -252,9 +252,6 @@ For instance, if you find that your capture device is displaying 640 &times; 400
 To access: Ctrl+R or [Context menu](#context-menu) &rarr; `Output` &rarr; `Dialogs` &rarr; `Video recorder...`
 
 The video recorder gives you the option to stream captured frames into a video file.
-
-![](images/screenshots/v2.3.0/record-dialog.png)\
-*The video recorder dialog - showing controls for recording captured frames into a video file.*
 
 To use the video recorder in Windows, you'll need to install the 32-bit version of the [x264vfw](https://sourceforge.net/projects/x264vfw/files/x264vfw/44_2851bm_44825/) codec and run its configurator at least once, so that its settings are added into the Windows registry for VCS to find.
 
@@ -324,7 +321,7 @@ To access: Ctrl+A or [Context menu](#context-menu) &rarr; `Output` &rarr; `Dialo
 
 The anti-tear dialog provides functionality to remove tearing from captured frames.
 
-![](images/screenshots/v2.3.0/anti-tear-dialog.png)\
+![](images/screenshots/v2.4.0/anti-tear-dialog.png)\
 *The anti-tear dialog - showing controls for adjusting the parameters of VCS's anti-tear engine.*
 
 Under some circumstances, like when the captured source doesn't sync its rendering with the refresh rate, captured frames can contain tearing. VCS's anti-tearer helps mitigate this issue.
@@ -356,7 +353,7 @@ To access: Ctrl+F or [Context menu](#context-menu) &rarr; `Output` &rarr; `Dialo
 
 The filter graph dialog lets you to create chains of image filters to be applied to captured frames prior to display in the [output window](#output-window).
 
-![](images/screenshots/v2.3.0/filter-graph-dialog.png)\
+![](images/screenshots/v2.4.0/filter-graph-dialog.png)\
 *The filter graph dialog - showing controls for creating and modifying filter chains.*
 
 The filter graph is made up of nodes that can be connected together in a chain. These nodes come in three varieties: `input gate`, `output gate`, and `filter`.
