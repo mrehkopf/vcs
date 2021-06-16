@@ -58,14 +58,6 @@ void kd_recalculate_filter_graph_chains(void)
     return;
 }
 
-void kd_disable_output_size_controls(const bool areDisabled)
-{
-    ASSERT_WINDOW_IS_NOT_NULL;
-    WINDOW->output_resolution_dialog()->disable_output_size_controls(areDisabled);
-
-    return;
-}
-
 FilterGraphNode* kd_add_filter_graph_node(const std::string &filterTypeUuid,
                                           const std::vector<std::pair<unsigned, double>> &initialParameterValues)
 {
@@ -83,22 +75,6 @@ void kd_acquire_output_window(void)
 
     WINDOW = new MainWindow;
     WINDOW->show();
-
-    return;
-}
-
-void kd_clear_aliases(void)
-{
-    ASSERT_WINDOW_IS_NOT_NULL;
-    WINDOW->alias_resolutions_dialog()->clear_known_aliases();
-
-    return;
-}
-
-void kd_add_alias(const mode_alias_s a)
-{
-    ASSERT_WINDOW_IS_NOT_NULL;
-    WINDOW->alias_resolutions_dialog()->add_alias_to_list(a);
 
     return;
 }
@@ -159,13 +135,6 @@ void kd_update_output_window_size(void)
     return;
 }
 
-void kd_refresh_filter_chains(void)
-{
-    /* TODO.*/
-
-    return;
-}
-
 void kd_load_video_presets(const std::string &filename)
 {
     ASSERT_WINDOW_IS_NOT_NULL;
@@ -188,14 +157,6 @@ bool kd_is_fullscreen(void)
 {
     ASSERT_WINDOW_IS_NOT_NULL;
     return WINDOW->isFullScreen();
-}
-
-void kd_redraw_output_window(void)
-{
-    ASSERT_WINDOW_IS_NOT_NULL;
-    WINDOW->redraw();
-
-    return;
 }
 
 void kd_show_headless_info_message(const char *const title,

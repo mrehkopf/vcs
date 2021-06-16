@@ -14,17 +14,9 @@
  * input to VCS, and for displaying captured frames and other information about
  * VCS's run-time state to the user.
  * 
- * The GUI doesn't actively poll VCS for new data. Instead, VCS uses this
- * display interface to inform the GUI when relevant data are changed (or when
- * it otherwise wants the GUI to behave in a particular way). For example, when
- * there's a new frame to be displayed, VCS will notify the GUI by calling
- * kd_redraw_output_window(). It's then the GUI's job to request the latest
- * processed frame's data from VCS and paint it onto an output surface (a
- * window, a texture, a file on disk, or something else, which is up to the
- * GUI's discretion).
- * 
- * Since the display interface decouples the GUI's implementation from the rest
- * of VCS, you can replace the GUI with minimal modification of the rest of VCS.
+ * The display interface decouples the GUI's implementation from the rest of
+ * VCS, making it possible to replace the GUI with fairly minimal modification
+ * to the rest of VCS.
  * 
  * VCS's default GUI uses Qt, and its implementation of the display interface
  * can be found in @ref src/display/qt/d_main.cpp.
@@ -112,22 +104,6 @@ void kd_acquire_output_window(void);
 void kd_release_output_window(void);
 
 /*!
- * Asks the GUI to enable or disable any user-facing controls for adjusting
- * the resolution of output frames.
- * 
- * There are certain situations during which VCS requires the output size to be
- * locked; for instance, while recording captured frames to video. The GUI
- * should fully comply with this and, when disabled, visually indicate to the
- * user that such controls are locked for the time being.
- * 
- * The GUI remains free to allow the user to adjust the output size if doing so
- * has no effect on VCS's output size - that is, if this only involves the GUI
- * modifying its local data, e.g. by deeply copying a frame's data and only
- * scaling the copy.
- */
-void kd_disable_output_size_controls(const bool areDisabled);
-
-/*!
  * Instructs the GUI to erase all information (nodes, connections, etc.) from
  * its filter graph.
  * 
@@ -135,13 +111,6 @@ void kd_disable_output_size_controls(const bool areDisabled);
  * kd_add_filter_graph_node()
  */
 void kd_clear_filter_graph(void);
-
-/*!
- * @warning
- * This function is currently unused and should be ignored until further
- * notice. It may be renamed or removed in a future version of VCS.
- */
-void kd_refresh_filter_chains(void);
 
 // Visit each node in the graph and while doing so, group together such chains of
 // filters that run from an input gate through one or more filters into an output
@@ -181,26 +150,6 @@ void kd_recalculate_filter_graph_chains(void);
  */
 FilterGraphNode* kd_add_filter_graph_node(const std::string &filterTypeUuid,
                                           const std::vector<std::pair<unsigned, double>> &initialParameterValues);
-
-/*!
- * Asks the GUI to repaint its output window (e.g. because there's a new output
- * frame to be displayed).
- * 
- * As part of its repainting, the GUI is expected to fetch the latest output
- * frame's data from the scaler interface and paint it onto the output window.
- * 
- * The following sample Qt 5 GUI code creates a QImage out of the current
- * output frame's data, then paints the image onto its output window
- * (error-checking omitted):
- * 
- * @code
- * resolution_s r = ks_output_resolution();
- * u8 *pixels = ks_scaler_output_as_raw_ptr();
- * QImage frame = QImage(pixels, r.w, r.h, QImage::Format_RGB32);
- * QPainter(this).drawImage(0, 0, frame);
- * @endcode
- */
-void kd_redraw_output_window(void);
 
 /*!
  * Asks the GUI to load video presets from the given file.
@@ -340,24 +289,6 @@ void kd_show_headless_assert_error_message(const char *const msg, const char * c
  * accordingly.
  */
 bool kd_add_log_entry(const log_entry_s e);
-
-/*!
- * Lets the GUI know that VCS has created a new alias resolution, and provides
- * a copy of it as a parameter.
- * 
- * If the GUI has a view to VCS's aliases, it should update that view
- * accordingly.
- */
-void kd_add_alias(const mode_alias_s a);
-
-/*!
- * Instructs the GUI to clear its view to VCS's alias resolutions (e.g. because
- * the aliases have been reset).
- * 
- * @see
- * kd_add_alias()
- */
-void kd_clear_aliases(void);
 
 /*!
  * Returns true if the output window is in fullscreen mode; false
