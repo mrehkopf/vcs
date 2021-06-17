@@ -12,7 +12,7 @@
 #include "anti_tear/anti_tearer.h"
 #include "anti_tear/anti_tear.h"
 #include "display/display.h"
-#include "capture/capture_api.h"
+#include "capture/capture_device.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "common/memory/memory.h"

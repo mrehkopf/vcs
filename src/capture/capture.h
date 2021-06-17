@@ -14,9 +14,9 @@
 #include "common/memory/memory.h"
 #include "common/types.h"
 
-struct capture_api_s;
+struct capture_device_s;
 
-capture_api_s& kc_capture_api(void);
+capture_device_s& kc_capture_device(void);
 void kc_initialize_capture(void);
 void kc_release_capture(void);
 bool kc_force_input_resolution(const resolution_s &r);

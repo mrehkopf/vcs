@@ -5,11 +5,11 @@
  *
  */
 
-#ifdef CAPTURE_API_VIRTUAL
+#ifdef CAPTURE_DEVICE_VIRTUAL
 
 #include <chrono>
 #include "common/propagate/app_events.h"
-#include "capture/capture_api_virtual.h"
+#include "capture/capture_device_virtual.h"
 #include "common/timer/timer.h"
 
 // We'll try to redraw the on-screen test pattern this often.
@@ -39,7 +39,7 @@ static bool pop_capture_event(const capture_event_e event)
     return oldFlagValue;
 }
 
-bool capture_api_virtual_s::initialize(void)
+bool capture_device_virtual_s::initialize(void)
 {
     this->frameBuffer.r = {640, 480, 32};
     this->frameBuffer.pixelFormat = capture_pixel_format_e::rgb_888;
@@ -79,14 +79,14 @@ bool capture_api_virtual_s::initialize(void)
     return true;
 }
 
-bool capture_api_virtual_s::release(void)
+bool capture_device_virtual_s::release(void)
 {
     this->frameBuffer.pixels.release_memory();
 
     return true;
 }
 
-void capture_api_virtual_s::refresh_test_pattern(void)
+void capture_device_virtual_s::refresh_test_pattern(void)
 {
     static unsigned numFramesGenerated = 0;
 
@@ -143,7 +143,7 @@ void capture_api_virtual_s::refresh_test_pattern(void)
     return;
 }
 
-bool capture_api_virtual_s::set_pixel_format(const capture_pixel_format_e pf)
+bool capture_device_virtual_s::set_pixel_format(const capture_pixel_format_e pf)
 {
     switch (pf)
     {
@@ -167,7 +167,7 @@ bool capture_api_virtual_s::set_pixel_format(const capture_pixel_format_e pf)
     return true;
 }
 
-bool capture_api_virtual_s::set_resolution(const resolution_s &r)
+bool capture_device_virtual_s::set_resolution(const resolution_s &r)
 {
     if ((r.w > this->maxResolution.w) ||
         (r.w < this->minResolution.w) ||
@@ -185,12 +185,12 @@ bool capture_api_virtual_s::set_resolution(const resolution_s &r)
     return true;
 }
 
-refresh_rate_s capture_api_virtual_s::get_refresh_rate() const
+refresh_rate_s capture_device_virtual_s::get_refresh_rate() const
 {
     return refresh_rate_s(CURRENT_REFRESH_RATE);
 }
 
-bool capture_api_virtual_s::set_input_channel(const unsigned idx)
+bool capture_device_virtual_s::set_input_channel(const unsigned idx)
 {
     this->inputChannelIdx = idx;
 
@@ -199,17 +199,17 @@ bool capture_api_virtual_s::set_input_channel(const unsigned idx)
     return true;
 }
 
-bool capture_api_virtual_s::has_invalid_signal(void) const
+bool capture_device_virtual_s::has_invalid_signal(void) const
 {
     return !IS_VALID_SIGNAL;
 }
 
-const captured_frame_s& capture_api_virtual_s::get_frame_buffer(void) const
+const captured_frame_s& capture_device_virtual_s::get_frame_buffer(void) const
 {
     return this->frameBuffer;
 }
 
-capture_event_e capture_api_virtual_s::pop_capture_event_queue(void)
+capture_event_e capture_device_virtual_s::pop_capture_event_queue(void)
 {
     if (pop_capture_event(capture_event_e::invalid_signal))
     {

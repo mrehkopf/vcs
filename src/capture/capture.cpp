@@ -7,19 +7,19 @@
  */
 
 #include "common/propagate/app_events.h"
-#include "capture/capture_api_virtual.h"
-#include "capture/capture_api_rgbeasy.h"
-#include "capture/capture_api_video4linux.h"
+#include "capture/capture_device_virtual.h"
+#include "capture/capture_device_rgbeasy.h"
+#include "capture/capture_device_video4linux.h"
 #include "capture/capture.h"
 #include "common/timer/timer.h"
 
-static capture_api_s *API = nullptr;
+static capture_device_s *API = nullptr;
 
 // We'll keep a running count of the number of frames we've missed, in total,
 // during capturing.
 static unsigned LAST_KNOWN_MISSED_FRAMES_COUNT = 0;
 
-capture_api_s& kc_capture_api(void)
+capture_device_s& kc_capture_device(void)
 {
     k_assert(API, "Attempting to fetch the capture API prior to its initialization.");
     
@@ -29,12 +29,12 @@ capture_api_s& kc_capture_api(void)
 void kc_initialize_capture(void)
 {
     API =
-    #ifdef CAPTURE_API_VIRTUAL
-        new capture_api_virtual_s;
-    #elif CAPTURE_API_RGBEASY
-        new capture_api_rgbeasy_s;
-    #elif CAPTURE_API_VIDEO4LINUX
-        new capture_api_video4linux_s;
+    #ifdef CAPTURE_DEVICE_VIRTUAL
+        new capture_device_virtual_s;
+    #elif CAPTURE_DEVICE_RGBEASY
+        new capture_device_rgbeasy_s;
+    #elif CAPTURE_DEVICE_VIDEO4LINUX
+        new capture_device_video4linux_s;
     #else
         #error "Unknown capture API."
     #endif
@@ -43,7 +43,7 @@ void kc_initialize_capture(void)
 
     kt_timer(1000, [](const unsigned)
     {
-        const unsigned numMissedCurrent = kc_capture_api().get_missed_frames_count();
+        const unsigned numMissedCurrent = kc_capture_device().get_missed_frames_count();
         const unsigned numMissedFrames = (numMissedCurrent- LAST_KNOWN_MISSED_FRAMES_COUNT);
 
         LAST_KNOWN_MISSED_FRAMES_COUNT = numMissedCurrent;
@@ -68,15 +68,15 @@ void kc_release_capture(void)
 
 bool kc_force_input_resolution(const resolution_s &r)
 {
-    #if CAPTURE_API_VIDEO4LINUX
+    #if CAPTURE_DEVICE_VIDEO4LINUX
         NBENE(("Custom input resolution are not supported with Video4Linux."));
         return false;
     #endif
 
-    const resolution_s min = kc_capture_api().get_minimum_resolution();
-    const resolution_s max = kc_capture_api().get_maximum_resolution();
+    const resolution_s min = kc_capture_device().get_minimum_resolution();
+    const resolution_s max = kc_capture_device().get_maximum_resolution();
 
-    if (kc_capture_api().has_no_signal())
+    if (kc_capture_device().has_no_signal())
     {
         DEBUG(("Was asked to change the input resolution while the capture card was not receiving a signal. Ignoring the request."));
         return false;
@@ -92,7 +92,7 @@ bool kc_force_input_resolution(const resolution_s &r)
         return false;
     }
 
-    if (!kc_capture_api().set_resolution(r))
+    if (!kc_capture_device().set_resolution(r))
     {
         NBENE(("Failed to set the new input resolution (%u x %u).", r.w, r.h));
         return false;

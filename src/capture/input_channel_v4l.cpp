@@ -5,7 +5,7 @@
  *
  */
 
-#ifdef CAPTURE_API_VIDEO4LINUX
+#ifdef CAPTURE_DEVICE_VIDEO4LINUX
 
 #include <poll.h>
 #include <sys/ioctl.h>
@@ -19,7 +19,7 @@
 #define INCLUDE_VISION
 #include <visionrgb/include/rgb133v4l2.h>
 
-input_channel_v4l_c::input_channel_v4l_c(capture_api_s *const parentCaptureAPI,
+input_channel_v4l_c::input_channel_v4l_c(capture_device_s *const parentCaptureAPI,
                                          const std::string v4lDeviceFileName,
                                          const unsigned numBackBuffers,
                                          captured_frame_s *const dstFrameBuffer) :

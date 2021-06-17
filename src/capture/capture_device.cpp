@@ -5,9 +5,9 @@
  *
  */
 
-#include "capture/capture_api.h"
+#include "capture/capture_device.h"
 
-capture_api_s::~capture_api_s()
+capture_device_s::~capture_device_s()
 {
     return;
 }

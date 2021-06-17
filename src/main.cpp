@@ -11,7 +11,7 @@
 #include "common/command_line/command_line.h"
 #include "anti_tear/anti_tear.h"
 #include "common/propagate/app_events.h"
-#include "capture/capture_api.h"
+#include "capture/capture_device.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
@@ -61,9 +61,9 @@ static bool initialize_all(void)
 
     ke_events().capture.newVideoMode.subscribe([]
     {
-        const auto resolution = kc_capture_api().get_resolution();
+        const auto resolution = kc_capture_device().get_resolution();
 
-        INFO(("Video mode: %u x %u @ %.3f Hz.", resolution.w, resolution.h, kc_capture_api().get_refresh_rate().value<double>()));
+        INFO(("Video mode: %u x %u @ %.3f Hz.", resolution.w, resolution.h, kc_capture_device().get_refresh_rate().value<double>()));
     });
 
     // The capture device has received a new video mode. We'll inspect the
@@ -71,7 +71,7 @@ static bool initialize_all(void)
     // propagate to the rest of VCS.
     ke_events().capture.newProposedVideoMode.subscribe([]
     {
-        const auto resolution = kc_capture_api().get_resolution();
+        const auto resolution = kc_capture_device().get_resolution();
 
         // If there's an alias for this resolution, force that resolution
         // instead. Note that forcing the resolution is expected to automatically
@@ -109,9 +109,9 @@ static bool initialize_all(void)
 
 static capture_event_e process_next_capture_event(void)
 {
-    std::lock_guard<std::mutex> lock(kc_capture_api().captureMutex);
+    std::lock_guard<std::mutex> lock(kc_capture_device().captureMutex);
 
-    const capture_event_e e = kc_capture_api().pop_capture_event_queue();
+    const capture_event_e e = kc_capture_device().pop_capture_event_queue();
 
     switch (e)
     {
@@ -125,20 +125,20 @@ static capture_event_e process_next_capture_event(void)
         }
         case capture_event_e::new_frame:
         {
-            if (kc_capture_api().has_valid_signal())
+            if (kc_capture_device().has_valid_signal())
             {
                 ke_events().capture.newFrame.fire();
             }
             else
             {
-                kc_capture_api().mark_frame_buffer_as_processed();
+                kc_capture_device().mark_frame_buffer_as_processed();
             }
             
             break;
         }
         case capture_event_e::new_video_mode:
         {
-            if (kc_capture_api().has_valid_signal())
+            if (kc_capture_device().has_valid_signal())
             {
                 ke_events().capture.newProposedVideoMode.fire();
             }
@@ -241,7 +241,7 @@ int main(int argc, char *argv[])
     INFO(("Entering the main loop."));
     {
         // Propagate the initial video mode to VCS.
-        if (kc_capture_api().has_valid_signal())
+        if (kc_capture_device().has_valid_signal())
         {
             ke_events().capture.newProposedVideoMode.fire();
         }

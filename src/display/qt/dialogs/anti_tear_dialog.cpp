@@ -15,7 +15,7 @@
 #include "common/propagate/app_events.h"
 #include "anti_tear/anti_tear.h"
 #include "capture/capture.h"
-#include "capture/capture_api.h"
+#include "capture/capture_device.h"
 #include "display/display.h"
 #include "common/globals.h"
 #include "ui_anti_tear_dialog.h"
@@ -85,7 +85,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
     {
         ke_events().capture.newVideoMode.subscribe([this]
         {
-            const auto resolution = kc_capture_api().get_resolution();
+            const auto resolution = kc_capture_device().get_resolution();
 
             ui->parameterGrid_parameters->set_maximum_value("Scan start", (resolution.h - 1));
             ui->parameterGrid_parameters->set_maximum_value("Scan end", (resolution.h - 1));

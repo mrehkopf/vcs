@@ -5,13 +5,13 @@
  *
  */
 
-#ifdef CAPTURE_API_RGBEASY
+#ifdef CAPTURE_DEVICE_RGBEASY
 
-#ifndef VCS_CAPTURE_CAPTURE_API_RGBEASY_H
-#define VCS_CAPTURE_CAPTURE_API_RGBEASY_H
+#ifndef VCS_CAPTURE_CAPTURE_DEVICE_RGBEASY_H
+#define VCS_CAPTURE_CAPTURE_DEVICE_RGBEASY_H
 
 #include <mutex>
-#include "capture/capture_api.h"
+#include "capture/capture_device.h"
 
 #if _WIN32
     #include <windows.h>
@@ -22,7 +22,7 @@
     #include "capture/null_rgbeasy.h"
 #endif
 
-struct capture_api_rgbeasy_s : public capture_api_s
+struct capture_device_rgbeasy_s : public capture_device_s
 {
     // Convenience getters for the RGBEasy thread to call.
     HRGB rgbeasy_capture_handle(void);

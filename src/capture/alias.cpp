@@ -7,7 +7,7 @@
 
 #include <vector>
 #include "common/propagate/app_events.h"
-#include "capture/capture_api.h"
+#include "capture/capture_device.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "capture/alias.h"
@@ -68,7 +68,7 @@ void ka_set_aliases(const std::vector<mode_alias_s> &aliases)
 {
     ALIASES = aliases;
 
-    if (kc_capture_api().has_no_signal())
+    if (kc_capture_device().has_no_signal())
     {
         return;
     }
@@ -76,7 +76,7 @@ void ka_set_aliases(const std::vector<mode_alias_s> &aliases)
     {
         // If one of the aliases matches the current input resolution, change the
         // resolution accordingly.
-        const resolution_s currentRes = kc_capture_api().get_resolution();
+        const resolution_s currentRes = kc_capture_device().get_resolution();
         for (const auto &alias: ALIASES)
         {
             if (alias.from.w == currentRes.w &&

@@ -5,15 +5,15 @@
  *
  */
 
-#ifdef CAPTURE_API_VIRTUAL
+#ifdef CAPTURE_DEVICE_VIRTUAL
 
-#ifndef VCS_CAPTURE_CAPTURE_API_VIRTUAL_H
-#define VCS_CAPTURE_CAPTURE_API_VIRTUAL_H
+#ifndef VCS_CAPTURE_CAPTURE_DEVICE_VIRTUAL_H
+#define VCS_CAPTURE_CAPTURE_DEVICE_VIRTUAL_H
 
-#include "capture/capture_api.h"
+#include "capture/capture_device.h"
 #include "common/globals.h"
 
-struct capture_api_virtual_s : public capture_api_s
+struct capture_device_virtual_s : public capture_device_s
 {
     // API overrides.
     bool initialize(void) override;

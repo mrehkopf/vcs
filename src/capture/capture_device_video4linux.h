@@ -8,16 +8,16 @@
  *
  */
 
-#ifdef CAPTURE_API_VIDEO4LINUX
+#ifdef CAPTURE_DEVICE_VIDEO4LINUX
 
-#ifndef VCS_CAPTURE_CAPTURE_API_VIDEO4LINUX_H
-#define VCS_CAPTURE_CAPTURE_API_VIDEO4LINUX_H
+#ifndef VCS_CAPTURE_CAPTURE_DEVICE_VIDEO4LINUX_H
+#define VCS_CAPTURE_CAPTURE_DEVICE_VIDEO4LINUX_H
 
-#include "capture/capture_api.h"
+#include "capture/capture_device.h"
 
 class input_channel_v4l_c;
 
-struct capture_api_video4linux_s : public capture_api_s
+struct capture_device_video4linux_s : public capture_device_s
 {
     bool initialize(void) override;
     bool release(void) override;

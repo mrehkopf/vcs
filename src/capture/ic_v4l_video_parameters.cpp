@@ -5,7 +5,7 @@
  *
  */
 
-#ifdef CAPTURE_API_VIDEO4LINUX
+#ifdef CAPTURE_DEVICE_VIDEO4LINUX
 
 #include <poll.h>
 #include <sys/ioctl.h>

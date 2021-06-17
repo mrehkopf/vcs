@@ -10,7 +10,7 @@
 #include <deque>
 #include <stdarg.h>
 #include "capture/capture.h"
-#include "capture/capture_api.h"
+#include "capture/capture_device.h"
 #include "common/propagate/app_events.h"
 #include "display/display.h"
 #include "common/globals.h"

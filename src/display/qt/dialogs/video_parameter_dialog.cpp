@@ -16,7 +16,7 @@
 #include "common/propagate/app_events.h"
 #include "common/refresh_rate.h"
 #include "common/disk/disk.h"
-#include "capture/capture_api.h"
+#include "capture/capture_device.h"
 #include "capture/capture.h"
 #include "capture/video_presets.h"
 #include "ui_video_parameter_dialog.h"
@@ -94,8 +94,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         ui->groupBox_videoPresetName->setEnabled(false);
         ui->parameterGrid_videoParams->setEnabled(false);
 
-        const auto minres = kc_capture_api().get_minimum_resolution();
-        const auto maxres = kc_capture_api().get_maximum_resolution();
+        const auto minres = kc_capture_device().get_minimum_resolution();
+        const auto maxres = kc_capture_device().get_maximum_resolution();
 
         ui->spinBox_resolutionX->setMinimum(int(minres.w));
         ui->spinBox_resolutionX->setMaximum(int(maxres.w));
@@ -271,7 +271,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
         connect(ui->pushButton_resolutionSeparator, &QPushButton::clicked, this, [this](void)
         {
-            const auto currentResolution = kc_capture_api().get_resolution();
+            const auto currentResolution = kc_capture_device().get_resolution();
 
             ui->spinBox_resolutionX->setValue(int(currentResolution.w));
             ui->spinBox_resolutionY->setValue(int(currentResolution.h));
@@ -279,7 +279,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
         connect(ui->pushButton_refreshRateSeparator, &QPushButton::clicked, this, [this](void)
         {
-            ui->doubleSpinBox_refreshRateValue->setValue(kc_capture_api().get_refresh_rate().value<double>());
+            ui->doubleSpinBox_refreshRateValue->setValue(kc_capture_device().get_refresh_rate().value<double>());
         });
 
         connect(ui->comboBox_shortcutSecondKey, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](const int idx)
@@ -335,7 +335,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
     {
         ke_events().capture.newVideoMode.subscribe([this]
         {
-            if (kc_capture_api().has_signal())
+            if (kc_capture_device().has_signal())
             {
                 this->update_preset_control_ranges();
             }
@@ -467,9 +467,9 @@ void VideoParameterDialog::update_preset_control_ranges(void)
     // doesn't clip preset data that falls outside of the capture card's
     // min/max range.
     {
-        const video_signal_parameters_s min = kc_capture_api().get_minimum_video_signal_parameters();
-        const video_signal_parameters_s max = kc_capture_api().get_maximum_video_signal_parameters();
-        const video_signal_parameters_s def = kc_capture_api().get_default_video_signal_parameters();
+        const video_signal_parameters_s min = kc_capture_device().get_minimum_video_signal_parameters();
+        const video_signal_parameters_s max = kc_capture_device().get_maximum_video_signal_parameters();
+        const video_signal_parameters_s def = kc_capture_device().get_default_video_signal_parameters();
 
         ui->parameterGrid_videoParams->set_maximum_value("Hor. size", std::max(currentParams.horizontalScale, max.horizontalScale));
         ui->parameterGrid_videoParams->set_maximum_value("Hor. position", std::max(currentParams.horizontalPosition, max.horizontalPosition));

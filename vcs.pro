@@ -7,7 +7,7 @@
 DEFINES += USE_OPENCV
 
 linux {
-    DEFINES += CAPTURE_API_VIDEO4LINUX
+    DEFINES += CAPTURE_DEVICE_VIDEO4LINUX
 
     # The base path for Datapath's Linux Vision driver header files. These are
     # bundled with the driver downloadable from Datapath's website. The files
@@ -24,7 +24,7 @@ linux {
 }
 
 win32 {
-    DEFINES += CAPTURE_API_RGBEASY
+    DEFINES += CAPTURE_DEVICE_RGBEASY
 
     INCLUDEPATH += "C:/VisionSDK/RGBEASY 1.0/INCLUDE"
     LIBS += "C:/VisionSDK/RGBEASY 1.0/LIB/Win32/Release/RGBEASY.lib"
@@ -127,12 +127,12 @@ SOURCES += \
     src/display/qt/dialogs/record_dialog.cpp \
     src/display/qt/dialogs/output_resolution_dialog.cpp \
     src/display/qt/dialogs/input_resolution_dialog.cpp \
-    src/capture/capture_api_virtual.cpp \
-    src/capture/capture_api_rgbeasy.cpp \
-    src/capture/capture_api.cpp \
+    src/capture/capture_device_virtual.cpp \
+    src/capture/capture_device_rgbeasy.cpp \
+    src/capture/capture_device.cpp \
     src/display/qt/subclasses/QTableWidget_property_table.cpp \
     src/display/qt/dialogs/signal_dialog.cpp \
-    src/capture/capture_api_video4linux.cpp \
+    src/capture/capture_device_video4linux.cpp \
     src/common/disk/file_writers/file_writer_filter_graph_version_b.cpp \
     src/common/disk/file_reader.cpp \
     src/common/disk/file_readers/file_reader_filter_graph_version_b.cpp \
@@ -238,13 +238,13 @@ HEADERS += \
     src/display/qt/dialogs/record_dialog.h \
     src/display/qt/dialogs/output_resolution_dialog.h \
     src/display/qt/dialogs/input_resolution_dialog.h \
-    src/capture/capture_api.h \
-    src/capture/capture_api_virtual.h \
-    src/capture/capture_api_rgbeasy.h \
+    src/capture/capture_device.h \
+    src/capture/capture_device_virtual.h \
+    src/capture/capture_device_rgbeasy.h \
     src/display/display.h \
     src/display/qt/subclasses/QTableWidget_property_table.h \
     src/display/qt/dialogs/signal_dialog.h \
-    src/capture/capture_api_video4linux.h \
+    src/capture/capture_device_video4linux.h \
     src/common/disk/file_writers/file_writer_filter_graph.h \
     src/common/disk/file_readers/file_reader_filter_graph.h \
     src/common/disk/file_reader.h \

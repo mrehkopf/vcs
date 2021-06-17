@@ -8,29 +8,31 @@
 /*! @file
  *
  * @brief
- * The capture API provides an interface for exposing a capture device to VCS.
+ * The capture device interface (capture_device_s) provides an abstract interface
+ * for exposing a capture device - or other such source of image data - to VCS.
  * 
- * Usage
+ * Usage:
  * 
- *   1. Create a new class for your capture device - this will be its specific
- *      capture API. You can look at existing examples: e.g. @a capture_api_virtual.h,
- *      which is for a dummy (null) capture device; and @a capture_api_rgbeasy.h,
- *      which is for the Datapath VisionRGB cards under Windows.
+ *   1. Subclass capture_device_s for your capture device. You can find examples
+ *      in VCS's existing implementations: e.g. @a capture_device_virtual.h
+ *      (generates a test pattern without interacting with any capture device)
+ *      or @a capture_device_rgbeasy.h (interfaces with Datapath VisionRGB
+ *      cards under Windows).
  * 
- *   2. Have the new class inherit from capture_api_s and implement at least
- *      its pure virtual functions.
+ *   2. The subclass must implement at least the pure virtual functions of
+ *      capture_device_s.
  * 
- *   3. Inside VCS's @a capture.cpp, instance the new class in kc_initialize_capture(),
- *      and have kc_capture_api() return a reference to that instance.
+ *   3. Inside kc_initialize_capture() in @a capture.cpp, instance the subclass,
+ *      and have kc_capture_device() return a reference to that instance.
  * 
- *   4. VCS will now interact with the new capture device though the API; e.g.
- *      by periodically calling kc_capture_api().pop_capture_event_queue() to
- *      see if there are new captured frames to be displayed.
+ *   4. VCS will now interact with the new capture device though the interface;
+ *      e.g. by periodically calling kc_capture_device().pop_capture_event_queue()
+ *      to see if there are new captured frames to be displayed.
  *
  */
 
-#ifndef VCS_CAPTURE_CAPTURE_API_H
-#define VCS_CAPTURE_CAPTURE_API_H
+#ifndef VCS_CAPTURE_CAPTURE_SOURCE_H
+#define VCS_CAPTURE_CAPTURE_SOURCE_H
 
 #include <string>
 #include <mutex>
@@ -41,12 +43,11 @@
 
 /*!
  * @brief
- * The base capture API class. Subclass this to add support for new capture
- * devices.
+ * The base capture device interface class. Subclass this to add support for new
+ * capture devices in VCS.
  * 
- * A capture API provides a standard interface for VCS to talk to a capture
- * device. You can thus subclass this base API to add support in VCS for new
- * capture devices.
+ * The capture device interface provides an abstract interface for VCS to
+ * interact with capture devices.
  * 
  * The main functions here are initialize(), pop_capture_event_queue(), and
  * get_frame_buffer(). VCS uses them to intialize the capture API and to
@@ -57,31 +58,31 @@
  * virtual functions can be overridden on a case-by-case basis if their
  * default implementations aren't satisfactory.
  * 
- * For an example of a very basic implementation of a capture API, see
- * @a capture_api_virtual.h. It implements a capture interface for a virtual
- * capture device, i.e. for code that generates images of an animating test
- * pattern.
+ * For a basic example of a subclass of this interface, see e.g.
+ * @a capture_device_virtual.h. It implements a virtual device for generating
+ * test patterns without the presence of an actual capture device.
  */
-struct capture_api_s
+struct capture_device_s
 {
-    virtual ~capture_api_s();
+    virtual ~capture_device_s();
 
     /*!
-     * Initializes the capture API and its capture device.
+     * Initializes the interface and the associated capture device.
      * 
-     * If the call succeeds, the capture API will begin receiving captured
-     * frames from the capture device.
+     * If the call succeeds, the interface will begin receiving captured frames
+     * from the device.
      * 
      * In case of error, this function may additionally set the global variable
      * PROGRAM_EXIT_REQUESTED to a truthy value, which will result in VCS's
-     * termination once the event loop in main.cpp detects this condition.
+     * termination once the event loop in @a main.cpp detects this condition.
      * 
      * Returns true on success; false otherwise.
      * 
      * @note
-     * Regardless of the return value, you should call release() before calling
-     * this function again. This ensures that any memory allocated to the
-     * capture API is freed.
+     * If you're going to call this function more than once during the program's
+     * execution, you'll need to manually invoke release() before each subsequent
+     * call; otherwise, a resource leak may occur. VCS will make the final call
+     * to release() on program termination.
      * 
      * @see
      * release(), pop_capture_event_queue(), get_frame_buffer()
@@ -89,11 +90,10 @@ struct capture_api_s
     virtual bool initialize(void) = 0;
 
     /*!
-     * Releases the capture device and deallocates the capture API's memory
-     * buffers.
+     * Releases the capture device and deallocates the interface's memory buffers.
      * 
      * If the call succeeds, frames will no longer be captured, and the return
-     * value from get_frame_buffer() will be undefined until the API is
+     * value from get_frame_buffer() will be undefined until the interface is
      * re-initialized with a call to initialize().
      * 
      * Returns true on success; false otherwise.
@@ -163,10 +163,10 @@ struct capture_api_s
 
     /*!
      * Returns the number of input channels on the capture device that're
-     * available to the capture API.
+     * available to the interface.
      * 
      * The value returned is an integer in the range [1,n] such that if the
-     * capture device has, for instance, 16 input channels and the capture API
+     * capture device has, for instance, 16 input channels and the interface
      * can use two of them, 2 is returned.
      * 
      * @see
@@ -205,7 +205,7 @@ struct capture_api_s
     virtual std::string get_device_name(void) const = 0;
 
     /*!
-     * Returns a string that identifies the capture API; e.g. "RGBEasy".
+     * Returns a string that identifies the interface; e.g. "RGBEasy".
      */
     virtual std::string get_api_name(void) const = 0;
 
@@ -252,7 +252,8 @@ struct capture_api_s
      * 
      * @note
      * The capture device's input and output resolutions are expected to always
-     * be equal.
+     * be equal; any scaling of captured frames is expected to be done by VCS and
+     * not the capture device.
      * 
      * @warning
      * Don't take this to be the resolution of the latest captured frame
@@ -265,11 +266,11 @@ struct capture_api_s
     virtual resolution_s get_resolution(void) const = 0;
 
     /*!
-     * Returns the minimum capture resolution supported by the capture API.
+     * Returns the minimum capture resolution supported by the interface.
      * 
      * @note
      * This resolution may be larger - but not smaller - than the minimum
-     * input/output resolution supported by the capture device.
+     * capture resolution supported by the capture device.
      * 
      * @see
      * get_maximum_resolution(), get_resolution(), set_resolution()
@@ -277,11 +278,11 @@ struct capture_api_s
     virtual resolution_s get_minimum_resolution(void) const = 0;
 
     /*!
-     * Returns the maximum capture resolution supported by the capture API.
+     * Returns the maximum capture resolution supported by the interface.
      * 
      * @note
      * This resolution may be smaller - but not larger - than the maximum
-     * input/output resolution supported by the capture device.
+     * capture resolution supported by the capture device.
      * 
      * @see
      * get_minimum_resolution(), get_resolution(), set_resolution()
@@ -289,9 +290,9 @@ struct capture_api_s
     virtual resolution_s get_maximum_resolution(void) const = 0;
 
     /*!
-     * Returns number of frames that were sent to the API by the capture device
-     * but which VCS was too busy to process (they were never displayed, recorded,
-     * etc.).
+     * Returns number of frames the interface has received from the capture
+     * device which VCS was too busy to process and display. These are, in effect,
+     * dropped frames.
      * 
      * If this value is above 0, it indicates that VCS is failing to process
      * and display captured frames as fast as the capture device is producing
@@ -300,19 +301,19 @@ struct capture_api_s
      * 
      * @note
      * This value must be cumulative over the lifetime of the program's
-     * execution and must never decrease.
+     * execution and must not decrease during that time.
      */
     virtual unsigned get_missed_frames_count(void) const = 0;
 
     /*!
-     * Returns the index value of the capture API's input channel on which the
-     * capture device is currently listening for signals. The value is in the
-     * range [0,n-1], where n = get_device_maximum_input_count().
+     * Returns the index value of the capture device's input channel on which the
+     * device is currently listening for signals. The value is in the range [0,n-1],
+     * where n = get_device_maximum_input_count().
      * 
      * If the capture device has more input channels than are supported by the
-     * API, the API is expected to map the index to a consecutive range. For
-     * example, if channels #1, #5, and #6 on the capture device are available
-     * to the API, capturing on channel #5 would correspond to an index value
+     * interface, the interface is expected to map the index to a consecutive range.
+     * For example, if channels #1, #5, and #6 on the capture device are available
+     * to the interface, capturing on channel #5 would correspond to an index value
      * of 1, with index 0 being channel #1 and index 2 channel #6.
      * 
      * @see
@@ -326,8 +327,8 @@ struct capture_api_s
     virtual refresh_rate_s get_refresh_rate(void) const = 0;
 
     /*!
-     * Returns the color depth, in bits, that the capture API currently expects
-     * to receive captured frames in.
+     * Returns the color depth, in bits, that the interface currently expects
+     * the capture device to send captured frames in.
      * 
      * For RGB888 frames the color depth would be 32; 16 for RGB565 frames; etc.
      * 
@@ -402,10 +403,10 @@ struct capture_api_s
      * Returns the most recently-captured frame's data.
      * 
      * @warning
-     * The caller should lock @ref captureMutex while accessing the returned
-     * data. Failure to do so may result in a race condition, as the capture
-     * API is permitted to operate on these data outside of the caller's
-     * thread.
+     * The caller should lock @ref captureMutex while accessing the returned data.
+     * Failure to do so may result in a race condition, as the capture interface
+     * (and/or the capture device) is permitted to begin operating on these data
+     * from outside of the caller's thread when the mutex is unlocked.
      */
     virtual const captured_frame_s &get_frame_buffer(void) const = 0;
 
@@ -413,8 +414,8 @@ struct capture_api_s
      * Setters: */
 
     /*!
-     * Called by VCS to notify the capture API that it has finished processing
-     * the latest frame obtained via get_frame_buffer(). The API is then free
+     * Called by VCS to notify the interface that VCS has finished processing the
+     * latest frame obtained via get_frame_buffer(). The inteface is then free
      * to e.g. overwrite the frame's data.
      * 
      * Returns true on success; false otherwise.
@@ -422,7 +423,7 @@ struct capture_api_s
     virtual bool mark_frame_buffer_as_processed(void) { return false; }
 
     /*!
-     * Returns the latest capture event and removes it from the capture API's
+     * Returns the latest capture event and removes it from the interface's
      * event queue. The caller can then respond to the event; e.g. by calling
      * get_frame_buffer() if the event is a new frame.
      */
@@ -476,7 +477,7 @@ struct capture_api_s
      * The capture device must adopt this as both its input and output
      * resolution. For example, if this resolution is 800 x 600, the capture
      * device should interpret the video signal as if it were 800 x 600, rather
-     * than upscaling or downscaling the frame to 800 x 600 after capturing.
+     * than scaling the frame to 800 x 600 after capturing.
      * 
      * @warning
      * Since this will be set as the capture device's input resolution,
@@ -491,13 +492,16 @@ struct capture_api_s
     virtual bool set_resolution(const resolution_s &r) { (void)r; return false; }
 
     /*!
-     * A mutex used to coordinate access to the capture API's data between the
-     * threads of the capture API, VCS, and the capture device.
+     * A mutex used to coordinate access to captured data originating via the
+     * capture interface (e.g. the frame pixel buffer returned by get_frame_buffer())
+     * between the threads of the capture interface, the capture device, and VCS.
      * 
-     * The VCS thread will lock this mutex while it's accessing frame data
-     * received from get_frame_buffer(). During this time, the capture API
-     * should not modify those data nor allow the capture device to modify
-     * them.
+     * The VCS thread will lock this mutex while accessing shared capture data,
+     * during which time neither the capture interface nor the capture device
+     * should modify those data.
+     * 
+     * The capture interface should lock this mutex while either it or the capture
+     * device is modifying said data.
      */
     std::mutex captureMutex;
 };

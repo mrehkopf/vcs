@@ -47,7 +47,7 @@
 #include "anti_tear/anti_tear.h"
 #include "common/propagate/app_events.h"
 #include "capture/video_presets.h"
-#include "capture/capture_api.h"
+#include "capture/capture_device.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
 #include "common/globals.h"
@@ -117,11 +117,11 @@ MainWindow::MainWindow(QWidget *parent) :
                     channel->addAction(select);
                     connect(select, &QAction::triggered, this, [this]
                     {
-                        unsigned newIdx = kc_capture_api().get_input_channel_idx();
+                        unsigned newIdx = kc_capture_device().get_input_channel_idx();
 
                         if (LinuxDeviceSelectorDialog(&newIdx).exec() != QDialog::Rejected)
                         {
-                            kc_capture_api().set_input_channel(newIdx);
+                            kc_capture_device().set_input_channel(newIdx);
                         }
                     });
 
@@ -129,7 +129,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 #else
                     QActionGroup *group = new QActionGroup(this);
 
-                    for (int i = 0; i < kc_capture_api().get_device_maximum_input_count(); i++)
+                    for (int i = 0; i < kc_capture_device().get_device_maximum_input_count(); i++)
                     {
                         QAction *inputChannel = new QAction(QString::number(i+1), this);
                         inputChannel->setActionGroup(group);
@@ -141,7 +141,7 @@ MainWindow::MainWindow(QWidget *parent) :
                             inputChannel->setChecked(true);
                         }
 
-                        connect(inputChannel, &QAction::triggered, this, [=]{kc_capture_api().set_input_channel(i);});
+                        connect(inputChannel, &QAction::triggered, this, [=]{kc_capture_device().set_input_channel(i);});
                     }
                 #endif
             }
@@ -158,7 +158,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 // Note: the Video4Linux capture API currently supports no other capture
                 // color format besides RGB888.
-                #ifndef CAPTURE_API_VIDEO4LINUX
+                #ifndef CAPTURE_DEVICE_VIDEO4LINUX
                     QAction *c16 = new QAction("16-bit (RGB 565)", this);
                     c16->setActionGroup(group);
                     c16->setCheckable(true);
@@ -169,15 +169,15 @@ MainWindow::MainWindow(QWidget *parent) :
                     c15->setCheckable(true);
                     colorDepth->addAction(c15);
 
-                    connect(c16, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_565);});
-                    connect(c15, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_555);});
+                    connect(c16, &QAction::triggered, this, [=]{kc_capture_device().set_pixel_format(capture_pixel_format_e::rgb_565);});
+                    connect(c15, &QAction::triggered, this, [=]{kc_capture_device().set_pixel_format(capture_pixel_format_e::rgb_555);});
                 #endif
-                connect(c24, &QAction::triggered, this, [=]{kc_capture_api().set_pixel_format(capture_pixel_format_e::rgb_888);});
+                connect(c24, &QAction::triggered, this, [=]{kc_capture_device().set_pixel_format(capture_pixel_format_e::rgb_888);});
             }
 
             QMenu *deinterlacing = new QMenu("De-interlacing", this);
             {
-                deinterlacing->setEnabled(kc_capture_api().device_supports_deinterlacing());
+                deinterlacing->setEnabled(kc_capture_device().device_supports_deinterlacing());
 
                 QActionGroup *group = new QActionGroup(this);
 
@@ -207,25 +207,25 @@ MainWindow::MainWindow(QWidget *parent) :
                     {
                         case capture_deinterlacing_mode_e::bob:
                         {
-                            kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::bob);
+                            kc_capture_device().set_deinterlacing_mode(capture_deinterlacing_mode_e::bob);
                             kpers_set_value(INI_GROUP_OUTPUT, "interlacing_mode", "Bob");
                             break;
                         }
                         case capture_deinterlacing_mode_e::weave:
                         {
-                            kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::weave);
+                            kc_capture_device().set_deinterlacing_mode(capture_deinterlacing_mode_e::weave);
                             kpers_set_value(INI_GROUP_OUTPUT, "interlacing_mode", "Weave");
                             break;
                         }
                         case capture_deinterlacing_mode_e::field_0:
                         {
-                            kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::field_0);
+                            kc_capture_device().set_deinterlacing_mode(capture_deinterlacing_mode_e::field_0);
                             kpers_set_value(INI_GROUP_OUTPUT, "interlacing_mode", "Field 1");
                             break;
                         }
                         case capture_deinterlacing_mode_e::field_1:
                         {
-                            kc_capture_api().set_deinterlacing_mode(capture_deinterlacing_mode_e::field_1);
+                            kc_capture_device().set_deinterlacing_mode(capture_deinterlacing_mode_e::field_1);
                             kpers_set_value(INI_GROUP_OUTPUT, "interlacing_mode", "Field 2");
                             break;
                         }
@@ -274,7 +274,7 @@ MainWindow::MainWindow(QWidget *parent) :
             videoParams->setShortcut(QKeySequence("ctrl+v"));
             dialogs->addAction(videoParams);
 
-            #if CAPTURE_API_VIDEO4LINUX
+            #if CAPTURE_DEVICE_VIDEO4LINUX
                 aliases->setEnabled(false);
                 INFO(("Aliases are not supported with Video4Linux."));
 
@@ -1098,7 +1098,7 @@ bool MainWindow::is_mouse_wheel_scaling_allowed(void)
 
 QImage MainWindow::overlay_image(void)
 {
-    if (!kc_capture_api().has_no_signal() &&
+    if (!kc_capture_device().has_no_signal() &&
         overlayDlg != nullptr &&
         overlayDlg->is_enabled())
     {
@@ -1143,7 +1143,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 
     // Show a magnifying glass effect which blows up part of the captured image.
     static QLabel *magnifyingGlass = nullptr;
-    if (!kc_capture_api().has_no_signal() &&
+    if (!kc_capture_device().has_no_signal() &&
         this->isActiveWindow() &&
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
         (QGuiApplication::mouseButtons() & Qt::MidButton))
@@ -1248,16 +1248,16 @@ void MainWindow::set_keyboard_shortcuts(void)
     // Shift + number assigns the current input channel.
     connect(keyboardShortcut("shift+1"), &QShortcut::activated, [=]
     {
-        if (kc_capture_api().get_input_channel_idx() != 0)
+        if (kc_capture_device().get_input_channel_idx() != 0)
         {
-            kc_capture_api().set_input_channel(0);
+            kc_capture_device().set_input_channel(0);
         }
     });
     connect(keyboardShortcut("shift+2"), &QShortcut::activated, [=]
     {
-        if (kc_capture_api().get_input_channel_idx() != 1)
+        if (kc_capture_device().get_input_channel_idx() != 1)
         {
-            kc_capture_api().set_input_channel(1);
+            kc_capture_device().set_input_channel(1);
         }
     });
 
@@ -1272,15 +1272,15 @@ void MainWindow::update_window_title(void)
     {
         title = QString("%1 - Closing...").arg(PROGRAM_NAME);
     }
-    else if (kc_capture_api().has_invalid_device())
+    else if (kc_capture_device().has_invalid_device())
     {
         title = QString("%1 - Invalid capture channel").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
     }
-    else if (kc_capture_api().has_invalid_signal())
+    else if (kc_capture_device().has_invalid_signal())
     {
         title = QString("%1 - Signal out of range").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
     }
-    else if (kc_capture_api().has_no_signal())
+    else if (kc_capture_device().has_no_signal())
     {
         title = QString("%1 - No signal").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
     }
@@ -1289,9 +1289,9 @@ void MainWindow::update_window_title(void)
         // A symbol shown in the title if VCS is currently dropping frames.
         const QString missedFramesMarker = "{!}";
 
-        const resolution_s inRes = kc_capture_api().get_resolution();
+        const resolution_s inRes = kc_capture_device().get_resolution();
         const resolution_s outRes = ks_scaler_output_resolution();
-        const refresh_rate_s refreshRate = kc_capture_api().get_refresh_rate();
+        const refresh_rate_s refreshRate = kc_capture_device().get_refresh_rate();
 
         QStringList programStatus;
         if (recordDlg->is_enabled())      programStatus << "R";

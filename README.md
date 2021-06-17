@@ -448,12 +448,12 @@ While developing VCS, I've been compiling it with GCC 5-9 on Linux and MinGW 5.3
 - Q: Why does VCS use such an old version of OpenCV? A: To maintain compatibility with Windows XP (useful for e.g. virtual machines).
 
 **RGBEasy.** On Windows, VCS uses Datapath's RGBEasy 1.0 API to interface with the capture device. The drivers for your Datapath capture card should include and have installed the required libraries, though you may need to adjust the paths to them in [vcs.pro](vcs.pro).
-- If you want to remove VCS's the dependency on RGBEasy, replace `CAPTURE_API_RGBEASY` with `CAPTURE_API_VIRTUAL` in [vcs.pro](vcs.pro). This will also disable capturing, but will let you run the program without the Datapath drivers/dependencies installed.
+- If you want to remove VCS's the dependency on RGBEasy, replace `CAPTURE_DEVICE_RGBEASY` with `CAPTURE_DEVICE_VIRTUAL` in [vcs.pro](vcs.pro). This will also disable capturing, but will let you run the program without the Datapath drivers/dependencies installed.
 - The specific RGBEASY headers and libraries used to build the official version of VCS come from the VisionRGB-PRO driver package v8.1.2.
 - Q: Why does VCS use such an old version of the RGBEasy API? A: To support the VisionRGB-PRO.
 
 **Video4Linux.** On Linux, VCS uses Datapath's Video4Linux driver to interface with the capture device. For this to work, you should install the latest Datapath Vision Linux driver (may not support kernel 5+).
-- If you want to remove VCS's the dependency on the Video4Linux driver, replace `CAPTURE_API_VIDEO4LINUX` with `CAPTURE_API_VIRTUAL` in [vcs.pro](vcs.pro). This will also disable capturing, but will let you run the program without the Datapath drivers installed.
+- If you want to remove VCS's the dependency on the Video4Linux driver, replace `CAPTURE_DEVICE_VIDEO4LINUX` with `CAPTURE_DEVICE_VIRTUAL` in [vcs.pro](vcs.pro). This will also disable capturing, but will let you run the program without the Datapath drivers installed.
 
 ## Code organization
 VCS is largely a single-threaded application whose event loop is synchronized to the capture devices's rate of operation. VCS's main loop polls the capture device (which may run in a separate thread) until a capture event (e.g. new frame) occurs, then processes the event, and returns to the polling loop.

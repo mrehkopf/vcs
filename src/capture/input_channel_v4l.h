@@ -8,7 +8,7 @@
  *
  */
 
-#ifdef CAPTURE_API_VIDEO4LINUX
+#ifdef CAPTURE_DEVICE_VIDEO4LINUX
 
 #ifndef VCS_CAPTURE_INPUT_CHANNEL_V4L_H
 #define VCS_CAPTURE_INPUT_CHANNEL_V4L_H
@@ -18,7 +18,7 @@
 #include <atomic>
 #include <vector>
 #include "common/globals.h"
-#include "capture/capture_api.h"
+#include "capture/capture_device.h"
 #include "common/refresh_rate.h"
 #include "capture/ic_v4l_video_parameters.h"
 
@@ -29,7 +29,7 @@ class input_channel_v4l_c
 public:
     // Open the input channel (/dev/videoX device) and start capturing from
     // it.
-    input_channel_v4l_c(capture_api_s *const parentCaptureAPI,
+    input_channel_v4l_c(capture_device_s *const parentCaptureAPI,
                         const std::string v4lDeviceFileName,
                         const unsigned numBackBuffers,
                         captured_frame_s *const dstFrameBuffer);
@@ -149,7 +149,7 @@ private:
     std::vector<unsigned> captureEventFlags = std::vector<unsigned>(static_cast<unsigned>(capture_event_e::num_enumerators));
 
     // The VCS capture API that this input channel was created by.
-    capture_api_s *const captureAPI;
+    capture_device_s *const captureAPI;
 
     std::string v4lDeviceFileName = "";
 
