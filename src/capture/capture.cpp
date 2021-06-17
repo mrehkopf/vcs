@@ -9,7 +9,7 @@
 #include "common/propagate/app_events.h"
 #include "capture/capture_device_virtual.h"
 #include "capture/capture_device_rgbeasy.h"
-#include "capture/capture_device_video4linux.h"
+#include "capture/capture_device_vision_v4l.h"
 #include "capture/capture.h"
 #include "common/timer/timer.h"
 
@@ -33,8 +33,8 @@ void kc_initialize_capture(void)
         new capture_device_virtual_s;
     #elif CAPTURE_DEVICE_RGBEASY
         new capture_device_rgbeasy_s;
-    #elif CAPTURE_DEVICE_VIDEO4LINUX
-        new capture_device_video4linux_s;
+    #elif CAPTURE_DEVICE_VISION_V4L
+        new capture_device_vision_v4l_s;
     #else
         #error "Unknown capture API."
     #endif
@@ -68,8 +68,8 @@ void kc_release_capture(void)
 
 bool kc_force_input_resolution(const resolution_s &r)
 {
-    #if CAPTURE_DEVICE_VIDEO4LINUX
-        NBENE(("Custom input resolution are not supported with Video4Linux."));
+    #if CAPTURE_DEVICE_VISION_V4L
+        NBENE(("Custom input resolutions are not supported with Video4Linux."));
         return false;
     #endif
 

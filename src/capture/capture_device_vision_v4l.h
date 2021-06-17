@@ -3,27 +3,27 @@
  * 
  * Software: VCS
  * 
- * This Video4Linux version of the VCS capture API provides support for capturing
- * under Linux via Datapath's Vision V4L drivers/interface.
+ * This capture device interface provides support for capturing under Linux via
+ * Datapath's Vision V4L drivers/interface.
  *
  */
 
-#ifdef CAPTURE_DEVICE_VIDEO4LINUX
+#ifdef CAPTURE_DEVICE_VISION_V4L
 
-#ifndef VCS_CAPTURE_CAPTURE_DEVICE_VIDEO4LINUX_H
-#define VCS_CAPTURE_CAPTURE_DEVICE_VIDEO4LINUX_H
+#ifndef VCS_CAPTURE_CAPTURE_DEVICE_VISION_V4L_H
+#define VCS_CAPTURE_CAPTURE_DEVICE_VISION_V4L_H
 
 #include "capture/capture_device.h"
 
 class input_channel_v4l_c;
 
-struct capture_device_video4linux_s : public capture_device_s
+struct capture_device_vision_v4l_s : public capture_device_s
 {
     bool initialize(void) override;
     bool release(void) override;
 
     std::string get_device_name(void) const override;
-    std::string get_api_name(void) const override                { return "Video4Linux"; }
+    std::string get_api_name(void) const override                { return "Vision/Video4Linux"; }
     std::string get_device_driver_version(void) const override;
     std::string get_device_firmware_version(void) const override;
     int get_device_maximum_input_count(void) const override;

@@ -158,7 +158,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 // Note: the Video4Linux capture API currently supports no other capture
                 // color format besides RGB888.
-                #ifndef CAPTURE_DEVICE_VIDEO4LINUX
+                #ifndef CAPTURE_DEVICE_VISION_V4L
                     QAction *c16 = new QAction("16-bit (RGB 565)", this);
                     c16->setActionGroup(group);
                     c16->setCheckable(true);
@@ -274,7 +274,7 @@ MainWindow::MainWindow(QWidget *parent) :
             videoParams->setShortcut(QKeySequence("ctrl+v"));
             dialogs->addAction(videoParams);
 
-            #if CAPTURE_DEVICE_VIDEO4LINUX
+            #if CAPTURE_DEVICE_VISION_V4L
                 aliases->setEnabled(false);
                 INFO(("Aliases are not supported with Video4Linux."));
 

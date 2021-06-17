@@ -482,7 +482,7 @@ struct capture_device_s
      * @warning
      * Since this will be set as the capture device's input resolution,
      * captured frames may exhibit artefacting if the resolution doesn't match
-     * the video signal's true or intended resolution.
+     * the video signal's true resolution.
      * 
      * Returns true on success; false otherwise.
      * 

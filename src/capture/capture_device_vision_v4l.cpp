@@ -11,7 +11,7 @@
  *
  */
 
-#ifdef CAPTURE_DEVICE_VIDEO4LINUX
+#ifdef CAPTURE_DEVICE_VISION_V4L
 
 #include <unordered_map>
 #include <cmath>
@@ -26,7 +26,7 @@
 #include <cstring>
 #include <chrono>
 #include <poll.h>
-#include "capture/capture_device_video4linux.h"
+#include "capture/capture_device_vision_v4l.h"
 #include "capture/input_channel_v4l.h"
 #include "capture/video_presets.h"
 #include "capture/ic_v4l_video_parameters.h"
@@ -49,7 +49,7 @@ static unsigned CURRENT_INPUT_CHANNEL_IDX = 0;
 // channel's value.
 static unsigned NUM_MISSED_FRAMES = 0;
 
-capture_event_e capture_device_video4linux_s::pop_capture_event_queue(void)
+capture_event_e capture_device_vision_v4l_s::pop_capture_event_queue(void)
 {
     if (!this->inputChannel)
     {
@@ -89,7 +89,7 @@ capture_event_e capture_device_video4linux_s::pop_capture_event_queue(void)
     return capture_event_e::none;
 }
 
-resolution_s capture_device_video4linux_s::get_resolution(void) const
+resolution_s capture_device_vision_v4l_s::get_resolution(void) const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -97,13 +97,13 @@ resolution_s capture_device_video4linux_s::get_resolution(void) const
     return this->inputChannel->captureStatus.resolution;
 }
 
-resolution_s capture_device_video4linux_s::get_minimum_resolution(void) const
+resolution_s capture_device_vision_v4l_s::get_minimum_resolution(void) const
 {
     /// TODO: Query actual hardware parameters for this.
     return resolution_s{MIN_OUTPUT_WIDTH, MIN_OUTPUT_HEIGHT, 32};
 }
 
-resolution_s capture_device_video4linux_s::get_maximum_resolution(void) const
+resolution_s capture_device_vision_v4l_s::get_maximum_resolution(void) const
 {
     /// TODO: Query actual hardware parameters for this.
 
@@ -112,7 +112,7 @@ resolution_s capture_device_video4linux_s::get_maximum_resolution(void) const
                         std::min(32u, MAX_CAPTURE_BPP)};
 }
 
-refresh_rate_s capture_device_video4linux_s::get_refresh_rate(void) const
+refresh_rate_s capture_device_vision_v4l_s::get_refresh_rate(void) const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -120,7 +120,7 @@ refresh_rate_s capture_device_video4linux_s::get_refresh_rate(void) const
     return this->inputChannel->captureStatus.refreshRate;
 }
 
-uint capture_device_video4linux_s::get_missed_frames_count(void) const
+uint capture_device_vision_v4l_s::get_missed_frames_count(void) const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -128,7 +128,7 @@ uint capture_device_video4linux_s::get_missed_frames_count(void) const
     return (NUM_MISSED_FRAMES + this->inputChannel->captureStatus.numNewFrameEventsSkipped);
 }
 
-bool capture_device_video4linux_s::has_invalid_signal() const
+bool capture_device_vision_v4l_s::has_invalid_signal() const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -136,7 +136,7 @@ bool capture_device_video4linux_s::has_invalid_signal() const
     return this->inputChannel->captureStatus.invalidSignal;
 }
 
-bool capture_device_video4linux_s::has_invalid_device() const
+bool capture_device_vision_v4l_s::has_invalid_device() const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -144,7 +144,7 @@ bool capture_device_video4linux_s::has_invalid_device() const
     return this->inputChannel->captureStatus.invalidDevice;
 }
 
-bool capture_device_video4linux_s::has_no_signal(void) const
+bool capture_device_vision_v4l_s::has_no_signal(void) const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -152,7 +152,7 @@ bool capture_device_video4linux_s::has_no_signal(void) const
     return this->inputChannel->captureStatus.noSignal;
 }
 
-capture_pixel_format_e capture_device_video4linux_s::get_pixel_format() const
+capture_pixel_format_e capture_device_vision_v4l_s::get_pixel_format() const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -160,7 +160,7 @@ capture_pixel_format_e capture_device_video4linux_s::get_pixel_format() const
     return this->inputChannel->captureStatus.pixelFormat;
 }
 
-resolution_s capture_device_video4linux_s::get_source_resolution(void) const
+resolution_s capture_device_vision_v4l_s::get_source_resolution(void) const
 {
     k_assert((this->inputChannel),
              "Attempting to set input channel parameters on a null channel.");
@@ -179,7 +179,7 @@ resolution_s capture_device_video4linux_s::get_source_resolution(void) const
             32}; /// TODO: Don't assume the bit depth.
 }
 
-bool capture_device_video4linux_s::initialize(void)
+bool capture_device_vision_v4l_s::initialize(void)
 {
     ke_events().capture.newVideoMode.subscribe([this]
     {
@@ -211,7 +211,7 @@ bool capture_device_video4linux_s::initialize(void)
     return false;
 }
 
-bool capture_device_video4linux_s::release(void)
+bool capture_device_vision_v4l_s::release(void)
 {
     delete this->inputChannel;
 
@@ -220,7 +220,7 @@ bool capture_device_video4linux_s::release(void)
     return true;
 }
 
-std::string capture_device_video4linux_s::get_device_name(void) const
+std::string capture_device_vision_v4l_s::get_device_name(void) const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -237,7 +237,7 @@ std::string capture_device_video4linux_s::get_device_name(void) const
     return (char*)caps.card;
 }
 
-std::string capture_device_video4linux_s::get_device_driver_version(void) const
+std::string capture_device_vision_v4l_s::get_device_driver_version(void) const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -257,13 +257,13 @@ std::string capture_device_video4linux_s::get_device_driver_version(void) const
             std::to_string((caps.version >> 0) & 0xff));
 }
 
-std::string capture_device_video4linux_s::get_device_firmware_version(void) const
+std::string capture_device_vision_v4l_s::get_device_firmware_version(void) const
 {
     return "Unknown";
 }
 
 
-int capture_device_video4linux_s::get_device_maximum_input_count(void) const
+int capture_device_vision_v4l_s::get_device_maximum_input_count(void) const
 {
     const char baseDevicePath[] = "/dev/video";
     int numInputs = 0;
@@ -304,12 +304,12 @@ int capture_device_video4linux_s::get_device_maximum_input_count(void) const
     return numInputs;
 }
 
-uint capture_device_video4linux_s::get_input_channel_idx(void) const
+uint capture_device_vision_v4l_s::get_input_channel_idx(void) const
 {
     return CURRENT_INPUT_CHANNEL_IDX;
 }
 
-video_signal_parameters_s capture_device_video4linux_s::get_video_signal_parameters(void) const
+video_signal_parameters_s capture_device_vision_v4l_s::get_video_signal_parameters(void) const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -340,7 +340,7 @@ video_signal_parameters_s capture_device_video4linux_s::get_video_signal_paramet
     return p;
 }
 
-video_signal_parameters_s capture_device_video4linux_s::get_default_video_signal_parameters(void) const
+video_signal_parameters_s capture_device_vision_v4l_s::get_default_video_signal_parameters(void) const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -387,7 +387,7 @@ video_signal_parameters_s capture_device_video4linux_s::get_default_video_signal
     return p;
 }
 
-video_signal_parameters_s capture_device_video4linux_s::get_minimum_video_signal_parameters(void) const
+video_signal_parameters_s capture_device_vision_v4l_s::get_minimum_video_signal_parameters(void) const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -434,7 +434,7 @@ video_signal_parameters_s capture_device_video4linux_s::get_minimum_video_signal
     return p;
 }
 
-video_signal_parameters_s capture_device_video4linux_s::get_maximum_video_signal_parameters(void) const
+video_signal_parameters_s capture_device_vision_v4l_s::get_maximum_video_signal_parameters(void) const
 {
     k_assert((this->inputChannel),
              "Attempting to query input channel parameters on a null channel.");
@@ -481,12 +481,12 @@ video_signal_parameters_s capture_device_video4linux_s::get_maximum_video_signal
     return p;
 }
 
-const captured_frame_s& capture_device_video4linux_s::get_frame_buffer(void) const
+const captured_frame_s& capture_device_vision_v4l_s::get_frame_buffer(void) const
 {
     return FRAME_BUFFER;
 }
 
-bool capture_device_video4linux_s::mark_frame_buffer_as_processed(void)
+bool capture_device_vision_v4l_s::mark_frame_buffer_as_processed(void)
 {
     k_assert((this->inputChannel),
              "Attempting to set input channel parameters on a null channel.");
@@ -498,7 +498,7 @@ bool capture_device_video4linux_s::mark_frame_buffer_as_processed(void)
     return true;
 }
 
-bool capture_device_video4linux_s::set_input_channel(const unsigned idx)
+bool capture_device_vision_v4l_s::set_input_channel(const unsigned idx)
 {
     if (this->inputChannel)
     {
@@ -520,7 +520,7 @@ bool capture_device_video4linux_s::set_input_channel(const unsigned idx)
     return true;
 }
 
-bool capture_device_video4linux_s::set_video_signal_parameters(const video_signal_parameters_s &p)
+bool capture_device_vision_v4l_s::set_video_signal_parameters(const video_signal_parameters_s &p)
 {
     k_assert((this->inputChannel),
              "Attempting to set input channel parameters on a null channel.");

@@ -453,7 +453,7 @@ While developing VCS, I've been compiling it with GCC 5-9 on Linux and MinGW 5.3
 - Q: Why does VCS use such an old version of the RGBEasy API? A: To support the VisionRGB-PRO.
 
 **Video4Linux.** On Linux, VCS uses Datapath's Video4Linux driver to interface with the capture device. For this to work, you should install the latest Datapath Vision Linux driver (may not support kernel 5+).
-- If you want to remove VCS's the dependency on the Video4Linux driver, replace `CAPTURE_DEVICE_VIDEO4LINUX` with `CAPTURE_DEVICE_VIRTUAL` in [vcs.pro](vcs.pro). This will also disable capturing, but will let you run the program without the Datapath drivers installed.
+- If you want to remove VCS's the dependency on the Video4Linux driver, replace `CAPTURE_DEVICE_VISION_V4L` with `CAPTURE_DEVICE_VIRTUAL` in [vcs.pro](vcs.pro). This will also disable capturing, but will let you run the program without the Datapath drivers installed.
 
 ## Code organization
 VCS is largely a single-threaded application whose event loop is synchronized to the capture devices's rate of operation. VCS's main loop polls the capture device (which may run in a separate thread) until a capture event (e.g. new frame) occurs, then processes the event, and returns to the polling loop.

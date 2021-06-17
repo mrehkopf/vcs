@@ -3,6 +3,9 @@
  *
  * Software: VCS
  *
+ * This capture device interface provides support for capturing under Windows via
+ * Datapath's RGBEASY drivers/interface.
+ *
  */
 
 #ifdef CAPTURE_DEVICE_RGBEASY
