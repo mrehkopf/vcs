@@ -1,11 +1,11 @@
 # Main Page
 
 ## Introduction
-Welcome to VCS's technical documentation! These documents aim to provide architectural and code-level information about VCS to developers.
+Welcome to VCS's technical documentation!
 
-VCS is a handy application by Tarpeeksi Hyvae Soft for controlling certain models of Datapath's Vision range of video capture cards. (Neither Tarpeeksi Hyvae Soft nor VCS are associated with Datapath nor are there any endorsements.)
+These docs aim to provide architectural and code-level information about VCS to developers -- although their contents are fairly sparse and scattered at the moment.
 
-You can find VCS's source code repository on GitHub here: https://www.github.com/leikareipa/vcs/. The repository includes end-user documentation.
+The VCS source code repository and end-user documentation can be found on GitHub, [github.com/leikareipa/vcs/](https://www.github.com/leikareipa/vcs/).
 
 ## Layout of documentation
 

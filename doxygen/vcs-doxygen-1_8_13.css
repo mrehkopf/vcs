@@ -10,9 +10,15 @@
 :root
 {
 	--page-background-color: rgb(238, 238, 238);
+	--secondary-background-color: #fafafa;
 	--content-padding: 27px;
 	--section-vertical-margin: 16px;
-	--link-color: #004fcf;
+	--link-color: #0c64ee;
+	--separating-border-color: #ececec;
+	--contents-heading-vertical-margin: 50px;
+	--contents-container-horizontal-padding: 20px;
+	--contents-container-vertical-padding: calc(0.5 * var(--contents-heading-vertical-margin));
+	--navi-indent: 17px;
 }
 
 *
@@ -36,11 +42,24 @@ body
 	margin: 0 auto !important;
 }
 
+.contents a,
 a.el,
 a:visited.el
 {
-	font-weight: normal !important;
+	font-weight: bold !important;
 	color: var(--link-color) !important;
+}
+
+.contents a[id]
+{
+	position: relative;
+	top: -10px;
+}
+
+.contents a[name="details"]
+{
+	position: relative !important;
+	top: calc(var(--contents-heading-vertical-margin) - 5px) !important;
 }
 
 table
@@ -61,23 +80,183 @@ hr
 #nav-tree
 {
 	background-image: none !important;
+	background-color: var(--page-background-color) !important;
+	padding: 15px !important;
+	padding-top: 5px !important;
+	box-sizing: border-box !important;
 }
 
-#nav-tree .item:hover
+#nav-tree .arrow
 {
-	background-color: rgba(0, 0, 50, 0.04) !important;
+	padding-left: 0 !important;
+	color: transparent !important;
+	width: 1ch !important;
+}
+
+#nav-tree .arrow::before
+{
+    content: "\2022" !important;
+    color: dimgray !important;
+    width: 0 !important;
+}
+
+#nav-tree .selected
+{
+	background-image: none !important;
+}
+
+#nav-tree .item
+{
+	padding-top: 2px !important;
+	padding-bottom: 2px !important;
+}
+
+#nav-tree .item > .label > a
+{
+	color: dimgray !important;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+#nav-tree .item.selected > .label > a
+{
+	color: black !important;
+	font-weight: bold !important;
+}
+
+#nav-tree .item > .label > a:hover
+{
+	color: black !important;
+}
+
+#nav-tree-contents > ul,
+#nav-tree-contents > ul > li
+{
+	padding-left: 0 !important;
+}
+
+#nav-tree-contents > ul > li > ul
+{
+	padding-left: var(--navi-indent) !important;
+}
+#nav-tree-contents > ul > li > ul > li,
+#nav-tree-contents > ul > li > ul > li .item
+{
+	padding-left: 0 !important;
+}
+
+#nav-tree-contents > ul > li > ul > li > ul
+{
+	padding-left: var(--navi-indent) !important;
+}
+#nav-tree-contents > ul > li > ul > li > ul > li,
+#nav-tree-contents > ul > li > ul > li > ul > li .item
+{
+	padding-left: 0 !important;
+}
+
+#nav-tree-contents > ul > li > ul > li > ul > li > ul
+{
+	padding-left: var(--navi-indent) !important;
+}
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li,
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li .item
+{
+	padding-left: 0 !important;
+}
+
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul
+{
+	padding-left: var(--navi-indent) !important;
+}
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li .item
+{
+	padding-left: 0 !important;
+}
+
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul
+{
+	padding-left: var(--navi-indent) !important;
+}
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li .item
+{
+	padding-left: 0 !important;
+}
+
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul
+{
+	padding-left: var(--navi-indent) !important;
+}
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li .item
+{
+	padding-left: 0 !important;
+}
+
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul
+{
+	padding-left: var(--navi-indent) !important;
+}
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li .item
+{
+	padding-left: 0 !important;
+}
+
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul
+{
+	padding-left: var(--navi-indent) !important;
+}
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li
+#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li .item
+{
+	padding-left: 0 !important;
+}
+
+#nav-path ul
+{
+	background-image: none !important;
+	background-color: var(--secondary-background-color) !important;
+	border: solid 1px transparent;
+	border-top: 1px solid var(--separating-border-color) !important;
+}
+
+#nav-path .footer
+{
+	color: dimgray !important;
+	height: 100%;
+}
+
+/* Replace the Doxygen image logo with plain text.*/
+#nav-path .footer > a::before
+{
+	content: "Doxygen";
+	margin-right: -0.5ch;
+}
+#nav-path .footer > a > img
+{
+	visibility: hidden;
+	max-width: 0;
 }
 
 #MSearchBox
 {
-	font-size: 80% !important;
+	display: none !important;
 }
 
 .contents
 {
 	background-color: white !important;
-	padding: var(--content-padding) !important;
+	padding: var(--contents-container-vertical-padding) var(--contents-container-horizontal-padding) !important;
+	padding-bottom: 0 !important;
 	margin: 0 !important;
+}
+
+.PageDoc > .contents
+{
+	padding: var(--contents-container-horizontal-padding) !important;
 }
 
 .contents > hr
@@ -112,6 +291,8 @@ hr
 .directory
 {
 	border: none !important;
+	margin: var(--contents-heading-vertical-margin) 0 !important;
+	margin-top: var(--contents-container-horizontal-padding) !important;
 }
 
 .directory .levels
@@ -119,13 +300,22 @@ hr
 	display: none !important;
 }
 
+.directory tr
+{
+	border: 1px solid var(--page-background-color) !important;
+}
+
+.directory tr.even
+{
+	background-color: var(--secondary-background-color) !important;
+}
+
 .header
 {
-	border: none !important;
-	padding: var(--content-padding) !important;
-	padding-top: 14px !important;
-	padding-bottom: 14px !important;
+	padding: 10px var(--contents-container-horizontal-padding) !important;
 	background-image: none !important;
+	background-color: var(--secondary-background-color) !important;
+	border-bottom: 1px solid var(--separating-border-color) !important;
 }
 
 .header .summary
@@ -143,11 +333,23 @@ hr
 .header .title
 {
 	font-weight: normal !important;
+	display: flex !important;
+	align-items: center !important;
+	font-style: italic !important;
 }
 
-.header .title::before
+.ui-resizable-handle
 {
-	content: "Topic: " !important;
+	background-image: none !important;
+	background-color: var(--page-background-color) !important;
+	box-shadow: inset 0 0 0px 1px rgba(0, 0, 0, 0.4) !important;
+	background: repeating-linear-gradient( 
+		0deg,
+		#f0f0f0,
+		#f0f0f0 1px,
+		#d0d0d0 1px,
+		#d0d0d0 2px
+	) !important;
 }
 
 #titlearea
@@ -162,9 +364,27 @@ hr
 	display: none !important;
 }
 
+.sm-dox a
+{
+	background-image: none !important;
+	color: whitesmoke !important;
+}
+
+.sm-dox a:hover
+{
+	background-color: black !important;
+	border-radius: 6px !important;
+}
+
 #main-menu
 {
 	padding-left: 0 !important;
+    background-image: none !important;
+    background-color: #3c3c3c !important;
+	height: 45px;
+    display: flex;
+    align-items: center;
+    padding-left: 5px !important;
 }
 
 #main-menu a
@@ -187,8 +407,8 @@ hr
 
 .memitem
 {
-	margin-top: var(--content-padding) !important;
-	margin-bottom: 0 !important;
+	margin-bottom: var(--contents-heading-vertical-margin);
+	margin-top: 0 !important;
 }
 
 .memitem .memdoc *:last-of-type
@@ -200,6 +420,7 @@ hr
 .memItemRight
 {
 	background-color: transparent !important;
+	vertical-align: middle;
 }
 
 .memItemRight b
@@ -242,10 +463,18 @@ hr
 {
 	font: initial !important;
 	font-family: sans-serif !important;
-	font-size: 115% !important;
 	padding-left: 0 !important;
 	margin: 0 !important;
 	color: black !important;
+}
+
+.memname td
+{
+	font-size: 140% !important;
+	padding: 0 !important;	
+	display: inline !important;
+	vertical-align: inherit !important;
+	letter-spacing: -1px !important;
 }
 
 table.memname tr
@@ -257,22 +486,29 @@ table.memname tr
 table.memberdecls td[class*="memItem"],
 table.memberdecls td[class*="mdesc"]
 {
-	border-top: 1px solid var(--page-background-color) !important;
+	border-top: 1px solid var(--separating-border-color) !important;
 	padding: 3px !important;
 }
 
 table.memberdecls td.memItemLeft,
 table.memberdecls td.mdescLeft
 {
-	border-left: 1px solid var(--page-background-color) !important;
-	border-right: 1px solid var(--page-background-color) !important;
+	border-left: 1px solid var(--separating-border-color) !important;
+	border-right: 1px solid var(--separating-border-color) !important;
 }
 
 table.memberdecls td.memItemRight,
 table.memberdecls td.mdescRight
 {
-	border-right: 1px solid var(--page-background-color) !important;
+	color: inherit !important;
+	border-right: 1px solid var(--separating-border-color) !important;
 	padding-left: 10px !important;
+}
+
+table.memberdecls td.mdescLeft,
+table.memberdecls td.mdescRight
+{
+	background-color: var(--secondary-background-color) !important;
 }
 
 table.memberdecls [class*="memitem:"]:nth-last-of-type(2) .memItemLeft,
@@ -280,15 +516,7 @@ table.memberdecls [class*="memitem:"]:nth-last-of-type(2) .memItemRight,
 table.memberdecls [class*="memdesc:"]:nth-last-of-type(2) .mdescLeft,
 table.memberdecls [class*="memdesc:"]:nth-last-of-type(2) .mdescRight
 {
-	border-bottom: 1px solid var(--page-background-color) !important;
-}
-
-.memname td
-{
-	font-size: 120% !important;
-	padding: 0 !important;	
-	display: inline !important;
-	vertical-align: inherit !important;
+	border-bottom: 1px solid var(--separating-border-color) !important;
 }
 
 .paramtype
@@ -321,14 +549,20 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	content: "\a0" !important;
 }
 
+.footer
+{
+	font-size: 90% !important;
+}
+
 .memproto
 {
 	box-shadow: none !important;
 	background-color: transparent !important;
 	font-weight: bold !important;
 	border: none !important;
-	border-bottom: 2px solid var(--page-background-color) !important;
-	padding-bottom: 11px !important;
+	border-bottom: 2px solid var(--separating-border-color) !important;
+	padding-top: 0 !important;
+	padding-bottom: 16px !important;
 }
 
 .memdoc
@@ -356,9 +590,10 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 .memdoc > .fragment
 {
 	counter-reset: line;
-	background-color: #fbfbfb !important;
-	border: 1px dashed #c6c6c6 !important;
-	border-radius: 3px !important;
+	background-color: rgba(166, 166, 166, 0.09) !important;
+	border: none !important;
+	border-left: 8px solid rgb(142, 142, 142) !important;
+	border-radius: 0 !important;
 	margin: 0px !important;
 	margin-top: var(--section-vertical-margin) !important;
 	margin-bottom: var(--section-vertical-margin) !important;
@@ -369,6 +604,8 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 {
 	font-family: monospace !important;
 	font-size: 15px !important;
+	padding-top: 2px !important;
+	padding-bottom: 2px !important;
 }
 
 .memdoc > .fragment > .line:not(:last-child)
@@ -378,7 +615,7 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 
 .memdoc > .fragment > .line::before
 {
-	color: #c6c6c6 !important;
+	color: rgb(142, 142, 142) !important;
 	counter-increment: line !important;
 	content: counter(line) ": " !important;
 }
@@ -442,9 +679,37 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	display: inline !important;
 }
 
-.section.warning dt
+.section.warning dt,
+.section.note dt
 {
+	font-weight: bold !important;
+}
+
+.section.see dt,
+.section.see dd a
+{
+	font-weight: normal !important;
 	font-style: italic !important;
+}
+
+.section.warning,
+.section.note
+{
+	border: none !important;
+    padding: 10px !important;
+    border-radius: 0 !important;
+}
+
+.section.warning
+{
+    background-color: rgba(255, 94, 0, 0.14) !important;
+    border-left: 6px solid rgb(255, 106, 0) !important;
+}
+
+.section.note
+{
+	background-color: rgba(166, 166, 166, 0.09) !important;
+	border-left: 6px solid rgb(170, 170, 170) !important;
 }
 
 .section.see dt::after
@@ -452,26 +717,39 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	content: " " !important;
 }
 
+.mlabels-left
+{
+	width: auto !important;
+}
+
+.mlabels > tbody > tr
+{
+	display: flex;
+	align-items: center;
+}
+
 span .mlabel
 {
 	background-color: var(--page-background-color) !important;
-	color: black !important;
-	padding: 3px 6px !important;
+    color: black !important;
+    padding: 5px !important;
 	border: none !important;
-	border-radius: 3px !important;
-	font-weight: normal !important;
-	vertical-align: bottom !important;
-	border: 1px solid rgb(213, 213, 213) !important;
+	border-left: 5px solid lightgray !important;
+    border-radius: 0 !important;
+    font-weight: normal !important;
+    vertical-align: bottom !important;
+	font-size: 80% !important;
 }
 
 .groupheader
 {
+	font-weight: bold !important;
 	color: black !important;
 	font-size: 160% !important;
 	border: none !important;
 	margin: 0 !important;
-	margin-top: 40px !important;
-	margin-bottom: 20px !important;
+	margin-top: var(--contents-heading-vertical-margin) !important;
+	margin-bottom: calc(0.5 * var(--contents-heading-vertical-margin)) !important;
 	padding: 0 !important;
 }
 
@@ -491,11 +769,38 @@ span .mlabel
 	vertical-align: middle !important;
 }
 
+.navpath > ul
+{
+	padding-left: 5px !important;
+}
+
+.navpath .navelem
+{
+	padding: 0 4px !important;
+	background-image: none !important;
+	display: flex;
+    align-items: baseline;
+}
+
+.navpath .navelem + .navelem::before
+{
+	content: "/" !important;
+	padding-right: 8px !important;
+	color: gray !important;
+}
+
 .navpath .navelem .el
 {
 	line-height: 170% !important;
 	font-size: 16px !important;
 	font-weight: bold !important;
+	color: dimgray !important;
+}
+
+.navpath .navelem .el:hover
+{
+	text-decoration: underline !important;
+	color: var(--link-color) !important;
 }
 
 .icon
