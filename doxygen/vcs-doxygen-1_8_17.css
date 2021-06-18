@@ -18,7 +18,7 @@
 	--contents-heading-vertical-margin: 50px;
 	--contents-container-horizontal-padding: 20px;
 	--contents-container-vertical-padding: calc(0.5 * var(--contents-heading-vertical-margin));
-	--navi-indent: 17px;
+	--navi-indent: 1.5ch;
 }
 
 *
@@ -77,27 +77,41 @@ hr
 	visibility: hidden !important;
 }
 
+.arrow
+{
+    visibility: hidden !important;
+	padding-left: 0 !important;
+	color: transparent !important;
+	width: 1.5ch !important;
+}
+
+.arrow::before
+{
+	color: black !important;
+	content: "\2022" !important;
+    visibility: visible;
+    width: 1.5ch !important;
+    text-align: center !important;
+    display: inline-block !important;
+}
+
+.textblock > ol
+{
+	padding-inline-start: 30px;
+}
+
+.textblock > ol > li
+{
+	line-height: 1.75 !important;
+}
+
 #nav-tree
 {
 	background-image: none !important;
 	background-color: var(--page-background-color) !important;
-	padding: 15px !important;
+	padding: 8px !important;
 	padding-top: 5px !important;
 	box-sizing: border-box !important;
-}
-
-#nav-tree .arrow
-{
-	padding-left: 0 !important;
-	color: transparent !important;
-	width: 1ch !important;
-}
-
-#nav-tree .arrow::before
-{
-    content: "\2022" !important;
-    color: dimgray !important;
-    width: 0 !important;
 }
 
 #nav-tree .selected
@@ -113,9 +127,9 @@ hr
 
 #nav-tree .item > .label > a
 {
-	color: dimgray !important;
-	padding-top: 2px;
-	padding-bottom: 2px;
+	color: black !important;
+	padding-top: 2px !important;
+	padding-bottom: 2px !important;
 }
 
 #nav-tree .item.selected > .label > a
@@ -135,82 +149,13 @@ hr
 	padding-left: 0 !important;
 }
 
-#nav-tree-contents > ul > li > ul
+/* Indent each successive branch in the navi tree.*/
+#nav-tree-contents li > ul
 {
 	padding-left: var(--navi-indent) !important;
 }
-#nav-tree-contents > ul > li > ul > li,
-#nav-tree-contents > ul > li > ul > li .item
-{
-	padding-left: 0 !important;
-}
-
-#nav-tree-contents > ul > li > ul > li > ul
-{
-	padding-left: var(--navi-indent) !important;
-}
-#nav-tree-contents > ul > li > ul > li > ul > li,
-#nav-tree-contents > ul > li > ul > li > ul > li .item
-{
-	padding-left: 0 !important;
-}
-
-#nav-tree-contents > ul > li > ul > li > ul > li > ul
-{
-	padding-left: var(--navi-indent) !important;
-}
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li,
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li .item
-{
-	padding-left: 0 !important;
-}
-
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul
-{
-	padding-left: var(--navi-indent) !important;
-}
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li .item
-{
-	padding-left: 0 !important;
-}
-
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul
-{
-	padding-left: var(--navi-indent) !important;
-}
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li .item
-{
-	padding-left: 0 !important;
-}
-
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul
-{
-	padding-left: var(--navi-indent) !important;
-}
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li .item
-{
-	padding-left: 0 !important;
-}
-
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul
-{
-	padding-left: var(--navi-indent) !important;
-}
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li .item
-{
-	padding-left: 0 !important;
-}
-
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul
-{
-	padding-left: var(--navi-indent) !important;
-}
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li
-#nav-tree-contents > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li > ul > li .item
+#nav-tree-contents li > ul > li,
+#nav-tree-contents li > ul > li .item
 {
 	padding-left: 0 !important;
 }
@@ -244,6 +189,28 @@ hr
 #MSearchBox
 {
 	display: none !important;
+}
+
+.fieldtable
+{
+	margin-top: 16px !important;
+	border-radius: 0 !important;
+	border-color: var(--separating-border-color) !important;
+}
+
+.fieldtable th
+{
+	font-weight: bold !important;
+	background-image: none !important;
+	background-color: var(--secondary-background-color) !important;
+}
+
+.fieldtable td,
+.fieldtable th
+{
+	padding: 4px !important;
+    padding-left: 1ch !important;
+	border-color: var(--separating-border-color) !important;
 }
 
 .contents
@@ -310,6 +277,13 @@ hr
 	background-color: var(--secondary-background-color) !important;
 }
 
+/* Hide icons (and negate their horizontal spacing) in the list of data structures.*/
+.directory .icona
+{
+	visibility: hidden !important;
+    margin-right: -34px !important;
+}
+
 .header
 {
 	padding: 10px var(--contents-container-horizontal-padding) !important;
@@ -335,11 +309,11 @@ hr
 	font-weight: normal !important;
 	display: flex !important;
 	align-items: center !important;
-	font-style: italic !important;
 }
 
 .ui-resizable-handle
 {
+	max-width: 6px !important;
 	background-image: none !important;
 	background-color: var(--page-background-color) !important;
 	box-shadow: inset 0 0 0px 1px rgba(0, 0, 0, 0.4) !important;
@@ -373,6 +347,7 @@ hr
 .sm-dox a:hover
 {
 	background-color: black !important;
+	color: white !important;
 	border-radius: 6px !important;
 }
 
@@ -421,6 +396,11 @@ hr
 {
 	background-color: transparent !important;
 	vertical-align: middle;
+}
+
+.memItemLeft
+{
+	min-width: 5ch !important;
 }
 
 .memItemRight b
