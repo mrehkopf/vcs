@@ -57,7 +57,7 @@ capture_device_s& kc_capture_device(void);
 
 /*!
  * Initializes the capture subsystem, including the capture hardware.
-
+ * 
  * By default, VCS will call this function on program startup.
  * 
  * @note
@@ -76,7 +76,7 @@ void kc_initialize_capture(void);
  * Returns true on success; false otherwise.
  * 
  * @warning
- * Calling this function - regardless of its return value - will invalidate
+ * Calling this function -- regardless of its return value -- will invalidate
  * the capture device interface reference returned by kc_capture_device().
  * 
  * @see
@@ -115,18 +115,21 @@ enum class capture_deinterlacing_mode_e
 };
 
 /*!
- * Enumerates the pixel color formats in which the capture subsystem may provide
- * frame data.
+ * Enumerates the color formats in which the capture subsystem may provide frame
+ * pixel data.
  */
 enum class capture_pixel_format_e
 {
-    //! 16 bits per pixel: 5 bits for red, green and blue, and 1 bit of padding.
+    //! 16 bits per pixel: 5 bits for red, 5 bits for green, 5 bits for blue, and
+    //! 1 bit of padding. No alpha.
     rgb_555,
 
-    //! 16 bits per pixel: 5 bits for red and blue, 6 bits for green.
+    //! 16 bits per pixel: 5 bits for red, 6 bits for green, and 5 bits for blue.
+    //! No alpha.
     rgb_565,
 
-    //! 32 bits per pixel: 8 bits for red, green and blue, and 8 bits of padding.
+    //! 32 bits per pixel: 8 bits for red, 8 bits for green, 8 bits for blue, and
+    //! 8 bits of padding. No alpha.
     rgb_888,
 };
 
