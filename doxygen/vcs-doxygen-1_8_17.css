@@ -7,6 +7,8 @@
  *
  */
 
+@import url("https://use.fontawesome.com/releases/v5.12.0/css/all.css");
+
 :root
 {
 	--page-background-color: rgb(238, 238, 238);
@@ -87,12 +89,15 @@ hr
 
 .arrow::before
 {
+	font-family: "Font Awesome 5 Free" !important;
+	content: "\f0da" !important;
 	color: black !important;
-	content: "\2022" !important;
-    visibility: visible;
-    width: 1.5ch !important;
+    visibility: visible !important;
     text-align: center !important;
     display: inline-block !important;
+    vertical-align: middle !important;
+    font-weight: 900 !important;
+    width: 1ch !important;
 }
 
 .textblock > ol
@@ -102,14 +107,15 @@ hr
 
 .textblock > ol > li
 {
-	line-height: 1.75 !important;
+	padding-top: 5px !important;
+	padding-bottom: 5px !important;
 }
 
 #nav-tree
 {
 	background-image: none !important;
 	background-color: var(--page-background-color) !important;
-	padding: 8px !important;
+	padding: 10px !important;
 	padding-top: 5px !important;
 	box-sizing: border-box !important;
 }
@@ -121,15 +127,13 @@ hr
 
 #nav-tree .item
 {
-	padding-top: 2px !important;
-	padding-bottom: 2px !important;
+	padding-top: 1px !important;
+	padding-bottom: 1px !important;
 }
 
 #nav-tree .item > .label > a
 {
 	color: black !important;
-	padding-top: 2px !important;
-	padding-bottom: 2px !important;
 }
 
 #nav-tree .item.selected > .label > a
@@ -141,6 +145,7 @@ hr
 #nav-tree .item > .label > a:hover
 {
 	color: black !important;
+	text-decoration: underline !important;
 }
 
 #nav-tree-contents > ul,
@@ -172,6 +177,17 @@ hr
 {
 	color: dimgray !important;
 	height: 100%;
+	font-size: 80% !important;
+}
+
+#nav-path .footer a
+{
+	color: inherit !important;
+}
+
+#nav-path .footer a:hover
+{
+	color: var(--link-color) !important;
 }
 
 /* Replace the Doxygen image logo with plain text.*/
@@ -198,18 +214,40 @@ hr
 	border-color: var(--separating-border-color) !important;
 }
 
+.fieldtable tr
+{
+	transition: background-color 1s ease !important;
+}
+
+.fieldtable tr.glow
+{
+	background-color: rgb(255, 252, 193) !important;
+}
+
 .fieldtable th
 {
 	font-weight: bold !important;
 	background-image: none !important;
 	background-color: var(--secondary-background-color) !important;
+
+	/* Hide Doxygen's original text content.*/
+	font-size: 0px;
+	color: transparent;
+}
+
+/* Replace Doxygen's original text content.*/
+.fieldtable th::before
+{
+	content: "Constants";
+	color: black !important;
+	font-size: initial !important;
 }
 
 .fieldtable td,
 .fieldtable th
 {
-	padding: 4px !important;
-    padding-left: 1ch !important;
+	padding: 6px !important;
+	padding-left: 8px !important;
 	border-color: var(--separating-border-color) !important;
 }
 
@@ -313,7 +351,6 @@ hr
 
 .ui-resizable-handle
 {
-	max-width: 6px !important;
 	background-image: none !important;
 	background-color: var(--page-background-color) !important;
 	box-shadow: inset 0 0 0px 1px rgba(0, 0, 0, 0.4) !important;
@@ -338,17 +375,22 @@ hr
 	display: none !important;
 }
 
-.sm-dox a
+#main-nav > .sm-dox a
 {
 	background-image: none !important;
 	color: whitesmoke !important;
 }
 
-.sm-dox a:hover
+#main-nav > .sm-dox a:hover
 {
 	background-color: black !important;
 	color: white !important;
 	border-radius: 6px !important;
+}
+
+#side-nav
+{
+	overflow: hidden !important;
 }
 
 #main-menu
@@ -457,6 +499,11 @@ hr
 	letter-spacing: -1px !important;
 }
 
+.memname td[class="paramname"] + td::before
+{
+	content: " ";
+}
+
 table.memname tr
 {
 	line-height: 100% !important;
@@ -529,11 +576,6 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	content: "\a0" !important;
 }
 
-.footer
-{
-	font-size: 90% !important;
-}
-
 .memproto
 {
 	box-shadow: none !important;
@@ -570,7 +612,7 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 .memdoc > .fragment
 {
 	counter-reset: line;
-	background-color: rgba(166, 166, 166, 0.09) !important;
+	background-color: rgba(166, 166, 166, 0.14) !important;
 	border: none !important;
 	border-left: 8px solid rgb(142, 142, 142) !important;
 	border-radius: 0 !important;
@@ -595,7 +637,7 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 
 .memdoc > .fragment > .line::before
 {
-	color: rgb(142, 142, 142) !important;
+	color: rgb(100, 100, 100) !important;
 	counter-increment: line !important;
 	content: counter(line) ": " !important;
 }
@@ -688,7 +730,7 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 
 .section.note
 {
-	background-color: rgba(166, 166, 166, 0.09) !important;
+	background-color: rgba(166, 166, 166, 0.14) !important;
 	border-left: 6px solid rgb(170, 170, 170) !important;
 }
 
@@ -766,7 +808,6 @@ span .mlabel
 {
 	content: "/" !important;
 	padding-right: 8px !important;
-	color: gray !important;
 }
 
 .navpath .navelem .el
