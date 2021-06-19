@@ -39,24 +39,19 @@ class FilterGraphNode;
 
 /*!
  * @brief
- * A container struct to hold the width, height, and bits per pixel of a
- * resolution.
+ * Describes the resolution of a pixel surface -- e.g. a program window or an image
+ * buffer.
  */
 struct resolution_s
 {
-    unsigned long w, h, bpp;
+    //! Width (in pixels).
+    unsigned long w;
 
-    bool operator==(const resolution_s &other) const
-    {
-        return bool((this->w == other.w) &&
-                    (this->h == other.h) &&
-                    (this->bpp == other.bpp));
-    }
+    //! Height (in pixels).
+    unsigned long h;
 
-    bool operator!=(const resolution_s &other) const
-    {
-        return !(*this == other);
-    }
+    //! Number of bits per pixel.
+    unsigned long bpp;
 };
 
 /*!
