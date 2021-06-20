@@ -16,11 +16,20 @@
 	--content-padding: 27px;
 	--section-vertical-margin: 16px;
 	--link-color: #0c64ee;
-	--separating-border-color: #ececec;
-	--contents-heading-vertical-margin: 50px;
-	--contents-container-horizontal-padding: 20px;
-	--contents-container-vertical-padding: calc(0.5 * var(--contents-heading-vertical-margin));
-	--navi-indent: 1.5ch;
+	--glow-color: #ff00bb1f;
+	--separating-border-color: #e2e2e2;
+	--contents-heading-vertical-margin: 27px;
+	--contents-container-horizontal-padding: 25px;
+	--contents-container-vertical-padding: var(--contents-heading-vertical-margin);
+	--navi-indent: 1.25ch;
+	--main-nav-item-horizontal-spacing: 16px;
+}
+
+.iconfopen,
+.iconfclosed,
+.icondoc
+{
+	display: none;
 }
 
 *
@@ -54,14 +63,20 @@ a:visited.el
 
 .contents a[id]
 {
-	position: relative;
-	top: -10px;
+	position: relative !important;
+	top: -15px !important;
+}
+
+.contents .fieldname > a
+{
+	position: relative !important;
+	top: -150px !important;
 }
 
 .contents a[name="details"]
 {
 	position: relative !important;
-	top: calc(var(--contents-heading-vertical-margin) - 5px) !important;
+	top: calc(var(--contents-heading-vertical-margin) - 15px) !important;
 }
 
 table
@@ -84,7 +99,7 @@ hr
     visibility: hidden !important;
 	padding-left: 0 !important;
 	color: transparent !important;
-	width: 1.5ch !important;
+	width: 1.25ch !important;
 }
 
 .arrow::before
@@ -93,7 +108,7 @@ hr
 	content: "\f0da" !important;
 	color: black !important;
     visibility: visible !important;
-    text-align: center !important;
+    text-align: left !important;
     display: inline-block !important;
     vertical-align: middle !important;
     font-weight: 900 !important;
@@ -115,9 +130,15 @@ hr
 {
 	background-image: none !important;
 	background-color: var(--page-background-color) !important;
-	padding: 10px !important;
-	padding-top: 5px !important;
+	padding: 15px !important;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
 	box-sizing: border-box !important;
+}
+
+#nav-tree .children_ul
+{
+	border-left: 1px dotted gray !important;
 }
 
 #nav-tree .selected
@@ -177,7 +198,7 @@ hr
 {
 	color: dimgray !important;
 	height: 100%;
-	font-size: 80% !important;
+	font-size: 90% !important;
 }
 
 #nav-path .footer a
@@ -214,14 +235,9 @@ hr
 	border-color: var(--separating-border-color) !important;
 }
 
-.fieldtable tr
+.fieldtable .fieldname
 {
-	transition: background-color 1s ease !important;
-}
-
-.fieldtable tr.glow
-{
-	background-color: rgb(255, 252, 193) !important;
+	font-style: italic;
 }
 
 .fieldtable th
@@ -300,6 +316,23 @@ hr
 	margin-top: var(--contents-container-horizontal-padding) !important;
 }
 
+.directory .entry,
+.directory .entry + .desc
+{
+	padding-top: 3px !important;
+	padding-bottom: 3px !important;
+	padding-left: 10px !important;
+	padding-right: 10px !important;
+	background-color: white !important;
+	min-width: 100px !important;
+	vertical-align: middle;
+}
+
+.directory .entry + .desc
+{
+	padding-left: 15px !important;
+}
+
 .directory .levels
 {
 	display: none !important;
@@ -319,7 +352,7 @@ hr
 .directory .icona
 {
 	visibility: hidden !important;
-    margin-right: -34px !important;
+    margin-right: -41px !important;
 }
 
 .header
@@ -352,15 +385,8 @@ hr
 .ui-resizable-handle
 {
 	background-image: none !important;
-	background-color: var(--page-background-color) !important;
+	background-color: white !important;
 	box-shadow: inset 0 0 0px 1px rgba(0, 0, 0, 0.4) !important;
-	background: repeating-linear-gradient( 
-		0deg,
-		#f0f0f0,
-		#f0f0f0 1px,
-		#d0d0d0 1px,
-		#d0d0d0 2px
-	) !important;
 }
 
 #titlearea
@@ -375,19 +401,6 @@ hr
 	display: none !important;
 }
 
-#main-nav > .sm-dox a
-{
-	background-image: none !important;
-	color: whitesmoke !important;
-}
-
-#main-nav > .sm-dox a:hover
-{
-	background-color: black !important;
-	color: white !important;
-	border-radius: 6px !important;
-}
-
 #side-nav
 {
 	overflow: hidden !important;
@@ -398,17 +411,62 @@ hr
 	padding-left: 0 !important;
     background-image: none !important;
     background-color: #3c3c3c !important;
-	height: 45px;
+	height: 40px;
     display: flex;
     align-items: center;
     padding-left: 5px !important;
 }
 
+#main-menu::before
+{
+	content: "VCS Developer Docs" !important;
+    color: whitesmoke !important;
+    padding-left: 10px !important;
+    margin-right: var(--main-nav-item-horizontal-spacing) !important;
+    font-weight: bold !important;
+}
+
+#main-menu li
+{
+	height: 100% !important;
+}
+
+#main-menu li:first-child a
+{
+	margin-left: calc(1ch + var(--main-nav-item-horizontal-spacing)) !important;
+}
+
+#main-menu li:first-child::before
+{
+	font-family: "Font Awesome 5 Free" !important;
+    content: "\f054" !important;
+    font-weight: 900 !important;
+    position: absolute !important;
+    color: #ff00bc !important;
+    top: 50% !important;
+    left: 0 !important;
+    transform: translateY(-50%) !important;
+}
+
 #main-menu a
 {
-	font-weight: bold !important;
-	padding: 8px !important;
-	font-size: 15px !important;
+	font-weight: normal !important;
+	padding: 0 !important;
+	background-image: none !important;
+	color: #cecece !important;
+	height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+#main-menu a:hover
+{
+	color: white !important;
+}
+
+#main-menu li + li a
+{
+	margin-left: var(--main-nav-item-horizontal-spacing) !important;
 }
 
 #main-menu .sub-arrow
@@ -428,7 +486,7 @@ hr
 	margin-top: 0 !important;
 }
 
-.memitem .memdoc *:last-of-type
+.memitem .memdoc:last-child
 {
 	margin-bottom: 0 !important;
 }
@@ -442,7 +500,7 @@ hr
 
 .memItemLeft
 {
-	min-width: 5ch !important;
+	min-width: 70px !important;
 }
 
 .memItemRight b
@@ -496,7 +554,6 @@ hr
 	padding: 0 !important;	
 	display: inline !important;
 	vertical-align: inherit !important;
-	letter-spacing: -1px !important;
 }
 
 .memname td[class="paramname"] + td::before
@@ -532,8 +589,14 @@ table.memberdecls td.mdescRight
 	padding-left: 10px !important;
 }
 
-table.memberdecls td.mdescLeft,
+table.memberdecls td.memItemRight,
 table.memberdecls td.mdescRight
+{
+	padding-left: 15px !important;
+}
+
+table.memberdecls td.mdescLeft:not(.glow),
+table.memberdecls td.mdescRight:not(.glow)
 {
 	background-color: var(--secondary-background-color) !important;
 }
@@ -583,8 +646,8 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	font-weight: bold !important;
 	border: none !important;
 	border-bottom: 2px solid var(--separating-border-color) !important;
-	padding-top: 0 !important;
-	padding-bottom: 16px !important;
+	padding-top: 12px !important;
+	padding-bottom: 12px !important;
 }
 
 .memdoc
@@ -612,9 +675,9 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 .memdoc > .fragment
 {
 	counter-reset: line;
-	background-color: rgba(166, 166, 166, 0.14) !important;
+	background-color: #f2f2f2 !important;
 	border: none !important;
-	border-left: 8px solid rgb(142, 142, 142) !important;
+	border-left: 6px solid #aaaaaa !important;
 	border-radius: 0 !important;
 	margin: 0px !important;
 	margin-top: var(--section-vertical-margin) !important;
@@ -666,7 +729,7 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 .section.note dt::after,
 .section.warning dt::after
 {
-	content: ": " !important;
+	content: " " !important;
 }
 
 .section.note dd,
@@ -707,10 +770,13 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	font-weight: bold !important;
 }
 
-.section.see dt,
+.section.see dt
+{
+	font-weight: bold !important;
+}
+
 .section.see dd a
 {
-	font-weight: normal !important;
 	font-style: italic !important;
 }
 
@@ -719,19 +785,18 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 {
 	border: none !important;
     padding: 10px !important;
-    border-radius: 0 !important;
+	border-radius: 0 !important;
+	background-color: #f2f2f2 !important;
 }
 
 .section.warning
 {
-    background-color: rgba(255, 94, 0, 0.14) !important;
-    border-left: 6px solid rgb(255, 106, 0) !important;
+    border-left: 6px solid #ff00bc !important;
 }
 
 .section.note
 {
-	background-color: rgba(166, 166, 166, 0.14) !important;
-	border-left: 6px solid rgb(170, 170, 170) !important;
+	border-left: 6px solid #aaaaaa !important;
 }
 
 .section.see dt::after
@@ -780,17 +845,6 @@ span .mlabel
 	margin-top: 0 !important;
 }
 
-.iconfopen,
-.iconfclosed
-{
-	vertical-align: sub !important;
-}
-
-.icondoc
-{
-	vertical-align: middle !important;
-}
-
 .navpath > ul
 {
 	padding-left: 5px !important;
@@ -828,4 +882,26 @@ span .mlabel
 {
 	width: 85% !important;
 	height: 95% !important;
+}
+
+.memItemLeft,
+.memItemRight,
+.mdescLeft,
+.mdescRight,
+.fieldtable tr,
+.memtitle + .memitem > .memproto
+{
+	transition: background-color 0.7s ease !important;
+	transition-delay: 0.7s !important;
+}
+
+.memItemLeft.glow,
+.memItemRight.glow,
+.mdescLeft.glow,
+.mdescRight.glow,
+.fieldtable tr.glow,
+.memtitle.glow + .memitem > .memproto
+{
+	transition-delay: 0s !important;
+	background-color: var(--glow-color) !important;
 }
