@@ -5,6 +5,13 @@
  *
  */
 
+/*! @file
+ *
+ * @brief
+ * A frame buffer for VCS's video recording subsystem.
+ * 
+ */
+
 #ifndef VCS_RECORD_RECORDING_BUFFER_H
 #define VCS_RECORD_RECORDING_BUFFER_H
 
@@ -15,86 +22,143 @@
 #include "common/memory/memory.h"
 #include "common/memory/memory_interface.h"
 
-// The recording buffer provides pre-allocated memory to hold frame pixel data.
-// The buffer operates as a 'last in, first out' (LIFO) queue and is intended
-// to be used by VCS's video recorder subsystem.
-//
-// Usage:
-//
-//   1. Initialize the buffer by calling initialize().
-//
-//   2. Add frames to the buffer by calling push() and copying the frame data to
-//      the memory area identified by the returned pointer. This memory area will
-//      be reserved - and thus won't be returned by subsequent calls to push() -
-//      until the frame is removed from the buffer by calling pop().
-//
-//      WARNING: Do not call push() if full() returns true.
-//
-//   3. Pop frames out of the buffer by calling pop(). Frames will be popped in
-//      the order they were push()ed but in reverse (first in, last out).
-//
-//      WARNING: Calling pop() will immediately mark the frame's memory area as no
-//      longer being in use, which means a subsequent call to push() may share its
-//      pointer to another part of the code. So you'll want to block calls to push()
-//      until you're finished accessing the memory's data.
-//
-//      WARNING: Do not call pop() if empty() returns true.
-//
-//   4. When you no longer need the buffer, release it by calling release().
-//
+/*!
+ * @brief
+ * A memory buffer for storing captured frames, for use by VCS's video recording
+ * subsystem.
+ * 
+ * This buffer allocates memory using VCS's memory subsystem for a given fixed
+ * number of captured frames, and provides access to the memory via a LIFO-like
+ * (last in, first out) queue interface.
+ * 
+ * The buffer provides the queue-like commands push() and pop(), of which push()
+ * marks the next available frame slot in the buffer as being in use and returns
+ * a pointer to its memory (which is big enough to hold one captured frame).
+ * This memory is available to the caller until it's marked by a call to pop()
+ * as no longer being in use, after which it's made available to subsequent push()
+ * calls. In LIFO fashion, the slot reserved by the most recent call to push()
+ * will be the last to be unreserved by pop().
+ * 
+ * Usage:
+ *
+ *   1. Initialize the buffer by calling initialize().
+ * 
+ *   2. To add a captured frame into the buffer, call push() to obtain a pointer
+ *      to the next available frame slot, then copy the frame's pixel data into
+ *      this memory area. The memory area is large enough to hold the maximum
+ *      frame size supported by the buffer.
+ *
+ *   3. To retrieve and remove a frame from the buffer in LIFO fashion, call pop()
+ *      and copy the frame pixel data from the memory to which the function returns
+ *      a pointer.
+ *
+ *   4. When you no longer need the buffer, release it by calling release().
+ */
 struct recording_buffer_s
 {
-    // Frames larger than this can't be stored in the buffer.
+    /*! Specifies the maximum width of frame that the buffer can store.*/
     const unsigned maxWidth = 1024;
+
+    /*! Specifies the maximum height of frame that the buffer can store.*/
     const unsigned maxHeight = 768;
 
-    // Allocate memory for the buffer, etc.
+    /*!
+     * Initializes the buffer, allocating memory to hold at most the number of
+     * frames given by @p frameCapacity.
+     * 
+     * @warning
+     * VCS's memory subsystem must be initialized before calling this function.
+     */
     void initialize(const size_t frameCapacity = 10);
 
-    // Deallocate the buffer's memory, etc.
+    /*!
+     * Releases the buffer.
+     * 
+     * @warning
+     * This function deallocates the buffer's memory, invalidating all pointers
+     * obtained from push() or pop().
+     */
     void release(void);
 
-    // Resets the buffer to an empty initial state.
+    /*!
+     * Resets the buffer to an empty state.
+     */
     void reset(void);
 
-    // Add a new frame into the buffer. Returns a pointer to its memory.
+    /*!
+     * Reserves a frame slot in the buffer and returns a pointer to its memory.
+     */
     heap_bytes_s<u8>* push(void);
 
-    // Remove a frame from the buffer (last in, first out). Returns a pointer
-    // to its memory.
+    /*!
+     * Unreserves a frame slot in the queue and returns a pointer to its memory.
+     * 
+     * The returned pointer will remain valid until either push() or release() is
+     * called.
+     */
     heap_bytes_s<u8>* pop(void);
 
-    // Returns true if the buffer's maximum frame capacity is currently in use.
-    // If so, no new frames can be push()ed until at least one is pop()ed.
+    /*!
+     * Returns true if the buffer is currently at maximum capacity; false
+     * otherwise.
+     * 
+     * If the buffer is full, no new frames can be queued with push() until one
+     * or more frame slots are unreserved with pop() or the buffer is reset with
+     * reset().
+     */
     bool full(void);
 
-    // Returns true if the buffer is currently holding no frames' data.
+    /*!
+     * Returns true if the buffer currently has no frame slots reserved; false
+     * otherwise.
+     */
     bool empty(void);
 
-    // Returns as a percentage the fraction of buffer capacity currently being
-    // used.
+    /*!
+     * Returns as a percentage (0--100) the amount of buffer capacity currently
+     * in use.
+     */
     unsigned usage(void);
 
-    // Memory for any temporary frame operations you might need to do. Feel free
-    // to use it.
+    /*!
+     * An extra memory buffer for any temporary frame operations the VCS video
+     * recording subsystem might need to do.
+     * 
+     * The buffer has room for one captured frame.
+     * 
+     * @note
+     * It's likely that this buffer will be removed in a future version of VCS,
+     * since it's a bit of a temporary kludge.
+     * 
+     * @warning
+     * This buffer's memory won't be allocated until initialize() is called.
+     */
     heap_bytes_s<u8> scratchBuffer;
 
-    // The VCS video recorder subsystem uses the buffer across threads, so this
-    // mutex is provided for convenience.
+    /*!
+     * A convenience mutex for use by VCS's video recorder subsystem.
+     * 
+     * Not used by the buffer.
+     */
     std::mutex mutex;
 
 private:
-    // Memory for the individual frames stored in the buffer.
+    /*!
+     * Memory for the buffer's frame slots.
+     * 
+     * Calls to push() and pop() return pointers to this memory.
+     */
     std::vector<heap_bytes_s<u8>> frameData;
 
-    // For each 'frameData' element, a boolean indicating whether that element
-    // is currently hosting a frame (and thus whether we're allowed to use
-    // that element when push() is called).
+    /*!
+     * A flag for each frame slot in the buffer, indicating whether a given slot
+     * is currently reserved (by a call to push()).
+     */
     std::vector<bool> isFrameInUse;
 
-    // A LIFO queue keeping track of the buffer's push()/pop() operations. The
-    // back of the queue points to the most recently added frame, while the front
-    // points to the least recently added frame.
+    /*!
+     * A LIFO queue for keeping track of the buffer's push()/pop() operations.
+     */
     std::queue<size_t /*idx to 'frameData'*/> frameQueue;
 };
 
