@@ -7,7 +7,7 @@
 /*! @file
  *
  * @brief
- * Provides a public interface for interacting with VCS's capture subsystem.
+ * The interface to VCS's capture subsystem.
  * 
  * The capture subsystem is responsible for mediating exchanges between VCS and
  * the capture device; including initializing the capture device and providing
@@ -103,8 +103,10 @@ bool kc_force_input_resolution(const resolution_s &r);
  * Enumerates the de-interlacing modes recognized by the capture subsystem.
  * 
  * @note
- * The capture device being used may support only some or none of these modes,
- * and/or might apply them only when receiving an interlaced signal.
+ * The capture subsystem itself doesn't apply de-interlacing, it just asks the
+ * capture device to do so. The capture device in turn may support only some or
+ * none of these modes, and/or might apply them only when receiving an
+ * interlaced signal.
  */
 enum class capture_deinterlacing_mode_e
 {
@@ -115,8 +117,14 @@ enum class capture_deinterlacing_mode_e
 };
 
 /*!
- * Enumerates the color formats in which the capture subsystem may provide frame
- * pixel data.
+ * Enumerates the color formats recognized by the capture subsystem. Frames output
+ * by the subsystem will have their pixel data in one of these formats.
+ *
+ * The capture device may support some, none, or all of these formats. Any
+ * capability queries should be made via the capture device interface.
+ * 
+ * @see
+ * captured_frame_s, capture_device_s
  */
 enum class capture_pixel_format_e
 {
@@ -171,7 +179,7 @@ enum class capture_event_e
     //! can't recover.
     unrecoverable_error,
 
-    //! Total enumerator count; should remain the last item in the list.
+    //! Total enumerator count. Should remain the last item in the list.
     num_enumerators
 };
 

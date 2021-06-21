@@ -8,8 +8,7 @@
 /*! @file
  *
  * @brief
- * The capture device interface (capture_device_s) provides an abstract interface
- * for exposing a capture device - or other such source of image data - to VCS.
+ * An interface for exposing capture devices to VCS's capture subsystem.
  * 
  * Usage:
  * 
@@ -43,8 +42,8 @@
 
 /*!
  * @brief
- * The base capture device interface class. Subclass this to add support for new
- * capture devices in VCS.
+ * The base capture device interface. Subclass this to add support for new capture
+ * devices in VCS.
  * 
  * The capture device interface provides an abstract interface for VCS to
  * interact with capture devices.
@@ -81,8 +80,8 @@ struct capture_device_s
      * @note
      * If you're going to call this function more than once during the program's
      * execution, you'll need to manually invoke release() before each subsequent
-     * call; otherwise, a resource leak may occur. VCS will make the final call
-     * to release() on program termination.
+     * call, or a resource leak may occur. VCS will make the final call to
+     * release() on program termination.
      * 
      * @see
      * release(), pop_capture_event_queue(), get_frame_buffer()

@@ -7,7 +7,7 @@
 /*! @file
  *
  * @brief
- * The display interface exposes a GUI to VCS.
+ * The interface to VCS's display subsystem.
  * 
  * The VCS GUI is responsible for providing the user with real-time means to
  * enter information (e.g. configuring capture parameters), for directing such
@@ -22,8 +22,8 @@
  * can be found in @ref src/display/qt/d_main.cpp.
  * 
  * @warning
- * As of VCS 2.0.0, this interface is undergoing refactoring. Some of its
- * functions may become renamed or removed in future versions.
+ * As of VCS 2.0.0, this interface is undergoing refactoring. Many of its
+ * functions are expected to become renamed or removed.
  */
 
 #ifndef VCS_DISPLAY_DISPLAY_H
