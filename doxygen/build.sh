@@ -1,1 +1,1 @@
-doxygen doxygen.cfg && php strip.php
+doxygen doxygen.cfg && php reduce.php

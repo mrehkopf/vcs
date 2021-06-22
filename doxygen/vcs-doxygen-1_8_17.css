@@ -8,7 +8,7 @@
  */
 
 @import url("https://use.fontawesome.com/releases/v5.12.0/css/all.css");
-@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital@0;1&family=Fira+Mono&display=swap');
 
 :root
 {
@@ -16,18 +16,19 @@
 	--secondary-background-color: #fafafa;
 	--content-padding: 27px;
 	--section-vertical-margin: 16px;
-	--theme-color: #ff00bc;
-	--theme-glow-color: #ff00bc19;
+	--theme-color: #ffa400;
+	--theme-glow-color: #ffa40024;
 	--link-color: #0c64ee;
 	--separating-border-color: #e6e6e6;
-	--contents-heading-vertical-margin: 21px;
+	--group-heading-vertical-margin: 21px;
 	--contents-container-horizontal-padding: 25px;
-	--contents-container-vertical-padding: var(--contents-heading-vertical-margin);
+	--contents-container-vertical-padding: var(--group-heading-vertical-margin);
 	--navi-indent: 1.25ch;
-	--main-nav-item-horizontal-spacing: 15px;
-	--primary-body-text-color: #353535;
-	--primary-heading-text-color: #151515;
+	--main-nav-item-horizontal-spacing: 14px;
+	--primary-body-text-color: #404040;
+	--primary-heading-text-color: #202020;
 	--secondary-body-text-color: gray;
+	--side-nav-resize-bar-width: 6px;
 }
 
 .iconfopen,
@@ -41,7 +42,7 @@
 {
 	color: var(--primary-body-text-color) !important;
 	line-height: initial !important;
-	font-family: "Nunito Sans", sans-serif !important;
+	font-family: "Lato", sans-serif !important;
 	font-size: 100% !important;
 	box-shadow: none !important;
 	text-shadow: none !important;
@@ -76,13 +77,13 @@ a:visited.el
 .contents .fieldname > a
 {
 	position: relative !important;
-	top: -180px !important;
+	top: -100px !important;
 }
 
 .contents a[name="details"]
 {
 	position: relative !important;
-	top: calc(var(--contents-heading-vertical-margin) - 15px) !important;
+	top: calc(var(--group-heading-vertical-margin) - 15px) !important;
 }
 
 table
@@ -160,14 +161,18 @@ hr
 
 #nav-tree .item.selected > .label > a
 {
-	color: black !important;
+	color: var(--link-color) !important;
 	font-weight: bold !important;
 }
 
 #nav-tree .item > .label > a:hover
 {
-	color: black !important;
 	text-decoration: underline !important;
+}
+
+#nav-tree .item:not(.selected) > .label > a:hover
+{
+	color: black !important;
 }
 
 #nav-tree-contents > ul,
@@ -232,19 +237,20 @@ hr
 .fieldtable
 {
 	width: 100% !important;
-	margin-top: 16px !important;
+	margin: 16px 0 !important;
 	border-radius: 0 !important;
 	border-color: var(--separating-border-color) !important;
 }
 
 .fieldtable .fieldname
 {
-	font-style: italic !important;
+	font-weight: bold !important;
 	width: 1ch !important; /* Shrink to content's minimum required width.*/
 }
 
 .fieldtable th
 {
+	border-radius: 0 !important;
 	font-weight: bold !important;
 	background-image: none !important;
 	background-color: #f2f2f2 !important;
@@ -291,7 +297,7 @@ hr
 
 .contents > p:first-of-type
 {
-	margin: 0 !important;
+	margin-top: 0 !important;
 }
 
 .contents > .textblock > h1,
@@ -303,6 +309,31 @@ hr
 	color: var(--primary-heading-text-color) !important;
 	margin-top: var(--content-padding) !important;
 	margin-bottom: var(--section-vertical-margin) !important;
+}
+
+.contents > .textblock > h1
+{
+	font-size: 160% !important;
+	font-weight: bold !important;
+}
+
+.contents > .textblock > h2
+{
+	font-size: 130% !important;
+	font-weight: bold !important;
+}
+
+.contents > .textblock > h3
+{
+	font-size: 100% !important;
+	font-weight: bold !important;
+}
+
+.contents > .textblock > h4
+{
+	font-size: 100% !important;
+	font-weight: normal !important;
+	font-style: italic !important;
 }
 
 .contents > .textblock > h1:first-child,
@@ -317,15 +348,15 @@ hr
 .directory
 {
 	border: none !important;
-	margin: var(--contents-heading-vertical-margin) 0 !important;
+	margin: var(--group-heading-vertical-margin) 0 !important;
 	margin-top: var(--contents-container-horizontal-padding) !important;
 }
 
 .directory .entry,
 .directory .entry + .desc
 {
-	padding-top: 3px !important;
-	padding-bottom: 3px !important;
+	padding-top: 4px !important;
+	padding-bottom: 4px !important;
 	padding-left: 8px !important;
 	padding-right: 10px !important;
 	background-color: white !important;
@@ -380,6 +411,7 @@ hr
 	font-weight: normal !important;
 	display: flex !important;
 	align-items: center !important;
+	color: black !important;
 }
 
 .ui-resizable-handle
@@ -387,6 +419,9 @@ hr
 	background-image: none !important;
 	background-color: white !important;
 	box-shadow: inset 0 0 0px 1px rgba(0, 0, 0, 0.4) !important;
+	width: var(--side-nav-resize-bar-width) !important;
+	min-width: var(--side-nav-resize-bar-width) !important;
+	max-width: var(--side-nav-resize-bar-width) !important;
 }
 
 #titlearea
@@ -404,6 +439,7 @@ hr
 #side-nav
 {
 	overflow: hidden !important;
+	padding-right: var(--side-nav-resize-bar-width) !important;
 }
 
 #main-menu
@@ -482,8 +518,8 @@ hr
 
 .memitem
 {
-	margin-bottom: var(--contents-heading-vertical-margin);
-	margin-top: 0 !important;
+	margin-bottom: 21px !important;
+	margin-top: -12px !important;
 }
 
 .memitem .memdoc:last-child
@@ -525,6 +561,11 @@ hr
 	display: none !important;
 }
 
+.memItemRight .vcs-enum-namespace
+{
+	display: none !important;
+}
+
 .memtitle
 {
 	visibility: hidden !important;
@@ -548,7 +589,7 @@ hr
 {
 	padding-left: 0 !important;
 	margin: 0 !important;
-	color: black !important;
+	color: var(--primary-heading-text-color) !important;
 }
 
 .memname td
@@ -579,7 +620,7 @@ table.memberdecls td[class*="memItem"],
 table.memberdecls td[class*="mdesc"]
 {
 	border-top: 1px solid var(--separating-border-color) !important;
-	padding: 3px !important;
+	padding: 4px !important;
 }
 
 table.memberdecls td.memItemLeft,
@@ -651,6 +692,7 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	border-bottom: 2px solid var(--separating-border-color) !important;
 	padding-top: 12px !important;
 	padding-bottom: 12px !important;
+	margin-bottom: 12px !important;
 }
 
 .memproto a
@@ -672,6 +714,11 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	padding-left: 0 !important;
 }
 
+.memdoc :first-child
+{
+	margin-top: 0 !important;
+}
+
 /* For function parameter names.*/
 .memdoc code
 {
@@ -681,11 +728,10 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 .memdoc > .fragment
 {
 	counter-reset: line;
-	background-color: #f2f2f2 !important;
-	border: none !important;
-	border-left: 6px solid #aaaaaa !important;
+	background-color: var(--secondary-background-color) !important;
+	border: 1px solid var(--separating-border-color) !important;
 	border-radius: 0 !important;
-	margin: 0px !important;
+	margin: 0 !important;
 	margin-top: var(--section-vertical-margin) !important;
 	margin-bottom: var(--section-vertical-margin) !important;
 	padding: 15px !important;
@@ -693,35 +739,29 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 
 .memdoc > .fragment > .line
 {
-	font-family: monospace !important;
-	font-size: 15px !important;
+	font-family: "Fira Mono", monospace !important;
+	font-size: 90% !important;
 	padding-top: 2px !important;
 	padding-bottom: 2px !important;
 }
 
 .memdoc > .fragment > .line:not(:last-child)
 {
-	margin-bottom: 5px !important;
-}
-
-.memdoc > .fragment > .line::before
-{
-	color: var(--secondary-body-text-color) !important;
-	counter-increment: line !important;
-	content: counter(line) ": " !important;
+	margin-bottom: 2px !important;
 }
 
 .memdoc > .fragment > .line > span
 {
 	color: inherit !important;
-	font-family: monospace !important;
+	font-family: "Fira Mono", monospace !important;
 }
 
 .memdoc > .fragment > .line > a.code,
 .memdoc > .fragment > .line > a.code:visited
 {
-	font-family: monospace !important;
+	font-family: "Fira Mono", monospace !important;
 	color: var(--link-color) !important;
+	font-weight: normal !important;
 }
 
 .section.note,
@@ -732,16 +772,17 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	padding: 0 !important;
 }
 
-.section.note *,
-.section.warning *
-{
-	color: black !important;
-}
-
 .section.note dt,
 .section.warning dt
 {
-	margin-right: 1ch !important;
+	margin-right: 0.4em !important;
+	color: black !important;
+}
+
+.section.note dd,
+.section.warning dd
+{
+	color: inherit !important;
 }
 
 .section.note dd,
@@ -825,38 +866,30 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 span .mlabel
 {
 	background-color: var(--page-background-color) !important;
-    color: black !important;
-    padding: 5px !important;
-	border: none !important;
-	border-left: 5px solid lightgray !important;
+    padding: 4px !important;
+    border: 1px solid var(--separating-border-color) !important;
     border-radius: 0 !important;
     font-weight: normal !important;
     vertical-align: bottom !important;
-	font-size: 80% !important;
+	font-size: 100% !important;
+	margin-left: 6px !important;
+	font-size: 85% !important;
 }
 
 .groupheader
 {
 	font-weight: bold !important;
-	color: black !important;
+	color: var(--primary-heading-text-color) !important;
 	font-size: 160% !important;
 	border: none !important;
-	margin: 0 !important;
-	margin-top: var(--contents-heading-vertical-margin) !important;
-	margin-bottom: calc(0.5 * var(--contents-heading-vertical-margin)) !important;
+	margin: var(--group-heading-vertical-margin) 0 !important;
+	margin-top: calc(20px + var(--group-heading-vertical-margin)) !important;
 	padding: 0 !important;
-	padding-top: 12px !important;
-	padding-bottom: 4px !important;
 }
 
-.memberdecls:first-of-type
+.contents .memberdecls:nth-child(2) .groupheader
 {
-	margin-top: -12px !important;
-}
-
-.contents .memberdecls:first-child .groupheader
-{
-	margin-top: 0 !important;
+	margin-top: var(--group-heading-vertical-margin) !important;
 }
 
 .navpath > ul
@@ -880,8 +913,8 @@ span .mlabel
 
 .navpath .navelem .el
 {
-	line-height: 170% !important;
-	font-size: 16px !important;
+	display: flex;
+	align-items: center;
 	font-weight: bold !important;
 	color: var(--primary-body-text-color) !important;
 }
@@ -918,4 +951,44 @@ span .mlabel
 {
 	transition-delay: 0s !important;
 	background-color: var(--theme-glow-color) !important;
+}
+
+.vcs-unnecessary-element,
+td.vcs-unnecessary-element
+{
+	display: none !important;
+}
+
+@media only screen and (max-width: 1100px)
+{
+	:root
+	{
+		--contents-container-horizontal-padding: 15px;
+	}
+	
+	#nav-path
+	{
+		display: none !important;
+	}
+}
+
+@media only screen and (max-width: 900px)
+{
+	:root
+	{
+		--contents-container-horizontal-padding: 10px;
+	}
+}
+
+@media only screen and (max-width: 768px)
+{
+	#side-nav
+	{
+		display: none !important;
+	}
+
+	#doc-content
+	{
+		margin-left: 0 !important;
+	}
 }
