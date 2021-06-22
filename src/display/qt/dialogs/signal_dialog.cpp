@@ -20,7 +20,6 @@
 #include "common/propagate/app_events.h"
 #include "display/qt/utility.h"
 #include "display/display.h"
-#include "capture/capture_device.h"
 #include "capture/capture.h"
 #include "common/disk/disk.h"
 #include "ui_signal_dialog.h"
@@ -33,7 +32,7 @@ static QTimer INFO_UPDATE_TIMER;
 // in the signal dialog.
 static unsigned NUM_DROPPED_FRAMES = 0;
 
-// How many captured frames the capture API has had to drop, in total. We'll
+// How many captured frames the capture subsystem has had to drop, in total. We'll
 // use this value to derive NUM_DROPPED_FRAMES.
 static unsigned GLOBAL_NUM_DROPPED_FRAMES = 0;
 
@@ -64,14 +63,14 @@ SignalDialog::SignalDialog(QWidget *parent) :
             VIDEO_MODE_UPTIME.start();
             INFO_UPDATE_TIMER.start(1000);
 
-            GLOBAL_NUM_DROPPED_FRAMES = kc_capture_device().get_missed_frames_count();
+            GLOBAL_NUM_DROPPED_FRAMES = kc_get_missed_frames_count();
 
             connect(&INFO_UPDATE_TIMER, &QTimer::timeout, [this]
             {
                 // Update missed frames count.
                 {
-                    NUM_DROPPED_FRAMES += (kc_capture_device().get_missed_frames_count() - GLOBAL_NUM_DROPPED_FRAMES);
-                    GLOBAL_NUM_DROPPED_FRAMES = kc_capture_device().get_missed_frames_count();
+                    NUM_DROPPED_FRAMES += (kc_get_missed_frames_count() - GLOBAL_NUM_DROPPED_FRAMES);
+                    GLOBAL_NUM_DROPPED_FRAMES = kc_get_missed_frames_count();
 
                     ui->tableWidget_propertyTable->modify_property("Frames dropped", QString::number(NUM_DROPPED_FRAMES));
                 }
@@ -82,7 +81,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
                     const unsigned minutes = (seconds / 60);
                     const unsigned hours   = (minutes / 60);
 
-                    if (kc_capture_device().has_no_signal())
+                    if (kc_has_no_signal())
                     {
                         ui->tableWidget_propertyTable->modify_property("Uptime", "-");
                     }
@@ -121,7 +120,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
         const auto update_info = [this]
         {
             VIDEO_MODE_UPTIME.restart();
-            update_information_table(kc_capture_device().has_signal());
+            update_information_table(kc_has_signal());
         };
 
         ke_events().capture.invalidSignal.subscribe([this]
@@ -174,7 +173,7 @@ void SignalDialog::set_controls_enabled(const bool state)
 
 void SignalDialog::update_information_table(const bool isReceivingSignal)
 {
-    const auto inputChannelIdx = kc_capture_device().get_input_channel_idx();
+    const auto inputChannelIdx = kc_get_input_channel_idx();
 
     ui->tableWidget_propertyTable->modify_property("Input channel",
     #if __linux__
@@ -185,8 +184,8 @@ void SignalDialog::update_information_table(const bool isReceivingSignal)
 
     if (isReceivingSignal)
     {
-        const resolution_s resolution = kc_capture_device().get_resolution();
-        const auto refreshRate = kc_capture_device().get_refresh_rate().value<double>();
+        const resolution_s resolution = kc_get_resolution();
+        const auto refreshRate = kc_get_refresh_rate().value<double>();
 
         ui->tableWidget_propertyTable->modify_property("Refresh rate", QString("%1 Hz").arg(QString::number(refreshRate, 'f', 3)));
         ui->tableWidget_propertyTable->modify_property("Resolution", QString("%1 \u00d7 %2").arg(resolution.w)

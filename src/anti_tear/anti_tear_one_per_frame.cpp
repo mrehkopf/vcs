@@ -37,7 +37,6 @@ void anti_tear_one_per_frame_c::process(const anti_tear_frame_s *const frame)
             nonTornFrameAlreadyCopied = true;
 
             // Fall through to scan for the next tear.
-            __attribute__ ((fallthrough));
         }
         // Look for a new tear and populate the back buffer with its data.
         case next_action_e::scan_for_tear:

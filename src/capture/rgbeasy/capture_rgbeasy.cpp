@@ -5,15 +5,33 @@
  *
  */
 
-#ifdef CAPTURE_DEVICE_RGBEASY
-
 #include <atomic>
 #include <cmath>
 #include "common/globals.h"
 #include "common/propagate/app_events.h"
-#include "capture/capture_device_rgbeasy.h"
 #include "capture/capture.h"
 #include "capture/alias.h"
+
+#if _WIN32
+    #include <windows.h>
+    #include <rgb.h>
+    #include <rgbapi.h>
+    #include <rgberror.h>
+#else
+    #include "capture/rgbeasy/null_rgbeasy.h"
+#endif
+
+static HRGB CAPTURE_HANDLE = 0;
+
+static HRGBDLL API_HANDLE = 0;
+
+// Set to 1 if we're currently capturing.
+static bool IS_CAPTURE_ACTIVE = false;
+
+// The corresponding flag will be set to true when the RGBEasy callback
+// thread notifies us of such an event; and reset back to false when we've
+// handled that event.
+static bool CAPTURE_EVENT_FLAGS[static_cast<int>(capture_event_e::num_enumerators)] = {false};
 
 static std::atomic<unsigned int> CNT_FRAMES_PROCESSED(0);
 static std::atomic<unsigned int> CNT_FRAMES_RECEIVED(0);
@@ -37,22 +55,33 @@ static bool IS_SIGNAL_INVALID = false;
 // The current input resolution.
 static resolution_s CAPTURE_RESOLUTION = {640, 480, 32};
 
-// The maximum image depth that the capturer can handle.
+// The maximum image depth that the capture device can handle.
 static const unsigned MAX_BIT_DEPTH = 32;
 
-// Marks the given capture event as having occurred.
-void capture_device_rgbeasy_s::push_capture_event(capture_event_e event)
+static bool apicall_succeeded(long callReturnValue)
 {
-    this->rgbeasyCaptureEventFlags[static_cast<int>(event)] = true;
+    if (callReturnValue != RGBERROR_NO_ERROR)
+    {
+        NBENE(("A call to the RGBEasy API returned with error code (0x%x).", callReturnValue));
+        return false;
+    }
+
+    return true;
+}
+
+// Marks the given capture event as having occurred.
+static void push_capture_event(capture_event_e event)
+{
+    CAPTURE_EVENT_FLAGS[static_cast<int>(event)] = true;
 
     return;
 }
 
 // Removes the given capture event from the 'queue', and returns its value.
-bool capture_device_rgbeasy_s::pop_capture_event(capture_event_e event)
+static bool pop_capture_event(capture_event_e event)
 {
-    const bool eventOccurred = this->rgbeasyCaptureEventFlags[static_cast<int>(event)];
-    this->rgbeasyCaptureEventFlags[static_cast<int>(event)] = false;
+    const bool eventOccurred = CAPTURE_EVENT_FLAGS[static_cast<int>(event)];
+    CAPTURE_EVENT_FLAGS[static_cast<int>(event)] = false;
 
     return eventOccurred;
 }
@@ -66,10 +95,8 @@ namespace rgbeasy_callbacks_n
 #if _WIN32
     // Called by the capture hardware when a new frame has been captured. The
     // captured RGBA data is in frameData.
-    void RGBCBKAPI frame_captured(HWND, HRGB, LPBITMAPINFOHEADER frameInfo, void *frameData, ULONG_PTR _thisPtr)
+    void RGBCBKAPI frame_captured(HWND, HRGB, LPBITMAPINFOHEADER frameInfo, void *frameData, ULONG_PTR)
     {
-        const auto thisPtr = reinterpret_cast<capture_device_rgbeasy_s*>(_thisPtr);
-
         // If the hardware is sending us a new frame while we're still unfinished
         // with processing the previous frame. In that case, we'll need to skip
         // this new frame.
@@ -79,7 +106,7 @@ namespace rgbeasy_callbacks_n
             return;
         }
 
-        std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
+        std::lock_guard<std::mutex> lock(kc_capture_mutex());
 
         // Ignore new callback events if the user has signaled to quit the program.
         if (PROGRAM_EXIT_REQUESTED)
@@ -87,7 +114,7 @@ namespace rgbeasy_callbacks_n
             goto done;
         }
 
-        // Verify that the
+        // Verify that the frame appears validly formed.
         {
             // This could happen e.g. if direct DMA transfer is enabled.
             if (frameData == nullptr ||
@@ -116,7 +143,7 @@ namespace rgbeasy_callbacks_n
             {
                 IS_SIGNAL_INVALID = true;
 
-                thisPtr->push_capture_event(capture_event_e::invalid_signal);
+                push_capture_event(capture_event_e::invalid_signal);
 
                 goto done;
             }
@@ -131,7 +158,7 @@ namespace rgbeasy_callbacks_n
         memcpy(FRAME_BUFFER.pixels.ptr(), (u8*)frameData,
                FRAME_BUFFER.pixels.up_to(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8)));
 
-        thisPtr->push_capture_event(capture_event_e::new_frame);
+        push_capture_event(capture_event_e::new_frame);
 
         done:
         CNT_FRAMES_RECEIVED++;
@@ -139,11 +166,9 @@ namespace rgbeasy_callbacks_n
     }
 
     // Called by the capture hardware when the input video mode changes.
-    void RGBCBKAPI video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO, ULONG_PTR _thisPtr)
+    void RGBCBKAPI video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO, ULONG_PTR)
     {
-        const auto thisPtr = reinterpret_cast<capture_device_rgbeasy_s*>(_thisPtr);
-
-        std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
+        std::lock_guard<std::mutex> lock(kc_capture_mutex());
 
         // Ignore new callback events if the user has signaled to quit the program.
         if (PROGRAM_EXIT_REQUESTED)
@@ -154,18 +179,16 @@ namespace rgbeasy_callbacks_n
         IS_SIGNAL_INVALID = false;
         RECEIVING_A_SIGNAL = true;
 
-        thisPtr->push_capture_event(capture_event_e::new_video_mode);
+        push_capture_event(capture_event_e::new_video_mode);
 
         done:
         return;
     }
 
     // Called by the capture hardware when it's given a signal it can't handle.
-    void RGBCBKAPI invalid_signal(HWND, HRGB, unsigned long horClock, unsigned long verClock, ULONG_PTR _thisPtr)
+    void RGBCBKAPI invalid_signal(HWND, HRGB, unsigned long horClock, unsigned long verClock, ULONG_PTR)
     {
-        const auto thisPtr = reinterpret_cast<capture_device_rgbeasy_s*>(_thisPtr);
-
-        std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
+        std::lock_guard<std::mutex> lock(kc_capture_mutex());
 
         // Ignore new callback events if the user has signaled to quit the program.
         if (PROGRAM_EXIT_REQUESTED)
@@ -174,96 +197,49 @@ namespace rgbeasy_callbacks_n
         }
 
         // Let the card apply its own no signal handler as well, just in case.
-        RGBInvalidSignal(thisPtr->rgbeasy_capture_handle(), horClock, verClock);
+        RGBInvalidSignal(CAPTURE_HANDLE, horClock, verClock);
 
         IS_SIGNAL_INVALID = true;
         RECEIVING_A_SIGNAL = false;
 
-        thisPtr->push_capture_event(capture_event_e::invalid_signal);
+        push_capture_event(capture_event_e::invalid_signal);
 
         done:
         return;
     }
 
     // Called by the capture hardware when the input signal is lost.
-    void RGBCBKAPI lost_signal(HWND, HRGB, ULONG_PTR _thisPtr)
+    void RGBCBKAPI lost_signal(HWND, HRGB, ULONG_PTR)
     {
-        const auto thisPtr = reinterpret_cast<capture_device_rgbeasy_s*>(_thisPtr);
-
-        std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
+        std::lock_guard<std::mutex> lock(kc_capture_mutex());
 
         // Let the card apply its own 'no signal' handler as well, just in case.
-        RGBNoSignal(thisPtr->rgbeasy_capture_handle());
+        RGBNoSignal(CAPTURE_HANDLE);
 
         RECEIVING_A_SIGNAL = false;
 
-        thisPtr->push_capture_event(capture_event_e::signal_lost);
+        push_capture_event(capture_event_e::signal_lost);
 
         return;
     }
 
-    void RGBCBKAPI error(HWND, HRGB, unsigned long, ULONG_PTR _thisPtr, unsigned long*)
+    void RGBCBKAPI error(HWND, HRGB, unsigned long, ULONG_PTR, unsigned long*)
     {
-        const auto thisPtr = reinterpret_cast<capture_device_rgbeasy_s*>(_thisPtr);
-
-        std::lock_guard<std::mutex> lock(thisPtr->captureMutex);
+        std::lock_guard<std::mutex> lock(kc_capture_mutex());
 
         RECEIVING_A_SIGNAL = false;
 
-        thisPtr->push_capture_event(capture_event_e::unrecoverable_error);
+        push_capture_event(capture_event_e::unrecoverable_error);
 
         return;
     }
 #endif
 }
 
-bool capture_device_rgbeasy_s::initialize(void)
+static bool release_hardware(void)
 {
-    INFO(("Initializing the capture API."));
-
-    FRAME_BUFFER.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (RGBEASY)");
-
-    // Open an input on the capture hardware, and have it start sending in frames.
-    if (!this->initialize_hardware() ||
-        !this->start_capture())
-    {
-        NBENE(("Failed to initialize the capture API."));
-
-        PROGRAM_EXIT_REQUESTED = 1;
-        goto done;
-    }
-
-    done:
-    // We can successfully exit if the initialization didn't trigger a request
-    // to terminate the program.
-    return !PROGRAM_EXIT_REQUESTED;
-}
-
-bool capture_device_rgbeasy_s::release(void)
-{
-    DEBUG(("Releasing the capture API."));
-
-    FRAME_BUFFER.pixels.release_memory();
-
-    if (this->stop_capture() &&
-        this->release_hardware())
-    {
-        DEBUG(("The capture API has been released."));
-
-        return true;
-    }
-    else
-    {
-        NBENE(("Failed to release the capture API."));
-
-        return false;
-    }
-}
-
-bool capture_device_rgbeasy_s::release_hardware(void)
-{
-    if (!apicall_succeeded(RGBCloseInput(this->captureHandle)) ||
-        !apicall_succeeded(RGBFree(this->rgbAPIHandle)))
+    if (!apicall_succeeded(RGBCloseInput(CAPTURE_HANDLE)) ||
+        !apicall_succeeded(RGBFree(API_HANDLE)))
     {
         return false;
     }
@@ -271,7 +247,7 @@ bool capture_device_rgbeasy_s::release_hardware(void)
     return true;
 }
 
-PIXELFORMAT capture_device_rgbeasy_s::pixel_format_to_rgbeasy_pixel_format(capture_pixel_format_e fmt)
+static PIXELFORMAT pixel_format_to_rgbeasy_pixel_format(capture_pixel_format_e fmt)
 {
     switch (fmt)
     {
@@ -282,25 +258,23 @@ PIXELFORMAT capture_device_rgbeasy_s::pixel_format_to_rgbeasy_pixel_format(captu
     }
 }
 
-bool capture_device_rgbeasy_s::initialize_hardware(void)
+static bool initialize_hardware(void)
 {
-    INFO(("Initializing the capture hardware."));
-
-    if (!apicall_succeeded(RGBLoad(&this->rgbAPIHandle)))
+    if (!apicall_succeeded(RGBLoad(&API_HANDLE)))
     {
         goto fail;
     }
 
-    if (!apicall_succeeded(RGBOpenInput(INPUT_CHANNEL_IDX,            &this->captureHandle)) ||
-        !apicall_succeeded(RGBSetFrameDropping(this->captureHandle,   FRAME_SKIP)) ||
-        !apicall_succeeded(RGBSetDMADirect(this->captureHandle,       FALSE)) ||
-        !apicall_succeeded(RGBSetPixelFormat(this->captureHandle,     pixel_format_to_rgbeasy_pixel_format(CAPTURE_PIXEL_FORMAT))) ||
-        !apicall_succeeded(RGBUseOutputBuffers(this->captureHandle,   FALSE)) ||
-        !apicall_succeeded(RGBSetFrameCapturedFn(this->captureHandle, rgbeasy_callbacks_n::frame_captured,     (ULONG_PTR)this)) ||
-        !apicall_succeeded(RGBSetModeChangedFn(this->captureHandle,   rgbeasy_callbacks_n::video_mode_changed, (ULONG_PTR)this)) ||
-        !apicall_succeeded(RGBSetInvalidSignalFn(this->captureHandle, rgbeasy_callbacks_n::invalid_signal,     (ULONG_PTR)this)) ||
-        !apicall_succeeded(RGBSetErrorFn(this->captureHandle,         rgbeasy_callbacks_n::error,              (ULONG_PTR)this)) ||
-        !apicall_succeeded(RGBSetNoSignalFn(this->captureHandle,      rgbeasy_callbacks_n::lost_signal,        (ULONG_PTR)this)))
+    if (!apicall_succeeded(RGBOpenInput(INPUT_CHANNEL_IDX,      &CAPTURE_HANDLE)) ||
+        !apicall_succeeded(RGBSetFrameDropping(CAPTURE_HANDLE,   FRAME_SKIP)) ||
+        !apicall_succeeded(RGBSetDMADirect(CAPTURE_HANDLE,       FALSE)) ||
+        !apicall_succeeded(RGBSetPixelFormat(CAPTURE_HANDLE,     pixel_format_to_rgbeasy_pixel_format(CAPTURE_PIXEL_FORMAT))) ||
+        !apicall_succeeded(RGBUseOutputBuffers(CAPTURE_HANDLE,   FALSE)) ||
+        !apicall_succeeded(RGBSetFrameCapturedFn(CAPTURE_HANDLE, rgbeasy_callbacks_n::frame_captured, 0)) ||
+        !apicall_succeeded(RGBSetModeChangedFn(CAPTURE_HANDLE,   rgbeasy_callbacks_n::video_mode_changed, 0)) ||
+        !apicall_succeeded(RGBSetInvalidSignalFn(CAPTURE_HANDLE, rgbeasy_callbacks_n::invalid_signal, 0)) ||
+        !apicall_succeeded(RGBSetErrorFn(CAPTURE_HANDLE,         rgbeasy_callbacks_n::error, 0)) ||
+        !apicall_succeeded(RGBSetNoSignalFn(CAPTURE_HANDLE,      rgbeasy_callbacks_n::lost_signal, 0)))
     {
         NBENE(("Failed to initialize the capture hardware."));
         goto fail;
@@ -312,18 +286,18 @@ fail:
     return false;
 }
 
-bool capture_device_rgbeasy_s::start_capture(void)
+static bool start_capture(void)
 {
     INFO(("Starting capture on input channel %d.", (INPUT_CHANNEL_IDX + 1)));
 
-    if (!apicall_succeeded(RGBStartCapture(this->captureHandle)))
+    if (!apicall_succeeded(RGBStartCapture(CAPTURE_HANDLE)))
     {
         NBENE(("Failed to start capture on input channel %u.", (INPUT_CHANNEL_IDX + 1)));
         goto fail;
     }
     else
     {
-        this->captureIsActive = true;
+        IS_CAPTURE_ACTIVE = true;
     }
 
     return true;
@@ -332,13 +306,13 @@ bool capture_device_rgbeasy_s::start_capture(void)
     return false;
 }
 
-bool capture_device_rgbeasy_s::stop_capture(void)
+static bool stop_capture(void)
 {
     INFO(("Stopping capture on input channel %d.", (INPUT_CHANNEL_IDX + 1)));
 
-    if (this->captureIsActive)
+    if (IS_CAPTURE_ACTIVE)
     {
-        if (!apicall_succeeded(RGBStopCapture(this->captureHandle)))
+        if (!apicall_succeeded(RGBStopCapture(CAPTURE_HANDLE)))
         {
             NBENE(("Failed to stop capture on input channel %d.", (INPUT_CHANNEL_IDX + 1)));
             goto fail;
@@ -350,14 +324,14 @@ bool capture_device_rgbeasy_s::stop_capture(void)
         goto fail;
     }
 
-    this->captureIsActive = false;
+    IS_CAPTURE_ACTIVE = false;
 
     DEBUG(("Restoring default callback handlers."));
-    RGBSetFrameCapturedFn(this->captureHandle, NULL, 0);
-    RGBSetModeChangedFn(this->captureHandle, NULL, 0);
-    RGBSetInvalidSignalFn(this->captureHandle, NULL, 0);
-    RGBSetNoSignalFn(this->captureHandle, NULL, 0);
-    RGBSetErrorFn(this->captureHandle, NULL, 0);
+    RGBSetFrameCapturedFn(CAPTURE_HANDLE, NULL, 0);
+    RGBSetModeChangedFn(CAPTURE_HANDLE, NULL, 0);
+    RGBSetInvalidSignalFn(CAPTURE_HANDLE, NULL, 0);
+    RGBSetNoSignalFn(CAPTURE_HANDLE, NULL, 0);
+    RGBSetErrorFn(CAPTURE_HANDLE, NULL, 0);
 
     return true;
 
@@ -365,20 +339,52 @@ bool capture_device_rgbeasy_s::stop_capture(void)
     return false;
 }
 
-bool capture_device_rgbeasy_s::apicall_succeeded(long callReturnValue) const
+bool kc_initialize_device(void)
 {
-    if (callReturnValue != RGBERROR_NO_ERROR)
+    INFO(("Initializing the RGBEASY capture device."));
+
+    FRAME_BUFFER.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (RGBEASY)");
+
+    // Open an input on the capture hardware, and have it start sending in frames.
+    if (!initialize_hardware() ||
+        !start_capture())
     {
-        NBENE(("A call to the RGBEasy API returned with error code (0x%x).", callReturnValue));
-        return false;
+        NBENE(("Failed to initialize the capture device."));
+
+        PROGRAM_EXIT_REQUESTED = 1;
+        goto done;
     }
 
-    return true;
+    done:
+    // We can successfully exit if the initialization didn't trigger a request
+    // to terminate the program.
+    return !PROGRAM_EXIT_REQUESTED;
 }
 
-bool capture_device_rgbeasy_s::device_supports_component_capture(void) const
+bool kc_release_device(void)
 {
-    const int numInputChannels = this->get_device_maximum_input_count();
+    DEBUG(("Releasing the capture device."));
+
+    FRAME_BUFFER.pixels.release_memory();
+
+    if (stop_capture() &&
+        release_hardware())
+    {
+        DEBUG(("The capture device has been released."));
+
+        return true;
+    }
+    else
+    {
+        NBENE(("Failed to release the capture device."));
+
+        return false;
+    }
+}
+
+bool kc_device_supports_component_capture(void)
+{
+    const int numInputChannels = kc_get_device_maximum_input_count();
 
     for (int i = 0; i < numInputChannels; i++)
     {
@@ -398,9 +404,9 @@ bool capture_device_rgbeasy_s::device_supports_component_capture(void) const
     return false;
 }
 
-bool capture_device_rgbeasy_s::device_supports_composite_capture(void) const
+bool kc_device_supports_composite_capture(void)
 {
-    const int numInputChannels = this->get_device_maximum_input_count();
+    const int numInputChannels = kc_get_device_maximum_input_count();
     long isSupported = 0;
 
     for (int i = 0; i < numInputChannels; i++)
@@ -419,7 +425,7 @@ bool capture_device_rgbeasy_s::device_supports_composite_capture(void) const
     return false;
 }
 
-bool capture_device_rgbeasy_s::device_supports_deinterlacing(void) const
+bool kc_device_supports_deinterlacing(void)
 {
     long isSupported = 0;
 
@@ -431,9 +437,9 @@ bool capture_device_rgbeasy_s::device_supports_deinterlacing(void) const
     return bool(isSupported);
 }
 
-bool capture_device_rgbeasy_s::device_supports_svideo(void) const
+bool kc_device_supports_svideo(void)
 {
-    const int numInputChannels = this->get_device_maximum_input_count();
+    const int numInputChannels = kc_get_device_maximum_input_count();
 
     for (int i = 0; i < numInputChannels; i++)
     {
@@ -453,7 +459,7 @@ bool capture_device_rgbeasy_s::device_supports_svideo(void) const
     return false;
 }
 
-bool capture_device_rgbeasy_s::device_supports_dma(void) const
+bool kc_device_supports_dma(void)
 {
     long isSupported = 0;
 
@@ -465,9 +471,9 @@ bool capture_device_rgbeasy_s::device_supports_dma(void) const
     return bool(isSupported);
 }
 
-bool capture_device_rgbeasy_s::device_supports_dvi(void) const
+bool kc_device_supports_dvi(void)
 {
-    const int numInputChannels = this->get_device_maximum_input_count();
+    const int numInputChannels = kc_get_device_maximum_input_count();
 
     for (int i = 0; i < numInputChannels; i++)
     {
@@ -487,9 +493,9 @@ bool capture_device_rgbeasy_s::device_supports_dvi(void) const
     return false;
 }
 
-bool capture_device_rgbeasy_s::device_supports_vga(void) const
+bool kc_device_supports_vga(void)
 {
-    const int numInputChannels = this->get_device_maximum_input_count();
+    const int numInputChannels = kc_get_device_maximum_input_count();
 
     for (int i = 0; i < numInputChannels; i++)
     {
@@ -509,7 +515,7 @@ bool capture_device_rgbeasy_s::device_supports_vga(void) const
     return false;
 }
 
-bool capture_device_rgbeasy_s::device_supports_yuv(void) const
+bool kc_device_supports_yuv(void)
 {
     long isSupported = 0;
 
@@ -521,12 +527,7 @@ bool capture_device_rgbeasy_s::device_supports_yuv(void) const
     return bool(isSupported);
 }
 
-HRGB capture_device_rgbeasy_s::rgbeasy_capture_handle(void)
-{
-    return this->captureHandle;
-}
-
-std::string capture_device_rgbeasy_s::get_device_firmware_version(void) const
+std::string kc_get_device_firmware_version(void)
 {
     RGBINPUTINFO ii = {0};
     ii.Size = sizeof(ii);
@@ -539,7 +540,7 @@ std::string capture_device_rgbeasy_s::get_device_firmware_version(void) const
     return std::to_string(ii.FirmWare);
 }
 
-std::string capture_device_rgbeasy_s::get_device_driver_version(void) const
+std::string kc_get_device_driver_version(void)
 {
     RGBINPUTINFO ii = {0};
     ii.Size = sizeof(ii);
@@ -555,7 +556,7 @@ std::string capture_device_rgbeasy_s::get_device_driver_version(void) const
                        std::to_string(ii.Driver.Revision));
 }
 
-std::string capture_device_rgbeasy_s::get_device_name(void) const
+std::string kc_get_device_name(void)
 {
     const std::string unknownName = "Unknown capture device";
 
@@ -574,12 +575,12 @@ std::string capture_device_rgbeasy_s::get_device_name(void) const
     }
 }
 
-std::string capture_device_rgbeasy_s::get_api_name(void) const
+std::string kc_get_api_name(void)
 {
     return "RGBEasy";
 }
 
-int capture_device_rgbeasy_s::get_device_maximum_input_count(void) const
+int kc_get_device_maximum_input_count(void)
 {
     unsigned long numInputs = 0;
 
@@ -591,18 +592,18 @@ int capture_device_rgbeasy_s::get_device_maximum_input_count(void) const
     return numInputs;
 }
 
-video_signal_parameters_s capture_device_rgbeasy_s::get_video_signal_parameters(void) const
+video_signal_parameters_s kc_get_video_signal_parameters(void)
 {
     video_signal_parameters_s p = {0};
 
-    if (!apicall_succeeded(RGBGetPhase(this->captureHandle,         &p.phase)) ||
-        !apicall_succeeded(RGBGetBlackLevel(this->captureHandle,    &p.blackLevel)) ||
-        !apicall_succeeded(RGBGetHorPosition(this->captureHandle,   &p.horizontalPosition)) ||
-        !apicall_succeeded(RGBGetVerPosition(this->captureHandle,   &p.verticalPosition)) ||
-        !apicall_succeeded(RGBGetHorScale(this->captureHandle,      &p.horizontalScale)) ||
-        !apicall_succeeded(RGBGetBrightness(this->captureHandle,    &p.overallBrightness)) ||
-        !apicall_succeeded(RGBGetContrast(this->captureHandle,      &p.overallContrast)) ||
-        !apicall_succeeded(RGBGetColourBalance(this->captureHandle, &p.redBrightness,
+    if (!apicall_succeeded(RGBGetPhase(CAPTURE_HANDLE,         &p.phase)) ||
+        !apicall_succeeded(RGBGetBlackLevel(CAPTURE_HANDLE,    &p.blackLevel)) ||
+        !apicall_succeeded(RGBGetHorPosition(CAPTURE_HANDLE,   &p.horizontalPosition)) ||
+        !apicall_succeeded(RGBGetVerPosition(CAPTURE_HANDLE,   &p.verticalPosition)) ||
+        !apicall_succeeded(RGBGetHorScale(CAPTURE_HANDLE,      &p.horizontalScale)) ||
+        !apicall_succeeded(RGBGetBrightness(CAPTURE_HANDLE,    &p.overallBrightness)) ||
+        !apicall_succeeded(RGBGetContrast(CAPTURE_HANDLE,      &p.overallContrast)) ||
+        !apicall_succeeded(RGBGetColourBalance(CAPTURE_HANDLE, &p.redBrightness,
                                                                     &p.greenBrightness,
                                                                     &p.blueBrightness,
                                                                     &p.redContrast,
@@ -615,18 +616,18 @@ video_signal_parameters_s capture_device_rgbeasy_s::get_video_signal_parameters(
     return p;
 }
 
-video_signal_parameters_s capture_device_rgbeasy_s::get_default_video_signal_parameters(void) const
+video_signal_parameters_s kc_get_default_video_signal_parameters(void)
 {
     video_signal_parameters_s p = {0};
 
-    if (!apicall_succeeded(RGBGetPhaseDefault(this->captureHandle,         &p.phase)) ||
-        !apicall_succeeded(RGBGetBlackLevelDefault(this->captureHandle,    &p.blackLevel)) ||
-        !apicall_succeeded(RGBGetHorPositionDefault(this->captureHandle,   &p.horizontalPosition)) ||
-        !apicall_succeeded(RGBGetVerPositionDefault(this->captureHandle,   &p.verticalPosition)) ||
-        !apicall_succeeded(RGBGetHorScaleDefault(this->captureHandle,      &p.horizontalScale)) ||
-        !apicall_succeeded(RGBGetBrightnessDefault(this->captureHandle,    &p.overallBrightness)) ||
-        !apicall_succeeded(RGBGetContrastDefault(this->captureHandle,      &p.overallContrast)) ||
-        !apicall_succeeded(RGBGetColourBalanceDefault(this->captureHandle, &p.redBrightness,
+    if (!apicall_succeeded(RGBGetPhaseDefault(CAPTURE_HANDLE,         &p.phase)) ||
+        !apicall_succeeded(RGBGetBlackLevelDefault(CAPTURE_HANDLE,    &p.blackLevel)) ||
+        !apicall_succeeded(RGBGetHorPositionDefault(CAPTURE_HANDLE,   &p.horizontalPosition)) ||
+        !apicall_succeeded(RGBGetVerPositionDefault(CAPTURE_HANDLE,   &p.verticalPosition)) ||
+        !apicall_succeeded(RGBGetHorScaleDefault(CAPTURE_HANDLE,      &p.horizontalScale)) ||
+        !apicall_succeeded(RGBGetBrightnessDefault(CAPTURE_HANDLE,    &p.overallBrightness)) ||
+        !apicall_succeeded(RGBGetContrastDefault(CAPTURE_HANDLE,      &p.overallContrast)) ||
+        !apicall_succeeded(RGBGetColourBalanceDefault(CAPTURE_HANDLE, &p.redBrightness,
                                                                            &p.greenBrightness,
                                                                            &p.blueBrightness,
                                                                            &p.redContrast,
@@ -639,18 +640,18 @@ video_signal_parameters_s capture_device_rgbeasy_s::get_default_video_signal_par
     return p;
 }
 
-video_signal_parameters_s capture_device_rgbeasy_s::get_minimum_video_signal_parameters(void) const
+video_signal_parameters_s kc_get_minimum_video_signal_parameters(void)
 {
     video_signal_parameters_s p = {0};
 
-    if (!apicall_succeeded(RGBGetPhaseMinimum(this->captureHandle,         &p.phase)) ||
-        !apicall_succeeded(RGBGetBlackLevelMinimum(this->captureHandle,    &p.blackLevel)) ||
-        !apicall_succeeded(RGBGetHorPositionMinimum(this->captureHandle,   &p.horizontalPosition)) ||
-        !apicall_succeeded(RGBGetVerPositionMinimum(this->captureHandle,   &p.verticalPosition)) ||
-        !apicall_succeeded(RGBGetHorScaleMinimum(this->captureHandle,      &p.horizontalScale)) ||
-        !apicall_succeeded(RGBGetBrightnessMinimum(this->captureHandle,    &p.overallBrightness)) ||
-        !apicall_succeeded(RGBGetContrastMinimum(this->captureHandle,      &p.overallContrast)) ||
-        !apicall_succeeded(RGBGetColourBalanceMinimum(this->captureHandle, &p.redBrightness,
+    if (!apicall_succeeded(RGBGetPhaseMinimum(CAPTURE_HANDLE,         &p.phase)) ||
+        !apicall_succeeded(RGBGetBlackLevelMinimum(CAPTURE_HANDLE,    &p.blackLevel)) ||
+        !apicall_succeeded(RGBGetHorPositionMinimum(CAPTURE_HANDLE,   &p.horizontalPosition)) ||
+        !apicall_succeeded(RGBGetVerPositionMinimum(CAPTURE_HANDLE,   &p.verticalPosition)) ||
+        !apicall_succeeded(RGBGetHorScaleMinimum(CAPTURE_HANDLE,      &p.horizontalScale)) ||
+        !apicall_succeeded(RGBGetBrightnessMinimum(CAPTURE_HANDLE,    &p.overallBrightness)) ||
+        !apicall_succeeded(RGBGetContrastMinimum(CAPTURE_HANDLE,      &p.overallContrast)) ||
+        !apicall_succeeded(RGBGetColourBalanceMinimum(CAPTURE_HANDLE, &p.redBrightness,
                                                                            &p.greenBrightness,
                                                                            &p.blueBrightness,
                                                                            &p.redContrast,
@@ -663,18 +664,18 @@ video_signal_parameters_s capture_device_rgbeasy_s::get_minimum_video_signal_par
     return p;
 }
 
-video_signal_parameters_s capture_device_rgbeasy_s::get_maximum_video_signal_parameters(void) const
+video_signal_parameters_s kc_get_maximum_video_signal_parameters(void)
 {
     video_signal_parameters_s p = {0};
 
-    if (!apicall_succeeded(RGBGetPhaseMaximum(this->captureHandle,         &p.phase)) ||
-        !apicall_succeeded(RGBGetBlackLevelMaximum(this->captureHandle,    &p.blackLevel)) ||
-        !apicall_succeeded(RGBGetHorPositionMaximum(this->captureHandle,   &p.horizontalPosition)) ||
-        !apicall_succeeded(RGBGetVerPositionMaximum(this->captureHandle,   &p.verticalPosition)) ||
-        !apicall_succeeded(RGBGetHorScaleMaximum(this->captureHandle,      &p.horizontalScale)) ||
-        !apicall_succeeded(RGBGetBrightnessMaximum(this->captureHandle,    &p.overallBrightness)) ||
-        !apicall_succeeded(RGBGetContrastMaximum(this->captureHandle,      &p.overallContrast)) ||
-        !apicall_succeeded(RGBGetColourBalanceMaximum(this->captureHandle, &p.redBrightness,
+    if (!apicall_succeeded(RGBGetPhaseMaximum(CAPTURE_HANDLE,         &p.phase)) ||
+        !apicall_succeeded(RGBGetBlackLevelMaximum(CAPTURE_HANDLE,    &p.blackLevel)) ||
+        !apicall_succeeded(RGBGetHorPositionMaximum(CAPTURE_HANDLE,   &p.horizontalPosition)) ||
+        !apicall_succeeded(RGBGetVerPositionMaximum(CAPTURE_HANDLE,   &p.verticalPosition)) ||
+        !apicall_succeeded(RGBGetHorScaleMaximum(CAPTURE_HANDLE,      &p.horizontalScale)) ||
+        !apicall_succeeded(RGBGetBrightnessMaximum(CAPTURE_HANDLE,    &p.overallBrightness)) ||
+        !apicall_succeeded(RGBGetContrastMaximum(CAPTURE_HANDLE,      &p.overallContrast)) ||
+        !apicall_succeeded(RGBGetColourBalanceMaximum(CAPTURE_HANDLE, &p.redBrightness,
                                                                            &p.greenBrightness,
                                                                            &p.blueBrightness,
                                                                            &p.redContrast,
@@ -687,32 +688,32 @@ video_signal_parameters_s capture_device_rgbeasy_s::get_maximum_video_signal_par
     return p;
 }
 
-resolution_s capture_device_rgbeasy_s::get_resolution_from_api(void)
+static resolution_s kc_get_resolution_from_api(void)
 {
     resolution_s r = {640, 480, 32};
 
-    if (!apicall_succeeded(RGBGetCaptureWidth(this->captureHandle, &r.w)) ||
-        !apicall_succeeded(RGBGetCaptureHeight(this->captureHandle, &r.h)))
+    if (!apicall_succeeded(RGBGetCaptureWidth(CAPTURE_HANDLE, &r.w)) ||
+        !apicall_succeeded(RGBGetCaptureHeight(CAPTURE_HANDLE, &r.h)))
     {
         k_assert(0, "The capture hardware failed to report its input resolution.");
     }
 
-    r.bpp = this->get_color_depth();
+    r.bpp = kc_get_color_depth();
 
     return r;
 }
 
-resolution_s capture_device_rgbeasy_s::get_resolution(void) const
+resolution_s kc_get_resolution(void)
 {
     return CAPTURE_RESOLUTION;
 }
 
-resolution_s capture_device_rgbeasy_s::get_minimum_resolution(void) const
+resolution_s kc_get_minimum_resolution(void)
 {
     resolution_s r = {640, 480, 32};
 
-    if (!apicall_succeeded(RGBGetCaptureWidthMinimum(this->captureHandle, &r.w)) ||
-        !apicall_succeeded(RGBGetCaptureHeightMinimum(this->captureHandle, &r.h)))
+    if (!apicall_succeeded(RGBGetCaptureWidthMinimum(CAPTURE_HANDLE, &r.w)) ||
+        !apicall_succeeded(RGBGetCaptureHeightMinimum(CAPTURE_HANDLE, &r.h)))
     {
         return {0};
     }
@@ -723,12 +724,12 @@ resolution_s capture_device_rgbeasy_s::get_minimum_resolution(void) const
     return r;
 }
 
-resolution_s capture_device_rgbeasy_s::get_maximum_resolution(void) const
+resolution_s kc_get_maximum_resolution(void)
 {
     resolution_s r = {640, 480, 32};
 
-    if (!apicall_succeeded(RGBGetCaptureWidthMaximum(this->captureHandle, &r.w)) ||
-        !apicall_succeeded(RGBGetCaptureHeightMaximum(this->captureHandle, &r.h)))
+    if (!apicall_succeeded(RGBGetCaptureWidthMaximum(CAPTURE_HANDLE, &r.w)) ||
+        !apicall_succeeded(RGBGetCaptureHeightMaximum(CAPTURE_HANDLE, &r.h)))
     {
         return {0};
     }
@@ -739,12 +740,12 @@ resolution_s capture_device_rgbeasy_s::get_maximum_resolution(void) const
     return r;
 }
 
-const captured_frame_s& capture_device_rgbeasy_s::get_frame_buffer(void) const
+const captured_frame_s& kc_get_frame_buffer(void)
 {
     return FRAME_BUFFER;
 }
 
-bool capture_device_rgbeasy_s::mark_frame_buffer_as_processed(void)
+bool kc_mark_frame_buffer_as_processed(void)
 {
     CNT_FRAMES_PROCESSED = CNT_FRAMES_RECEIVED.load();
 
@@ -753,7 +754,7 @@ bool capture_device_rgbeasy_s::mark_frame_buffer_as_processed(void)
     return true;
 }
 
-capture_event_e capture_device_rgbeasy_s::pop_capture_event_queue(void)
+capture_event_e kc_pop_capture_event_queue(void)
 {
     if (pop_capture_event(capture_event_e::unrecoverable_error))
     {
@@ -761,7 +762,7 @@ capture_event_e capture_device_rgbeasy_s::pop_capture_event_queue(void)
     }
     else if (pop_capture_event(capture_event_e::new_video_mode))
     {
-        CAPTURE_RESOLUTION = this->get_resolution_from_api();
+        CAPTURE_RESOLUTION = kc_get_resolution_from_api();
 
         return capture_event_e::new_video_mode;
     }
@@ -782,9 +783,9 @@ capture_event_e capture_device_rgbeasy_s::pop_capture_event_queue(void)
     return (RECEIVING_A_SIGNAL? capture_event_e::none : capture_event_e::sleep);
 }
 
-refresh_rate_s capture_device_rgbeasy_s::get_refresh_rate(void) const
+refresh_rate_s kc_get_refresh_rate(void)
 {
-    if (this->has_no_signal())
+    if (kc_has_no_signal())
     {
         DEBUG(("Tried to query the refresh rate while no signal was being received. Ignoring this."));
         return refresh_rate_s(0);
@@ -793,7 +794,7 @@ refresh_rate_s capture_device_rgbeasy_s::get_refresh_rate(void) const
     RGBMODEINFO mi = {0};
     mi.Size = sizeof(mi);
 
-    if (apicall_succeeded(RGBGetModeInfo(this->captureHandle, &mi)))
+    if (apicall_succeeded(RGBGetModeInfo(CAPTURE_HANDLE, &mi)))
     {
         return refresh_rate_s(mi.RefreshRate / 1000.0);
     }
@@ -803,9 +804,11 @@ refresh_rate_s capture_device_rgbeasy_s::get_refresh_rate(void) const
     }
 }
 
-bool capture_device_rgbeasy_s::set_deinterlacing_mode(const capture_deinterlacing_mode_e mode)
+bool kc_set_deinterlacing_mode(const capture_deinterlacing_mode_e mode)
 {
     DEINTERLACE apiDeinterlacingMode = RGB_DEINTERLACE_BOB;
+
+    (void)apiDeinterlacingMode;
 
     DEBUG(("Setting deinterlacing mode to %d.", static_cast<int>(mode)));
 
@@ -818,7 +821,7 @@ bool capture_device_rgbeasy_s::set_deinterlacing_mode(const capture_deinterlacin
         default: k_assert(0, "Unknown deinterlacing mode."); return false;
     }
 
-    if (apicall_succeeded(RGBSetDeinterlace(this->captureHandle, apiDeinterlacingMode)))
+    if (apicall_succeeded(RGBSetDeinterlace(CAPTURE_HANDLE, apiDeinterlacingMode)))
     {
         return true;
     }
@@ -829,9 +832,9 @@ bool capture_device_rgbeasy_s::set_deinterlacing_mode(const capture_deinterlacin
     }
 }
 
-bool capture_device_rgbeasy_s::set_video_signal_parameters(const video_signal_parameters_s &p)
+bool kc_set_video_signal_parameters(const video_signal_parameters_s &p)
 {
-    if (this->has_no_signal())
+    if (kc_has_no_signal())
     {
         DEBUG(("Was asked to set capture video params while there was no signal. "
                "Ignoring the request."));
@@ -840,14 +843,14 @@ bool capture_device_rgbeasy_s::set_video_signal_parameters(const video_signal_pa
     }
 
     /// TODO: Add error checking.
-    RGBSetPhase(this->captureHandle,         p.phase);
-    RGBSetBlackLevel(this->captureHandle,    p.blackLevel);
-    RGBSetHorPosition(this->captureHandle,   p.horizontalPosition);
-    RGBSetHorScale(this->captureHandle,      p.horizontalScale);
-    RGBSetVerPosition(this->captureHandle,   p.verticalPosition);
-    RGBSetBrightness(this->captureHandle,    p.overallBrightness);
-    RGBSetContrast(this->captureHandle,      p.overallContrast);
-    RGBSetColourBalance(this->captureHandle, p.redBrightness,
+    RGBSetPhase(CAPTURE_HANDLE,         p.phase);
+    RGBSetBlackLevel(CAPTURE_HANDLE,    p.blackLevel);
+    RGBSetHorPosition(CAPTURE_HANDLE,   p.horizontalPosition);
+    RGBSetHorScale(CAPTURE_HANDLE,      p.horizontalScale);
+    RGBSetVerPosition(CAPTURE_HANDLE,   p.verticalPosition);
+    RGBSetBrightness(CAPTURE_HANDLE,    p.overallBrightness);
+    RGBSetContrast(CAPTURE_HANDLE,      p.overallContrast);
+    RGBSetColourBalance(CAPTURE_HANDLE, p.redBrightness,
                                              p.greenBrightness,
                                              p.blueBrightness,
                                              p.redContrast,
@@ -857,9 +860,9 @@ bool capture_device_rgbeasy_s::set_video_signal_parameters(const video_signal_pa
     return true;
 }
 
-bool capture_device_rgbeasy_s::set_input_channel(const unsigned idx)
+bool kc_set_input_channel(const unsigned idx)
 {
-    const int numInputChannels = this->get_device_maximum_input_count();
+    const int numInputChannels = kc_get_device_maximum_input_count();
 
     if (numInputChannels < 0)
     {
@@ -875,7 +878,7 @@ bool capture_device_rgbeasy_s::set_input_channel(const unsigned idx)
         goto fail;
     }
 
-    if (apicall_succeeded(RGBSetInput(this->captureHandle, idx)))
+    if (apicall_succeeded(RGBSetInput(CAPTURE_HANDLE, idx)))
     {
         INFO(("Setting capture input channel to %u.", (idx + 1)));
 
@@ -896,9 +899,9 @@ bool capture_device_rgbeasy_s::set_input_channel(const unsigned idx)
     return false;
 }
 
-bool capture_device_rgbeasy_s::set_pixel_format(const capture_pixel_format_e pf)
+bool kc_set_pixel_format(const capture_pixel_format_e pf)
 {
-    if (apicall_succeeded(RGBSetPixelFormat(this->captureHandle, pixel_format_to_rgbeasy_pixel_format(pf))))
+    if (apicall_succeeded(RGBSetPixelFormat(CAPTURE_HANDLE, pixel_format_to_rgbeasy_pixel_format(pf))))
     {
         CAPTURE_PIXEL_FORMAT = pf;
 
@@ -908,9 +911,9 @@ bool capture_device_rgbeasy_s::set_pixel_format(const capture_pixel_format_e pf)
     return false;
 }
 
-bool capture_device_rgbeasy_s::set_resolution(const resolution_s &r)
+bool kc_set_resolution(const resolution_s &r)
 {
-    if (!this->captureIsActive)
+    if (!IS_CAPTURE_ACTIVE)
     {
         INFO(("Was asked to set the capture resolution while capture was inactive. Ignoring this request."));
         return false;
@@ -918,7 +921,7 @@ bool capture_device_rgbeasy_s::set_resolution(const resolution_s &r)
 
     unsigned long wd = 0, hd = 0;
 
-    const auto currentInputRes = this->get_resolution();
+    const auto currentInputRes = kc_get_resolution();
     if (r.w == currentInputRes.w &&
         r.h == currentInputRes.h)
     {
@@ -927,7 +930,7 @@ bool capture_device_rgbeasy_s::set_resolution(const resolution_s &r)
     }
 
     // Test whether the capture hardware can handle the given resolution.
-    if (!apicall_succeeded(RGBTestCaptureWidth(this->captureHandle, r.w)))
+    if (!apicall_succeeded(RGBTestCaptureWidth(CAPTURE_HANDLE, r.w)))
     {
         NBENE(("Failed to force the new input resolution (%u x %u). The capture hardware says the width "
                "is illegal.", r.w, r.h));
@@ -935,9 +938,9 @@ bool capture_device_rgbeasy_s::set_resolution(const resolution_s &r)
     }
 
     // Set the new resolution.
-    if (!apicall_succeeded(RGBSetCaptureWidth(this->captureHandle, (unsigned long)r.w)) ||
-        !apicall_succeeded(RGBSetCaptureHeight(this->captureHandle, (unsigned long)r.h)) ||
-        !apicall_succeeded(RGBSetOutputSize(this->captureHandle, (unsigned long)r.w, (unsigned long)r.h)))
+    if (!apicall_succeeded(RGBSetCaptureWidth(CAPTURE_HANDLE, (unsigned long)r.w)) ||
+        !apicall_succeeded(RGBSetCaptureHeight(CAPTURE_HANDLE, (unsigned long)r.h)) ||
+        !apicall_succeeded(RGBSetOutputSize(CAPTURE_HANDLE, (unsigned long)r.w, (unsigned long)r.h)))
     {
         NBENE(("The capture hardware could not properly initialize the new input resolution (%u x %u).",
                r.w, r.h));
@@ -945,7 +948,7 @@ bool capture_device_rgbeasy_s::set_resolution(const resolution_s &r)
     }
 
     /// Temp hack to test if the new resolution is valid.
-    RGBGetOutputSize(this->captureHandle, &wd, &hd);
+    RGBGetOutputSize(CAPTURE_HANDLE, &wd, &hd);
     if (wd != r.w ||
         hd != r.h)
     {
@@ -953,7 +956,7 @@ bool capture_device_rgbeasy_s::set_resolution(const resolution_s &r)
         goto fail;
     }
 
-    CAPTURE_RESOLUTION = this->get_resolution_from_api();
+    CAPTURE_RESOLUTION = kc_get_resolution_from_api();
 
     return true;
 
@@ -961,17 +964,17 @@ bool capture_device_rgbeasy_s::set_resolution(const resolution_s &r)
     return false;
 }
 
-uint capture_device_rgbeasy_s::get_missed_frames_count(void) const
+uint kc_get_missed_frames_count(void)
 {
     return NUM_NEW_FRAME_EVENTS_SKIPPED;
 }
 
-uint capture_device_rgbeasy_s::get_input_channel_idx(void) const
+uint kc_get_input_channel_idx(void)
 {
     return INPUT_CHANNEL_IDX;
 }
 
-uint capture_device_rgbeasy_s::get_color_depth(void) const
+uint kc_get_color_depth(void)
 {
     switch (CAPTURE_PIXEL_FORMAT)
     {
@@ -982,24 +985,39 @@ uint capture_device_rgbeasy_s::get_color_depth(void) const
     }
 }
 
-bool capture_device_rgbeasy_s::is_capturing(void) const
+bool is_capturing(void)
 {
-    return this->captureIsActive;
+    return IS_CAPTURE_ACTIVE;
 }
 
-bool capture_device_rgbeasy_s::has_invalid_signal(void) const
+
+bool kc_has_valid_signal(void)
+{
+    return !kc_has_invalid_signal();
+}
+
+bool kc_has_invalid_signal(void)
 {
     return IS_SIGNAL_INVALID;
 }
 
-bool capture_device_rgbeasy_s::has_no_signal(void) const
+bool kc_has_signal(void)
+{
+    return !kc_has_no_signal();
+}
+
+bool kc_has_no_signal(void)
 {
     return !RECEIVING_A_SIGNAL;
 }
 
-capture_pixel_format_e capture_device_rgbeasy_s::get_pixel_format(void) const
+/// TODO: Implement, if it can be done with the RGBEASY API.
+bool kc_has_invalid_device(void)
+{
+    return false;
+}
+
+capture_pixel_format_e kc_get_pixel_format(void)
 {
     return CAPTURE_PIXEL_FORMAT;
 }
-
-#endif

@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <cstring>
 #include <linux/videodev2.h>
-#include "capture/ic_v4l_video_parameters.h"
+#include "capture/vision_v4l/ic_v4l_video_parameters.h"
 
 #define INCLUDE_VISION
 #include <visionrgb/include/rgb133v4l2.h>

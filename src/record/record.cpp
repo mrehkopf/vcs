@@ -25,7 +25,6 @@
 #include "record/recording_buffer.h"
 #include "record/framerate_estimator.h"
 #include "capture/capture.h"
-#include "capture/capture_device.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/core/core.hpp>
@@ -212,7 +211,7 @@ bool krecord_start_recording(const char *const filename,
                       RECORDING.playbackFrameRate,
                       cv::Size(RECORDING.resolution.w, RECORDING.resolution.h));
 
-    RECORDING.numGlobalDroppedFrames = kc_capture_device().get_missed_frames_count();
+    RECORDING.numGlobalDroppedFrames = kc_get_missed_frames_count();
     RECORDING.recordingTimer.start();
     runEncoder = true;
     encoderError = "No error specified.";
@@ -349,8 +348,8 @@ void krecord_record_current_frame(void)
             }
         }
 
-        RECORDING.numDroppedFrames += (kc_capture_device().get_missed_frames_count() - RECORDING.numGlobalDroppedFrames);
-        RECORDING.numGlobalDroppedFrames = kc_capture_device().get_missed_frames_count();
+        RECORDING.numDroppedFrames += (kc_get_missed_frames_count() - RECORDING.numGlobalDroppedFrames);
+        RECORDING.numGlobalDroppedFrames = kc_get_missed_frames_count();
     }
 
     return;

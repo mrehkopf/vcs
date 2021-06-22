@@ -18,9 +18,9 @@
 #include <atomic>
 #include <vector>
 #include "common/globals.h"
-#include "capture/capture_device.h"
 #include "common/refresh_rate.h"
-#include "capture/ic_v4l_video_parameters.h"
+#include "capture/capture.h"
+#include "capture/vision_v4l/ic_v4l_video_parameters.h"
 
 struct v4l2_format;
 
@@ -29,8 +29,7 @@ class input_channel_v4l_c
 public:
     // Open the input channel (/dev/videoX device) and start capturing from
     // it.
-    input_channel_v4l_c(capture_device_s *const parentCaptureAPI,
-                        const std::string v4lDeviceFileName,
+    input_channel_v4l_c(const std::string v4lDeviceFileName,
                         const unsigned numBackBuffers,
                         captured_frame_s *const dstFrameBuffer);
 
@@ -147,9 +146,6 @@ private:
     // Flags that the capture channel will set to convey to the VCS thread the
     // various capture events it detects during capture.
     std::vector<unsigned> captureEventFlags = std::vector<unsigned>(static_cast<unsigned>(capture_event_e::num_enumerators));
-
-    // The VCS capture API that this input channel was created by.
-    capture_device_s *const captureAPI;
 
     std::string v4lDeviceFileName = "";
 

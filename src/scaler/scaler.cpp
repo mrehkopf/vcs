@@ -12,7 +12,6 @@
 #include <cmath>
 #include "anti_tear/anti_tear.h"
 #include "common/propagate/app_events.h"
-#include "capture/capture_device.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
@@ -111,7 +110,7 @@ resolution_s ks_scaler_output_resolution(void)
         return {r.w, r.h, OUTPUT_BIT_DEPTH};
     }
 
-    resolution_s inRes = kc_capture_device().get_resolution();
+    resolution_s inRes = kc_get_resolution();
     resolution_s outRes = inRes;
 
     // Base resolution.
@@ -389,7 +388,7 @@ int cv_error_handler(int status, const char* func_name,
 
 void ks_initialize_scaler(void)
 {
-    INFO(("Initializing the scaler."));
+    INFO(("Initializing the scaler subsystem."));
 
     #if USE_OPENCV
         cv::redirectError(cv_error_handler);
@@ -404,16 +403,16 @@ void ks_initialize_scaler(void)
 
     ke_events().capture.newFrame.subscribe([]
     {
-        ks_scale_frame(kc_capture_device().get_frame_buffer());
+        ks_scale_frame(kc_get_frame_buffer());
 
         ke_events().scaler.newFrame.fire();
 
-        kc_capture_device().mark_frame_buffer_as_processed();
+        kc_mark_frame_buffer_as_processed();
     });
 
     ke_events().capture.newVideoMode.subscribe([]
     {
-        const auto currentInputRes = kc_capture_device().get_resolution();
+        const auto currentInputRes = kc_get_resolution();
         ks_set_output_base_resolution(currentInputRes, false);
     });
 
@@ -521,8 +520,8 @@ void ks_scale_frame(const captured_frame_s &frame)
     resolution_s frameRes = frame.r; /// Temp hack. May want to modify the .bpp value.
     resolution_s outputRes = ks_scaler_output_resolution();
 
-    const resolution_s minres = kc_capture_device().get_minimum_resolution();
-    const resolution_s maxres = kc_capture_device().get_maximum_resolution();
+    const resolution_s minres = kc_get_minimum_resolution();
+    const resolution_s maxres = kc_get_maximum_resolution();
 
     // Verify that we have a workable frame.
     {
@@ -546,7 +545,7 @@ void ks_scale_frame(const captured_frame_s &frame)
             NBENE(("Was asked to scale a null frame. Ignoring it."));
             goto done;
         }
-        else if (frame.pixelFormat != kc_capture_device().get_pixel_format())
+        else if (frame.pixelFormat != kc_get_pixel_format())
         {
             NBENE(("Was asked to scale a frame whose pixel format differed from the expected. Ignoring it."));
             goto done;

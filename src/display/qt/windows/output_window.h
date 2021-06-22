@@ -139,7 +139,7 @@ private:
     // A user-definable custom title for the output window.
     QString windowTitleOverride = "";
 
-    // Set to true if the capture API is currently reporting that captured frames
+    // Set to true if the capture subsystem is currently reporting that captured frames
     // are being dropped; false otherwise. The value gets updated at some interval,
     // e.g. 1 second.
     bool areFramesBeingDropped = false;

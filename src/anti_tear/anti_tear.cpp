@@ -12,7 +12,6 @@
 #include "anti_tear/anti_tearer.h"
 #include "anti_tear/anti_tear.h"
 #include "display/display.h"
-#include "capture/capture_device.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "common/memory/memory.h"
@@ -39,7 +38,7 @@ void kat_initialize_anti_tear(void)
 {
     const resolution_s &maxres = {MAX_CAPTURE_WIDTH, MAX_CAPTURE_HEIGHT, MAX_CAPTURE_BPP};
 
-    INFO(("Initializing the anti-tear engine for %u x %u max.", maxres.w, maxres.h));
+    INFO(("Initializing the anti-tear subsystem for %u x %u max.", maxres.w, maxres.h));
 
     ANTI_TEARER.initialize(maxres);
 

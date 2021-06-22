@@ -11,8 +11,6 @@
  *
  */
 
-#ifdef CAPTURE_DEVICE_VISION_V4L
-
 #include <unordered_map>
 #include <cmath>
 #include <atomic>
@@ -26,21 +24,23 @@
 #include <cstring>
 #include <chrono>
 #include <poll.h>
-#include "capture/capture_device_vision_v4l.h"
-#include "capture/input_channel_v4l.h"
+#include "capture/vision_v4l/input_channel_v4l.h"
 #include "capture/video_presets.h"
-#include "capture/ic_v4l_video_parameters.h"
+#include "capture/vision_v4l/ic_v4l_video_parameters.h"
 #include "common/propagate/app_events.h"
 
 #define INCLUDE_VISION
 #include <visionrgb/include/rgb133v4l2.h>
+
+// The input channel (/dev/videoX device) we're currently capturing from.
+static input_channel_v4l_c *CUR_INPUT_CHANNEL = nullptr;
 
 // The latest frame we've received from the capture device.
 static captured_frame_s FRAME_BUFFER;
 
 // The numeric index of the currently-active input channel. This would be 0 for
 // /dev/video0, 4 for /dev/video4, etc.
-static unsigned CURRENT_INPUT_CHANNEL_IDX = 0;
+static unsigned CUR_INPUT_CHANNEL_IDX = 0;
 
 // Cumulative count of frames that were sent to us by the capture device but which
 // VCS was too busy to process. Note that this count doesn't account for the missed
@@ -49,39 +49,39 @@ static unsigned CURRENT_INPUT_CHANNEL_IDX = 0;
 // channel's value.
 static unsigned NUM_MISSED_FRAMES = 0;
 
-capture_event_e capture_device_vision_v4l_s::pop_capture_event_queue(void)
+capture_event_e kc_pop_capture_event_queue(void)
 {
-    if (!this->inputChannel)
+    if (!CUR_INPUT_CHANNEL)
     {
         return capture_event_e::unrecoverable_error;
     }
-    else if (this->inputChannel->pop_capture_event(capture_event_e::unrecoverable_error))
+    else if (CUR_INPUT_CHANNEL->pop_capture_event(capture_event_e::unrecoverable_error))
     {
-        this->inputChannel->captureStatus.invalidDevice = true;
+        CUR_INPUT_CHANNEL->captureStatus.invalidDevice = true;
 
         return capture_event_e::unrecoverable_error;
     }
-    else if (this->inputChannel->pop_capture_event(capture_event_e::new_video_mode))
+    else if (CUR_INPUT_CHANNEL->pop_capture_event(capture_event_e::new_video_mode))
     {
         return capture_event_e::new_video_mode;
     }
-    else if (this->inputChannel->pop_capture_event(capture_event_e::signal_lost))
+    else if (CUR_INPUT_CHANNEL->pop_capture_event(capture_event_e::signal_lost))
     {
         return capture_event_e::signal_lost;
     }
-    else if (this->inputChannel->pop_capture_event(capture_event_e::invalid_signal))
+    else if (CUR_INPUT_CHANNEL->pop_capture_event(capture_event_e::invalid_signal))
     {
         return capture_event_e::invalid_signal;
     }
-    else if (this->inputChannel->pop_capture_event(capture_event_e::invalid_device))
+    else if (CUR_INPUT_CHANNEL->pop_capture_event(capture_event_e::invalid_device))
     {
         return capture_event_e::invalid_device;
     }
-    else if (this->inputChannel->pop_capture_event(capture_event_e::new_frame))
+    else if (CUR_INPUT_CHANNEL->pop_capture_event(capture_event_e::new_frame))
     {
         return capture_event_e::new_frame;
     }
-    else if (this->inputChannel->pop_capture_event(capture_event_e::sleep))
+    else if (CUR_INPUT_CHANNEL->pop_capture_event(capture_event_e::sleep))
     {
         return capture_event_e::sleep;
     }
@@ -89,21 +89,21 @@ capture_event_e capture_device_vision_v4l_s::pop_capture_event_queue(void)
     return capture_event_e::none;
 }
 
-resolution_s capture_device_vision_v4l_s::get_resolution(void) const
+resolution_s kc_get_resolution(void)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    return this->inputChannel->captureStatus.resolution;
+    return CUR_INPUT_CHANNEL->captureStatus.resolution;
 }
 
-resolution_s capture_device_vision_v4l_s::get_minimum_resolution(void) const
+resolution_s kc_get_minimum_resolution(void)
 {
     /// TODO: Query actual hardware parameters for this.
     return resolution_s{MIN_OUTPUT_WIDTH, MIN_OUTPUT_HEIGHT, 32};
 }
 
-resolution_s capture_device_vision_v4l_s::get_maximum_resolution(void) const
+resolution_s kc_get_maximum_resolution(void)
 {
     /// TODO: Query actual hardware parameters for this.
 
@@ -112,89 +112,82 @@ resolution_s capture_device_vision_v4l_s::get_maximum_resolution(void) const
                         std::min(32u, MAX_CAPTURE_BPP)};
 }
 
-refresh_rate_s capture_device_vision_v4l_s::get_refresh_rate(void) const
+refresh_rate_s kc_get_refresh_rate(void)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    return this->inputChannel->captureStatus.refreshRate;
+    return CUR_INPUT_CHANNEL->captureStatus.refreshRate;
 }
 
-uint capture_device_vision_v4l_s::get_missed_frames_count(void) const
+uint kc_get_missed_frames_count(void)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    return (NUM_MISSED_FRAMES + this->inputChannel->captureStatus.numNewFrameEventsSkipped);
+    return (NUM_MISSED_FRAMES + CUR_INPUT_CHANNEL->captureStatus.numNewFrameEventsSkipped);
 }
 
-bool capture_device_vision_v4l_s::has_invalid_signal() const
+bool kc_has_valid_signal(void)
 {
-    k_assert((this->inputChannel),
+    return !kc_has_invalid_signal();
+}
+
+bool kc_has_invalid_signal(void)
+{
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    return this->inputChannel->captureStatus.invalidSignal;
+    return CUR_INPUT_CHANNEL->captureStatus.invalidSignal;
 }
 
-bool capture_device_vision_v4l_s::has_invalid_device() const
+bool kc_has_invalid_device(void)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    return this->inputChannel->captureStatus.invalidDevice;
+    return CUR_INPUT_CHANNEL->captureStatus.invalidDevice;
 }
 
-bool capture_device_vision_v4l_s::has_no_signal(void) const
+bool kc_has_signal(void)
 {
-    k_assert((this->inputChannel),
+    return !kc_has_no_signal();
+}
+
+bool kc_has_no_signal(void)
+{
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    return this->inputChannel->captureStatus.noSignal;
+    return CUR_INPUT_CHANNEL->captureStatus.noSignal;
 }
 
-capture_pixel_format_e capture_device_vision_v4l_s::get_pixel_format() const
+capture_pixel_format_e kc_get_pixel_format(void)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    return this->inputChannel->captureStatus.pixelFormat;
+    return CUR_INPUT_CHANNEL->captureStatus.pixelFormat;
 }
 
-resolution_s capture_device_vision_v4l_s::get_source_resolution(void) const
+bool kc_initialize_device(void)
 {
-    k_assert((this->inputChannel),
-             "Attempting to set input channel parameters on a null channel.");
+    INFO(("Initializing the Vision/V4L capture device."));
 
-    v4l2_format format;
-    memset(&format, 0, sizeof(format));
-    format.type = V4L2_BUF_TYPE_CAPTURE_SOURCE;
-
-    if (!this->inputChannel->device_ioctl(RGB133_VIDIOC_G_SRC_FMT, &format))
-    {
-        k_assert(0, "The capture hardware failed to report its input resolution.");
-    }
-
-    return {format.fmt.pix.width,
-            format.fmt.pix.height,
-            32}; /// TODO: Don't assume the bit depth.
-}
-
-bool capture_device_vision_v4l_s::initialize(void)
-{
-    ke_events().capture.newVideoMode.subscribe([this]
+    ke_events().capture.newVideoMode.subscribe([]
     {
         // Re-create the input channel for the new video mode.
-        this->set_input_channel(CURRENT_INPUT_CHANNEL_IDX);
+        kc_set_input_channel(CUR_INPUT_CHANNEL_IDX);
     });
 
-    ke_events().capture.signalLost.subscribe([this]
+    ke_events().capture.signalLost.subscribe([]
     {
-        this->inputChannel->captureStatus.videoParameters.update();
+        CUR_INPUT_CHANNEL->captureStatus.videoParameters.update();
     });
 
-    ke_events().capture.newInputChannel.subscribe([this]
+    ke_events().capture.newInputChannel.subscribe([]
     {
-        this->inputChannel->captureStatus.videoParameters.update();
+        CUR_INPUT_CHANNEL->captureStatus.videoParameters.update();
         kvideopreset_apply_current_active_preset();
     });
 
@@ -202,7 +195,7 @@ bool capture_device_vision_v4l_s::initialize(void)
     FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
     FRAME_BUFFER.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (V4L)");
 
-    this->set_input_channel(INPUT_CHANNEL_IDX);
+    kc_set_input_channel(INPUT_CHANNEL_IDX);
 
     return true;
 
@@ -211,23 +204,23 @@ bool capture_device_vision_v4l_s::initialize(void)
     return false;
 }
 
-bool capture_device_vision_v4l_s::release(void)
+bool kc_release_device(void)
 {
-    delete this->inputChannel;
+    delete CUR_INPUT_CHANNEL;
 
     FRAME_BUFFER.pixels.release_memory();
 
     return true;
 }
 
-std::string capture_device_vision_v4l_s::get_device_name(void) const
+std::string kc_get_device_name(void)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
     v4l2_capability caps = {};
 
-    if (!this->inputChannel->device_ioctl(VIDIOC_QUERYCAP, &caps))
+    if (!CUR_INPUT_CHANNEL->device_ioctl(VIDIOC_QUERYCAP, &caps))
     {
         NBENE(("Failed to query capture device capabilities."));
 
@@ -237,14 +230,14 @@ std::string capture_device_vision_v4l_s::get_device_name(void) const
     return (char*)caps.card;
 }
 
-std::string capture_device_vision_v4l_s::get_device_driver_version(void) const
+std::string kc_get_device_driver_version(void)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
     v4l2_capability caps = {};
 
-    if (!this->inputChannel->device_ioctl(VIDIOC_QUERYCAP, &caps))
+    if (!CUR_INPUT_CHANNEL->device_ioctl(VIDIOC_QUERYCAP, &caps))
     {
         NBENE(("Failed to query capture device capabilities."));
 
@@ -257,13 +250,13 @@ std::string capture_device_vision_v4l_s::get_device_driver_version(void) const
             std::to_string((caps.version >> 0) & 0xff));
 }
 
-std::string capture_device_vision_v4l_s::get_device_firmware_version(void) const
+std::string kc_get_device_firmware_version(void)
 {
     return "Unknown";
 }
 
 
-int capture_device_vision_v4l_s::get_device_maximum_input_count(void) const
+int kc_get_device_maximum_input_count(void)
 {
     const char baseDevicePath[] = "/dev/video";
     int numInputs = 0;
@@ -304,22 +297,22 @@ int capture_device_vision_v4l_s::get_device_maximum_input_count(void) const
     return numInputs;
 }
 
-uint capture_device_vision_v4l_s::get_input_channel_idx(void) const
+uint kc_get_input_channel_idx(void)
 {
-    return CURRENT_INPUT_CHANNEL_IDX;
+    return CUR_INPUT_CHANNEL_IDX;
 }
 
-video_signal_parameters_s capture_device_vision_v4l_s::get_video_signal_parameters(void) const
+video_signal_parameters_s kc_get_video_signal_parameters(void)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    if (this->has_no_signal())
+    if (kc_has_no_signal())
     {
-        return this->get_default_video_signal_parameters();
+        return kc_get_default_video_signal_parameters();
     }
 
-    const auto videoParams = this->inputChannel->captureStatus.videoParameters;
+    const auto videoParams = CUR_INPUT_CHANNEL->captureStatus.videoParameters;
 
     video_signal_parameters_s p;
 
@@ -340,18 +333,18 @@ video_signal_parameters_s capture_device_vision_v4l_s::get_video_signal_paramete
     return p;
 }
 
-video_signal_parameters_s capture_device_vision_v4l_s::get_default_video_signal_parameters(void) const
+video_signal_parameters_s kc_get_default_video_signal_parameters(void)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    const auto videoParams = this->inputChannel->captureStatus.videoParameters;
+    const auto videoParams = CUR_INPUT_CHANNEL->captureStatus.videoParameters;
 
     video_signal_parameters_s p;
 
     // The V4L API returns no parameter ranges while there's no signal - so let's
     // approximate them.
-    if (this->has_no_signal())
+    if (kc_has_no_signal())
     {
         p.phase              = 0;
         p.blackLevel         = 8;
@@ -387,18 +380,18 @@ video_signal_parameters_s capture_device_vision_v4l_s::get_default_video_signal_
     return p;
 }
 
-video_signal_parameters_s capture_device_vision_v4l_s::get_minimum_video_signal_parameters(void) const
+video_signal_parameters_s kc_get_minimum_video_signal_parameters(void)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    const auto videoParams = this->inputChannel->captureStatus.videoParameters;
+    const auto videoParams = CUR_INPUT_CHANNEL->captureStatus.videoParameters;
 
     video_signal_parameters_s p;
 
     // The V4L API returns no parameter ranges while there's no signal - so let's
     // approximate them.
-    if (this->has_no_signal())
+    if (kc_has_no_signal())
     {
         p.phase              = 0;
         p.blackLevel         = 1;
@@ -434,18 +427,18 @@ video_signal_parameters_s capture_device_vision_v4l_s::get_minimum_video_signal_
     return p;
 }
 
-video_signal_parameters_s capture_device_vision_v4l_s::get_maximum_video_signal_parameters(void) const
+video_signal_parameters_s kc_get_maximum_video_signal_parameters(void)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    const auto videoParams = this->inputChannel->captureStatus.videoParameters;
+    const auto videoParams = CUR_INPUT_CHANNEL->captureStatus.videoParameters;
 
     video_signal_parameters_s p;
 
     // The V4L API returns no parameter ranges while there's no signal - so let's
     // approximate them.
-    if (this->has_no_signal())
+    if (kc_has_no_signal())
     {
         p.phase              = 31;
         p.blackLevel         = 255;
@@ -481,51 +474,83 @@ video_signal_parameters_s capture_device_vision_v4l_s::get_maximum_video_signal_
     return p;
 }
 
-const captured_frame_s& capture_device_vision_v4l_s::get_frame_buffer(void) const
+const captured_frame_s& kc_get_frame_buffer(void)
 {
     return FRAME_BUFFER;
 }
 
-bool capture_device_vision_v4l_s::mark_frame_buffer_as_processed(void)
+bool kc_mark_frame_buffer_as_processed(void)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to set input channel parameters on a null channel.");
 
-    this->inputChannel->captureStatus.numFramesProcessed++;
+    CUR_INPUT_CHANNEL->captureStatus.numFramesProcessed++;
 
     FRAME_BUFFER.processed = true;
 
     return true;
 }
 
-bool capture_device_vision_v4l_s::set_input_channel(const unsigned idx)
+std::string kc_get_api_name(void)
 {
-    if (this->inputChannel)
-    {
-        NUM_MISSED_FRAMES += this->inputChannel->captureStatus.numNewFrameEventsSkipped;
+    return "Vision/Video4Linux";
+}
 
-        delete this->inputChannel;
+/// TODO: Implement.
+bool kc_set_pixel_format(const capture_pixel_format_e pf)
+{
+    (void)pf;
+
+    return false;
+}
+
+/// TODO: Implement.
+bool kc_set_deinterlacing_mode(const capture_deinterlacing_mode_e mode)
+{
+    (void)mode;
+
+    return false;
+}
+
+/// TODO: Implement.
+uint kc_get_color_depth(void)
+{
+    return 32;
+}
+
+/// TODO: Implement.
+bool kc_is_capturing(void)
+{
+    return true;
+}
+
+bool kc_set_input_channel(const unsigned idx)
+{
+    if (CUR_INPUT_CHANNEL)
+    {
+        NUM_MISSED_FRAMES += CUR_INPUT_CHANNEL->captureStatus.numNewFrameEventsSkipped;
+
+        delete CUR_INPUT_CHANNEL;
     }
 
-    const std::string captureDeviceFileName = (std::string("/dev/video") + std::to_string(idx));
-    this->inputChannel = new input_channel_v4l_c(this,
-                                                 captureDeviceFileName,
-                                                 3,
-                                                 &FRAME_BUFFER);
+    const std::string captureDeviceFilename = (std::string("/dev/video") + std::to_string(idx));
+    CUR_INPUT_CHANNEL = new input_channel_v4l_c(captureDeviceFilename,
+                                                3,
+                                                &FRAME_BUFFER);
 
-    CURRENT_INPUT_CHANNEL_IDX = idx;
+    CUR_INPUT_CHANNEL_IDX = idx;
 
     ke_events().capture.newInputChannel.fire();
 
     return true;
 }
 
-bool capture_device_vision_v4l_s::set_video_signal_parameters(const video_signal_parameters_s &p)
+bool kc_set_video_signal_parameters(const video_signal_parameters_s &p)
 {
-    k_assert((this->inputChannel),
+    k_assert(CUR_INPUT_CHANNEL,
              "Attempting to set input channel parameters on a null channel.");
 
-    if (this->has_no_signal())
+    if (kc_has_no_signal())
     {
         DEBUG(("Was asked to set capture video params while there was no signal. "
                "Ignoring the request."));
@@ -533,30 +558,76 @@ bool capture_device_vision_v4l_s::set_video_signal_parameters(const video_signal
         return true;
     }
 
-    auto videoParams = this->inputChannel->captureStatus.videoParameters;
+    auto videoParams = CUR_INPUT_CHANNEL->captureStatus.videoParameters;
 
-    const auto set_parameter = [&videoParams](const int value, const ic_v4l_video_parameters_c::parameter_type_e parameterType)
+    const auto kc_set_parameter = [&videoParams](const int value, const ic_v4l_video_parameters_c::parameter_type_e parameterType)
     {
         return videoParams.set_value(value, parameterType);
     };
 
-    set_parameter(p.phase,              ic_v4l_video_parameters_c::parameter_type_e::phase);
-    set_parameter(p.blackLevel,         ic_v4l_video_parameters_c::parameter_type_e::black_level);
-    set_parameter(p.horizontalPosition, ic_v4l_video_parameters_c::parameter_type_e::horizontal_position);
-    set_parameter(p.verticalPosition,   ic_v4l_video_parameters_c::parameter_type_e::vertical_position);
-    set_parameter(p.horizontalScale,    ic_v4l_video_parameters_c::parameter_type_e::horizontal_size);
-    set_parameter(p.overallBrightness,  ic_v4l_video_parameters_c::parameter_type_e::brightness);
-    set_parameter(p.overallContrast,    ic_v4l_video_parameters_c::parameter_type_e::contrast);
-    set_parameter(p.redBrightness,      ic_v4l_video_parameters_c::parameter_type_e::red_brightness);
-    set_parameter(p.greenBrightness,    ic_v4l_video_parameters_c::parameter_type_e::green_brightness);
-    set_parameter(p.blueBrightness,     ic_v4l_video_parameters_c::parameter_type_e::blue_brightness);
-    set_parameter(p.redContrast,        ic_v4l_video_parameters_c::parameter_type_e::red_contrast);
-    set_parameter(p.greenContrast,      ic_v4l_video_parameters_c::parameter_type_e::green_contrast);
-    set_parameter(p.blueContrast,       ic_v4l_video_parameters_c::parameter_type_e::blue_contrast);
+    kc_set_parameter(p.phase,              ic_v4l_video_parameters_c::parameter_type_e::phase);
+    kc_set_parameter(p.blackLevel,         ic_v4l_video_parameters_c::parameter_type_e::black_level);
+    kc_set_parameter(p.horizontalPosition, ic_v4l_video_parameters_c::parameter_type_e::horizontal_position);
+    kc_set_parameter(p.verticalPosition,   ic_v4l_video_parameters_c::parameter_type_e::vertical_position);
+    kc_set_parameter(p.horizontalScale,    ic_v4l_video_parameters_c::parameter_type_e::horizontal_size);
+    kc_set_parameter(p.overallBrightness,  ic_v4l_video_parameters_c::parameter_type_e::brightness);
+    kc_set_parameter(p.overallContrast,    ic_v4l_video_parameters_c::parameter_type_e::contrast);
+    kc_set_parameter(p.redBrightness,      ic_v4l_video_parameters_c::parameter_type_e::red_brightness);
+    kc_set_parameter(p.greenBrightness,    ic_v4l_video_parameters_c::parameter_type_e::green_brightness);
+    kc_set_parameter(p.blueBrightness,     ic_v4l_video_parameters_c::parameter_type_e::blue_brightness);
+    kc_set_parameter(p.redContrast,        ic_v4l_video_parameters_c::parameter_type_e::red_contrast);
+    kc_set_parameter(p.greenContrast,      ic_v4l_video_parameters_c::parameter_type_e::green_contrast);
+    kc_set_parameter(p.blueContrast,       ic_v4l_video_parameters_c::parameter_type_e::blue_contrast);
 
     videoParams.update();
 
     return true;
 }
 
-#endif
+/// TODO: Can this capability be queried with Video4Linux?
+bool kc_device_supports_component_capture(void)
+{
+    return false;
+}
+
+/// TODO: Can this capability be queried with Video4Linux?
+bool kc_device_supports_composite_capture(void)
+{
+    return false;
+}
+
+/// TODO: Can this capability be queried with Video4Linux?
+bool kc_device_supports_deinterlacing(void)
+{
+    return false;
+}
+
+/// TODO: Can this capability be queried with Video4Linux?
+bool kc_device_supports_svideo(void)
+{
+    return false;
+}
+
+/// TODO: Can this capability be queried with Video4Linux?
+bool kc_device_supports_dma(void)
+{
+    return false;
+}
+
+/// TODO: Can this capability be queried with Video4Linux?
+bool kc_device_supports_dvi(void)
+{
+    return false;
+}
+
+/// TODO: Can this capability be queried with Video4Linux?
+bool kc_device_supports_vga(void)
+{
+    return false;
+}
+
+/// TODO: Can this capability be queried with Video4Linux?
+bool kc_device_supports_yuv(void)
+{
+    return false;
+}

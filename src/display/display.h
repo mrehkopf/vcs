@@ -224,8 +224,8 @@ void kd_update_output_window_size(void);
  * times per second when capturing VGA mode 13h.
  * 
  * @note
- * If the GUI wants to match the capture's refresh rate, it's important that it
- * only repaints its output window when VCS calls this function.
+ * If the GUI wants to match the capture's refresh rate, it should repaint its
+ * output only when VCS calls this function.
  */
 void kd_spin_event_loop(void);
 

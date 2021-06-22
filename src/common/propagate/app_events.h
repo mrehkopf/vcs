@@ -66,8 +66,8 @@ public:
     // Events related to capturing.
     struct
     {
-        // VCS has received a new frame from the capture API. (The frame's data is
-        // available from kc_capture_device().get_frame_buffer().)
+        // VCS has received a new frame from the capture device. (The frame's data is
+        // available from kc_get_frame_buffer().)
         vcs_event_c newFrame;
 
         // The capture device has received a new video mode. We treat it as a proposal,

@@ -7,43 +7,29 @@
  */
 
 #include "common/propagate/app_events.h"
-#include "capture/capture_device_virtual.h"
-#include "capture/capture_device_rgbeasy.h"
-#include "capture/capture_device_vision_v4l.h"
 #include "capture/capture.h"
 #include "common/timer/timer.h"
-
-static capture_device_s *API = nullptr;
 
 // We'll keep a running count of the number of frames we've missed, in total,
 // during capturing.
 static unsigned LAST_KNOWN_MISSED_FRAMES_COUNT = 0;
 
-capture_device_s& kc_capture_device(void)
+static std::mutex CAPTURE_MUTEX;
+
+std::mutex& kc_capture_mutex(void)
 {
-    k_assert(API, "Attempting to fetch the capture API prior to its initialization.");
-    
-    return *API;
+    return CAPTURE_MUTEX;
 }
 
 void kc_initialize_capture(void)
 {
-    API =
-    #ifdef CAPTURE_DEVICE_VIRTUAL
-        new capture_device_virtual_s;
-    #elif CAPTURE_DEVICE_RGBEASY
-        new capture_device_rgbeasy_s;
-    #elif CAPTURE_DEVICE_VISION_V4L
-        new capture_device_vision_v4l_s;
-    #else
-        #error "Unknown capture API."
-    #endif
+     INFO(("Initializing the capture subsystem."));
 
-    API->initialize();
+    kc_initialize_device();
 
     kt_timer(1000, [](const unsigned)
     {
-        const unsigned numMissedCurrent = kc_capture_device().get_missed_frames_count();
+        const unsigned numMissedCurrent = kc_get_missed_frames_count();
         const unsigned numMissedFrames = (numMissedCurrent- LAST_KNOWN_MISSED_FRAMES_COUNT);
 
         LAST_KNOWN_MISSED_FRAMES_COUNT = numMissedCurrent;
@@ -56,12 +42,9 @@ void kc_initialize_capture(void)
 
 void kc_release_capture(void)
 {
-    INFO(("Releasing the capture API."));
+    INFO(("Releasing the capture subsystem."));
 
-    API->release();
-
-    delete API;
-    API = nullptr;
+    kc_release_device();
 
     return;
 }
@@ -73,10 +56,10 @@ bool kc_force_input_resolution(const resolution_s &r)
         return false;
     #endif
 
-    const resolution_s min = kc_capture_device().get_minimum_resolution();
-    const resolution_s max = kc_capture_device().get_maximum_resolution();
+    const resolution_s min = kc_get_minimum_resolution();
+    const resolution_s max = kc_get_maximum_resolution();
 
-    if (kc_capture_device().has_no_signal())
+    if (kc_has_no_signal())
     {
         DEBUG(("Was asked to change the input resolution while the capture card was not receiving a signal. Ignoring the request."));
         return false;
@@ -92,7 +75,7 @@ bool kc_force_input_resolution(const resolution_s &r)
         return false;
     }
 
-    if (!kc_capture_device().set_resolution(r))
+    if (!kc_set_resolution(r))
     {
         NBENE(("Failed to set the new input resolution (%u x %u).", r.w, r.h));
         return false;

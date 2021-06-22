@@ -58,7 +58,7 @@ static uint CACHE_ALLOC_LOCKED = 0;
 
 static void initialize_cache(void)
 {
-    INFO(("Initializing the memory manager with %u MB.", (MEMORY_CACHE_SIZE / 1024 / 1024)));
+    INFO(("Initializing the memory subsystem with %u MB.", (MEMORY_CACHE_SIZE / 1024 / 1024)));
 
     // Ideally, we'll only call this function once.
     k_assert(MEMORY_CACHE == NULL, "Calling the memory manager initializer with a non-null memory cache.");

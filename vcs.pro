@@ -127,12 +127,8 @@ SOURCES += \
     src/display/qt/dialogs/record_dialog.cpp \
     src/display/qt/dialogs/output_resolution_dialog.cpp \
     src/display/qt/dialogs/input_resolution_dialog.cpp \
-    src/capture/capture_device_virtual.cpp \
-    src/capture/capture_device_rgbeasy.cpp \
-    src/capture/capture_device.cpp \
     src/display/qt/subclasses/QTableWidget_property_table.cpp \
     src/display/qt/dialogs/signal_dialog.cpp \
-    src/capture/capture_device_vision_v4l.cpp \
     src/common/disk/file_writers/file_writer_filter_graph_version_b.cpp \
     src/common/disk/file_reader.cpp \
     src/common/disk/file_readers/file_reader_filter_graph_version_b.cpp \
@@ -154,8 +150,6 @@ SOURCES += \
     src/common/disk/file_writers/file_writer_video_presets_version_a.cpp \
     src/common/disk/file_readers/file_reader_video_presets_version_a.cpp \
     src/common/propagate/app_events.cpp \
-    src/capture/input_channel_v4l.cpp \
-    src/capture/ic_v4l_video_parameters.cpp \
     src/record/recording_buffer.cpp \
     src/record/framerate_estimator.cpp \
     src/common/timer/timer.cpp \
@@ -163,7 +157,6 @@ SOURCES += \
 
 HEADERS += \
     src/common/globals.h \
-    src/capture/null_rgbeasy.h \
     src/common/types.h \
     src/display/qt/subclasses/QComboBox_video_preset_list.h \
     src/display/qt/subclasses/QDialog_vcs_base_dialog.h \
@@ -238,13 +231,9 @@ HEADERS += \
     src/display/qt/dialogs/record_dialog.h \
     src/display/qt/dialogs/output_resolution_dialog.h \
     src/display/qt/dialogs/input_resolution_dialog.h \
-    src/capture/capture_device.h \
-    src/capture/capture_device_virtual.h \
-    src/capture/capture_device_rgbeasy.h \
     src/display/display.h \
     src/display/qt/subclasses/QTableWidget_property_table.h \
     src/display/qt/dialogs/signal_dialog.h \
-    src/capture/capture_device_vision_v4l.h \
     src/common/disk/file_writers/file_writer_filter_graph.h \
     src/common/disk/file_readers/file_reader_filter_graph.h \
     src/common/disk/file_reader.h \
@@ -263,8 +252,6 @@ HEADERS += \
     src/common/disk/file_writers/file_writer_video_presets.h \
     src/common/disk/file_readers/file_reader_video_presets.h \
     src/common/propagate/app_events.h \
-    src/capture/input_channel_v4l.h \
-    src/capture/ic_v4l_video_parameters.h \
     src/record/recording_buffer.h \
     src/record/recording_meta.h \
     src/record/framerate_estimator.h \
@@ -285,6 +272,27 @@ FORMS += \
     src/display/qt/dialogs/ui/signal_dialog.ui \
     src/display/qt/dialogs/ui/video_parameter_dialog.ui \
     src/display/qt/dialogs/ui/linux_device_selector_dialog.ui
+
+contains(DEFINES, CAPTURE_DEVICE_VIRTUAL) {
+    SOURCES += src/capture/virtual/capture_virtual.cpp
+}
+
+contains(DEFINES, CAPTURE_DEVICE_VISION_V4L) {
+    SOURCES += src/capture/vision_v4l/capture_vision_v4l.cpp \
+               src/capture/vision_v4l/input_channel_v4l.cpp \
+               src/capture/vision_v4l/ic_v4l_video_parameters.cpp
+
+    HEADERS += src/capture/vision_v4l/input_channel_v4l.h \
+               src/capture/vision_v4l/ic_v4l_video_parameters.h
+}
+
+contains(DEFINES, CAPTURE_DEVICE_RGBEASY) {
+    SOURCES += src/capture/rgbeasy/capture_rgbeasy.cpp
+
+    linux {
+        SOURCES += src/capture/rgbeasy/null_rgbeasy.h
+    }
+}
 
 # C++. For GCC/Clang/MinGW.
 QMAKE_CXXFLAGS += -g

@@ -149,7 +149,7 @@ AliasDialog::~AliasDialog(void)
     return;
 }
 
-// Send the user-defined alias resolutions from the GUI to the capturer,
+// Send the user-defined alias resolutions from the GUI to the capture subsystem,
 // which puts them into use.
 void AliasDialog::broadcast_aliases(void)
 {

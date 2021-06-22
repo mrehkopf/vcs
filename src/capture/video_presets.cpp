@@ -9,7 +9,6 @@
 #include <vector>
 #include "common/propagate/app_events.h"
 #include "capture/video_presets.h"
-#include "capture/capture_device.h"
 #include "capture/capture.h"
 
 static std::vector<video_preset_s*> PRESETS;
@@ -52,14 +51,14 @@ bool kvideopreset_remove_preset(const unsigned presetId)
 
 static video_preset_s* strongest_activating_preset(void)
 {
-    if (kc_capture_device().has_no_signal())
+    if (kc_has_no_signal())
     {
         ACTIVE_PRESET_ID = -1;
         return nullptr;
     }
 
-    const resolution_s resolution = kc_capture_device().get_resolution();
-    const refresh_rate_s refreshRate = kc_capture_device().get_refresh_rate();
+    const resolution_s resolution = kc_get_resolution();
+    const refresh_rate_s refreshRate = kc_get_refresh_rate();
 
     std::vector<std::pair<unsigned/*preset id*/,
                           int/*preset activation level*/>> activationLevels;
@@ -106,7 +105,7 @@ void kvideopreset_remove_all_presets(void)
 
 void kvideoparam_preset_video_params_changed(const unsigned presetId)
 {
-    if (kc_capture_device().has_no_signal())
+    if (kc_has_no_signal())
     {
         return;
     }
@@ -116,7 +115,7 @@ void kvideoparam_preset_video_params_changed(const unsigned presetId)
 
     if (thisPreset == activePreset)
     {
-        kc_capture_device().set_video_signal_parameters(thisPreset->videoParameters);
+        kc_set_video_signal_parameters(thisPreset->videoParameters);
     }
 
     return;
@@ -124,7 +123,7 @@ void kvideoparam_preset_video_params_changed(const unsigned presetId)
 
 void kvideopreset_apply_current_active_preset(void)
 {
-    if (kc_capture_device().has_no_signal())
+    if (kc_has_no_signal())
     {
         return;
     }
@@ -133,11 +132,11 @@ void kvideopreset_apply_current_active_preset(void)
 
     if (activePreset)
     {
-        kc_capture_device().set_video_signal_parameters(activePreset->videoParameters);
+        kc_set_video_signal_parameters(activePreset->videoParameters);
     }
     else
     {
-        kc_capture_device().set_video_signal_parameters(kc_capture_device().get_default_video_signal_parameters());
+        kc_set_video_signal_parameters(kc_get_default_video_signal_parameters());
     }
 
     return;
@@ -163,7 +162,7 @@ video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId)
 
 void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
 {
-    if (kc_capture_device().has_no_signal())
+    if (kc_has_no_signal())
     {
         return;
     }
@@ -172,7 +171,7 @@ void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
     {
         if (preset->activates_with_shortcut(shortcutString))
         {
-            kc_capture_device().set_video_signal_parameters(preset->videoParameters);
+            kc_set_video_signal_parameters(preset->videoParameters);
             return;
         }
     }
@@ -204,7 +203,7 @@ video_preset_s* kvideopreset_create_new_preset(const video_preset_s *const dupli
     {
         preset->activatesWithResolution = false;
         preset->activationResolution = {640, 480, 32};
-        preset->videoParameters = kc_capture_device().get_default_video_signal_parameters();
+        preset->videoParameters = kc_get_default_video_signal_parameters();
     }
 
     preset->id = RUNNING_PRESET_ID++;
