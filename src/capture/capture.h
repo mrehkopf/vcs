@@ -10,21 +10,63 @@
  * The interface to VCS's capture subsystem.
  *
  * The capture subsystem is responsible for mediating exchange between VCS and
- * the capture device; including initializing the capture and providing VCS with
+ * the capture device; including initializing the device and providing VCS with
  * access to the frame buffer(s) associated with the device.
+ * 
+ * The capture subsystem is an exceptional subsystem in that it's allowed to run
+ * outside of the main VCS thread. This freedom -- in what is otherwise a
+ * single-threaded application -- is granted because some capture devices require
+ * out-of-thread callbacks or the like.
+ * 
+ * The multithreaded capture subsystem will typically have an idle monitoring
+ * thread that waits for the capture device to send in data. When data comes in,
+ * the thread will copy it to a local memory buffer to be operated on in the
+ * main VCS thread when it's ready to do so.
+ * 
+ * Because of the out-of-thread nature of this subsystem, it's important that
+ * accesses to its memory buffers are synchronized using the capture mutex (see
+ * kc_capture_mutex()).
  *
  * Usage:
  *
  *   1. Call kc_initialize_capture() to initialize the subsystem. This is VCS's
  *      default startup behavior.
  *
- *   2. Use the interface functions to interact with the capture device. For
- *      instance, kc_get_frame_buffer() returns the most recent captured frame's
- *      data.
+ *   2. Use the interface functions to interact with the subsyste. For instance,
+ *      kc_get_frame_buffer() returns the most recent captured frame's data.
  *
  *   3. Call kc_release_capture() to release the subsystem. This is VCS's default
  *      exit behavior.
- *
+ * 
+ * ## Implementing support for new capture devices
+ * 
+ * The capture subsystem interface (this file, capture.h) provides a declaration
+ * of the functions used by VCS to interact with the capture subsystem. Some of
+ * the functions -- e.g. kc_initialize_capture() -- are agnostic to the capture
+ * device being used, while others -- e.g. kc_initialize_device() -- are specific
+ * to a particular type of capture device.
+ * 
+ * The universal functions like kc_initialize_capture() are defined in the
+ * base interface source file (@a capture.cpp), whereas the device-specific
+ * functions like kc_initialize_device() are implemented in a separate,
+ * device-specific source file. For instance, the device source file
+ * @a capture_rgbeasy.cpp implements support for RGBEasy capture devices under
+ * Windows, while @a capture_vision_v4l.cpp adds support for Vision Linux devices.
+ * Both files simply implement the device-specific functions of the interface for
+ * the corresponding device, and depending on which device is to be supported by
+ * VCS, only one of the files gets included in the compiled executable (see @a vcs.pro
+ * for the logic that decides which implementation is included in the build).
+ * 
+ * You can add support for a new capture device by creating implementations for
+ * the device of all of the device-specific interface functions, namely those
+ * declared in capture.h prefixed with @a kc_ but which aren't already defined in
+ * @a capture.cpp. You can look at the existing device source files for hands-on
+ * examples.
+ * 
+ * As you'll see from @a capture_virtual.cpp, the capture device doesn't need
+ * to be an actual device. It can be any source of image data -- something
+ * that reads images from @a stdin, for example. It only needs to implement the
+ * interface functions and output its data in the form dictated by the interface.
  */
 
 #ifndef VCS_CAPTURE_CAPTURE_H
@@ -178,24 +220,22 @@ struct video_signal_parameters_s
 /*!
  * Returns a reference to a mutex which should be locked by the capture subsystem
  * while it's accessing data shared with VCS (e.g. capture event flags or the
- * capture frame buffer), and which VCS should lock while accessing those data.
+ * capture frame buffer), and which VCS should lock while accessing that data.
  *
  * Failure to observe this mutex when accessing shared capture data may result in
- * a race condition, as the capture subsystem is allowed to run in threads separate
- * from the rest of VCS.
+ * a race condition, as the capture subsystem is allowed to run outside of the
+ * main VCS thread.
  *
  * @code
- * {
- *     // Block until the mutex allows us access to capture data.
- *     std::lock_guard<std::mutex> lock(kc_capture_mutex());
+ * // Block until the mutex allows us to access the capture data.
+ * std::lock_guard<std::mutex> lock(kc_capture_mutex());
  *
- *     // Handle the most recent capture event (having locked the mutex prevents
- *     // the capture subsystem from pushing new events while we do this).
- *     switch (kc_pop_capture_event_queue())
- *     {
- *         // ...
- *     }
- * } // The std::lock_guard lock is automatically released by going out of scope.
+ * // Handle the most recent capture event (having locked the mutex prevents
+ * // the capture subsystem from pushing new events while we do this).
+ * switch (kc_pop_capture_event_queue())
+ * {
+ *     // ...
+ * }
  * @endcode
  *
  * @note
