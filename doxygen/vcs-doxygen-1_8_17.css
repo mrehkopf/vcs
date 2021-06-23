@@ -8,7 +8,7 @@
  */
 
 @import url("https://use.fontawesome.com/releases/v5.12.0/css/all.css");
-@import url('https://fonts.googleapis.com/css2?family=Lato:ital@0;1&family=Fira+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital@0;1&family=Source+Code+Pro&display=swap');
 
 :root
 {
@@ -28,6 +28,7 @@
 	--primary-body-text-color: #404040;
 	--primary-heading-text-color: #202020;
 	--secondary-body-text-color: gray;
+	--code-block-text-color: dimgray;
 	--side-nav-resize-bar-width: 6px;
 }
 
@@ -106,7 +107,7 @@ hr
     visibility: hidden !important;
 	padding-left: 0 !important;
 	color: transparent !important;
-	width: 1.25ch !important;
+	width: 1ch !important;
 }
 
 .arrow::before
@@ -162,7 +163,6 @@ hr
 #nav-tree .item.selected > .label > a
 {
 	color: var(--link-color) !important;
-	font-weight: bold !important;
 }
 
 #nav-tree .item > .label > a:hover
@@ -190,6 +190,11 @@ hr
 #nav-tree-contents li > ul > li .item
 {
 	padding-left: 0 !important;
+}
+
+#nav-path
+{
+	display: none !important;
 }
 
 #nav-path ul
@@ -319,7 +324,7 @@ hr
 
 .contents > .textblock > h2
 {
-	font-size: 130% !important;
+	font-size: 125% !important;
 	font-weight: bold !important;
 }
 
@@ -518,13 +523,8 @@ hr
 
 .memitem
 {
-	margin-bottom: 21px !important;
+	margin-bottom: 30px !important;
 	margin-top: -12px !important;
-}
-
-.memitem .memdoc:last-child
-{
-	margin-bottom: 0 !important;
 }
 
 .memItemLeft,
@@ -739,10 +739,9 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 
 .memdoc > .fragment > .line
 {
-	font-family: "Fira Mono", monospace !important;
-	font-size: 90% !important;
-	padding-top: 2px !important;
-	padding-bottom: 2px !important;
+	font-family: "Source Code Pro", monospace !important;
+	font-size: 85% !important;
+	color: var(--code-block-text-color) !important;
 }
 
 .memdoc > .fragment > .line:not(:last-child)
@@ -753,13 +752,13 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 .memdoc > .fragment > .line > span
 {
 	color: inherit !important;
-	font-family: "Fira Mono", monospace !important;
+	font-family: "Source Code Pro", monospace !important;
 }
 
 .memdoc > .fragment > .line > a.code,
 .memdoc > .fragment > .line > a.code:visited
 {
-	font-family: "Fira Mono", monospace !important;
+	font-family: "Source Code Pro", monospace !important;
 	color: var(--link-color) !important;
 	font-weight: normal !important;
 }
@@ -957,6 +956,16 @@ span .mlabel
 td.vcs-unnecessary-element
 {
 	display: none !important;
+}
+
+.memitem :last-child
+{
+    margin-bottom: 0 !important;
+}
+
+.contents > .memberdecls:first-child .groupheader
+{
+	margin-top: 0 !important;
 }
 
 @media only screen and (max-width: 1100px)
