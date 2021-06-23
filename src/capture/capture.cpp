@@ -49,15 +49,15 @@ void kc_release_capture(void)
     return;
 }
 
-bool kc_force_input_resolution(const resolution_s &r)
+bool kc_force_capture_resolution(const resolution_s &r)
 {
     #if CAPTURE_DEVICE_VISION_V4L
         NBENE(("Custom input resolutions are not supported with Video4Linux."));
         return false;
     #endif
 
-    const resolution_s min = kc_get_minimum_resolution();
-    const resolution_s max = kc_get_maximum_resolution();
+    const resolution_s min = kc_get_device_minimum_resolution();
+    const resolution_s max = kc_get_device_maximum_resolution();
 
     if (kc_has_no_signal())
     {
@@ -75,7 +75,7 @@ bool kc_force_input_resolution(const resolution_s &r)
         return false;
     }
 
-    if (!kc_set_resolution(r))
+    if (!kc_set_capture_resolution(r))
     {
         NBENE(("Failed to set the new input resolution (%u x %u).", r.w, r.h));
         return false;

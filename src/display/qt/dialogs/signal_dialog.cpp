@@ -173,7 +173,7 @@ void SignalDialog::set_controls_enabled(const bool state)
 
 void SignalDialog::update_information_table(const bool isReceivingSignal)
 {
-    const auto inputChannelIdx = kc_get_input_channel_idx();
+    const auto inputChannelIdx = kc_get_device_input_channel_idx();
 
     ui->tableWidget_propertyTable->modify_property("Input channel",
     #if __linux__
@@ -184,8 +184,8 @@ void SignalDialog::update_information_table(const bool isReceivingSignal)
 
     if (isReceivingSignal)
     {
-        const resolution_s resolution = kc_get_resolution();
-        const auto refreshRate = kc_get_refresh_rate().value<double>();
+        const resolution_s resolution = kc_get_capture_resolution();
+        const auto refreshRate = kc_get_capture_refresh_rate().value<double>();
 
         ui->tableWidget_propertyTable->modify_property("Refresh rate", QString("%1 Hz").arg(QString::number(refreshRate, 'f', 3)));
         ui->tableWidget_propertyTable->modify_property("Resolution", QString("%1 \u00d7 %2").arg(resolution.w)

@@ -93,8 +93,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         ui->groupBox_videoPresetName->setEnabled(false);
         ui->parameterGrid_videoParams->setEnabled(false);
 
-        const auto minres = kc_get_minimum_resolution();
-        const auto maxres = kc_get_maximum_resolution();
+        const auto minres = kc_get_device_minimum_resolution();
+        const auto maxres = kc_get_device_maximum_resolution();
 
         ui->spinBox_resolutionX->setMinimum(int(minres.w));
         ui->spinBox_resolutionX->setMaximum(int(maxres.w));
@@ -270,7 +270,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
         connect(ui->pushButton_resolutionSeparator, &QPushButton::clicked, this, [this](void)
         {
-            const auto currentResolution = kc_get_resolution();
+            const auto currentResolution = kc_get_capture_resolution();
 
             ui->spinBox_resolutionX->setValue(int(currentResolution.w));
             ui->spinBox_resolutionY->setValue(int(currentResolution.h));
@@ -278,7 +278,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
         connect(ui->pushButton_refreshRateSeparator, &QPushButton::clicked, this, [this](void)
         {
-            ui->doubleSpinBox_refreshRateValue->setValue(kc_get_refresh_rate().value<double>());
+            ui->doubleSpinBox_refreshRateValue->setValue(kc_get_capture_refresh_rate().value<double>());
         });
 
         connect(ui->comboBox_shortcutSecondKey, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](const int idx)
@@ -466,9 +466,9 @@ void VideoParameterDialog::update_preset_control_ranges(void)
     // doesn't clip preset data that falls outside of the capture card's
     // min/max range.
     {
-        const video_signal_parameters_s min = kc_get_minimum_video_signal_parameters();
-        const video_signal_parameters_s max = kc_get_maximum_video_signal_parameters();
-        const video_signal_parameters_s def = kc_get_default_video_signal_parameters();
+        const video_signal_parameters_s min = kc_get_device_video_parameter_minimums();
+        const video_signal_parameters_s max = kc_get_device_video_parameter_maximums();
+        const video_signal_parameters_s def = kc_get_device_video_parameter_defaults();
 
         ui->parameterGrid_videoParams->set_maximum_value("Hor. size", std::max(currentParams.horizontalScale, max.horizontalScale));
         ui->parameterGrid_videoParams->set_maximum_value("Hor. position", std::max(currentParams.horizontalPosition, max.horizontalPosition));

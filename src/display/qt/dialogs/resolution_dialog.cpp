@@ -28,8 +28,8 @@ ResolutionDialog::ResolutionDialog(const QString title, resolution_s *const r, Q
 
     // Set the GUI controls to their proper initial values.
     {
-        const resolution_s minres = kc_get_minimum_resolution();
-        const resolution_s maxres = kc_get_maximum_resolution();
+        const resolution_s minres = kc_get_device_minimum_resolution();
+        const resolution_s maxres = kc_get_device_maximum_resolution();
 
         ui->spinBox_x->setMinimum(minres.w);
         ui->spinBox_x->setMaximum(maxres.w);

@@ -60,9 +60,9 @@ static bool initialize_all(void)
 
     ke_events().capture.newVideoMode.subscribe([]
     {
-        const auto resolution = kc_get_resolution();
+        const auto resolution = kc_get_capture_resolution();
 
-        INFO(("Video mode: %u x %u @ %.3f Hz.", resolution.w, resolution.h, kc_get_refresh_rate().value<double>()));
+        INFO(("Video mode: %u x %u @ %.3f Hz.", resolution.w, resolution.h, kc_get_capture_refresh_rate().value<double>()));
     });
 
     // The capture device has received a new video mode. We'll inspect the
@@ -70,7 +70,7 @@ static bool initialize_all(void)
     // propagate to the rest of VCS.
     ke_events().capture.newProposedVideoMode.subscribe([]
     {
-        const auto resolution = kc_get_resolution();
+        const auto resolution = kc_get_capture_resolution();
 
         // If there's an alias for this resolution, force that resolution
         // instead. Note that forcing the resolution is expected to automatically
@@ -79,7 +79,7 @@ static bool initialize_all(void)
         {
             const resolution_s aliasResolution = ka_aliased(resolution);
 
-            kc_force_input_resolution(aliasResolution);
+            kc_force_capture_resolution(aliasResolution);
         }
         else
         {

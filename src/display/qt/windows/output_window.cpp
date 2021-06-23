@@ -116,11 +116,11 @@ MainWindow::MainWindow(QWidget *parent) :
                     channel->addAction(select);
                     connect(select, &QAction::triggered, this, [this]
                     {
-                        unsigned newIdx = kc_get_input_channel_idx();
+                        unsigned newIdx = kc_get_device_input_channel_idx();
 
                         if (LinuxDeviceSelectorDialog(&newIdx).exec() != QDialog::Rejected)
                         {
-                            kc_set_input_channel(newIdx);
+                            kc_set_capture_input_channel(newIdx);
                         }
                     });
 
@@ -168,10 +168,10 @@ MainWindow::MainWindow(QWidget *parent) :
                     c15->setCheckable(true);
                     colorDepth->addAction(c15);
 
-                    connect(c16, &QAction::triggered, this, [=]{kc_set_pixel_format(capture_pixel_format_e::rgb_565);});
-                    connect(c15, &QAction::triggered, this, [=]{kc_set_pixel_format(capture_pixel_format_e::rgb_555);});
+                    connect(c16, &QAction::triggered, this, [=]{kc_set_capture_pixel_format(capture_pixel_format_e::rgb_565);});
+                    connect(c15, &QAction::triggered, this, [=]{kc_set_capture_pixel_format(capture_pixel_format_e::rgb_555);});
                 #endif
-                connect(c24, &QAction::triggered, this, [=]{kc_set_pixel_format(capture_pixel_format_e::rgb_888);});
+                connect(c24, &QAction::triggered, this, [=]{kc_set_capture_pixel_format(capture_pixel_format_e::rgb_888);});
             }
 
             QMenu *deinterlacing = new QMenu("De-interlacing", this);
@@ -1247,16 +1247,16 @@ void MainWindow::set_keyboard_shortcuts(void)
     // Shift + number assigns the current input channel.
     connect(keyboardShortcut("shift+1"), &QShortcut::activated, [=]
     {
-        if (kc_get_input_channel_idx() != 0)
+        if (kc_get_device_input_channel_idx() != 0)
         {
-            kc_set_input_channel(0);
+            kc_set_capture_input_channel(0);
         }
     });
     connect(keyboardShortcut("shift+2"), &QShortcut::activated, [=]
     {
-        if (kc_get_input_channel_idx() != 1)
+        if (kc_get_device_input_channel_idx() != 1)
         {
-            kc_set_input_channel(1);
+            kc_set_capture_input_channel(1);
         }
     });
 
@@ -1288,9 +1288,9 @@ void MainWindow::update_window_title(void)
         // A symbol shown in the title if VCS is currently dropping frames.
         const QString missedFramesMarker = "{!}";
 
-        const resolution_s inRes = kc_get_resolution();
+        const resolution_s inRes = kc_get_capture_resolution();
         const resolution_s outRes = ks_scaler_output_resolution();
-        const refresh_rate_s refreshRate = kc_get_refresh_rate();
+        const refresh_rate_s refreshRate = kc_get_capture_refresh_rate();
 
         QStringList programStatus;
         if (recordDlg->is_enabled())      programStatus << "R";

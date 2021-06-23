@@ -115,9 +115,9 @@ bool kc_initialize_device(void)
     // Simulate the capturing of a new frame.
     kt_timer(std::round(1000 / TARGET_REFRESH_RATE), [](const unsigned)
     {
-        if ((kc_get_resolution().bpp > MAX_CAPTURE_BPP) ||
-            (kc_get_resolution().w > MAX_CAPTURE_WIDTH) ||
-            (kc_get_resolution().h > MAX_CAPTURE_HEIGHT))
+        if ((kc_get_capture_resolution().bpp > MAX_CAPTURE_BPP) ||
+            (kc_get_capture_resolution().w > MAX_CAPTURE_WIDTH) ||
+            (kc_get_capture_resolution().h > MAX_CAPTURE_HEIGHT))
         {
             IS_VALID_SIGNAL = false;
             push_capture_event(capture_event_e::invalid_signal);
@@ -153,7 +153,7 @@ bool kc_release_device(void)
     return true;
 }
 
-bool kc_set_pixel_format(const capture_pixel_format_e pf)
+bool kc_set_capture_pixel_format(const capture_pixel_format_e pf)
 {
     switch (pf)
     {
@@ -177,7 +177,7 @@ bool kc_set_pixel_format(const capture_pixel_format_e pf)
     return true;
 }
 
-bool kc_set_resolution(const resolution_s &r)
+bool kc_set_capture_resolution(const resolution_s &r)
 {
     if ((r.w > MAX_RESOLUTION.w) ||
         (r.w < MIN_RESOLUTION.w) ||
@@ -195,12 +195,12 @@ bool kc_set_resolution(const resolution_s &r)
     return true;
 }
 
-refresh_rate_s kc_get_refresh_rate(void)
+refresh_rate_s kc_get_capture_refresh_rate(void)
 {
     return refresh_rate_s(CURRENT_REFRESH_RATE);
 }
 
-bool kc_set_input_channel(const unsigned idx)
+bool kc_set_capture_input_channel(const unsigned idx)
 {
     CUR_INPUT_CHANNEL_IDX = idx;
 
@@ -277,12 +277,12 @@ bool kc_has_invalid_device(void)
     return false;
 }
 
-capture_pixel_format_e kc_get_pixel_format(void)
+capture_pixel_format_e kc_get_capture_pixel_format(void)
 {
     return FRAME_BUFFER.pixelFormat;
 }
 
-uint kc_get_color_depth(void)
+uint kc_get_capture_color_depth(void)
 {
     return (unsigned)FRAME_BUFFER.r.bpp;
 }
@@ -297,22 +297,22 @@ uint kc_get_missed_frames_count(void)
     return 0;
 }
 
-uint kc_get_input_channel_idx(void)
+uint kc_get_device_input_channel_idx(void)
 {
     return CUR_INPUT_CHANNEL_IDX;
 }
 
-resolution_s kc_get_resolution(void)
+resolution_s kc_get_capture_resolution(void)
 {
     return FRAME_BUFFER.r;
 }
 
-resolution_s kc_get_minimum_resolution(void)
+resolution_s kc_get_device_minimum_resolution(void)
 {
     return MIN_RESOLUTION;
 }
 
-resolution_s kc_get_maximum_resolution(void)
+resolution_s kc_get_device_maximum_resolution(void)
 {
     return MAX_RESOLUTION;
 }
@@ -322,7 +322,7 @@ std::string kc_get_device_name(void)
     return "Virtual capture device";
 }
 
-std::string kc_get_api_name(void)
+std::string kc_get_device_api_name(void)
 {
     return "Virtual";
 }
@@ -342,22 +342,22 @@ int kc_get_device_maximum_input_count(void)
     return 2;
 }
 
-video_signal_parameters_s kc_get_video_signal_parameters(void)
+video_signal_parameters_s kc_get_device_video_parameters(void)
 {
     return video_signal_parameters_s{};
 }
 
-video_signal_parameters_s kc_get_default_video_signal_parameters(void)
+video_signal_parameters_s kc_get_device_video_parameter_defaults(void)
 {
     return video_signal_parameters_s{};
 }
 
-video_signal_parameters_s kc_get_minimum_video_signal_parameters(void)
+video_signal_parameters_s kc_get_device_video_parameter_minimums(void)
 {
     return video_signal_parameters_s{};
 }
 
-video_signal_parameters_s kc_get_maximum_video_signal_parameters(void)
+video_signal_parameters_s kc_get_device_video_parameter_maximums(void)
 {
     return video_signal_parameters_s{};
 }

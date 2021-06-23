@@ -575,7 +575,7 @@ std::string kc_get_device_name(void)
     }
 }
 
-std::string kc_get_api_name(void)
+std::string kc_get_device_api_name(void)
 {
     return "RGBEasy";
 }
@@ -592,7 +592,7 @@ int kc_get_device_maximum_input_count(void)
     return numInputs;
 }
 
-video_signal_parameters_s kc_get_video_signal_parameters(void)
+video_signal_parameters_s kc_get_device_video_parameters(void)
 {
     video_signal_parameters_s p = {0};
 
@@ -616,7 +616,7 @@ video_signal_parameters_s kc_get_video_signal_parameters(void)
     return p;
 }
 
-video_signal_parameters_s kc_get_default_video_signal_parameters(void)
+video_signal_parameters_s kc_get_device_video_parameter_defaults(void)
 {
     video_signal_parameters_s p = {0};
 
@@ -640,7 +640,7 @@ video_signal_parameters_s kc_get_default_video_signal_parameters(void)
     return p;
 }
 
-video_signal_parameters_s kc_get_minimum_video_signal_parameters(void)
+video_signal_parameters_s kc_get_device_video_parameter_minimums(void)
 {
     video_signal_parameters_s p = {0};
 
@@ -664,7 +664,7 @@ video_signal_parameters_s kc_get_minimum_video_signal_parameters(void)
     return p;
 }
 
-video_signal_parameters_s kc_get_maximum_video_signal_parameters(void)
+video_signal_parameters_s kc_get_device_video_parameter_maximums(void)
 {
     video_signal_parameters_s p = {0};
 
@@ -698,17 +698,17 @@ static resolution_s kc_get_resolution_from_api(void)
         k_assert(0, "The capture hardware failed to report its input resolution.");
     }
 
-    r.bpp = kc_get_color_depth();
+    r.bpp = kc_get_capture_color_depth();
 
     return r;
 }
 
-resolution_s kc_get_resolution(void)
+resolution_s kc_get_capture_resolution(void)
 {
     return CAPTURE_RESOLUTION;
 }
 
-resolution_s kc_get_minimum_resolution(void)
+resolution_s kc_get_device_minimum_resolution(void)
 {
     resolution_s r = {640, 480, 32};
 
@@ -724,7 +724,7 @@ resolution_s kc_get_minimum_resolution(void)
     return r;
 }
 
-resolution_s kc_get_maximum_resolution(void)
+resolution_s kc_get_device_maximum_resolution(void)
 {
     resolution_s r = {640, 480, 32};
 
@@ -783,7 +783,7 @@ capture_event_e kc_pop_capture_event_queue(void)
     return (RECEIVING_A_SIGNAL? capture_event_e::none : capture_event_e::sleep);
 }
 
-refresh_rate_s kc_get_refresh_rate(void)
+refresh_rate_s kc_get_capture_refresh_rate(void)
 {
     if (kc_has_no_signal())
     {
@@ -860,7 +860,7 @@ bool kc_set_video_signal_parameters(const video_signal_parameters_s &p)
     return true;
 }
 
-bool kc_set_input_channel(const unsigned idx)
+bool kc_set_capture_input_channel(const unsigned idx)
 {
     const int numInputChannels = kc_get_device_maximum_input_count();
 
@@ -899,7 +899,7 @@ bool kc_set_input_channel(const unsigned idx)
     return false;
 }
 
-bool kc_set_pixel_format(const capture_pixel_format_e pf)
+bool kc_set_capture_pixel_format(const capture_pixel_format_e pf)
 {
     if (apicall_succeeded(RGBSetPixelFormat(CAPTURE_HANDLE, pixel_format_to_rgbeasy_pixel_format(pf))))
     {
@@ -911,7 +911,7 @@ bool kc_set_pixel_format(const capture_pixel_format_e pf)
     return false;
 }
 
-bool kc_set_resolution(const resolution_s &r)
+bool kc_set_capture_resolution(const resolution_s &r)
 {
     if (!IS_CAPTURE_ACTIVE)
     {
@@ -921,7 +921,7 @@ bool kc_set_resolution(const resolution_s &r)
 
     unsigned long wd = 0, hd = 0;
 
-    const auto currentInputRes = kc_get_resolution();
+    const auto currentInputRes = kc_get_capture_resolution();
     if (r.w == currentInputRes.w &&
         r.h == currentInputRes.h)
     {
@@ -969,12 +969,12 @@ uint kc_get_missed_frames_count(void)
     return NUM_NEW_FRAME_EVENTS_SKIPPED;
 }
 
-uint kc_get_input_channel_idx(void)
+uint kc_get_device_input_channel_idx(void)
 {
     return INPUT_CHANNEL_IDX;
 }
 
-uint kc_get_color_depth(void)
+uint kc_get_capture_color_depth(void)
 {
     switch (CAPTURE_PIXEL_FORMAT)
     {
@@ -1017,7 +1017,7 @@ bool kc_has_invalid_device(void)
     return false;
 }
 
-capture_pixel_format_e kc_get_pixel_format(void)
+capture_pixel_format_e kc_get_capture_pixel_format(void)
 {
     return CAPTURE_PIXEL_FORMAT;
 }

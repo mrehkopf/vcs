@@ -110,7 +110,7 @@ resolution_s ks_scaler_output_resolution(void)
         return {r.w, r.h, OUTPUT_BIT_DEPTH};
     }
 
-    resolution_s inRes = kc_get_resolution();
+    resolution_s inRes = kc_get_capture_resolution();
     resolution_s outRes = inRes;
 
     // Base resolution.
@@ -412,7 +412,7 @@ void ks_initialize_scaler(void)
 
     ke_events().capture.newVideoMode.subscribe([]
     {
-        const auto currentInputRes = kc_get_resolution();
+        const auto currentInputRes = kc_get_capture_resolution();
         ks_set_output_base_resolution(currentInputRes, false);
     });
 
@@ -520,8 +520,8 @@ void ks_scale_frame(const captured_frame_s &frame)
     resolution_s frameRes = frame.r; /// Temp hack. May want to modify the .bpp value.
     resolution_s outputRes = ks_scaler_output_resolution();
 
-    const resolution_s minres = kc_get_minimum_resolution();
-    const resolution_s maxres = kc_get_maximum_resolution();
+    const resolution_s minres = kc_get_device_minimum_resolution();
+    const resolution_s maxres = kc_get_device_maximum_resolution();
 
     // Verify that we have a workable frame.
     {
@@ -545,7 +545,7 @@ void ks_scale_frame(const captured_frame_s &frame)
             NBENE(("Was asked to scale a null frame. Ignoring it."));
             goto done;
         }
-        else if (frame.pixelFormat != kc_get_pixel_format())
+        else if (frame.pixelFormat != kc_get_capture_pixel_format())
         {
             NBENE(("Was asked to scale a frame whose pixel format differed from the expected. Ignoring it."));
             goto done;

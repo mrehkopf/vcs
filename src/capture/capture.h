@@ -9,17 +9,18 @@
  * @brief
  * The interface to VCS's capture subsystem.
  *
- * The capture subsystem is responsible for mediating exchanges between VCS and
- * the capture device; including initializing the capture device and providing
- * VCS with access to the frame buffer(s) associated with the device.
+ * The capture subsystem is responsible for mediating exchange between VCS and
+ * the capture device; including initializing the capture and providing VCS with
+ * access to the frame buffer(s) associated with the device.
  *
  * Usage:
  *
  *   1. Call kc_initialize_capture() to initialize the subsystem. This is VCS's
  *      default startup behavior.
  *
- *   2. Use the interface returned by kc_capture_device() to interact with the
- *      capture device.
+ *   2. Use the interface functions to interact with the capture device. For
+ *      instance, kc_get_frame_buffer() returns the most recent captured frame's
+ *      data.
  *
  *   3. Call kc_release_capture() to release the subsystem. This is VCS's default
  *      exit behavior.
@@ -40,79 +41,6 @@
 
 struct capture_device_s;
 
-std::mutex& kc_capture_mutex(void);
-
-/*!
- * Initializes the capture subsystem.
- *
- * By default, VCS will call this function on program startup.
- *
- * @note
- * Will trigger an assertion failure if the initialization fails.
- *
- * @see
- * kc_release_capture()
- */
-void kc_initialize_capture(void);
-
-/*!
- * Initializes the capture device.
- *
- * Returns true on success; false otherwise.
- *
- * @warning
- * Don't call this function directly. Instead, call kc_initialize_capture(),
- * which will initialize both the capture device and the capture subsystem
- * (they are interlinked).
- *
- * @see
- * kc_initialize_capture(), kc_release_device()
- */
-bool kc_initialize_device(void);
-
-/*!
- * Releases the capture subsystem.
- *
- * By default, VCS will call this function on program exit.
- *
- * @see
- * kc_initialize_capture()
- */
-void kc_release_capture(void);
-
-/*!
- * Releases the capture device.
- *
- * By default, this function will be called by kc_release_capture(), which
- * you should call if you want to release the capture device.
- *
- * Returns true on success; false otherwise.
- *
- * @warning
- * Don't call this function directly. Instead, call kc_release_capture(), which
- * will release both the capture device and the capture subsystem (they are
- * interlinked).
- *
- * @see
- * kc_initialize_capture(), kc_initialize_device()
- */
-bool kc_release_device(void);
-
-/*!
- * Asks the capture device to set its input resolution to the one given,
- * overriding the current input resolution.
- *
- * @note
- * If the resolution of the captured signal doesn't match this resolution, the
- * captured image may become corrupted until the proper resolution is set.
- *
- * @warning
- * This function may become obsolete in a future version of VCS, in which case
- * its functionality will likely be merged into the capture device interface
- * (see kc_capture_device()).
- */
-bool kc_force_input_resolution(const resolution_s &r);
-
 /*!
  * Enumerates the de-interlacing modes recognized by the capture subsystem.
  *
@@ -131,8 +59,10 @@ enum class capture_deinterlacing_mode_e
 };
 
 /*!
- * Enumerates the color formats recognized by the capture subsystem. Frames output
- * by the subsystem will have their pixel data in one of these formats.
+ * Enumerates the color formats recognized by the capture subsystem.
+ *
+ * Frames output by the subsystem will have their pixel data in one of these
+ * formats.
  *
  * The capture device may support some, none, or all of these formats. Any
  * capability queries should be made via the capture device interface.
@@ -245,11 +175,106 @@ struct video_signal_parameters_s
     long blackLevel;
 };
 
+/*!
+ * Returns a reference to a mutex which should be locked by the capture subsystem
+ * while it's accessing data shared with VCS (e.g. capture event flags or the
+ * capture frame buffer), and which VCS should lock while accessing those data.
+ *
+ * Failure to observe this mutex when accessing shared capture data may result in
+ * a race condition, as the capture subsystem is allowed to run in threads separate
+ * from the rest of VCS.
+ *
+ * @code
+ * {
+ *     // Block until the mutex allows us access to capture data.
+ *     std::lock_guard<std::mutex> lock(kc_capture_mutex());
+ *
+ *     // Handle the most recent capture event (having locked the mutex prevents
+ *     // the capture subsystem from pushing new events while we do this).
+ *     switch (kc_pop_capture_event_queue())
+ *     {
+ *         // ...
+ *     }
+ * } // The std::lock_guard lock is automatically released by going out of scope.
+ * @endcode
+ *
+ * @note
+ * If the capture subsystem finds the mutex locked when the capture device sends
+ * a new frame, the frame will be dropped without waiting for the lock to be
+ * released.
+ */
+std::mutex& kc_capture_mutex(void);
 
+/*!
+ * Initializes the capture subsystem.
+ *
+ * By default, VCS will call this function on program startup.
+ *
+ * @note
+ * Will trigger an assertion failure if the initialization fails.
+ *
+ * @see
+ * kc_release_capture()
+ */
+void kc_initialize_capture(void);
 
+/*!
+ * Initializes the capture device.
+ *
+ * Returns true on success; false otherwise.
+ *
+ * @warning
+ * Don't call this function directly. Instead, call kc_initialize_capture(),
+ * which will initialize both the capture device and the capture subsystem
+ * (they are interlinked).
+ *
+ * @see
+ * kc_initialize_capture(), kc_release_device()
+ */
+bool kc_initialize_device(void);
 
+/*!
+ * Releases the capture subsystem.
+ *
+ * By default, VCS will call this function on program exit.
+ *
+ * @see
+ * kc_initialize_capture()
+ */
+void kc_release_capture(void);
 
+/*!
+ * Releases the capture device.
+ *
+ * By default, this function will be called by kc_release_capture(), which
+ * you should call if you want to release the capture device.
+ *
+ * Returns true on success; false otherwise.
+ *
+ * @warning
+ * Don't call this function directly. Instead, call kc_release_capture(), which
+ * will release both the capture device and the capture subsystem (they are
+ * interlinked).
+ *
+ * @see
+ * kc_initialize_capture(), kc_initialize_device()
+ */
+bool kc_release_device(void);
 
+/*!
+ * Asks the capture device to set its input resolution to the one given,
+ * overriding the current input resolution.
+ *
+ * @note
+ * If the resolution of the captured signal doesn't match this resolution, the
+ * captured image may become corrupted until the proper resolution is set.
+ *
+ * @warning
+ * This function may become obsolete in a future version of VCS, in which case
+ * its functionality will likely be merged into the capture device interface
+ * (see kc_capture_device()).
+ */
+bool kc_force_capture_resolution(const resolution_s &r);
 
 /*!
  * Returns true if the capture device is capable of capturing from a
@@ -308,7 +333,7 @@ bool kc_device_supports_yuv(void);
  * can use two of them, 2 is returned.
  *
  * @see
- * kc_get_input_channel_idx()
+ * kc_get_device_input_channel_idx()
  */
 int kc_get_device_maximum_input_count(void);
 
@@ -345,45 +370,49 @@ std::string kc_get_device_name(void);
 /*!
  * Returns a string that identifies the interface; e.g. "RGBEasy".
  */
-std::string kc_get_api_name(void);
+std::string kc_get_device_api_name(void);
 
 /*!
  * Returns the capture device's current video signal parameters.
  *
  * @see
- * kc_set_video_signal_parameters(), kc_get_minimum_video_signal_parameters(),
- * kc_get_maximum_video_signal_parameters(), kc_get_default_video_signal_parameters()
+ * kc_set_video_signal_parameters(), kc_get_device_video_parameter_minimums(),
+ * kc_get_device_video_parameter_maximums(),
+ * kc_get_device_video_parameter_defaults()
  */
-video_signal_parameters_s kc_get_video_signal_parameters(void);
+video_signal_parameters_s kc_get_device_video_parameters(void);
 
 /*!
  * Returns the capture device's default video signal parameters.
  *
  * @see
- * kc_get_video_signal_parameters(), kc_get_video_signal_parameters(),
- * kc_get_minimum_video_signal_parameters(), kc_get_maximum_video_signal_parameters()
+ * kc_get_device_video_parameters(), kc_get_device_video_parameters(),
+ * kc_get_device_video_parameter_minimums(),
+ * kc_get_device_video_parameter_maximums()
  */
-video_signal_parameters_s kc_get_default_video_signal_parameters(void);
+video_signal_parameters_s kc_get_device_video_parameter_defaults(void);
 
 /*!
  * Returns the minimum value supported by the capture device for each video
  * signal parameter.
  *
  * @see
- * kc_set_video_signal_parameters(), kc_get_video_signal_parameters(),
- * kc_get_maximum_video_signal_parameters(), kc_get_default_video_signal_parameters()
+ * kc_set_video_signal_parameters(), kc_get_device_video_parameters(),
+ * kc_get_device_video_parameter_maximums(),
+ * kc_get_device_video_parameter_defaults()
  */
-video_signal_parameters_s kc_get_minimum_video_signal_parameters(void);
+video_signal_parameters_s kc_get_device_video_parameter_minimums(void);
 
 /*!
  * Returns the maximum value supported by the capture device for each video
  * signal parameter.
  *
  * @see
- * kc_set_video_signal_parameters(), kc_get_video_signal_parameters(),
- * kc_get_minimum_video_signal_parameters(), kc_get_default_video_signal_parameters()
+ * kc_set_video_signal_parameters(), kc_get_device_video_parameters(),
+ * kc_get_device_video_parameter_minimums(),
+ * kc_get_device_video_parameter_defaults()
  */
-video_signal_parameters_s kc_get_maximum_video_signal_parameters(void);
+video_signal_parameters_s kc_get_device_video_parameter_maximums(void);
 
 /*!
  * Returns the capture device's current input/output resolution.
@@ -399,9 +428,10 @@ video_signal_parameters_s kc_get_maximum_video_signal_parameters(void);
  * may have changed since that frame was captured.
  *
  * @see
- * kc_set_resolution(), kc_get_minimum_resolution(), kc_get_maximum_resolution()
+ * kc_set_capture_resolution(), kc_get_device_minimum_resolution(),
+ * kc_get_device_maximum_resolution()
  */
-resolution_s kc_get_resolution(void);
+resolution_s kc_get_capture_resolution(void);
 
 /*!
  * Returns the minimum capture resolution supported by the interface.
@@ -411,9 +441,10 @@ resolution_s kc_get_resolution(void);
  * capture resolution supported by the capture device.
  *
  * @see
- * kc_get_maximum_resolution(), kc_get_resolution(), kc_set_resolution()
+ * kc_get_device_maximum_resolution(), kc_get_capture_resolution(),
+ * kc_set_capture_resolution()
  */
-resolution_s kc_get_minimum_resolution(void);
+resolution_s kc_get_device_minimum_resolution(void);
 
 /*!
  * Returns the maximum capture resolution supported by the interface.
@@ -423,9 +454,10 @@ resolution_s kc_get_minimum_resolution(void);
  * capture resolution supported by the capture device.
  *
  * @see
- * kc_get_minimum_resolution(), kc_get_resolution(), kc_set_resolution()
+ * kc_get_device_minimum_resolution(), kc_get_capture_resolution(),
+ * kc_set_capture_resolution()
  */
-resolution_s kc_get_maximum_resolution(void);
+resolution_s kc_get_device_maximum_resolution(void);
 
 /*!
  * Returns number of frames the interface has received from the capture
@@ -457,12 +489,12 @@ unsigned kc_get_missed_frames_count(void);
  * @see
  * kc_get_device_maximum_input_count()
  */
-unsigned kc_get_input_channel_idx(void);
+unsigned kc_get_device_input_channel_idx(void);
 
 /*!
  * Returns the refresh rate of the current capture signal.
  */
-refresh_rate_s kc_get_refresh_rate(void);
+refresh_rate_s kc_get_capture_refresh_rate(void);
 
 /*!
  * Returns the color depth, in bits, that the interface currently expects
@@ -474,7 +506,7 @@ refresh_rate_s kc_get_refresh_rate(void);
  * be different from this value e.g. if the capture color depth was changed
  * just after the frame was captured.
  */
-unsigned kc_get_color_depth(void);
+unsigned kc_get_capture_color_depth(void);
 
 /*!
  * Returns the pixel format that the capture device is currently storing
@@ -484,7 +516,7 @@ unsigned kc_get_color_depth(void);
  * be different from this value e.g. if the capture pixel format was changed
  * just after the frame was captured.
  */
-capture_pixel_format_e kc_get_pixel_format(void);
+capture_pixel_format_e kc_get_capture_pixel_format(void);
 
 /*!
  * Returns true if the current capture signal is invalid; false otherwise.
@@ -519,7 +551,7 @@ bool kc_has_valid_device(void);
  * device's active input channel; false otherwise.
  *
  * @see
- * has_signal(), kc_get_input_channel_idx(), kc_set_input_channel()
+ * has_signal(), kc_get_device_input_channel_idx(), kc_set_capture_input_channel()
  */
 bool kc_has_no_signal(void);
 
@@ -528,7 +560,7 @@ bool kc_has_no_signal(void);
  * receiving a signal; false otherwise.
  *
  * @see
- * has_no_signal(), kc_get_input_channel_idx(), kc_set_input_channel()
+ * has_no_signal(), kc_get_device_input_channel_idx(), kc_set_capture_input_channel()
  */
 bool kc_has_signal(void);
 
@@ -538,15 +570,27 @@ bool kc_has_signal(void);
 bool kc_is_capturing(void);
 
 /*!
- * Returns the most recently-captured frame's data.
+ * Returns a reference to the most recently captured frame.
+ *
+ * @code
+ * std::lock_guard<std::mutex> lock(kc_capture_mutex());
+ *
+ * captured_frame_s &frame = kc_get_frame_buffer();
+ *
+ * // We can now access the frame's pixel data without the capture subsystem
+ * // modifying it from another thread, until the mutex lock is released.
+ * @endcode
  *
  * @warning
- * The caller should lock @ref captureMutex while accessing the returned data.
- * Failure to do so may result in a race condition, as the capture interface
- * (and/or the capture device) is permitted to begin operating on these data
- * from outside of the caller's thread when the mutex is unlocked.
+ * The caller should lock kc_capture_mutex() while accessing the returned data.
+ * Failure to do so may result in a race condition, since the capture subsystem
+ * is otherwise permitted to operate on these data from outside of the caller's
+ * thread.
+ *
+ * @see
+ * kc_capture_mutex()
  */
-const captured_frame_s &kc_get_frame_buffer(void);
+const captured_frame_s& kc_get_frame_buffer(void);
 
 /*!
  * Called by VCS to notify the interface that VCS has finished processing the
@@ -570,8 +614,8 @@ capture_event_e kc_pop_capture_event_queue(void);
  * Returns true on success; false otherwise.
  *
  * @see
- * kc_get_video_signal_parameters(), kc_get_minimum_video_signal_parameters(),
- * kc_get_maximum_video_signal_parameters(), kc_get_default_video_signal_parameters()
+ * kc_get_device_video_parameters(), kc_get_device_video_parameter_minimums(),
+ * kc_get_device_video_parameter_maximums(), kc_get_device_video_parameter_defaults()
  */
 bool kc_set_video_signal_parameters(const video_signal_parameters_s &p);
 
@@ -589,9 +633,9 @@ bool kc_set_deinterlacing_mode(const capture_deinterlacing_mode_e mode);
  * Returns true on success; false otherwise.
  *
  * @see
- * kc_get_input_channel_idx(), kc_get_device_maximum_input_count()
+ * kc_get_device_input_channel_idx(), kc_get_device_maximum_input_count()
  */
-bool kc_set_input_channel(const unsigned idx);
+bool kc_set_capture_input_channel(const unsigned idx);
 
 /*!
  * Tells the capture device to store its captured frames using the given
@@ -600,9 +644,9 @@ bool kc_set_input_channel(const unsigned idx);
  * Returns true on success; false otherwise.
  *
  * @see
- * kc_get_pixel_format()
+ * kc_get_capture_pixel_format()
  */
-bool kc_set_pixel_format(const capture_pixel_format_e pf);
+bool kc_set_capture_pixel_format(const capture_pixel_format_e pf);
 
 /*!
  * Tells the capture device to adopt the given resolution as its input and
@@ -622,15 +666,9 @@ bool kc_set_pixel_format(const capture_pixel_format_e pf);
  * Returns true on success; false otherwise.
  *
  * @see
- * kc_get_resolution(), kc_get_minimum_resolution(), kc_get_maximum_resolution()
+ * kc_get_capture_resolution(), kc_get_device_minimum_resolution(),
+ * kc_get_device_maximum_resolution()
  */
-bool kc_set_resolution(const resolution_s &r);
-
-
-
-
-
-
-
+bool kc_set_capture_resolution(const resolution_s &r);
 
 #endif

@@ -84,7 +84,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
     {
         ke_events().capture.newVideoMode.subscribe([this]
         {
-            const auto resolution = kc_get_resolution();
+            const auto resolution = kc_get_capture_resolution();
 
             ui->parameterGrid_parameters->set_maximum_value("Scan start", (resolution.h - 1));
             ui->parameterGrid_parameters->set_maximum_value("Scan end", (resolution.h - 1));

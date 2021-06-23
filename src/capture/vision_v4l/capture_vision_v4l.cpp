@@ -89,7 +89,7 @@ capture_event_e kc_pop_capture_event_queue(void)
     return capture_event_e::none;
 }
 
-resolution_s kc_get_resolution(void)
+resolution_s kc_get_capture_resolution(void)
 {
     k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
@@ -97,13 +97,13 @@ resolution_s kc_get_resolution(void)
     return CUR_INPUT_CHANNEL->captureStatus.resolution;
 }
 
-resolution_s kc_get_minimum_resolution(void)
+resolution_s kc_get_device_minimum_resolution(void)
 {
     /// TODO: Query actual hardware parameters for this.
     return resolution_s{MIN_OUTPUT_WIDTH, MIN_OUTPUT_HEIGHT, 32};
 }
 
-resolution_s kc_get_maximum_resolution(void)
+resolution_s kc_get_device_maximum_resolution(void)
 {
     /// TODO: Query actual hardware parameters for this.
 
@@ -112,7 +112,7 @@ resolution_s kc_get_maximum_resolution(void)
                         std::min(32u, MAX_CAPTURE_BPP)};
 }
 
-refresh_rate_s kc_get_refresh_rate(void)
+refresh_rate_s kc_get_capture_refresh_rate(void)
 {
     k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
@@ -162,7 +162,7 @@ bool kc_has_no_signal(void)
     return CUR_INPUT_CHANNEL->captureStatus.noSignal;
 }
 
-capture_pixel_format_e kc_get_pixel_format(void)
+capture_pixel_format_e kc_get_capture_pixel_format(void)
 {
     k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
@@ -177,7 +177,7 @@ bool kc_initialize_device(void)
     ke_events().capture.newVideoMode.subscribe([]
     {
         // Re-create the input channel for the new video mode.
-        kc_set_input_channel(CUR_INPUT_CHANNEL_IDX);
+        kc_set_capture_input_channel(CUR_INPUT_CHANNEL_IDX);
     });
 
     ke_events().capture.signalLost.subscribe([]
@@ -195,7 +195,7 @@ bool kc_initialize_device(void)
     FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
     FRAME_BUFFER.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (V4L)");
 
-    kc_set_input_channel(INPUT_CHANNEL_IDX);
+    kc_set_capture_input_channel(INPUT_CHANNEL_IDX);
 
     return true;
 
@@ -297,19 +297,19 @@ int kc_get_device_maximum_input_count(void)
     return numInputs;
 }
 
-uint kc_get_input_channel_idx(void)
+uint kc_get_device_input_channel_idx(void)
 {
     return CUR_INPUT_CHANNEL_IDX;
 }
 
-video_signal_parameters_s kc_get_video_signal_parameters(void)
+video_signal_parameters_s kc_get_device_video_parameters(void)
 {
     k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
     if (kc_has_no_signal())
     {
-        return kc_get_default_video_signal_parameters();
+        return kc_get_device_video_parameter_defaults();
     }
 
     const auto videoParams = CUR_INPUT_CHANNEL->captureStatus.videoParameters;
@@ -333,7 +333,7 @@ video_signal_parameters_s kc_get_video_signal_parameters(void)
     return p;
 }
 
-video_signal_parameters_s kc_get_default_video_signal_parameters(void)
+video_signal_parameters_s kc_get_device_video_parameter_defaults(void)
 {
     k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
@@ -380,7 +380,7 @@ video_signal_parameters_s kc_get_default_video_signal_parameters(void)
     return p;
 }
 
-video_signal_parameters_s kc_get_minimum_video_signal_parameters(void)
+video_signal_parameters_s kc_get_device_video_parameter_minimums(void)
 {
     k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
@@ -427,7 +427,7 @@ video_signal_parameters_s kc_get_minimum_video_signal_parameters(void)
     return p;
 }
 
-video_signal_parameters_s kc_get_maximum_video_signal_parameters(void)
+video_signal_parameters_s kc_get_device_video_parameter_maximums(void)
 {
     k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
@@ -491,13 +491,13 @@ bool kc_mark_frame_buffer_as_processed(void)
     return true;
 }
 
-std::string kc_get_api_name(void)
+std::string kc_get_device_api_name(void)
 {
     return "Vision/Video4Linux";
 }
 
 /// TODO: Implement.
-bool kc_set_pixel_format(const capture_pixel_format_e pf)
+bool kc_set_capture_pixel_format(const capture_pixel_format_e pf)
 {
     (void)pf;
 
@@ -513,7 +513,7 @@ bool kc_set_deinterlacing_mode(const capture_deinterlacing_mode_e mode)
 }
 
 /// TODO: Implement.
-uint kc_get_color_depth(void)
+uint kc_get_capture_color_depth(void)
 {
     return 32;
 }
@@ -524,7 +524,7 @@ bool kc_is_capturing(void)
     return true;
 }
 
-bool kc_set_input_channel(const unsigned idx)
+bool kc_set_capture_input_channel(const unsigned idx)
 {
     if (CUR_INPUT_CHANNEL)
     {

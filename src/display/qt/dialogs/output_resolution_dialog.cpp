@@ -54,7 +54,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
 
             if (!is_checked(state))
             {
-                ks_set_output_base_resolution(kc_get_resolution(), true);
+                ks_set_output_base_resolution(kc_get_capture_resolution(), true);
 
                 kd_update_output_window_size();
 
@@ -107,7 +107,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
         {
             if (!ui->checkBox_forceOutputRes->isChecked())
             {
-                const auto captureResolution = kc_get_resolution();
+                const auto captureResolution = kc_get_capture_resolution();
                 ui->spinBox_outputResX->setValue(captureResolution.w);
                 ui->spinBox_outputResY->setValue(captureResolution.h);
             }
@@ -178,7 +178,7 @@ void OutputResolutionDialog::notify_of_new_capture_signal(void)
 {
     if (!ui->checkBox_forceOutputRes->isChecked())
     {
-        const resolution_s r = kc_get_resolution();
+        const resolution_s r = kc_get_capture_resolution();
 
         ui->spinBox_outputResX->setValue(r.w);
         ui->spinBox_outputResY->setValue(r.h);

@@ -83,7 +83,7 @@ InputResolutionDialog::InputResolutionDialog(QWidget *parent) :
                 }
                 else
                 {
-                    kc_force_input_resolution({unsigned(buttonResolution.width()),
+                    kc_force_capture_resolution({unsigned(buttonResolution.width()),
                                                unsigned(buttonResolution.height())});
                 }
             });
@@ -95,7 +95,7 @@ InputResolutionDialog::InputResolutionDialog(QWidget *parent) :
 
             if (ResolutionDialog("Force a capture resolution", &customResolution, parentWidget()).exec() == QDialog::Accepted)
             {
-                kc_force_input_resolution(customResolution);
+                kc_force_capture_resolution(customResolution);
             }
         });
     }

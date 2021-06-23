@@ -75,13 +75,13 @@ void ka_set_aliases(const std::vector<mode_alias_s> &aliases)
     {
         // If one of the aliases matches the current input resolution, change the
         // resolution accordingly.
-        const resolution_s currentRes = kc_get_resolution();
+        const resolution_s currentRes = kc_get_capture_resolution();
         for (const auto &alias: ALIASES)
         {
             if (alias.from.w == currentRes.w &&
                 alias.from.h == currentRes.h)
             {
-                kc_force_input_resolution(alias.to);
+                kc_force_capture_resolution(alias.to);
                 break;
             }
         }

@@ -57,8 +57,8 @@ static video_preset_s* strongest_activating_preset(void)
         return nullptr;
     }
 
-    const resolution_s resolution = kc_get_resolution();
-    const refresh_rate_s refreshRate = kc_get_refresh_rate();
+    const resolution_s resolution = kc_get_capture_resolution();
+    const refresh_rate_s refreshRate = kc_get_capture_refresh_rate();
 
     std::vector<std::pair<unsigned/*preset id*/,
                           int/*preset activation level*/>> activationLevels;
@@ -136,7 +136,7 @@ void kvideopreset_apply_current_active_preset(void)
     }
     else
     {
-        kc_set_video_signal_parameters(kc_get_default_video_signal_parameters());
+        kc_set_video_signal_parameters(kc_get_device_video_parameter_defaults());
     }
 
     return;
@@ -203,7 +203,7 @@ video_preset_s* kvideopreset_create_new_preset(const video_preset_s *const dupli
     {
         preset->activatesWithResolution = false;
         preset->activationResolution = {640, 480, 32};
-        preset->videoParameters = kc_get_default_video_signal_parameters();
+        preset->videoParameters = kc_get_device_video_parameter_defaults();
     }
 
     preset->id = RUNNING_PRESET_ID++;
