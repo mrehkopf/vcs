@@ -3,6 +3,7 @@
 #include "common/propagate/app_events.h"
 #include "capture/capture.h"
 #include "common/globals.h"
+#include "record/record.h"
 #include "scaler/scaler.h"
 #include "ui_output_resolution_dialog.h"
 
@@ -103,7 +104,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
 
     // Subscribe to app events.
     {
-        ke_events().capture.newVideoMode.subscribe([this]
+        kcEvent_newVideoMode.subscribe([this]
         {
             if (!ui->checkBox_forceOutputRes->isChecked())
             {
@@ -113,7 +114,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
             }
         });
 
-        ke_events().recorder.recordingStarted.subscribe([this]
+        krecordEvent_recordingStarted.subscribe([this]
         {
             // Disable any GUI functionality that would let the user change the current
             // output size, since we want to keep the output resolution constant while
@@ -121,7 +122,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
             this->disable_output_size_controls(true);
         });
 
-        ke_events().recorder.recordingEnded.subscribe([this]
+        krecordEvent_recordingEnded.subscribe([this]
         {
             this->disable_output_size_controls(false);
         });

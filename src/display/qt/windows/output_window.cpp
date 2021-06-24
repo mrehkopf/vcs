@@ -726,12 +726,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Subscribe to app events.
     {
-        ke_events().scaler.newFrame.subscribe([this]
+        ksEvent_newFrame.subscribe([this]
         {
             this->redraw();
         });
 
-        ke_events().scaler.framesPerSecond.subscribe([this](const unsigned fps)
+        ksEvent_framesPerSecond.subscribe([this](const unsigned fps)
         {
             if (CURRENT_OUTPUT_FPS != fps)
             {
@@ -740,39 +740,39 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
 
-        ke_events().scaler.newFrameResolution.subscribe([this]
+        ksEvent_newFrameResolution.subscribe([this]
         {
             this->update_window_title();
             this->update_window_size();
         });
 
-        ke_events().capture.signalLost.subscribe([this]
-        {
-            this->update_window_title();
-            this->update_window_size();
-            this->redraw();
-        });
-
-        ke_events().capture.invalidDevice.subscribe([this]
+        kcEvent_signalLost.subscribe([this]
         {
             this->update_window_title();
             this->update_window_size();
             this->redraw();
         });
 
-        ke_events().capture.invalidSignal.subscribe([this]
+        kcEvent_invalidDevice.subscribe([this]
         {
             this->update_window_title();
             this->update_window_size();
             this->redraw();
         });
 
-        ke_events().capture.newVideoMode.subscribe([this]
+        kcEvent_invalidSignal.subscribe([this]
+        {
+            this->update_window_title();
+            this->update_window_size();
+            this->redraw();
+        });
+
+        kcEvent_newVideoMode.subscribe([this]
         {
             this->update_window_title();
         });
 
-        ke_events().recorder.recordingStarted.subscribe([this]
+        krecordEvent_recordingStarted.subscribe([this]
         {
             if (!PROGRAM_EXIT_REQUESTED)
             {
@@ -780,7 +780,7 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
 
-        ke_events().recorder.recordingEnded.subscribe([this]
+        krecordEvent_recordingEnded.subscribe([this]
         {
             if (!PROGRAM_EXIT_REQUESTED)
             {
@@ -794,7 +794,7 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
 
-        ke_events().capture.missedFramesCount.subscribe([this](const unsigned numMissed)
+        kcEvent_missedFramesCount.subscribe([this](const unsigned numMissed)
         {
             const bool areDropped = (numMissed > 0);
 

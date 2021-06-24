@@ -10,6 +10,10 @@
 #include <string>
 #include "common/globals.h"
 #include "common/types.h"
+#include "common/propagate/app_events.h"
+
+extern app_event_c<void> krecordEvent_recordingStarted;
+extern app_event_c<void> krecordEvent_recordingEnded;
 
 bool krecord_start_recording(const char *const filename,
                              const uint width,

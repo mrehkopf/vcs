@@ -22,7 +22,7 @@ static unsigned RUNNING_PRESET_ID = 0;
 
 void kvideopreset_initialize(void)
 {
-    ke_events().capture.newVideoMode.subscribe(kvideopreset_apply_current_active_preset);
+    kcEvent_newVideoMode.subscribe(kvideopreset_apply_current_active_preset);
 
     return;
 }

@@ -82,7 +82,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 
     // Subscribe to app events.
     {
-        ke_events().capture.newVideoMode.subscribe([this]
+        kcEvent_newVideoMode.subscribe([this]
         {
             const auto resolution = kc_get_capture_resolution();
 

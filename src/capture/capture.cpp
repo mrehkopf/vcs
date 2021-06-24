@@ -10,6 +10,17 @@
 #include "capture/capture.h"
 #include "common/timer/timer.h"
 
+app_event_c<void> kcEvent_frameCaptured;
+app_event_c<void> kcEvent_newProposedVideoMode;
+app_event_c<void> kcEvent_newVideoMode;
+app_event_c<void> kcEvent_newInputChannel;
+app_event_c<void> kcEvent_invalidDevice;
+app_event_c<void> kcEvent_signalLost;
+app_event_c<void> kcEvent_signalGained;
+app_event_c<void> kcEvent_invalidSignal;
+app_event_c<void> kcEvent_unrecoverableError;
+app_event_c<unsigned> kcEvent_missedFramesCount;
+
 // We'll keep a running count of the number of frames we've missed, in total,
 // during capturing.
 static unsigned LAST_KNOWN_MISSED_FRAMES_COUNT = 0;
@@ -34,7 +45,7 @@ void kc_initialize_capture(void)
 
         LAST_KNOWN_MISSED_FRAMES_COUNT = numMissedCurrent;
 
-        ke_events().capture.missedFramesCount.fire(numMissedFrames);
+        kcEvent_missedFramesCount.fire(numMissedFrames);
     });
 
     return;
@@ -81,7 +92,7 @@ bool kc_force_capture_resolution(const resolution_s &r)
         return false;
     }
 
-    ke_events().capture.newVideoMode.fire();
+    kcEvent_newVideoMode.fire();
 
     return true;
 }

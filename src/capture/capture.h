@@ -66,7 +66,7 @@
  * As you'll see from @a capture_virtual.cpp, the capture device doesn't need
  * to be an actual device. It can be any source of image data -- something
  * that reads images from @a stdin, for example. It only needs to implement the
- * interface functions and output its data in the form dictated by the interface.
+ * interface functions and to output its data in the form dictated by the interface.
  */
 
 #ifndef VCS_CAPTURE_CAPTURE_H
@@ -80,8 +80,38 @@
 #include "common/refresh_rate.h"
 #include "common/memory/memory.h"
 #include "common/types.h"
+#include "common/propagate/app_events.h"
 
-struct capture_device_s;
+// VCS has received a new frame from the capture device. (The frame's data is
+// available from kc_get_frame_buffer().)
+extern app_event_c<void> kcEvent_frameCaptured;
+
+// The capture device has received a new video mode. We treat it as a proposal,
+// since we might e.g. not want this video mode to be used, and in that case
+// would tell the capture device to use some other mode.
+extern app_event_c<void> kcEvent_newProposedVideoMode;
+
+// The capture device has received a new video mode that we've approved of
+// (cf. newProposedVideoMode).
+extern app_event_c<void> kcEvent_newVideoMode;
+
+// The active input channel index has changed.
+extern app_event_c<void> kcEvent_newInputChannel;
+
+// The current capture device is invalid.
+extern app_event_c<void> kcEvent_invalidDevice;
+
+extern app_event_c<void> kcEvent_signalLost;
+extern app_event_c<void> kcEvent_signalGained;
+extern app_event_c<void> kcEvent_invalidSignal;
+extern app_event_c<void> kcEvent_unrecoverableError;
+
+// The capture subsystem has had to ignore frames coming from the capture
+// device because VCS was busy with something else (e.g. with processing
+// a previous frame). Provides the count of missed frames (generally, the
+// capture subsystem might fire this event at regular intervals and pass
+// the count of missed frames during that interval).
+extern app_event_c<unsigned> kcEvent_missedFramesCount;
 
 /*!
  * Enumerates the de-interlacing modes recognized by the capture subsystem.
@@ -101,16 +131,11 @@ enum class capture_deinterlacing_mode_e
 };
 
 /*!
- * Enumerates the color formats recognized by the capture subsystem.
- *
- * Frames output by the subsystem will have their pixel data in one of these
- * formats.
- *
- * The capture device may support some, none, or all of these formats. Any
- * capability queries should be made via the capture device interface.
+ * Enumerates the pixel color formats recognized by the capture subsystem for
+ * captured frames.
  *
  * @see
- * captured_frame_s, capture_device_s
+ * captured_frame_s
  */
 enum class capture_pixel_format_e
 {
@@ -219,19 +244,22 @@ struct video_signal_parameters_s
 
 /*!
  * Returns a reference to a mutex which should be locked by the capture subsystem
- * while it's accessing data shared with VCS (e.g. capture event flags or the
- * capture frame buffer), and which VCS should lock while accessing that data.
+ * while it's accessing data shared with the rest of VCS (e.g. capture event flags
+ * or the capture frame buffer), and which the rest of VCS should lock while
+ * accessing that data.
  *
- * Failure to observe this mutex when accessing shared capture data may result in
- * a race condition, as the capture subsystem is allowed to run outside of the
+ * Failure to observe this mutex when accessing capture subsystem data may result
+ * in a race condition, as the capture subsystem is allowed to run outside of the
  * main VCS thread.
  *
  * @code
- * // Block until the mutex allows us to access the capture data.
+ * // Code running in the main VCS thread.
+ * 
+ * // Blocks until the capture mutex allows us to access the capture data.
  * std::lock_guard<std::mutex> lock(kc_capture_mutex());
  *
  * // Handle the most recent capture event (having locked the mutex prevents
- * // the capture subsystem from pushing new events while we do this).
+ * // the capture subsystem from pushing new events while we're doing this).
  * switch (kc_pop_capture_event_queue())
  * {
  *     // ...
@@ -239,9 +267,9 @@ struct video_signal_parameters_s
  * @endcode
  *
  * @note
- * If the capture subsystem finds the mutex locked when the capture device sends
- * a new frame, the frame will be dropped without waiting for the lock to be
- * released.
+ * If the capture subsystem finds the capture mutex locked when the capture device
+ * sends in a new frame, the frame will be discarded rather than waiting for the
+ * lock to be released.
  */
 std::mutex& kc_capture_mutex(void);
 
@@ -308,11 +336,6 @@ bool kc_release_device(void);
  * @note
  * If the resolution of the captured signal doesn't match this resolution, the
  * captured image may become corrupted until the proper resolution is set.
- *
- * @warning
- * This function may become obsolete in a future version of VCS, in which case
- * its functionality will likely be merged into the capture device interface
- * (see kc_capture_device()).
  */
 bool kc_force_capture_resolution(const resolution_s &r);
 
@@ -500,9 +523,9 @@ resolution_s kc_get_device_minimum_resolution(void);
 resolution_s kc_get_device_maximum_resolution(void);
 
 /*!
- * Returns number of frames the interface has received from the capture
- * device which VCS was too busy to process and display. These are, in effect,
- * dropped frames.
+ * Returns the number of frames the interface has received from the capture
+ * device which VCS was too busy to process and display. These are, in
+ * effect, dropped frames.
  *
  * If this value is above 0, it indicates that VCS is failing to process
  * and display captured frames as fast as the capture device is producing
@@ -610,22 +633,32 @@ bool kc_has_signal(void);
 bool kc_is_capturing(void);
 
 /*!
- * Returns a reference to the most recently captured frame.
+ * Returns a reference to the most recent captured frame.
  *
  * @code
+ * // The capture mutex should be locked first, to ensure that the frame buffer
+ * // isn't modified by another thread while we're accessing it.
  * std::lock_guard<std::mutex> lock(kc_capture_mutex());
  *
- * captured_frame_s &frame = kc_get_frame_buffer();
- *
- * // We can now access the frame's pixel data without the capture subsystem
- * // modifying it from another thread, until the mutex lock is released.
+ * const auto &frameBuffer = kc_get_frame_buffer();
+ * // Access the frame buffer's data...
  * @endcode
- *
+ * 
+ * @code
+ * // Capture subsystem events guarantee that the capture mutex has been locked
+ * // for the duration of the subscribed event handler.
+ * kcEvent_frameCaptured.subscribe([]
+ * {
+ *     // kc_capture_mutex() == locked.
+ * 
+ *     const auto &frameBuffer = kc_get_frame_buffer();
+ *     // Access the frame buffer's data...
+ * });
+ * @endcode
+ * 
  * @warning
- * The caller should lock kc_capture_mutex() while accessing the returned data.
- * Failure to do so may result in a race condition, since the capture subsystem
- * is otherwise permitted to operate on these data from outside of the caller's
- * thread.
+ * To ensure that the frame buffer's data isn't modified by another thread while
+ * you're accessing it, acquire the capture mutex before calling this function.
  *
  * @see
  * kc_capture_mutex()

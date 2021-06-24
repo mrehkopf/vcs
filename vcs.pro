@@ -57,6 +57,7 @@ RESOURCES += \
     src/display/qt/res.qrc
 
 SOURCES += \
+    src/display/display.cpp \
     src/display/qt/subclasses/QComboBox_video_preset_list.cpp \
     src/display/qt/subclasses/QDialog_vcs_base_dialog.cpp \
     src/display/qt/subclasses/QFrame_filtergui_for_qt.cpp \
@@ -149,7 +150,6 @@ SOURCES += \
     src/capture/video_presets.cpp \
     src/common/disk/file_writers/file_writer_video_presets_version_a.cpp \
     src/common/disk/file_readers/file_reader_video_presets_version_a.cpp \
-    src/common/propagate/app_events.cpp \
     src/record/recording_buffer.cpp \
     src/record/framerate_estimator.cpp \
     src/common/timer/timer.cpp \

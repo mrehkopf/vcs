@@ -32,10 +32,14 @@
 #include <string>
 #include <vector>
 #include "common/types.h"
+#include "common/propagate/app_events.h"
 
 struct log_entry_s;
 struct mode_alias_s;
 class FilterGraphNode;
+
+// Marks the output window as dirty, i.e. in need of redrawing.
+extern app_event_c<void> kdEvent_dirty;
 
 /*!
  * @brief
