@@ -22,19 +22,19 @@
 #include "common/disk/file_writers/file_writer_filter_graph.h"
 #include "common/disk/file_writers/file_writer_aliases.h"
 #include "common/disk/file_readers/file_reader_aliases.h"
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 #include "capture/capture.h"
 #include "capture/video_presets.h"
 #include "capture/alias.h"
 #include "filter/filter.h"
 #include "common/disk/disk.h"
 
-app_event_c<void> kdiskEvent_savedVideoPresets;
-app_event_c<void> kdiskEvent_savedFilterGraph;
-app_event_c<void> kdiskEvent_savedAliases;
-app_event_c<void> kdiskEvent_loadedVideoPresets;
-app_event_c<void> kdiskEvent_loadedFilterGraph;
-app_event_c<void> kdiskEvent_loadedAliases;
+vcs_event_c<void> kdiskEvent_savedVideoPresets;
+vcs_event_c<void> kdiskEvent_savedFilterGraph;
+vcs_event_c<void> kdiskEvent_savedAliases;
+vcs_event_c<void> kdiskEvent_loadedVideoPresets;
+vcs_event_c<void> kdiskEvent_loadedFilterGraph;
+vcs_event_c<void> kdiskEvent_loadedAliases;
 
 bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
                               const std::string &targetFilename)

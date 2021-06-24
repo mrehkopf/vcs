@@ -13,7 +13,7 @@
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "common/command_line/command_line.h"
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 #include "common/refresh_rate.h"
 #include "common/disk/disk.h"
 #include "capture/capture.h"

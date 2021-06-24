@@ -10,7 +10,7 @@
 #include "display/qt/windows/output_window.h"
 #include "common/command_line/command_line.h"
 #include "anti_tear/anti_tear.h"
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"

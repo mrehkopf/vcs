@@ -6,7 +6,7 @@
  */
 
 #include <vector>
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "capture/alias.h"

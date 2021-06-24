@@ -80,38 +80,38 @@
 #include "common/refresh_rate.h"
 #include "common/memory/memory.h"
 #include "common/types.h"
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 
 // VCS has received a new frame from the capture device. (The frame's data is
 // available from kc_get_frame_buffer().)
-extern app_event_c<void> kcEvent_frameCaptured;
+extern vcs_event_c<void> kcEvent_frameCaptured;
 
 // The capture device has received a new video mode. We treat it as a proposal,
 // since we might e.g. not want this video mode to be used, and in that case
 // would tell the capture device to use some other mode.
-extern app_event_c<void> kcEvent_newProposedVideoMode;
+extern vcs_event_c<void> kcEvent_newProposedVideoMode;
 
 // The capture device has received a new video mode that we've approved of
 // (cf. newProposedVideoMode).
-extern app_event_c<void> kcEvent_newVideoMode;
+extern vcs_event_c<void> kcEvent_newVideoMode;
 
 // The active input channel index has changed.
-extern app_event_c<void> kcEvent_newInputChannel;
+extern vcs_event_c<void> kcEvent_newInputChannel;
 
 // The current capture device is invalid.
-extern app_event_c<void> kcEvent_invalidDevice;
+extern vcs_event_c<void> kcEvent_invalidDevice;
 
-extern app_event_c<void> kcEvent_signalLost;
-extern app_event_c<void> kcEvent_signalGained;
-extern app_event_c<void> kcEvent_invalidSignal;
-extern app_event_c<void> kcEvent_unrecoverableError;
+extern vcs_event_c<void> kcEvent_signalLost;
+extern vcs_event_c<void> kcEvent_signalGained;
+extern vcs_event_c<void> kcEvent_invalidSignal;
+extern vcs_event_c<void> kcEvent_unrecoverableError;
 
 // The capture subsystem has had to ignore frames coming from the capture
 // device because VCS was busy with something else (e.g. with processing
 // a previous frame). Provides the count of missed frames (generally, the
 // capture subsystem might fire this event at regular intervals and pass
 // the count of missed frames during that interval).
-extern app_event_c<unsigned> kcEvent_missedFramesCount;
+extern vcs_event_c<unsigned> kcEvent_missedFramesCount;
 
 /*!
  * Enumerates the de-interlacing modes recognized by the capture subsystem.

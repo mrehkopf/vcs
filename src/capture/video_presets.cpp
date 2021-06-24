@@ -7,7 +7,7 @@
 
 #include <algorithm>
 #include <vector>
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 #include "capture/video_presets.h"
 #include "capture/capture.h"
 

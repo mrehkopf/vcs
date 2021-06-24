@@ -6,20 +6,20 @@
  *
  */
 
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 #include "capture/capture.h"
 #include "common/timer/timer.h"
 
-app_event_c<void> kcEvent_frameCaptured;
-app_event_c<void> kcEvent_newProposedVideoMode;
-app_event_c<void> kcEvent_newVideoMode;
-app_event_c<void> kcEvent_newInputChannel;
-app_event_c<void> kcEvent_invalidDevice;
-app_event_c<void> kcEvent_signalLost;
-app_event_c<void> kcEvent_signalGained;
-app_event_c<void> kcEvent_invalidSignal;
-app_event_c<void> kcEvent_unrecoverableError;
-app_event_c<unsigned> kcEvent_missedFramesCount;
+vcs_event_c<void> kcEvent_frameCaptured;
+vcs_event_c<void> kcEvent_newProposedVideoMode;
+vcs_event_c<void> kcEvent_newVideoMode;
+vcs_event_c<void> kcEvent_newInputChannel;
+vcs_event_c<void> kcEvent_invalidDevice;
+vcs_event_c<void> kcEvent_signalLost;
+vcs_event_c<void> kcEvent_signalGained;
+vcs_event_c<void> kcEvent_invalidSignal;
+vcs_event_c<void> kcEvent_unrecoverableError;
+vcs_event_c<unsigned> kcEvent_missedFramesCount;
 
 // We'll keep a running count of the number of frames we've missed, in total,
 // during capturing.

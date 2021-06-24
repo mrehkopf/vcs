@@ -251,7 +251,7 @@ HEADERS += \
     src/capture/video_presets.h \
     src/common/disk/file_writers/file_writer_video_presets.h \
     src/common/disk/file_readers/file_reader_video_presets.h \
-    src/common/propagate/app_events.h \
+    src/common/propagate/vcs_event.h \
     src/record/recording_buffer.h \
     src/record/recording_meta.h \
     src/record/framerate_estimator.h \

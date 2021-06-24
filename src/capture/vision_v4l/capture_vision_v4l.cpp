@@ -27,7 +27,7 @@
 #include "capture/vision_v4l/input_channel_v4l.h"
 #include "capture/video_presets.h"
 #include "capture/vision_v4l/ic_v4l_video_parameters.h"
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 
 #define INCLUDE_VISION
 #include <visionrgb/include/rgb133v4l2.h>

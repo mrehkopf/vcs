@@ -1,6 +1,6 @@
 #include "display/qt/dialogs/output_resolution_dialog.h"
 #include "display/qt/persistent_settings.h"
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "record/record.h"

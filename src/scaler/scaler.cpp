@@ -11,7 +11,7 @@
 #include <vector>
 #include <cmath>
 #include "anti_tear/anti_tear.h"
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
@@ -26,13 +26,13 @@
     #include <opencv2/core/core.hpp>
 #endif
 
-app_event_c<void> ksEvent_newFrameResolution;
+vcs_event_c<void> ksEvent_newFrameResolution;
 
 // The most recent captured frame has now been processed and is ready for display.
-app_event_c<void> ksEvent_newFrame;
+vcs_event_c<void> ksEvent_newFrame;
 
 // The number of frames processed (see newFrame) in the last second.
-app_event_c<unsigned> ksEvent_framesPerSecond;
+vcs_event_c<unsigned> ksEvent_framesPerSecond;
 
 // For keeping track of the number of frames scaled per second.
 static unsigned NUM_FRAMES_SCALED_PER_SECOND = 0;

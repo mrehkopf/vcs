@@ -7,4 +7,4 @@
 
 #include "display/display.h"
 
-app_event_c<void> kdEvent_dirty;
+vcs_event_c<void> kdEvent_dirty;

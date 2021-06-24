@@ -7,7 +7,7 @@
 
 #include <chrono>
 #include "common/globals.h"
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 #include "common/timer/timer.h"
 #include "capture/capture.h"
 

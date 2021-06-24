@@ -1,9 +1,9 @@
 /*
- * 2020 Tarpeeksi Hyvae Soft
+ * 2020-2021 Tarpeeksi Hyvae Soft
  *
  * Software: VCS
  *
- * The app event system allows the various subsystems of VCS to receive notification
+ * The VCS event system allows the various subsystems of VCS to receive notification
  * when certain runtime events occur.
  *
  */
@@ -15,7 +15,7 @@
 #include <list>
 
 template <typename T>
-class app_event_c
+class vcs_event_c
 {
 public:
     void subscribe(std::function<void(T)> handlerFn)
@@ -41,7 +41,7 @@ private:
 
 // An event that passes no parameters.
 template <>
-class app_event_c<void>
+class vcs_event_c<void>
 {
 public:
     void subscribe(std::function<void(void)> handlerFn)

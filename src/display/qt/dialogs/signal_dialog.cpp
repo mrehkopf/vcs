@@ -17,7 +17,7 @@
 #include "display/qt/subclasses/QTableWidget_property_table.h"
 #include "display/qt/dialogs/signal_dialog.h"
 #include "display/qt/persistent_settings.h"
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 #include "display/qt/utility.h"
 #include "display/display.h"
 #include "capture/capture.h"

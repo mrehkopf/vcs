@@ -15,7 +15,7 @@
 #include <future>
 #include <mutex>
 #include <cstring>
-#include "common/propagate/app_events.h"
+#include "common/propagate/vcs_event.h"
 #include "display/display.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
@@ -34,8 +34,8 @@
     static cv::VideoWriter VIDEO_WRITER;
 #endif
 
-app_event_c<void> krecordEvent_recordingStarted;
-app_event_c<void> krecordEvent_recordingEnded;
+vcs_event_c<void> krecordEvent_recordingStarted;
+vcs_event_c<void> krecordEvent_recordingEnded;
 
 static const unsigned RECORDING_BUFFER_CAPACITY = 10;
 
