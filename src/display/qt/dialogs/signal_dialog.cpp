@@ -123,29 +123,29 @@ SignalDialog::SignalDialog(QWidget *parent) :
             update_information_table(kc_has_signal());
         };
 
-        kcEvent_invalidSignal.subscribe([this]
+        kc_evInvalidSignal.subscribe([this]
         {
             this->set_controls_enabled(false);
         });
 
-        kcEvent_signalLost.subscribe([this]
+        kc_evSignalLost.subscribe([this]
         {
             this->set_controls_enabled(false);
         });
 
-        kcEvent_signalGained.subscribe([this]
+        kc_evSignalGained.subscribe([this]
         {
             this->set_controls_enabled(true);
         });
 
-        ksEvent_framesPerSecond.subscribe([this](const unsigned fps)
+        ks_evFramesPerSecond.subscribe([this](const unsigned fps)
         {
             ui->tableWidget_propertyTable->modify_property("Frame rate", QString("%1 FPS").arg(fps));
         });
 
-        kcEvent_newVideoMode.subscribe(update_info);
+        kc_evNewVideoMode.subscribe(update_info);
 
-        kcEvent_newInputChannel.subscribe(update_info);
+        kc_evNewInputChannel.subscribe(update_info);
     }
 
     return;

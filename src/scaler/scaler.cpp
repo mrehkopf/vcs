@@ -26,13 +26,13 @@
     #include <opencv2/core/core.hpp>
 #endif
 
-vcs_event_c<void> ksEvent_newFrameResolution;
+vcs_event_c<void> ks_evNewFrameResolution;
 
 // The most recent captured frame has now been processed and is ready for display.
-vcs_event_c<void> ksEvent_newFrame;
+vcs_event_c<void> ks_evNewFrame;
 
 // The number of frames processed (see newFrame) in the last second.
-vcs_event_c<unsigned> ksEvent_framesPerSecond;
+vcs_event_c<unsigned> ks_evFramesPerSecond;
 
 // For keeping track of the number of frames scaled per second.
 static unsigned NUM_FRAMES_SCALED_PER_SECOND = 0;
@@ -409,41 +409,41 @@ void ks_initialize_scaler(void)
     ks_set_upscaling_filter(SCALING_FILTERS.at(0).name);
     ks_set_downscaling_filter(SCALING_FILTERS.at(0).name);
 
-    kcEvent_frameCaptured.subscribe([]
+    kc_evFrameCaptured.subscribe([]
     {
         ks_scale_frame(kc_get_frame_buffer());
 
-        ksEvent_newFrame.fire();
+        ks_evNewFrame.fire();
 
         kc_mark_frame_buffer_as_processed();
     });
 
-    kcEvent_newVideoMode.subscribe([]
+    kc_evNewVideoMode.subscribe([]
     {
         const auto currentInputRes = kc_get_capture_resolution();
         ks_set_output_base_resolution(currentInputRes, false);
     });
 
-    kcEvent_invalidSignal.subscribe([]
+    kc_evInvalidSignal.subscribe([]
     {
         ks_indicate_invalid_signal();
-        kdEvent_dirty.fire();
+        kd_evDirty.fire();
     });
 
-    kcEvent_signalLost.subscribe([]
+    kc_evSignalLost.subscribe([]
     {
         ks_indicate_no_signal();
-        kdEvent_dirty.fire();
+        kd_evDirty.fire();
     });
 
-    kcEvent_frameCaptured.subscribe([]
+    kc_evFrameCaptured.subscribe([]
     {
         NUM_FRAMES_SCALED_PER_SECOND++;
     });
 
     kt_timer(1000, [](const unsigned)
     {
-        ksEvent_framesPerSecond.fire(NUM_FRAMES_SCALED_PER_SECOND);
+        ks_evFramesPerSecond.fire(NUM_FRAMES_SCALED_PER_SECOND);
 
         NUM_FRAMES_SCALED_PER_SECOND = 0;
     });
@@ -643,7 +643,7 @@ void ks_scale_frame(const captured_frame_s &frame)
     if ((LATEST_OUTPUT_SIZE.w != outputRes.w) ||
         (LATEST_OUTPUT_SIZE.h != outputRes.h))
     {
-        ksEvent_newFrameResolution.fire();
+        ks_evNewFrameResolution.fire();
 
         LATEST_OUTPUT_SIZE = outputRes;
     }

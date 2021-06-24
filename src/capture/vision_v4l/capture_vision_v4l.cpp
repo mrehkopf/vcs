@@ -174,18 +174,18 @@ bool kc_initialize_device(void)
 {
     INFO(("Initializing the Vision/V4L capture device."));
 
-    kcEvent_newVideoMode.subscribe([]
+    kc_evNewVideoMode.subscribe([]
     {
         // Re-create the input channel for the new video mode.
         kc_set_capture_input_channel(CUR_INPUT_CHANNEL_IDX);
     });
 
-    kcEvent_signalLost.subscribe([]
+    kc_evSignalLost.subscribe([]
     {
         CUR_INPUT_CHANNEL->captureStatus.videoParameters.update();
     });
 
-    kcEvent_newInputChannel.subscribe([]
+    kc_evNewInputChannel.subscribe([]
     {
         CUR_INPUT_CHANNEL->captureStatus.videoParameters.update();
         kvideopreset_apply_current_active_preset();
@@ -540,7 +540,7 @@ bool kc_set_capture_input_channel(const unsigned idx)
 
     CUR_INPUT_CHANNEL_IDX = idx;
 
-    kcEvent_newInputChannel.fire();
+    kc_evNewInputChannel.fire();
 
     return true;
 }

@@ -29,12 +29,12 @@
 #include "filter/filter.h"
 #include "common/disk/disk.h"
 
-vcs_event_c<void> kdiskEvent_savedVideoPresets;
-vcs_event_c<void> kdiskEvent_savedFilterGraph;
-vcs_event_c<void> kdiskEvent_savedAliases;
-vcs_event_c<void> kdiskEvent_loadedVideoPresets;
-vcs_event_c<void> kdiskEvent_loadedFilterGraph;
-vcs_event_c<void> kdiskEvent_loadedAliases;
+vcs_event_c<void> kdisk_evSavedVideoPresets;
+vcs_event_c<void> kdisk_evSavedFilterGraph;
+vcs_event_c<void> kdisk_evSavedAliases;
+vcs_event_c<void> kdisk_evLoadedVideoPresets;
+vcs_event_c<void> kdisk_evLoadedFilterGraph;
+vcs_event_c<void> kdisk_evLoadedAliases;
 
 bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
                               const std::string &targetFilename)
@@ -44,7 +44,7 @@ bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
         goto fail;
     }
 
-    kdiskEvent_savedVideoPresets.fire();
+    kdisk_evSavedVideoPresets.fire();
 
     return true;
 
@@ -135,7 +135,7 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &sourceF
         }
     }
 
-    kdiskEvent_loadedVideoPresets.fire();
+    kdisk_evLoadedVideoPresets.fire();
 
     INFO(("Loaded %u video preset(s).", presets.size()));
 
@@ -187,7 +187,7 @@ std::vector<mode_alias_s> kdisk_load_aliases(const std::string &sourceFilename)
         return (a.to.w * a.to.h) < (b.to.w * b.to.h);
     });
 
-    kdiskEvent_loadedAliases.fire();
+    kdisk_evLoadedAliases.fire();
 
     INFO(("Loaded %u alias(es).", aliases.size()));
 
@@ -209,7 +209,7 @@ bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
         goto fail;
     }
 
-    kdiskEvent_savedAliases.fire();
+    kdisk_evSavedAliases.fire();
 
     return true;
 
@@ -230,7 +230,7 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
         goto fail;
     }
 
-    kdiskEvent_savedFilterGraph.fire();
+    kdisk_evSavedFilterGraph.fire();
 
     return true;
 
@@ -289,7 +289,7 @@ std::pair<std::vector<FilterGraphNode*>,
         goto fail;
     }
 
-    kdiskEvent_loadedFilterGraph.fire();
+    kdisk_evLoadedFilterGraph.fire();
 
     INFO(("Loaded %u filter graph node(s).", graphNodes.size()));
 

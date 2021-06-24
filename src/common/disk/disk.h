@@ -13,12 +13,12 @@ struct video_signal_parameters_s;
 struct video_preset_s;
 struct mode_alias_s;
 
-extern vcs_event_c<void> kdiskEvent_savedVideoPresets;
-extern vcs_event_c<void> kdiskEvent_savedFilterGraph;
-extern vcs_event_c<void> kdiskEvent_savedAliases;
-extern vcs_event_c<void> kdiskEvent_loadedVideoPresets;
-extern vcs_event_c<void> kdiskEvent_loadedFilterGraph;
-extern vcs_event_c<void> kdiskEvent_loadedAliases;
+extern vcs_event_c<void> kdisk_evSavedVideoPresets;
+extern vcs_event_c<void> kdisk_evSavedFilterGraph;
+extern vcs_event_c<void> kdisk_evSavedAliases;
+extern vcs_event_c<void> kdisk_evLoadedVideoPresets;
+extern vcs_event_c<void> kdisk_evLoadedFilterGraph;
+extern vcs_event_c<void> kdisk_evLoadedAliases;
 
 bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets, const std::string &targetFilename);
 bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes, std::vector<filter_graph_option_s> &options, const std::string &targetFilename);

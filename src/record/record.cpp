@@ -34,8 +34,8 @@
     static cv::VideoWriter VIDEO_WRITER;
 #endif
 
-vcs_event_c<void> krecordEvent_recordingStarted;
-vcs_event_c<void> krecordEvent_recordingEnded;
+vcs_event_c<void> krecord_evRecordingStarted;
+vcs_event_c<void> krecord_evRecordingEnded;
 
 static const unsigned RECORDING_BUFFER_CAPACITY = 10;
 
@@ -49,7 +49,7 @@ void krecord_initialize(void)
 {
     RECORDING_BUFFER.initialize(RECORDING_BUFFER_CAPACITY);
 
-    ksEvent_newFrame.subscribe([]
+    ks_evNewFrame.subscribe([]
     {
         if (krecord_is_recording())
         {
@@ -57,12 +57,12 @@ void krecord_initialize(void)
         }
     });
 
-    krecordEvent_recordingStarted.subscribe([]
+    krecord_evRecordingStarted.subscribe([]
     {
         DEBUG(("Recording into \"%s\".", RECORDING.filename.c_str()));
     });
 
-    krecordEvent_recordingEnded.subscribe([]
+    krecord_evRecordingEnded.subscribe([]
     {
         DEBUG(("Finished recording into \"%s\".", RECORDING.filename.c_str()));
     });
@@ -228,7 +228,7 @@ bool krecord_start_recording(const char *const filename,
         return false;
     }
 
-    krecordEvent_recordingStarted.fire();
+    krecord_evRecordingStarted.fire();
 
     return true;
 #endif
@@ -377,7 +377,7 @@ void krecord_stop_recording(void)
 
     VIDEO_WRITER.release();
 
-    krecordEvent_recordingEnded.fire();
+    krecord_evRecordingEnded.fire();
 
     return;
 #endif

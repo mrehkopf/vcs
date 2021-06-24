@@ -12,8 +12,8 @@
 #include "common/types.h"
 #include "common/propagate/vcs_event.h"
 
-extern vcs_event_c<void> krecordEvent_recordingStarted;
-extern vcs_event_c<void> krecordEvent_recordingEnded;
+extern vcs_event_c<void> krecord_evRecordingStarted;
+extern vcs_event_c<void> krecord_evRecordingEnded;
 
 bool krecord_start_recording(const char *const filename,
                              const uint width,

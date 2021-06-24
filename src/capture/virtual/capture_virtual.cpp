@@ -204,7 +204,7 @@ bool kc_set_capture_input_channel(const unsigned idx)
 {
     CUR_INPUT_CHANNEL_IDX = idx;
 
-    kcEvent_newInputChannel.fire();
+    kc_evNewInputChannel.fire();
 
     return true;
 }

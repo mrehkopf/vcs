@@ -84,34 +84,34 @@
 
 // VCS has received a new frame from the capture device. (The frame's data is
 // available from kc_get_frame_buffer().)
-extern vcs_event_c<void> kcEvent_frameCaptured;
+extern vcs_event_c<void> kc_evFrameCaptured;
 
 // The capture device has received a new video mode. We treat it as a proposal,
 // since we might e.g. not want this video mode to be used, and in that case
 // would tell the capture device to use some other mode.
-extern vcs_event_c<void> kcEvent_newProposedVideoMode;
+extern vcs_event_c<void> kc_evNewProposedVideoMode;
 
 // The capture device has received a new video mode that we've approved of
 // (cf. newProposedVideoMode).
-extern vcs_event_c<void> kcEvent_newVideoMode;
+extern vcs_event_c<void> kc_evNewVideoMode;
 
 // The active input channel index has changed.
-extern vcs_event_c<void> kcEvent_newInputChannel;
+extern vcs_event_c<void> kc_evNewInputChannel;
 
 // The current capture device is invalid.
-extern vcs_event_c<void> kcEvent_invalidDevice;
+extern vcs_event_c<void> kc_evInvalidDevice;
 
-extern vcs_event_c<void> kcEvent_signalLost;
-extern vcs_event_c<void> kcEvent_signalGained;
-extern vcs_event_c<void> kcEvent_invalidSignal;
-extern vcs_event_c<void> kcEvent_unrecoverableError;
+extern vcs_event_c<void> kc_evSignalLost;
+extern vcs_event_c<void> kc_evSignalGained;
+extern vcs_event_c<void> kc_evInvalidSignal;
+extern vcs_event_c<void> kc_evUnrecoverableError;
 
 // The capture subsystem has had to ignore frames coming from the capture
 // device because VCS was busy with something else (e.g. with processing
 // a previous frame). Provides the count of missed frames (generally, the
 // capture subsystem might fire this event at regular intervals and pass
 // the count of missed frames during that interval).
-extern vcs_event_c<unsigned> kcEvent_missedFramesCount;
+extern vcs_event_c<unsigned> kc_evMissedFramesCount;
 
 /*!
  * Enumerates the de-interlacing modes recognized by the capture subsystem.
@@ -647,7 +647,7 @@ bool kc_is_capturing(void);
  * @code
  * // Capture subsystem events guarantee that the capture mutex has been locked
  * // for the duration of the subscribed event handler.
- * kcEvent_frameCaptured.subscribe([]
+ * kc_evFrameCaptured.subscribe([]
  * {
  *     // kc_capture_mutex() == locked.
  * 

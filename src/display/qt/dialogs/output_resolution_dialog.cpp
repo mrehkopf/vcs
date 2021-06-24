@@ -104,7 +104,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
 
     // Subscribe to app events.
     {
-        kcEvent_newVideoMode.subscribe([this]
+        kc_evNewVideoMode.subscribe([this]
         {
             if (!ui->checkBox_forceOutputRes->isChecked())
             {
@@ -114,7 +114,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
             }
         });
 
-        krecordEvent_recordingStarted.subscribe([this]
+        krecord_evRecordingStarted.subscribe([this]
         {
             // Disable any GUI functionality that would let the user change the current
             // output size, since we want to keep the output resolution constant while
@@ -122,7 +122,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
             this->disable_output_size_controls(true);
         });
 
-        krecordEvent_recordingEnded.subscribe([this]
+        krecord_evRecordingEnded.subscribe([this]
         {
             this->disable_output_size_controls(false);
         });

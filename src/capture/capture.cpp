@@ -10,16 +10,16 @@
 #include "capture/capture.h"
 #include "common/timer/timer.h"
 
-vcs_event_c<void> kcEvent_frameCaptured;
-vcs_event_c<void> kcEvent_newProposedVideoMode;
-vcs_event_c<void> kcEvent_newVideoMode;
-vcs_event_c<void> kcEvent_newInputChannel;
-vcs_event_c<void> kcEvent_invalidDevice;
-vcs_event_c<void> kcEvent_signalLost;
-vcs_event_c<void> kcEvent_signalGained;
-vcs_event_c<void> kcEvent_invalidSignal;
-vcs_event_c<void> kcEvent_unrecoverableError;
-vcs_event_c<unsigned> kcEvent_missedFramesCount;
+vcs_event_c<void> kc_evFrameCaptured;
+vcs_event_c<void> kc_evNewProposedVideoMode;
+vcs_event_c<void> kc_evNewVideoMode;
+vcs_event_c<void> kc_evNewInputChannel;
+vcs_event_c<void> kc_evInvalidDevice;
+vcs_event_c<void> kc_evSignalLost;
+vcs_event_c<void> kc_evSignalGained;
+vcs_event_c<void> kc_evInvalidSignal;
+vcs_event_c<void> kc_evUnrecoverableError;
+vcs_event_c<unsigned> kc_evMissedFramesCount;
 
 // We'll keep a running count of the number of frames we've missed, in total,
 // during capturing.
@@ -45,7 +45,7 @@ void kc_initialize_capture(void)
 
         LAST_KNOWN_MISSED_FRAMES_COUNT = numMissedCurrent;
 
-        kcEvent_missedFramesCount.fire(numMissedFrames);
+        kc_evMissedFramesCount.fire(numMissedFrames);
     });
 
     return;
@@ -92,7 +92,7 @@ bool kc_force_capture_resolution(const resolution_s &r)
         return false;
     }
 
-    kcEvent_newVideoMode.fire();
+    kc_evNewVideoMode.fire();
 
     return true;
 }

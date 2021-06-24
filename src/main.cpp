@@ -53,12 +53,12 @@ static void cleanup_all(void)
 
 static bool initialize_all(void)
 {
-    kcEvent_unrecoverableError.subscribe([]
+    kc_evUnrecoverableError.subscribe([]
     {
         PROGRAM_EXIT_REQUESTED = true;
     });
 
-    kcEvent_newVideoMode.subscribe([]
+    kc_evNewVideoMode.subscribe([]
     {
         const auto resolution = kc_get_capture_resolution();
 
@@ -68,7 +68,7 @@ static bool initialize_all(void)
     // The capture device has received a new video mode. We'll inspect the
     // mode to see if we think it's acceptable, then allow news of it to
     // propagate to the rest of VCS.
-    kcEvent_newProposedVideoMode.subscribe([]
+    kc_evNewProposedVideoMode.subscribe([]
     {
         const auto resolution = kc_get_capture_resolution();
 
@@ -83,7 +83,7 @@ static bool initialize_all(void)
         }
         else
         {
-            kcEvent_newVideoMode.fire();
+            kc_evNewVideoMode.fire();
         }
     });
 
@@ -118,7 +118,7 @@ static capture_event_e process_next_capture_event(void)
         {
             NBENE(("The capture device has reported an unrecoverable error."));
 
-            kcEvent_unrecoverableError.fire();
+            kc_evUnrecoverableError.fire();
 
             break;
         }
@@ -126,7 +126,7 @@ static capture_event_e process_next_capture_event(void)
         {
             if (kc_has_valid_signal())
             {
-                kcEvent_frameCaptured.fire();
+                kc_evFrameCaptured.fire();
             }
             else
             {
@@ -139,24 +139,24 @@ static capture_event_e process_next_capture_event(void)
         {
             if (kc_has_valid_signal())
             {
-                kcEvent_newProposedVideoMode.fire();
+                kc_evNewProposedVideoMode.fire();
             }
 
             break;
         }
         case capture_event_e::signal_lost:
         {
-            kcEvent_signalLost.fire();
+            kc_evSignalLost.fire();
             break;
         }
         case capture_event_e::invalid_signal:
         {
-            kcEvent_invalidSignal.fire();
+            kc_evInvalidSignal.fire();
             break;
         }
         case capture_event_e::invalid_device:
         {
-            kcEvent_invalidDevice.fire();
+            kc_evInvalidDevice.fire();
             break;
         }
         case capture_event_e::sleep:
@@ -242,7 +242,7 @@ int main(int argc, char *argv[])
         // Propagate the initial video mode to VCS.
         if (kc_has_valid_signal())
         {
-            kcEvent_newProposedVideoMode.fire();
+            kc_evNewProposedVideoMode.fire();
         }
 
         while (!PROGRAM_EXIT_REQUESTED)

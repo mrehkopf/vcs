@@ -210,7 +210,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
 
     // Subscribe to app events.
     {
-        krecordEvent_recordingStarted.subscribe([this]
+        krecord_evRecordingStarted.subscribe([this]
         {
             this->set_recording_controls_enabled(false);
             ui->groupBox_status->setEnabled(true);
@@ -225,7 +225,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
             }
         });
 
-        krecordEvent_recordingEnded.subscribe([this]
+        krecord_evRecordingEnded.subscribe([this]
         {
             this->set_recording_controls_enabled(true);
             ui->groupBox_status->setEnabled(false);

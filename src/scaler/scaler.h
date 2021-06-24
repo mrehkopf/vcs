@@ -15,13 +15,13 @@ struct captured_frame_s;
 // The parameters accepted by scaling functions.
 #define SCALER_FUNC_PARAMS u8 *const pixelData, const resolution_s &sourceRes, const resolution_s &targetRes
 
-extern vcs_event_c<void> ksEvent_newFrameResolution;
+extern vcs_event_c<void> ks_evNewFrameResolution;
 
 // The most recent captured frame has now been processed and is ready for display.
-extern vcs_event_c<void> ksEvent_newFrame;
+extern vcs_event_c<void> ks_evNewFrame;
 
 // The number of frames processed (see newFrame) in the last second.
-extern vcs_event_c<unsigned> ksEvent_framesPerSecond;
+extern vcs_event_c<unsigned> ks_evFramesPerSecond;
 
 // IDs for the different up/downscaling filters the scaler can use.
 enum scaling_filter_id_e

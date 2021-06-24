@@ -39,7 +39,7 @@ struct mode_alias_s;
 class FilterGraphNode;
 
 // Marks the output window as dirty, i.e. in need of redrawing.
-extern vcs_event_c<void> kdEvent_dirty;
+extern vcs_event_c<void> kd_evDirty;
 
 /*!
  * @brief
