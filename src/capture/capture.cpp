@@ -10,10 +10,10 @@
 #include "capture/capture.h"
 #include "common/timer/timer.h"
 
-vcs_event_c<void> kc_evFrameCaptured;
-vcs_event_c<void> kc_evNewProposedVideoMode;
-vcs_event_c<void> kc_evNewVideoMode;
-vcs_event_c<void> kc_evNewInputChannel;
+vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
+vcs_event_c<capture_video_mode_s> kc_evNewProposedVideoMode;
+vcs_event_c<capture_video_mode_s> kc_evNewVideoMode;
+vcs_event_c<void> ks_evInputChannelChanged;
 vcs_event_c<void> kc_evInvalidDevice;
 vcs_event_c<void> kc_evSignalLost;
 vcs_event_c<void> kc_evSignalGained;
@@ -60,6 +60,14 @@ void kc_release_capture(void)
     return;
 }
 
+capture_video_mode_s kc_get_capture_video_mode(void)
+{
+    return {
+        kc_get_capture_resolution(),
+        kc_get_capture_refresh_rate(),
+    };
+}
+
 bool kc_force_capture_resolution(const resolution_s &r)
 {
     #if CAPTURE_DEVICE_VISION_V4L
@@ -92,7 +100,7 @@ bool kc_force_capture_resolution(const resolution_s &r)
         return false;
     }
 
-    kc_evNewVideoMode.fire();
+    kc_evNewVideoMode.fire(kc_get_capture_video_mode());
 
     return true;
 }

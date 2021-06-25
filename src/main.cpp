@@ -58,32 +58,30 @@ static bool initialize_all(void)
         PROGRAM_EXIT_REQUESTED = true;
     });
 
-    kc_evNewVideoMode.subscribe([]
+    kc_evNewVideoMode.subscribe([](capture_video_mode_s videoMode)
     {
-        const auto resolution = kc_get_capture_resolution();
-
-        INFO(("Video mode: %u x %u @ %.3f Hz.", resolution.w, resolution.h, kc_get_capture_refresh_rate().value<double>()));
+        INFO(("Video mode: %u x %u @ %.3f Hz.",
+              videoMode.resolution.w,
+              videoMode.resolution.h,
+              videoMode.refreshRate.value<double>()));
     });
 
     // The capture device has received a new video mode. We'll inspect the
     // mode to see if we think it's acceptable, then allow news of it to
     // propagate to the rest of VCS.
-    kc_evNewProposedVideoMode.subscribe([]
+    kc_evNewProposedVideoMode.subscribe([](capture_video_mode_s videoMode)
     {
-        const auto resolution = kc_get_capture_resolution();
-
         // If there's an alias for this resolution, force that resolution
         // instead. Note that forcing the resolution is expected to automatically
         // fire a capture.newVideoMode event.
-        if (ka_has_alias(resolution))
+        if (ka_has_alias(videoMode.resolution))
         {
-            const resolution_s aliasResolution = ka_aliased(resolution);
-
+            const resolution_s aliasResolution = ka_aliased(videoMode.resolution);
             kc_force_capture_resolution(aliasResolution);
         }
         else
         {
-            kc_evNewVideoMode.fire();
+            kc_evNewVideoMode.fire(videoMode);
         }
     });
 
@@ -126,12 +124,11 @@ static capture_event_e process_next_capture_event(void)
         {
             if (kc_has_valid_signal())
             {
-                kc_evFrameCaptured.fire();
+                const auto &frame = kc_get_frame_buffer();
+                kc_evNewCapturedFrame.fire(frame);
             }
-            else
-            {
-                kc_mark_frame_buffer_as_processed();
-            }
+
+            kc_mark_frame_buffer_as_processed();
 
             break;
         }
@@ -139,7 +136,7 @@ static capture_event_e process_next_capture_event(void)
         {
             if (kc_has_valid_signal())
             {
-                kc_evNewProposedVideoMode.fire();
+                kc_evNewProposedVideoMode.fire({});
             }
 
             break;
@@ -242,7 +239,7 @@ int main(int argc, char *argv[])
         // Propagate the initial video mode to VCS.
         if (kc_has_valid_signal())
         {
-            kc_evNewProposedVideoMode.fire();
+            kc_evNewProposedVideoMode.fire(kc_get_capture_video_mode());
         }
 
         while (!PROGRAM_EXIT_REQUESTED)

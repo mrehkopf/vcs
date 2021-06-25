@@ -104,13 +104,12 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
 
     // Subscribe to app events.
     {
-        kc_evNewVideoMode.subscribe([this]
+        kc_evNewVideoMode.subscribe([this](capture_video_mode_s videoMode)
         {
             if (!ui->checkBox_forceOutputRes->isChecked())
             {
-                const auto captureResolution = kc_get_capture_resolution();
-                ui->spinBox_outputResX->setValue(captureResolution.w);
-                ui->spinBox_outputResY->setValue(captureResolution.h);
+                ui->spinBox_outputResX->setValue(videoMode.resolution.w);
+                ui->spinBox_outputResY->setValue(videoMode.resolution.h);
             }
         });
 

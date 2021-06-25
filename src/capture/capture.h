@@ -82,28 +82,153 @@
 #include "common/types.h"
 #include "common/propagate/vcs_event.h"
 
-// VCS has received a new frame from the capture device. (The frame's data is
-// available from kc_get_frame_buffer().)
-extern vcs_event_c<void> kc_evFrameCaptured;
+struct capture_video_mode_s;
 
-// The capture device has received a new video mode. We treat it as a proposal,
-// since we might e.g. not want this video mode to be used, and in that case
-// would tell the capture device to use some other mode.
-extern vcs_event_c<void> kc_evNewProposedVideoMode;
+/*!
+ * An event fired when the capture subsystem makes a new captured frame available.
+ * 
+ * The event won't be fired at the exact time of capture but rather once VCS has
+ * polled the capture subsystem and found that a new frame is available. In other
+ * words, the event is fired by VCS's event loop rather than by the capture
+ * subsystem.
+ * 
+ * Frames that don't register on calls to kc_pop_capture_event_queue() won't
+ * generate this event.
+ * 
+ * A reference to the frame's data is provided as an argument to subscribed
+ * handlers. A given handler can assume the data to remain valid until returning.
+ * 
+ * @code
+ * kc_evNewCapturedFrame.subscribe([](const captured_frame_s &frame)
+ * {
+ *    // Access the frame's data. If you want the data to persist after the
+ *    // handler returns, copy it into a local memory buffer.
+ * });
+ * @endcode
+ * 
+ * @code
+ * // Feeds captured frames into the scaler subsystem.
+ * kc_evNewCapturedFrame.subscribe([](const captured_frame_s &frame)
+ * {
+ *    printf("Captured in %lu x %lu.\n", frame.r.w, frame.r.h);
+ *    ks_scale_frame(frame);
+ * });
+ * 
+ * // Receives a notification when a frame has been scaled.
+ * ks_evNewScaledFrame.subscribe([](const captured_frame_s &frame)
+ * {
+ *    printf("Scaled to %lu x %lu.\n", frame.r.w, frame.r.h);
+ * });
+ * @endcode
+ * 
+ * @note
+ * The capture mutex must be locked before firing this event, including before
+ * acquiring the frame reference from kc_get_frame_buffer().
+ * 
+ * @see
+ * kc_get_frame_buffer(), kc_capture_mutex()
+ */
+extern vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
 
-// The capture device has received a new video mode that we've approved of
-// (cf. newProposedVideoMode).
-extern vcs_event_c<void> kc_evNewVideoMode;
+/*!
+ * An event fired when the capture subsystem reports its input signal to have
+ * changed in video mode (e.g. resolution or refresh rate).
+ * 
+ * This event is to be treated as a proposal in that the video mode is what the
+ * capture device thinks is correct but which VCS might disagree with, e.g. as
+ * per an alias resolution.
+ * 
+ * You can accept the mode proposal by firing the kc_evNewVideoMode event, or
+ * call kc_force_capture_resolution() to change it.
+ * 
+ * This event is fired by VCS's event loop (which polls the capture subsystem)
+ * rather than by the capture subsystem.
+ * 
+ * @code
+ * // A sample implementation that approves the proposed video mode if there's
+ * // no alias for it, and otherwise forces the alias mode.
+ * kc_evNewProposedVideoMode.subscribe([](capture_video_mode_s videoMode)
+ * {
+ *    if (ka_has_alias(videoMode.resolution))
+ *    {
+ *        kc_force_capture_resolution(ka_aliased(videoMode.resolution));
+ *    }
+ *    else
+ *    {
+ *        kc_evNewVideoMode.fire(videoMode);
+ *    }
+ * });
+ * @endcode
+ * 
+ * @see
+ * kc_evNewVideoMode, kc_force_capture_resolution()
+ */
+extern vcs_event_c<capture_video_mode_s> kc_evNewProposedVideoMode;
 
-// The active input channel index has changed.
-extern vcs_event_c<void> kc_evNewInputChannel;
+/*!
+ * An event fired when the capture video mode has changed.
+ * 
+ * It's not guaranteed that the new video mode is different from the previous
+ * one, although usually it will be. The mode should be treated as new regardless
+ * -- or, if you will, as a resetting of the mode if it's the same as the previous
+ * mode.
+ * 
+ * @see
+ * kc_evNewProposedVideoMode, kc_force_capture_resolution()
+ */
+extern vcs_event_c<capture_video_mode_s> kc_evNewVideoMode;
 
-// The current capture device is invalid.
+/*!
+ * An event fired when the capture device's active input channel is changed.
+ * 
+ * The event is fired by VCS's event loop (which polls the capture subsystem)
+ * rather than by the capture subsystem.
+ */
+extern vcs_event_c<void> ks_evInputChannelChanged;
+
+/*!
+ * An event fired when the capture subsystem reports its capture device to be
+ * invalid. An invalid capture device can't be used.
+ * 
+ * The event is fired by VCS's event loop (which polls the capture subsystem)
+ * rather than by the capture subsystem.
+ */
 extern vcs_event_c<void> kc_evInvalidDevice;
 
+/*!
+ * An event fired when the capture device loses its input signal. This implies
+ * that the capture device was receiving a signal previously.
+ * 
+ * The event is fired by VCS's event loop (which polls the capture subsystem)
+ * rather than by the capture subsystem.
+ */
 extern vcs_event_c<void> kc_evSignalLost;
+
+/*!
+ * An event fired when the capture device begins receiving an input signal.
+ * This implies that the device was in a state of "no signal" previously.
+ * 
+ * The event is fired by VCS's event loop (which polls the capture subsystem)
+ * rather than by the capture subsystem.
+ */
 extern vcs_event_c<void> kc_evSignalGained;
+
+/*!
+ * An event fired when the capture device reports its input signal to be invalid;
+ * e.g. of an unsupported resolution.
+ * 
+ * The event is fired by VCS's event loop (which polls the capture subsystem)
+ * rather than by the capture subsystem.
+ */
 extern vcs_event_c<void> kc_evInvalidSignal;
+
+/*!
+ * An event fired when an error occurs in the capture subsystem from which the
+ * subsystem can't recover.
+ * 
+ * The event is fired by VCS's event loop (which polls the capture subsystem)
+ * rather than by the capture subsystem.
+ */
 extern vcs_event_c<void> kc_evUnrecoverableError;
 
 // The capture subsystem has had to ignore frames coming from the capture
@@ -172,12 +297,11 @@ enum class capture_event_e
     //! The capture device has just lost its input signal.
     signal_lost,
 
-    //! The capture device has sent a new frame, whose data is now available tp
-    //! VCS via the capture device interface.
+    //! The capture device has sent in a new frame, whose data can be queried via
+    //! get_frame_buffer().
     new_frame,
 
     //! The capture device's input signal has changed in resolution or refresh rate.
-    //! The new mode parameters can be queried via the capture device interface.
     new_video_mode,
 
     //! The capture device's current input signal is invalid (e.g. out of range).
@@ -192,6 +316,17 @@ enum class capture_event_e
 
     //! Total enumerator count. Should remain the last item in the list.
     num_enumerators
+};
+
+/*!
+ * @brief
+ * A video mode of the capture device's input signal.
+ */
+struct capture_video_mode_s
+{
+    resolution_s resolution;
+
+    refresh_rate_s refreshRate;
 };
 
 /*!
@@ -262,7 +397,7 @@ struct video_signal_parameters_s
  * // the capture subsystem from pushing new events while we're doing this).
  * switch (kc_pop_capture_event_queue())
  * {
- *     // ...
+ *    // ...
  * }
  * @endcode
  *
@@ -293,8 +428,7 @@ void kc_initialize_capture(void);
  *
  * @warning
  * Don't call this function directly. Instead, call kc_initialize_capture(),
- * which will initialize both the capture device and the capture subsystem
- * (they are interlinked).
+ * which will initialize both the capture device and the capture subsystem.
  *
  * @see
  * kc_initialize_capture(), kc_release_device()
@@ -330,12 +464,22 @@ void kc_release_capture(void);
 bool kc_release_device(void);
 
 /*!
+ * Returns the current video mode of the capture device's input signal.
+ *
+ * @see
+ * kc_get_capture_resolution(), kc_get_capture_refresh_rate()
+ */
+capture_video_mode_s kc_get_capture_video_mode(void);
+
+/*!
  * Asks the capture device to set its input resolution to the one given,
  * overriding the current input resolution.
+ * 
+ * This function fires a @ref kc_evNewVideoMode event.
  *
  * @note
  * If the resolution of the captured signal doesn't match this resolution, the
- * captured image may become corrupted until the proper resolution is set.
+ * captured image may display incorrectly.
  */
 bool kc_force_capture_resolution(const resolution_s &r);
 
@@ -431,7 +575,8 @@ std::string kc_get_device_driver_version(void);
 std::string kc_get_device_name(void);
 
 /*!
- * Returns a string that identifies the interface; e.g. "RGBEasy".
+ * Returns a string that identifies the capture device interface; e.g. "RGBEasy"
+ * (for @a capture_rgbeasy.cpp) or "Vision/Video4Linux" (@a capture_vision_v4l.cpp).
  */
 std::string kc_get_device_api_name(void);
 
@@ -497,7 +642,7 @@ video_signal_parameters_s kc_get_device_video_parameter_maximums(void);
 resolution_s kc_get_capture_resolution(void);
 
 /*!
- * Returns the minimum capture resolution supported by the interface.
+ * Returns the minimum capture resolution supported by the capture device.
  *
  * @note
  * This resolution may be larger - but not smaller - than the minimum
@@ -510,7 +655,7 @@ resolution_s kc_get_capture_resolution(void);
 resolution_s kc_get_device_minimum_resolution(void);
 
 /*!
- * Returns the maximum capture resolution supported by the interface.
+ * Returns the maximum capture resolution supported by the capture device.
  *
  * @note
  * This resolution may be smaller - but not larger - than the maximum
@@ -637,23 +782,11 @@ bool kc_is_capturing(void);
  *
  * @code
  * // The capture mutex should be locked first, to ensure that the frame buffer
- * // isn't modified by another thread while we're accessing it.
+ * // isn't modified by another thread while we're accessing its data.
  * std::lock_guard<std::mutex> lock(kc_capture_mutex());
  *
  * const auto &frameBuffer = kc_get_frame_buffer();
  * // Access the frame buffer's data...
- * @endcode
- * 
- * @code
- * // Capture subsystem events guarantee that the capture mutex has been locked
- * // for the duration of the subscribed event handler.
- * kc_evFrameCaptured.subscribe([]
- * {
- *     // kc_capture_mutex() == locked.
- * 
- *     const auto &frameBuffer = kc_get_frame_buffer();
- *     // Access the frame buffer's data...
- * });
  * @endcode
  * 
  * @warning

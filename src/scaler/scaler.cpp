@@ -26,10 +26,10 @@
     #include <opencv2/core/core.hpp>
 #endif
 
-vcs_event_c<void> ks_evNewFrameResolution;
+vcs_event_c<void> ks_evNewScaledFrameResolution;
 
 // The most recent captured frame has now been processed and is ready for display.
-vcs_event_c<void> ks_evNewFrame;
+vcs_event_c<const captured_frame_s&> ks_evNewScaledFrame;
 
 // The number of frames processed (see newFrame) in the last second.
 vcs_event_c<unsigned> ks_evFramesPerSecond;
@@ -56,8 +56,8 @@ static const std::vector<scaling_filter_s> SCALING_FILTERS =    // User-facing s
                 {{"Nearest", &s_scaler_nearest}};
 #endif
 
-// The pixel buffer where scaled frames are to be placed.
-static heap_bytes_s<u8> OUTPUT_BUFFER;
+// The frame buffer where scaled frames are to be placed.
+static captured_frame_s FRAME_BUFFER;
 
 // Scratch buffers.
 static heap_bytes_s<u8> COLORCONV_BUFFER;
@@ -65,8 +65,6 @@ static heap_bytes_s<u8> TMP_BUFFER;
 
 static aspect_mode_e ASPECT_MODE = aspect_mode_e::native;
 static bool FORCE_ASPECT = true;
-
-static resolution_s LATEST_OUTPUT_SIZE = {0, 0, 0}; // The size of the image currently in the scaler's output buffer.
 
 static const u32 OUTPUT_BIT_DEPTH = 32;             // The bit depth we're currently scaling to.
 
@@ -278,11 +276,11 @@ void s_scaler_nearest(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        opencv_scale(pixelData, OUTPUT_BUFFER.ptr(), sourceRes, targetRes, cv::INTER_NEAREST);
+        opencv_scale(pixelData, FRAME_BUFFER.pixels.ptr(), sourceRes, targetRes, cv::INTER_NEAREST);
     #else
         real deltaW = (sourceRes.w / real(targetRes.w));
         real deltaH = (sourceRes.h / real(targetRes.h));
-        u8 *const dst = OUTPUT_BUFFER.ptr();
+        u8 *const dst = FRAME_BUFFER.pixels.ptr();
 
         for (uint y = 0; y < targetRes.h; y++)
         {
@@ -309,7 +307,7 @@ void s_scaler_linear(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        opencv_scale(pixelData, OUTPUT_BUFFER.ptr(), sourceRes, targetRes, cv::INTER_LINEAR);
+        opencv_scale(pixelData, FRAME_BUFFER.pixels.ptr(), sourceRes, targetRes, cv::INTER_LINEAR);
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
@@ -327,7 +325,7 @@ void s_scaler_area(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        opencv_scale(pixelData, OUTPUT_BUFFER.ptr(), sourceRes, targetRes, cv::INTER_AREA);
+        opencv_scale(pixelData, FRAME_BUFFER.pixels.ptr(), sourceRes, targetRes, cv::INTER_AREA);
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
@@ -345,7 +343,7 @@ void s_scaler_cubic(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        opencv_scale(pixelData, OUTPUT_BUFFER.ptr(), sourceRes, targetRes, cv::INTER_CUBIC);
+        opencv_scale(pixelData, FRAME_BUFFER.pixels.ptr(), sourceRes, targetRes, cv::INTER_CUBIC);
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
@@ -363,7 +361,7 @@ void s_scaler_lanczos(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        opencv_scale(pixelData, OUTPUT_BUFFER.ptr(), sourceRes, targetRes, cv::INTER_LANCZOS4);
+        opencv_scale(pixelData, FRAME_BUFFER.pixels.ptr(), sourceRes, targetRes, cv::INTER_LANCZOS4);
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
@@ -402,26 +400,24 @@ void ks_initialize_scaler(void)
         cv::redirectError(cv_error_handler);
     #endif
 
-    OUTPUT_BUFFER.alloc(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler output buffer");
     COLORCONV_BUFFER.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Scaler color conversion buffer");
     TMP_BUFFER.alloc(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler scratch buffer");
+
+    FRAME_BUFFER.pixels.alloc(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler output buffer");
+    FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
+    FRAME_BUFFER.r = {0, 0, 0};
 
     ks_set_upscaling_filter(SCALING_FILTERS.at(0).name);
     ks_set_downscaling_filter(SCALING_FILTERS.at(0).name);
 
-    kc_evFrameCaptured.subscribe([]
+    kc_evNewCapturedFrame.subscribe([](const captured_frame_s &frame)
     {
-        ks_scale_frame(kc_get_frame_buffer());
-
-        ks_evNewFrame.fire();
-
-        kc_mark_frame_buffer_as_processed();
+        ks_scale_frame(frame);
     });
 
-    kc_evNewVideoMode.subscribe([]
+    kc_evNewVideoMode.subscribe([](capture_video_mode_s videoMode)
     {
-        const auto currentInputRes = kc_get_capture_resolution();
-        ks_set_output_base_resolution(currentInputRes, false);
+        ks_set_output_base_resolution(videoMode.resolution, false);
     });
 
     kc_evInvalidSignal.subscribe([]
@@ -436,7 +432,7 @@ void ks_initialize_scaler(void)
         kd_evDirty.fire();
     });
 
-    kc_evFrameCaptured.subscribe([]
+    ks_evNewScaledFrame.subscribe([](const captured_frame_s&)
     {
         NUM_FRAMES_SCALED_PER_SECOND++;
     });
@@ -456,7 +452,7 @@ void ks_release_scaler(void)
     INFO(("Releasing the scaler."));
 
     COLORCONV_BUFFER.release_memory();
-    OUTPUT_BUFFER.release_memory();
+    FRAME_BUFFER.pixels.release_memory();
     TMP_BUFFER.release_memory();
 
     return;
@@ -578,7 +574,7 @@ void ks_scale_frame(const captured_frame_s &frame)
                    frame.r.w, frame.r.h, maxres.w, maxres.h));
             goto done;
         }
-        else if (OUTPUT_BUFFER.is_null())
+        else if (FRAME_BUFFER.pixels.is_null())
         {
             goto done;
         }
@@ -610,7 +606,7 @@ void ks_scale_frame(const captured_frame_s &frame)
             frameRes.w == outputRes.w &&
             frameRes.h == outputRes.h)
         {
-            memcpy(OUTPUT_BUFFER.ptr(), pixelData, OUTPUT_BUFFER.up_to(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
+            memcpy(FRAME_BUFFER.pixels.ptr(), pixelData, FRAME_BUFFER.pixels.up_to(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
         }
         else
         {
@@ -631,21 +627,22 @@ void ks_scale_frame(const captured_frame_s &frame)
                 NBENE(("Upscale or downscale filter is null. Refusing to scale."));
 
                 outputRes = frameRes;
-                memcpy(OUTPUT_BUFFER.ptr(), pixelData, OUTPUT_BUFFER.up_to(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
+                memcpy(FRAME_BUFFER.pixels.ptr(), pixelData, FRAME_BUFFER.pixels.up_to(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
             }
             else
             {
                 scaler->scale(pixelData, frameRes, outputRes);
             }
         }
-    }
 
-    if ((LATEST_OUTPUT_SIZE.w != outputRes.w) ||
-        (LATEST_OUTPUT_SIZE.h != outputRes.h))
-    {
-        ks_evNewFrameResolution.fire();
+        if ((FRAME_BUFFER.r.w != outputRes.w) ||
+            (FRAME_BUFFER.r.h != outputRes.h))
+        {
+            ks_evNewScaledFrameResolution.fire();
+            FRAME_BUFFER.r = outputRes;
+        }
 
-        LATEST_OUTPUT_SIZE = outputRes;
+        ks_evNewScaledFrame.fire(ks_frame_buffer());
     }
 
     done:
@@ -707,31 +704,36 @@ void ks_set_output_scale_override_enabled(const bool state)
 
 void ks_indicate_no_signal(void)
 {
-    ks_clear_scaler_output_buffer();
+    ks_clear_frame_buffer();
 
     return;
 }
 
 void ks_indicate_invalid_signal(void)
 {
-    ks_clear_scaler_output_buffer();
+    ks_clear_frame_buffer();
 
     return;
 }
 
-void ks_clear_scaler_output_buffer(void)
+void ks_clear_frame_buffer(void)
 {
-    k_assert(!OUTPUT_BUFFER.is_null(),
+    k_assert(!FRAME_BUFFER.pixels.is_null(),
              "Can't access the output buffer: it was unexpectedly null.");
 
-    memset(OUTPUT_BUFFER.ptr(), 0, OUTPUT_BUFFER.up_to(MAX_NUM_BYTES_IN_OUTPUT_FRAME));
+    memset(FRAME_BUFFER.pixels.ptr(), 0, FRAME_BUFFER.pixels.up_to(MAX_NUM_BYTES_IN_OUTPUT_FRAME));
 
     return;
 }
 
-const u8* ks_scaler_output_pixels_ptr(void)
+const u8* ks_frame_buffer_pixels_ptr(void)
 {
-    return OUTPUT_BUFFER.ptr();
+    return FRAME_BUFFER.pixels.ptr();
+}
+
+const captured_frame_s& ks_frame_buffer(void)
+{
+    return FRAME_BUFFER;
 }
 
 // Returns a list of GUI-displayable names of the scaling filters that're

@@ -76,14 +76,13 @@ void OGLWidget::resizeGL(int w, int h)
 void OGLWidget::paintGL()
 {
     // Draw the output frame.
-    const resolution_s r = ks_scaler_output_resolution();
-    const u8 *const fb = ks_scaler_output_pixels_ptr();
-    if (fb != nullptr)
+    const captured_frame_s &frame = ks_frame_buffer();
+    if (!frame.pixels.is_null())
     {
         this->glDisable(GL_BLEND);
 
         this->glBindTexture(GL_TEXTURE_2D, FRAMEBUFFER_TEXTURE);
-        this->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, r.w, r.h, 0, GL_BGRA, GL_UNSIGNED_BYTE, fb);
+        this->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, frame.r.w, frame.r.h, 0, GL_BGRA, GL_UNSIGNED_BYTE, frame.pixels.ptr());
 
         glBegin(GL_TRIANGLES);
             glTexCoord2i(0, 0); glVertex2i(0,             0);

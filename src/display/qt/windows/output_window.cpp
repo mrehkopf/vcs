@@ -308,15 +308,17 @@ MainWindow::MainWindow(QWidget *parent) :
                 {
                     const QImage frameImage = ([]()->QImage
                     {
-                        const resolution_s r = ks_scaler_output_resolution();
-                        const u8 *const fb = ks_scaler_output_pixels_ptr();
+                        const captured_frame_s &frame = ks_frame_buffer();
 
-                        if (fb == nullptr)
+                        k_assert((frame.pixelFormat == capture_pixel_format_e::rgb_888),
+                                 "Expected frame pixel data to be 32-bit RGB.");
+
+                        if (frame.pixels.is_null())
                         {
                             DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
                             return QImage();
                         }
-                        else return QImage(fb, r.w, r.h, QImage::Format_RGB32);
+                        else return QImage(frame.pixels.ptr(), frame.r.w, frame.r.h, QImage::Format_RGB32);
                     })();
 
                     if (frameImage.save(filename))
@@ -726,7 +728,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Subscribe to app events.
     {
-        ks_evNewFrame.subscribe([this]
+        ks_evNewScaledFrame.subscribe([this](const captured_frame_s&)
         {
             this->redraw();
         });
@@ -740,7 +742,7 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
 
-        ks_evNewFrameResolution.subscribe([this]
+        ks_evNewScaledFrameResolution.subscribe([this]
         {
             this->update_window_title();
             this->update_window_size();
@@ -767,7 +769,7 @@ MainWindow::MainWindow(QWidget *parent) :
             this->redraw();
         });
 
-        kc_evNewVideoMode.subscribe([this]
+        kc_evNewVideoMode.subscribe([this](capture_video_mode_s)
         {
             this->update_window_title();
         });
@@ -811,21 +813,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::update_context_menu_eyedropper(const QPoint &scalerOutputPos)
 {
-    const resolution_s &resolution = ks_scaler_output_resolution();
-    const u8 *const pixels = ks_scaler_output_pixels_ptr();
+    const captured_frame_s &frame = ks_frame_buffer();
 
-    if (((unsigned long)scalerOutputPos.x() >= resolution.w) ||
-        ((unsigned long)scalerOutputPos.y() >= resolution.h))
+    if (((unsigned long)scalerOutputPos.x() >= frame.r.w) ||
+        ((unsigned long)scalerOutputPos.y() >= frame.r.h))
     {
         this->contextMenuEyedropper->setText("No eyedrop");
         return;
     }
 
-    const unsigned idx = ((scalerOutputPos.x() + scalerOutputPos.y() * resolution.w) * (resolution.bpp / 8));
+    const unsigned idx = ((scalerOutputPos.x() + scalerOutputPos.y() * frame.r.w) * (frame.r.bpp / 8));
 
-    const u8 red =   pixels[idx + 2];
-    const u8 green = pixels[idx + 1];
-    const u8 blue =  pixels[idx + 0];
+    const u8 red =   frame.pixels[idx + 2];
+    const u8 green = frame.pixels[idx + 1];
+    const u8 blue =  frame.pixels[idx + 0];
 
     this->contextMenuEyedropper->setText(QString("%1, %2, %3").arg(red).arg(green).arg(blue));
 
@@ -1114,15 +1115,17 @@ void MainWindow::paintEvent(QPaintEvent *)
     // Convert the output buffer into a QImage frame.
     const QImage frameImage = ([]()->QImage
     {
-        const resolution_s r = ks_scaler_output_resolution();
-        const u8 *const fb = ks_scaler_output_pixels_ptr();
+       const captured_frame_s &frame = ks_frame_buffer();
 
-        if (fb == nullptr)
-        {
-            DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
-            return QImage();
-        }
-        else return QImage(fb, r.w, r.h, QImage::Format_RGB32);
+       k_assert((frame.pixelFormat == capture_pixel_format_e::rgb_888),
+                "Expected frame pixel data to be 32-bit RGB.");
+
+       if (frame.pixels.is_null())
+       {
+           DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
+           return QImage();
+       }
+       else return QImage(frame.pixels.ptr(), frame.r.w, frame.r.h, QImage::Format_RGB32);
     })();
 
     QPainter painter(this);

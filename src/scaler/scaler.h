@@ -15,10 +15,10 @@ struct captured_frame_s;
 // The parameters accepted by scaling functions.
 #define SCALER_FUNC_PARAMS u8 *const pixelData, const resolution_s &sourceRes, const resolution_s &targetRes
 
-extern vcs_event_c<void> ks_evNewFrameResolution;
+extern vcs_event_c<void> ks_evNewScaledFrameResolution;
 
 // The most recent captured frame has now been processed and is ready for display.
-extern vcs_event_c<void> ks_evNewFrame;
+extern vcs_event_c<const captured_frame_s&> ks_evNewScaledFrame;
 
 // The number of frames processed (see newFrame) in the last second.
 extern vcs_event_c<unsigned> ks_evFramesPerSecond;
@@ -83,9 +83,11 @@ void ks_indicate_no_signal(void);
 
 void ks_indicate_invalid_signal(void);
 
-void ks_clear_scaler_output_buffer(void);
+void ks_clear_frame_buffer(void);
 
-const u8* ks_scaler_output_pixels_ptr(void);
+const u8* ks_frame_buffer_pixels_ptr(void);
+
+const captured_frame_s& ks_frame_buffer(void);
 
 const std::string &ks_upscaling_filter_name(void);
 

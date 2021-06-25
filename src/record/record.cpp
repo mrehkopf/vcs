@@ -49,11 +49,11 @@ void krecord_initialize(void)
 {
     RECORDING_BUFFER.initialize(RECORDING_BUFFER_CAPACITY);
 
-    ks_evNewFrame.subscribe([]
+    ks_evNewScaledFrame.subscribe([](const captured_frame_s &frame)
     {
         if (krecord_is_recording())
         {
-            krecord_record_current_frame();
+            krecord_record_frame(frame);
         }
     });
 
@@ -285,10 +285,15 @@ resolution_s krecord_video_resolution(void)
     return RECORDING.resolution;
 }
 
-// Encode VCS's most recent output frame into the video.
-//
-void krecord_record_current_frame(void)
+// Encode the given frame into video.
+void krecord_record_frame(const captured_frame_s &frame)
 {
+    if (frame.pixels.is_null())
+    {
+        DEBUG(("Attempted to record a null frame into the video. Ignoring it."));
+        return;
+    }
+
 #ifdef USE_OPENCV
     k_assert(VIDEO_WRITER.isOpened(),
              "Attempted to record a video frame before video recording had been initialized.");
@@ -309,13 +314,8 @@ void krecord_record_current_frame(void)
         return;
     }
 
-    // Get the current output frame.
-    const resolution_s resolution = ks_scaler_output_resolution();
-    const u8 *const frameData = ks_scaler_output_pixels_ptr();
-    if (frameData == nullptr) return;
-
-    k_assert((resolution.w == RECORDING.resolution.w &&
-              resolution.h == RECORDING.resolution.h), "Incompatible frame for recording: mismatched resolution.");
+    k_assert((frame.r.w == RECORDING.resolution.w &&
+              frame.r.h == RECORDING.resolution.h), "Incompatible frame for recording: mismatched resolution.");
 
     // Queue the frame to be encoded by the encoder thread.
     {
@@ -345,9 +345,9 @@ void krecord_record_current_frame(void)
                 /// place for this before we allow the recording to start, but you
                 /// never know...
                 
-                cv::Mat originalFrame(resolution.h, resolution.w, CV_8UC4, (u8*)frameData);
-                cv::Mat frame = cv::Mat(resolution.h, resolution.w, CV_8UC3, bufferPtr);
-                cv::cvtColor(originalFrame, frame, CV_BGRA2BGR);
+                cv::Mat originalFrame(frame.r.h, frame.r.w, CV_8UC4, (u8*)frame.pixels.ptr());
+                cv::Mat convertedFrame = cv::Mat(frame.r.h, frame.r.w, CV_8UC3, bufferPtr);
+                cv::cvtColor(originalFrame, convertedFrame, CV_BGRA2BGR);
             }
         }
 
