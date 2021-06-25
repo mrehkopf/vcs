@@ -59,6 +59,13 @@ struct heap_bytes_s
         return size;
     }
 
+    void point_to(heap_bytes_s<T> &other)
+    {
+        k_assert(!other.is_null(), "Can't point to a null memory object.");
+
+        return this->point_to(other.ptr(), other.size());
+    }
+
     void point_to(T *const newPtr, const int size)
     {
         k_assert(data == nullptr, "Can't assign a pointer to a non-null memory object.");
