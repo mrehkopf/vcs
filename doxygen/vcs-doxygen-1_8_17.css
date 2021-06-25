@@ -8,7 +8,7 @@
  */
 
 @import url("https://use.fontawesome.com/releases/v5.12.0/css/all.css");
-@import url('https://fonts.googleapis.com/css2?family=Lato:ital@0;1&family=Source+Code+Pro&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono&display=swap');
 
 :root
 {
@@ -28,8 +28,11 @@
 	--primary-body-text-color: #404040;
 	--primary-heading-text-color: #202020;
 	--secondary-body-text-color: gray;
-	--code-block-text-color: dimgray;
+	--code-text-color: var(--primary-body-text-color);
 	--side-nav-resize-bar-width: 6px;
+	--text-font-family: "Roboto", sans-serif;
+	--member-declaration-heading-font-family: "Roboto", sans-serif;
+	--code-font-family: "JetBrains Mono", monospace;
 }
 
 .iconfopen,
@@ -41,9 +44,8 @@
 
 *
 {
-	color: var(--primary-body-text-color) !important;
 	line-height: initial !important;
-	font-family: "Lato", sans-serif !important;
+	font-family: var(--text-font-family) !important;
 	font-size: 100% !important;
 	box-shadow: none !important;
 	text-shadow: none !important;
@@ -52,6 +54,16 @@
 	-moz-transition:  none !important;
 	-ms-transition:  none !important;
 	-o-transition:  none !important;
+}
+
+*:not([class^="hljs"])
+{
+	color: var(--primary-body-text-color) !important;
+}
+
+p
+{
+	line-height: 1.3em !important;
 }
 
 body
@@ -65,7 +77,7 @@ body
 a.el,
 a:visited.el
 {
-	font-weight: bold !important;
+	font-weight: 500 !important;
 	color: var(--link-color) !important;
 }
 
@@ -249,14 +261,14 @@ hr
 
 .fieldtable .fieldname
 {
-	font-weight: bold !important;
+	font-weight: 500 !important;
 	width: 1ch !important; /* Shrink to content's minimum required width.*/
 }
 
 .fieldtable th
 {
 	border-radius: 0 !important;
-	font-weight: bold !important;
+	font-weight: 500 !important;
 	background-image: none !important;
 	background-color: #f2f2f2 !important;
 
@@ -269,8 +281,9 @@ hr
 .fieldtable th::before
 {
 	content: "Constants" !important;
-	color: black !important;
 	font-size: initial !important;
+	font-weight: 500 !important;
+	color: var(--primary-heading-text-color) !important
 }
 
 .fieldtable td,
@@ -319,19 +332,19 @@ hr
 .contents > .textblock > h1
 {
 	font-size: 160% !important;
-	font-weight: bold !important;
+	font-weight: 500 !important;
 }
 
 .contents > .textblock > h2
 {
 	font-size: 125% !important;
-	font-weight: bold !important;
+	font-weight: 500 !important;
 }
 
 .contents > .textblock > h3
 {
 	font-size: 100% !important;
-	font-weight: bold !important;
+	font-weight: 500 !important;
 }
 
 .contents > .textblock > h4
@@ -464,7 +477,7 @@ hr
     color: whitesmoke !important;
     padding-left: 10px !important;
     margin-right: var(--main-nav-item-horizontal-spacing) !important;
-    font-weight: bold !important;
+    font-weight: 500 !important;
 }
 
 #main-menu li
@@ -523,8 +536,8 @@ hr
 
 .memitem
 {
-	margin-bottom: 30px !important;
-	margin-top: -12px !important;
+	margin-bottom: 40px !important;
+	margin-top: 16px !important;
 }
 
 .memItemLeft,
@@ -592,9 +605,15 @@ hr
 	color: var(--primary-heading-text-color) !important;
 }
 
+.memname *
+{
+	font-family: var(--member-declaration-heading-font-family) !important;
+	color: var(--primary-heading-text-color) !important;
+}
+
 .memname td
 {
-	font-size: 140% !important;
+	font-size: 100% !important;
 	padding: 0 !important;	
 	display: inline !important;
 	vertical-align: inherit !important;
@@ -629,7 +648,7 @@ table.memberdecls td.mdescLeft
 	border-left: 1px solid var(--separating-border-color) !important;
 	border-right: 1px solid var(--separating-border-color) !important;
 	padding-left: 10px !important;
-	padding-right: 10px !important;
+	padding-right: 6px !important;
 }
 
 table.memberdecls td.memItemRight,
@@ -638,13 +657,13 @@ table.memberdecls td.mdescRight
 	color: inherit !important;
 	border-right: 1px solid var(--separating-border-color) !important;
 	padding-left: 10px !important;
-	padding-right: 10px !important;
+	padding-right: 6px !important;
 }
 
 table.memberdecls td.memItemRight,
 table.memberdecls td.mdescRight
 {
-	padding-left: 15px !important;
+	padding-left: 12px !important;
 }
 
 table.memberdecls td.mdescLeft:not(.glow),
@@ -687,12 +706,13 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 {
 	box-shadow: none !important;
 	background-color: transparent !important;
-	font-weight: bold !important;
+	font-weight: 500 !important;
 	border: none !important;
-	border-bottom: 2px solid var(--separating-border-color) !important;
 	padding-top: 12px !important;
 	padding-bottom: 12px !important;
 	margin-bottom: 12px !important;
+	background-color: #f2f2f2 !important;
+	padding-left: 10px !important;
 }
 
 .memproto a
@@ -707,6 +727,7 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	border: none !important;
 	padding: 0 !important;
 	background: none !important;
+	padding-left: 10px !important;
 }
 
 .memdoc p
@@ -728,20 +749,39 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 .memdoc > .fragment
 {
 	counter-reset: line;
-	background-color: var(--secondary-background-color) !important;
-	border: 1px solid var(--separating-border-color) !important;
+	background-color: #f8f8f8 !important;
+	border: none;
+	border-left: 5px solid #aaaaaa !important;
 	border-radius: 0 !important;
 	margin: 0 !important;
 	margin-top: var(--section-vertical-margin) !important;
 	margin-bottom: var(--section-vertical-margin) !important;
 	padding: 15px !important;
+	line-height: 0 !important;
 }
 
 .memdoc > .fragment > .line
 {
-	font-family: "Source Code Pro", monospace !important;
-	font-size: 85% !important;
-	color: var(--code-block-text-color) !important;
+	font-family: var(--code-font-family) !important;
+	font-size: 88% !important;
+	white-space: pre !important;
+	font-style: inherit !important;
+}
+
+.memdoc > .fragment > .line:not(.hljs)
+{
+	color: var(--code-text-color) !important;
+}
+
+.memdoc > .fragment > .line.hljs
+{
+	padding: 0 !important;
+    background-color: inherit !important;
+}
+
+.memdoc > pre.fragment > code.line > .comment
+{
+	color: #3e8220 !important;
 }
 
 .memdoc > .fragment > .line:not(:last-child)
@@ -751,14 +791,18 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 
 .memdoc > .fragment > .line > span
 {
+	font-family: var(--code-font-family) !important;
+}
+
+.memdoc > .fragment > .line > span:not([class^="hljs"])
+{
 	color: inherit !important;
-	font-family: "Source Code Pro", monospace !important;
 }
 
 .memdoc > .fragment > .line > a.code,
 .memdoc > .fragment > .line > a.code:visited
 {
-	font-family: "Source Code Pro", monospace !important;
+	font-family: var(--code-font-family) !important;
 	color: var(--link-color) !important;
 	font-weight: normal !important;
 }
@@ -769,13 +813,6 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	border: none !important;
 	margin: 0 !important;
 	padding: 0 !important;
-}
-
-.section.note dt,
-.section.warning dt
-{
-	margin-right: 0.4em !important;
-	color: black !important;
 }
 
 .section.note dd,
@@ -816,34 +853,36 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	display: inline !important;
 }
 
+.section.see dt
+{
+	font-weight: 500 !important;
+	color: var(--primary-heading-text-color) !important;
+}
+
 .section.warning dt,
 .section.note dt
 {
-	font-weight: bold !important;
+	font-weight: normal !important;
+	color: var(--primary-heading-text-color) !important;
 }
 
-.section.see dt
+.section.warning dt::after,
+.section.note dt::after
 {
-	font-weight: bold !important;
+	content: ": ";
 }
 
 .section.warning,
 .section.note
 {
 	border: none !important;
-    padding: 10px !important;
 	border-radius: 0 !important;
-	background-color: #f2f2f2 !important;
+	background-color: transparent !important;
 }
 
-.section.warning
+.section.warning > dt
 {
-    border-left: 6px solid var(--theme-color) !important;
-}
-
-.section.note
-{
-	border-left: 6px solid #aaaaaa !important;
+	font-weight: 500 !important;
 }
 
 .section.see dt::after
@@ -877,7 +916,7 @@ span .mlabel
 
 .groupheader
 {
-	font-weight: bold !important;
+	font-weight: 500 !important;
 	color: var(--primary-heading-text-color) !important;
 	font-size: 160% !important;
 	border: none !important;
@@ -914,7 +953,7 @@ span .mlabel
 {
 	display: flex;
 	align-items: center;
-	font-weight: bold !important;
+	font-weight: 500 !important;
 	color: var(--primary-body-text-color) !important;
 }
 

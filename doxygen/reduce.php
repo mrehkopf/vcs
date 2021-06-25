@@ -19,6 +19,7 @@ $reducerChain = [
     "remove_unnecessary_spaces",
     "simplify_enum_declarations",
     "mark_unnecessary_elements",
+    "standardize_code_elements",
 ];
 
 foreach ($htmlFiles as $filename)
@@ -53,6 +54,15 @@ function remove_unnecessary_spaces(string $html) : string
 
     $html = preg_replace('/(<td class="memname">)(.*?) (<\/td>)/',
                         '$1$2$3',
+                        $html);
+
+    // E.g. "std::vector< std::pair< unsigned, double >>"
+    //   => "std::vector<std::pair<unsigned, double>>".
+    $html = preg_replace('/(?)&lt; /',
+                        '$1&lt;',
+                        $html);
+    $html = preg_replace('/(?) &gt;/',
+                        '$1&gt;',
                         $html);
 
     return $html;
@@ -94,5 +104,45 @@ function mark_unnecessary_elements(string $html) : string
                         '$1<span class="vcs-unnecessary-element">$2</span>',
                         $html);
 
+    return $html;
+}
+
+// Makes...
+//
+// <div class="fragment">
+//   <div class="line"></div>
+//   <div class="line"></div>
+//   ...
+// </div>
+//
+// ...into...
+//
+// <pre class="fragment">
+//   <code class="line"></code>
+//   <code class="line"></code>
+//   ...
+// </pre>
+//
+// Uses some kludge HTML regex parsing.
+function standardize_code_elements(string $html) : string
+{
+    $html = str_replace('<div class="fragment">',
+                        '<pre class="fragment">',
+                        $html);
+
+    // It seems that the closing tag for <div class="fragment"> is followed
+    // immediately by <!-- fragment -->, for whatever reason. But we'll use
+    // that to identify the closing tag.
+    $html = str_replace('</div><!-- fragment -->',
+                        '</pre><!-- fragment -->',
+                        $html);
+
+    // Note: This regex will fail if the <div class="line"> elements contain
+    // other <div> elements. But I'm not aware that Doxygen inserts child
+    // <div>s into these - seems to just use <span> and text nodes.
+    $html = preg_replace('/<div class="line">(.*?)<\/div>/',
+                         '<code class="line">$1</code>',
+                         $html);
+                        
     return $html;
 }
