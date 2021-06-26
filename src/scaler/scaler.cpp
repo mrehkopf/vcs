@@ -415,7 +415,7 @@ void ks_initialize_scaler(void)
         ks_scale_frame(frame);
     });
 
-    kc_evNewVideoMode.subscribe([](capture_video_mode_s videoMode)
+    kc_evNewVideoMode.subscribe([](const capture_video_mode_s &videoMode)
     {
         ks_set_output_base_resolution(videoMode.resolution, false);
     });
@@ -432,7 +432,7 @@ void ks_initialize_scaler(void)
         kd_evDirty.fire();
     });
 
-    ks_evNewScaledFrame.subscribe([](const captured_frame_s&)
+    ks_evNewScaledFrame.subscribe([]
     {
         NUM_FRAMES_SCALED_PER_SECOND++;
     });

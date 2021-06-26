@@ -728,7 +728,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Subscribe to app events.
     {
-        ks_evNewScaledFrame.subscribe([this](const captured_frame_s&)
+        ks_evNewScaledFrame.subscribe([this]
         {
             this->redraw();
         });

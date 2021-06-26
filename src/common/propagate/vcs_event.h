@@ -8,12 +8,13 @@
  *
  */
 
-#ifndef VCS_COMMON_PROPAGATE_APP_EVENTS_H
-#define VCS_COMMON_PROPAGATE_APP_EVENTS_H
+#ifndef VCS_COMMON_PROPAGATE_VCS_EVENT_H
+#define VCS_COMMON_PROPAGATE_VCS_EVENT_H
 
 #include <functional>
 #include <list>
 
+// An event that passes an argument to its event handlers.
 template <typename T>
 class vcs_event_c
 {
@@ -25,6 +26,14 @@ public:
         return;
     }
 
+    // For event handlers that want to ignore the callback argument.
+    void subscribe(std::function<void(void)> handlerFn)
+    {
+        this->subscribedHandlersNoArgs.push_back(handlerFn);
+
+        return;
+    }
+
     void fire(T value) const
     {
         for (const auto &handlerFn: this->subscribedHandlers)
@@ -32,14 +41,20 @@ public:
             handlerFn(value);
         }
 
+        for (const auto &handlerFn: this->subscribedHandlersNoArgs)
+        {
+            handlerFn();
+        }
+
         return;
     }
 
 private:
     std::list<std::function<void(T)>> subscribedHandlers;
+    std::list<std::function<void(void)>> subscribedHandlersNoArgs;
 };
 
-// An event that passes no parameters.
+// An event that passes no arguments to its event handlers.
 template <>
 class vcs_event_c<void>
 {

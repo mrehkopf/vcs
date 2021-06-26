@@ -147,7 +147,7 @@ extern vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
  * @code
  * // A sample implementation that approves the proposed video mode if there's
  * // no alias for it, and otherwise forces the alias mode.
- * kc_evNewProposedVideoMode.subscribe([](capture_video_mode_s videoMode)
+ * kc_evNewProposedVideoMode.subscribe([](const capture_video_mode_s &videoMode)
  * {
  *    if (ka_has_alias(videoMode.resolution))
  *    {
@@ -163,7 +163,7 @@ extern vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
  * @see
  * kc_evNewVideoMode, kc_force_capture_resolution()
  */
-extern vcs_event_c<capture_video_mode_s> kc_evNewProposedVideoMode;
+extern vcs_event_c<const capture_video_mode_s&> kc_evNewProposedVideoMode;
 
 /*!
  * An event fired when the capture video mode has changed.
@@ -176,12 +176,12 @@ extern vcs_event_c<capture_video_mode_s> kc_evNewProposedVideoMode;
  * @see
  * kc_evNewProposedVideoMode, kc_force_capture_resolution()
  */
-extern vcs_event_c<capture_video_mode_s> kc_evNewVideoMode;
+extern vcs_event_c<const capture_video_mode_s&> kc_evNewVideoMode;
 
 /*!
  * An event fired when the capture device's active input channel is changed.
  * 
- * The event is fired by VCS's event loop (which polls the capture subsystem)
+ * This event is fired by VCS's event loop (which polls the capture subsystem)
  * rather than by the capture subsystem.
  */
 extern vcs_event_c<void> ks_evInputChannelChanged;
@@ -190,7 +190,7 @@ extern vcs_event_c<void> ks_evInputChannelChanged;
  * An event fired when the capture subsystem reports its capture device to be
  * invalid. An invalid capture device can't be used.
  * 
- * The event is fired by VCS's event loop (which polls the capture subsystem)
+ * This event is fired by VCS's event loop (which polls the capture subsystem)
  * rather than by the capture subsystem.
  */
 extern vcs_event_c<void> kc_evInvalidDevice;
@@ -199,7 +199,7 @@ extern vcs_event_c<void> kc_evInvalidDevice;
  * An event fired when the capture device loses its input signal. This implies
  * that the capture device was receiving a signal previously.
  * 
- * The event is fired by VCS's event loop (which polls the capture subsystem)
+ * This event is fired by VCS's event loop (which polls the capture subsystem)
  * rather than by the capture subsystem.
  */
 extern vcs_event_c<void> kc_evSignalLost;
@@ -208,7 +208,7 @@ extern vcs_event_c<void> kc_evSignalLost;
  * An event fired when the capture device begins receiving an input signal.
  * This implies that the device was in a state of "no signal" previously.
  * 
- * The event is fired by VCS's event loop (which polls the capture subsystem)
+ * This event is fired by VCS's event loop (which polls the capture subsystem)
  * rather than by the capture subsystem.
  */
 extern vcs_event_c<void> kc_evSignalGained;
@@ -217,7 +217,7 @@ extern vcs_event_c<void> kc_evSignalGained;
  * An event fired when the capture device reports its input signal to be invalid;
  * e.g. of an unsupported resolution.
  * 
- * The event is fired by VCS's event loop (which polls the capture subsystem)
+ * This event is fired by VCS's event loop (which polls the capture subsystem)
  * rather than by the capture subsystem.
  */
 extern vcs_event_c<void> kc_evInvalidSignal;
@@ -226,7 +226,7 @@ extern vcs_event_c<void> kc_evInvalidSignal;
  * An event fired when an error occurs in the capture subsystem from which the
  * subsystem can't recover.
  * 
- * The event is fired by VCS's event loop (which polls the capture subsystem)
+ * This event is fired by VCS's event loop (which polls the capture subsystem)
  * rather than by the capture subsystem.
  */
 extern vcs_event_c<void> kc_evUnrecoverableError;
@@ -246,6 +246,9 @@ extern vcs_event_c<unsigned> kc_evMissedFramesCount;
  * capture device to do so. The capture device in turn may support only some or
  * none of these modes, and/or might apply them only when receiving an
  * interlaced signal.
+ * 
+ * @see
+ * kc_set_deinterlacing_mode()
  */
 enum class capture_deinterlacing_mode_e
 {
@@ -281,6 +284,9 @@ enum class capture_pixel_format_e
  * VCS will periodically query the capture subsystem for the latest capture events.
  * This enumerates the range of capture events that the capture subsystem can report
  * back.
+ * 
+ * @see
+ * kc_pop_capture_event_queue()
  */
 enum class capture_event_e
 {
@@ -310,8 +316,8 @@ enum class capture_event_e
     //! The capture device isn't available for use.
     invalid_device,
 
-    //! An error has occurred within the capture subsystem from which the subsystem
-    //! can't recover.
+    //! An error has occurred with the capture device from which the capture
+    //! subsystem can't recover.
     unrecoverable_error,
 
     //! Total enumerator count. Should remain the last item in the list.
@@ -378,7 +384,7 @@ struct video_signal_parameters_s
 };
 
 /*!
- * Returns a reference to a mutex which should be locked by the capture subsystem
+ * Returns a reference to a mutex that should be locked by the capture subsystem
  * while it's accessing data shared with the rest of VCS (e.g. capture event flags
  * or the capture frame buffer), and which the rest of VCS should lock while
  * accessing that data.
@@ -397,7 +403,7 @@ struct video_signal_parameters_s
  * // the capture subsystem from pushing new events while we're doing this).
  * switch (kc_pop_capture_event_queue())
  * {
- *    // ...
+ *    // Handle the cases...
  * }
  * @endcode
  *

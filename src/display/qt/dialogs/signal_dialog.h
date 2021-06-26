@@ -26,7 +26,7 @@ class SignalDialog : public VCSBaseDialog
 
 public:
     explicit SignalDialog(QWidget *parent = 0);
-    ~SignalDialog();
+    ~SignalDialog(void);
 
     void set_controls_enabled(const bool state);
 

@@ -104,7 +104,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
 
     // Subscribe to app events.
     {
-        kc_evNewVideoMode.subscribe([this](capture_video_mode_s videoMode)
+        kc_evNewVideoMode.subscribe([this](const capture_video_mode_s &videoMode)
         {
             if (!ui->checkBox_forceOutputRes->isChecked())
             {
