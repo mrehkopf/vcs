@@ -330,9 +330,9 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         }
     }
 
-    // Subscribe to app events.
+    // Listen for app events.
     {
-        kc_evNewVideoMode.subscribe([this](const capture_video_mode_s&)
+        kc_evNewVideoMode.listen([this](const capture_video_mode_s&)
         {
             if (kc_has_signal())
             {

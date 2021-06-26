@@ -102,9 +102,9 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
     ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT, "relative_scale", 100).toInt());
     this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "output_resolution", this->size()).toSize());
 
-    // Subscribe to app events.
+    // Listen for app events.
     {
-        kc_evNewVideoMode.subscribe([this](const capture_video_mode_s &videoMode)
+        kc_evNewVideoMode.listen([this](const capture_video_mode_s &videoMode)
         {
             if (!ui->checkBox_forceOutputRes->isChecked())
             {
@@ -113,7 +113,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
             }
         });
 
-        krecord_evRecordingStarted.subscribe([this]
+        krecord_evRecordingStarted.listen([this]
         {
             // Disable any GUI functionality that would let the user change the current
             // output size, since we want to keep the output resolution constant while
@@ -121,7 +121,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
             this->disable_output_size_controls(true);
         });
 
-        krecord_evRecordingEnded.subscribe([this]
+        krecord_evRecordingEnded.listen([this]
         {
             this->disable_output_size_controls(false);
         });

@@ -151,7 +151,7 @@ hr
 #nav-tree
 {
 	background-image: none !important;
-	background-color: var(--page-background-color) !important;
+	background-color: white !important;
 	padding: 15px !important;
 	padding-top: 0 !important;
 	padding-bottom: 0 !important;

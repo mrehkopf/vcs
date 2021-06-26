@@ -95,27 +95,30 @@ struct capture_video_mode_s;
  * Frames that don't register on calls to kc_pop_capture_event_queue() won't
  * generate this event.
  * 
- * A reference to the frame's data is provided as an argument to subscribed
- * handlers. A given handler can assume the data to remain valid until returning.
+ * A reference to the frame's data is provided as an argument to event listeners.
+ * The data will remain valid for each listener until the listener function
+ * returns.
  * 
  * @code
- * kc_evNewCapturedFrame.subscribe([](const captured_frame_s &frame)
+ * // Register an event listener that gets run each time a new frame is captured.
+ * kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
  * {
- *    // Access the frame's data. If you want the data to persist after the
- *    // handler returns, copy it into a local memory buffer.
+ *    // The frame's data is available to this listener until the function
+ *    // returns. If we want to keep hold of the data for longer, we need to
+ *    // copy it into a local buffer.
  * });
  * @endcode
  * 
  * @code
- * // Feeds captured frames into the scaler subsystem.
- * kc_evNewCapturedFrame.subscribe([](const captured_frame_s &frame)
+ * // Feed captured frames into the scaler subsystem.
+ * kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
  * {
  *    printf("Captured in %lu x %lu.\n", frame.r.w, frame.r.h);
  *    ks_scale_frame(frame);
  * });
  * 
- * // Receives a notification when a frame has been scaled.
- * ks_evNewScaledFrame.subscribe([](const captured_frame_s &frame)
+ * // Receive a notification whenever a frame has been scaled.
+ * ks_evNewScaledFrame.listen([](const captured_frame_s &frame)
  * {
  *    printf("Scaled to %lu x %lu.\n", frame.r.w, frame.r.h);
  * });
@@ -147,7 +150,7 @@ extern vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
  * @code
  * // A sample implementation that approves the proposed video mode if there's
  * // no alias for it, and otherwise forces the alias mode.
- * kc_evNewProposedVideoMode.subscribe([](const capture_video_mode_s &videoMode)
+ * kc_evNewProposedVideoMode.listen([](const capture_video_mode_s &videoMode)
  * {
  *    if (ka_has_alias(videoMode.resolution))
  *    {
@@ -396,14 +399,14 @@ struct video_signal_parameters_s
  * @code
  * // Code running in the main VCS thread.
  * 
- * // Blocks until the capture mutex allows us to access the capture data.
+ * // Blocks execution until the capture mutex allows us to access the capture data.
  * std::lock_guard<std::mutex> lock(kc_capture_mutex());
  *
  * // Handle the most recent capture event (having locked the mutex prevents
  * // the capture subsystem from pushing new events while we're doing this).
  * switch (kc_pop_capture_event_queue())
  * {
- *    // Handle the cases...
+ *    // ...
  * }
  * @endcode
  *
@@ -418,9 +421,18 @@ std::mutex& kc_capture_mutex(void);
  * Initializes the capture subsystem.
  *
  * By default, VCS will call this function on program startup.
- *
+ * 
  * @note
  * Will trigger an assertion failure if the initialization fails.
+ * 
+ * @code
+ * kc_initialize_capture();
+ * 
+ * kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
+ * {
+ *    printf("Captured a frame (%lu x %lu)\n", frame.r.w, frame.r.h);
+ * });
+ * @endcode
  *
  * @see
  * kc_release_capture()
@@ -736,7 +748,7 @@ capture_pixel_format_e kc_get_capture_pixel_format(void);
  * Returns true if the current capture signal is invalid; false otherwise.
  *
  * @see
- * has_no_signal()
+ * kc_has_no_signal()
  */
 bool kc_has_invalid_signal(void);
 
@@ -744,7 +756,7 @@ bool kc_has_invalid_signal(void);
  * Returns true if the current capture signal is valid; false otherwise.
  *
  * @see
- * has_invalid_signal(), has_no_signal()
+ * has_invalid_signal(), kc_has_no_signal()
  */
 bool kc_has_valid_signal(void);
 
@@ -765,7 +777,7 @@ bool kc_has_valid_device(void);
  * device's active input channel; false otherwise.
  *
  * @see
- * has_signal(), kc_get_device_input_channel_idx(), kc_set_capture_input_channel()
+ * kc_has_signal(), kc_get_device_input_channel_idx(), kc_set_capture_input_channel()
  */
 bool kc_has_no_signal(void);
 
@@ -774,7 +786,7 @@ bool kc_has_no_signal(void);
  * receiving a signal; false otherwise.
  *
  * @see
- * has_no_signal(), kc_get_device_input_channel_idx(), kc_set_capture_input_channel()
+ * kc_has_no_signal(), kc_get_device_input_channel_idx(), kc_set_capture_input_channel()
  */
 bool kc_has_signal(void);
 

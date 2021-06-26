@@ -49,7 +49,7 @@ void krecord_initialize(void)
 {
     RECORDING_BUFFER.initialize(RECORDING_BUFFER_CAPACITY);
 
-    ks_evNewScaledFrame.subscribe([](const captured_frame_s &frame)
+    ks_evNewScaledFrame.listen([](const captured_frame_s &frame)
     {
         if (krecord_is_recording())
         {
@@ -57,12 +57,12 @@ void krecord_initialize(void)
         }
     });
 
-    krecord_evRecordingStarted.subscribe([]
+    krecord_evRecordingStarted.listen([]
     {
         DEBUG(("Recording into \"%s\".", RECORDING.filename.c_str()));
     });
 
-    krecord_evRecordingEnded.subscribe([]
+    krecord_evRecordingEnded.listen([]
     {
         DEBUG(("Finished recording into \"%s\".", RECORDING.filename.c_str()));
     });

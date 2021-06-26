@@ -115,7 +115,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
         });
     }
 
-    // Subscribe to app events.
+    // Listen for app events.
     {
         const auto update_info = [this]
         {
@@ -123,32 +123,32 @@ SignalDialog::SignalDialog(QWidget *parent) :
             update_information_table(kc_has_signal());
         };
 
-        kc_evInvalidSignal.subscribe([this]
+        kc_evInvalidSignal.listen([this]
         {
             this->set_controls_enabled(false);
         });
 
-        kc_evSignalLost.subscribe([this]
+        kc_evSignalLost.listen([this]
         {
             this->set_controls_enabled(false);
         });
 
-        kc_evSignalGained.subscribe([this]
+        kc_evSignalGained.listen([this]
         {
             this->set_controls_enabled(true);
         });
 
-        ks_evFramesPerSecond.subscribe([this](const unsigned fps)
+        ks_evFramesPerSecond.listen([this](const unsigned fps)
         {
             ui->tableWidget_propertyTable->modify_property("Frame rate", QString("%1 FPS").arg(fps));
         });
 
-        kc_evNewVideoMode.subscribe([update_info](const capture_video_mode_s&)
+        kc_evNewVideoMode.listen([update_info](const capture_video_mode_s&)
         {
             update_info();
         });
 
-        ks_evInputChannelChanged.subscribe(update_info);
+        ks_evInputChannelChanged.listen(update_info);
     }
 
     return;

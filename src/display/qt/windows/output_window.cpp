@@ -726,14 +726,14 @@ MainWindow::MainWindow(QWidget *parent) :
         this->apply_programwide_styling(":/res/stylesheets/appstyle-newie.qss");
     }
 
-    // Subscribe to app events.
+    // Listen for app events.
     {
-        ks_evNewScaledFrame.subscribe([this]
+        ks_evNewScaledFrame.listen([this]
         {
             this->redraw();
         });
 
-        ks_evFramesPerSecond.subscribe([this](const unsigned fps)
+        ks_evFramesPerSecond.listen([this](const unsigned fps)
         {
             if (CURRENT_OUTPUT_FPS != fps)
             {
@@ -742,39 +742,39 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
 
-        ks_evNewScaledFrameResolution.subscribe([this]
+        ks_evNewScaledFrameResolution.listen([this]
         {
             this->update_window_title();
             this->update_window_size();
         });
 
-        kc_evSignalLost.subscribe([this]
-        {
-            this->update_window_title();
-            this->update_window_size();
-            this->redraw();
-        });
-
-        kc_evInvalidDevice.subscribe([this]
+        kc_evSignalLost.listen([this]
         {
             this->update_window_title();
             this->update_window_size();
             this->redraw();
         });
 
-        kc_evInvalidSignal.subscribe([this]
+        kc_evInvalidDevice.listen([this]
         {
             this->update_window_title();
             this->update_window_size();
             this->redraw();
         });
 
-        kc_evNewVideoMode.subscribe([this](capture_video_mode_s)
+        kc_evInvalidSignal.listen([this]
+        {
+            this->update_window_title();
+            this->update_window_size();
+            this->redraw();
+        });
+
+        kc_evNewVideoMode.listen([this](capture_video_mode_s)
         {
             this->update_window_title();
         });
 
-        krecord_evRecordingStarted.subscribe([this]
+        krecord_evRecordingStarted.listen([this]
         {
             if (!PROGRAM_EXIT_REQUESTED)
             {
@@ -782,7 +782,7 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
 
-        krecord_evRecordingEnded.subscribe([this]
+        krecord_evRecordingEnded.listen([this]
         {
             if (!PROGRAM_EXIT_REQUESTED)
             {
@@ -796,7 +796,7 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
 
-        kc_evMissedFramesCount.subscribe([this](const unsigned numMissed)
+        kc_evMissedFramesCount.listen([this](const unsigned numMissed)
         {
             const bool areDropped = (numMissed > 0);
 

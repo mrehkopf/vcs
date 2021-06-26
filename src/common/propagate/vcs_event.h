@@ -19,7 +19,7 @@ template <typename T>
 class vcs_event_c
 {
 public:
-    void subscribe(std::function<void(T)> handlerFn)
+    void listen(std::function<void(T)> handlerFn)
     {
         this->subscribedHandlers.push_back(handlerFn);
 
@@ -27,7 +27,7 @@ public:
     }
 
     // For event handlers that want to ignore the callback argument.
-    void subscribe(std::function<void(void)> handlerFn)
+    void listen(std::function<void(void)> handlerFn)
     {
         this->subscribedHandlersNoArgs.push_back(handlerFn);
 
@@ -59,7 +59,7 @@ template <>
 class vcs_event_c<void>
 {
 public:
-    void subscribe(std::function<void(void)> handlerFn)
+    void listen(std::function<void(void)> handlerFn)
     {
         this->subscribedHandlers.push_back(handlerFn);
 

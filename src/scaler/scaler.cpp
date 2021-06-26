@@ -410,29 +410,29 @@ void ks_initialize_scaler(void)
     ks_set_upscaling_filter(SCALING_FILTERS.at(0).name);
     ks_set_downscaling_filter(SCALING_FILTERS.at(0).name);
 
-    kc_evNewCapturedFrame.subscribe([](const captured_frame_s &frame)
+    kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
     {
         ks_scale_frame(frame);
     });
 
-    kc_evNewVideoMode.subscribe([](const capture_video_mode_s &videoMode)
+    kc_evNewVideoMode.listen([](const capture_video_mode_s &videoMode)
     {
         ks_set_output_base_resolution(videoMode.resolution, false);
     });
 
-    kc_evInvalidSignal.subscribe([]
+    kc_evInvalidSignal.listen([]
     {
         ks_indicate_invalid_signal();
         kd_evDirty.fire();
     });
 
-    kc_evSignalLost.subscribe([]
+    kc_evSignalLost.listen([]
     {
         ks_indicate_no_signal();
         kd_evDirty.fire();
     });
 
-    ks_evNewScaledFrame.subscribe([]
+    ks_evNewScaledFrame.listen([]
     {
         NUM_FRAMES_SCALED_PER_SECOND++;
     });

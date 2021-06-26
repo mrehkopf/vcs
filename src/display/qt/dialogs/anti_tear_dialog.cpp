@@ -80,9 +80,9 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
         ui->parameterGrid_parameters->add_scroller("Matches req'd", KAT_DEFAULT_NUM_MATCHES_REQUIRED, 1, 200);
     }
 
-    // Subscribe to app events.
+    // Listen for app events.
     {
-        kc_evNewVideoMode.subscribe([this](const capture_video_mode_s &videoMode)
+        kc_evNewVideoMode.listen([this](const capture_video_mode_s &videoMode)
         {
             ui->parameterGrid_parameters->set_maximum_value("Scan start", (videoMode.resolution.h - 1));
             ui->parameterGrid_parameters->set_maximum_value("Scan end", (videoMode.resolution.h - 1));
