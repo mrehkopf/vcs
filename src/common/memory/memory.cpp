@@ -53,9 +53,6 @@ static u8 *NEXT_FREE = NULL;    // A pointer to the next free byte in the memory
 static const uint NUM_ALLOC_TABLE_ELEMENTS = 512;
 static mem_allocation_s *ALLOC_TABLE = NULL;
 
-// Set to 1 to disallow any further allocations from the cache.
-static uint CACHE_ALLOC_LOCKED = 0;
-
 static void initialize_cache(void)
 {
     INFO(("Initializing the memory subsystem with %u MB.", (MEMORY_CACHE_SIZE / 1024 / 1024)));
@@ -85,8 +82,6 @@ static void initialize_cache(void)
 void* kmem_allocate(const int numBytes, const char *const reason)
 {
     k_assert(std::this_thread::get_id() == NATIVE_THREAD_ID, "Potential attempt to allocate memory from multiple threads. This isn't supported.");
-
-    k_assert(!CACHE_ALLOC_LOCKED, "Memory allocations are locked, can't add new ones.");
     k_assert(!PROGRAM_EXIT_REQUESTED, "No more memory should be allocated after the program has been asked to terminate.");
     k_assert(numBytes > 0, "Can't allocate sub-byte memory blocks.");
 
@@ -225,16 +220,7 @@ void kmem_release(void **mem)
     return;
 }
 
-void kmem_lock_cache_alloc(void)
-{
-    k_assert(CACHE_ALLOC_LOCKED == 0, "Was asked to lock the memory cache, but it had already been locked.");
-
-    CACHE_ALLOC_LOCKED = 1;
-
-    return;
-}
-
-void kmem_deallocate_memory_cache(void)
+void kmem_release_system(void)
 {
     const unsigned numMBAllocated = (TOTAL_BYTES_ALLOCATED / 1024);
     const unsigned percentUtilization = int((double(TOTAL_BYTES_ALLOCATED) / MEMORY_CACHE_SIZE) * 100);
