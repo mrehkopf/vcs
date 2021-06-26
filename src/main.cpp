@@ -45,7 +45,7 @@ static void cleanup_all(void)
     krecord_release();
 
     // Call this last.
-    kmem_deallocate_memory_cache();
+    kmem_release_system();
 
     INFO(("Ready to exit. Bye!"));
     return;

@@ -65,9 +65,6 @@ struct recording_buffer_s
     /*!
      * Initializes the buffer, allocating memory to hold at most the number of
      * frames given by @p frameCapacity.
-     * 
-     * @warning
-     * VCS's memory subsystem must be initialized before calling this function.
      */
     void initialize(const size_t frameCapacity = 10);
 
