@@ -78,7 +78,7 @@
 #include "common/globals.h"
 #include "scaler/scaler.h"
 #include "common/refresh_rate.h"
-#include "common/memory/memory.h"
+#include "common/memory/memory_interface.h"
 #include "common/types.h"
 #include "common/propagate/vcs_event.h"
 

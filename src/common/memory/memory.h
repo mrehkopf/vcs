@@ -146,6 +146,4 @@ uint kmem_sizeof_allocation(const void *const mem);
  */
 void kmem_release_system(void);
 
-#include "memory_interface.h"
-
 #endif
