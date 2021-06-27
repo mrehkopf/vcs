@@ -44,10 +44,7 @@ static void cleanup_all(void)
     kvideopreset_release();
     krecord_release();
 
-    // Call this last.
-    kmem_release_system();
-
-    INFO(("Ready to exit. Bye!"));
+    INFO(("Ready to exit."));
     return;
 }
 
@@ -216,7 +213,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    INFO(("Initializing the program."));
+    INFO(("Initializing VCS."));
     if (!initialize_all())
     {
         kd_show_headless_error_message("",

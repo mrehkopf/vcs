@@ -51,8 +51,6 @@
  *      // bytes == NULL.
  *      // ints == NULL.
  *      @endcode
- *
- *   5. Call kmem_release_system() to release the memory subsystem.
  */
 
 #ifndef VCS_COMMON_MEMORY_MEMORY_H
@@ -136,14 +134,5 @@ void kmem_release(void **mem);
  * kmem_allocate()
  */
 uint kmem_sizeof_allocation(const void *const mem);
-
-/*!
- * Releases the memory subsystem, deallocating its fixed-sized memory buffer.
- * 
- * @warning
- * This function should only be called on program exit, when PROGRAM_EXIT_REQUESTED
- * equals true.
- */
-void kmem_release_system(void);
 
 #endif
