@@ -23,7 +23,7 @@ void filter_unsharp_mask_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
         const double str = this->parameter(PARAM_STRENGTH);
         const double rad = this->parameter(PARAM_RADIUS);
 
-        cv::Mat tmp = cv::Mat(r.h, r.w, CV_8UC4, TMP_BUF.ptr());
+        cv::Mat tmp = cv::Mat(r.h, r.w, CV_8UC4, TMP_BUF.data());
         cv::Mat output = cv::Mat(r.h, r.w, CV_8UC4, pixels);
         cv::GaussianBlur(output, tmp, cv::Size(0, 0), rad);
         cv::addWeighted(output, 1 + str, tmp, -str, 0, output);

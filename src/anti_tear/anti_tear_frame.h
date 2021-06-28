@@ -32,7 +32,7 @@ struct anti_tear_frame_s
 
     bool is_valid(void)
     {
-        return (this->pixels.ptr() &&
+        return (this->pixels.data() &&
                 (this->resolution.w <= MAX_OUTPUT_WIDTH) &&
                 (this->resolution.h <= MAX_OUTPUT_HEIGHT) &&
                 (this->resolution.bpp <= MAX_OUTPUT_BPP));
@@ -51,9 +51,9 @@ struct anti_tear_frame_s
             const unsigned idx1 = (y * this->resolution.w * numBytesPerPixel);
             const unsigned idx2 = ((this->resolution.h - 1 - y) * this->resolution.w * numBytesPerPixel);
 
-            std::memcpy(&scratch,                    (this->pixels.ptr() + idx1), numBytesPerRow);
-            std::memcpy((this->pixels.ptr() + idx1), (this->pixels.ptr() + idx2), numBytesPerRow);
-            std::memcpy((this->pixels.ptr() + idx2), &scratch, numBytesPerRow);
+            std::memcpy(&scratch,                    (this->pixels.data() + idx1), numBytesPerRow);
+            std::memcpy((this->pixels.data() + idx1), (this->pixels.data() + idx2), numBytesPerRow);
+            std::memcpy((this->pixels.data() + idx2), &scratch, numBytesPerRow);
         }
 
         return;

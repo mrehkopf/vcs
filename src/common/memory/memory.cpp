@@ -69,7 +69,7 @@ static void release(void)
     const unsigned numMBAllocated = (TOTAL_BYTES_ALLOCATED / 1024);
     const unsigned percentUtilization = int((double(TOTAL_BYTES_ALLOCATED) / MEMORY_BUFFER_SIZE) * 100);
 
-    DEBUG(("Deallocating the memory subsystem at %d%% utilization (%u KB).",
+    DEBUG(("atexit: Releasing the memory subsystem at %d%% utilization (%u KB).",
            percentUtilization,
            numMBAllocated));
 

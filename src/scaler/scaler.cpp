@@ -242,7 +242,7 @@ void opencv_scale(u8 *const pixelData,
     if (ks_is_forced_aspect_enabled())
     {
         const resolution_s paddedRes = padded_resolution(sourceRes, targetRes);
-        cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.ptr());
+        cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.data());
 
         if ((paddedRes.h == targetRes.h) &&
             (paddedRes.w == targetRes.w))
@@ -276,7 +276,7 @@ void s_scaler_nearest(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        opencv_scale(pixelData, FRAME_BUFFER.pixels.ptr(), sourceRes, targetRes, cv::INTER_NEAREST);
+        opencv_scale(pixelData, FRAME_BUFFER.pixels.data(), sourceRes, targetRes, cv::INTER_NEAREST);
     #else
         real deltaW = (sourceRes.w / real(targetRes.w));
         real deltaH = (sourceRes.h / real(targetRes.h));
@@ -307,7 +307,7 @@ void s_scaler_linear(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        opencv_scale(pixelData, FRAME_BUFFER.pixels.ptr(), sourceRes, targetRes, cv::INTER_LINEAR);
+        opencv_scale(pixelData, FRAME_BUFFER.pixels.data(), sourceRes, targetRes, cv::INTER_LINEAR);
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
@@ -325,7 +325,7 @@ void s_scaler_area(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        opencv_scale(pixelData, FRAME_BUFFER.pixels.ptr(), sourceRes, targetRes, cv::INTER_AREA);
+        opencv_scale(pixelData, FRAME_BUFFER.pixels.data(), sourceRes, targetRes, cv::INTER_AREA);
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
@@ -343,7 +343,7 @@ void s_scaler_cubic(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        opencv_scale(pixelData, FRAME_BUFFER.pixels.ptr(), sourceRes, targetRes, cv::INTER_CUBIC);
+        opencv_scale(pixelData, FRAME_BUFFER.pixels.data(), sourceRes, targetRes, cv::INTER_CUBIC);
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
@@ -361,7 +361,7 @@ void s_scaler_lanczos(SCALER_FUNC_PARAMS)
     }
 
     #if USE_OPENCV
-        opencv_scale(pixelData, FRAME_BUFFER.pixels.ptr(), sourceRes, targetRes, cv::INTER_LANCZOS4);
+        opencv_scale(pixelData, FRAME_BUFFER.pixels.data(), sourceRes, targetRes, cv::INTER_LANCZOS4);
     #else
         k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
     #endif
@@ -400,10 +400,10 @@ void ks_initialize_scaler(void)
         cv::redirectError(cv_error_handler);
     #endif
 
-    COLORCONV_BUFFER.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Scaler color conversion buffer");
-    TMP_BUFFER.alloc(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler scratch buffer");
+    COLORCONV_BUFFER.allocate(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Scaler color conversion buffer");
+    TMP_BUFFER.allocate(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler scratch buffer");
 
-    FRAME_BUFFER.pixels.alloc(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler output buffer");
+    FRAME_BUFFER.pixels.allocate(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler output buffer");
     FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
     FRAME_BUFFER.r = {0, 0, 0};
 
@@ -451,9 +451,9 @@ void ks_release_scaler(void)
 {
     INFO(("Releasing the scaler."));
 
-    COLORCONV_BUFFER.release_memory();
-    FRAME_BUFFER.pixels.release_memory();
-    TMP_BUFFER.release_memory();
+    COLORCONV_BUFFER.release();
+    FRAME_BUFFER.pixels.release();
+    TMP_BUFFER.release();
 
     return;
 }
@@ -471,8 +471,8 @@ void s_convert_frame_to_bgra(const captured_frame_s &frame)
         u32 conversionType = 0;
         const u32 numColorChan = (frame.r.bpp / 8);
 
-        cv::Mat input = cv::Mat(frame.r.h, frame.r.w, CV_MAKETYPE(CV_8U,numColorChan), frame.pixels.ptr());
-        cv::Mat colorConv = cv::Mat(frame.r.h, frame.r.w, CV_8UC4, COLORCONV_BUFFER.ptr());
+        cv::Mat input = cv::Mat(frame.r.h, frame.r.w, CV_MAKETYPE(CV_8U,numColorChan), frame.pixels.data());
+        cv::Mat colorConv = cv::Mat(frame.r.h, frame.r.w, CV_8UC4, COLORCONV_BUFFER.data());
 
         k_assert(!COLORCONV_BUFFER.is_null(),
                  "Was asked to convert a frame's color depth, but the color conversion buffer "
@@ -520,7 +520,7 @@ void s_convert_frame_to_bgra(const captured_frame_s &frame)
 //
 void ks_scale_frame(const captured_frame_s &frame)
 {
-    u8 *pixelData = frame.pixels.ptr();
+    u8 *pixelData = frame.pixels.data();
     resolution_s frameRes = frame.r; /// Temp hack. May want to modify the .bpp value.
     resolution_s outputRes = ks_scaler_output_resolution();
 
@@ -590,7 +590,7 @@ void ks_scale_frame(const captured_frame_s &frame)
         s_convert_frame_to_bgra(frame);
         frameRes.bpp = 32;
 
-        pixelData = COLORCONV_BUFFER.ptr();
+        pixelData = COLORCONV_BUFFER.data();
     }
 
     pixelData = kat_anti_tear(pixelData, frameRes);
@@ -606,7 +606,7 @@ void ks_scale_frame(const captured_frame_s &frame)
             frameRes.w == outputRes.w &&
             frameRes.h == outputRes.h)
         {
-            memcpy(FRAME_BUFFER.pixels.ptr(), pixelData, FRAME_BUFFER.pixels.up_to(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
+            memcpy(FRAME_BUFFER.pixels.data(), pixelData, FRAME_BUFFER.pixels.size_check(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
         }
         else
         {
@@ -627,7 +627,7 @@ void ks_scale_frame(const captured_frame_s &frame)
                 NBENE(("Upscale or downscale filter is null. Refusing to scale."));
 
                 outputRes = frameRes;
-                memcpy(FRAME_BUFFER.pixels.ptr(), pixelData, FRAME_BUFFER.pixels.up_to(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
+                memcpy(FRAME_BUFFER.pixels.data(), pixelData, FRAME_BUFFER.pixels.size_check(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
             }
             else
             {
@@ -721,14 +721,14 @@ void ks_clear_frame_buffer(void)
     k_assert(!FRAME_BUFFER.pixels.is_null(),
              "Can't access the output buffer: it was unexpectedly null.");
 
-    memset(FRAME_BUFFER.pixels.ptr(), 0, FRAME_BUFFER.pixels.up_to(MAX_NUM_BYTES_IN_OUTPUT_FRAME));
+    memset(FRAME_BUFFER.pixels.data(), 0, FRAME_BUFFER.pixels.size_check(MAX_NUM_BYTES_IN_OUTPUT_FRAME));
 
     return;
 }
 
 const u8* ks_frame_buffer_pixels_ptr(void)
 {
-    return FRAME_BUFFER.pixels.ptr();
+    return FRAME_BUFFER.pixels.data();
 }
 
 const captured_frame_s& ks_frame_buffer(void)

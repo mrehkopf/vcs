@@ -17,10 +17,10 @@ void recording_buffer_s::initialize(const size_t frameCapacity)
 
     for (auto &buffer: this->frameData)
     {
-        buffer.alloc(maxFrameSize, "Video recording frame buffer.");
+        buffer.allocate(maxFrameSize, "Video recording frame buffer.");
     }
 
-    this->scratchBuffer.alloc(maxFrameSize, "Video recording scratch buffer.");
+    this->scratchBuffer.allocate(maxFrameSize, "Video recording scratch buffer.");
 
     this->reset();
 
@@ -31,10 +31,10 @@ void recording_buffer_s::release(void)
 {
     for (auto &buffer: this->frameData)
     {
-        buffer.release_memory();
+        buffer.release();
     }
 
-    this->scratchBuffer.release_memory();
+    this->scratchBuffer.release();
 
     return;
 }

@@ -47,7 +47,7 @@
  * 
  *      // Create an object but delay its memory allocation.
  *      heap_bytes_s<double> doubles;
- *      doubles.alloc(11);
+ *      doubles.allocate(11);
  * 
  *      // It's recommended that you provide a string describing your intended
  *      // purpose for the allocation. It may be used for descriptive debug
@@ -61,18 +61,18 @@
  *      heap_bytes_s<char> chars(10);
  * 
  *      // These memory accesses are bounds-checked at runtime if the RELEASE_BUILD
- *      // build flag isn't set; otherwise, no bounds-checking is done.
+ *      // build flag isn't defined; otherwise, no bounds-checking is done.
  *      ints[1] = 1234;
  *      chars[0] = 82;
  *      int a = ints[1]; // a == 1234.
  *      char b = chars[0]; // b == 82.
  * 
- *      // We only allocated memory for 2 ints, so this read overflows. It triggers a
- *      // bounds-checking assertion failure if the RELEASE_BUILD build flag isn't set.
- *      int c = ints[3];
+ *      // We allocated memory for 2 ints, so this overflows. It triggers a bounds-
+ *      // checking assertion failure if the RELEASE_BUILD build flag isn't defined.
+ *      int c = ints[9];
  * 
  *      // The underlying memory pointer (of type T) is also available.
- *      int *exposedBuffer = ints.ptr();
+ *      int *exposedBuffer = ints.data();
  *      @endcode
  * 
  *   4. Release the allocated memory when you no longer need it:
@@ -80,12 +80,12 @@
  *      heap_bytes_s<char> chars(10);
  *      // chars.is_null() == false.
  * 
- *      chars.release_memory();
+ *      chars.release();
  *      // chars.is_null() == true.
  * 
  *      // Attempting to access null (in this case, released) memory. Triggers an
- *      // assertion failure if the RELEASE_BUILD build flag isn't set; otherwise
- *      // results in undefined behavior.
+ *      // assertion failure if the RELEASE_BUILD build flag isn't defined;
+ *      // otherwise results in undefined behavior.
  *      chars[0] = 15;
  *      @endcode
  */
@@ -94,32 +94,33 @@ struct heap_bytes_s
 {
     /*!
      * Initializes the object without allocating memory for its data buffer. The
-     * memory can be allocated later with alloc().
+     * memory can be allocated later with allocate().
      * 
      * @code
      * heap_bytes_s<char> buffer;
 
      * // buffer.is_null() == true.
-     * // buffer.size() == 0.
+     * // buffer.count() == 0.
      * @endcode
      * 
      * @note
      * Attempting to dereference the object's unallocated data buffer (e.g. with
      * heap_bytes_s::operator[]) will result in a bounds-checking assertion failure
-     * if the RELEASE_BUILD build flag isn't set, and undefined behavior otherwise.
+     * if the RELEASE_BUILD build flag isn't defined, and undefined behavior
+     * otherwise.
      * 
      * @see
-     * alloc()
+     * allocate()
      */
     heap_bytes_s(void)
     {
-        this->data = nullptr;
-        this->dataSize = 0;
+        this->data_ = nullptr;
+        this->elementCount_ = 0;
     }
 
     /*!
-     * Initializes the object and allocates @p num elements of type @p T for its
-     * data buffer.
+     * Initializes the object and allocates @p numElements elements of type @p T
+     * for its data buffer.
      * 
      * This function calls kmem_allocate() to perform the memory allocation. See
      * that function's documentation for more information about the memory it
@@ -129,22 +130,22 @@ struct heap_bytes_s
      * heap_bytes_s<char> buffer(10);
      * 
      * // buffer.is_null() == false.
-     * // buffer.size() == 10.
+     * // buffer.count() == 10.
      * // buffer[0] == 0.
      * @endcode
      * 
      * @see
      * kmem_allocate()
      */
-    heap_bytes_s(const uint num, const char *const reason = nullptr)
+    heap_bytes_s(const unsigned numElements, const char *const reason = nullptr)
     {
-        alloc(num, reason);
+        this->allocate(numElements, reason);
 
         return;
     }
 
     /*!
-     * Returns a reference to the element at offset @p offs in the data buffer,
+     * Returns a reference to the element at index @p idx in the data buffer,
      * bounds-checking the offset unless the RELEASE_BUILD build flag is set.
      * 
      * If the bounds check fails, triggers an assertion failure.
@@ -154,24 +155,24 @@ struct heap_bytes_s
      * heap_bytes_s<int> buffer(10);
      * 
      * // Set the value of the 2nd int in the data buffer. This access will
-     * // be bounds-checked if the RELEASE_BUILD build flag isn't set.
+     * // be bounds-checked if the RELEASE_BUILD build flag isn't defined.
      * buffer[1] = 0;
      * 
      * // An overflowing write that attempts to modify the 11th element when only
      * // 10 elements have been allocated. Triggers an assertion failure if the
-     * // RELEASE_BUILD build flag isn't set.
+     * // RELEASE_BUILD build flag isn't defined.
      * buffer[10] = 0;
      * @endcode
      * 
      * @see
-     * ptr()
+     * data()
      */
-    T& operator[](const uint offs) const
+    T& operator[](const unsigned idx) const
     {
-        k_assert_optional((this->data != nullptr), "Tried to access null heap memory.");
-        k_assert_optional((offs < this->size()), "Accessing heap memory out of bounds.");
+        k_assert_optional((this->data_ != nullptr), "Tried to access null heap memory.");
+        k_assert_optional((idx < this->count()), "Accessing heap memory out of bounds.");
 
-        return this->data[offs];
+        return this->data_[idx];
     }
 
     /*!
@@ -179,7 +180,7 @@ struct heap_bytes_s
      * 
      * @code
      * heap_bytes_s<int> buffer(10);
-     * int *rawPointer = buffer.ptr();
+     * int *rawPointer = buffer.data();
      * 
      * // These refer to the same memory element, but the direct pointer access
      * // never does bounds-checking.
@@ -187,17 +188,22 @@ struct heap_bytes_s
      * rawPointer[1];
      * 
      * // You could use the pointer e.g. with the mem* functions.
-     * std::memset(buffer.ptr(), 0, buffer.size());
+     * std::memset(buffer.data(), 0, buffer.count());
      * @endcode
+     * 
+     * @note
+     * If the RELEASE_BUILD build flag isn't defined, calling this function when
+     * the data buffer is unallocated (is_null() returns true) will result in an
+     * assertion failure.
      * 
      * @see
      * heap_bytes_s::operator[]
      */
-    T* ptr(void) const
+    T* data(void) const
     {
-        k_assert_optional(this->data != nullptr, "Tried to access null heap memory.");
+        k_assert_optional(this->data_, "Tried to access null heap memory.");
 
-        return this->data;
+        return this->data_;
     }
 
     /*!
@@ -213,12 +219,12 @@ struct heap_bytes_s
      * unsigned x = 10;
      * unsigned y = 5;
      * 
-     * // We want to memset x*y bytes of the data buffer. The up_to() function
-     * // ensures that this value doesn't exceed the buffer's maximum capacity.
-     * std::memset(buffer.ptr(), 0, buffer.up_to(x * y));
+     * // We want to memset x*y bytes of the data buffer. The size_check() function
+     * // ensures that this value doesn't exceed the buffer's maximum byte capacity.
+     * std::memset(buffer.data(), 0, buffer.size_check(x * y));
      * @endcode
      */
-    uint up_to(const uint size) const
+    unsigned size_check(const unsigned size) const
     {
         k_assert((size <= this->size()), "Possible memory access out of bounds.");
 
@@ -246,7 +252,7 @@ struct heap_bytes_s
      * intsRef[0] = 1;
      * // ints[0] == 1.
      * 
-     * ints.release_memory();
+     * ints.release();
      * // ints.is_null() == true.
      * // intsRef.is_null() == false.
      * 
@@ -255,7 +261,7 @@ struct heap_bytes_s
      * // data buffer exists.
      * intsRef[0];
      * 
-     * intsRef.release_memory();
+     * intsRef.release();
      * // intsRef.is_null() == true.
      * 
      * // Will now correctly trigger the bounds-checking of operator[].
@@ -269,18 +275,18 @@ struct heap_bytes_s
     {
         k_assert(!other.is_null(), "Can't point to a null memory object.");
 
-        return this->point_to(other.ptr(), other.size());
+        return this->point_to(other.data(), other.count());
     }
 
     /*!
-     * Sets the data buffer pointer to point to @p newPtr, which is a memory region
-     * of @p size bytes.
+     * Sets the data buffer pointer to point to a region of memory pointed to by
+     * @p dataPtr and which holds @p numElements elements of type @p T.
      * 
      * @code
      * int ints[10];
      * heap_bytes_s<int> intsRef;
      * 
-     * intsRef.point_to(ints, (10 * sizeof(ints[0])));
+     * intsRef.point_to(ints, 10);
      * 
      * ints[0] = 1234;
      * // intsRef[0] == 1234.
@@ -289,13 +295,13 @@ struct heap_bytes_s
      * @see
      * point_to(heap_bytes_s<T> &)
      */
-    void point_to(T *const newPtr, const int size)
+    void point_to(T *const dataPtr, const int numElements)
     {
-        k_assert(this->data == nullptr, "Can't assign a pointer to a non-null memory object.");
-        k_assert(size > 0, "Can't assign with data sizes less than 1.");
+        k_assert(!this->data_, "Can't assign a pointer to a non-null memory object.");
+        k_assert((numElements > 0), "Can't assign less than 1 element.");
 
-        this->data = newPtr;
-        this->dataSize = size;
+        this->data_ = dataPtr;
+        this->elementCount_ = numElements;
         this->alias = true;
 
         return;
@@ -305,36 +311,38 @@ struct heap_bytes_s
      * Allocates memory for the data buffer.
      * 
      * @warning
-     * Call release_memory() before re-allocating. Attempting to allocate over an
+     * Call release() before re-allocating. Attempting to allocate over an
      * existing data buffer will trigger an assertion failure.
      * 
      * @code
      * // Allocate memory for 10 ints using the constructor.
      * heap_bytes_s<int> ints(10);
      * 
-     * // Allocate memory for 10 ints using alloc().
+     * // Allocate memory for 10 ints using allocate().
      * heap_bytes_s<int> ints2;
-     * ints2.alloc(10);
+     * ints2.allocate(10);
      * 
      * // Allocate memory for 10 ints, then re-allocate for only 5 ints.
      * {
      *    heap_bytes_s<int> ints3(10);
-     *    // ints3.size() == 10.
+     *    // ints3.count() == 10.
      * 
-     *    ints3.release_memory();
-     *    // ints3.size() == 0.
+     *    ints3.release();
+     *    // ints3.count() == 0.
      * 
-     *    ints3.alloc(5);
-     *    // ints3.size() == 5.
+     *    ints3.allocate(5);
+     *    // ints3.count() == 5.
      * }
      * @endcode
      */
-    void alloc(const int size, const char *const reason = nullptr)
+    void allocate(const int elementCount, const char *const reason = nullptr)
     {
-        k_assert(!data, "Attempting to doubly allocate.");
+        k_assert(!this->data_, "Attempting to doubly allocate.");
 
-        this->data = (T*)kmem_allocate(sizeof(T) * size, (reason == nullptr? "(No reason given.)" : reason));
-        this->dataSize = size;
+        const unsigned numBytes = (sizeof(T) * elementCount);
+
+        this->data_ = (T*)kmem_allocate(numBytes, (reason? reason : "<No reason given>"));
+        this->elementCount_ = elementCount;
 
         return;
     }
@@ -356,14 +364,14 @@ struct heap_bytes_s
      * heap_bytes_s<int> ints;
      * // ints.is_null() == true.
      * 
-     * ints.alloc(1);
+     * ints.allocate(1);
      * // ints.is_null() == false.
      * 
-     * ints.release_memory();
+     * ints.release();
      * // ints.is_null() == true.
      * 
      * // This call is ignored, because the buffer has already been released.
-     * ints.release_memory();
+     * ints.release();
      * // ints.is_null() == true.
      * @endcode
      * 
@@ -373,10 +381,10 @@ struct heap_bytes_s
      * heap_bytes_s<int> intsRef;
      * intsRef.point_to(ints);
      * 
-     * // Calling release_memory() on a data buffer allocated with point_to()
+     * // Calling release() on a data buffer allocated with point_to()
      * // only sets that memory object's data pointer to null without releasing
      * // the buffer.
-     * intsRef.release_memory();
+     * intsRef.release();
      * // intsRef.is_null() == true.
      * // ints.is_null() == false.
      * @endcode
@@ -384,9 +392,9 @@ struct heap_bytes_s
      * @see
      * kmem_release()
      */
-    void release_memory(void)
+    void release(void)
     {
-        if (this->data == nullptr)
+        if (this->data_ == nullptr)
         {
             DEBUG(("Was asked to release a null pointer in the memory cache. Ignoring this."));
             return;
@@ -394,35 +402,59 @@ struct heap_bytes_s
 
         if (!this->alias)
         {
-            kmem_release((void**)&this->data);
-            this->dataSize = 0;
+            kmem_release((void**)&this->data_);
+            this->elementCount_ = 0;
         }
         else
         {
             DEBUG(("Marking aliased memory to null instead of releasing it."));
-            this->data = nullptr;
-            this->dataSize = 0;
+            this->data_ = nullptr;
+            this->elementCount_ = 0;
         }
 
         return;
     }
 
     /*!
-     * Returns the number of elements (of type @p T) allocated to the data buffer.
+     * Returns the number of elements (of type @p T) allocated for the data buffer.
      * 
      * @code
      * heap_bytes_s<int> ints(11);
-     * // ints.size() == 11.
+     *
+     * // ints.count() == 11.
+     * // ints.size() == (11 * sizeof(int)).
      * @endcode
      * 
      * @code
      * heap_bytes_s<int> ints;
-     * // ints.size() == 0.
+     *
+     * // ints.count() == 0.
      * @endcode
+     *
+     * @see
+     * size()
      */
-    uint size(void) const
+    unsigned count(void) const
     {
-        return this->dataSize;
+        return this->elementCount_;
+    }
+
+    /*!
+     * Returns the number of bytes allocated for the data buffer.
+     *
+     * @code
+     * heap_bytes_s<int> ints(11);
+     *
+     * // ints.size() == (11 * sizeof(int)).
+     * // ints.count() == 11.
+     * @endcode
+     *
+     * @see
+     * count()
+     */
+    unsigned size(void) const
+    {
+        return (sizeof(T) * this->count());
     }
 
     /*!
@@ -434,10 +466,10 @@ struct heap_bytes_s
      * heap_bytes_s<int> ints;
      * // ints.is_null() == true.
      * 
-     * ints.alloc(1);
+     * ints.allocate(1);
      * // ints.is_null() == false.
      * 
-     * ints.release_memory();
+     * ints.release();
      * // ints.is_null() == true.
      * @endcode
      * 
@@ -452,17 +484,22 @@ struct heap_bytes_s
      * @endcode
      * 
      * @see
-     * alloc
+     * allocate()
      */
     bool is_null(void) const
     {
-        return !bool(this->data);
+        return !bool(this->data_);
     }
 
 private:
-    T *data = nullptr;
-    uint dataSize = 0;
-    bool alias = false; // Set to true if the data pointer was assigned from outside rather than allocated specifically for this memory object.
+    T *data_ = nullptr;
+
+    // The number of elements (of type T) allocated for the data buffer.
+    unsigned elementCount_ = 0;
+
+    // Set to true if the data buffer was allocated with point_to(), i.e. if
+    // this object doesn't own the data buffer.
+    bool alias = false;
 };
 
 #endif

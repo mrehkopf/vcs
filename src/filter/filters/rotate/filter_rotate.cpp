@@ -24,7 +24,7 @@ void filter_rotate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 
     #ifdef USE_OPENCV
         cv::Mat output = cv::Mat(r.h, r.w, CV_8UC4, pixels);
-        cv::Mat temp = cv::Mat(r.h, r.w, CV_8UC4, scratch.ptr());
+        cv::Mat temp = cv::Mat(r.h, r.w, CV_8UC4, scratch.data());
 
         cv::Mat transf = cv::getRotationMatrix2D(cv::Point2d((r.w / 2), (r.h / 2)), -angle, scale);
         cv::warpAffine(output, temp, transf, cv::Size(r.w, r.h));

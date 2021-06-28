@@ -95,9 +95,9 @@ static bool encoder_thread(void)
                     RECORDING.peakBufferUsagePercent = std::max(RECORDING_BUFFER.usage(),
                                                                 RECORDING.peakBufferUsagePercent);
 
-                    memcpy(RECORDING_BUFFER.scratchBuffer.ptr(),
-                           RECORDING_BUFFER.pop()->ptr(),
-                           RECORDING_BUFFER.scratchBuffer.up_to(RECORDING_BUFFER.maxWidth * RECORDING_BUFFER.maxHeight * 3));
+                    memcpy(RECORDING_BUFFER.scratchBuffer.data(),
+                           RECORDING_BUFFER.pop()->data(),
+                           RECORDING_BUFFER.scratchBuffer.size_check(RECORDING_BUFFER.maxWidth * RECORDING_BUFFER.maxHeight * 3));
 
                     gotNewFrame = true;
                 }
@@ -108,7 +108,7 @@ static bool encoder_thread(void)
                 VIDEO_WRITER << cv::Mat(RECORDING.resolution.h,
                                         RECORDING.resolution.w,
                                         CV_8UC3,
-                                        RECORDING_BUFFER.scratchBuffer.ptr());
+                                        RECORDING_BUFFER.scratchBuffer.data());
 
                 RECORDING.numFrames++;
             }
@@ -334,7 +334,7 @@ void krecord_record_frame(const captured_frame_s &frame)
                 }
                 else
                 {
-                    bufferPtr = RECORDING_BUFFER.push()->ptr();
+                    bufferPtr = RECORDING_BUFFER.push()->data();
                 }
             }
 
@@ -345,7 +345,7 @@ void krecord_record_frame(const captured_frame_s &frame)
                 /// place for this before we allow the recording to start, but you
                 /// never know...
                 
-                cv::Mat originalFrame(frame.r.h, frame.r.w, CV_8UC4, (u8*)frame.pixels.ptr());
+                cv::Mat originalFrame(frame.r.h, frame.r.w, CV_8UC4, (u8*)frame.pixels.data());
                 cv::Mat convertedFrame = cv::Mat(frame.r.h, frame.r.w, CV_8UC3, bufferPtr);
                 cv::cvtColor(originalFrame, convertedFrame, CV_BGRA2BGR);
             }

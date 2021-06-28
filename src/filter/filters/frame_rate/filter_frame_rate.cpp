@@ -44,9 +44,9 @@ void filter_frame_rate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
             }
         }
 
-        memcpy(prevPixels.ptr(),
+        memcpy(prevPixels.data(),
                pixels,
-               prevPixels.up_to(r.w * r.h * (r.bpp / 8)));
+               prevPixels.size_check(r.w * r.h * (r.bpp / 8)));
 
         const auto timeNow = std::chrono::system_clock::now();
         const double secsElapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - timeElapsed).count() / 1000.0);

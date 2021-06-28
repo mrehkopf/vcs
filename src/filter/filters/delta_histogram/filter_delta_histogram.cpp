@@ -69,7 +69,7 @@ void filter_delta_histogram_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
             cv::line(output, cv::Point(x1, y1r), cv::Point(x2, y2r), cv::Scalar(0, 0, 255), 2, CV_AA);
         }
 
-        memcpy(prevFramePixels.ptr(), pixels, prevFramePixels.up_to(r.w * r.h * numColorChannels));
+        memcpy(prevFramePixels.data(), pixels, prevFramePixels.size_check(r.w * r.h * numColorChannels));
     #endif
 
     return;

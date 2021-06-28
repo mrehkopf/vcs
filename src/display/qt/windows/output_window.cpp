@@ -318,7 +318,7 @@ MainWindow::MainWindow(QWidget *parent) :
                             DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
                             return QImage();
                         }
-                        else return QImage(frame.pixels.ptr(), frame.r.w, frame.r.h, QImage::Format_RGB32);
+                        else return QImage(frame.pixels.data(), frame.r.w, frame.r.h, QImage::Format_RGB32);
                     })();
 
                     if (frameImage.save(filename))
@@ -1125,7 +1125,7 @@ void MainWindow::paintEvent(QPaintEvent *)
            DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
            return QImage();
        }
-       else return QImage(frame.pixels.ptr(), frame.r.w, frame.r.h, QImage::Format_RGB32);
+       else return QImage(frame.pixels.data(), frame.r.w, frame.r.h, QImage::Format_RGB32);
     })();
 
     QPainter painter(this);

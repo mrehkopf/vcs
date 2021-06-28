@@ -27,7 +27,7 @@ void filter_flip_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 
     #ifdef USE_OPENCV
         cv::Mat output = cv::Mat(r.h, r.w, CV_8UC4, pixels);
-        cv::Mat temp = cv::Mat(r.h, r.w, CV_8UC4, scratch.ptr());
+        cv::Mat temp = cv::Mat(r.h, r.w, CV_8UC4, scratch.data());
 
         cv::flip(output, temp, axis);
         temp.copyTo(output);

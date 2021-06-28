@@ -343,7 +343,7 @@ bool kc_initialize_device(void)
 {
     INFO(("Initializing the RGBEASY capture device."));
 
-    FRAME_BUFFER.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (RGBEASY)");
+    FRAME_BUFFER.pixels.allocate(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (RGBEASY)");
 
     // Open an input on the capture hardware, and have it start sending in frames.
     if (!initialize_hardware() ||
@@ -365,7 +365,7 @@ bool kc_release_device(void)
 {
     DEBUG(("Releasing the capture device."));
 
-    FRAME_BUFFER.pixels.release_memory();
+    FRAME_BUFFER.pixels.release();
 
     if (stop_capture() &&
         release_hardware())

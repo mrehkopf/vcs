@@ -82,7 +82,7 @@ void OGLWidget::paintGL()
         this->glDisable(GL_BLEND);
 
         this->glBindTexture(GL_TEXTURE_2D, FRAMEBUFFER_TEXTURE);
-        this->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, frame.r.w, frame.r.h, 0, GL_BGRA, GL_UNSIGNED_BYTE, frame.pixels.ptr());
+        this->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, frame.r.w, frame.r.h, 0, GL_BGRA, GL_UNSIGNED_BYTE, frame.pixels.data());
 
         glBegin(GL_TRIANGLES);
             glTexCoord2i(0, 0); glVertex2i(0,             0);

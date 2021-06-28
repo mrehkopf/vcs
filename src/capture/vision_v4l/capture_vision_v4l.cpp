@@ -193,7 +193,7 @@ bool kc_initialize_device(void)
 
     FRAME_BUFFER.r = {640, 480, 32};
     FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
-    FRAME_BUFFER.pixels.alloc(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (V4L)");
+    FRAME_BUFFER.pixels.allocate(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (V4L)");
 
     kc_set_capture_input_channel(INPUT_CHANNEL_IDX);
 
@@ -208,7 +208,7 @@ bool kc_release_device(void)
 {
     delete CUR_INPUT_CHANNEL;
 
-    FRAME_BUFFER.pixels.release_memory();
+    FRAME_BUFFER.pixels.release();
 
     return true;
 }
