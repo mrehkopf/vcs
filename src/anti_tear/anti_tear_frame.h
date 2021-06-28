@@ -9,13 +9,13 @@
 #define VCS_FILTER_ANTI_TEAR_FRAME_H
 
 #include "common/globals.h"
-#include "common/memory/memory_interface.h"
+#include "common/memory/heap_mem.h"
 
 struct anti_tear_frame_s
 {
     resolution_s resolution;
 
-    heap_bytes_s<u8> pixels;
+    heap_mem<u8> pixels;
 
     anti_tear_frame_s(const resolution_s resolution = {0, 0, 0},
                       u8 *const pixels = nullptr)

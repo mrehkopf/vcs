@@ -49,7 +49,7 @@ bool recording_buffer_s::full(void)
     return (this->frameQueue.size() >= this->frameData.size());
 }
 
-heap_bytes_s<u8>* recording_buffer_s::push(void)
+heap_mem<u8>* recording_buffer_s::push(void)
 {
     k_assert(!this->full(), "Attempting to push to a queue that is full.");
 
@@ -70,7 +70,7 @@ heap_bytes_s<u8>* recording_buffer_s::push(void)
     return nullptr;
 }
 
-heap_bytes_s<u8>* recording_buffer_s::pop(void)
+heap_mem<u8>* recording_buffer_s::pop(void)
 {
     k_assert(this->frameQueue.size(), "Attempting to pop an empty queue.");
 

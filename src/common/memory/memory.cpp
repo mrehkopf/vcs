@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <thread>
-#include "common/memory/memory_interface.h"
+#include "common/memory/heap_mem.h"
 #include "common/memory/memory.h"
 #include "common/globals.h"
 

@@ -21,7 +21,7 @@ void filter_frame_rate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
     VALIDATE_FILTER_INPUT
 
     #ifdef USE_OPENCV
-        static heap_bytes_s<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Frame rate filter buffer");
+        static heap_mem<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Frame rate filter buffer");
         static u32 uniqueFramesProcessed = 0;
         static u32 uniqueFramesPerSecond = 0;
         static auto timeElapsed = std::chrono::system_clock::now();

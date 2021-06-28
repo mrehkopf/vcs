@@ -14,7 +14,7 @@ void filter_denoise_pixel_gate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
     VALIDATE_FILTER_INPUT
 
     const unsigned threshold = this->parameter(PARAM_THRESHOLD);
-    static heap_bytes_s<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Denoising filter buffer");
+    static heap_mem<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Denoising filter buffer");
 
     for (uint i = 0; i < (r.h * r.w); i++)
     {

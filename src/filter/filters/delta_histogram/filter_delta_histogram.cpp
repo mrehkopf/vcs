@@ -19,7 +19,7 @@ void filter_delta_histogram_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
     VALIDATE_FILTER_INPUT
 
     #ifdef USE_OPENCV
-        static heap_bytes_s<u8> prevFramePixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Delta histogram buffer");
+        static heap_mem<u8> prevFramePixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Delta histogram buffer");
 
         const unsigned numBins = 512;
         const unsigned numColorChannels = (r.bpp / 8);

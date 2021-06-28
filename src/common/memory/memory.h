@@ -18,7 +18,7 @@
  * of VCS's memory usage.
  * 
  * @note
- * A C++-style wrapper for this interface is provided by heap_bytes_s.
+ * A C++-style wrapper for this interface is provided by heap_mem.
  * 
  * @warning
  * This memory interface is for POD data only; i.e. anything you wouldn't mind

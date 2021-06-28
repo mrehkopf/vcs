@@ -18,7 +18,7 @@ void filter_unsharp_mask_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
     VALIDATE_FILTER_INPUT
 
     #ifdef USE_OPENCV
-        static heap_bytes_s<u8> TMP_BUF(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Unsharp mask buffer");
+        static heap_mem<u8> TMP_BUF(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Unsharp mask buffer");
 
         const double str = this->parameter(PARAM_STRENGTH);
         const double rad = this->parameter(PARAM_RADIUS);

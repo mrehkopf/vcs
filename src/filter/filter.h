@@ -73,7 +73,7 @@
 #include <unordered_map>
 #include <functional>
 #include <cstring>
-#include "common/memory/memory_interface.h"
+#include "common/memory/heap_mem.h"
 #include "filter/filtergui.h"
 #include "display/display.h"
 #include "common/globals.h"

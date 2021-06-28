@@ -60,8 +60,8 @@ static const std::vector<scaling_filter_s> SCALING_FILTERS =    // User-facing s
 static captured_frame_s FRAME_BUFFER;
 
 // Scratch buffers.
-static heap_bytes_s<u8> COLORCONV_BUFFER;
-static heap_bytes_s<u8> TMP_BUFFER;
+static heap_mem<u8> COLORCONV_BUFFER;
+static heap_mem<u8> TMP_BUFFER;
 
 static aspect_mode_e ASPECT_MODE = aspect_mode_e::native;
 static bool FORCE_ASPECT = true;

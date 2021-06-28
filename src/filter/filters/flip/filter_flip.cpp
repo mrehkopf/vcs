@@ -18,7 +18,7 @@ void filter_flip_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
-    static heap_bytes_s<u8> scratch(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Flip filter scratch buffer");
+    static heap_mem<u8> scratch(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Flip filter scratch buffer");
 
     int axis = this->parameter(PARAM_AXIS);
 

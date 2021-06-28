@@ -17,7 +17,7 @@ void filter_rotate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
 {
     VALIDATE_FILTER_INPUT
 
-    static heap_bytes_s<u8> scratch(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Rotate filter scratch buffer");
+    static heap_mem<u8> scratch(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Rotate filter scratch buffer");
 
     const double angle = this->parameter(PARAM_ROT);
     const double scale = this->parameter(PARAM_SCALE);

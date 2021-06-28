@@ -43,22 +43,22 @@
  *   1. Allocate memory for POD data types:
  *      @code
  *      // Allocate memory for 2 ints.
- *      heap_bytes_s<int> ints(2);
+ *      heap_mem<int> ints(2);
  * 
  *      // Create an object but delay its memory allocation.
- *      heap_bytes_s<double> doubles;
+ *      heap_mem<double> doubles;
  *      doubles.allocate(11);
  * 
  *      // It's recommended that you provide a string describing your intended
  *      // purpose for the allocation. It may be used for descriptive debug
  *      // messages etc.
- *      heap_bytes_s<char> scratch(640*480, "Scratch buffer for color conversion");
+ *      heap_mem<char> scratch(640*480, "Scratch buffer for color conversion");
  *      @endcode
  * 
  *   2. Use the allocated memory:
  *      @code
- *      heap_bytes_s<int> ints(2);
- *      heap_bytes_s<char> chars(10);
+ *      heap_mem<int> ints(2);
+ *      heap_mem<char> chars(10);
  * 
  *      // These memory accesses are bounds-checked at runtime if the RELEASE_BUILD
  *      // build flag isn't defined; otherwise, no bounds-checking is done.
@@ -77,7 +77,7 @@
  * 
  *   4. Release the allocated memory when you no longer need it:
  *      @code
- *      heap_bytes_s<char> chars(10);
+ *      heap_mem<char> chars(10);
  *      // chars.is_null() == false.
  * 
  *      chars.release();
@@ -90,14 +90,15 @@
  *      @endcode
  */
 template <typename T>
-struct heap_bytes_s
+class heap_mem
 {
+public:
     /*!
      * Initializes the object without allocating memory for its data buffer. The
      * memory can be allocated later with allocate().
      * 
      * @code
-     * heap_bytes_s<char> buffer;
+     * heap_mem<char> buffer;
 
      * // buffer.is_null() == true.
      * // buffer.count() == 0.
@@ -105,14 +106,14 @@ struct heap_bytes_s
      * 
      * @note
      * Attempting to dereference the object's unallocated data buffer (e.g. with
-     * heap_bytes_s::operator[]) will result in a bounds-checking assertion failure
+     * heap_mem::operator[]) will result in a bounds-checking assertion failure
      * if the RELEASE_BUILD build flag isn't defined, and undefined behavior
      * otherwise.
      * 
      * @see
      * allocate()
      */
-    heap_bytes_s(void)
+    heap_mem(void)
     {
         this->data_ = nullptr;
         this->elementCount_ = 0;
@@ -127,7 +128,7 @@ struct heap_bytes_s
      * allocates.
      * 
      * @code
-     * heap_bytes_s<char> buffer(10);
+     * heap_mem<char> buffer(10);
      * 
      * // buffer.is_null() == false.
      * // buffer.count() == 10.
@@ -137,7 +138,7 @@ struct heap_bytes_s
      * @see
      * kmem_allocate()
      */
-    heap_bytes_s(const unsigned numElements, const char *const reason = nullptr)
+    heap_mem(const unsigned numElements, const char *const reason = nullptr)
     {
         this->allocate(numElements, reason);
 
@@ -152,7 +153,7 @@ struct heap_bytes_s
      *
      * @code
      * // Allocate 10 ints.
-     * heap_bytes_s<int> buffer(10);
+     * heap_mem<int> buffer(10);
      * 
      * // Set the value of the 2nd int in the data buffer. This access will
      * // be bounds-checked if the RELEASE_BUILD build flag isn't defined.
@@ -179,7 +180,7 @@ struct heap_bytes_s
      * Returns a pointer (of type @a T) to the first byte in the data buffer.
      * 
      * @code
-     * heap_bytes_s<int> buffer(10);
+     * heap_mem<int> buffer(10);
      * int *rawPointer = buffer.data();
      * 
      * // These refer to the same memory element, but the direct pointer access
@@ -197,7 +198,7 @@ struct heap_bytes_s
      * assertion failure.
      * 
      * @see
-     * heap_bytes_s::operator[]
+     * heap_mem::operator[]
      */
     T* data(void) const
     {
@@ -214,7 +215,7 @@ struct heap_bytes_s
      * e.g. the mem* functions.
      * 
      * @code
-     * heap_bytes_s<char> buffer(1000);
+     * heap_mem<char> buffer(1000);
      * 
      * unsigned x = 10;
      * unsigned y = 5;
@@ -241,9 +242,9 @@ struct heap_bytes_s
      * undefined behavior that bypasses runtime bounds checks.
      * 
      * @code
-     * heap_bytes_s<int> ints(2);
+     * heap_mem<int> ints(2);
      * 
-     * heap_bytes_s<int> intsRef;
+     * heap_mem<int> intsRef;
      * intsRef.point_to(ints);
      * 
      * ints[0] = 1234;
@@ -271,7 +272,7 @@ struct heap_bytes_s
      * @see
      * point_to(T *const, const int)
      */
-    void point_to(heap_bytes_s<T> &other)
+    void point_to(heap_mem<T> &other)
     {
         k_assert(!other.is_null(), "Can't point to a null memory object.");
 
@@ -284,7 +285,7 @@ struct heap_bytes_s
      * 
      * @code
      * int ints[10];
-     * heap_bytes_s<int> intsRef;
+     * heap_mem<int> intsRef;
      * 
      * intsRef.point_to(ints, 10);
      * 
@@ -293,7 +294,7 @@ struct heap_bytes_s
      * @endcode
      * 
      * @see
-     * point_to(heap_bytes_s<T> &)
+     * point_to(heap_mem<T> &)
      */
     void point_to(T *const dataPtr, const int numElements)
     {
@@ -316,15 +317,15 @@ struct heap_bytes_s
      * 
      * @code
      * // Allocate memory for 10 ints using the constructor.
-     * heap_bytes_s<int> ints(10);
+     * heap_mem<int> ints(10);
      * 
      * // Allocate memory for 10 ints using allocate().
-     * heap_bytes_s<int> ints2;
+     * heap_mem<int> ints2;
      * ints2.allocate(10);
      * 
      * // Allocate memory for 10 ints, then re-allocate for only 5 ints.
      * {
-     *    heap_bytes_s<int> ints3(10);
+     *    heap_mem<int> ints3(10);
      *    // ints3.count() == 10.
      * 
      *    ints3.release();
@@ -361,7 +362,7 @@ struct heap_bytes_s
      * Requests to release a null data buffer will be ignored.
      * 
      * @code
-     * heap_bytes_s<int> ints;
+     * heap_mem<int> ints;
      * // ints.is_null() == true.
      * 
      * ints.allocate(1);
@@ -376,9 +377,9 @@ struct heap_bytes_s
      * @endcode
      * 
      * @code
-     * heap_bytes_s<int> ints(2);
+     * heap_mem<int> ints(2);
      * 
-     * heap_bytes_s<int> intsRef;
+     * heap_mem<int> intsRef;
      * intsRef.point_to(ints);
      * 
      * // Calling release() on a data buffer allocated with point_to()
@@ -419,14 +420,14 @@ struct heap_bytes_s
      * Returns the number of elements (of type @p T) allocated for the data buffer.
      * 
      * @code
-     * heap_bytes_s<int> ints(11);
+     * heap_mem<int> ints(11);
      *
      * // ints.count() == 11.
      * // ints.size() == (11 * sizeof(int)).
      * @endcode
      * 
      * @code
-     * heap_bytes_s<int> ints;
+     * heap_mem<int> ints;
      *
      * // ints.count() == 0.
      * @endcode
@@ -443,7 +444,7 @@ struct heap_bytes_s
      * Returns the number of bytes allocated for the data buffer.
      *
      * @code
-     * heap_bytes_s<int> ints(11);
+     * heap_mem<int> ints(11);
      *
      * // ints.size() == (11 * sizeof(int)).
      * // ints.count() == 11.
@@ -463,7 +464,7 @@ struct heap_bytes_s
      * 
      * @code
      * // The default constructor doesn't allocate the data buffer.
-     * heap_bytes_s<int> ints;
+     * heap_mem<int> ints;
      * // ints.is_null() == true.
      * 
      * ints.allocate(1);
@@ -474,9 +475,9 @@ struct heap_bytes_s
      * @endcode
      * 
      * @code
-     * heap_bytes_s<int> ints(2);
+     * heap_mem<int> ints(2);
      * 
-     * heap_bytes_s<int> intsRef;
+     * heap_mem<int> intsRef;
      * // intsRef.is_null() == true.
      * 
      * intsRef.point_to(ints);

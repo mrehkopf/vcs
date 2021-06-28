@@ -20,7 +20,7 @@
 #include <mutex>
 #include "common/globals.h"
 #include "common/memory/memory.h"
-#include "common/memory/memory_interface.h"
+#include "common/memory/heap_mem.h"
 
 /*!
  * @brief
@@ -85,7 +85,7 @@ struct recording_buffer_s
     /*!
      * Reserves a frame slot in the buffer and returns a pointer to its memory.
      */
-    heap_bytes_s<u8>* push(void);
+    heap_mem<u8>* push(void);
 
     /*!
      * Unreserves a frame slot in the queue and returns a pointer to its memory.
@@ -93,7 +93,7 @@ struct recording_buffer_s
      * The returned pointer will remain valid until either push() or release() is
      * called.
      */
-    heap_bytes_s<u8>* pop(void);
+    heap_mem<u8>* pop(void);
 
     /*!
      * Returns true if the buffer is currently at maximum capacity; false
@@ -130,7 +130,7 @@ struct recording_buffer_s
      * @warning
      * This buffer's memory won't be allocated until initialize() is called.
      */
-    heap_bytes_s<u8> scratchBuffer;
+    heap_mem<u8> scratchBuffer;
 
     /*!
      * A convenience mutex for use by VCS's video recorder subsystem.
@@ -145,7 +145,7 @@ private:
      * 
      * Calls to push() and pop() return pointers to this memory.
      */
-    std::vector<heap_bytes_s<u8>> frameData;
+    std::vector<heap_mem<u8>> frameData;
 
     /*!
      * A flag for each frame slot in the buffer, indicating whether a given slot

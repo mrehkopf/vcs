@@ -218,7 +218,7 @@ HEADERS += \
     src/display/qt/utility.h \
     src/common/disk/csv.h \
     src/common/memory/memory.h \
-    src/common/memory/memory_interface.h \
+    src/common/memory/heap_mem.h \
     src/record/record.h \
     src/common/disk/disk.h \
     src/capture/alias.h \
