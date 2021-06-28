@@ -13,18 +13,18 @@
 :root
 {
 	--page-background-color: rgb(238, 238, 238);
-	--secondary-background-color: #f8f8f8;
+	--secondary-background-color: #f7f7f7;
 	--content-padding: 27px;
 	--section-vertical-margin: 16px;
-	--theme-color: #ffa400;
-	--theme-glow-color: #ffa40024;
+	--theme-color: whitesmoke;
+	--glow-color: #ffa40024;
 	--link-color: #0c64ee;
-	--separating-border-color: #e6e6e6;
+	--separating-border-color: #e4e4e4;
 	--group-heading-vertical-margin: 21px;
-	--contents-container-horizontal-padding: 25px;
+	--contents-container-horizontal-padding: 30px;
 	--contents-container-vertical-padding: var(--group-heading-vertical-margin);
 	--navi-indent: 1.25ch;
-	--main-nav-item-horizontal-spacing: 14px;
+	--main-nav-item-horizontal-spacing: 13px;
 	--header-color: #3c3c3c;
 	--primary-body-text-color: #404040;
 	--primary-heading-text-color: #202020;
@@ -128,13 +128,19 @@ hr
 {
 	font-family: "Font Awesome 5 Free" !important;
 	content: "\f0da" !important;
-	color: black !important;
+	color: var(--primary-body-text-color) !important;
     visibility: visible !important;
     text-align: left !important;
     display: inline-block !important;
     vertical-align: middle !important;
     font-weight: 900 !important;
     width: 1ch !important;
+}
+
+/* Hide auto-generated template info immediately under "Detailed Description".*/
+.groupheader + .textblock > h3
+{
+	display: none !important;
 }
 
 .textblock > ol
@@ -153,14 +159,14 @@ hr
 	background-image: none !important;
 	background-color: white !important;
 	padding: 15px !important;
-	padding-top: 0 !important;
+	padding-top: 5px !important;
 	padding-bottom: 0 !important;
 	box-sizing: border-box !important;
 }
 
 #nav-tree .children_ul
 {
-	border-left: 1px dotted gray !important;
+	border-left: 1px solid var(--separating-border-color) !important;
 }
 
 #nav-tree .selected
@@ -382,7 +388,7 @@ hr
 	padding-right: 10px !important;
 	background-color: white !important;
 	min-width: 100px !important;
-	vertical-align: middle;
+	vertical-align: top;
 }
 
 .directory .levels
@@ -412,7 +418,7 @@ hr
 	padding: 10px var(--contents-container-horizontal-padding) !important;
 	background-image: none !important;
 	background-color: var(--secondary-background-color) !important;
-	border-bottom: 1px solid lightgray !important;
+	border-bottom: 1px solid var(--separating-border-color) !important;
 }
 
 .header .summary
@@ -432,6 +438,28 @@ hr
 	font-weight: normal !important;
 	display: flex !important;
 	align-items: center !important;
+	flex-direction: row-reverse !important;
+	justify-content: flex-end !important;
+}
+
+.header .title .vcs-separator
+{
+	position: relative;
+    width: 23px;
+}
+
+.header .title .vcs-separator::after
+{
+    font-family: "Font Awesome 5 Free" !important;
+    content: "\f0da" !important;
+    text-align: center !important;
+    transform: translateY(-50%) !important;
+    font-weight: 900 !important;
+    width: 100% !important;
+    position: absolute !important;
+    top: 0px !important;
+	left: 0px !important;
+	color: #a2a2a2 !important;
 }
 
 .ui-resizable-handle
@@ -441,7 +469,7 @@ hr
 	width: var(--side-nav-resize-bar-width) !important;
 	min-width: var(--side-nav-resize-bar-width) !important;
 	max-width: var(--side-nav-resize-bar-width) !important;
-	box-shadow: inset 1px 0 5px 0px rgba(0, 0, 0, 0.35) !important;
+	box-shadow: inset 1px 0 5px 0px rgba(0, 0, 0, 0.3) !important;
 }
 
 #titlearea
@@ -510,9 +538,9 @@ hr
 	padding: 0 !important;
 	background-image: none !important;
 	color: #cecece !important;
-	height: 100%;
-    display: flex;
-    align-items: center;
+	height: 100% !important;
+    display: flex !important;
+	align-items: center !important;
 }
 
 #main-menu a:hover
@@ -641,7 +669,7 @@ table.memberdecls td[class*="memItem"],
 table.memberdecls td[class*="mdesc"]
 {
 	border-top: 1px solid var(--separating-border-color) !important;
-	padding: 4px !important;
+	padding: 5px !important;
 }
 
 table.memberdecls td.memItemLeft,
@@ -718,6 +746,13 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	border-bottom: none !important;
 }
 
+.memproto .memtemplate
+{
+	margin-left: 0 !important;
+	margin-bottom: 2px !important;
+	color: #6c6c6c !important;
+}
+
 .memproto a
 {
 	font-weight: normal !important;
@@ -738,18 +773,18 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	padding-left: 0 !important;
 }
 
-.memdoc :first-child
-{
-	margin-top: 0 !important;
-}
-
-/* For function parameter names.*/
+/* For function parameter names, e.g. "@p param".*/
 .memdoc code
 {
 	font-style: italic !important;
 }
 
-.memdoc > .fragment
+.memdoc :first-child
+{
+	margin-top: 0 !important;
+}
+
+.fragment
 {
 	counter-reset: line;
 	background-color: white !important;
@@ -762,47 +797,48 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	line-height: 0 !important;
 }
 
-.memdoc > .fragment > .line
+.fragment > .line
 {
 	font-family: var(--code-font-family) !important;
 	font-size: 88% !important;
 	white-space: pre !important;
 	font-style: inherit !important;
+	font-variant-ligatures: none !important;
 }
 
-.memdoc > .fragment > .line:not(.hljs)
+.fragment > .line:not(.hljs)
 {
 	color: var(--code-text-color) !important;
 }
 
-.memdoc > .fragment > .line.hljs
+.fragment > .line.hljs
 {
 	padding: 0 !important;
     background-color: inherit !important;
 }
 
-.memdoc > pre.fragment > code.line > .comment
+pre.fragment > code.line > .comment
 {
 	color: #3e8220 !important;
 }
 
-.memdoc > .fragment > .line:not(:last-child)
+.fragment > .line:not(:last-child)
 {
 	margin-bottom: 2px !important;
 }
 
-.memdoc > .fragment > .line > span
+.fragment > .line > span
 {
 	font-family: var(--code-font-family) !important;
 }
 
-.memdoc > .fragment > .line > span:not([class^="hljs"])
+.fragment > .line > span:not([class^="hljs"])
 {
 	color: inherit !important;
 }
 
-.memdoc > .fragment > .line > a.code,
-.memdoc > .fragment > .line > a.code:visited
+.fragment > .line > a.code,
+.fragment > .line > a.code:visited
 {
 	font-family: var(--code-font-family) !important;
 	color: var(--link-color) !important;
@@ -985,7 +1021,7 @@ span .mlabel
 .memtitle.glow + .memitem > .memproto
 {
 	transition-delay: 0s !important;
-	background-color: var(--theme-glow-color) !important;
+	background-color: var(--glow-color) !important;
 }
 
 .vcs-unnecessary-element,

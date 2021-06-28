@@ -20,6 +20,7 @@ $reducerChain = [
     "simplify_enum_declarations",
     "mark_unnecessary_elements",
     "standardize_code_elements",
+    "singly_capitalize",
 ];
 
 foreach ($htmlFiles as $filename)
@@ -34,7 +35,7 @@ foreach ($htmlFiles as $filename)
     file_put_contents($filename, $reducedContents);
 }
 
-echo "Reduced the output.\n";
+echo "Reduced the output's HTML.\n";
 
 function remove_non_breaking_spaces(string $html) : string
 {
@@ -53,17 +54,24 @@ function remove_unnecessary_spaces(string $html) : string
                         $html);
 
     $html = preg_replace('/(<td class="memname">)(.*?) (<\/td>)/',
-                        '$1$2$3',
-                        $html);
+                         '$1$2$3',
+                         $html);
 
     // E.g. "std::vector< std::pair< unsigned, double >>"
     //   => "std::vector<std::pair<unsigned, double>>".
     $html = preg_replace('/(?)&lt; /',
-                        '$1&lt;',
-                        $html);
+                         '$1&lt;',
+                         $html);
     $html = preg_replace('/(?) &gt;/',
-                        '$1&gt;',
-                        $html);
+                         '$1&gt;',
+                         $html);
+
+    // For function return declarations. E.g. "void *" => "void*".
+    // This is a pretty open-ended regex, so it's quite possibly going to generate
+    // unwanted matches.
+    $html = preg_replace('/ +(\*|&amp;) *<\/td>/',
+                         '$1</td>',
+                         $html);
 
     return $html;
 }
@@ -144,5 +152,47 @@ function standardize_code_elements(string $html) : string
                          '<code class="line">$1</code>',
                          $html);
                         
+    return $html;
+}
+
+function singly_capitalize(string $html) : string
+{
+    // Reference page headers.
+    {
+        $replacements = [
+            "File Reference"=>"File reference",
+            "Struct Reference"=>"Struct reference",
+            "Class Reference"=>"Class reference",
+            "Struct Template Reference"=>"Struct reference",
+            "Class Template Reference"=>"Class reference",
+        ];
+
+        $keys = array_keys($replacements);
+
+        foreach ($keys as $srcReplacement)
+        {
+            $html = preg_replace('/(<div class="title">)(.*?) '.$srcReplacement.'(.*?<\/div>)/',
+                                '$1<span class="vcs-referent">$2</span>'.
+                                '<span class="vcs-separator"></span>'.
+                                '<span class="vcs-referrer">'.$replacements[$srcReplacement].'$3</span>',
+                                $html);
+        }
+    }
+
+    // Pre-generated page headers.
+    {
+        $html = str_replace('<div class="title">File List</div>',
+                            '<div class="title">File list</div>',
+                            $html);
+
+        $html = str_replace('<div class="title">Data Structures</div>',
+                            '<div class="title">Data structures</div>',
+                            $html);
+
+        $html = str_replace('<div class="title">Data Structure Index</div>',
+                            '<div class="title">Data structure index</div>',
+                            $html);
+    }
+
     return $html;
 }
