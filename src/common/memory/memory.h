@@ -9,47 +9,49 @@
  * @brief
  * The interface to VCS's memory subsystem.
  * 
- * The memory subsystem provides pre-allocated heap memory to other VCS subsystems.
+ * The memory subsystem provides chunks of pre-allocated heap memory to the rest
+ * of VCS and its subsystems for storing blocks of POD data.
  * 
  * The subsystem allocates a fixed-size memory buffer on initialization and deals
- * out portions of the buffer as virtual allocations to callers.
- * 
- * The subsystem also maintains internal bookkeeping of requested allocations,
- * allowing for monitoring of VCS's memory usage.
+ * out portions of it as virtual allocations to callers. The subsystem also
+ * maintains internal bookkeeping of requested allocations, allowing for monitoring
+ * of VCS's memory usage.
  * 
  * @note
- * A C++-style wrapper interface is provided by @ref memory_interface.h.
+ * A C++-style wrapper for this interface is provided by heap_bytes_s.
+ * 
+ * @warning
+ * This memory interface is for POD data only; i.e. anything you wouldn't mind
+ * using @a memset on.
  * 
  * ## Usage
  * 
  *   1. Call kmem_allocate() to request an allocation of memory:
  *      @code
- *      // Note: The memory is explicitly 0-initialized.
+ *      // Note: The allocator will 0-initialize the memory.
  *      char *bytes = (char*)kmem_allocate(101, "101 bytes");
  *      int *ints = (int*)kmem_allocate(2*sizeof(int), "A pair of ints");
- *      @endcode
  * 
- *   2. Use the memory as you would normally:
- *      @code
+ *      // Use the allocated memory as you would a standard allocation.
  *      bytes[0] = 82;
  *      ints[1] = 1234;
  *      @endcode
  * 
- *   3. You can use kmem_sizeof_allocation() to find the size of an allocation:
+ *   2. You can use kmem_sizeof_allocation() to find the size of an allocation:
  *      @code
- *      unsigned size = kmem_sizeof_allocation(bytes);
- *      // size == 101.
+ *      char *buffer = (char*)kmem_allocate(44);
+ *      unsigned size = kmem_sizeof_allocation((void*)buffer);
+ *      // size == 44.
  *      @endcode
  * 
- *   4. Call kmem_release() to release the memory buffer back into circulation
- *      for subsequent calls to kmem_allocate():
+ *   3. Call kmem_release() to release an allocation back into circulation for
+ *      subsequent calls to kmem_allocate():
  *      @code
- *      // Note: The pointers are set to NULL by the call.
- *      kmem_release((void**)&bytes);
- *      kmem_release((void**)&ints);
+ *      char *buffer = (char*)kmem_allocate(1);
+ *      // buffer != NULL.
  * 
- *      // bytes == NULL.
- *      // ints == NULL.
+ *      kmem_release((void**)&buffer);
+ *      // buffer == NULL.
  *      @endcode
  */
 
@@ -61,8 +63,7 @@
 
 /*!
  * Allocates a consecutive block of @p numBytes bytes and returns a pointer to
- * the first byte. The block's bytes are explicitly 0-initialized before
- * returning.
+ * the first byte. The block's bytes are 0-initialized.
  * 
  * The allocation is virtual in that no new memory is allocated; rather, the
  * pointer returned is to an unused region of the memory subsystem's pre-allocated
@@ -125,8 +126,9 @@ void kmem_release(void **mem);
  * kmem_allocate() for that allocation.
  * 
  * @code
- * char *buffer = (char*)kmem_allocate(101, "101 bytes");
- * unsigned size = kmem_sizeof_allocation(buffer);
+ * char *buffer = (char*)kmem_allocate(101, "An example allocation");
+ * 
+ * unsigned size = kmem_sizeof_allocation((void*)buffer);
  * // size == 101.
  * @endcode
  * 
