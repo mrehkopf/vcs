@@ -8,7 +8,7 @@
 /*! @file
  *
  * @brief
- * A frame buffer for VCS's video recording subsystem.
+ * A frame buffer for the recording subsystem.
  * 
  */
 
@@ -24,7 +24,7 @@
 
 /*!
  * @brief
- * A memory buffer for storing captured frames, for use by VCS's video recording
+ * A memory buffer for storing captured frames, for use by VCS's recording
  * subsystem.
  * 
  * This buffer allocates memory using VCS's memory subsystem for a given fixed
@@ -133,7 +133,7 @@ struct recording_buffer_s
     heap_mem<u8> scratchBuffer;
 
     /*!
-     * A convenience mutex for use by VCS's video recorder subsystem.
+     * A convenience mutex for use by the recording subsystem.
      * 
      * Not used by the buffer.
      */

@@ -54,7 +54,7 @@ bool kvideopreset_remove_preset(const unsigned presetId)
 
 static video_preset_s* strongest_activating_preset(void)
 {
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         ACTIVE_PRESET_ID = -1;
         return nullptr;
@@ -108,7 +108,7 @@ void kvideopreset_remove_all_presets(void)
 
 void kvideoparam_preset_video_params_changed(const unsigned presetId)
 {
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         return;
     }
@@ -126,7 +126,7 @@ void kvideoparam_preset_video_params_changed(const unsigned presetId)
 
 void kvideopreset_apply_current_active_preset(void)
 {
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         return;
     }
@@ -165,7 +165,7 @@ video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId)
 
 void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
 {
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         return;
     }

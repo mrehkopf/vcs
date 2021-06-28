@@ -1098,7 +1098,7 @@ bool MainWindow::is_mouse_wheel_scaling_allowed(void)
 
 QImage MainWindow::overlay_image(void)
 {
-    if (!kc_has_no_signal() &&
+    if (kc_is_receiving_signal() &&
         overlayDlg != nullptr &&
         overlayDlg->is_enabled())
     {
@@ -1145,7 +1145,7 @@ void MainWindow::paintEvent(QPaintEvent *)
 
     // Show a magnifying glass effect which blows up part of the captured image.
     static QLabel *magnifyingGlass = nullptr;
-    if (!kc_has_no_signal() &&
+    if (kc_is_receiving_signal() &&
         this->isActiveWindow() &&
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
         (QGuiApplication::mouseButtons() & Qt::MidButton))
@@ -1274,15 +1274,15 @@ void MainWindow::update_window_title(void)
     {
         title = QString("%1 - Closing...").arg(PROGRAM_NAME);
     }
-    else if (kc_has_invalid_device())
+    else if (!kc_has_valid_device())
     {
         title = QString("%1 - Invalid capture channel").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
     }
-    else if (kc_has_invalid_signal())
+    else if (!kc_has_valid_signal())
     {
         title = QString("%1 - Signal out of range").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
     }
-    else if (kc_has_no_signal())
+    else if (!kc_is_receiving_signal())
     {
         title = QString("%1 - No signal").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
     }

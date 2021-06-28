@@ -7,7 +7,7 @@
 /*! @file
  *
  * @brief
- * The interface to VCS's memory subsystem.
+ * The memory subsystem interface.
  * 
  * The memory subsystem provides chunks of pre-allocated heap memory to the rest
  * of VCS and its subsystems for storing blocks of POD data.

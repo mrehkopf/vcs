@@ -81,7 +81,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
                     const unsigned minutes = (seconds / 60);
                     const unsigned hours   = (minutes / 60);
 
-                    if (kc_has_no_signal())
+                    if (!kc_is_receiving_signal())
                     {
                         ui->tableWidget_propertyTable->modify_property("Uptime", "-");
                     }
@@ -120,7 +120,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
         const auto update_info = [this]
         {
             VIDEO_MODE_UPTIME.restart();
-            update_information_table(kc_has_signal());
+            update_information_table(kc_is_receiving_signal());
         };
 
         kc_evInvalidSignal.listen([this]

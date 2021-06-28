@@ -785,7 +785,7 @@ capture_event_e kc_pop_capture_event_queue(void)
 
 refresh_rate_s kc_get_capture_refresh_rate(void)
 {
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         DEBUG(("Tried to query the refresh rate while no signal was being received. Ignoring this."));
         return refresh_rate_s(0);
@@ -834,7 +834,7 @@ bool kc_set_deinterlacing_mode(const capture_deinterlacing_mode_e mode)
 
 bool kc_set_video_signal_parameters(const video_signal_parameters_s &p)
 {
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         DEBUG(("Was asked to set capture video params while there was no signal. "
                "Ignoring the request."));
@@ -993,28 +993,18 @@ bool is_capturing(void)
 
 bool kc_has_valid_signal(void)
 {
-    return !kc_has_invalid_signal();
+    return !IS_SIGNAL_INVALID;
 }
 
-bool kc_has_invalid_signal(void)
+bool kc_is_receiving_signal(void)
 {
-    return IS_SIGNAL_INVALID;
-}
-
-bool kc_has_signal(void)
-{
-    return !kc_has_no_signal();
-}
-
-bool kc_has_no_signal(void)
-{
-    return !RECEIVING_A_SIGNAL;
+    return RECEIVING_A_SIGNAL;
 }
 
 /// TODO: Implement, if it can be done with the RGBEASY API.
-bool kc_has_invalid_device(void)
+bool kc_has_valid_device(void)
 {
-    return false;
+    return true;
 }
 
 capture_pixel_format_e kc_get_capture_pixel_format(void)

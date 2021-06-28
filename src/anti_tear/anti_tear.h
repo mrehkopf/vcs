@@ -7,7 +7,7 @@
 /*! @file
  *
  * @brief
- * The interface to VCS's anti-tear subsystem.
+ * The anti-tear subsystem interface.
  * 
  * The anti-tear subsystem is responsible for reducing temporal tearing artifacts
  * in captured frames.

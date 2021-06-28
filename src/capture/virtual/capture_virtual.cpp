@@ -272,9 +272,9 @@ bool kc_device_supports_yuv(void)
     return true;
 }
 
-bool kc_has_invalid_device(void)
+bool kc_has_valid_device(void)
 {
-    return false;
+    return true;
 }
 
 capture_pixel_format_e kc_get_capture_pixel_format(void)
@@ -379,19 +379,9 @@ bool kc_has_valid_signal(void)
     return IS_VALID_SIGNAL;
 }
 
-bool kc_has_invalid_signal(void)
-{
-    return !kc_has_valid_signal();
-}
-
-bool kc_has_signal(void)
+bool kc_is_receiving_signal(void)
 {
     return true;
-}
-
-bool kc_has_no_signal(void)
-{
-    return !kc_has_signal();
 }
 
 bool kc_set_video_signal_parameters(const video_signal_parameters_s &p)

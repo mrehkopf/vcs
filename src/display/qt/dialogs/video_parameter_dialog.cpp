@@ -334,7 +334,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
     {
         kc_evNewVideoMode.listen([this](const capture_video_mode_s&)
         {
-            if (kc_has_signal())
+            if (kc_is_receiving_signal())
             {
                 this->update_preset_control_ranges();
             }

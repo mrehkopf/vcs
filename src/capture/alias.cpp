@@ -67,7 +67,7 @@ void ka_set_aliases(const std::vector<mode_alias_s> &aliases)
 {
     ALIASES = aliases;
 
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         return;
     }

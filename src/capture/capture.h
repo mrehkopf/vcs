@@ -7,7 +7,7 @@
 /*! @file
  *
  * @brief
- * The interface to VCS's capture subsystem.
+ * The capture subsystem interface.
  *
  * The capture subsystem is responsible for mediating exchange between VCS and
  * the capture device; including initializing the device and providing VCS with
@@ -27,12 +27,12 @@
  * accesses to its memory buffers are synchronized using the capture mutex (see
  * kc_capture_mutex()).
  *
- * Usage:
+ * ## Usage
  *
  *   1. Call kc_initialize_capture() to initialize the subsystem. This is VCS's
  *      default startup behavior.
  *
- *   2. Use the interface functions to interact with the subsyste. For instance,
+ *   2. Use the interface functions to interact with the subsystem. For instance,
  *      kc_get_frame_buffer() returns the most recent captured frame's data.
  *
  *   3. Call kc_release_capture() to release the subsystem. This is VCS's default
@@ -745,27 +745,12 @@ unsigned kc_get_capture_color_depth(void);
 capture_pixel_format_e kc_get_capture_pixel_format(void);
 
 /*!
- * Returns true if the current capture signal is invalid; false otherwise.
- *
- * @see
- * kc_has_no_signal()
- */
-bool kc_has_invalid_signal(void);
-
-/*!
  * Returns true if the current capture signal is valid; false otherwise.
  *
  * @see
- * has_invalid_signal(), kc_has_no_signal()
+ * has_invalid_signal(), kc_is_receiving_signal()
  */
 bool kc_has_valid_signal(void);
-
-/*!
- * Returns true if the current capture device is invalid; false otherwise.
- * This could happen e.g. if the user (on Linux) opens a /dev/videoX that
- * doesn't provide a compatible capture device.
- */
-bool kc_has_invalid_device(void);
 
 /*!
  * Returns true if the current capture device is valid; false otherwise.
@@ -773,22 +758,13 @@ bool kc_has_invalid_device(void);
 bool kc_has_valid_device(void);
 
 /*!
- * Returns true if there's currently no capture signal on the capture
- * device's active input channel; false otherwise.
- *
- * @see
- * kc_has_signal(), kc_get_device_input_channel_idx(), kc_set_capture_input_channel()
- */
-bool kc_has_no_signal(void);
-
-/*!
  * Returns true if the capture device's active input channel is currently
  * receiving a signal; false otherwise.
  *
  * @see
- * kc_has_no_signal(), kc_get_device_input_channel_idx(), kc_set_capture_input_channel()
+ * kc_get_device_input_channel_idx(), kc_set_capture_input_channel()
  */
-bool kc_has_signal(void);
+bool kc_is_receiving_signal(void);
 
 /*!
  * Returns true if the device is currently capturing; false otherwise.

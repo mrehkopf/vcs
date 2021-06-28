@@ -130,36 +130,26 @@ uint kc_get_missed_frames_count(void)
 
 bool kc_has_valid_signal(void)
 {
-    return !kc_has_invalid_signal();
+    k_assert(CUR_INPUT_CHANNEL,
+             "Attempting to query input channel parameters on a null channel.");
+
+    return !CUR_INPUT_CHANNEL->captureStatus.invalidSignal;
 }
 
-bool kc_has_invalid_signal(void)
+bool kc_has_valid_device(void)
 {
     k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    return CUR_INPUT_CHANNEL->captureStatus.invalidSignal;
+    return !CUR_INPUT_CHANNEL->captureStatus.invalidDevice;
 }
 
-bool kc_has_invalid_device(void)
+bool kc_is_receiving_signal(void)
 {
     k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    return CUR_INPUT_CHANNEL->captureStatus.invalidDevice;
-}
-
-bool kc_has_signal(void)
-{
-    return !kc_has_no_signal();
-}
-
-bool kc_has_no_signal(void)
-{
-    k_assert(CUR_INPUT_CHANNEL,
-             "Attempting to query input channel parameters on a null channel.");
-
-    return CUR_INPUT_CHANNEL->captureStatus.noSignal;
+    return !CUR_INPUT_CHANNEL->captureStatus.noSignal;
 }
 
 capture_pixel_format_e kc_get_capture_pixel_format(void)
@@ -307,7 +297,7 @@ video_signal_parameters_s kc_get_device_video_parameters(void)
     k_assert(CUR_INPUT_CHANNEL,
              "Attempting to query input channel parameters on a null channel.");
 
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         return kc_get_device_video_parameter_defaults();
     }
@@ -344,7 +334,7 @@ video_signal_parameters_s kc_get_device_video_parameter_defaults(void)
 
     // The V4L API returns no parameter ranges while there's no signal - so let's
     // approximate them.
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         p.phase              = 0;
         p.blackLevel         = 8;
@@ -391,7 +381,7 @@ video_signal_parameters_s kc_get_device_video_parameter_minimums(void)
 
     // The V4L API returns no parameter ranges while there's no signal - so let's
     // approximate them.
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         p.phase              = 0;
         p.blackLevel         = 1;
@@ -438,7 +428,7 @@ video_signal_parameters_s kc_get_device_video_parameter_maximums(void)
 
     // The V4L API returns no parameter ranges while there's no signal - so let's
     // approximate them.
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         p.phase              = 31;
         p.blackLevel         = 255;
@@ -550,7 +540,7 @@ bool kc_set_video_signal_parameters(const video_signal_parameters_s &p)
     k_assert(CUR_INPUT_CHANNEL,
              "Attempting to set input channel parameters on a null channel.");
 
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         DEBUG(("Was asked to set capture video params while there was no signal. "
                "Ignoring the request."));

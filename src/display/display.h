@@ -7,7 +7,7 @@
 /*! @file
  *
  * @brief
- * The interface to VCS's display subsystem.
+ * The display subsystem interface.
  * 
  * The VCS GUI is responsible for providing the user with real-time means to
  * enter information (e.g. configuring capture parameters), for directing such

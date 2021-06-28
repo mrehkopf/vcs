@@ -78,7 +78,7 @@ bool kc_force_capture_resolution(const resolution_s &r)
     const resolution_s min = kc_get_device_minimum_resolution();
     const resolution_s max = kc_get_device_maximum_resolution();
 
-    if (kc_has_no_signal())
+    if (!kc_is_receiving_signal())
     {
         DEBUG(("Was asked to change the input resolution while the capture card was not receiving a signal. Ignoring the request."));
         return false;
