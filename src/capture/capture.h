@@ -118,7 +118,7 @@ struct capture_video_mode_s;
  * });
  * 
  * // Receive a notification whenever a frame has been scaled.
- * ks_evNewScaledFrame.listen([](const captured_frame_s &frame)
+ * ks_evNewScaledImage.listen([](const captured_frame_s &frame)
  * {
  *    printf("Scaled to %lu x %lu.\n", frame.r.w, frame.r.h);
  * });
@@ -428,6 +428,7 @@ std::mutex& kc_capture_mutex(void);
  * @code
  * kc_initialize_capture();
  * 
+ * // This listener function gets called each time a frame is captured.
  * kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
  * {
  *    printf("Captured a frame (%lu x %lu)\n", frame.r.w, frame.r.h);
@@ -435,7 +436,7 @@ std::mutex& kc_capture_mutex(void);
  * @endcode
  *
  * @see
- * kc_release_capture()
+ * kc_release_capture(), kc_evNewCapturedFrame
  */
 void kc_initialize_capture(void);
 
@@ -485,7 +486,7 @@ bool kc_release_device(void);
  * Returns the current video mode of the capture device's input signal.
  *
  * @see
- * kc_get_capture_resolution(), kc_get_capture_refresh_rate()
+ * kc_get_capture_resolution(), kc_get_capture_refresh_rate(), kc_evNewVideoMode
  */
 capture_video_mode_s kc_get_capture_video_mode(void);
 
@@ -655,7 +656,7 @@ video_signal_parameters_s kc_get_device_video_parameter_maximums(void);
  *
  * @see
  * kc_set_capture_resolution(), kc_get_device_minimum_resolution(),
- * kc_get_device_maximum_resolution()
+ * kc_get_device_maximum_resolution(), kc_evNewVideoMode
  */
 resolution_s kc_get_capture_resolution(void);
 
@@ -719,6 +720,9 @@ unsigned kc_get_device_input_channel_idx(void);
 
 /*!
  * Returns the refresh rate of the current capture signal.
+ * 
+ * @see
+ * kc_evNewVideoMode
  */
 refresh_rate_s kc_get_capture_refresh_rate(void);
 
@@ -748,7 +752,8 @@ capture_pixel_format_e kc_get_capture_pixel_format(void);
  * Returns true if the current capture signal is valid; false otherwise.
  *
  * @see
- * has_invalid_signal(), kc_is_receiving_signal()
+ * has_invalid_signal(), kc_is_receiving_signal(), kc_evSignalGained,
+ * kc_evSignalLost
  */
 bool kc_has_valid_signal(void);
 
@@ -762,14 +767,10 @@ bool kc_has_valid_device(void);
  * receiving a signal; false otherwise.
  *
  * @see
- * kc_get_device_input_channel_idx(), kc_set_capture_input_channel()
+ * kc_get_device_input_channel_idx(), kc_set_capture_input_channel(),
+ * kc_evSignalGained, kc_evSignalLost
  */
 bool kc_is_receiving_signal(void);
-
-/*!
- * Returns true if the device is currently capturing; false otherwise.
- */
-bool kc_is_capturing(void);
 
 /*!
  * Returns a reference to the most recent captured frame.
@@ -788,7 +789,7 @@ bool kc_is_capturing(void);
  * you're accessing it, acquire the capture mutex before calling this function.
  *
  * @see
- * kc_capture_mutex()
+ * kc_capture_mutex(), kc_evNewCapturedFrame
  */
 const captured_frame_s& kc_get_frame_buffer(void);
 

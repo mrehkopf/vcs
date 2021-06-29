@@ -287,11 +287,6 @@ uint kc_get_capture_color_depth(void)
     return (unsigned)FRAME_BUFFER.r.bpp;
 }
 
-bool kc_is_capturing(void)
-{
-    return false;
-}
-
 uint kc_get_missed_frames_count(void)
 {
     return 0;

@@ -289,7 +289,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         QMenu *outputMenu = new QMenu("Output", this);
         {
-            const std::vector<std::string> scalerNames = ks_list_of_scaling_filter_names();
+            const std::vector<std::string> scalerNames = ks_scaling_filter_names();
             k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
 
             connect(outputMenu->addAction("Screenshot..."), &QAction::triggered, this, [this]
@@ -409,11 +409,11 @@ MainWindow::MainWindow(QWidget *parent) :
                 const QString defaultAspectRatio = kpers_value_of(INI_GROUP_OUTPUT, "aspect_mode", "Native").toString();
 
                 connect(native, &QAction::toggled, this,
-                        [=](const bool checked){if (checked) { ks_set_forced_aspect_enabled(false); ks_set_aspect_mode(aspect_mode_e::native);}});
+                        [=](const bool checked){if (checked) { ks_set_aspect_ratio_enabled(false); ks_set_aspect_ratio(scaler_aspect_ratio_e::native);}});
                 connect(traditional43, &QAction::toggled, this,
-                        [=](const bool checked){if (checked) { ks_set_forced_aspect_enabled(true); ks_set_aspect_mode(aspect_mode_e::traditional_4_3);}});
+                        [=](const bool checked){if (checked) { ks_set_aspect_ratio_enabled(true); ks_set_aspect_ratio(scaler_aspect_ratio_e::traditional_4_3);}});
                 connect(always43, &QAction::toggled, this,
-                        [=](const bool checked){if (checked) { ks_set_forced_aspect_enabled(true); ks_set_aspect_mode(aspect_mode_e::always_4_3);}});
+                        [=](const bool checked){if (checked) { ks_set_aspect_ratio_enabled(true); ks_set_aspect_ratio(scaler_aspect_ratio_e::all_4_3);}});
 
                 if (defaultAspectRatio == "Native") native->setChecked(true);
                 else if (defaultAspectRatio == "Always 4:3") always43->setChecked(true);
@@ -728,7 +728,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Listen for app events.
     {
-        ks_evNewScaledFrame.listen([this]
+        ks_evNewScaledImage.listen([this]
         {
             this->redraw();
         });
@@ -742,7 +742,7 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
 
-        ks_evNewScaledFrameResolution.listen([this]
+        ks_evNewOutputResolution.listen([this]
         {
             this->update_window_title();
             this->update_window_size();
@@ -871,11 +871,11 @@ MainWindow::~MainWindow()
     {
         const QString aspectMode = []()->QString
         {
-            switch (ks_aspect_mode())
+            switch (ks_aspect_ratio())
             {
-                case aspect_mode_e::native: return "Native";
-                case aspect_mode_e::always_4_3: return "Always 4:3";
-                case aspect_mode_e::traditional_4_3: return "Traditional 4:3";
+                case scaler_aspect_ratio_e::native: return "Native";
+                case scaler_aspect_ratio_e::all_4_3: return "Always 4:3";
+                case scaler_aspect_ratio_e::traditional_4_3: return "Traditional 4:3";
                 default: return "(Unknown)";
             }
         }();
@@ -1292,7 +1292,7 @@ void MainWindow::update_window_title(void)
         const QString missedFramesMarker = "{!}";
 
         const resolution_s inRes = kc_get_capture_resolution();
-        const resolution_s outRes = ks_scaler_output_resolution();
+        const resolution_s outRes = ks_output_resolution();
         const refresh_rate_s refreshRate = kc_get_capture_refresh_rate();
 
         QStringList programStatus;
@@ -1338,7 +1338,7 @@ void MainWindow::update_gui_state()
 
 void MainWindow::update_window_size(void)
 {
-    const resolution_s r = ks_scaler_output_resolution();
+    const resolution_s r = ks_output_resolution();
 
     this->setFixedSize(r.w, r.h);
     overlayDlg->set_overlay_max_width(r.w);

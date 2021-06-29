@@ -284,8 +284,8 @@ void AliasDialog::clear_known_aliases(void)
 void AliasDialog::add_new_alias(void)
 {
     mode_alias_s newAlias;
-    newAlias.from = {1, 1, 0};
-    newAlias.to = {640, 480, 0};
+    newAlias.from = {1, 1};
+    newAlias.to = {640, 480};
 
     this->add_alias_to_list(newAlias);
 

@@ -49,7 +49,7 @@ void krecord_initialize(void)
 {
     RECORDING_BUFFER.initialize(RECORDING_BUFFER_CAPACITY);
 
-    ks_evNewScaledFrame.listen([](const captured_frame_s &frame)
+    ks_evNewScaledImage.listen([](const captured_frame_s &frame)
     {
         if (krecord_is_recording())
         {

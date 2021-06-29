@@ -508,12 +508,6 @@ uint kc_get_capture_color_depth(void)
     return 32;
 }
 
-/// TODO: Implement.
-bool kc_is_capturing(void)
-{
-    return true;
-}
-
 bool kc_set_capture_input_channel(const unsigned idx)
 {
     if (CUR_INPUT_CHANNEL)

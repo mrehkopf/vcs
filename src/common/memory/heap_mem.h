@@ -189,7 +189,7 @@ public:
      * rawPointer[1];
      * 
      * // You could use the pointer e.g. with the mem* functions.
-     * std::memset(buffer.data(), 0, buffer.count());
+     * std::memset(buffer.data(), 0, buffer.size());
      * @endcode
      * 
      * @note

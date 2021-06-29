@@ -34,7 +34,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
         {
             if (is_checked(state))
             {
-                ks_set_output_scaling(ui->spinBox_outputScale->value() / 100.0);
+                ks_set_scaling_multiplier(ui->spinBox_outputScale->value() / 100.0);
             }
             else
             {
@@ -42,7 +42,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
             }
 
             ui->spinBox_outputScale->setEnabled(is_checked(state));
-            ks_set_output_scale_override_enabled(is_checked(state));
+            ks_set_scaling_multiplier_enabled(is_checked(state));
         });
 
         connect(ui->checkBox_forceOutputRes, &QCheckBox::stateChanged, this, [=](int state)
@@ -51,16 +51,17 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
             ui->spinBox_outputResY->setEnabled(is_checked(state));
             ui->label_resolutionX->setEnabled(is_checked(state));
 
-            ks_set_output_resolution_override_enabled(is_checked(state));
+            ks_set_base_resolution_enabled(is_checked(state));
 
-            if (!is_checked(state))
+            if (is_checked(state))
             {
-                ks_set_output_base_resolution(kc_get_capture_resolution(), true);
-
-                kd_update_output_window_size();
-
-                ui->spinBox_outputResX->setValue(ks_scaler_output_base_resolution().w);
-                ui->spinBox_outputResY->setValue(ks_scaler_output_base_resolution().h);
+                ks_set_base_resolution({(unsigned)ui->spinBox_outputResX->value(),
+                                            (unsigned)ui->spinBox_outputResY->value()});
+            }
+            else
+            {
+                ui->spinBox_outputResX->setValue(ks_base_resolution().w);
+                ui->spinBox_outputResY->setValue(ks_base_resolution().h);
             }
         });
 
@@ -70,11 +71,9 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
             if (!ui->checkBox_forceOutputRes->isChecked()) return;
 
             const resolution_s r = {(uint)ui->spinBox_outputResX->value(),
-                                    (uint)ui->spinBox_outputResY->value(), 0};
+                                    (uint)ui->spinBox_outputResY->value()};
 
-            ks_set_output_base_resolution(r, true);
-
-            kd_update_output_window_size();
+            ks_set_base_resolution(r);
         });
 
         connect(ui->spinBox_outputResY, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this,
@@ -83,15 +82,13 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
             if (!ui->checkBox_forceOutputRes->isChecked()) return;
 
             const resolution_s r = {(uint)ui->spinBox_outputResX->value(),
-                                    (uint)ui->spinBox_outputResY->value(), 0};
+                                    (uint)ui->spinBox_outputResY->value()};
 
-            ks_set_output_base_resolution(r, true);
-
-            kd_update_output_window_size();
+            ks_set_base_resolution(r);
         });
 
         connect(ui->spinBox_outputScale, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this,
-                [this]{ ks_set_output_scaling(ui->spinBox_outputScale->value() / 100.0); });
+                [this]{ ks_set_scaling_multiplier(ui->spinBox_outputScale->value() / 100.0); });
     }
 
     // Restore persistent settings.

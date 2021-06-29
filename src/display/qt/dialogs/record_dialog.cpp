@@ -167,7 +167,7 @@ RecordDialog::RecordDialog(QDialog *parent) :
                     // platforms.
                     QFile(ui->lineEdit_recordingFilename->text()).remove();
 
-                    const resolution_s videoResolution = ks_scaler_output_resolution();
+                    const resolution_s videoResolution = ks_output_resolution();
 
                     krecord_start_recording(ui->lineEdit_recordingFilename->text().toStdString().c_str(),
                                             videoResolution.w,

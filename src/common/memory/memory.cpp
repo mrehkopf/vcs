@@ -89,6 +89,8 @@ static void release(void)
 
     free(MEMORY_BUFFER);
 
+    DEBUG(("atexit: Released the memory subsystem."));
+
     return;
 }
 
