@@ -33,8 +33,6 @@ public:
 
     void refresh_filter_graph(void);
 
-    void set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions);
-
     // Loads the filter graph from the most recent used graph file. Returns true
     // if the graph was loaded; false otherwise.
     bool restore_persistent_graph(void);

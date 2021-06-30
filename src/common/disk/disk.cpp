@@ -222,10 +222,9 @@ bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
 }
 
 bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
-                             std::vector<filter_graph_option_s> &graphOptions,
                              const std::string &targetFilename)
 {
-    if (!file_writer::filter_graph::version_b::write(targetFilename, nodes, graphOptions))
+    if (!file_writer::filter_graph::version_b::write(targetFilename, nodes, {}))
     {
         goto fail;
     }
@@ -242,8 +241,7 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
     return false;
 }
 
-std::pair<std::vector<FilterGraphNode*>,
-          std::vector<filter_graph_option_s>> kdisk_load_filter_graph(const std::string &sourceFilename)
+std::vector<FilterGraphNode*> kdisk_load_filter_graph(const std::string &sourceFilename)
 {
     if (sourceFilename.empty())
     {
@@ -293,7 +291,7 @@ std::pair<std::vector<FilterGraphNode*>,
 
     INFO(("Loaded %u filter graph node(s).", graphNodes.size()));
 
-    return {graphNodes, graphOptions};
+    return graphNodes;
 
     fail:
     kd_clear_filter_graph();

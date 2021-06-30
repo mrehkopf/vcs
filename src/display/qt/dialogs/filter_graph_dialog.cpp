@@ -304,13 +304,11 @@ bool FilterGraphDialog::load_graph_from_file(const QString &filename)
         return false;
     }
 
-    const auto filterData = kdisk_load_filter_graph(filename.toStdString());
+    const auto filterNodes = kdisk_load_filter_graph(filename.toStdString());
 
-    if (!filterData.first.empty())
+    if (!filterNodes.empty())
     {
         this->set_data_filename(filename);
-        this->set_filter_graph_options(filterData.second);
-
         return true;
     }
     else
@@ -345,12 +343,7 @@ void FilterGraphDialog::save_graph_into_file(QString filename)
         }
     }
 
-    std::vector<filter_graph_option_s> graphOptions;
-    {
-        /// TODO.
-    }
-
-    if (kdisk_save_filter_graph(filterNodes, graphOptions, filename.toStdString()))
+    if (kdisk_save_filter_graph(filterNodes, filename.toStdString()))
     {
         this->set_data_filename(filename);
     }
@@ -505,18 +498,6 @@ void FilterGraphDialog::clear_filter_graph(void)
 void FilterGraphDialog::refresh_filter_graph(void)
 {
     this->graphicsScene->update_scene_connections();
-
-    return;
-}
-
-void FilterGraphDialog::set_filter_graph_options(const std::vector<filter_graph_option_s> &graphOptions)
-{
-    for (const filter_graph_option_s &option: graphOptions)
-    {
-        /// TODO.
-
-        (void)option;
-    }
 
     return;
 }
