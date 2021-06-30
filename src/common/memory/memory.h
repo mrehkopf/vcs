@@ -22,7 +22,7 @@
  * 
  * @warning
  * This memory interface is for POD data only; i.e. anything you wouldn't mind
- * using @a memset on.
+ * using @a memset() on.
  * 
  * ## Usage
  * 

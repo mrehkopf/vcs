@@ -18,13 +18,13 @@ namespace aliases
     namespace legacy_1_6_5
     {
         bool read(const std::string &filename,
-                  std::vector<mode_alias_s> *const aliases);
+                  std::vector<resolution_alias_s> *const aliases);
     }
 
     namespace version_a
     {
         bool read(const std::string &filename,
-                  std::vector<mode_alias_s> *const aliases);
+                  std::vector<resolution_alias_s> *const aliases);
     }
 }
 }

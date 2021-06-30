@@ -10,7 +10,7 @@
 #include "common/disk/csv.h"
 
 bool file_reader::aliases::version_a::read(const std::string &filename,
-                                           std::vector<mode_alias_s> *const aliases)
+                                           std::vector<resolution_alias_s> *const aliases)
 {
     // Bails out if the value (string) of the given cell on the current row
     // doesn't match the given one.
@@ -54,7 +54,7 @@ bool file_reader::aliases::version_a::read(const std::string &filename,
 
         for (unsigned i = 0; i < numAliases; i++)
         {
-            mode_alias_s alias;
+            resolution_alias_s alias;
 
             row++;
             FAIL_IF_CELL_IS_NOT(0, "alias");

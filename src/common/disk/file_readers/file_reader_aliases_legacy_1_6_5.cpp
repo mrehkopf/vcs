@@ -10,7 +10,7 @@
 #include "common/disk/csv.h"
 
 bool file_reader::aliases::legacy_1_6_5::read(const std::string &filename,
-                                              std::vector<mode_alias_s> *const aliases)
+                                              std::vector<resolution_alias_s> *const aliases)
 {
     QList<QStringList> rowData = csv_parse_c(QString::fromStdString(filename)).contents();
 
@@ -28,7 +28,7 @@ bool file_reader::aliases::legacy_1_6_5::read(const std::string &filename,
             goto fail;
         }
 
-        mode_alias_s a;
+        resolution_alias_s a;
         a.from.w = row.at(0).toUInt();
         a.from.h = row.at(1).toUInt();
         a.to.w = row.at(2).toUInt();

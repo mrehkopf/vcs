@@ -202,8 +202,19 @@ extern vcs_event_c<void> kc_evInvalidDevice;
  * An event fired when the capture device loses its input signal. This implies
  * that the capture device was receiving a signal previously.
  * 
+ * The event is fired only when the signal is lost, not continuously while there's
+ * no signal.
+ * 
  * This event is fired by VCS's event loop (which polls the capture subsystem)
  * rather than by the capture subsystem.
+ * 
+ * @code
+ * // Have VCS's output window display a "no signal" message when there's no signal.
+ * kc_evSignalLost.listen(ks_indicate_no_signal);
+ * @endcode
+ * 
+ * @see
+ * kc_evSignalGained
  */
 extern vcs_event_c<void> kc_evSignalLost;
 
@@ -213,6 +224,9 @@ extern vcs_event_c<void> kc_evSignalLost;
  * 
  * This event is fired by VCS's event loop (which polls the capture subsystem)
  * rather than by the capture subsystem.
+ * 
+ * @see
+ * kc_evSignalLost
  */
 extern vcs_event_c<void> kc_evSignalGained;
 

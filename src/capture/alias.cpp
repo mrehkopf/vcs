@@ -12,7 +12,7 @@
 #include "capture/alias.h"
 
 // A list of all the aliases we know of.
-static std::vector<mode_alias_s> ALIASES;
+static std::vector<resolution_alias_s> ALIASES;
 
 void ka_initialize_aliases(void)
 {
@@ -58,12 +58,12 @@ resolution_s ka_aliased(const resolution_s &r)
     return r;
 }
 
-const std::vector<mode_alias_s>& ka_aliases(void)
+const std::vector<resolution_alias_s>& ka_aliases(void)
 {
     return ALIASES;
 }
 
-void ka_set_aliases(const std::vector<mode_alias_s> &aliases)
+void ka_set_aliases(const std::vector<resolution_alias_s> &aliases)
 {
     ALIASES = aliases;
 

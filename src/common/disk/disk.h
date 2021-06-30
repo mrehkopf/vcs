@@ -1,3 +1,22 @@
+/*
+ * 2019 Tarpeeksi Hyvae Soft
+ * 
+ * Software: VCS
+ * 
+ */
+
+/*! @file
+ *
+ * @brief
+ * The disk subsystem interface.
+ * 
+ * The disk subsystem provides functionality to VCS for saving and loading user
+ * data files -- e.g. video preset configurations.
+ * 
+ * The subsystem transparently handles loading from legacy file formats. Saving
+ * is always done using the current file format for the given type of data.
+ */
+
 #ifndef VCS_COMMON_DISK_DISK_H
 #define VCS_COMMON_DISK_DISK_H
 
@@ -11,21 +30,69 @@ class QString;
 struct filter_graph_option_s;
 struct video_signal_parameters_s;
 struct video_preset_s;
-struct mode_alias_s;
+struct resolution_alias_s;
 
-extern vcs_event_c<void> kdisk_evSavedVideoPresets;
-extern vcs_event_c<void> kdisk_evSavedFilterGraph;
-extern vcs_event_c<void> kdisk_evSavedAliases;
-extern vcs_event_c<void> kdisk_evLoadedVideoPresets;
-extern vcs_event_c<void> kdisk_evLoadedFilterGraph;
-extern vcs_event_c<void> kdisk_evLoadedAliases;
+/*!
+ * Saves the given video presets into @p filename.
+ * 
+ * Returns true on success, false otherwise.
+ * 
+ * @see
+ * kdisk_load_video_presets()
+ */
+bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
+                              const std::string &filename);
 
-bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets, const std::string &targetFilename);
-bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes, const std::string &targetFilename);
-bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases, const std::string &targetFilename);
+/*!
+ * Saves the given filter graph nodes into @p filename.
+ * 
+ * Returns true on success, false otherwise.
+ * 
+ * @see
+ * kdisk_load_filter_graph()
+ */
+bool kdisk_save_filter_graph(const std::vector<FilterGraphNode*> &nodes,
+                             const std::string &filename);
 
-std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &sourceFilename);
-std::vector<FilterGraphNode*> kdisk_load_filter_graph(const std::string &sourceFilename);
-std::vector<mode_alias_s> kdisk_load_aliases(const std::string &sourceFilename);
+/*!
+ * Saves the given alias resolutions into @p filename.
+ * 
+ * Returns true on success, false otherwise.
+ * 
+ * @see
+ * kdisk_load_aliases()
+ */
+bool kdisk_save_aliases(const std::vector<resolution_alias_s> &aliases,
+                        const std::string &filename);
+
+/*!
+ * Loads the video presets stored in @p filename.
+ * 
+ * Returns the loaded video presets. If the loading fails, returns an empty vector.
+ * 
+ * @see
+ * kdisk_save_video_presets()
+ */
+std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filename);
+
+/*!
+ * Loads the filter graph nodes stored in @p filename.
+ * 
+ * Returns the loaded filter graph nodes. If the loading fails, returns an empty vector.
+ * 
+ * @see
+ * kdisk_save_filter_graph()
+ */
+std::vector<FilterGraphNode*> kdisk_load_filter_graph(const std::string &filename);
+
+/*!
+ * Loads the capture resolution aliases stored in @p filename.
+ * 
+ * Returns the loaded aliases. If the loading fails, returns an empty vector.
+ * 
+ * @see
+ * kdisk_save_aliases()
+ */
+std::vector<resolution_alias_s> kdisk_load_aliases(const std::string &filename);
 
 #endif

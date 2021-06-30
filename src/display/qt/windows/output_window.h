@@ -25,7 +25,7 @@ class VCSBaseDialog;
 class QAction;
 
 struct signal_info_s;
-struct mode_alias_s;
+struct resolution_alias_s;
 
 namespace Ui {
 class MainWindow;

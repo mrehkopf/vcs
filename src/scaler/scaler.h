@@ -11,7 +11,7 @@
  * 
  * The scaler subsystem provides facilities to VCS for scaling captured frames.
  * 
- * When an input frame is scaled, its pixel data is copied onto the subsystem's
+ * When an input frame is scaled, its pixel data is copied into the subsystem's
  * frame buffer, from which callers can fetch it until the next image is scaled
  * (or until the buffer's pixel data is modified in some other way).
  * 
@@ -299,7 +299,7 @@ void ks_set_base_resolution(const resolution_s &r);
 void ks_set_base_resolution_enabled(const bool enabled);
 
 /*!
- * Draws a "no signal" image onto the scaler subsystem's frame buffer, erasing
+ * Draws a "no signal" image into the scaler subsystem's frame buffer, erasing
  * any previous image there.
  * 
  * @note
@@ -320,7 +320,7 @@ void ks_set_base_resolution_enabled(const bool enabled);
 void ks_indicate_no_signal(void);
 
 /*!
- * Draws an "invalid signal" image onto the scaler subsystem's frame buffer,
+ * Draws an "invalid signal" image into the scaler subsystem's frame buffer,
  * erasing any previous image there.
  * 
  * @note

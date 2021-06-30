@@ -19,7 +19,7 @@
 
 /*!
  * @brief
- * A C++ wrapper for the memory subsystem interface (memory.h).
+ * A C++ wrapper for the memory subsystem interface.
  * 
  * This wrapper provides a C++ API over the C-style memory subsystem interface,
  * as well as runtime bounds-checking.
@@ -32,8 +32,8 @@
  * original interface's plain byte arrays.
  * 
  * @warning
- * This memory interface is for POD data only; i.e. anything you wouldn't mind
- * using @a memset on.
+ * The memory interface is for POD data only; i.e. anything you wouldn't mind
+ * using @a memset() on.
  * 
  * @see
  * [Memory subsystem interface](@ref memory.h)
@@ -421,14 +421,12 @@ public:
      * 
      * @code
      * heap_mem<int> ints(11);
-     *
      * // ints.count() == 11.
      * // ints.size() == (11 * sizeof(int)).
      * @endcode
      * 
      * @code
      * heap_mem<int> ints;
-     *
      * // ints.count() == 0.
      * @endcode
      *
@@ -445,7 +443,6 @@ public:
      *
      * @code
      * heap_mem<int> ints(11);
-     *
      * // ints.size() == (11 * sizeof(int)).
      * // ints.count() == 11.
      * @endcode

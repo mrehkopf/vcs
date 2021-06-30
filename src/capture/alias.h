@@ -33,7 +33,7 @@
 
 #include "display/display.h"
 
-struct mode_alias_s
+struct resolution_alias_s
 {
     resolution_s from;
     resolution_s to;
@@ -48,10 +48,10 @@ resolution_s ka_aliased(const resolution_s &r);
 bool ka_has_alias(const resolution_s &r);
 
 // Returns all aliases we know of.
-const std::vector<mode_alias_s>& ka_aliases(void);
+const std::vector<resolution_alias_s>& ka_aliases(void);
 
 // Assign the list of aliases we'll operate on.
-void ka_set_aliases(const std::vector<mode_alias_s> &aliases);
+void ka_set_aliases(const std::vector<resolution_alias_s> &aliases);
 
 void ka_initialize_aliases(void);
 

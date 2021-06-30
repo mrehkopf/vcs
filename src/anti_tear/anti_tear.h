@@ -33,7 +33,7 @@
  * that captured frames may contain extraneous analog noise etc., making it less
  * obvious which parts of the image have changed from the previous one.
  * 
- * Usage:
+ * ## Usage
  * 
  *   1. Call kat_initialize_anti_tear() to initialize the subsystem. This is VCS's
  *      default startup behavior.
@@ -41,7 +41,7 @@
  *   2. Call kat_anti_tear() with the image data on which you want to apply
  *      anti-tearing.
  * 
- *   3. Optionally, call any of the setter functions (kat_set_xxxx) to adjust the
+ *   3. Optionally, call any of the setter functions (@a kat_set_xxxx) to adjust the
  *      anti-tearer's operation.
  * 
  *   4. Call kat_release_anti_tear() to release the subsystem. This is VCS's default

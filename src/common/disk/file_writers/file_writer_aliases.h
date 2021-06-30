@@ -17,7 +17,7 @@ namespace aliases
     namespace version_a
     {
         bool write(const std::string &filename,
-                   const std::vector<mode_alias_s> &aliases);
+                   const std::vector<resolution_alias_s> &aliases);
     }
 }
 }

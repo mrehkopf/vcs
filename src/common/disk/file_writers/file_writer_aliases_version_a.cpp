@@ -11,7 +11,7 @@
 #include "filter/filter.h"
 
 bool file_writer::aliases::version_a::write(const std::string &filename,
-                                            const std::vector<mode_alias_s> &aliases)
+                                            const std::vector<resolution_alias_s> &aliases)
 {
     file_streamer_c outFile(filename);
 

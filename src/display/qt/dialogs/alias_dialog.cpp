@@ -153,12 +153,12 @@ AliasDialog::~AliasDialog(void)
 // which puts them into use.
 void AliasDialog::broadcast_aliases(void)
 {
-    std::vector<mode_alias_s> aliases;
+    std::vector<resolution_alias_s> aliases;
 
     auto items = ui->treeWidget_knownAliases->findItems("*", Qt::MatchWildcard);
     for (auto *item: items)
     {
-        mode_alias_s a;
+        resolution_alias_s a;
 
         a.from.w = item->data(0, data_role::width).toUInt();
         a.from.h = item->data(0, data_role::height).toUInt();
@@ -196,7 +196,7 @@ void AliasDialog::showEvent(QShowEvent *event)
     return;
 }
 
-void AliasDialog::add_alias_to_list(const mode_alias_s a)
+void AliasDialog::add_alias_to_list(const resolution_alias_s a)
 {
     // Returns a widget containing two QSpinBoxes, corresponding to a resolution's
     // width and height. In other words, with the widget, the user can specify a resolution.
@@ -283,7 +283,7 @@ void AliasDialog::clear_known_aliases(void)
 
 void AliasDialog::add_new_alias(void)
 {
-    mode_alias_s newAlias;
+    resolution_alias_s newAlias;
     newAlias.from = {1, 1};
     newAlias.to = {640, 480};
 
@@ -367,7 +367,7 @@ void AliasDialog::save_aliases_to_file(QString filename)
     return;
 }
 
-void AliasDialog::assign_aliases(const std::vector<mode_alias_s> &aliases)
+void AliasDialog::assign_aliases(const std::vector<resolution_alias_s> &aliases)
 {
     ui->treeWidget_knownAliases->clear();
 

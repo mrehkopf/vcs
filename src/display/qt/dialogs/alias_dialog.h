@@ -15,7 +15,7 @@ namespace Ui {
 class AliasDialog;
 }
 
-struct mode_alias_s;
+struct resolution_alias_s;
 
 class AliasDialog : public VCSBaseDialog
 {
@@ -28,7 +28,7 @@ public:
 
     void clear_known_aliases(void);
 
-    void add_alias_to_list(const mode_alias_s a);
+    void add_alias_to_list(const resolution_alias_s a);
 
     void load_aliases_from_file(const QString &filename);
 
@@ -51,7 +51,7 @@ private:
 
     void showEvent(QShowEvent *event);
 
-    void assign_aliases(const std::vector<mode_alias_s> &aliases);
+    void assign_aliases(const std::vector<resolution_alias_s> &aliases);
 
 };
 

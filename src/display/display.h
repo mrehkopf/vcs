@@ -35,7 +35,7 @@
 #include "common/propagate/vcs_event.h"
 
 struct log_entry_s;
-struct mode_alias_s;
+struct resolution_alias_s;
 class FilterGraphNode;
 
 // Marks the output window as dirty, i.e. in need of redrawing.

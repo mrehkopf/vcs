@@ -29,22 +29,13 @@
 #include "filter/filter.h"
 #include "common/disk/disk.h"
 
-vcs_event_c<void> kdisk_evSavedVideoPresets;
-vcs_event_c<void> kdisk_evSavedFilterGraph;
-vcs_event_c<void> kdisk_evSavedAliases;
-vcs_event_c<void> kdisk_evLoadedVideoPresets;
-vcs_event_c<void> kdisk_evLoadedFilterGraph;
-vcs_event_c<void> kdisk_evLoadedAliases;
-
 bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
-                              const std::string &targetFilename)
+                              const std::string &filename)
 {
-    if (!file_writer::video_presets::version_a::write(targetFilename, presets))
+    if (!file_writer::video_presets::version_a::write(filename, presets))
     {
         goto fail;
     }
-
-    kdisk_evSavedVideoPresets.fire();
 
     return true;
 
@@ -57,9 +48,9 @@ bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
 }
 
 
-std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &sourceFilename)
+std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filename)
 {
-    if (sourceFilename.empty())
+    if (filename.empty())
     {
         DEBUG(("No video presets file defined, skipping."));
         return {};
@@ -67,15 +58,15 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &sourceF
 
     std::vector<video_preset_s*> presets;
 
-    const std::string fileVersion = file_reader::file_version(sourceFilename);
-    const std::string fileType = file_reader::file_type(sourceFilename);
+    const std::string fileVersion = file_reader::file_version(filename);
+    const std::string fileType = file_reader::file_type(filename);
 
     // Legacy parameter file format (VCS <= 1.6.5).
     if (fileVersion.empty())
     {
         std::vector<video_signal_parameters_s> videoModeParams;
 
-        if (!file_reader::video_params::legacy_1_6_5::read(sourceFilename, &videoModeParams))
+        if (!file_reader::video_params::legacy_1_6_5::read(filename, &videoModeParams))
         {
             goto fail;
         }
@@ -99,7 +90,7 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &sourceF
     {
         std::vector<video_signal_parameters_s> videoModeParams;
 
-        if (!file_reader::video_params::version_a::read(sourceFilename, &videoModeParams))
+        if (!file_reader::video_params::version_a::read(filename, &videoModeParams))
         {
             goto fail;
         }
@@ -123,7 +114,7 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &sourceF
     {
         if (fileVersion == "a")
         {
-            if (!file_reader::video_presets::version_a::read(sourceFilename, &presets))
+            if (!file_reader::video_presets::version_a::read(filename, &presets))
             {
                 goto fail;
             }
@@ -134,8 +125,6 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &sourceF
             goto fail;
         }
     }
-
-    kdisk_evLoadedVideoPresets.fire();
 
     INFO(("Loaded %u video preset(s).", presets.size()));
 
@@ -149,28 +138,28 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &sourceF
     return {};
 }
 
-std::vector<mode_alias_s> kdisk_load_aliases(const std::string &sourceFilename)
+std::vector<resolution_alias_s> kdisk_load_aliases(const std::string &filename)
 {
-    if (sourceFilename.empty())
+    if (filename.empty())
     {
         DEBUG(("No alias file defined, skipping."));
         return {};
     }
 
-    const std::string fileVersion = file_reader::file_version(sourceFilename);
+    const std::string fileVersion = file_reader::file_version(filename);
 
-    std::vector<mode_alias_s> aliases;
+    std::vector<resolution_alias_s> aliases;
 
     if (fileVersion.empty())
     {
-        if (!file_reader::aliases::legacy_1_6_5::read(sourceFilename, &aliases))
+        if (!file_reader::aliases::legacy_1_6_5::read(filename, &aliases))
         {
             goto fail;
         }
     }
     else if (fileVersion == "a")
     {
-        if (!file_reader::aliases::version_a::read(sourceFilename, &aliases))
+        if (!file_reader::aliases::version_a::read(filename, &aliases))
         {
             goto fail;
         }
@@ -182,12 +171,10 @@ std::vector<mode_alias_s> kdisk_load_aliases(const std::string &sourceFilename)
     }
 
     // Sort the aliases so they display more nicely in the GUI.
-    std::sort(aliases.begin(), aliases.end(), [](const mode_alias_s &a, const mode_alias_s &b)
+    std::sort(aliases.begin(), aliases.end(), [](const resolution_alias_s &a, const resolution_alias_s &b)
     {
         return (a.to.w * a.to.h) < (b.to.w * b.to.h);
     });
-
-    kdisk_evLoadedAliases.fire();
 
     INFO(("Loaded %u alias(es).", aliases.size()));
 
@@ -201,15 +188,13 @@ std::vector<mode_alias_s> kdisk_load_aliases(const std::string &sourceFilename)
     return {};
 }
 
-bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
-                        const std::string &targetFilename)
+bool kdisk_save_aliases(const std::vector<resolution_alias_s> &aliases,
+                        const std::string &filename)
 {
-    if (!file_writer::aliases::version_a::write(targetFilename, aliases))
+    if (!file_writer::aliases::version_a::write(filename, aliases))
     {
         goto fail;
     }
-
-    kdisk_evSavedAliases.fire();
 
     return true;
 
@@ -221,15 +206,13 @@ bool kdisk_save_aliases(const std::vector<mode_alias_s> &aliases,
     return false;
 }
 
-bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
-                             const std::string &targetFilename)
+bool kdisk_save_filter_graph(const std::vector<FilterGraphNode*> &nodes,
+                             const std::string &filename)
 {
-    if (!file_writer::filter_graph::version_b::write(targetFilename, nodes, {}))
+    if (!file_writer::filter_graph::version_b::write(filename, nodes, {}))
     {
         goto fail;
     }
-
-    kdisk_evSavedFilterGraph.fire();
 
     return true;
 
@@ -241,15 +224,15 @@ bool kdisk_save_filter_graph(std::vector<FilterGraphNode*> &nodes,
     return false;
 }
 
-std::vector<FilterGraphNode*> kdisk_load_filter_graph(const std::string &sourceFilename)
+std::vector<FilterGraphNode*> kdisk_load_filter_graph(const std::string &filename)
 {
-    if (sourceFilename.empty())
+    if (filename.empty())
     {
         DEBUG(("No filter graph file defined, skipping."));
         return {};
     }
 
-    const std::string fileVersion = file_reader::file_version(sourceFilename);
+    const std::string fileVersion = file_reader::file_version(filename);
 
     if (fileVersion.empty())
     {
@@ -269,14 +252,14 @@ std::vector<FilterGraphNode*> kdisk_load_filter_graph(const std::string &sourceF
 
     if (fileVersion == "a")
     {
-        if (!file_reader::filter_graph::version_a::read(sourceFilename, &graphNodes, &graphOptions))
+        if (!file_reader::filter_graph::version_a::read(filename, &graphNodes, &graphOptions))
         {
             goto fail;
         }
     }
     else if (fileVersion == "b")
     {
-        if (!file_reader::filter_graph::version_b::read(sourceFilename, &graphNodes, &graphOptions))
+        if (!file_reader::filter_graph::version_b::read(filename, &graphNodes, &graphOptions))
         {
             goto fail;
         }
@@ -286,8 +269,6 @@ std::vector<FilterGraphNode*> kdisk_load_filter_graph(const std::string &sourceF
         NBENE(("Unsupported filter graph file format."));
         goto fail;
     }
-
-    kdisk_evLoadedFilterGraph.fire();
 
     INFO(("Loaded %u filter graph node(s).", graphNodes.size()));
 

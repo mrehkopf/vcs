@@ -39,7 +39,7 @@
  * calls. In LIFO fashion, the slot reserved by the most recent call to push()
  * will be the last to be unreserved by pop().
  * 
- * Usage:
+ * ## Usage
  *
  *   1. Initialize the buffer by calling initialize().
  * 
