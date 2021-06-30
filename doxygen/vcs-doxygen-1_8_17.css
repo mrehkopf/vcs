@@ -37,10 +37,29 @@
 }
 
 .iconfopen,
-.iconfclosed,
+.iconfclosed
+{
+	display: none !important;
+}
+
 .icondoc
 {
-	display: none;
+	visibility: hidden !important;
+	width: 2ch !important;
+	margin: 0 !important;
+}
+
+.icondoc::before
+{
+	font-family: "Font Awesome 5 Free" !important;
+	content: "\f02e" !important;
+	color: #a2a2a2 !important;
+    visibility: visible !important;
+    text-align: left !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    font-weight: 900 !important;
+    width: 1ch !important;
 }
 
 *
@@ -86,7 +105,7 @@ a:visited.el
 .contents a[id]
 {
 	position: relative !important;
-	top: -15px !important;
+	top: -25px !important;
 }
 
 .contents .fieldname > a
@@ -98,7 +117,7 @@ a:visited.el
 .contents a[name="details"]
 {
 	position: relative !important;
-	top: calc(var(--group-heading-vertical-margin) - 15px) !important;
+	top: var(--group-heading-vertical-margin) !important;
 }
 
 table
@@ -122,6 +141,7 @@ hr
 	padding-left: 0 !important;
 	color: transparent !important;
 	width: 1ch !important;
+	height: 21px !important;
 }
 
 .arrow::before
@@ -161,6 +181,7 @@ hr
 	padding: 15px !important;
 	padding-top: 5px !important;
 	padding-bottom: 0 !important;
+	padding-right: 5px !important;
 	box-sizing: border-box !important;
 }
 
@@ -193,6 +214,11 @@ hr
 #nav-tree .item:not(.selected) > .label > a:hover
 {
 	color: black !important;
+}
+
+#nav-tree-contents
+{
+	overflow-x: hidden;
 }
 
 #nav-tree-contents > ul,
@@ -263,7 +289,8 @@ hr
 {
 	width: 100% !important;
 	margin: 16px 0 !important;
-	border-radius: 0 !important;
+	border-radius: 7px !important;
+	padding: 6px !important;
 	border-color: var(--separating-border-color) !important;
 }
 
@@ -298,7 +325,7 @@ hr
 .fieldtable td,
 .fieldtable th
 {
-	padding: 5px !important;
+	padding: 6px !important;
 	padding-left: 8px !important;
 	padding-right: 8px !important;
 	border-color: var(--separating-border-color) !important;
@@ -382,13 +409,26 @@ hr
 .directory .entry,
 .directory .entry + .desc
 {
-	padding-top: 4px !important;
-	padding-bottom: 4px !important;
+	padding-top: 5px !important;
+	padding-bottom: 5px !important;
 	padding-left: 8px !important;
 	padding-right: 10px !important;
 	background-color: white !important;
 	min-width: 100px !important;
-	vertical-align: top;
+	vertical-align: middle !important;
+	height: 31px !important;
+	box-sizing: border-box !important;
+}
+
+.directory .entry + .desc:empty
+{
+	padding: 0 !important;
+}
+
+.directory .arrow
+{
+	width: 1.25ch !important;
+	height: unset !important;
 }
 
 .directory .levels
@@ -503,7 +543,7 @@ hr
 
 #main-menu::before
 {
-	content: "VCS Developer Docs" !important;
+	content: "VCS Dev Docs" !important;
     color: whitesmoke !important;
     padding-left: 10px !important;
     margin-right: var(--main-nav-item-horizontal-spacing) !important;
@@ -574,7 +614,8 @@ hr
 .memItemRight
 {
 	background-color: transparent !important;
-	vertical-align: middle;
+	vertical-align: middle !important;
+	white-space: inherit !important;
 }
 
 .memItemLeft a
@@ -590,13 +631,6 @@ hr
 .memItemRight > .el ~ .el
 {
 	font-weight: normal !important;
-}
-
-/* Undo the two non-breaking spaces that occur after every n elements in
- * enum value listings.*/
-.memItemRight br + b
-{
-	margin-left: -0.5em !important;
 }
 
 .memItemRight br
@@ -665,11 +699,19 @@ table.memname tr
 	float: left !important;
 }
 
+table.memberdecls
+{
+	border-bottom: 1px solid var(--separating-border-color) !important;
+}
+
 table.memberdecls td[class*="memItem"],
 table.memberdecls td[class*="mdesc"]
 {
 	border-top: 1px solid var(--separating-border-color) !important;
-	padding: 5px !important;
+	padding-top: 5px !important;
+	padding-bottom: 5px !important;
+	height: 31px !important;
+	box-sizing: border-box !important;
 }
 
 table.memberdecls td.memItemLeft,
@@ -679,6 +721,7 @@ table.memberdecls td.mdescLeft
 	border-right: 1px solid var(--separating-border-color) !important;
 	padding-left: 10px !important;
 	padding-right: 6px !important;
+	min-width: 80px !important;
 }
 
 table.memberdecls td.memItemRight,
@@ -696,18 +739,15 @@ table.memberdecls td.mdescRight
 	padding-left: 12px !important;
 }
 
+table.memberdecls [class*="memdesc:"]
+{
+	display: none !important;
+}
+
 table.memberdecls td.mdescLeft:not(.glow),
 table.memberdecls td.mdescRight:not(.glow)
 {
 	background-color: var(--secondary-background-color) !important;
-}
-
-table.memberdecls [class*="memitem:"]:nth-last-of-type(2) .memItemLeft,
-table.memberdecls [class*="memitem:"]:nth-last-of-type(2) .memItemRight,
-table.memberdecls [class*="memdesc:"]:nth-last-of-type(2) .mdescLeft,
-table.memberdecls [class*="memdesc:"]:nth-last-of-type(2) .mdescRight
-{
-	border-bottom: 1px solid var(--separating-border-color) !important;
 }
 
 .paramtype
@@ -750,7 +790,7 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 {
 	margin-left: 0 !important;
 	margin-bottom: 2px !important;
-	color: #6c6c6c !important;
+	color: #595959 !important;
 }
 
 .memproto a

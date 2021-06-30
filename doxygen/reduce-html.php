@@ -66,11 +66,16 @@ function remove_unnecessary_spaces(string $html) : string
                          '$1&gt;',
                          $html);
 
-    // For function return declarations. E.g. "void *" => "void*".
+    // For function return declarations: e.g. "void *" => "void*".
     // This is a pretty open-ended regex, so it's quite possibly going to generate
     // unwanted matches.
     $html = preg_replace('/ +(\*|&amp;) *<\/td>/',
                          '$1</td>',
+                         $html);
+
+    // For function return declarations: e.g. "std::vector<int *>" => "std::vector<int*>".
+    $html = preg_replace('/(&lt;.*?) ((\*|&amp;)&gt;)/',
+                         '$1$2',
                          $html);
 
     return $html;

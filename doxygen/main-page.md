@@ -1,4 +1,4 @@
-# VCS Developer Docs
+# VCS Developer Documentation
 
 # Introduction
 Welcome to VCS's technical documentation for developers!

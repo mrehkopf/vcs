@@ -5,7 +5,7 @@
  * 
  * Software: VCS
  * 
- * Modifies (reduces) Doxygen-generated HTML files to make them compliant with
+ * Modifies (reduces) Doxygen-generated JavaScript files to make them compliant with
  * VCS's custom Doxygen theme.
  * 
  */
@@ -43,7 +43,7 @@ function singly_capitalize(string $js) : string
         '"Data Structures"'=>'"Data structures"',
         '"Data Structure Index"'=>'"Data structure index"',
         '"File List"'=>'"File list"',
-        '"VCS Developer Docs"'=>'"Main page"',
+        '"VCS Developer Documentation"'=>'"Main page"',
     ];
 
     return strtr($js, $replacements);
