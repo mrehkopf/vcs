@@ -615,7 +615,6 @@ hr
 {
 	background-color: transparent !important;
 	vertical-align: middle !important;
-	white-space: inherit !important;
 }
 
 .memItemLeft a
@@ -789,7 +788,7 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 .memproto .memtemplate
 {
 	margin-left: 0 !important;
-	margin-bottom: 2px !important;
+	margin-bottom: 3px !important;
 	color: #595959 !important;
 }
 

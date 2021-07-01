@@ -1,3 +1,3 @@
 doxygen doxygen.cfg\
-&& php reduce-html.php\
+&& python3 reduce-html.py\
 && php reduce-js.php
