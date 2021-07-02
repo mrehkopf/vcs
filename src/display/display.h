@@ -51,26 +51,30 @@ extern vcs_event_c<void> kd_evDirty;
  */
 struct abstract_filter_graph_node_s
 {
-    //! Uniquely identifies this node from others.
+    /*! Uniquely identifies this node from others.*/
     int id = 0;
 
-    //! Whether this node is active (true) or a passive passthrough (false).
+    /*! Whether this node is active (true) or a passive passthrough (false).*/
     bool isEnabled = true;
 
-    //! The UUID of the filter type that this node represents (see filter_c).
+    /*! The UUID of the filter type that this node represents (see filter_c).*/
     std::string typeUuid = "";
 
-    //! The color of the node's background.
-    //! @warning This property will be refactored into an enumerator in the future.
+    /*!
+     * The color of the node's background.
+     * 
+     * @warning
+     * In the future, this property will be refactored into an enumerator.
+     */
     std::string backgroundColor = "black";
 
-    //! The filter parameters for this node (see filter_c).
+    /*! The filter parameters for this node (see filter_c).*/
     std::vector<std::pair<unsigned, double>> parameters;
 
-    //! The node's 2D XY coordinates in the filter graph.
+    /*! The node's 2D XY coordinates in the filter graph.*/
     std::pair<double, double> position = {0, 0};
 
-    //! The nodes (identified by their id) to which this node is connected.
+    /*! The nodes (identified by their id) to which this node is connected.*/
     std::vector<int> connectedTo;
 };
 
@@ -81,13 +85,13 @@ struct abstract_filter_graph_node_s
  */
 struct resolution_s
 {
-    //! Width (in pixels).
+    /*! Width (in pixels).*/
     unsigned long w;
 
-    //! Height (in pixels).
+    /*! Height (in pixels).*/
     unsigned long h;
 
-    //! Number of bits per pixel.
+    /*! Number of bits per pixel.*/
     unsigned long bpp;
 };
 

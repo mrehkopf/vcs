@@ -284,16 +284,22 @@ enum class capture_deinterlacing_mode_e
  */
 enum class capture_pixel_format_e
 {
-    //! 16 bits per pixel: 5 bits for red, 5 bits for green, 5 bits for blue, and
-    //! 1 bit of padding. No alpha.
+    /*!
+     * 16 bits per pixel: 5 bits for red, 5 bits for green, 5 bits for blue, and
+     * 1 bit of padding. No alpha.
+     */
     rgb_555,
 
-    //! 16 bits per pixel: 5 bits for red, 6 bits for green, and 5 bits for blue.
-    //! No alpha.
+    /*!
+     * 16 bits per pixel: 5 bits for red, 6 bits for green, and 5 bits for blue.
+     * No alpha.
+     */
     rgb_565,
 
-    //! 32 bits per pixel: 8 bits for red, 8 bits for green, 8 bits for blue, and
-    //! 8 bits of padding. No alpha.
+    /*!
+     * 32 bits per pixel: 8 bits for red, 8 bits for green, 8 bits for blue, and
+     * 8 bits of padding. No alpha.
+     */
     rgb_888,
 };
 
@@ -307,37 +313,45 @@ enum class capture_pixel_format_e
  */
 enum class capture_event_e
 {
-    //! No capture events to report. Although some capture events may have occurred,
-    //! the capture subsystem chooses to not inform VCS of them.
+    /*!
+     * No capture events to report. Although some capture events may have occurred,
+     * the capture subsystem chooses to not inform VCS of them.
+     */
     none,
 
-    //! Same as 'none', but the capture subsystem also thinks VCS shouldn't send
-    //! a new query for capture events for some short while (milliseconds); e.g.
-    //! because the capture device is currently not receiving a signal and so isn't
-    //! expected to produce events in the immediate future.
+    /*!
+     * Same as 'none', but the capture subsystem also thinks VCS shouldn't send
+     * a new query for capture events for some short while (milliseconds); e.g.
+     * because the capture device is currently not receiving a signal and so isn't
+     * expected to produce events in the immediate future.
+     */
     sleep,
 
-    //! The capture device has just lost its input signal.
+    /*! The capture device has just lost its input signal.*/
     signal_lost,
 
-    //! The capture device has sent in a new frame, whose data can be queried via
-    //! get_frame_buffer().
+    /*!
+     * The capture device has sent in a new frame, whose data can be queried via
+     * get_frame_buffer().
+     */
     new_frame,
 
-    //! The capture device's input signal has changed in resolution or refresh rate.
+    /*! The capture device's input signal has changed in resolution or refresh rate.*/
     new_video_mode,
 
-    //! The capture device's current input signal is invalid (e.g. out of range).
+    /*! The capture device's current input signal is invalid (e.g. out of range).*/
     invalid_signal,
 
-    //! The capture device isn't available for use.
+    /*! The capture device isn't available for use.*/
     invalid_device,
 
-    //! An error has occurred with the capture device from which the capture
-    //! subsystem can't recover.
+    /*!
+     * An error has occurred with the capture device from which the capture
+     * subsystem can't recover.
+     */
     unrecoverable_error,
 
-    //! Total enumerator count. Should remain the last item in the list.
+    /*! Total enumerator count. Should remain the last item in the list.*/
     num_enumerators
 };
 

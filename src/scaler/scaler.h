@@ -119,14 +119,16 @@ extern vcs_event_c<unsigned> ks_evFramesPerSecond;
  */
 enum class scaler_aspect_ratio_e
 {
-    //! An image's native aspect ratio (width / height).
+    /*! An image's native aspect ratio (width / height).*/
     native,
 
-    //! An image's native aspect ratio (width / height), except for certain
-    //! historically 4:3 aspect ratio resolutions like 720 x 400.
+    /*!
+     * An image's native aspect ratio (width / height), except for certain
+     * historically 4:3 aspect ratio resolutions like 720 x 400.
+     */
     traditional_4_3,
 
-    //! An aspect ratio of 4:3, disregarding the image's native ratio.
+    /*! An aspect ratio of 4:3, disregarding the image's native ratio.*/
     all_4_3
 };
 

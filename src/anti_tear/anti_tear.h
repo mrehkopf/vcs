@@ -75,18 +75,22 @@ struct resolution_s;
  */
 enum class anti_tear_scan_hint_e
 {
-    //! Tells the anti-tear subsystem that input images are expected to have at
-    //! most one tear. In other words, a single un-torn image will span no more
-    //! than two consecutive input images. This may allow the anti-tearer to apply
-    //! performance optimizations, but will lead to incorrect anti-tearing results
-    //! if any input image has more than one tear.
+    /*!
+     * Tells the anti-tear subsystem that input images are expected to have at
+     * most one tear. In other words, a single un-torn image will span no more
+     * than two consecutive input images. This may allow the anti-tearer to apply
+     * performance optimizations, but will lead to incorrect anti-tearing results
+     * if any input image has more than one tear.
+     */
     look_for_one_tear,
 
-    //! Tells the anti-tear subsystem that input images may have several tears.
-    //! In other words, a single un-torn image may span any number of
-    //! consecutive input images. The anti-tearer may, however, choose to only
-    //! scan a certain maximum number of consecutive input images before
-    //! declaring the result to be a fully de-torn image.
+    /*!
+     * Tells the anti-tear subsystem that input images may have several tears.
+     * In other words, a single un-torn image may span any number of
+     * consecutive input images. The anti-tearer may, however, choose to only
+     * scan a certain maximum number of consecutive input images before
+     * declaring the result to be a fully de-torn image.
+     */
     look_for_multiple_tears,
 };
 
@@ -107,10 +111,10 @@ enum class anti_tear_scan_hint_e
  */
 enum class anti_tear_scan_direction_e
 {
-    //! Scans input images from bottom to top.
+    /*! Scans input images from bottom to top.*/
     up,
 
-    //! Scans input images from top to bottom.
+    /*! Scans input images from top to bottom.*/
     down,
 };
 
