@@ -25,12 +25,6 @@ public:
 
     void clear_filter_graph(void);
 
-    FilterGraphNode* add_filter_graph_node(const std::string &filterTypeUuid,
-                                           const std::vector<std::pair<unsigned, double>> &initialParameterValues = {});
-
-    FilterGraphNode* add_filter_node(const std::string &filterTypeUuid,
-                                     const std::vector<std::pair<unsigned, double>> &initialParameterValues = {});
-
     void refresh_filter_graph(void);
 
     // Loads the filter graph from the most recent used graph file. Returns true
@@ -40,6 +34,9 @@ public:
     bool load_graph_from_file(const QString &filename);
 
 private:
+    FilterGraphNode* add_filter_graph_node(const std::string &filterTypeUuid,
+                                           const std::vector<std::pair<unsigned, double>> &initialParameterValues = {});
+
     void reset_graph(const bool autoAccept = false);
 
     void save_graph_into_file(QString filename);

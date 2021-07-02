@@ -224,7 +224,7 @@ bool kdisk_save_filter_graph(const std::vector<FilterGraphNode*> &nodes,
     return false;
 }
 
-std::vector<FilterGraphNode*> kdisk_load_filter_graph(const std::string &filename)
+std::vector<abstract_filter_graph_node_s> kdisk_load_filter_graph(const std::string &filename)
 {
     if (filename.empty())
     {
@@ -245,21 +245,18 @@ std::vector<FilterGraphNode*> kdisk_load_filter_graph(const std::string &filenam
         return {};
     }
 
-    std::vector<FilterGraphNode*> graphNodes;
-    std::vector<filter_graph_option_s> graphOptions;
-
-    kd_clear_filter_graph();
+    std::vector<abstract_filter_graph_node_s> graphNodes;
 
     if (fileVersion == "a")
     {
-        if (!file_reader::filter_graph::version_a::read(filename, &graphNodes, &graphOptions))
+        if (!file_reader::filter_graph::version_a::read(filename, &graphNodes))
         {
             goto fail;
         }
     }
     else if (fileVersion == "b")
     {
-        if (!file_reader::filter_graph::version_b::read(filename, &graphNodes, &graphOptions))
+        if (!file_reader::filter_graph::version_b::read(filename, &graphNodes))
         {
             goto fail;
         }
@@ -275,7 +272,6 @@ std::vector<FilterGraphNode*> kdisk_load_filter_graph(const std::string &filenam
     return graphNodes;
 
     fail:
-    kd_clear_filter_graph();
     kd_show_headless_error_message("Data was not loaded",
                                    "An error was encountered while loading the filter graph. No data was "
                                    "loaded. More information about the error may be found in "

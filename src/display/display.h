@@ -43,6 +43,39 @@ extern vcs_event_c<void> kd_evDirty;
 
 /*!
  * @brief
+ * A GUI framework-agnostic representation of a filter graph node.
+ * 
+ * Used to mediate data between the disk subsystem's file loader and the display
+ * subsystem's (GUI framework-dependent) filter graph implementation, so that the
+ * file loader can remain independent from the GUI framework.
+ */
+struct abstract_filter_graph_node_s
+{
+    //! Uniquely identifies this node from others.
+    int id = 0;
+
+    //! Whether this node is active (true) or a passive passthrough (false).
+    bool isEnabled = true;
+
+    //! The UUID of the filter type that this node represents (see filter_c).
+    std::string typeUuid = "";
+
+    //! The color of the node's background.
+    //! @warning This property will be refactored into an enumerator in the future.
+    std::string backgroundColor = "black";
+
+    //! The filter parameters for this node (see filter_c).
+    std::vector<std::pair<unsigned, double>> parameters;
+
+    //! The node's 2D XY coordinates in the filter graph.
+    std::pair<double, double> position = {0, 0};
+
+    //! The nodes (identified by their id) to which this node is connected.
+    std::vector<int> connectedTo;
+};
+
+/*!
+ * @brief
  * Describes the resolution of a pixel surface -- e.g. a program window or an image
  * buffer.
  */
@@ -102,15 +135,6 @@ void kd_acquire_output_window(void);
  */
 void kd_release_output_window(void);
 
-/*!
- * Instructs the GUI to erase all information (nodes, connections, etc.) from
- * its filter graph.
- * 
- * @see
- * kd_add_filter_graph_node()
- */
-void kd_clear_filter_graph(void);
-
 // Visit each node in the graph and while doing so, group together such chains of
 // filters that run from an input gate through one or more filters into an output
 // gate. The chains will then be submitted to the filter handler for use in applying
@@ -137,18 +161,6 @@ void kd_clear_filter_graph(void);
  * @endcode
  */
 void kd_recalculate_filter_graph_chains(void);
-
-/*!
- * Tells the GUI to create and add into its filter graph a new node with the
- * given properties.
- * 
- * The GUI filter graph is expected to be a dialog of some sort - e.g. a visual
- * node graph - in which the user can create and modify filter chains.
- * 
- * Returns a pointer to the created node; or @a nullptr if no node was created.
- */
-FilterGraphNode* kd_add_filter_graph_node(const std::string &filterTypeUuid,
-                                          const std::vector<std::pair<unsigned, double>> &initialParameterValues);
 
 /*!
  * Asks the GUI to load video presets from the given file.

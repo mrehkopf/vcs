@@ -23,6 +23,7 @@
 #include <vector>
 #include <string>
 #include "common/propagate/vcs_event.h"
+#include "display/display.h"
 
 class FilterGraphNode;
 class QString;
@@ -83,7 +84,7 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filenam
  * @see
  * kdisk_save_filter_graph()
  */
-std::vector<FilterGraphNode*> kdisk_load_filter_graph(const std::string &filename);
+std::vector<abstract_filter_graph_node_s> kdisk_load_filter_graph(const std::string &filename);
 
 /*!
  * Loads the capture resolution aliases stored in @p filename.

@@ -766,8 +766,7 @@ capture_pixel_format_e kc_get_capture_pixel_format(void);
  * Returns true if the current capture signal is valid; false otherwise.
  *
  * @see
- * has_invalid_signal(), kc_is_receiving_signal(), kc_evSignalGained,
- * kc_evSignalLost
+ * kc_is_receiving_signal(), kc_evSignalGained, kc_evSignalLost
  */
 bool kc_has_valid_signal(void);
 
@@ -788,6 +787,9 @@ bool kc_is_receiving_signal(void);
 
 /*!
  * Returns a reference to the most recent captured frame.
+ * 
+ * To ensure that the frame buffer's data isn't modified by another thread while
+ * you're accessing it, acquire the capture mutex before calling this function.
  *
  * @code
  * // The capture mutex should be locked first, to ensure that the frame buffer
@@ -797,10 +799,6 @@ bool kc_is_receiving_signal(void);
  * const auto &frameBuffer = kc_get_frame_buffer();
  * // Access the frame buffer's data...
  * @endcode
- * 
- * @warning
- * To ensure that the frame buffer's data isn't modified by another thread while
- * you're accessing it, acquire the capture mutex before calling this function.
  *
  * @see
  * kc_capture_mutex(), kc_evNewCapturedFrame
@@ -867,6 +865,8 @@ bool kc_set_capture_pixel_format(const capture_pixel_format_e pf);
  * Tells the capture device to adopt the given resolution as its input and
  * output resolution.
  *
+ * Returns true on success; false otherwise.
+ * 
  * @note
  * The capture device must adopt this as both its input and output
  * resolution. For example, if this resolution is 800 x 600, the capture
@@ -877,9 +877,7 @@ bool kc_set_capture_pixel_format(const capture_pixel_format_e pf);
  * Since this will be set as the capture device's input resolution,
  * captured frames may exhibit artefacting if the resolution doesn't match
  * the video signal's true resolution.
- *
- * Returns true on success; false otherwise.
- *
+ * 
  * @see
  * kc_get_capture_resolution(), kc_get_device_minimum_resolution(),
  * kc_get_device_maximum_resolution()

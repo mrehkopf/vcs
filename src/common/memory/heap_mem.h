@@ -99,7 +99,6 @@ public:
      * 
      * @code
      * heap_mem<char> buffer;
-
      * // buffer.is_null() == true.
      * // buffer.count() == 0.
      * @endcode
@@ -129,7 +128,6 @@ public:
      * 
      * @code
      * heap_mem<char> buffer(10);
-     * 
      * // buffer.is_null() == false.
      * // buffer.count() == 10.
      * // buffer[0] == 0.
@@ -311,10 +309,6 @@ public:
     /*!
      * Allocates memory for the data buffer.
      * 
-     * @warning
-     * Call release() before re-allocating. Attempting to allocate over an
-     * existing data buffer will trigger an assertion failure.
-     * 
      * @code
      * // Allocate memory for 10 ints using the constructor.
      * heap_mem<int> ints(10);
@@ -335,6 +329,10 @@ public:
      *    // ints3.count() == 5.
      * }
      * @endcode
+     * 
+     * @warning
+     * Call release() before re-allocating. Attempting to allocate over an
+     * existing data buffer will trigger an assertion failure.
      */
     void allocate(const int elementCount, const char *const reason = nullptr)
     {

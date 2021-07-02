@@ -56,6 +56,7 @@
 
 struct resolution_s;
 
+//! @cond
 // Default starting parameter values for the anti-tear engine.
 #define KAT_DEFAULT_THRESHOLD 3
 #define KAT_DEFAULT_WINDOW_LENGTH 8
@@ -65,6 +66,7 @@ struct resolution_s;
 #define KAT_DEFAULT_VISUALIZE_SCAN_RANGE false
 #define KAT_DEFAULT_SCAN_DIRECTION anti_tear_scan_direction_e::down
 #define KAT_DEFAULT_SCAN_HINT anti_tear_scan_hint_e::look_for_one_tear
+//! @endcond
 
 /*!
  * Enumerates the tear-scanning hints which can be given to the anti-tear

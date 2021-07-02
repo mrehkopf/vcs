@@ -18,15 +18,13 @@ namespace filter_graph
     namespace version_a
     {
         bool read(const std::string &filename,
-                  std::vector<FilterGraphNode*> *const graphNodes,
-                  std::vector<filter_graph_option_s> *const graphOptions);
+                  std::vector<abstract_filter_graph_node_s> * const graphNodes);
     }
 
     namespace version_b
     {
         bool read(const std::string &filename,
-                  std::vector<FilterGraphNode*> *const graphNodes,
-                  std::vector<filter_graph_option_s> *const graphOptions);
+                  std::vector<abstract_filter_graph_node_s> *const graphNodes);
     }
 }
 }

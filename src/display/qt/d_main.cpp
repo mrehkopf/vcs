@@ -42,31 +42,12 @@ static MainWindow *WINDOW = nullptr;
 
 #define ASSERT_WINDOW_IS_NOT_NULL k_assert(WINDOW, "Tried to query the display before it had been initialized.");
 
-void kd_clear_filter_graph(void)
-{
-    ASSERT_WINDOW_IS_NOT_NULL;
-    WINDOW->filter_graph_dialog()->clear_filter_graph();
-
-    return;
-}
-
 void kd_recalculate_filter_graph_chains(void)
 {
     ASSERT_WINDOW_IS_NOT_NULL;
     WINDOW->filter_graph_dialog()->recalculate_filter_chains();
 
     return;
-}
-
-FilterGraphNode* kd_add_filter_graph_node(const std::string &filterTypeUuid,
-                                          const std::vector<std::pair<unsigned, double>> &initialParameterValues)
-{
-    if (WINDOW)
-    {
-        return WINDOW->filter_graph_dialog()->add_filter_graph_node(filterTypeUuid, initialParameterValues);
-    }
-
-    return nullptr;
 }
 
 void kd_acquire_output_window(void)

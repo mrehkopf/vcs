@@ -146,7 +146,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
                     connect(filtersMenu->addAction(QString::fromStdString(filter->name())), &QAction::triggered, this, [=]
                     {
-                        this->add_filter_node(filter->uuid());
+                        this->add_filter_graph_node(filter->uuid());
                     });
                 }
 
@@ -180,7 +180,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
                         connect(action, &QAction::triggered, this, [=]
                         {
-                            this->add_filter_node(filter->uuid());
+                            this->add_filter_graph_node(filter->uuid());
                         });
                     }
                 }
@@ -304,11 +304,51 @@ bool FilterGraphDialog::load_graph_from_file(const QString &filename)
         return false;
     }
 
-    const auto filterNodes = kdisk_load_filter_graph(filename.toStdString());
+    const auto loadedAbstractNodes = kdisk_load_filter_graph(filename.toStdString());
 
-    if (!filterNodes.empty())
+    if (!loadedAbstractNodes.empty())
     {
         this->set_data_filename(filename);
+
+        this->clear_filter_graph();
+
+        // Add the loaded nodes to the filter graph.
+        {
+            std::vector<FilterGraphNode*> addedNodes;
+
+            for (const auto &abstractNode: loadedAbstractNodes)
+            {
+                FilterGraphNode *const node = this->add_filter_graph_node(abstractNode.typeUuid, abstractNode.parameters);
+                k_assert(node, "Failed to create a filter graph node.");
+
+                node->setPos(abstractNode.position.first, abstractNode.position.second);
+                node->set_background_color(QString::fromStdString(abstractNode.backgroundColor));
+                node->set_enabled(abstractNode.isEnabled);
+
+                addedNodes.push_back(node);
+            }
+
+            // Connect the nodes to each other.
+            for (unsigned i = 0; i < loadedAbstractNodes.size(); i++)
+            {
+                if (loadedAbstractNodes[i].connectedTo.empty())
+                {
+                    continue;
+                }
+
+                node_edge_s *const srcEdge = addedNodes.at(i)->output_edge();
+                k_assert(srcEdge, "Invalid source edge for connecting filter nodes.");
+
+                for (const auto dstNodeIdx: loadedAbstractNodes.at(i).connectedTo)
+                {
+                    node_edge_s *const dstEdge = addedNodes.at(dstNodeIdx)->input_edge();
+                    k_assert(dstEdge, "Invalid destination or target edge for connecting filter nodes.");
+
+                    srcEdge->connect_to(dstEdge);
+                }
+            }
+        }
+
         return true;
     }
     else
@@ -353,8 +393,8 @@ void FilterGraphDialog::save_graph_into_file(QString filename)
 
 // Adds a new instance of the given filter type into the node graph. Returns a
 // pointer to the new node.
-FilterGraphNode* FilterGraphDialog::add_filter_node(const std::string &filterTypeUuid,
-                                                    const std::vector<std::pair<unsigned, double>> &initialParameterValues)
+FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const std::string &filterTypeUuid,
+                                                          const std::vector<std::pair<unsigned, double>> &initialParameterValues)
 {
     filter_c *const filter = kf_create_new_filter_instance(filterTypeUuid, initialParameterValues);
     k_assert(filter, "Failed to create a new filter node.");
@@ -500,10 +540,4 @@ void FilterGraphDialog::refresh_filter_graph(void)
     this->graphicsScene->update_scene_connections();
 
     return;
-}
-
-FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const std::string &filterTypeUuid,
-                                                          const std::vector<std::pair<unsigned, double>> &initialParameterValues)
-{
-    return add_filter_node(filterTypeUuid, initialParameterValues);
 }

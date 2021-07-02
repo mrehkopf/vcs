@@ -11,8 +11,7 @@
 #include "filter/filter.h"
 
 bool file_reader::filter_graph::version_b::read(const std::string &filename,
-                                                std::vector<FilterGraphNode*> *const graphNodes,
-                                                std::vector<filter_graph_option_s> *const graphOptions)
+                                                std::vector<abstract_filter_graph_node_s> *const graphNodes)
 {
     // Bails out if the value (string) of the first cell on the current row doesn't match
     // the given one.
@@ -54,15 +53,18 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
         FAIL_IF_FIRST_CELL_IS_NOT("filterCount");
         const unsigned numFilters = rowData.at(row).at(1).toUInt();
 
-        // Load the filter data.
+        // Load the filter nodes.
         for (unsigned i = 0; i < numFilters; i++)
         {
+            abstract_filter_graph_node_s node;
+
             row++;
             FAIL_IF_FIRST_CELL_IS_NOT("id");
-            const auto filterTypeUuid = rowData.at(row).at(1).toStdString();
+            node.typeUuid = rowData.at(row).at(1).toStdString();
 
-            if (!kf_is_known_filter_type(filterTypeUuid))
+            if (!kf_is_known_filter_type(node.typeUuid))
             {
+                NBENE(("Unrecognized filter UUID \"%s\"", node.typeUuid.c_str()));
                 goto fail;
             }
 
@@ -70,19 +72,16 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
             FAIL_IF_FIRST_CELL_IS_NOT("parameterData");
             const unsigned numParameters = rowData.at(row).at(1).toUInt();
 
-            std::vector<std::pair<unsigned, double>> params;
-            params.reserve(numParameters);
-            for (unsigned p = 0; p < numParameters; p++)
+            for (unsigned paramIdx = 0; paramIdx < numParameters; paramIdx++)
             {
-                params.push_back({p, rowData.at(row).at(2+p).toDouble()});
+                const double paramValue = rowData.at(row).at(2 + paramIdx).toDouble();
+                node.parameters.push_back({paramIdx, paramValue});
             }
 
-            const auto newNode = kd_add_filter_graph_node(filterTypeUuid, params);
-            k_assert(newNode, "Failed to create a new filter node instance.");
-            graphNodes->push_back(newNode);
+            graphNodes->push_back(node);
         }
 
-        // Load the node data.
+        // Load the filter node metadata.
         {
             row++;
             FAIL_IF_FIRST_CELL_IS_NOT("nodeCount");
@@ -101,11 +100,12 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
 
                     if (paramName == "scenePosition")
                     {
-                        graphNodes->at(i)->setPos(QPointF(rowData.at(row).at(1).toDouble(), rowData.at(row).at(2).toDouble()));
+                        graphNodes->at(i).position = {rowData.at(row).at(1).toDouble(),
+                                                      rowData.at(row).at(2).toDouble()};
                     }
                     else if (paramName == "isEnabled")
                     {
-                        graphNodes->at(i)->set_enabled(rowData.at(row).at(1).toInt());
+                        graphNodes->at(i).isEnabled = rowData.at(row).at(1).toInt();
                     }
                     else if (paramName == "connections")
                     {
@@ -113,36 +113,19 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
 
                         for (unsigned c = 0; c < numConnections; c++)
                         {
-                            node_edge_s *const sourceEdge = graphNodes->at(i)->output_edge();
-                            node_edge_s *const targetEdge = graphNodes->at(rowData.at(row).at(2+c).toUInt())->input_edge();
-
-                            k_assert((sourceEdge && targetEdge), "Invalid source or target edge for connecting.");
-
-                            sourceEdge->connect_to(targetEdge);
+                            const int dstNodeId = rowData.at(row).at(2+c).toInt();
+                            graphNodes->at(i).connectedTo.push_back(dstNodeId);
                         }
                     }
                     else if (paramName == "backgroundColor")
                     {
-                        graphNodes->at(i)->set_background_color(rowData.at(row).at(1));
+                        graphNodes->at(i).backgroundColor = rowData.at(row).at(1).toStdString();
                     }
                     else
                     {
                         NBENE(("Encountered an unknown filter graph node parameter name. Ignoring it."));
                     }
                 }
-            }
-        }
-
-        // Load the graph options.
-        {
-            row++;
-            FAIL_IF_FIRST_CELL_IS_NOT("graphOptionsCount");
-            const unsigned graphOptionsCount = rowData.at(row).at(1).toUInt();
-
-            for (unsigned i = 0; i < graphOptionsCount; i++)
-            {
-                row++;
-                graphOptions->push_back(filter_graph_option_s(rowData.at(row).at(0).toStdString(), rowData.at(row).at(1).toInt()));
             }
         }
     }
