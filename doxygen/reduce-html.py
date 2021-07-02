@@ -12,17 +12,16 @@ from bs4 import BeautifulSoup, NavigableString
 def filter_leaf_nodes(nodes:list)->list:
     return [x for x in nodes if x.string != None]
 
-def parse_dom(html:str)->BeautifulSoup:
+def parse_html(html:str)->BeautifulSoup:
     return BeautifulSoup(html, "html.parser")
 
 def remove_non_breaking_spaces(html:str)->str:
     html = html.replace("&nbsp;", "")
     html = html.replace("&#160;", "")
-
     return html
 
 def simplify_enum_declarations(html:str)->str:
-    dom = parse_dom(html)
+    dom = parse_html(html)
 
     # E.g. "enum_e { enum_e::a, enum_e::b }" => "enum_e { a, b }".
     # Note: Only enum declarations in <a></a> contain the "xxx::" part we want to remove.
@@ -42,11 +41,14 @@ def get_function_table(dom:BeautifulSoup):
     fnTableAnchor = dom.select("table.memberdecls a[name=func-members],"
                                "table.memberdecls a[name=pub-methods]")
 
-    if (not fnTableAnchor): return None
+    if (not fnTableAnchor):
+        return None
 
     fnTableAnchor = fnTableAnchor[0]
     parent = fnTableAnchor
-    for x in range(4): parent = parent.parent
+    for x in range(4):
+        parent = parent.parent
+
     return parent
 
 def strip_unwanted_whitespace(html:str)->str:
@@ -62,7 +64,7 @@ def strip_unwanted_whitespace(html:str)->str:
     # For function return declarations; e.g. "std::vector<int *>" => "std::vector<int*>".
     html = re.sub(r'(&lt;.*?) ((\*|&amp;)&gt;)', '\g<1>\g<2>', html)
 
-    dom = parse_dom(html)
+    dom = parse_html(html)
 
     # Strip the space between a function's name and its list of parameters.
     # E.g. "function (int x)" => "function(int x)".
@@ -75,7 +77,7 @@ def strip_unwanted_whitespace(html:str)->str:
     return str(dom)
 
 def remove_unwanted_elements(html:str)->str:
-    dom = parse_dom(html)
+    dom = parse_html(html)
 
     # Remove certain labels like "strong" next to member names.
     prototypeLabels = dom.select(".memproto > table.mlabels .mlabels-right .mlabel")
@@ -83,14 +85,14 @@ def remove_unwanted_elements(html:str)->str:
         if node.string in ["strong", "virtual"]:
             node.decompose()
 
-    # Simplify "(void)" in function declarations to "()"."
+    # Simplify "(void)" in function declarations to "()".
     functionTable = get_function_table(dom)
     if (functionTable):
         nodes = (functionTable.select("table.memberdecls tr[class^=memitem] > td.memItemRight"))
         for node in nodes:
             node.contents[1].replaceWith(node.contents[1].replace("(void)", "()"))
 
-    # Simplify "(void)" in function documentation to "()"."
+    # Simplify "(void)" in function documentation to "()".
     paramNodes = filter_leaf_nodes(dom.select(".paramtype"))
     for node in paramNodes:
         if (node.string == "void"):
@@ -99,7 +101,7 @@ def remove_unwanted_elements(html:str)->str:
     return str(dom)
 
 def singly_capitalize(html:str)->str:
-    dom = parse_dom(html)
+    dom = parse_html(html)
 
     headingNodes = dom.select("h2.groupheader")
     for node in headingNodes:
@@ -118,10 +120,11 @@ def recreate_reference_page_title(html:str)->str:
         "Class Template Reference",
     ]
 
-    dom = parse_dom(html)
+    dom = parse_html(html)
 
     titleNode = dom.select("#doc-content > .header .title")
-    if (not titleNode): return str(dom)
+    if (not titleNode):
+        return str(dom)
 
     titleNode = titleNode[0]
 
@@ -151,7 +154,7 @@ def recreate_reference_page_title(html:str)->str:
     return str(dom)
 
 def standardize_code_elements(html:str)->str:
-    dom = parse_dom(html)
+    dom = parse_html(html)
 
     fragmentNodes = dom.select("div.fragment")
     for node in fragmentNodes:
@@ -165,7 +168,7 @@ def standardize_code_elements(html:str)->str:
 
 # Formats function signatures a little better.
 def betterize_memnames(html:str)->str:
-    dom = parse_dom(html)
+    dom = parse_html(html)
 
     memnameNodes = dom.select("table.memname")
     for node in memnameNodes:
@@ -194,7 +197,8 @@ def betterize_memnames(html:str)->str:
             nameSpan.string = memName.text.strip()
             nameList.append(nameSpan)
 
-        nameList.append(NavigableString("("))
+        if len(paramTypeNodes):
+            nameList.append(NavigableString("("))
 
         for typeNode, nameNode in zip(paramTypeNodes, paramNameNodes):
             typeLink = typeNode.select("a")
@@ -233,31 +237,58 @@ def betterize_memnames(html:str)->str:
 
     return str(dom)
 
-for filename in os.listdir("./html/"):
-    filename = "./html/" + filename
+# Moves .memitem elements' "See also" section from .memdoc to the parent
+# .memitem. This allows us to style the section as a .memitem footer in CSS. 
+def footerize_memitem_see_section(html:str)->str:
+    dom = parse_html(html)
 
-    if filename.endswith('.html'):
-        htmlFile = open(filename, "r+")
-        html = htmlFile.read()
+    memItems = dom.select("#doc-content .memitem")
 
-        # Wrap in <pre> to conserve whitespace in code fragments.
-        html = "<pre>" + html + "</pre>"
+    for memItem in memItems:
+        seeSection = memItem.select(".memdoc > .section.see")
+        if seeSection:
+            term = seeSection[0].select("dt")
+            if term:
+                # The text is expected to already be "See also", we add the colon.
+                term[0].string = "See also:"
+            memItem.append(seeSection[0])
 
-        html = remove_non_breaking_spaces(html)
-        html = strip_unwanted_whitespace(html)
-        html = standardize_code_elements(html)
-        html = simplify_enum_declarations(html)
-        html = remove_unwanted_elements(html)
-        html = recreate_reference_page_title(html)
-        html = singly_capitalize(html)
-        html = betterize_memnames(html)
+    return str(dom)
 
-        # Remove the document-wrapping <pre> tag.
-        html = html[5:-6]
+# Applies the given reducer functions to the HTML files in the given source
+# directory (e.g. "./html/" - the path must end with "/").
+def reduce_html(srcDir:str, reducerFunctions:list):
+    for filename in os.listdir(srcDir):
+        filename = srcDir + filename
 
-        htmlFile.seek(0)
-        htmlFile.write(html)
-        htmlFile.truncate()
-        htmlFile.close()
+        if filename.endswith(".html"):
+            htmlFile = open(filename, "r+")
+            html = htmlFile.read()
 
-print("Reduced the output's HTML")
+            # Wrap the document in <pre> to have the HTML parser conserve
+            # whitespace in code fragments.
+            html = "<pre>" + html + "</pre>"
+
+            for reducerFn in reducerFunctions:
+                html = reducerFn(html)
+
+            # Remove the document-wrapping <pre> tag.
+            html = html[5:-6]
+
+            htmlFile.seek(0)
+            htmlFile.write(html)
+            htmlFile.truncate()
+            htmlFile.close()
+
+print("Reducing the output's HTML...")
+reduce_html("./html/", [
+    remove_non_breaking_spaces,
+    strip_unwanted_whitespace,
+    standardize_code_elements,
+    simplify_enum_declarations,
+    remove_unwanted_elements,
+    recreate_reference_page_title,
+    singly_capitalize,
+    betterize_memnames,
+    footerize_memitem_see_section,
+])

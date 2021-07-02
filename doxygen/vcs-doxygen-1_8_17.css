@@ -608,6 +608,7 @@ hr
 {
 	margin-bottom: var(--contents-container-horizontal-padding) !important;
 	margin-top: 16px !important;
+	border: 1px solid var(--separating-border-color) !important;
 }
 
 .memItemLeft,
@@ -776,13 +777,13 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	box-sizing: border-box !important;
 	box-shadow: none !important;
 	font-weight: 500 !important;
-	border: 1px solid var(--separating-border-color) !important;
+	border: none !important;
+	border-bottom: 1px solid var(--separating-border-color) !important;
 	padding-top: 10px !important;
 	padding-bottom: 10px !important;
 	background-color: var(--secondary-background-color) !important;
 	padding-left: 16px !important;
 	border-radius: 0 !important;
-	border-bottom: none !important;
 }
 
 .memproto .memtemplate
@@ -800,7 +801,7 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 .memdoc
 {
 	box-shadow: none !important;
-	border: 1px solid var(--separating-border-color) !important;
+	border: none !important;
 	padding: 0 !important;
 	background: none !important;
 	border-radius: 0 !important;
@@ -892,17 +893,28 @@ pre.fragment > code.line > .comment
 	padding: 0 !important;
 }
 
+.memitem .section.see
+{
+	padding: 10px 16px !important;
+	border-top: 1px solid var(--separating-border-color) !important;
+	margin: 0 !important;
+}
+
 .section.note dd,
 .section.warning dd
 {
 	color: inherit !important;
 }
 
-.section.note dd,
-.section.warning dd,
 .section.see dd
 {
 	margin: 0 !important;
+}
+
+.section.note dd,
+.section.warning dd
+{
+	margin-left: 4px !important;
 }
 
 .section.note dt,
@@ -910,14 +922,6 @@ pre.fragment > code.line > .comment
 .section.see dd .el
 {
 	font-weight: normal !important;
-}
-
-.section.see,
-.section.note,
-.section.warning
-{
-	margin-bottom: var(--section-vertical-margin) !important;
-	margin-top: var(--section-vertical-margin) !important;
 }
 
 .section.see dd,
@@ -936,6 +940,11 @@ pre.fragment > code.line > .comment
 	color: var(--primary-heading-text-color) !important;
 }
 
+.memitem .section.see dt
+{
+	font-weight: normal !important;
+}
+
 .section.warning dt,
 .section.note dt
 {
@@ -946,7 +955,7 @@ pre.fragment > code.line > .comment
 .section.warning dt::after,
 .section.note dt::after
 {
-	content: ": ";
+	content: ":";
 }
 
 .section.warning,
@@ -955,6 +964,8 @@ pre.fragment > code.line > .comment
 	border: none !important;
 	border-radius: 0 !important;
 	background-color: transparent !important;
+	margin-bottom: var(--section-vertical-margin) !important;
+	margin-top: var(--section-vertical-margin) !important;
 }
 
 .section.see dt::after

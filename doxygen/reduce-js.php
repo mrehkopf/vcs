@@ -10,6 +10,8 @@
  * 
  */
 
+echo "Reducing the output's JS...\n";
+
 $fileReducers = [
     "./html/menudata.js"=>[
         "singly_capitalize",
@@ -32,8 +34,6 @@ foreach ($filenames as $filename)
 
     file_put_contents($filename, $reducedContents);
 }
-
-echo "Reduced the output's JS.\n";
 
 function singly_capitalize(string $js) : string
 {
