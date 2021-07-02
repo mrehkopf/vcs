@@ -1,6 +1,6 @@
 bin/
 .vscode/
 misc/
-doxygen/html/
+devdocs/html/
 generated_files/
 *.pro.user
