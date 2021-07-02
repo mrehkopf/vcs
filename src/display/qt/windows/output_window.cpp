@@ -977,7 +977,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
             (QMessageBox::question(this, "Confirm VCS exit",
                                    "The following dialogs have unsaved changes:"
                                    "<br><br>" + dialogsWithUnsavedChanges.join("<br>") +
-                                   "<br><br>Exit anyway?",
+                                   "<br><br>Exit and lose unsaved changes?",
                                    (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::No))
         {
             return;
