@@ -216,9 +216,22 @@ def betterize_memnames(html:str)->str:
         for typeNode, nameNode in zip(paramTypeNodes, paramNameNodes):
             typeLink = typeNode.select("a")
 
-            if (typeLink):
-                typeLink[0]["class"].append("vcs-param-type")
-                nameList.append(typeLink[0])
+            if typeLink:
+                typeSpan = dom.new_tag("span")
+                typeSpan["class"] = "vcs-param-type"
+                for child in typeNode.contents:
+                    if isinstance(child, str):
+                        textNode = dom.new_tag("span")
+                        textNode.string = child.string
+                        typeSpan.append(textNode)
+                    # Note: We assume all non-text nodes would be <a>.
+                    else:
+                        linkNode = dom.new_tag("a")
+                        linkNode.string = child.text
+                        linkNode["class"] = child["class"]
+                        linkNode["href"] = child["href"]
+                        typeSpan.append(linkNode)
+                nameList.append(typeSpan)
             else:
                 typeSpan = dom.new_tag("span")
                 typeSpan["class"] = "vcs-param-type"
@@ -380,7 +393,7 @@ def reduce_html(srcDir:str, reducerFunctions:list):
     for filename in os.listdir(srcDir):
         filename = srcDir + filename
 
-        if filename.endswith(".html"):
+        if filename.endswith("filter_8h.html"):
             htmlFile = open(filename, "r+")
             html = htmlFile.read()
 
