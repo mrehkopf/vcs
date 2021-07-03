@@ -60,22 +60,27 @@ def get_decl_table(tableHeading:str, dom:BeautifulSoup):
     return None
 
 def strip_unwanted_whitespace(html:str)->str:
-    # For function return declarations.
-    # E.g. "std::vector< std::pair< unsigned, double >>"
-    #   => "std::vector<std::pair<unsigned, double>>".
-    html = re.sub(r'([^\s]?)&lt; ', '\g<1>&lt;', html)
-    html = re.sub(r'(.*?) &gt;', '\g<1>&gt;', html)
-
-    # For function return declarations; e.g. "void *" => "void*".
-    html = re.sub(r' +(\*|&amp;) *<\/td>', '\g<1></td>', html)
-
-    # For function return declarations; e.g. "std::vector<int *>" => "std::vector<int*>".
-    html = re.sub(r'(&lt;.*?) ((\*|&amp;)&gt;)', '\g<1>\g<2>', html)
-
     dom = parse_html(html)
 
-    # Strip the space between a function's name and its list of parameters.
-    # E.g. "function (int x)" => "function(int x)".
+    # Function declarations' return values and parameters.
+    allElements = dom.select("div.memproto, tr[class^=memitem], div.header")
+    for element in allElements:
+        innerHTML = str(element)
+
+        # E.g. "std::vector< std::pair< unsigned, double >>"
+        #   => "std::vector<std::pair<unsigned, double>>".
+        innerHTML = re.sub(r'([^\s]?)&lt; ', '\g<1>&lt;', innerHTML)
+        innerHTML = re.sub(r'(.*?) &gt;', '\g<1>&gt;', innerHTML)
+
+        # E.g. "void *" => "void*".
+        innerHTML = re.sub(r' +(\*|&amp;) *<\/td>', '\g<1></td>', innerHTML)
+
+        # E.g. "std::vector<int *>" => "std::vector<int*>".
+        innerHTML = re.sub(r'(&lt;.*?) ((\*|&amp;)&gt;)', '\g<1>\g<2>', innerHTML)
+        element.replaceWith(BeautifulSoup(str(innerHTML), "html.parser"))
+
+    # Strip the space between a function's name and its list of parameters
+    # in the function declaration table. E.g. "function (int x)" => "function(int x)".
     functionTables = get_function_decl_tables(dom)
     for table in functionTables:
         nodes = table.select("table.memberdecls tr[class^=memitem] > td.memItemRight")
@@ -393,7 +398,7 @@ def reduce_html(srcDir:str, reducerFunctions:list):
     for filename in os.listdir(srcDir):
         filename = srcDir + filename
 
-        if filename.endswith("filter_8h.html"):
+        if filename.endswith(".html"):
             htmlFile = open(filename, "r+")
             html = htmlFile.read()
 
