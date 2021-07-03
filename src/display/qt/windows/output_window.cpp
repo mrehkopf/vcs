@@ -769,7 +769,7 @@ MainWindow::MainWindow(QWidget *parent) :
             this->redraw();
         });
 
-        kc_evNewVideoMode.listen([this](capture_video_mode_s)
+        kc_evNewVideoMode.listen([this](video_mode_s)
         {
             this->update_window_title();
         });

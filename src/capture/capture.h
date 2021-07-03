@@ -82,7 +82,7 @@
 #include "common/types.h"
 #include "common/propagate/vcs_event.h"
 
-struct capture_video_mode_s;
+struct video_mode_s;
 
 /*!
  * An event fired when the capture subsystem makes a new captured frame available.
@@ -150,7 +150,7 @@ extern vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
  * @code
  * // A sample implementation that approves the proposed video mode if there's
  * // no alias for it, and otherwise forces the alias mode.
- * kc_evNewProposedVideoMode.listen([](const capture_video_mode_s &videoMode)
+ * kc_evNewProposedVideoMode.listen([](const video_mode_s &videoMode)
  * {
  *    if (ka_has_alias(videoMode.resolution))
  *    {
@@ -166,7 +166,7 @@ extern vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
  * @see
  * kc_evNewVideoMode, kc_force_capture_resolution()
  */
-extern vcs_event_c<const capture_video_mode_s&> kc_evNewProposedVideoMode;
+extern vcs_event_c<const video_mode_s&> kc_evNewProposedVideoMode;
 
 /*!
  * An event fired when the capture video mode has changed.
@@ -179,7 +179,7 @@ extern vcs_event_c<const capture_video_mode_s&> kc_evNewProposedVideoMode;
  * @see
  * kc_evNewProposedVideoMode, kc_force_capture_resolution()
  */
-extern vcs_event_c<const capture_video_mode_s&> kc_evNewVideoMode;
+extern vcs_event_c<const video_mode_s&> kc_evNewVideoMode;
 
 /*!
  * An event fired when the capture device's active input channel is changed.
@@ -209,8 +209,11 @@ extern vcs_event_c<void> kc_evInvalidDevice;
  * rather than by the capture subsystem.
  * 
  * @code
- * // Have VCS's output window display a "no signal" message when there's no signal.
- * kc_evSignalLost.listen(ks_indicate_no_signal);
+ * // Print a message every time the capture signal is lost.
+ * kc_evSignalLost.listen([]
+ * {
+ *     printf("The signal was lost.\n");
+ * });
  * @endcode
  * 
  * @see
@@ -359,7 +362,7 @@ enum class capture_event_e
  * @brief
  * A video mode of the capture device's input signal.
  */
-struct capture_video_mode_s
+struct video_mode_s
 {
     resolution_s resolution;
 
@@ -516,7 +519,7 @@ bool kc_release_device(void);
  * @see
  * kc_get_capture_resolution(), kc_get_capture_refresh_rate(), kc_evNewVideoMode
  */
-capture_video_mode_s kc_get_capture_video_mode(void);
+video_mode_s kc_get_capture_video_mode(void);
 
 /*!
  * Asks the capture device to set its input resolution to the one given,

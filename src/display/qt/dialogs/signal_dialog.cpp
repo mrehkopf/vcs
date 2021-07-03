@@ -143,7 +143,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
             ui->tableWidget_propertyTable->modify_property("Frame rate", QString("%1 FPS").arg(fps));
         });
 
-        kc_evNewVideoMode.listen([update_info](const capture_video_mode_s&)
+        kc_evNewVideoMode.listen([update_info](const video_mode_s&)
         {
             update_info();
         });

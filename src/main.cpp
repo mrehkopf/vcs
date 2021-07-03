@@ -55,7 +55,7 @@ static bool initialize_all(void)
         PROGRAM_EXIT_REQUESTED = true;
     });
 
-    kc_evNewVideoMode.listen([](const capture_video_mode_s &videoMode)
+    kc_evNewVideoMode.listen([](const video_mode_s &videoMode)
     {
         INFO(("Video mode: %u x %u @ %.3f Hz.",
               videoMode.resolution.w,
@@ -66,7 +66,7 @@ static bool initialize_all(void)
     // The capture device has received a new video mode. We'll inspect the
     // mode to see if we think it's acceptable, then allow news of it to
     // propagate to the rest of VCS.
-    kc_evNewProposedVideoMode.listen([](const capture_video_mode_s &videoMode)
+    kc_evNewProposedVideoMode.listen([](const video_mode_s &videoMode)
     {
         // If there's an alias for this resolution, force that resolution
         // instead. Note that forcing the resolution is expected to automatically

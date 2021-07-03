@@ -82,7 +82,7 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
 
     // Listen for app events.
     {
-        kc_evNewVideoMode.listen([this](const capture_video_mode_s &videoMode)
+        kc_evNewVideoMode.listen([this](const video_mode_s &videoMode)
         {
             ui->parameterGrid_parameters->set_maximum_value("Scan start", (videoMode.resolution.h - 1));
             ui->parameterGrid_parameters->set_maximum_value("Scan end", (videoMode.resolution.h - 1));

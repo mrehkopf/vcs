@@ -11,8 +11,8 @@
 #include "common/timer/timer.h"
 
 vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
-vcs_event_c<const capture_video_mode_s&> kc_evNewProposedVideoMode;
-vcs_event_c<const capture_video_mode_s&> kc_evNewVideoMode;
+vcs_event_c<const video_mode_s&> kc_evNewProposedVideoMode;
+vcs_event_c<const video_mode_s&> kc_evNewVideoMode;
 vcs_event_c<void> ks_evInputChannelChanged;
 vcs_event_c<void> kc_evInvalidDevice;
 vcs_event_c<void> kc_evSignalLost;
@@ -60,7 +60,7 @@ void kc_release_capture(void)
     return;
 }
 
-capture_video_mode_s kc_get_capture_video_mode(void)
+video_mode_s kc_get_capture_video_mode(void)
 {
     return {
         kc_get_capture_resolution(),
