@@ -200,13 +200,13 @@ def betterize_memnames(html:str)->str:
             nameList.append(memNameLink[0])
             nameList.append(NavigableString(split[1]))
         else:
-            split = memName.text.strip().split(" ")
+            split = memName.text.strip().rpartition(" ")
             retSpan = dom.new_tag("span")
             retSpan["class"] = "vcs-member-return"
             retSpan.string = split[0]
             nameSpan = dom.new_tag("span")
             nameSpan["class"] = "vcs-member-name"
-            nameSpan.string = split[1]
+            nameSpan.string = split[2]
             nameList.append(retSpan)
             nameList.append(nameSpan)
 
