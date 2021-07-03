@@ -721,7 +721,6 @@ table.memberdecls td.mdescLeft
 	border-right: 1px solid var(--separating-border-color) !important;
 	padding-left: 10px !important;
 	padding-right: 6px !important;
-	min-width: 80px !important;
 }
 
 table.memberdecls td.memItemRight,
@@ -1078,6 +1077,11 @@ span .mlabel
 td.vcs-unnecessary-element
 {
 	display: none !important;
+}
+
+.vcs-member-return + .vcs-member-name::before
+{
+	content: " ";
 }
 
 .memitem :last-child

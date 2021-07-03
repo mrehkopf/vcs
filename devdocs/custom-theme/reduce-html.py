@@ -34,22 +34,30 @@ def simplify_enum_declarations(html:str)->str:
 
     return str(dom)
 
-# Returns the function definition table in the given BeautifulSoup DOM object;
-# or None if the DOM doesn't include that table. 
-def get_function_table(dom:BeautifulSoup):
-    # FIXME: What if the page has both the func-members and pub-methods tables?
-    fnTableAnchor = dom.select("table.memberdecls a[name=func-members],"
-                               "table.memberdecls a[name=pub-methods]")
+# Returns as a list all function declaration tables in the given Beautiful Soup
+# object. If there are no such tables, returns an empty array.
+def get_function_decl_tables(dom:BeautifulSoup):
+    return filter(lambda x: x, [
+        get_decl_table("Functions", dom),
+        get_decl_table("Public member functions", dom),
+        get_decl_table("Private member functions", dom)
+    ])
+    
+# Returns a member declaration table of the given heading in the given Beautiful
+# Soup object.
+def get_decl_table(tableHeading:str, dom:BeautifulSoup):
+    declTables = dom.select("#doc-content table.memberdecls")
 
-    if (not fnTableAnchor):
-        return None
+    for table in declTables:
+        heading = table.select(".groupheader")
+        if heading:
+            # Some headings just have a text node (<h2>Functions</h2>), while others
+            # also have an anchor (<h2><a href="..."></a>Functions</h2>).
+            for child in heading[0].contents:
+                if child.string and child.string.lower().strip() == tableHeading.lower():
+                    return table
 
-    fnTableAnchor = fnTableAnchor[0]
-    parent = fnTableAnchor
-    for x in range(4):
-        parent = parent.parent
-
-    return parent
+    return None
 
 def strip_unwanted_whitespace(html:str)->str:
     # For function return declarations.
@@ -68,9 +76,9 @@ def strip_unwanted_whitespace(html:str)->str:
 
     # Strip the space between a function's name and its list of parameters.
     # E.g. "function (int x)" => "function(int x)".
-    functionTable = get_function_table(dom)
-    if (functionTable):
-        nodes = (functionTable.select("table.memberdecls tr[class^=memitem] > td.memItemRight"))
+    functionTables = get_function_decl_tables(dom)
+    for table in functionTables:
+        nodes = table.select("table.memberdecls tr[class^=memitem] > td.memItemRight")
         for node in nodes:
             node.contents[1].replaceWith(node.contents[1].lstrip())
 
@@ -86,9 +94,9 @@ def remove_unwanted_elements(html:str)->str:
             node.decompose()
 
     # Simplify "(void)" in function declarations to "()".
-    functionTable = get_function_table(dom)
-    if (functionTable):
-        nodes = (functionTable.select("table.memberdecls tr[class^=memitem] > td.memItemRight"))
+    functionTables = get_function_decl_tables(dom)
+    for table in functionTables:
+        nodes = table.select("table.memberdecls tr[class^=memitem] > td.memItemRight")
         for node in nodes:
             node.contents[1].replaceWith(node.contents[1].replace("(void)", "()"))
 
@@ -192,9 +200,14 @@ def betterize_memnames(html:str)->str:
             nameList.append(memNameLink[0])
             nameList.append(NavigableString(split[1]))
         else:
+            split = memName.text.strip().split(" ")
+            retSpan = dom.new_tag("span")
+            retSpan["class"] = "vcs-member-return"
+            retSpan.string = split[0]
             nameSpan = dom.new_tag("span")
             nameSpan["class"] = "vcs-member-name"
-            nameSpan.string = memName.text.strip()
+            nameSpan.string = split[1]
+            nameList.append(retSpan)
             nameList.append(nameSpan)
 
         if len(paramTypeNodes):
@@ -255,6 +268,112 @@ def footerize_memitem_see_section(html:str)->str:
 
     return str(dom)
 
+# Create specific formatting for event documentation. Otherwise, events are lumped
+# with variable declarations.
+def specialize_event_documentation(html:str)->str:
+    dom = parse_html(html)
+
+    variableTable = get_decl_table("Variables", dom)
+
+    if not variableTable:
+        return str(dom)
+
+    eventDecls = []
+    allDecls = variableTable.select("tr[class^=memitem]")
+    for decl in allDecls:
+        left = decl.select("td.memItemLeft")
+        if left and left[0].text.strip().startswith("vcs_event_c<"):
+            eventDecls.append(decl)
+
+    if not eventDecls:
+        return str(dom)
+
+    # Create a table for event declarations.
+    eventsTable = dom.new_tag("table")
+    eventsTable["class"] = "memberdecls"
+    eventsTableBody = dom.new_tag("tbody")
+    heading = dom.new_tag("tr")
+    heading["class"] = "heading"
+    td = dom.new_tag("td")
+    td["colspan"] = "2"
+    h2 = dom.new_tag("h2")
+    h2["class"] = "groupheader"
+    h2.string = "Events"
+    td.append(h2)
+    heading.append(td)
+    eventsTableBody.append(heading)
+    eventsTable.append(eventsTableBody)
+    variableTable.insert_after(eventsTable)
+
+    # Remove "vcs_event_c" from events' declarations.
+    for event in eventDecls:
+        eventsTableBody.append(event)
+        leftItems = event.select(".memItemLeft")
+        for left in leftItems:
+            right = left.parent.select(".memItemRight")[0]
+            for child in left.contents:
+                if child.string:
+                    # FIXME: This will probably fail if vcs_event_c is a link rather than a text node.
+                    child.string.replace_with(child.string.replace("vcs_event_c<", "<"))
+
+    # Move the events from the variables table to the events table.
+    for event in eventDecls:
+        eventsTableBody.append(event)
+
+    # The variables table can be removed if it's now empty.
+    if not variableTable.select("tr[class^=memitem]"):
+        variableTable.decompose()
+
+    # Find all event documentation elements.
+    eventDocElements = []
+    allMemItems = dom.select("#doc-content div.memitem")
+    for item in allMemItems:
+        memName = item.select("span.memname")
+        if memName:
+            for child in memName[0].contents:
+                if child.string and child.string.startswith("vcs_event_c<"):
+                    # FIXME: This will probably fail if vcs_event_c is a link rather than a text node.
+                    child.string.replace_with(child.string.replace("vcs_event_c<", "<"))
+                    eventDocElements.append(item)
+                    break
+
+    variableHeading = dom.select("#doc-content h2.groupheader")
+    for heading in variableHeading:
+        if heading.string and heading.string == "Variable documentation":
+            variableHeading = heading
+            break
+
+    # If we couldn't find the specific heading.
+    if isinstance(variableHeading, list):
+        return str(dom)
+    
+    # Create a heading for event documentation.
+    eventsHeading = dom.new_tag("h2")
+    eventsHeading["class"] = "groupheader"
+    eventsHeading.string = "Event documentation"
+    variableHeading.insert_before(eventsHeading)
+
+    # Move event documentation under its own heading.
+    for item in eventDocElements:
+        itemAnchor = item.find_previous().find_previous().find_previous()
+        assert itemAnchor and itemAnchor.name == "h2"
+
+        itemAnchor2 = itemAnchor.find_previous()
+        assert itemAnchor2 and itemAnchor2.name == "a"
+
+        eventsHeading.insert_after(item)
+        eventsHeading.insert_after(itemAnchor)
+        eventsHeading.insert_after(itemAnchor2)
+
+    # Remove the "Variable documentation" heading if it's now empty.
+    # Note: This code is untested and may not work as intended. Basically, a non-
+    # empty heading should be followed by combinations of a/div/.memitem, which
+    # constitute the heading's child documentation elements.
+    if variableHeading.find_next().name != "a":
+        variableHeading.decompose()
+
+    return str(dom)
+
 # Applies the given reducer functions to the HTML files in the given source
 # directory (e.g. "./html/" - the path must end with "/").
 def reduce_html(srcDir:str, reducerFunctions:list):
@@ -291,4 +410,5 @@ reduce_html("./html/", [
     singly_capitalize,
     betterize_memnames,
     footerize_memitem_see_section,
+    specialize_event_documentation,
 ])
