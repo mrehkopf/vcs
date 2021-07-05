@@ -9,10 +9,10 @@
 #define VCS_FILTER_FILTERS_FRAME_RATE_FILTER_FRAME_RATE_H
 
 #include <chrono>
-#include "filter/filter.h"
+#include "filter/abstract_filter.h"
 #include "filter/filters/frame_rate/gui/filtergui_frame_rate.h"
 
-class filter_frame_rate_c : public filter_c
+class filter_frame_rate_c : public abstract_filter_c
 {
 public:
     enum { PARAM_THRESHOLD,
@@ -34,12 +34,12 @@ public:
            TEXT_BLACK = 2,
            TEXT_WHITE = 3 };
 
-    filter_frame_rate_c(FILTER_CTOR_FUNCTION_PARAMS) :
-        filter_c({{PARAM_THRESHOLD, 20},
-                  {PARAM_CORNER, TOP_LEFT},
-                  {PARAM_BG_COLOR, BG_TRANSPARENT},
-                  {PARAM_TEXT_COLOR, TEXT_YELLOW}},
-                 initialParameterValues)
+    filter_frame_rate_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+        abstract_filter_c({{PARAM_THRESHOLD, 20},
+                           {PARAM_CORNER, TOP_LEFT},
+                           {PARAM_BG_COLOR, BG_TRANSPARENT},
+                           {PARAM_TEXT_COLOR, TEXT_YELLOW}},
+                          initialParamValues)
     {
         this->guiDescription = new filtergui_frame_rate_c(this);
     }
@@ -50,7 +50,7 @@ public:
     std::string name(void) const override { return "Frame rate"; }
     filter_category_e category(void) const override { return filter_category_e::meta; }
 
-    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
+    void apply(u8 *const pixels, const resolution_s &r) override;
 
 private:
 };

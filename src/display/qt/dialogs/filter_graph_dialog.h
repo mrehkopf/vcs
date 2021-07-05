@@ -35,7 +35,7 @@ public:
 
 private:
     FilterGraphNode* add_filter_graph_node(const std::string &filterTypeUuid,
-                                           const std::vector<std::pair<unsigned, double>> &initialParameterValues = {});
+                                           const std::vector<std::pair<unsigned, double>> &initialParamValues = {});
 
     void reset_graph(const bool autoAccept = false);
 

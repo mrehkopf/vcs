@@ -13,7 +13,7 @@
 class filtergui_flip_c : public filtergui_c
 {
 public:
-    filtergui_flip_c(filter_c *const filter);
+    filtergui_flip_c(abstract_filter_c *const filter);
 };
 
 #endif

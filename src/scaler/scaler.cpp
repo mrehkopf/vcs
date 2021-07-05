@@ -604,7 +604,7 @@ void ks_scale_frame(const captured_frame_s &frame)
 
     /// TODO: If anti-tearing has visualization options turned on, we'd ideally
     /// draw them AFTER applying filtering.
-    kf_apply_filter_chain(pixelData, frameRes);
+    kf_apply_matching_filter_chain(pixelData, frameRes);
 
     // Scale the frame to the desired output size.
     {

@@ -15,9 +15,9 @@
 
 // Takes a subregion of the frame and either scales it up to fill the whole frame or
 // fills its surroundings with black.
-void filter_crop_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
+void filter_crop_c::apply(u8 *const pixels, const resolution_s &r)
 {
-    VALIDATE_FILTER_INPUT
+    this->assert_input_validity(pixels, r);
 
     const unsigned x = this->parameter(PARAM_X);
     const unsigned y = this->parameter(PARAM_Y);

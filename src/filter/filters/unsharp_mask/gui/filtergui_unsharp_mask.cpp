@@ -9,7 +9,7 @@
 #include "filter/filters/unsharp_mask/filter_unsharp_mask.h"
 #include "filter/filters/unsharp_mask/gui/filtergui_unsharp_mask.h"
 
-filtergui_unsharp_mask_c::filtergui_unsharp_mask_c(filter_c *const filter)
+filtergui_unsharp_mask_c::filtergui_unsharp_mask_c(abstract_filter_c *const filter)
 {
     {
         auto *const strength = new filtergui_spinbox_s;

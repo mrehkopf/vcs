@@ -13,7 +13,7 @@
 class filtergui_anti_tear_c : public filtergui_c
 {
 public:
-    filtergui_anti_tear_c(filter_c *const filter);
+    filtergui_anti_tear_c(abstract_filter_c *const filter);
 };
 
 #endif

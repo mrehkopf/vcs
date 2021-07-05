@@ -35,9 +35,6 @@
  * The memory interface is for POD data only; i.e. anything you wouldn't mind
  * using @a memset() on.
  * 
- * @see
- * [Memory subsystem interface](@ref memory.h)
- * 
  * ## Usage
  * 
  *   1. Allocate memory for POD data types:
@@ -88,6 +85,9 @@
  *      // otherwise results in undefined behavior.
  *      chars[0] = 15;
  *      @endcode
+ * 
+ * @see
+ * [Memory subsystem interface](@ref memory.h)
  */
 template <typename T>
 class heap_mem
@@ -263,7 +263,7 @@ public:
      * intsRef.release();
      * // intsRef.is_null() == true.
      * 
-     * // Will now correctly trigger the bounds-checking of operator[].
+     * // Will now correctly trigger the bounds-checking in operator[].
      * intsRef[0];
      * @endcode
      * 

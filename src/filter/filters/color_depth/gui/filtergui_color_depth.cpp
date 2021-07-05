@@ -9,7 +9,7 @@
 #include "filter/filters/color_depth/filter_color_depth.h"
 #include "filter/filters/color_depth/gui/filtergui_color_depth.h"
 
-filtergui_color_depth_c::filtergui_color_depth_c(filter_c *const filter)
+filtergui_color_depth_c::filtergui_color_depth_c(abstract_filter_c *const filter)
 {
     {
         auto *const red = new filtergui_spinbox_s;

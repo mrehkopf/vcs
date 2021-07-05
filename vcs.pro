@@ -72,6 +72,7 @@ SOURCES += \
     src/anti_tear/anti_tear_multiple_per_frame.cpp \
     src/anti_tear/anti_tear_one_per_frame.cpp \
     src/anti_tear/anti_tearer.cpp \
+    src/filter/abstract_filter.cpp \
     src/filter/filters/anti_tear/filter_anti_tear.cpp \
     src/filter/filters/anti_tear/gui/filtergui_anti_tear.cpp \
     src/filter/filters/blur/filter_blur.cpp \

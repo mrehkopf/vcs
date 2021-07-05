@@ -14,7 +14,7 @@
 #include "common/globals.h"
 #include "common/types.h"
 
-class filter_c;
+class abstract_filter_c;
 
 // The possible types of GUI components.
 enum class filtergui_component_e
@@ -99,7 +99,7 @@ struct filtergui_field_s
 // to create the actual GUI.
 class filtergui_c
 {
-    friend class filter_c;
+    friend class abstract_filter_c;
 
 public:
     virtual ~filtergui_c(void);

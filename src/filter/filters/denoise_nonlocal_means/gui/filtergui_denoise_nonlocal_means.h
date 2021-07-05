@@ -13,7 +13,7 @@
 class filtergui_denoise_nonlocal_means_c : public filtergui_c
 {
 public:
-    filtergui_denoise_nonlocal_means_c(filter_c *const filter);
+    filtergui_denoise_nonlocal_means_c(abstract_filter_c *const filter);
 };
 
 #endif

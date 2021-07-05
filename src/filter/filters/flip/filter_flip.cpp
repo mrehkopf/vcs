@@ -14,9 +14,9 @@
 #endif
 
 // Flips the frame horizontally and/or vertically.
-void filter_flip_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
+void filter_flip_c::apply(u8 *const pixels, const resolution_s &r)
 {
-    VALIDATE_FILTER_INPUT
+    this->assert_input_validity(pixels, r);
 
     static heap_mem<u8> scratch(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Flip filter scratch buffer");
 

@@ -13,7 +13,7 @@
 class filtergui_decimate_c : public filtergui_c
 {
 public:
-    filtergui_decimate_c(filter_c *const filter);
+    filtergui_decimate_c(abstract_filter_c *const filter);
 };
 
 #endif

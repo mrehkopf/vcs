@@ -13,7 +13,7 @@
 class filtergui_crop_c : public filtergui_c
 {
 public:
-    filtergui_crop_c(filter_c *const filter);
+    filtergui_crop_c(abstract_filter_c *const filter);
 };
 
 #endif

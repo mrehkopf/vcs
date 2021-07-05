@@ -8,10 +8,10 @@
 #ifndef VCS_FILTER_FILTERS_BLUR_FILTER_BLUR_H
 #define VCS_FILTER_FILTERS_BLUR_FILTER_BLUR_H
 
-#include "filter/filter.h"
+#include "filter/abstract_filter.h"
 #include "filter/filters/blur/gui/filtergui_blur.h"
 
-class filter_blur_c : public filter_c
+class filter_blur_c : public abstract_filter_c
 {
 public:
     enum { PARAM_TYPE,
@@ -20,17 +20,17 @@ public:
     enum { BLUR_BOX = 0,
            BLUR_GAUSSIAN = 1 };
     
-    filter_blur_c(FILTER_CTOR_FUNCTION_PARAMS) :
-        filter_c({{PARAM_KERNEL_SIZE, 1},
-                  {PARAM_TYPE, BLUR_GAUSSIAN}},
-                 initialParameterValues)
+    filter_blur_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+        abstract_filter_c({{PARAM_KERNEL_SIZE, 1},
+                           {PARAM_TYPE, BLUR_GAUSSIAN}},
+                          initialParamValues)
     {
         this->guiDescription = new filtergui_blur_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_blur_c)
 
-    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
+    void apply(u8 *const pixels, const resolution_s &r) override;
 
     std::string name(void) const override { return "Blur"; }
     std::string uuid(void) const override { return "a5426f2e-b060-48a9-adf8-1646a2d3bd41"; }

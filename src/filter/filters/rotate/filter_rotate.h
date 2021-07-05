@@ -8,19 +8,19 @@
 #ifndef VCS_FILTER_FILTERS_ROTATE_FILTER_ROTATE_H
 #define VCS_FILTER_FILTERS_ROTATE_FILTER_ROTATE_H
 
-#include "filter/filter.h"
+#include "filter/abstract_filter.h"
 #include "filter/filters/rotate/gui/filtergui_rotate.h"
 
-class filter_rotate_c : public filter_c
+class filter_rotate_c : public abstract_filter_c
 {
 public:
     enum { PARAM_ROT,
            PARAM_SCALE };
 
-    filter_rotate_c(FILTER_CTOR_FUNCTION_PARAMS) :
-        filter_c({{PARAM_SCALE, 1},
-                  {PARAM_ROT, 0}},
-                 initialParameterValues)
+    filter_rotate_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+        abstract_filter_c({{PARAM_SCALE, 1},
+                           {PARAM_ROT, 0}},
+                          initialParamValues)
     {
         this->guiDescription = new filtergui_rotate_c(this);
     }
@@ -31,7 +31,7 @@ public:
     std::string name(void) const override { return "Rotate"; }
     filter_category_e category(void) const override { return filter_category_e::distort; }
 
-    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
+    void apply(u8 *const pixels, const resolution_s &r) override;
 
 private:
 };

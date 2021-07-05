@@ -8,17 +8,16 @@
 #ifndef VCS_FILTER_FILTERS_DENOISE_PIXEL_GATE_FILTER_DENOISE_PIXEL_GATE_H
 #define VCS_FILTER_FILTERS_DENOISE_PIXEL_GATE_FILTER_DENOISE_PIXEL_GATE_H
 
-#include "filter/filter.h"
+#include "filter/abstract_filter.h"
 #include "filter/filters/denoise_pixel_gate/gui/filtergui_denoise_pixel_gate.h"
 
-class filter_denoise_pixel_gate_c : public filter_c
+class filter_denoise_pixel_gate_c : public abstract_filter_c
 {
 public:
     enum { PARAM_THRESHOLD };
                          
-    filter_denoise_pixel_gate_c(FILTER_CTOR_FUNCTION_PARAMS) :
-        filter_c({{PARAM_THRESHOLD, 5}},
-                 initialParameterValues)
+    filter_denoise_pixel_gate_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+        abstract_filter_c({{PARAM_THRESHOLD, 5}}, initialParamValues)
     {
         this->guiDescription = new filtergui_denoise_pixel_gate_c(this);
     }
@@ -29,7 +28,7 @@ public:
     std::string name(void) const override { return "Denoise (pixel gate)"; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
 
-    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
+    void apply(u8 *const pixels, const resolution_s &r) override;
 
 private:
 };

@@ -13,9 +13,9 @@
     #include <opencv2/core/core.hpp>
 #endif
 
-void filter_median_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
+void filter_median_c::apply(u8 *const pixels, const resolution_s &r)
 {
-    VALIDATE_FILTER_INPUT
+    this->assert_input_validity(pixels, r);
 
     #ifdef USE_OPENCV
         const double kernelSize = this->parameter(PARAM_KERNEL_SIZE);

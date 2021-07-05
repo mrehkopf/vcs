@@ -15,8 +15,9 @@
 #include <QLabel>
 #include "display/qt/subclasses/QFrame_filtergui_for_qt.h"
 #include "filter/filter.h"
+#include "filter/abstract_filter.h"
 
-FilterGUIForQt::FilterGUIForQt(const filter_c *const filter,
+FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter,
                                QWidget *parent) :
     QFrame(parent)
 {
@@ -147,8 +148,8 @@ FilterGUIForQt::FilterGUIForQt(const filter_c *const filter,
         }
     }
 
-    this->setMinimumWidth(((filter->category() == filter_category_e::gate_input) ||
-                           (filter->category() == filter_category_e::gate_output))
+    this->setMinimumWidth(((filter->category() == filter_category_e::input_condition) ||
+                           (filter->category() == filter_category_e::output_condition))
                           ? 200
                           : 220);
     this->adjustSize();

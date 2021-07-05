@@ -13,9 +13,9 @@
     #include <opencv2/core/core.hpp>
 #endif
 
-void filter_kernel_3x3_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
+void filter_kernel_3x3_c::apply(u8 *const pixels, const resolution_s &r)
 {
-    VALIDATE_FILTER_INPUT
+    this->assert_input_validity(pixels, r);
 
     #ifdef USE_OPENCV
         const float v11 = this->parameter(PARAM_11);

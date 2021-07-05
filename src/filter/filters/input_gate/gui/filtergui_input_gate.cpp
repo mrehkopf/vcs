@@ -9,7 +9,7 @@
 #include "filter/filters/input_gate/filter_input_gate.h"
 #include "filter/filters/input_gate/gui/filtergui_input_gate.h"
 
-filtergui_input_gate_c::filtergui_input_gate_c(filter_c *const filter)
+filtergui_input_gate_c::filtergui_input_gate_c(abstract_filter_c *const filter)
 {
     {
         auto *const width = new filtergui_spinbox_s;

@@ -17,6 +17,7 @@
 #include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "filter/filtergui.h"
+#include "filter/abstract_filter.h"
 #include "common/command_line/command_line.h"
 #include "common/disk/disk.h"
 #include "ui_filter_graph_dialog.h"
@@ -128,9 +129,9 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                 QMenu *distortMenu = new QMenu("Distort", this);
                 QMenu *metaMenu = new QMenu("Information", this);
 
-                auto knownFilterTypes = kf_known_filter_types();
+                auto knownFilterTypes = kf_available_filter_types();
 
-                std::sort(knownFilterTypes.begin(), knownFilterTypes.end(), [](const filter_c *a, const filter_c *b)
+                std::sort(knownFilterTypes.begin(), knownFilterTypes.end(), [](const abstract_filter_c *a, const abstract_filter_c *b)
                 {
                     return a->name() < b->name();
                 });
@@ -138,8 +139,8 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                 // Add gates.
                 for (const auto filter: knownFilterTypes)
                 {
-                    if ((filter->category() != filter_category_e::gate_input) &&
-                        (filter->category() != filter_category_e::gate_output))
+                    if ((filter->category() != filter_category_e::input_condition) &&
+                        (filter->category() != filter_category_e::output_condition))
                     {
                         continue;
                     }
@@ -161,8 +162,8 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
                     for (const auto filter: knownFilterTypes)
                     {
-                        if ((filter->category() == filter_category_e::gate_input) ||
-                            (filter->category() == filter_category_e::gate_output))
+                        if ((filter->category() == filter_category_e::input_condition) ||
+                            (filter->category() == filter_category_e::output_condition))
                         {
                             continue;
                         }
@@ -239,7 +240,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             {
                 emit this->data_changed();
 
-                if (filterNode->associatedFilter->category() == filter_category_e::gate_input)
+                if (filterNode->associatedFilter->category() == filter_category_e::input_condition)
                 {
                     this->inputGateNodes.erase(std::find(inputGateNodes.begin(), inputGateNodes.end(), filterNode));
                 }
@@ -253,7 +254,6 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             }
         });
     }
-
 
     // Restore persistent settings.
     this->reset_graph(true);
@@ -308,8 +308,6 @@ bool FilterGraphDialog::load_graph_from_file(const QString &filename)
 
     if (!loadedAbstractNodes.empty())
     {
-        this->set_data_filename(filename);
-
         this->clear_filter_graph();
 
         // Add the loaded nodes to the filter graph.
@@ -348,6 +346,8 @@ bool FilterGraphDialog::load_graph_from_file(const QString &filename)
                 }
             }
         }
+
+        this->set_data_filename(filename);
 
         return true;
     }
@@ -394,9 +394,9 @@ void FilterGraphDialog::save_graph_into_file(QString filename)
 // Adds a new instance of the given filter type into the node graph. Returns a
 // pointer to the new node.
 FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const std::string &filterTypeUuid,
-                                                          const std::vector<std::pair<unsigned, double>> &initialParameterValues)
+                                                          const std::vector<std::pair<unsigned, double>> &initialParamValues)
 {
-    filter_c *const filter = kf_create_new_filter_instance(filterTypeUuid, initialParameterValues);
+    abstract_filter_c *const filter = kf_create_filter_instance(filterTypeUuid, initialParamValues);
     k_assert(filter, "Failed to create a new filter node.");
 
     FilterGUIForQt *const guiWidget = new FilterGUIForQt(filter);
@@ -411,8 +411,8 @@ FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const std::string &fil
     {
         switch (filter->category())
         {
-            case filter_category_e::gate_input: newNode = new InputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
-            case filter_category_e::gate_output: newNode = new OutputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
+            case filter_category_e::input_condition: newNode = new InputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
+            case filter_category_e::output_condition: newNode = new OutputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
             default: newNode = new FilterNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
         }
 
@@ -424,7 +424,7 @@ FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const std::string &fil
         nodeWidgetProxy->setWidget(guiWidget);
         nodeWidgetProxy->widget()->move(2, 27);
 
-        if (filter->category() == filter_category_e::gate_input)
+        if (filter->category() == filter_category_e::input_condition)
         {
             this->inputGateNodes.push_back(newNode);
         }
@@ -478,10 +478,10 @@ FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const std::string &fil
 // the filters to captured frames.
 void FilterGraphDialog::recalculate_filter_chains(void)
 {
-    kf_remove_all_filter_chains();
+    kf_unregister_all_filter_chains();
 
-    const std::function<void(FilterGraphNode *const, std::vector<filter_c*>)> traverse_filter_node =
-          [&](FilterGraphNode *const node, std::vector<filter_c*> accumulatedFilterChain)
+    const std::function<void(FilterGraphNode *const, std::vector<abstract_filter_c*>)> traverse_filter_node =
+          [&](FilterGraphNode *const node, std::vector<abstract_filter_c*> accumulatedFilterChain)
     {
         k_assert((node && node->associatedFilter), "Trying to visit an invalid node.");
 
@@ -502,9 +502,9 @@ void FilterGraphDialog::recalculate_filter_chains(void)
             accumulatedFilterChain.push_back(node->associatedFilter);
         }
 
-        if (node->associatedFilter->category() == filter_category_e::gate_output)
+        if (node->associatedFilter->category() == filter_category_e::output_condition)
         {
-            kf_add_filter_chain(accumulatedFilterChain);
+            kf_register_filter_chain(accumulatedFilterChain);
             return;
         }
 
@@ -527,7 +527,7 @@ void FilterGraphDialog::recalculate_filter_chains(void)
 
 void FilterGraphDialog::clear_filter_graph(void)
 {
-    kf_remove_all_filter_chains();
+    kf_unregister_all_filter_chains();
     this->graphicsScene->reset_scene();
     this->inputGateNodes.clear();
     this->numNodesAdded = 0;

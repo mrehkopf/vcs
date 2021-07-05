@@ -13,7 +13,7 @@
 class filtergui_frame_rate_c : public filtergui_c
 {
 public:
-    filtergui_frame_rate_c(filter_c *const filter);
+    filtergui_frame_rate_c(abstract_filter_c *const filter);
 };
 
 #endif

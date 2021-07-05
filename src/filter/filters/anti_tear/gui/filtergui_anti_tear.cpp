@@ -9,7 +9,7 @@
 #include "filter/filters/anti_tear/filter_anti_tear.h"
 #include "filter/filters/anti_tear/gui/filtergui_anti_tear.h"
 
-filtergui_anti_tear_c::filtergui_anti_tear_c(filter_c *const filter)
+filtergui_anti_tear_c::filtergui_anti_tear_c(abstract_filter_c *const filter)
 {
     {
         auto *const scanDir = new filtergui_combobox_s;

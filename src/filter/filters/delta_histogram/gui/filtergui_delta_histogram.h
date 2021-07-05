@@ -13,7 +13,7 @@
 class filtergui_delta_histogram_c : public filtergui_c
 {
 public:
-    filtergui_delta_histogram_c(filter_c *const filter);
+    filtergui_delta_histogram_c(abstract_filter_c *const filter);
 };
 
 #endif

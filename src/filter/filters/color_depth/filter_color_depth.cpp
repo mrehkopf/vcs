@@ -13,9 +13,9 @@
     #include <opencv2/core/core.hpp>
 #endif
 
-void filter_color_depth_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
+void filter_color_depth_c::apply(u8 *const pixels, const resolution_s &r)
 {
-    VALIDATE_FILTER_INPUT
+    this->assert_input_validity(pixels, r);
 
     const unsigned maskRed   = (255u << unsigned(8 - this->parameter(PARAM_BIT_COUNT_RED)));
     const unsigned maskGreen = (255u << unsigned(8 - this->parameter(PARAM_BIT_COUNT_GREEN)));

@@ -9,7 +9,7 @@
 #include "filter/filters/decimate/filter_decimate.h"
 #include "filter/filters/decimate/gui/filtergui_decimate.h"
 
-filtergui_decimate_c::filtergui_decimate_c(filter_c *const filter)
+filtergui_decimate_c::filtergui_decimate_c(abstract_filter_c *const filter)
 {
     {
         auto *const factor = new filtergui_spinbox_s;

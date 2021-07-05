@@ -9,7 +9,7 @@
 #include "filter/filters/crop/filter_crop.h"
 #include "filter/filters/crop/gui/filtergui_crop.h"
 
-filtergui_crop_c::filtergui_crop_c(filter_c *const filter)
+filtergui_crop_c::filtergui_crop_c(abstract_filter_c *const filter)
 {
     {
         auto *const xPos = new filtergui_spinbox_s;

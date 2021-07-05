@@ -8,14 +8,14 @@
 #ifndef VCS_FILTER_FILTERS_SHARPEN_FILTER_SHARPEN_H
 #define VCS_FILTER_FILTERS_SHARPEN_FILTER_SHARPEN_H
 
-#include "filter/filter.h"
+#include "filter/abstract_filter.h"
 #include "filter/filters/sharpen/gui/filtergui_sharpen.h"
 
-class filter_sharpen_c : public filter_c
+class filter_sharpen_c : public abstract_filter_c
 {
 public:
-    filter_sharpen_c(FILTER_CTOR_FUNCTION_PARAMS) :
-        filter_c({}, initialParameterValues)
+    filter_sharpen_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+        abstract_filter_c({}, initialParamValues)
     {
         this->guiDescription = new filtergui_sharpen_c(this);
     }
@@ -26,7 +26,7 @@ public:
     std::string name(void) const override { return "Sharpen"; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
 
-    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
+    void apply(u8 *const pixels, const resolution_s &r) override;
 
 private:
 };

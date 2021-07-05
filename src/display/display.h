@@ -155,12 +155,12 @@ void kd_release_output_window(void);
  * In pseudocode, the GUI would do something like the following:
  * 
  * @code
- * kf_remove_all_filter_chains();
+ * kf_unregister_all_filter_chains();
  * 
  * for (chain: guiFilterChains)
  * {
  *     const standardFilterChain = ...convert chain into standard format...
- *     kf_add_filter_chain(standardFilterChain);
+ *     kf_register_filter_chain(standardFilterChain);
  * }
  * @endcode
  */

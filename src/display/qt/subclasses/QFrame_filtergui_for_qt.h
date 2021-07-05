@@ -18,7 +18,7 @@ class FilterGUIForQt : public QFrame
 
 public:
     // Constructs a Qt widget out of the filter's framework-indepdent GUI description.
-    explicit FilterGUIForQt(const filter_c *const filter,
+    explicit FilterGUIForQt(const abstract_filter_c *const filter,
                             QWidget *parent = 0);
 
 signals:

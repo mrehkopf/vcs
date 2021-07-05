@@ -13,7 +13,7 @@
 class filtergui_color_depth_c : public filtergui_c
 {
 public:
-    filtergui_color_depth_c(filter_c *const filter);
+    filtergui_color_depth_c(abstract_filter_c *const filter);
 };
 
 #endif

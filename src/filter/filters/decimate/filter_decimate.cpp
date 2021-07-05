@@ -7,9 +7,9 @@
 
 #include "filter/filters/decimate/filter_decimate.h"
 
-void filter_decimate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
+void filter_decimate_c::apply(u8 *const pixels, const resolution_s &r)
 {
-    VALIDATE_FILTER_INPUT
+    this->assert_input_validity(pixels, r);
 
     #ifdef USE_OPENCV
         const unsigned factor = this->parameter(PARAM_FACTOR);

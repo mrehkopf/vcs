@@ -9,10 +9,10 @@
 #define VCS_FILTER_FILTERS_ANTI_TEAR_FILTER_ANTI_TEAR_H
 
 #include "anti_tear/anti_tear.h"
-#include "filter/filter.h"
+#include "filter/abstract_filter.h"
 #include "filter/filters/anti_tear/gui/filtergui_anti_tear.h"
 
-class filter_anti_tear_c : public filter_c
+class filter_anti_tear_c : public abstract_filter_c
 {
 public:
     enum { PARAM_SCAN_DIRECTION,
@@ -32,18 +32,18 @@ public:
     enum { SCAN_ONE_TEAR = 0,
            SCAN_MULTIPLE_TEARS = 1 };
 
-    filter_anti_tear_c(FILTER_CTOR_FUNCTION_PARAMS) :
-        filter_c({{PARAM_SCAN_DIRECTION, SCAN_DOWN},
-                  {PARAM_SCAN_HINT, SCAN_MULTIPLE_TEARS},
-                  {PARAM_SCAN_START, 0},
-                  {PARAM_SCAN_END, 0},
-                  {PARAM_THRESHOLD, KAT_DEFAULT_THRESHOLD},
-                  {PARAM_WINDOW_LENGTH, KAT_DEFAULT_WINDOW_LENGTH},
-                  {PARAM_STEP_SIZE, KAT_DEFAULT_STEP_SIZE},
-                  {PARAM_MATCHES_REQD, KAT_DEFAULT_NUM_MATCHES_REQUIRED},
-                  {PARAM_VISUALIZE_TEARS, 0},
-                  {PARAM_VISUALIZE_RANGE, 0}},
-                 initialParameterValues)
+    filter_anti_tear_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+        abstract_filter_c({{PARAM_SCAN_DIRECTION, SCAN_DOWN},
+                           {PARAM_SCAN_HINT, SCAN_MULTIPLE_TEARS},
+                           {PARAM_SCAN_START, 0},
+                           {PARAM_SCAN_END, 0},
+                           {PARAM_THRESHOLD, KAT_DEFAULT_THRESHOLD},
+                           {PARAM_WINDOW_LENGTH, KAT_DEFAULT_WINDOW_LENGTH},
+                           {PARAM_STEP_SIZE, KAT_DEFAULT_STEP_SIZE},
+                           {PARAM_MATCHES_REQD, KAT_DEFAULT_NUM_MATCHES_REQUIRED},
+                           {PARAM_VISUALIZE_TEARS, 0},
+                           {PARAM_VISUALIZE_RANGE, 0}},
+                          initialParamValues)
     {
         this->guiDescription = new filtergui_anti_tear_c(this);
     }
@@ -54,7 +54,7 @@ public:
     std::string name(void) const override { return "Anti-tear"; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
 
-    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
+    void apply(u8 *const pixels, const resolution_s &r) override;
 
 private:
 };

@@ -13,7 +13,7 @@
 class filtergui_unsharp_mask_c : public filtergui_c
 {
 public:
-    filtergui_unsharp_mask_c(filter_c *const filter);
+    filtergui_unsharp_mask_c(abstract_filter_c *const filter);
 };
 
 #endif

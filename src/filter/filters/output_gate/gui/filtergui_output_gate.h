@@ -13,7 +13,7 @@
 class filtergui_output_gate_c : public filtergui_c
 {
 public:
-    filtergui_output_gate_c(filter_c *const filter);
+    filtergui_output_gate_c(abstract_filter_c *const filter);
 };
 
 #endif

@@ -13,7 +13,7 @@
 class filtergui_blur_c : public filtergui_c
 {
 public:
-    filtergui_blur_c(filter_c *const filter);
+    filtergui_blur_c(abstract_filter_c *const filter);
 };
 
 #endif

@@ -8,19 +8,19 @@
 #ifndef VCS_FILTER_FILTERS_OUTPUT_GATE_FILTER_OUTPUT_GATE_H
 #define VCS_FILTER_FILTERS_OUTPUT_GATE_FILTER_OUTPUT_GATE_H
 
-#include "filter/filter.h"
+#include "filter/abstract_filter.h"
 #include "filter/filters/output_gate/gui/filtergui_output_gate.h"
 
-class filter_output_gate_c : public filter_c
+class filter_output_gate_c : public abstract_filter_c
 {
 public:
     enum { PARAM_WIDTH,
            PARAM_HEIGHT };
 
-    filter_output_gate_c(FILTER_CTOR_FUNCTION_PARAMS) :
-        filter_c({{PARAM_WIDTH, 640},
-                  {PARAM_HEIGHT, 480}},
-                 initialParameterValues)
+    filter_output_gate_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+        abstract_filter_c({{PARAM_WIDTH, 640},
+                           {PARAM_HEIGHT, 480}},
+                          initialParamValues)
     {
         this->guiDescription = new filtergui_output_gate_c(this);
     }
@@ -29,9 +29,9 @@ public:
 
     std::string uuid(void) const override { return "be8443e2-4355-40fd-aded-63cebcbfb8ce"; }
     std::string name(void) const override { return "Output gate"; }
-    filter_category_e category(void) const override { return filter_category_e::gate_output; }
+    filter_category_e category(void) const override { return filter_category_e::output_condition; }
 
-    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
+    void apply(u8 *const pixels, const resolution_s &r) override;
 
 private:
 };

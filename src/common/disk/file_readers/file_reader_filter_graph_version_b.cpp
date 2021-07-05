@@ -62,7 +62,7 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
             FAIL_IF_FIRST_CELL_IS_NOT("id");
             node.typeUuid = rowData.at(row).at(1).toStdString();
 
-            if (!kf_is_known_filter_type(node.typeUuid))
+            if (!kf_is_known_filter_uuid(node.typeUuid))
             {
                 NBENE(("Unrecognized filter UUID \"%s\"", node.typeUuid.c_str()));
                 goto fail;

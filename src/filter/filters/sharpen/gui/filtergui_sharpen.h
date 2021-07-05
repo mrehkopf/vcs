@@ -13,7 +13,7 @@
 class filtergui_sharpen_c : public filtergui_c
 {
 public:
-    filtergui_sharpen_c(filter_c *const filter);
+    filtergui_sharpen_c(abstract_filter_c *const filter);
 };
 
 #endif

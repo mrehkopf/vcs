@@ -42,13 +42,13 @@
  *      // Executed each time the capture subsystem reports a new captured frame.
  *      kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
  *      {
- *         ks_scale_frame(frame);
+ *          ks_scale_frame(frame);
  *      });
  * 
  *      // Executed each time the scaler subsystem produces a new scaled image.
  *      ks_evNewScaledImage.listen([](const captured_frame_s &frame)
  *      {
- *         printf("A frame was scaled to %lu x %lu.\n", frame.r.w, frame.r.h);
+ *          printf("A frame was scaled to %lu x %lu.\n", frame.r.w, frame.r.h);
  *      });
  *      @endcode
  *
@@ -86,7 +86,7 @@ extern vcs_event_c<const resolution_s&> ks_evNewOutputResolution;
  * @code
  * ks_evNewScaledImage.listen([](const captured_frame_s &scaledImage)
  * {
- *    printf("Scaled a frame to %lu x %lu.\n", scaledImage.r.w, scaledImage.r.h);
+ *     printf("Scaled a frame to %lu x %lu.\n", scaledImage.r.w, scaledImage.r.h);
  * });
  * @endcode
  * 
@@ -102,7 +102,7 @@ extern vcs_event_c<const captured_frame_s&> ks_evNewScaledImage;
  * @code
  * ks_evFramesPerSecond.listen([](unsigned numFrames)
  * {
- *    printf("Scaled %u frames per second.\n", numFrames);
+ *     printf("Scaled %u frames per second.\n", numFrames);
  * });
  * @endcode
  * 
@@ -172,11 +172,11 @@ bool ks_is_aspect_ratio_enabled(void);
 void ks_initialize_scaler(void);
 
 /*!
- * Releases the scaler subsystem.
+ * Releases the scaler subsystem, deallocating any of its memory buffers etc.
  * 
- * @note
- * No scaler interface functions should be called after this function has been
- * called.
+ * @warning
+ * Between calling this function and ks_initialize_scaler(), no other scaler
+ * subsystem functions should be called.
  * 
  * @see
  * ks_initialize_scaler()
@@ -198,13 +198,13 @@ void ks_release_scaler(void);
  * // Feed captured frames into the scaler using a VCS event listener.
  * kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
  * {
- *    ks_scale_frame(frame);
+ *     ks_scale_frame(frame);
  * });
  * 
  * // Receive scaled frames from the scaler.
  * ks_evNewScaledImage.listen([](const captured_frame_s &frame)
  * {
- *    printf("A frame was scaled to %lu x %lu.\n", frame.r.w, frame.r.h);
+ *     printf("A frame was scaled to %lu x %lu.\n", frame.r.w, frame.r.h);
  * });
  * @endcode
  * 

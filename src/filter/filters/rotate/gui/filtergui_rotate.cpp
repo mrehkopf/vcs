@@ -9,7 +9,7 @@
 #include "filter/filters/rotate/filter_rotate.h"
 #include "filter/filters/rotate/gui/filtergui_rotate.h"
 
-filtergui_rotate_c::filtergui_rotate_c(filter_c *const filter)
+filtergui_rotate_c::filtergui_rotate_c(abstract_filter_c *const filter)
 {
     {
         auto *const angle = new filtergui_doublespinbox_s;

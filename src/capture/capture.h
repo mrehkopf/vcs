@@ -103,9 +103,9 @@ struct video_mode_s;
  * // Register an event listener that gets run each time a new frame is captured.
  * kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
  * {
- *    // The frame's data is available to this listener until the function
- *    // returns. If we want to keep hold of the data for longer, we need to
- *    // copy it into a local buffer.
+ *     // The frame's data is available to this listener until the function
+ *     // returns. If we want to keep hold of the data for longer, we need to
+ *     // copy it into a local buffer.
  * });
  * @endcode
  * 
@@ -113,14 +113,14 @@ struct video_mode_s;
  * // Feed captured frames into the scaler subsystem.
  * kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
  * {
- *    printf("Captured in %lu x %lu.\n", frame.r.w, frame.r.h);
- *    ks_scale_frame(frame);
+ *     printf("Captured in %lu x %lu.\n", frame.r.w, frame.r.h);
+ *     ks_scale_frame(frame);
  * });
  * 
  * // Receive a notification whenever a frame has been scaled.
  * ks_evNewScaledImage.listen([](const captured_frame_s &frame)
  * {
- *    printf("Scaled to %lu x %lu.\n", frame.r.w, frame.r.h);
+ *     printf("Scaled to %lu x %lu.\n", frame.r.w, frame.r.h);
  * });
  * @endcode
  * 
@@ -152,14 +152,14 @@ extern vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
  * // no alias for it, and otherwise forces the alias mode.
  * kc_evNewProposedVideoMode.listen([](const video_mode_s &videoMode)
  * {
- *    if (ka_has_alias(videoMode.resolution))
- *    {
- *        kc_force_capture_resolution(ka_aliased(videoMode.resolution));
- *    }
- *    else
- *    {
- *        kc_evNewVideoMode.fire(videoMode);
- *    }
+ *     if (ka_has_alias(videoMode.resolution))
+ *     {
+ *         kc_force_capture_resolution(ka_aliased(videoMode.resolution));
+ *     }
+ *     else
+ *     {
+ *         kc_evNewVideoMode.fire(videoMode);
+ *     }
  * });
  * @endcode
  * 
@@ -437,7 +437,7 @@ struct video_signal_parameters_s
  * // the capture subsystem from pushing new events while we're doing this).
  * switch (kc_pop_capture_event_queue())
  * {
- *    // ...
+ *     // ...
  * }
  * @endcode
  *

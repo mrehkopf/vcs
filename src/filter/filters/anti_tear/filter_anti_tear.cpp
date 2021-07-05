@@ -8,9 +8,9 @@
 #include "filter/filters/anti_tear/filter_anti_tear.h"
 #include "anti_tear/anti_tearer.h"
 
-void filter_anti_tear_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
+void filter_anti_tear_c::apply(u8 *const pixels, const resolution_s &r)
 {
-    VALIDATE_FILTER_INPUT
+    this->assert_input_validity(pixels, r);
 
     static anti_tearer_c antiTearer;
     static bool isInitialized= false;

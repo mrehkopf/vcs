@@ -13,7 +13,7 @@
 class filtergui_rotate_c : public filtergui_c
 {
 public:
-    filtergui_rotate_c(filter_c *const filter);
+    filtergui_rotate_c(abstract_filter_c *const filter);
 };
 
 #endif

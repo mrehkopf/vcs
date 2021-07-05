@@ -13,9 +13,9 @@
     #include <opencv2/core/core.hpp>
 #endif
 
-void filter_unsharp_mask_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
+void filter_unsharp_mask_c::apply(u8 *const pixels, const resolution_s &r)
 {
-    VALIDATE_FILTER_INPUT
+    this->assert_input_validity(pixels, r);
 
     #ifdef USE_OPENCV
         static heap_mem<u8> TMP_BUF(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Unsharp mask buffer");

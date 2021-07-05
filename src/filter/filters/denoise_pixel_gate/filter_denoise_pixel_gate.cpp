@@ -9,9 +9,9 @@
 
 // Reduces temporal image noise by requiring that pixels between frames vary by at
 // least a threshold value before being updated on screen.
-void filter_denoise_pixel_gate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
+void filter_denoise_pixel_gate_c::apply(u8 *const pixels, const resolution_s &r)
 {
-    VALIDATE_FILTER_INPUT
+    this->assert_input_validity(pixels, r);
 
     const unsigned threshold = this->parameter(PARAM_THRESHOLD);
     static heap_mem<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Denoising filter buffer");

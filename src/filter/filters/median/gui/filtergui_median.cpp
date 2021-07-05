@@ -9,7 +9,7 @@
 #include "filter/filters/median/filter_median.h"
 #include "filter/filters/median/gui/filtergui_median.h"
 
-filtergui_median_c::filtergui_median_c(filter_c *const filter)
+filtergui_median_c::filtergui_median_c(abstract_filter_c *const filter)
 {
     {
         auto *const radius = new filtergui_spinbox_s;

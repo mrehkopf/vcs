@@ -14,9 +14,9 @@
 #endif
 
 // Draws a histogram by color value of the number of pixels changed between frames.
-void filter_delta_histogram_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
+void filter_delta_histogram_c::apply(u8 *const pixels, const resolution_s &r)
 {
-    VALIDATE_FILTER_INPUT
+    this->assert_input_validity(pixels, r);
 
     #ifdef USE_OPENCV
         static heap_mem<u8> prevFramePixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Delta histogram buffer");

@@ -14,9 +14,9 @@
 #endif
 
 // Quite slow.
-void filter_denoise_nonlocal_means_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
+void filter_denoise_nonlocal_means_c::apply(u8 *const pixels, const resolution_s &r)
 {
-    VALIDATE_FILTER_INPUT
+    this->assert_input_validity(pixels, r);
 
     #if USE_OPENCV
         const double h = this->parameter(PARAM_H);

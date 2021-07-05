@@ -13,7 +13,7 @@
 class filtergui_kernel_3x3_c : public filtergui_c
 {
 public:
-    filtergui_kernel_3x3_c(filter_c *const filter);
+    filtergui_kernel_3x3_c(abstract_filter_c *const filter);
 };
 
 #endif

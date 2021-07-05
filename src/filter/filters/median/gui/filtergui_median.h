@@ -13,7 +13,7 @@
 class filtergui_median_c : public filtergui_c
 {
 public:
-    filtergui_median_c(filter_c *const filter);
+    filtergui_median_c(abstract_filter_c *const filter);
 };
 
 #endif

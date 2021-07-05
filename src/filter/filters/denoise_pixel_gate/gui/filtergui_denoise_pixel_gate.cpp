@@ -9,7 +9,7 @@
 #include "filter/filters/denoise_pixel_gate/filter_denoise_pixel_gate.h"
 #include "filter/filters/denoise_pixel_gate/gui/filtergui_denoise_pixel_gate.h"
 
-filtergui_denoise_pixel_gate_c::filtergui_denoise_pixel_gate_c(filter_c *const filter)
+filtergui_denoise_pixel_gate_c::filtergui_denoise_pixel_gate_c(abstract_filter_c *const filter)
 {
     {
         auto *const threshold = new filtergui_spinbox_s;

@@ -9,6 +9,7 @@
 #include "common/disk/file_streamer.h"
 #include "common/globals.h"
 #include "filter/filter.h"
+#include "filter/abstract_filter.h"
 
 bool file_writer::filter_graph::version_b::write(const std::string &filename,
                                                  const std::vector<FilterGraphNode*> &nodes,

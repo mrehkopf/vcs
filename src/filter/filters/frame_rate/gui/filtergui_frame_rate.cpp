@@ -9,7 +9,7 @@
 #include "filter/filters/frame_rate/filter_frame_rate.h"
 #include "filter/filters/frame_rate/gui/filtergui_frame_rate.h"
 
-filtergui_frame_rate_c::filtergui_frame_rate_c(filter_c *const filter)
+filtergui_frame_rate_c::filtergui_frame_rate_c(abstract_filter_c *const filter)
 {
     {
         auto *const threshold = new filtergui_spinbox_s;

@@ -9,7 +9,7 @@
 #include "filter/filters/denoise_nonlocal_means/filter_denoise_nonlocal_means.h"
 #include "filter/filters/denoise_nonlocal_means/gui/filtergui_denoise_nonlocal_means.h"
 
-filtergui_denoise_nonlocal_means_c::filtergui_denoise_nonlocal_means_c(filter_c *const filter)
+filtergui_denoise_nonlocal_means_c::filtergui_denoise_nonlocal_means_c(abstract_filter_c *const filter)
 {
     {
         auto *const luminance = new filtergui_spinbox_s;

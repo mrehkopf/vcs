@@ -9,7 +9,7 @@
 #include "filter/filters/blur/filter_blur.h"
 #include "filter/filters/blur/gui/filtergui_blur.h"
 
-filtergui_blur_c::filtergui_blur_c(filter_c *const filter)
+filtergui_blur_c::filtergui_blur_c(abstract_filter_c *const filter)
 {
     {
         auto *const blurType = new filtergui_combobox_s;

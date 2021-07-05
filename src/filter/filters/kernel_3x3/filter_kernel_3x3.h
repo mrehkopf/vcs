@@ -8,10 +8,10 @@
 #ifndef VCS_FILTER_FILTERS_SHARPEN_FILTER_KERNEL_3X3_H
 #define VCS_FILTER_FILTERS_SHARPEN_FILTER_KERNEL_3X3_H
 
-#include "filter/filter.h"
+#include "filter/abstract_filter.h"
 #include "filter/filters/kernel_3x3/gui/filtergui_kernel_3x3.h"
 
-class filter_kernel_3x3_c : public filter_c
+class filter_kernel_3x3_c : public abstract_filter_c
 {
 public:
     enum { PARAM_11,
@@ -24,17 +24,17 @@ public:
            PARAM_32,
            PARAM_33,};
 
-    filter_kernel_3x3_c(FILTER_CTOR_FUNCTION_PARAMS) :
-        filter_c({{PARAM_11, 0},
-                  {PARAM_12, 0},
-                  {PARAM_13, 0},
-                  {PARAM_21, 0},
-                  {PARAM_22, 1},
-                  {PARAM_23, 0},
-                  {PARAM_31, 0},
-                  {PARAM_32, 0},
-                  {PARAM_33, 0}},
-                 initialParameterValues)
+    filter_kernel_3x3_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+        abstract_filter_c({{PARAM_11, 0},
+                           {PARAM_12, 0},
+                           {PARAM_13, 0},
+                           {PARAM_21, 0},
+                           {PARAM_22, 1},
+                           {PARAM_23, 0},
+                           {PARAM_31, 0},
+                           {PARAM_32, 0},
+                           {PARAM_33, 0}},
+                          initialParamValues)
     {
         this->guiDescription = new filtergui_kernel_3x3_c(this);
     }
@@ -45,7 +45,7 @@ public:
     std::string name(void) const override { return "Kernel (3 \u00d7 3)"; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
 
-    void apply(FILTER_APPLY_FUNCTION_PARAMS) override;
+    void apply(u8 *const pixels, const resolution_s &r) override;
 
 private:
 };

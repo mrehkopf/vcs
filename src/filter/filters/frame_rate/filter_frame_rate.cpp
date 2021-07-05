@@ -16,9 +16,9 @@
 // Counts the number of unique frames per second, i.e. frames in which the pixels
 // change between frames by less than a set threshold (which is to account for
 // analog capture artefacts).
-void filter_frame_rate_c::apply(FILTER_APPLY_FUNCTION_PARAMS)
+void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
 {
-    VALIDATE_FILTER_INPUT
+    this->assert_input_validity(pixels, r);
 
     #ifdef USE_OPENCV
         static heap_mem<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Frame rate filter buffer");

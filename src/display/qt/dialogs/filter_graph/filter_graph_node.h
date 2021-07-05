@@ -10,7 +10,7 @@
 
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 
-class filter_c;
+class abstract_filter_c;
 
 enum class filter_node_type_e
 {
@@ -29,7 +29,7 @@ public:
                     const unsigned height = 130);
     virtual ~FilterGraphNode();
 
-    filter_c *associatedFilter = nullptr;
+    abstract_filter_c *associatedFilter = nullptr;
 
     // Convenience functions that can be used to access the node's (default) input and output edge.
     virtual node_edge_s* input_edge(void) { return nullptr; }
