@@ -12,14 +12,15 @@
 
 :root
 {
-	--page-background-color: rgb(238, 238, 238);
+	--primary-background-color: rgb(238, 238, 238);
 	--secondary-background-color: #f7f7f7;
+	--tertiary-background-color: #f0f0f0;
 	--content-padding: 27px;
 	--section-vertical-margin: 16px;
 	--theme-color: whitesmoke;
 	--glow-color: #ffa40024;
 	--link-color: #0c64ee;
-	--separating-border-color: #e4e4e4;
+	--separating-border-color: #e0e0e0;
 	--group-heading-vertical-margin: 21px;
 	--contents-container-horizontal-padding: 30px;
 	--contents-container-vertical-padding: var(--group-heading-vertical-margin);
@@ -82,7 +83,7 @@
 }
 
 p,
-dd
+.section:not(.see) > dd
 {
 	line-height: 1.35em !important;
 }
@@ -92,6 +93,14 @@ body
 	background-color: white !important;
 	width: 100% !important;
 	margin: 0 auto !important;
+}
+
+.vcs-markdown-code
+{
+	display: inline-block !important;
+	padding: 3px 6px !important;
+	background-color: var(--tertiary-background-color) !important;
+	border-radius: 7px !important;
 }
 
 .contents a,
@@ -158,7 +167,7 @@ hr
 }
 
 /* Hide auto-generated template info immediately under "Detailed Description".*/
-.groupheader + .textblock > h3
+.groupheader + .textblock + h3
 {
 	display: none !important;
 }
@@ -298,6 +307,7 @@ hr
 {
 	vertical-align: middle !important;
 	width: 1ch !important; /* Shrink to content's minimum required width.*/
+	text-align: right !important;
 }
 
 .fieldtable th
@@ -365,6 +375,12 @@ hr
 	margin-bottom: var(--section-vertical-margin) !important;
 }
 
+.contents > .textblock > h4,
+.contents > .textblock > h5
+{
+	margin-top: initial !important;
+}
+
 .contents > .textblock > h1
 {
 	font-size: 160% !important;
@@ -416,7 +432,7 @@ hr
 	background-color: white !important;
 	min-width: 100px !important;
 	vertical-align: middle !important;
-	height: 31px !important;
+	height: 32px !important;
 	box-sizing: border-box !important;
 }
 
@@ -438,7 +454,7 @@ hr
 
 .directory tr
 {
-	border: 1px solid var(--page-background-color) !important;
+	border: 1px solid var(--primary-background-color) !important;
 }
 
 .directory tr.even
@@ -710,7 +726,7 @@ table.memberdecls td[class*="mdesc"]
 	border-top: 1px solid var(--separating-border-color) !important;
 	padding-top: 5px !important;
 	padding-bottom: 5px !important;
-	height: 31px !important;
+	height: 32px !important;
 	box-sizing: border-box !important;
 }
 
@@ -719,7 +735,7 @@ table.memberdecls td.mdescLeft
 {
 	border-left: 1px solid var(--separating-border-color) !important;
 	border-right: 1px solid var(--separating-border-color) !important;
-	padding-left: 10px !important;
+	padding-left: 6px !important;
 	padding-right: 6px !important;
 }
 
@@ -778,8 +794,8 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 	font-weight: 500 !important;
 	border: none !important;
 	border-bottom: 1px solid var(--separating-border-color) !important;
-	padding-top: 10px !important;
-	padding-bottom: 10px !important;
+	padding-top: 12px !important;
+	padding-bottom: 12px !important;
 	background-color: var(--secondary-background-color) !important;
 	padding-left: 16px !important;
 	border-radius: 0 !important;
@@ -985,7 +1001,7 @@ pre.fragment > code.line > .comment
 
 span .mlabel
 {
-	background-color: var(--page-background-color) !important;
+	background-color: var(--primary-background-color) !important;
     padding: 4px !important;
     border: 1px solid var(--separating-border-color) !important;
     border-radius: 0 !important;
