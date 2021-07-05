@@ -105,8 +105,9 @@
  *      @code
  *      auto *blur = kf_create_filter_instance<filter_blur_c>();
  * 
- *      uint8_t pixels[2];
- *      resolution_s resolution = {1, 2};
+ *      // Filter a dummy image of 1 x 2 resolution (BGRA/8888 format).
+ *      uint8_t pixels[8];
+ *      resolution_s resolution = {1, 2, 32};
  *      blur->apply(pixels, resolution);
  * 
  *      // When we no longer need the filter.
@@ -419,6 +420,10 @@ void kf_unregister_all_filter_chains(void);
  * 
  * If the filter subsystem is disabled, or if there are no registered filter
  * chains, calling this function has no effect.
+ * 
+ * @note
+ * @p pixels is expected to be in BGRA/8888 format, each pixel being 4 bytes in
+ * B,G,R,A order.
  *
  * @see
  * kf_register_filter_chain(), ks_output_resolution(), kf_set_filtering_enabled()
