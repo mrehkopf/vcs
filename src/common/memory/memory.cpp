@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <thread>
+#include "common/command_line/command_line.h"
 #include "common/memory/heap_mem.h"
 #include "common/memory/memory.h"
 #include "common/globals.h"
@@ -23,10 +24,8 @@
  *
  */
 
-// How many bytes to pre-allocate for the memory buffer. Note that the buffer
-// currently has no ability to grow itself, so this amount must be sufficient
-// for the whole of the program's execution.
-static uint MEMORY_BUFFER_SIZE = 256u/*MB*/ * 1024 * 1024;
+// How many bytes have been pre-allocated for the memory buffer.
+static uint MEMORY_BUFFER_SIZE_B = 0;
 
 // The memory manager isn't prepared for multithreading, so discourage its use in
 // that context. We'll grab the id of whatever thread initializes this, and later
@@ -67,7 +66,7 @@ static void release(void)
     k_assert(PROGRAM_EXIT_REQUESTED, "Was asked to release the memory subsystem before the program had been told to exit.");
 
     const unsigned numMBAllocated = (TOTAL_BYTES_ALLOCATED / 1024);
-    const unsigned percentUtilization = int((double(TOTAL_BYTES_ALLOCATED) / MEMORY_BUFFER_SIZE) * 100);
+    const unsigned percentUtilization = int((double(TOTAL_BYTES_ALLOCATED) / MEMORY_BUFFER_SIZE_B) * 100);
 
     DEBUG(("atexit: Releasing the memory subsystem at %d%% utilization (%u KB).",
            percentUtilization,
@@ -99,16 +98,18 @@ static void initialize(void)
     k_assert((MEMORY_BUFFER == NULL), "Attempting to re-initialize the memory subsystem.");
     static_assert(std::is_same<decltype(MEMORY_BUFFER), u8*>::value && (sizeof(u8) == 1), "Expected the memory buffer elements to be u8*.");
 
-    INFO(("Initializing the memory subsystem with a buffer of %u MB.", (MEMORY_BUFFER_SIZE / 1024 / 1024)));
+    INFO(("Initializing the memory subsystem with a buffer of %u MB.", (MEMORY_BUFFER_SIZE_B / 1024 / 1024)));
 
-    MEMORY_BUFFER = (u8*)calloc(MEMORY_BUFFER_SIZE, 1);
+    MEMORY_BUFFER_SIZE_B = (kcom_mem_cache_size_mb() * 1024 * 1024);
+
+    MEMORY_BUFFER = (u8*)calloc(MEMORY_BUFFER_SIZE_B, 1);
     NEXT_FREE = MEMORY_BUFFER;
     k_assert(MEMORY_BUFFER != NULL, "The memory manager failed to allocate enough memory for its operation.");
 
     // Use the beginning of the memory buffer for the allocation table.
     k_assert((ALLOC_TABLE == NULL), "Expected a null allocation table.");
     const uint allocTableByteSize = (NUM_ALLOC_TABLE_ELEMENTS * sizeof(mem_allocation_s));
-    k_assert((allocTableByteSize < MEMORY_BUFFER_SIZE), "Not enough room in the memory buffer for the allocation table.");
+    k_assert((allocTableByteSize < MEMORY_BUFFER_SIZE_B), "Not enough room in the memory buffer for the allocation table.");
     ALLOC_TABLE = (mem_allocation_s*)MEMORY_BUFFER;
     TOTAL_BYTES_ALLOCATED += allocTableByteSize;
     NEXT_FREE += allocTableByteSize;
@@ -179,7 +180,7 @@ void* kmem_allocate(const int numBytes, const char *const reason)
     ALLOC_TABLE[tableIdx].isInUse = true;
 
     // Validate the memory before sending it off.
-    k_assert((mem + numBytes) < (MEMORY_BUFFER + MEMORY_BUFFER_SIZE),
+    k_assert((mem + numBytes) < (MEMORY_BUFFER + MEMORY_BUFFER_SIZE_B),
              "Memory allocation would overflow the memory buffer. The buffer needs to be made larger.");
     k_assert(mem != NULL, "Detected a null return from the memory manager allocator. This should not be the case.");
     memset(mem, 0, numBytes);
@@ -231,7 +232,7 @@ void kmem_release(void **mem)
 
     // Make sure we've been asked to release a valid allocation.
     assert(*mem >= MEMORY_BUFFER);
-    assert(*mem <= (MEMORY_BUFFER + MEMORY_BUFFER_SIZE));
+    assert(*mem <= (MEMORY_BUFFER + MEMORY_BUFFER_SIZE_B));
 
     const uint idx = alloc_table_index_of_pointer(*mem);
 

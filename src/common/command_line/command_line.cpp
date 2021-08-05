@@ -15,10 +15,13 @@
  */
 
 // Which input channel on the capture hardware we want to receive frames from.
-uint INPUT_CHANNEL_IDX = 0;
+unsigned INPUT_CHANNEL_IDX = 0;
 
 // How many frames the capture card should drop between captures.
-uint FRAME_SKIP = 0;
+unsigned FRAME_SKIP = 0;
+
+// The size of VCS's pre-allocated memory cache.
+static unsigned MEM_CACHE_SIZE_MB = 256;
 
 // Name of (and path to) the capture parameter file on disk.
 static std::string VIDEO_PRESETS_FILE_NAME = "";
@@ -42,7 +45,7 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
     {
         switch (c)
         {
-            case 'i':   // Capture input channel.
+            case 'i':
             {
                 INPUT_CHANNEL_IDX = strtol(optarg, NULL, 10);
                 
@@ -54,7 +57,7 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
                     if ((INPUT_CHANNEL_IDX < minChannelIdx) ||
                         (INPUT_CHANNEL_IDX > maxChannelIdx))
                     {
-                        NBENE(("Input channel index out of bounds. Expected range: %u-%u.",
+                        NBENE(("Input channel index (-i) is out of bounds. Expected range: %u-%u.",
                                minChannelIdx, maxChannelIdx));
 
                         kd_show_headless_error_message("", parseFailMsg);
@@ -68,23 +71,41 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
 
                 break;
             }
-            case 'v':   // Location of the video presets file.
-            case 'm':   // ('m' provided for legacy compatibility)
+            case 'm':
+            {
+                const int minSize = 1;
+                const int maxSize = 8192;
+
+                int size = strtol(optarg, NULL, 10);
+
+                if ((size < minSize) ||
+                    (size > maxSize))
+                {
+                    NBENE(("Memory cache size (-m) is out of bounds. Expected range: %d-%d.",
+                           minSize, maxSize));
+
+                    kd_show_headless_error_message("", parseFailMsg);
+
+                    return false;
+                }
+
+                MEM_CACHE_SIZE_MB = unsigned(size);
+
+                break;
+            }
+            case 'v':
             {
                 VIDEO_PRESETS_FILE_NAME = optarg;
-
                 break;
             }
-            case 'a':   // Location of the alias file.
+            case 'a':
             {
                 ALIAS_FILE_NAME = optarg;
-
                 break;
             }
-            case 'f':   // Location of the filter graph file.
+            case 'f':
             {
                 FILTER_GRAPH_FILE_NAME = optarg;
-
                 break;
             }
         }
@@ -112,6 +133,11 @@ void kcom_override_video_presets_file_name(const std::string newFilename)
     VIDEO_PRESETS_FILE_NAME = newFilename;
 
     return;
+}
+
+unsigned kcom_mem_cache_size_mb(void)
+{
+    return MEM_CACHE_SIZE_MB;
 }
 
 const std::string& kcom_aliases_file_name(void)

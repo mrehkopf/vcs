@@ -422,11 +422,17 @@ Optionally, you can pass one or more of following command-line arguments to VCS:
 
 -i <input channel> ...... Start capture on the given input channel (1...n). By
                           default, channel #1 will be used.
+
+-m <value in MB> ........ Set the amount of system memory that VCS reserves on
+                          startup. If you're getting error messages about the
+                          memory cache running out, increase this value. If you
+                          get x264 allocation errors when attempting to record
+                          video, try reducing this value. Default: 256 MB.
 ```
 
 For instance, if you had capture parameters stored in the file `params.vcsm`, and you wanted capture to start on input channel #2 when you run VCS, you might launch VCS like so:
 ```
-vcs.exe -m "params.vcsm" -i 2
+vcs.exe -v "params.vcs-video" -i 2
 ```
 
 # Developer's manual
