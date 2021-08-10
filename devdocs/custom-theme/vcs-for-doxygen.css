@@ -45,6 +45,9 @@
 
 .icondoc
 {
+	/* This class of icons is fully disabled for now.*/
+	display: none !important;
+
 	visibility: hidden !important;
 	width: 2ch !important;
 	margin: 0 !important;
@@ -806,7 +809,6 @@ table.memname tr:not(:nth-last-child(-n+2))::after
 {
 	margin-left: 0 !important;
 	margin-bottom: 3px !important;
-	color: #595959 !important;
 }
 
 .memproto a
