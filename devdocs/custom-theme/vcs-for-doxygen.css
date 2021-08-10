@@ -71,10 +71,10 @@
 	box-shadow: none !important;
 	text-shadow: none !important;
 	transition: none !important;
-	-webkit-transition:  none !important;
-	-moz-transition:  none !important;
-	-ms-transition:  none !important;
-	-o-transition:  none !important;
+	-webkit-transition: none !important;
+	-moz-transition: none !important;
+	-ms-transition: none !important;
+	-o-transition: none !important;
 }
 
 *:not([class^="hljs"])
@@ -98,7 +98,7 @@ body
 .vcs-markdown-code
 {
 	display: inline-block !important;
-	padding: 3px 6px !important;
+	padding: 3px 5px !important;
 	background-color: var(--tertiary-background-color) !important;
 	border-radius: 7px !important;
 }
@@ -197,6 +197,7 @@ hr
 #nav-tree .children_ul
 {
 	border-left: 1px solid var(--separating-border-color) !important;
+	height: initial !important; /* Disable any of Doxygen's animation of height on this element.*/
 }
 
 #nav-tree .selected
