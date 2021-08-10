@@ -170,7 +170,7 @@ hr
 }
 
 /* Hide auto-generated template info immediately under "Detailed Description".*/
-.groupheader + .textblock + h3
+.groupheader + .textblock.vcs-section-details > h3
 {
 	display: none !important;
 }
