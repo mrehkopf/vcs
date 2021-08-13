@@ -278,6 +278,11 @@ contains(DEFINES, CAPTURE_DEVICE_VIRTUAL) {
     SOURCES += src/capture/virtual/capture_virtual.cpp
 }
 
+contains(DEFINES, CAPTURE_DEVICE_DOSBOX_MMAP) {
+    SOURCES += src/capture/dosbox_mmap/capture_dosbox_mmap.cpp
+    LIBS += -lrt
+}
+
 contains(DEFINES, CAPTURE_DEVICE_VISION_V4L) {
     SOURCES += src/capture/vision_v4l/capture_vision_v4l.cpp \
                src/capture/vision_v4l/input_channel_v4l.cpp \

@@ -1,0 +1,163 @@
+diff -crB ./dosbox-0.74-3/Makefile.in ./dosbox-0.74-3-vcs/Makefile.in
+*** ./dosbox-0.74-3/Makefile.in	2019-06-26 17:55:11.000000000 +0300
+--- ./dosbox-0.74-3-vcs/Makefile.in	2021-08-13 00:26:30.307321628 +0300
+***************
+*** 238,244 ****
+  INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+  LDFLAGS = @LDFLAGS@
+  LIBOBJS = @LIBOBJS@
+! LIBS = @LIBS@
+  LTLIBOBJS = @LTLIBOBJS@
+  MAKEINFO = @MAKEINFO@
+  MKDIR_P = @MKDIR_P@
+--- 238,244 ----
+  INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+  LDFLAGS = @LDFLAGS@
+  LIBOBJS = @LIBOBJS@
+! LIBS = -lrt @LIBS@
+  LTLIBOBJS = @LTLIBOBJS@
+  MAKEINFO = @MAKEINFO@
+  MKDIR_P = @MKDIR_P@
+diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmain.cpp
+*** ./dosbox-0.74-3/src/gui/sdlmain.cpp	2019-06-26 17:56:44.000000000 +0300
+--- ./dosbox-0.74-3-vcs/src/gui/sdlmain.cpp	2021-08-13 00:29:50.243278307 +0300
+***************
+*** 221,226 ****
+--- 221,289 ----
+  
+  static SDL_Block sdl;
+  
++ // Memory interface with VCS.
++ static unsigned char *THS_MMAP_STATUS_BUF;
++ static unsigned char *THS_MMAP_SCREEN_BUF;
++ static bool THS_IS_SHARED_MEM_INIT = false;
++ #include <sys/mman.h>
++ #include <fcntl.h>
++ #include <cassert>
++ static unsigned char* ths_acquire_shared_memory_buffer(const char *name, const size_t size)
++ {
++ 	const int fileDesc = shm_open(name, O_RDWR, 0666);
++ 	assert((fileDesc >= 0) && "DOSBox/VCS: Failed to open the shared memory file.");
++ 
++ 	unsigned char *const bufPtr = (unsigned char*)mmap(NULL, size, 0666, MAP_SHARED, fileDesc, 0);
++ 	assert(bufPtr && "DOSBox/VCS: Failed to map the shared memory file.");
++ 
++ 	return bufPtr;
++ }
++ static void ths_init_shared_memory_interface(void)
++ {
++ 	if (THS_IS_SHARED_MEM_INIT)
++ 	{
++ 		return;
++ 	}
++ 
++ 	const unsigned int initBufSize = 9;
++ 	const char sharedStatusBufName[] = "vcs_dosbox_mmap_status";
++ 	const char sharedScreenBufName[] = "vcs_dosbox_mmap_screen";
++ 
++ 	THS_MMAP_STATUS_BUF = ths_acquire_shared_memory_buffer(sharedStatusBufName, initBufSize);
++ 	const unsigned screenBufSize = ((uint32_t*)THS_MMAP_STATUS_BUF)[0];
++ 	THS_MMAP_SCREEN_BUF = ths_acquire_shared_memory_buffer(sharedScreenBufName, screenBufSize);
++ 
++ 	THS_IS_SHARED_MEM_INIT = 1;
++ 	
++ 	return;
++ }
++ static void ths_copy_frame_buffer(SDL_Block *sdl)
++ {
++ 	ths_init_shared_memory_interface();
++ 
++ 	// VCS will set this value to 0 once it's done accessing the pixel buffer
++ 	// and DOSBox is free to modify the buffer again.
++ 	if (THS_MMAP_STATUS_BUF[0] != 0)
++ 	{
++ 		return;
++ 	}
++ 
++ 	// Copy the screen's pixel data over to VCS.
++ 	if (sdl->opengl.framebuf)
++ 	{
++ 		const unsigned frameWidth = sdl->draw.width;
++ 		const unsigned frameHeight = sdl->draw.height;
++ 		*((uint16_t*)(&THS_MMAP_SCREEN_BUF[0])) = frameWidth;
++ 		*((uint16_t*)(&THS_MMAP_SCREEN_BUF[2])) = frameHeight;
++ 		memcpy(&THS_MMAP_SCREEN_BUF[4], sdl->opengl.framebuf, (frameHeight * sdl->opengl.pitch));
++ 	}
++ 
++ 	// Signal to VCS that DOSBox has given it a new frame.
++ 	THS_MMAP_STATUS_BUF[0] = 1;
++ 
++     return;
++ }
++ 
+  #define SETMODE_SAVES 1  //Don't set Video Mode if nothing changes.
+  #define SETMODE_SAVES_CLEAR 1 //Clear the screen, when the Video Mode is reused
+  SDL_Surface* SDL_SetVideoMode_Wrap(int width,int height,int bpp,Bit32u flags){
+***************
+*** 239,245 ****
+  		else {
+  			glClearColor (0.0, 0.0, 0.0, 1.0);
+  			glClear(GL_COLOR_BUFFER_BIT);
+! 			SDL_GL_SwapBuffers();
+  		}
+  #else //C_OPENGL
+  		SDL_FillRect(sdl.surface,NULL,SDL_MapRGB(sdl.surface->format,0,0,0));
+--- 302,308 ----
+  		else {
+  			glClearColor (0.0, 0.0, 0.0, 1.0);
+  			glClear(GL_COLOR_BUFFER_BIT);
+! 			SDL_GL_SwapBuffers(); ths_copy_frame_buffer(&sdl);
+  		}
+  #else //C_OPENGL
+  		SDL_FillRect(sdl.surface,NULL,SDL_MapRGB(sdl.surface->format,0,0,0));
+***************
+*** 713,719 ****
+  
+  		glClearColor (0.0, 0.0, 0.0, 1.0);
+  		glClear(GL_COLOR_BUFFER_BIT);
+! 		SDL_GL_SwapBuffers();
+  		glClear(GL_COLOR_BUFFER_BIT);
+  		glShadeModel (GL_FLAT);
+  		glDisable (GL_DEPTH_TEST);
+--- 776,782 ----
+  
+  		glClearColor (0.0, 0.0, 0.0, 1.0);
+  		glClear(GL_COLOR_BUFFER_BIT);
+! 		SDL_GL_SwapBuffers(); ths_copy_frame_buffer(&sdl);
+  		glClear(GL_COLOR_BUFFER_BIT);
+  		glShadeModel (GL_FLAT);
+  		glDisable (GL_DEPTH_TEST);
+***************
+*** 947,953 ****
+  				index++;
+  			}
+  			glCallList(sdl.opengl.displaylist);
+! 			SDL_GL_SwapBuffers();
+  		}
+  		break;
+  #endif
+--- 1010,1016 ----
+  				index++;
+  			}
+  			glCallList(sdl.opengl.displaylist);
+! 			SDL_GL_SwapBuffers(); ths_copy_frame_buffer(&sdl);
+  		}
+  		break;
+  #endif
+***************
+*** 1251,1257 ****
+  	glBufferDataARB = (PFNGLBUFFERDATAARBPROC)SDL_GL_GetProcAddress("glBufferDataARB");
+  	glMapBufferARB = (PFNGLMAPBUFFERARBPROC)SDL_GL_GetProcAddress("glMapBufferARB");
+  	glUnmapBufferARB = (PFNGLUNMAPBUFFERARBPROC)SDL_GL_GetProcAddress("glUnmapBufferARB");
+! 	const char * gl_ext = (const char *)glGetString (GL_EXTENSIONS);
+  	if(gl_ext && *gl_ext){
+  		sdl.opengl.packed_pixel=(strstr(gl_ext,"EXT_packed_pixels") != NULL);
+  		sdl.opengl.paletted_texture=(strstr(gl_ext,"EXT_paletted_texture") != NULL);
+--- 1314,1320 ----
+  	glBufferDataARB = (PFNGLBUFFERDATAARBPROC)SDL_GL_GetProcAddress("glBufferDataARB");
+  	glMapBufferARB = (PFNGLMAPBUFFERARBPROC)SDL_GL_GetProcAddress("glMapBufferARB");
+  	glUnmapBufferARB = (PFNGLUNMAPBUFFERARBPROC)SDL_GL_GetProcAddress("glUnmapBufferARB");
+! 	const char * gl_ext = NULL; // Force the use of sdl.opengl.framebuf.
+  	if(gl_ext && *gl_ext){
+  		sdl.opengl.packed_pixel=(strstr(gl_ext,"EXT_packed_pixels") != NULL);
+  		sdl.opengl.paletted_texture=(strstr(gl_ext,"EXT_paletted_texture") != NULL);
