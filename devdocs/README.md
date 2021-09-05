@@ -1,6 +1,9 @@
 # VCS Developer Docs
 VCS comes with work-in-progress documentation in the Doxygen format.
 
-To build the documentation, run `build.sh`. The built docs will be placed under the `html` subdirectory.
+Pre-built docs are hosted [here](https://www.tarpeeksihyvaesoft.com/vcs/devdocs/).
 
-Pre-built docs are hosted at https://www.tarpeeksihyvaesoft.com/vcs/devdocs/.
+To build the documentation yourself:
+
+1. Run `$ doxygen doxygen.cfg`. This will produce Doxygen's documentation for VCS in XML format (placed under the `xml` subdirectory)
+2. Convert the XML into HTML using [vcs-doxy-theme](https://github.com/leikareipa/vcs-doxy-theme)

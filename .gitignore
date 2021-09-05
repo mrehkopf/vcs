@@ -1,6 +1,6 @@
 bin/
 .vscode/
 misc/
-devdocs/html/
+devdocs/xml/
 generated_files/
 *.pro.user

@@ -1,4 +1,4 @@
-# VCS Developer Documentation
+# Welcome to VCS Dev Docs
 
 # Introduction
 Welcome to VCS's technical documentation for developers!
@@ -11,4 +11,4 @@ The VCS source code repository and end-user documentation can be found on GitHub
 
 In most cases, the thematic organizational unit of code in VCS is the source file (e.g. .cpp); for which the corresponding header file (e.g. .h) provides a public interface accessible to other units. This is organization is roughly equivalent to classes: the source file represents the class, and static global variables and functions inside the source file are its private members.
 
-With that in mind, perhaps the most useful way of accessing this documentation is on the file level, where for each documented header file there's an overview of its interface followed by documentation of each of the interface's functions. You can find an index of the documented interfaces (header files) [here](./files.html), or by clicking on "Files" in the upper left corner.
+With that in mind, perhaps the most useful way of accessing this documentation is on the file level, where for each documented header file there's an overview of its interface followed by documentation of each of the interface's functions. You can find an index of the documented interfaces (header files) [here](./index=files.html), or by clicking on "Files" in the upper left corner.
