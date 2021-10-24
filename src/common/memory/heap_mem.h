@@ -87,7 +87,7 @@
  *      @endcode
  * 
  * @see
- * [Memory subsystem interface](@ref memory.h)
+ * [the underlying memory subsystem interface](@ref memory.h)
  */
 template <typename T>
 class heap_mem
@@ -119,8 +119,8 @@ public:
     }
 
     /*!
-     * Initializes the object and allocates @p numElements elements of type @p T
-     * for its data buffer.
+     * Initializes the object and allocates @p numElements count of elements of
+     * type @p T for its data buffer.
      * 
      * This function calls kmem_allocate() to perform the memory allocation. See
      * that function's documentation for more information about the memory it
@@ -319,14 +319,14 @@ public:
      * 
      * // Allocate memory for 10 ints, then re-allocate for only 5 ints.
      * {
-     *    heap_mem<int> ints3(10);
-     *    // ints3.count() == 10.
+     *     heap_mem<int> ints3(10);
+     *     // ints3.count() == 10.
      * 
-     *    ints3.release();
-     *    // ints3.count() == 0.
+     *     ints3.release();
+     *     // ints3.count() == 0.
      * 
-     *    ints3.allocate(5);
-     *    // ints3.count() == 5.
+     *     ints3.allocate(5);
+     *     // ints3.count() == 5.
      * }
      * @endcode
      * 
@@ -471,6 +471,7 @@ public:
      * 
      * @code
      * heap_mem<int> ints(2);
+     * // ints.is_null() == false.
      * 
      * heap_mem<int> intsRef;
      * // intsRef.is_null() == true.

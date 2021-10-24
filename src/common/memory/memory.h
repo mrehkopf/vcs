@@ -100,7 +100,7 @@ void* kmem_allocate(const int numBytes, const char *const reason);
  * kmem_allocate() for that allocation.
  * 
  * @note
- * @p mem will be set to NULL by the call. 
+ * The value of the pointer passed in as @p mem will be set to NULL. 
  * 
  * @code
  * // Make an allocation.

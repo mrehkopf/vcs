@@ -40,11 +40,11 @@
  * 
  * ## Implementing support for new capture devices
  * 
- * The capture subsystem interface (this file, capture.h) provides a declaration
- * of the functions used by VCS to interact with the capture subsystem. Some of
- * the functions -- e.g. kc_initialize_capture() -- are agnostic to the capture
- * device being used, while others -- e.g. kc_initialize_device() -- are specific
- * to a particular type of capture device.
+ * The capture subsystem interface provides a declaration of the functions used
+ * by VCS to interact with the capture subsystem. Some of the functions -- e.g.
+ * kc_initialize_capture() -- are agnostic to the capture device being used, while
+ * others -- e.g. kc_initialize_device() -- are specific to a particular type of
+ * capture device.
  * 
  * The universal functions like kc_initialize_capture() are defined in the
  * base interface source file (@a capture.cpp), whereas the device-specific
@@ -462,7 +462,7 @@ std::mutex& kc_capture_mutex(void);
  * // This listener function gets called each time a frame is captured.
  * kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
  * {
- *    printf("Captured a frame (%lu x %lu)\n", frame.r.w, frame.r.h);
+ *     printf("Captured a frame (%lu x %lu)\n", frame.r.w, frame.r.h);
  * });
  * @endcode
  *
@@ -850,7 +850,11 @@ capture_event_e kc_pop_capture_event_queue(void);
 bool kc_set_video_signal_parameters(const video_signal_parameters_s &p);
 
 /*!
- * Sets the capture device's deinterlacing mode.
+ * Sets the capture device's de-interlacing mode.
+ * 
+ * @note
+ * Some capture devices might apply de-interlacing only when capturing an
+ * interlaced signal.
  *
  * Returns true on success; false otherwise.
  */

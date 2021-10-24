@@ -135,7 +135,7 @@ struct recording_buffer_s
     /*!
      * A convenience mutex for use by the recording subsystem.
      * 
-     * Not used by the buffer.
+     * Not used by the class itself.
      */
     std::mutex mutex;
 

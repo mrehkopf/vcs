@@ -338,12 +338,12 @@ enum class filter_category_e
     meta,
 
     /*!
-     * Special case. A pseudo-filter used as a control in filter chains.
+     * Special case, not for use by filters. Used as a control in filter chains.
      */
     input_condition,
 
     /*!
-     * Special case. A pseudo-filter used as a control in filter chains.
+     * Special case, not for use by filters. Used as a control in filter chains.
      */
     output_condition,
 };

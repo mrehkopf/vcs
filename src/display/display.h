@@ -43,7 +43,7 @@ extern vcs_event_c<void> kd_evDirty;
 
 /*!
  * @brief
- * A GUI framework-agnostic representation of a filter graph node.
+ * A GUI-agnostic representation of a filter graph node.
  * 
  * Used to mediate data between the disk subsystem's file loader and the display
  * subsystem's (GUI framework-dependent) filter graph implementation, so that the
@@ -57,7 +57,7 @@ struct abstract_filter_graph_node_s
     /*! Whether this node is active (true) or a passive passthrough (false).*/
     bool isEnabled = true;
 
-    /*! The UUID of the filter type that this node represents (see filter_c).*/
+    /*! The UUID of the filter type that this node represents (see abstract_filter_c).*/
     std::string typeUuid = "";
 
     /*!
@@ -68,13 +68,13 @@ struct abstract_filter_graph_node_s
      */
     std::string backgroundColor = "black";
 
-    /*! The filter parameters for this node (see filter_c).*/
+    /*! The filter parameters for this node (see abstract_filter_c).*/
     std::vector<std::pair<unsigned, double>> parameters;
 
     /*! The node's 2D XY coordinates in the filter graph.*/
     std::pair<double, double> position = {0, 0};
 
-    /*! The nodes (identified by their id) to which this node is connected.*/
+    /*! The nodes (identified by their @ref id) to which this node is connected.*/
     std::vector<int> connectedTo;
 };
 
