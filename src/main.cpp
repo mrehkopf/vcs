@@ -4,6 +4,13 @@
  *
  */
 
+#if (!defined(CAPTURE_DEVICE_VIRTUAL) &&\
+     !defined(CAPTURE_DEVICE_VISION_V4L) &&\
+     !defined(CAPTURE_DEVICE_RGBEASY) &&\
+     !defined(CAPTURE_DEVICE_DOSBOX_MMAP))
+    #error "Unrecognized value for the capture device toggle"
+#endif
+
 #include <chrono>
 #include <thread>
 #include <mutex>

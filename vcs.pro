@@ -57,6 +57,7 @@ RESOURCES += \
     src/display/qt/res.qrc
 
 SOURCES += \
+    src/main.cpp \
     src/display/display.cpp \
     src/display/qt/subclasses/QComboBox_video_preset_list.cpp \
     src/display/qt/subclasses/QDialog_vcs_base_dialog.cpp \
@@ -109,7 +110,6 @@ SOURCES += \
     src/filter/filters/unsharp_mask/filter_unsharp_mask.cpp \
     src/filter/filters/unsharp_mask/gui/filtergui_unsharp_mask.cpp \
     src/scaler/scaler.cpp \
-    src/main.cpp \
     src/common/log/log.cpp \
     src/filter/filter.cpp \
     src/common/command_line/command_line.cpp \
