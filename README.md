@@ -364,73 +364,74 @@ To connect two nodes, click and drag with the left mouse button from one node's 
 
 ## Mouse and keyboard shortcuts
 You can make use of the following mouse and keyboard shortcuts:
-```
-Double-click
-VCS's output window ..... Toggle window border on/off.
 
-Middle-click
-output window ........... Magnify this portion of the output window.
+**Double-click VCS's output window**\
+Toggle window border on/off.
 
-Left-press and drag
-output window ........... Move the window (same as dragging by its title bar).
+**Middle-click the output window**\
+Magnify this portion of the output window.
 
-Right-press
-output window ........... Open the context menu.
+**Left-click and drag the output window**\
+Move the window (same as dragging by its title bar).
 
-Mouse wheel
-output window ........... Scale the output window up/down.
+**Right-click the output window**\
+Open the context menu.
 
-F11 ..................... Toggle fullscreen mode on/off.
+**Mouse wheel over the output window**\
+Scale the output window up/down.
 
-Ctrl + A ................ Open the anti-tear dialog.
+**F11**\
+Toggle fullscreen mode on/off.
 
-Ctrl + F ................ Open the filter graph dialog.
+**Ctrl + A**\
+Open the anti-tear dialog.
 
-Ctrl + V ................ Open the video settings dialog.
+**Ctrl + F**\
+Open the filter graph dialog.
 
-Ctrl + I ................ Open the input resolution dialog.
+**Ctrl + V**\
+Open the video settings dialog.
 
-Ctrl + O ................ Open the output resolution dialog.
+**Ctrl + I**\
+Open the input resolution dialog.
 
-Ctrl + R ................ Open the record dialog.
+**Ctrl + O**\
+Open the output resolution dialog.
 
-Ctrl + L ................ Open the overlay dialog.
+**Ctrl + R**\
+Open the record dialog.
 
-Ctrl + Shift + key ...... Toggle the corresponding dialog's functionality on/off;
-                          e.g. Ctrl + Shift + R to turn recording on/off.
+**Ctrl + L**\
+Open the overlay dialog.
 
-Ctrl + 1 to 9 ........... Shortcuts for the input resolution buttons on the
-                          control panel's Input tab.
+**Ctrl + Shift + key**\
+Toggle the corresponding dialog's functionality on/off; e.g. Ctrl + Shift + R to turn recording on/off.
 
-Shift + 1 to 2 .......... Set the input channel index.
-```
+**Ctrl + 1...9**\
+Shortcuts for the input resolution buttons on the control panel's Input tab.
+
+**Shift + 1...2**\
+Set the input channel index.
 
 ## Command-line arguments
-Optionally, you can pass one or more of following command-line arguments to VCS:
-```
--v <path + filename> .... Load video presets from the given file on start-up.
-                          Video preset files typically have the .vcs-video
-                          suffix.
+Optionally, you can pass one or more of following command-line arguments when launching VCS:
 
--f <path + filename> .... Load a custom filter graph from the given file on
-                          start-up. Filter graph files typically have the .vcs-
-                          filter-graph suffix.
+`-i <input channel>`
+- Start capture on the given input channel (1...*n*). On Linux, a value of 1 corresponds to /dev/video0, 2 to /dev/video1, 3 to /dev/video2, etc. By default, channel #1 will be used.
 
--a <path + filename> .... Load alias resolutions from the given file on start-
-                          up. Alias resolution files typically have the .vcs-
-                          alias suffix.
+`-v <path + filename>`
+- Load video presets from the given file on start-up. Video preset files typically have the .vcs-video suffix.
 
--i <input channel> ...... Start capture on the given input channel (1...n). By
-                          default, channel #1 will be used.
+`-f <path + filename>`
+- Load a custom filter graph from the given file on start-up. Filter graph files typically have the .vcs-filter-graph suffix.
 
--m <value in MB> ........ Set the amount of system memory that VCS reserves on
-                          startup. If you're getting error messages about the
-                          memory cache running out, increase this value. If you
-                          get x264 allocation errors when attempting to record
-                          video, try reducing this value. Default: 256 MB.
-```
+`-a <path + filename>`
+- Load alias resolutions from the given file on start-up. Alias resolution files typically have the .vcs-alias suffix.
 
-For instance, if you had capture parameters stored in the file `params.vcsm`, and you wanted capture to start on input channel #2 when you run VCS, you might launch VCS like so:
+`-m <value in MB>`
+- Set the amount of system memory that VCS reserves on startup. If you're getting error messages about the memory cache running out, increase this value. If you get x264 allocation errors when attempting to record video, try reducing this value. Default: 256 MB.
+
+For example, if you had capture parameters stored in the file `params.vcsm`, and you wanted capture to start on input channel #2 when you run VCS, you might launch VCS like so:
 ```
 vcs.exe -v "params.vcs-video" -i 2
 ```
