@@ -7,7 +7,7 @@
 DEFINES += USE_OPENCV
 
 linux {
-    DEFINES += CAPTURE_DEVICE_VISION_V4L
+    DEFINES += CAPTURE_DEVICE_VIRTUAL
 
     # The base path for Datapath's Linux Vision driver header files. These are
     # bundled with the driver downloadable from Datapath's website. The files
@@ -59,6 +59,7 @@ RESOURCES += \
 SOURCES += \
     src/main.cpp \
     src/display/display.cpp \
+    src/display/qt/subclasses/QLabel_magnifying_glass.cpp \
     src/display/qt/subclasses/QComboBox_video_preset_list.cpp \
     src/display/qt/subclasses/QDialog_vcs_base_dialog.cpp \
     src/display/qt/subclasses/QFrame_filtergui_for_qt.cpp \
@@ -163,6 +164,7 @@ HEADERS += \
     src/display/qt/subclasses/QDialog_vcs_base_dialog.h \
     src/display/qt/subclasses/QFrame_filtergui_for_qt.h \
     src/display/qt/subclasses/QGroupBox_parameter_grid.h \
+    src/display/qt/subclasses/QLabel_magnifying_glass.h \
     src/display/qt/subclasses/QMenu_dialog_file_menu.h \
     src/display/qt/windows/output_window.h \
     src/display/qt/dialogs/resolution_dialog.h \

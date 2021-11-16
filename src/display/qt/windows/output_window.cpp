@@ -28,6 +28,7 @@
 #include <QImage>
 #include <QLabel>
 #include <cmath>
+#include "display/qt/subclasses/QLabel_magnifying_glass.h"
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
 #include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 #include "display/qt/dialogs/linux_device_selector_dialog.h"
@@ -75,6 +76,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QVBoxLayout *const mainLayout = new QVBoxLayout(ui->centralwidget);
     mainLayout->setMargin(0);
     mainLayout->setSpacing(0);
+
+    this->magnifyingGlass = new MagnifyingGlass(this);
 
     // Set up the child dialogs.
     {
@@ -1144,65 +1147,16 @@ void MainWindow::paintEvent(QPaintEvent *)
     }
 
     // Show a magnifying glass effect which blows up part of the captured image.
-    static QLabel *magnifyingGlass = nullptr;
     if (kc_is_receiving_signal() &&
         this->isActiveWindow() &&
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
         (QGuiApplication::mouseButtons() & Qt::MidButton))
     {
-        if (magnifyingGlass == nullptr)
-        {
-            magnifyingGlass = new QLabel(this);
-            magnifyingGlass->setStyleSheet("background-color: rgba(0, 0, 0, 255);"
-                                           "border-color: blue;"
-                                           "border-style: solid;"
-                                           "border-width: 3px;"
-                                           "border-radius: 0px;");
-        }
-
-        const QSize magnifiedRegionSize = QSize(40, 30);
-        const QSize glassSize = QSize(280, 210);
-        const QPoint cursorPos = this->mapFromGlobal(QCursor::pos());
-        QPoint regionTopLeft = QPoint((cursorPos.x() - (magnifiedRegionSize.width() / 2)),
-                                      (cursorPos.y() - (magnifiedRegionSize.height() / 2)));
-
-        // Don't let the magnification overflow the image buffer.
-        if (regionTopLeft.x() < 0)
-        {
-            regionTopLeft.setX(0);
-        }
-        else if (regionTopLeft.x() > (frameImage.width() - magnifiedRegionSize.width()))
-        {
-            regionTopLeft.setX(frameImage.width() - magnifiedRegionSize.width());
-        }
-        if (regionTopLeft.y() < 0)
-        {
-            regionTopLeft.setY(0);
-        }
-        else if (regionTopLeft.y() > (frameImage.height() - magnifiedRegionSize.height()))
-        {
-            regionTopLeft.setY(frameImage.height() - magnifiedRegionSize.height());
-        }
-
-        // Grab the magnified region's pixel data.
-        const u32 startIdx = (regionTopLeft.x() + regionTopLeft.y() * frameImage.width()) * (frameImage.depth() / 8);
-        QImage magn(frameImage.bits() + startIdx, magnifiedRegionSize.width(), magnifiedRegionSize.height(),
-                    frameImage.bytesPerLine(), frameImage.format());
-
-        magnifyingGlass->resize(glassSize);
-        magnifyingGlass->setPixmap(QPixmap::fromImage(magn.scaled(glassSize.width(), glassSize.height(),
-                                                                  Qt::IgnoreAspectRatio, Qt::FastTransformation)));
-        magnifyingGlass->move(std::min((this->width() - glassSize.width()), std::max(0, cursorPos.x() - (glassSize.width() / 2))),
-                              std::max(0, std::min((this->height() - glassSize.height()), cursorPos.y() - (glassSize.height() / 2))));
-        magnifyingGlass->show();
+        magnifyingGlass->magnify(frameImage, this->mapFromGlobal(QCursor::pos()));
     }
     else
     {
-        if (magnifyingGlass != nullptr &&
-            magnifyingGlass->isVisible())
-        {
-            magnifyingGlass->setVisible(false);
-        }
+        magnifyingGlass->hide();
     }
 
     return;
