@@ -306,19 +306,19 @@ video_signal_parameters_s kc_get_device_video_parameters(void)
 
     video_signal_parameters_s p;
 
-    p.phase              = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::phase);
-    p.blackLevel         = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::black_level);
-    p.horizontalPosition = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::horizontal_position);
-    p.verticalPosition   = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::vertical_position);
-    p.horizontalScale    = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::horizontal_size);
-    p.overallBrightness  = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::brightness);
-    p.overallContrast    = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::contrast);
-    p.redBrightness      = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::red_brightness);
-    p.greenBrightness    = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::green_brightness);
-    p.blueBrightness     = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::blue_brightness);
-    p.redContrast        = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::red_contrast);
-    p.greenContrast      = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::green_contrast);
-    p.blueContrast       = videoParams.value(ic_v4l_video_parameters_c::parameter_type_e::blue_contrast);
+    p.phase              = videoParams.value(ic_v4l_device_controls_c::control_type_e::phase);
+    p.blackLevel         = videoParams.value(ic_v4l_device_controls_c::control_type_e::black_level);
+    p.horizontalPosition = videoParams.value(ic_v4l_device_controls_c::control_type_e::horizontal_position);
+    p.verticalPosition   = videoParams.value(ic_v4l_device_controls_c::control_type_e::vertical_position);
+    p.horizontalScale    = videoParams.value(ic_v4l_device_controls_c::control_type_e::horizontal_size);
+    p.overallBrightness  = videoParams.value(ic_v4l_device_controls_c::control_type_e::brightness);
+    p.overallContrast    = videoParams.value(ic_v4l_device_controls_c::control_type_e::contrast);
+    p.redBrightness      = videoParams.value(ic_v4l_device_controls_c::control_type_e::red_brightness);
+    p.greenBrightness    = videoParams.value(ic_v4l_device_controls_c::control_type_e::green_brightness);
+    p.blueBrightness     = videoParams.value(ic_v4l_device_controls_c::control_type_e::blue_brightness);
+    p.redContrast        = videoParams.value(ic_v4l_device_controls_c::control_type_e::red_contrast);
+    p.greenContrast      = videoParams.value(ic_v4l_device_controls_c::control_type_e::green_contrast);
+    p.blueContrast       = videoParams.value(ic_v4l_device_controls_c::control_type_e::blue_contrast);
 
     return p;
 }
@@ -339,8 +339,8 @@ video_signal_parameters_s kc_get_device_video_parameter_defaults(void)
         p.phase              = 0;
         p.blackLevel         = 8;
         p.horizontalPosition = 112;
-        p.verticalPosition   = 11;
-        p.horizontalScale    = 800;
+        p.verticalPosition   = 36;
+        p.horizontalScale    = 900;
         p.overallBrightness  = 32;
         p.overallContrast    = 128;
         p.redBrightness      = 128;
@@ -352,19 +352,19 @@ video_signal_parameters_s kc_get_device_video_parameter_defaults(void)
     }
     else
     {
-        p.phase              = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::phase);
-        p.blackLevel         = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::black_level);
-        p.horizontalPosition = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::horizontal_position);
-        p.verticalPosition   = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::vertical_position);
-        p.horizontalScale    = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::horizontal_size);
-        p.overallBrightness  = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::brightness);
-        p.overallContrast    = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::contrast);
-        p.redBrightness      = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::red_brightness);
-        p.greenBrightness    = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::green_brightness);
-        p.blueBrightness     = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::blue_brightness);
-        p.redContrast        = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::red_contrast);
-        p.greenContrast      = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::green_contrast);
-        p.blueContrast       = videoParams.default_value(ic_v4l_video_parameters_c::parameter_type_e::blue_contrast);
+        p.phase              = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::phase);
+        p.blackLevel         = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::black_level);
+        p.horizontalPosition = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::horizontal_position);
+        p.verticalPosition   = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::vertical_position);
+        p.horizontalScale    = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::horizontal_size);
+        p.overallBrightness  = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::brightness);
+        p.overallContrast    = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::contrast);
+        p.redBrightness      = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::red_brightness);
+        p.greenBrightness    = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::green_brightness);
+        p.blueBrightness     = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::blue_brightness);
+        p.redContrast        = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::red_contrast);
+        p.greenContrast      = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::green_contrast);
+        p.blueContrast       = videoParams.default_value(ic_v4l_device_controls_c::control_type_e::blue_contrast);
     }
 
     return p;
@@ -381,12 +381,18 @@ video_signal_parameters_s kc_get_device_video_parameter_minimums(void)
 
     // The V4L API returns no parameter ranges while there's no signal - so let's
     // approximate them.
-    if (!kc_is_receiving_signal())
+    //
+    // Note: Querying the minimums from V4L seems to work a little unreliably (and
+    // they vary from one video mode to another), so for now let's just always use
+    // hard-coded values.
+    if (1 || !kc_is_receiving_signal())
     {
+        // Note: These values have been approximated with the VisionRGB-E1S in mind.
+        // They may or may not be suitable for other models.
         p.phase              = 0;
         p.blackLevel         = 1;
-        p.horizontalPosition = 32;
-        p.verticalPosition   = 4;
+        p.horizontalPosition = 1;
+        p.verticalPosition   = 1;
         p.horizontalScale    = 100;
         p.overallBrightness  = 0;
         p.overallContrast    = 0;
@@ -399,19 +405,19 @@ video_signal_parameters_s kc_get_device_video_parameter_minimums(void)
     }
     else
     {
-        p.phase              = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::phase);
-        p.blackLevel         = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::black_level);
-        p.horizontalPosition = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::horizontal_position);
-        p.verticalPosition   = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::vertical_position);
-        p.horizontalScale    = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::horizontal_size);
-        p.overallBrightness  = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::brightness);
-        p.overallContrast    = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::contrast);
-        p.redBrightness      = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::red_brightness);
-        p.greenBrightness    = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::green_brightness);
-        p.blueBrightness     = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::blue_brightness);
-        p.redContrast        = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::red_contrast);
-        p.greenContrast      = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::green_contrast);
-        p.blueContrast       = videoParams.minimum_value(ic_v4l_video_parameters_c::parameter_type_e::blue_contrast);
+        p.phase              = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::phase);
+        p.blackLevel         = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::black_level);
+        p.horizontalPosition = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::horizontal_position);
+        p.verticalPosition   = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::vertical_position);
+        p.horizontalScale    = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::horizontal_size);
+        p.overallBrightness  = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::brightness);
+        p.overallContrast    = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::contrast);
+        p.redBrightness      = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::red_brightness);
+        p.greenBrightness    = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::green_brightness);
+        p.blueBrightness     = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::blue_brightness);
+        p.redContrast        = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::red_contrast);
+        p.greenContrast      = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::green_contrast);
+        p.blueContrast       = videoParams.minimum_value(ic_v4l_device_controls_c::control_type_e::blue_contrast);
     }
 
     return p;
@@ -428,14 +434,20 @@ video_signal_parameters_s kc_get_device_video_parameter_maximums(void)
 
     // The V4L API returns no parameter ranges while there's no signal - so let's
     // approximate them.
-    if (!kc_is_receiving_signal())
+    //
+    // Note: Querying the maximums from V4L seems to work a little unreliably (and
+    // they vary from one video mode to another), so for now let's just always use
+    // hard-coded values.
+    if (1 || !kc_is_receiving_signal())
     {
+        // Note: These values have been approximated with the VisionRGB-E1S in mind.
+        // They may or may not be suitable for other models.
         p.phase              = 31;
         p.blackLevel         = 255;
-        p.horizontalPosition = 800;
-        p.verticalPosition   = 15;
+        p.horizontalPosition = 1200;
+        p.verticalPosition   = 63;
         p.horizontalScale    = 4095;
-        p.overallBrightness  = 255;
+        p.overallBrightness  = 64;
         p.overallContrast    = 255;
         p.redBrightness      = 255;
         p.greenBrightness    = 511;
@@ -446,19 +458,19 @@ video_signal_parameters_s kc_get_device_video_parameter_maximums(void)
     }
     else
     {
-        p.phase              = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::phase);
-        p.blackLevel         = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::black_level);
-        p.horizontalPosition = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::horizontal_position);
-        p.verticalPosition   = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::vertical_position);
-        p.horizontalScale    = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::horizontal_size);
-        p.overallBrightness  = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::brightness);
-        p.overallContrast    = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::contrast);
-        p.redBrightness      = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::red_brightness);
-        p.greenBrightness    = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::green_brightness);
-        p.blueBrightness     = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::blue_brightness);
-        p.redContrast        = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::red_contrast);
-        p.greenContrast      = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::green_contrast);
-        p.blueContrast       = videoParams.maximum_value(ic_v4l_video_parameters_c::parameter_type_e::blue_contrast);
+        p.phase              = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::phase);
+        p.blackLevel         = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::black_level);
+        p.horizontalPosition = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::horizontal_position);
+        p.verticalPosition   = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::vertical_position);
+        p.horizontalScale    = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::horizontal_size);
+        p.overallBrightness  = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::brightness);
+        p.overallContrast    = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::contrast);
+        p.redBrightness      = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::red_brightness);
+        p.greenBrightness    = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::green_brightness);
+        p.blueBrightness     = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::blue_brightness);
+        p.redContrast        = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::red_contrast);
+        p.greenContrast      = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::green_contrast);
+        p.blueContrast       = videoParams.maximum_value(ic_v4l_device_controls_c::control_type_e::blue_contrast);
     }
 
     return p;
@@ -544,24 +556,24 @@ bool kc_set_video_signal_parameters(const video_signal_parameters_s &p)
 
     auto videoParams = CUR_INPUT_CHANNEL->captureStatus.videoParameters;
 
-    const auto kc_set_parameter = [&videoParams](const int value, const ic_v4l_video_parameters_c::parameter_type_e parameterType)
+    const auto kc_set_parameter = [&videoParams](const int value, const ic_v4l_device_controls_c::control_type_e parameterType)
     {
         return videoParams.set_value(value, parameterType);
     };
 
-    kc_set_parameter(p.phase,              ic_v4l_video_parameters_c::parameter_type_e::phase);
-    kc_set_parameter(p.blackLevel,         ic_v4l_video_parameters_c::parameter_type_e::black_level);
-    kc_set_parameter(p.horizontalPosition, ic_v4l_video_parameters_c::parameter_type_e::horizontal_position);
-    kc_set_parameter(p.verticalPosition,   ic_v4l_video_parameters_c::parameter_type_e::vertical_position);
-    kc_set_parameter(p.horizontalScale,    ic_v4l_video_parameters_c::parameter_type_e::horizontal_size);
-    kc_set_parameter(p.overallBrightness,  ic_v4l_video_parameters_c::parameter_type_e::brightness);
-    kc_set_parameter(p.overallContrast,    ic_v4l_video_parameters_c::parameter_type_e::contrast);
-    kc_set_parameter(p.redBrightness,      ic_v4l_video_parameters_c::parameter_type_e::red_brightness);
-    kc_set_parameter(p.greenBrightness,    ic_v4l_video_parameters_c::parameter_type_e::green_brightness);
-    kc_set_parameter(p.blueBrightness,     ic_v4l_video_parameters_c::parameter_type_e::blue_brightness);
-    kc_set_parameter(p.redContrast,        ic_v4l_video_parameters_c::parameter_type_e::red_contrast);
-    kc_set_parameter(p.greenContrast,      ic_v4l_video_parameters_c::parameter_type_e::green_contrast);
-    kc_set_parameter(p.blueContrast,       ic_v4l_video_parameters_c::parameter_type_e::blue_contrast);
+    kc_set_parameter(p.phase,              ic_v4l_device_controls_c::control_type_e::phase);
+    kc_set_parameter(p.blackLevel,         ic_v4l_device_controls_c::control_type_e::black_level);
+    kc_set_parameter(p.horizontalPosition, ic_v4l_device_controls_c::control_type_e::horizontal_position);
+    kc_set_parameter(p.verticalPosition,   ic_v4l_device_controls_c::control_type_e::vertical_position);
+    kc_set_parameter(p.horizontalScale,    ic_v4l_device_controls_c::control_type_e::horizontal_size);
+    kc_set_parameter(p.overallBrightness,  ic_v4l_device_controls_c::control_type_e::brightness);
+    kc_set_parameter(p.overallContrast,    ic_v4l_device_controls_c::control_type_e::contrast);
+    kc_set_parameter(p.redBrightness,      ic_v4l_device_controls_c::control_type_e::red_brightness);
+    kc_set_parameter(p.greenBrightness,    ic_v4l_device_controls_c::control_type_e::green_brightness);
+    kc_set_parameter(p.blueBrightness,     ic_v4l_device_controls_c::control_type_e::blue_brightness);
+    kc_set_parameter(p.redContrast,        ic_v4l_device_controls_c::control_type_e::red_contrast);
+    kc_set_parameter(p.greenContrast,      ic_v4l_device_controls_c::control_type_e::green_contrast);
+    kc_set_parameter(p.blueContrast,       ic_v4l_device_controls_c::control_type_e::blue_contrast);
 
     videoParams.update();
 

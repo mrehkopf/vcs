@@ -13,37 +13,49 @@
 #include <fcntl.h>
 #include <cstring>
 #include <linux/videodev2.h>
+#include "common/globals.h"
+#include "capture/capture.h"
 #include "capture/vision_v4l/ic_v4l_video_parameters.h"
 
 #define INCLUDE_VISION
 #include <visionrgb/include/rgb133v4l2.h>
 
-ic_v4l_video_parameters_c::ic_v4l_video_parameters_c(const int v4lDeviceFileHandle) :
+ic_v4l_device_controls_c::ic_v4l_device_controls_c(const int v4lDeviceFileHandle) :
     v4lDeviceFileHandle(v4lDeviceFileHandle)
 {
     return;
 }
 
-bool ic_v4l_video_parameters_c::set_value(const int newValue, const ic_v4l_video_parameters_c::parameter_type_e parameterType)
+bool ic_v4l_device_controls_c::set_value(const int newValue, const ic_v4l_device_controls_c::control_type_e control)
 {
-    // If we don't recognize the given parameter.
-    if (this->v4l_id(parameterType) < 0)
+    // Unrecognized control.
+    if (this->v4l_id(control) < 0)
     {
+        /// We'd like to emit a debug message, but it'll spam the console when there's
+        /// no capture signal (and detecting whether there's a signal with V4L is hit
+        /// and miss), so for now we'll just not do that.
+        //DEBUG(("Asked to modify an unrecognized V4L control; ignoring it."));
         return false;
     }
 
     v4l2_control v4lc = {};
-    v4lc.id = this->v4l_id(parameterType);
+    v4lc.id = this->v4l_id(control);
     v4lc.value = newValue;
 
-    return bool(ioctl(this->v4lDeviceFileHandle, VIDIOC_S_CTRL, &v4lc) == 0);
+    if (ioctl(this->v4lDeviceFileHandle, VIDIOC_S_CTRL, &v4lc) != 0)
+    {
+        DEBUG(("Unsupported value %d for V4L control \"%s\".", newValue, this->name(control).c_str()));
+        return false;
+    }
+
+    return true;
 }
 
-int ic_v4l_video_parameters_c::value(const ic_v4l_video_parameters_c::parameter_type_e parameterType) const
+int ic_v4l_device_controls_c::value(const ic_v4l_device_controls_c::control_type_e control) const
 {
     try
     {
-        return this->parameters.at(parameterType).currentValue;
+        return this->controls.at(control).currentValue;
     }
     catch(...)
     {
@@ -51,11 +63,11 @@ int ic_v4l_video_parameters_c::value(const ic_v4l_video_parameters_c::parameter_
     }
 }
 
-int ic_v4l_video_parameters_c::default_value(const ic_v4l_video_parameters_c::parameter_type_e parameterType) const
+int ic_v4l_device_controls_c::default_value(const ic_v4l_device_controls_c::control_type_e control) const
 {
     try
     {
-        return this->parameters.at(parameterType).defaultValue;
+        return this->controls.at(control).defaultValue;
     }
     catch(...)
     {
@@ -63,11 +75,11 @@ int ic_v4l_video_parameters_c::default_value(const ic_v4l_video_parameters_c::pa
     }
 }
 
-int ic_v4l_video_parameters_c::minimum_value(const ic_v4l_video_parameters_c::parameter_type_e parameterType) const
+int ic_v4l_device_controls_c::minimum_value(const ic_v4l_device_controls_c::control_type_e control) const
 {
     try
     {
-        return this->parameters.at(parameterType).minimumValue;
+        return this->controls.at(control).minimumValue;
     }
     catch(...)
     {
@@ -75,11 +87,11 @@ int ic_v4l_video_parameters_c::minimum_value(const ic_v4l_video_parameters_c::pa
     }
 }
 
-int ic_v4l_video_parameters_c::maximum_value(const ic_v4l_video_parameters_c::parameter_type_e parameterType) const
+int ic_v4l_device_controls_c::maximum_value(const ic_v4l_device_controls_c::control_type_e control) const
 {
     try
     {
-        return this->parameters.at(parameterType).maximumValue;
+        return this->controls.at(control).maximumValue;
     }
     catch(...)
     {
@@ -87,11 +99,11 @@ int ic_v4l_video_parameters_c::maximum_value(const ic_v4l_video_parameters_c::pa
     }
 }
 
-int ic_v4l_video_parameters_c::v4l_id(const ic_v4l_video_parameters_c::parameter_type_e parameterType) const
+int ic_v4l_device_controls_c::v4l_id(const ic_v4l_device_controls_c::control_type_e control) const
 {
     try
     {
-        return this->parameters.at(parameterType).v4lId;
+        return this->controls.at(control).v4lId;
     }
     catch(...)
     {
@@ -99,11 +111,11 @@ int ic_v4l_video_parameters_c::v4l_id(const ic_v4l_video_parameters_c::parameter
     }
 }
 
-std::string ic_v4l_video_parameters_c::name(const ic_v4l_video_parameters_c::parameter_type_e parameterType) const
+std::string ic_v4l_device_controls_c::name(const ic_v4l_device_controls_c::control_type_e control) const
 {
     try
     {
-        return this->parameters.at(parameterType).name;
+        return this->controls.at(control).name;
     }
     catch(...)
     {
@@ -111,9 +123,9 @@ std::string ic_v4l_video_parameters_c::name(const ic_v4l_video_parameters_c::par
     }
 }
 
-void ic_v4l_video_parameters_c::update()
+void ic_v4l_device_controls_c::update()
 {
-    this->parameters.clear();
+    this->controls.clear();
 
     const auto enumerate_parameters = [this](const unsigned startID, const unsigned endID)
     {
@@ -130,7 +142,7 @@ void ic_v4l_video_parameters_c::update()
                     !(query.flags & V4L2_CTRL_FLAG_HAS_PAYLOAD) &&
                     !(query.flags & V4L2_CTRL_FLAG_WRITE_ONLY))
                 {
-                    video_parameter_s parameter;
+                    control_data_s parameter;
 
                     parameter.name = (char*)query.name;
                     parameter.v4lId = i;
@@ -160,7 +172,7 @@ void ic_v4l_video_parameters_c::update()
                         chr = ((chr == ' ')? '_' : (char)std::tolower(chr));
                     }
 
-                    this->parameters[this->type_for_name(parameter.name)] = parameter;
+                    this->controls[this->type_for_name(parameter.name)] = parameter;
                 }
             }
         }
@@ -172,23 +184,23 @@ void ic_v4l_video_parameters_c::update()
     return;
 }
 
-ic_v4l_video_parameters_c::parameter_type_e ic_v4l_video_parameters_c::type_for_name(const std::string &name)
+ic_v4l_device_controls_c::control_type_e ic_v4l_device_controls_c::type_for_name(const std::string &name)
 {
-    if (name == "horizontal_size")     return parameter_type_e::horizontal_size;
-    if (name == "horizontal_position") return parameter_type_e::horizontal_position;
-    if (name == "vertical_position")   return parameter_type_e::vertical_position;
-    if (name == "phase")               return parameter_type_e::phase;
-    if (name == "black_level")         return parameter_type_e::black_level;
-    if (name == "brightness")          return parameter_type_e::brightness;
-    if (name == "contrast")            return parameter_type_e::contrast;
-    if (name == "red_brightness")      return parameter_type_e::red_brightness;
-    if (name == "red_contrast")        return parameter_type_e::red_contrast;
-    if (name == "green_brightness")    return parameter_type_e::green_brightness;
-    if (name == "green_contrast")      return parameter_type_e::green_contrast;
-    if (name == "blue_brightness")     return parameter_type_e::blue_brightness;
-    if (name == "blue_contrast")       return parameter_type_e::blue_contrast;
+    if (name == "horizontal_size")     return control_type_e::horizontal_size;
+    if (name == "horizontal_position") return control_type_e::horizontal_position;
+    if (name == "vertical_position")   return control_type_e::vertical_position;
+    if (name == "phase")               return control_type_e::phase;
+    if (name == "black_level")         return control_type_e::black_level;
+    if (name == "brightness")          return control_type_e::brightness;
+    if (name == "contrast")            return control_type_e::contrast;
+    if (name == "red_brightness")      return control_type_e::red_brightness;
+    if (name == "red_contrast")        return control_type_e::red_contrast;
+    if (name == "green_brightness")    return control_type_e::green_brightness;
+    if (name == "green_contrast")      return control_type_e::green_contrast;
+    if (name == "blue_brightness")     return control_type_e::blue_brightness;
+    if (name == "blue_contrast")       return control_type_e::blue_contrast;
 
-    return parameter_type_e::unknown;
+    return control_type_e::unknown;
 }
 
 #endif

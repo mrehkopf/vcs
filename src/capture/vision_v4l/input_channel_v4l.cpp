@@ -265,7 +265,7 @@ bool input_channel_v4l_c::open_device(const std::string &deviceFileName)
         return false;
     }
 
-    this->captureStatus.videoParameters = ic_v4l_video_parameters_c(this->v4lDeviceFileHandle);
+    this->captureStatus.videoParameters = ic_v4l_device_controls_c(this->v4lDeviceFileHandle);
 
     return true;
 }

@@ -66,7 +66,7 @@ public:
 
         refresh_rate_s refreshRate = refresh_rate_s(0);
 
-        ic_v4l_video_parameters_c videoParameters;
+        ic_v4l_device_controls_c videoParameters;
 
         // Count of the frames we've captured that VCS has finished processed.
         std::atomic<unsigned int> numFramesProcessed = {0};
