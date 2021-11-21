@@ -1152,11 +1152,11 @@ void MainWindow::paintEvent(QPaintEvent *)
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
         (QGuiApplication::mouseButtons() & Qt::MidButton))
     {
-        magnifyingGlass->magnify(frameImage, this->mapFromGlobal(QCursor::pos()));
+        this->magnifyingGlass->magnify(frameImage, this->mapFromGlobal(QCursor::pos()));
     }
     else
     {
-        magnifyingGlass->hide();
+        this->magnifyingGlass->hide();
     }
 
     return;

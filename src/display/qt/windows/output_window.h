@@ -23,6 +23,7 @@ class AliasDialog;
 class AboutDialog;
 class VCSBaseDialog;
 class QAction;
+class MagnifyingGlass;
 
 struct signal_info_s;
 struct resolution_alias_s;
@@ -68,15 +69,15 @@ public:
     bool apply_programwide_styling(const QString &filename);
 
     OutputResolutionDialog* output_resolution_dialog(void) const { return this->outputResolutionDlg; }
-    InputResolutionDialog* input_resolution_dialog(void)    const { return this->inputResolutionDlg; }
-    VideoParameterDialog* video_presets_dialog(void)        const { return this->videoParamDlg; }
-    FilterGraphDialog* filter_graph_dialog(void)            const { return this->filterGraphDlg; }
-    AntiTearDialog* anti_tear_dialog(void)                  const { return this->antitearDlg; }
-    OverlayDialog* overlay_dialog(void)                     const { return this->overlayDlg; }
-    RecordDialog* recordDialog(void)                        const { return this->recordDlg; }
-    SignalDialog* signal_info_dialog(void)                  const { return this->signalDlg; }
-    AliasDialog* alias_resolutions_dialog(void)             const { return this->aliasDlg; }
-    AboutDialog* about_dialog(void)                         const { return this->aboutDlg; }
+    InputResolutionDialog* input_resolution_dialog(void)   const { return this->inputResolutionDlg; }
+    VideoParameterDialog* video_presets_dialog(void)       const { return this->videoParamDlg; }
+    FilterGraphDialog* filter_graph_dialog(void)           const { return this->filterGraphDlg; }
+    AntiTearDialog* anti_tear_dialog(void)                 const { return this->antitearDlg; }
+    OverlayDialog* overlay_dialog(void)                    const { return this->overlayDlg; }
+    RecordDialog* recordDialog(void)                       const { return this->recordDlg; }
+    SignalDialog* signal_info_dialog(void)                 const { return this->signalDlg; }
+    AliasDialog* alias_resolutions_dialog(void)            const { return this->aliasDlg; }
+    AboutDialog* about_dialog(void)                        const { return this->aboutDlg; }
 
 signals:
     void entered_fullscreen(void);
@@ -128,6 +129,8 @@ private:
     // A master list of all the dialogs that this window spawns. Will be filled in
     // when we create the dialog instances.
     QVector<VCSBaseDialog*> dialogs;
+
+    MagnifyingGlass *magnifyingGlass = nullptr;
 
     // Set to true when the user has selected to close the
     // main window.
