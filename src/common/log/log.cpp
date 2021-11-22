@@ -78,7 +78,11 @@ void log(const char *const type, const char *const msg, va_list args)
     TOTAL_NUM_LOG_ENTRIES++;
 
     // Output the entry into the console.
-    printf("[%-5s] %s\n", type, buf);
+    printf("[%ld:%s] %s\n",
+       long(std::time(NULL)),
+       type,
+       buf
+    );
 
     // Try and dump the entry/entries into the GUI. If we can't, just
     // give up for now and we'll try again next time.
@@ -101,6 +105,7 @@ void log(const char *const type, const char *const msg, va_list args)
 void klog_log_error(const char *const msg, ...)
 {
     va_list args;
+
     va_start(args, msg);
         log("Error", msg, args);
     va_end(args);
@@ -111,6 +116,7 @@ void klog_log_error(const char *const msg, ...)
 void klog_log_info(const char *const msg, ...)
 {
     va_list args;
+
     va_start(args, msg);
         log("Info", msg, args);
     va_end(args);
@@ -121,6 +127,7 @@ void klog_log_info(const char *const msg, ...)
 void klog_log_debug(const char *const msg, ...)
 {
     va_list args;
+
     va_start(args, msg);
         log("Debug", msg, args);
     va_end(args);
