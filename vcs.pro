@@ -7,7 +7,7 @@
 DEFINES += USE_OPENCV
 
 linux {
-    DEFINES += CAPTURE_DEVICE_VIRTUAL
+    DEFINES += CAPTURE_DEVICE_VISION_V4L
 
     # The base path for Datapath's Linux Vision driver header files. These are
     # bundled with the driver downloadable from Datapath's website. The files
