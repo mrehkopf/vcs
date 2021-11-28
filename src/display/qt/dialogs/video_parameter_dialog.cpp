@@ -16,6 +16,7 @@
 #include "common/propagate/vcs_event.h"
 #include "common/refresh_rate.h"
 #include "common/disk/disk.h"
+#include "common/propagate/vcs_event.h"
 #include "capture/capture.h"
 #include "capture/video_presets.h"
 #include "ui_video_parameter_dialog.h"
@@ -448,7 +449,7 @@ void VideoParameterDialog::broadcast_current_preset_parameters(void)
     preset->videoParameters.phase              = ui->parameterGrid_videoParams->value("Phase");
     preset->videoParameters.verticalPosition   = ui->parameterGrid_videoParams->value("Ver. position");
 
-    kvideoparam_preset_video_params_changed(preset->id);
+    kc_evVideoPresetParamsChanged.fire(preset);
 
     return;
 }

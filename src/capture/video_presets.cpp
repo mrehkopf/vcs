@@ -11,6 +11,8 @@
 #include "capture/video_presets.h"
 #include "capture/capture.h"
 
+vcs_event_c<const video_preset_s*> kc_evVideoPresetParamsChanged;
+
 static std::vector<video_preset_s*> PRESETS;
 
 // The id of the preset that's currently being applied; or -1 if no preset is
@@ -19,35 +21,6 @@ static int ACTIVE_PRESET_ID;
 
 // Incremented for each new preset added, and used as the id for that preset.
 static unsigned RUNNING_PRESET_ID = 0;
-
-void kvideopreset_initialize(void)
-{
-    kc_evNewVideoMode.listen(kvideopreset_apply_current_active_preset);
-
-    return;
-}
-
-void kvideopreset_release(void)
-{
-    kvideopreset_remove_all_presets();
-
-    return;
-}
-
-bool kvideopreset_remove_preset(const unsigned presetId)
-{
-    const auto targetPreset = std::find_if(PRESETS.begin(), PRESETS.end(), [=](video_preset_s *p){return p->id == presetId;});
-
-    if (targetPreset == PRESETS.end())
-    {
-        return false;
-    }
-
-    delete (*targetPreset);
-    PRESETS.erase(targetPreset);
-
-    return true;
-}
 
 static video_preset_s* strongest_activating_preset(void)
 {
@@ -90,6 +63,48 @@ static video_preset_s* strongest_activating_preset(void)
     }
 }
 
+void kvideopreset_initialize(void)
+{
+    // Listen for app events.
+    {
+        kc_evNewVideoMode.listen(kvideopreset_apply_current_active_preset);
+
+        kc_evVideoPresetParamsChanged.listen([](const video_preset_s *preset)
+        {
+            k_assert(preset, "Expected a non-null preset.");
+
+            if (preset == strongest_activating_preset())
+            {
+                kc_set_video_signal_parameters(preset->videoParameters);
+            }
+        });
+    }
+
+    return;
+}
+
+void kvideopreset_release(void)
+{
+    kvideopreset_remove_all_presets();
+
+    return;
+}
+
+bool kvideopreset_remove_preset(const unsigned presetId)
+{
+    const auto targetPreset = std::find_if(PRESETS.begin(), PRESETS.end(), [=](video_preset_s *p){return p->id == presetId;});
+
+    if (targetPreset == PRESETS.end())
+    {
+        return false;
+    }
+
+    delete (*targetPreset);
+    PRESETS.erase(targetPreset);
+
+    return true;
+}
+
 void kvideopreset_remove_all_presets(void)
 {
     for (auto *preset: PRESETS)
@@ -99,24 +114,6 @@ void kvideopreset_remove_all_presets(void)
 
     PRESETS.clear();
     RUNNING_PRESET_ID = 0;
-
-    return;
-}
-
-void kvideoparam_preset_video_params_changed(const unsigned presetId)
-{
-    if (!kc_is_receiving_signal())
-    {
-        return;
-    }
-
-    const video_preset_s *thisPreset = kvideopreset_get_preset_ptr(presetId);
-    const video_preset_s *activePreset = strongest_activating_preset();
-
-    if (thisPreset == activePreset)
-    {
-        kc_set_video_signal_parameters(thisPreset->videoParameters);
-    }
 
     return;
 }

@@ -1,5 +1,5 @@
 /*
- * 2020 Tarpeeksi Hyvae Soft
+ * 2020-2021 Tarpeeksi Hyvae Soft
  * 
  * Software: VCS
  *
@@ -12,6 +12,7 @@
 #include "common/globals.h"
 #include "common/refresh_rate.h"
 #include "capture/capture.h"
+#include "common/propagate/vcs_event.h"
 
 struct video_preset_s
 {
@@ -117,14 +118,16 @@ struct video_preset_s
     }
 };
 
+// Should be fired whenever changes have been made to the given video preset's
+// parameters.
+//
+// Warning: If you change the preset's activation conditions, you should call
+// kvideopreset_apply_current_active_preset() instead.
+extern vcs_event_c<const video_preset_s*> kc_evVideoPresetParamsChanged;
+
 void kvideopreset_initialize(void);
 
 void kvideopreset_release(void);
-
-// Call this to inform the system that the given preset's parameter(s) have
-// changed. Note that if you change the preset's activation conditions, you
-// should call kvideopreset_apply_current_active_preset() instead.
-void kvideoparam_preset_video_params_changed(const unsigned presetId);
 
 void kvideopreset_remove_all_presets(void);
 
