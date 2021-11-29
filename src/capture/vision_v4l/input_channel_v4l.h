@@ -109,6 +109,10 @@ private:
     // changed; false otherwise.
     bool capture_thread__has_source_mode_changed(void);
 
+    // Returns true if the input channel is currently receiving a signal; false
+    // otherwise.
+    bool capture_thread__has_signal(void);
+
     // Mark the given capture event as having occurred.
     void push_capture_event(capture_event_e event);
 

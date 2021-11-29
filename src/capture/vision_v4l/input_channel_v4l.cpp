@@ -20,6 +20,12 @@
 #define INCLUDE_VISION
 #include <visionrgb/include/rgb133v4l2.h>
 
+// We'll persist the resolution and refresh rate, so that when a new video mode
+// is encountered, the code will first save the new mode values and then close
+// the old input channel, with the new input channel adopting the persisted values.
+static resolution_s LATEST_RESOLUTION = {1024, 768, 32};
+static refresh_rate_s LATEST_REFRESH_RATE = 0;
+
 input_channel_v4l_c::input_channel_v4l_c(const std::string v4lDeviceFileName,
                                          const unsigned numBackBuffers,
                                          captured_frame_s *const dstFrameBuffer) :
@@ -27,7 +33,10 @@ input_channel_v4l_c::input_channel_v4l_c(const std::string v4lDeviceFileName,
     dstFrameBuffer(dstFrameBuffer),
     requestedNumBackBuffers(numBackBuffers)
 {
-    INFO(("Establishing a connection to %s.", this->v4lDeviceFileName.c_str()));
+    DEBUG(("Establishing a connection to %s.", this->v4lDeviceFileName.c_str()));
+
+    this->captureStatus.refreshRate = LATEST_REFRESH_RATE;
+    this->captureStatus.resolution = LATEST_RESOLUTION;
 
     this->start_capturing();
 
@@ -36,7 +45,7 @@ input_channel_v4l_c::input_channel_v4l_c(const std::string v4lDeviceFileName,
 
 input_channel_v4l_c::~input_channel_v4l_c()
 {
-    INFO(("Closing the connection to %s.", this->v4lDeviceFileName.c_str()));
+    DEBUG(("Closing the connection to %s.", this->v4lDeviceFileName.c_str()));
 
     const int retVal = this->stop_capturing();
 
@@ -102,12 +111,38 @@ resolution_s input_channel_v4l_c::source_resolution(void)
             32}; /// TODO: Don't assume the bit depth.
 }
 
+bool input_channel_v4l_c::capture_thread__has_signal(void)
+{
+    /// FIXME: We're only assuming this is the correct ID for the "signal_type" control.
+    static const unsigned v4lSignalTypeControlId = 0x8000013;
+
+    /// FIXME: We're only assuming this value of the "signal_type" control means "no signal".
+    static const unsigned noSignalControlValue = 0;
+
+    v4l2_control v4lc = {};
+    v4lc.id = v4lSignalTypeControlId;
+
+    if (ioctl(this->v4lDeviceFileHandle, VIDIOC_G_CTRL, &v4lc) == 0)
+    {
+        const bool hasNoSignal = (v4lc.value == noSignalControlValue);
+        const bool hasStatusChanged = (hasNoSignal != this->captureStatus.noSignal);
+
+        this->captureStatus.noSignal = (v4lc.value == noSignalControlValue);
+
+        if (hasStatusChanged && hasNoSignal)
+        {
+            std::lock_guard<std::mutex> lock(kc_capture_mutex());
+            this->push_capture_event(capture_event_e::signal_lost);
+        }
+    }
+
+    return !this->captureStatus.noSignal;
+}
+
 bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
 {
     v4l2_format format = {0};
     format.type = V4L2_BUF_TYPE_CAPTURE_SOURCE;
-
-    /// TODO: Check for 'no signal' status.
 
     if (ioctl(this->v4lDeviceFileHandle, RGB133_VIDIOC_G_SRC_FMT, &format) >= 0)
     {
@@ -120,10 +155,12 @@ bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
         {
             const refresh_rate_s currentRefreshRate = refresh_rate_s(format.fmt.pix.priv / 1000.0);
 
-            if ((currentRefreshRate != this->captureStatus.refreshRate) ||
-                (format.fmt.pix.width != this->captureStatus.resolution.w) ||
-                (format.fmt.pix.height != this->captureStatus.resolution.h))
+            if ((currentRefreshRate != LATEST_REFRESH_RATE) ||
+                (format.fmt.pix.width != LATEST_RESOLUTION.w) ||
+                (format.fmt.pix.height != LATEST_RESOLUTION.h))
             {
+                this->captureStatus.refreshRate = LATEST_REFRESH_RATE = currentRefreshRate;
+                this->captureStatus.resolution = LATEST_RESOLUTION = {format.fmt.pix.width, format.fmt.pix.height, 32};
                 return true;
             }
         }
@@ -198,7 +235,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
 
             const input_channel_v4l_c::mmap_metadata &srcBuffer = this->mmapBackBuffers.at(buf.index);
 
-            this->dstFrameBuffer->r = this->captureStatus.resolution;
+            this->dstFrameBuffer->r = LATEST_RESOLUTION;
             this->dstFrameBuffer->r.bpp = ((this->captureStatus.pixelFormat == capture_pixel_format_e::rgb_888)? 32 : 16);
             this->dstFrameBuffer->pixelFormat = this->captureStatus.pixelFormat;
 
@@ -306,7 +343,7 @@ int input_channel_v4l_c::capture_thread(void)
             return 1;
         }
 
-        if (this->captureStatus.noSignal)
+        if (!capture_thread__has_signal())
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             continue;
@@ -379,7 +416,7 @@ bool input_channel_v4l_c::enqueue_mmap_back_buffers(const resolution_s &resoluti
         goto fail;
     }
 
-    // Tell the capture device we want it to allocate the back buffers in its,
+    // Tell the capture device we want it to allocate the back buffers in its
     // own memory and that we'll access them via mmap.
     {
         reqBuf.count = this->requestedNumBackBuffers;
@@ -392,8 +429,6 @@ bool input_channel_v4l_c::enqueue_mmap_back_buffers(const resolution_s &resoluti
             goto fail;
         }
     }
-
-    INFO(("The capture device has created %d back buffer(s).", reqBuf.count));
 
     // Have the capture device allocate the back buffers in its own memory.
     for (uint32_t i = 0; i < reqBuf.count; i++)
@@ -549,38 +584,6 @@ bool input_channel_v4l_c::start_capturing()
     if (!this->streamon())
     {
         goto fail;
-    }
-
-    // Initialize the capture status parameters.
-    {
-        v4l2_format format = {0};
-        format.type = V4L2_BUF_TYPE_CAPTURE_SOURCE;
-
-        if (ioctl(this->v4lDeviceFileHandle, RGB133_VIDIOC_G_SRC_FMT, &format) >= 0)
-        {
-            if (!input_channel_v4l_c::is_format_of_valid_signal(&format))
-            {
-                this->captureStatus.invalidSignal = true;
-
-                this->push_capture_event(capture_event_e::invalid_signal);
-            }
-            else
-            {
-                this->captureStatus.resolution.w = format.fmt.pix.width;
-                this->captureStatus.resolution.h = format.fmt.pix.height;
-                this->captureStatus.resolution.bpp = 32;
-                this->captureStatus.refreshRate = refresh_rate_s(format.fmt.pix.priv / 1000.0);
-            }
-
-            /// TODO: Handle 'no signal'.
-        }
-        else
-        {
-            NBENE(("Couldn't set the initial capture parameters for device \"%s\".",
-                   this->v4lDeviceFileName.c_str()));
-
-            goto fail;
-        }
     }
 
     // Start the capture thread.
