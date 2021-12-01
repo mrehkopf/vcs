@@ -28,13 +28,9 @@ ic_v4l_device_controls_c::ic_v4l_device_controls_c(const int v4lDeviceFileHandle
 
 bool ic_v4l_device_controls_c::set_value(const int newValue, const ic_v4l_device_controls_c::control_type_e control)
 {
-    // Unrecognized control.
     if (this->v4l_id(control) < 0)
     {
-        /// We'd like to emit a debug message, but it'll spam the console when there's
-        /// no capture signal (and detecting whether there's a signal with V4L is hit
-        /// and miss), so for now we'll just not do that.
-        //DEBUG(("Asked to modify an unrecognized V4L control; ignoring it."));
+        DEBUG(("Asked to modify an unrecognized V4L control; ignoring this."));
         return false;
     }
 
@@ -44,7 +40,11 @@ bool ic_v4l_device_controls_c::set_value(const int newValue, const ic_v4l_device
 
     if (ioctl(this->v4lDeviceFileHandle, VIDIOC_S_CTRL, &v4lc) != 0)
     {
-        DEBUG(("Unsupported value %d for V4L control \"%s\".", newValue, this->name(control).c_str()));
+        if (kc_is_receiving_signal())
+        {
+            DEBUG(("V4L control: Unsupported value %d for \"%s\".", newValue, this->name(control).c_str()));
+        }
+
         return false;
     }
 
