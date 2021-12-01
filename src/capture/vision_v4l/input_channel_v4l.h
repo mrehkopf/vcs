@@ -51,7 +51,7 @@ public:
     struct
     {
         // True if this channel is currently not receiving a signal.
-        bool noSignal = false;
+        bool noSignal = true;
 
         // True if the signal we're currently receiving is invalid in some way
         // (e.g. out of range).

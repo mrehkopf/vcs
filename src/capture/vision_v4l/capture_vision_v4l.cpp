@@ -69,6 +69,10 @@ capture_event_e kc_pop_capture_event_queue(void)
     {
         return capture_event_e::signal_lost;
     }
+    else if (CUR_INPUT_CHANNEL->pop_capture_event(capture_event_e::signal_gained))
+    {
+        return capture_event_e::signal_gained;
+    }
     else if (CUR_INPUT_CHANNEL->pop_capture_event(capture_event_e::invalid_signal))
     {
         return capture_event_e::invalid_signal;
@@ -170,12 +174,7 @@ bool kc_initialize_device(void)
         kc_set_capture_input_channel(CUR_INPUT_CHANNEL_IDX);
     });
 
-    kc_evSignalLost.listen([]
-    {
-        CUR_INPUT_CHANNEL->captureStatus.videoParameters.update();
-    });
-
-    ks_evInputChannelChanged.listen([]
+    kc_evSignalGained.listen([]
     {
         CUR_INPUT_CHANNEL->captureStatus.videoParameters.update();
         kvideopreset_apply_current_active_preset();
@@ -302,7 +301,9 @@ video_signal_parameters_s kc_get_device_video_parameters(void)
         return kc_get_device_video_parameter_defaults();
     }
 
-    const auto videoParams = CUR_INPUT_CHANNEL->captureStatus.videoParameters;
+    auto videoParams = CUR_INPUT_CHANNEL->captureStatus.videoParameters;
+
+    videoParams.update();
 
     video_signal_parameters_s p;
 
@@ -574,8 +575,6 @@ bool kc_set_video_signal_parameters(const video_signal_parameters_s &p)
     kc_set_parameter(p.redContrast,        ic_v4l_device_controls_c::control_type_e::red_contrast);
     kc_set_parameter(p.greenContrast,      ic_v4l_device_controls_c::control_type_e::green_contrast);
     kc_set_parameter(p.blueContrast,       ic_v4l_device_controls_c::control_type_e::blue_contrast);
-
-    videoParams.update();
 
     return true;
 }

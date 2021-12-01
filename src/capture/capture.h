@@ -333,6 +333,9 @@ enum class capture_event_e
     /*! The capture device has just lost its input signal.*/
     signal_lost,
 
+    /*! The capture device has just gained an input signal.*/
+    signal_gained,
+
     /*!
      * The capture device has sent in a new frame, whose data can be queried via
      * get_frame_buffer().

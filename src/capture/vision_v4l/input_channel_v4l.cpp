@@ -129,10 +129,10 @@ bool input_channel_v4l_c::capture_thread__has_signal(void)
 
         this->captureStatus.noSignal = (v4lc.value == noSignalControlValue);
 
-        if (hasStatusChanged && hasNoSignal)
+        if (hasStatusChanged)
         {
             std::lock_guard<std::mutex> lock(kc_capture_mutex());
-            this->push_capture_event(capture_event_e::signal_lost);
+            this->push_capture_event(hasNoSignal? capture_event_e::signal_lost : capture_event_e::signal_gained);
         }
     }
 

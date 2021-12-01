@@ -150,6 +150,11 @@ static capture_event_e process_next_capture_event(void)
             kc_evSignalLost.fire();
             break;
         }
+        case capture_event_e::signal_gained:
+        {
+            kc_evSignalGained.fire();
+            break;
+        }
         case capture_event_e::invalid_signal:
         {
             kc_evInvalidSignal.fire();
