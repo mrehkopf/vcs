@@ -63,7 +63,10 @@ capture_event_e kc_pop_capture_event_queue(void)
     }
     else if (CUR_INPUT_CHANNEL->pop_capture_event(capture_event_e::new_video_mode))
     {
-        return capture_event_e::new_video_mode;
+        // Re-create the input channel for the new video mode.
+        kc_set_capture_input_channel(CUR_INPUT_CHANNEL_IDX);
+
+        return capture_event_e::none;
     }
     else if (CUR_INPUT_CHANNEL->pop_capture_event(capture_event_e::signal_lost))
     {
@@ -168,16 +171,10 @@ bool kc_initialize_device(void)
 {
     INFO(("Initializing the Vision/V4L capture device."));
 
-    kc_evNewVideoMode.listen([]
-    {
-        // Re-create the input channel for the new video mode.
-        kc_set_capture_input_channel(CUR_INPUT_CHANNEL_IDX);
-    });
-
     kc_evSignalGained.listen([]
     {
         CUR_INPUT_CHANNEL->captureStatus.videoParameters.update();
-        kvideopreset_apply_current_active_preset();
+        kc_evNewProposedVideoMode.fire(kc_get_capture_video_mode());
     });
 
     FRAME_BUFFER.r = {640, 480, 32};
@@ -530,8 +527,7 @@ bool kc_set_capture_input_channel(const unsigned idx)
         delete CUR_INPUT_CHANNEL;
     }
 
-    const std::string captureDeviceFilename = (std::string("/dev/video") + std::to_string(idx));
-    CUR_INPUT_CHANNEL = new input_channel_v4l_c(captureDeviceFilename,
+    CUR_INPUT_CHANNEL = new input_channel_v4l_c((std::string("/dev/video") + std::to_string(idx)),
                                                 3,
                                                 &FRAME_BUFFER);
 

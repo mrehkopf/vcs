@@ -33,7 +33,7 @@ input_channel_v4l_c::input_channel_v4l_c(const std::string v4lDeviceFileName,
     dstFrameBuffer(dstFrameBuffer),
     requestedNumBackBuffers(numBackBuffers)
 {
-    DEBUG(("Establishing a connection to %s.", this->v4lDeviceFileName.c_str()));
+    DEBUG(("Opening %s.", this->v4lDeviceFileName.c_str()));
 
     this->captureStatus.refreshRate = LATEST_REFRESH_RATE;
     this->captureStatus.resolution = LATEST_RESOLUTION;
@@ -45,7 +45,7 @@ input_channel_v4l_c::input_channel_v4l_c(const std::string v4lDeviceFileName,
 
 input_channel_v4l_c::~input_channel_v4l_c()
 {
-    DEBUG(("Closing the connection to %s.", this->v4lDeviceFileName.c_str()));
+    DEBUG(("Closing %s.", this->v4lDeviceFileName.c_str()));
 
     const int retVal = this->stop_capturing();
 
@@ -598,6 +598,8 @@ bool input_channel_v4l_c::start_capturing()
             goto fail;
         }
     }
+
+    DEBUG(("Capturing on %s.", this->v4lDeviceFileName.c_str()));
 
     return true;
 
