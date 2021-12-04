@@ -53,6 +53,9 @@ signals:
     // Emitted when the last item in the preset list is removed.
     void preset_list_became_empty(void);
 
+    // Emitted when the user makes changest
+    void preset_activation_rules_changed(const video_preset_s *const preset);
+
     // Emitted when an item is added to an empty preset list.
     void preset_list_no_longer_empty(void);
 
@@ -73,6 +76,8 @@ private:
     void broadcast_current_preset_parameters(void);
 
     void resort_preset_list(void);
+
+    void update_active_preset_indicator(void);
 
     Ui::VideoParameterDialog *ui;
 

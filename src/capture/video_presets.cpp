@@ -15,10 +15,6 @@ vcs_event_c<const video_preset_s*> kc_evVideoPresetParamsChanged;
 
 static std::vector<video_preset_s*> PRESETS;
 
-// The id of the preset that's currently being applied; or -1 if no preset is
-// currently active.
-static int ACTIVE_PRESET_ID;
-
 // Incremented for each new preset added, and used as the id for that preset.
 static unsigned RUNNING_PRESET_ID = 0;
 
@@ -26,7 +22,6 @@ static video_preset_s* strongest_activating_preset(void)
 {
     if (!kc_is_receiving_signal())
     {
-        ACTIVE_PRESET_ID = -1;
         return nullptr;
     }
 
@@ -36,7 +31,7 @@ static video_preset_s* strongest_activating_preset(void)
     std::vector<std::pair<unsigned/*preset id*/,
                           int/*preset activation level*/>> activationLevels;
 
-    ACTIVE_PRESET_ID = -1;
+    int strongestPresetId = -1;
     int highestActivationLevel = 0;
 
     for (auto *preset: PRESETS)
@@ -46,20 +41,19 @@ static video_preset_s* strongest_activating_preset(void)
         if (activationLevel > highestActivationLevel)
         {
             highestActivationLevel = activationLevel;
-            ACTIVE_PRESET_ID = int(preset->id);
+            strongestPresetId = int(preset->id);
         }
     }
 
     // If no presets activated strongly enough.
     if ((highestActivationLevel <= 0) ||
-        (ACTIVE_PRESET_ID < 0))
+        (strongestPresetId < 0))
     {
-        ACTIVE_PRESET_ID = -1;
         return nullptr;
     }
     else
     {
-        return kvideopreset_get_preset_ptr(unsigned(ACTIVE_PRESET_ID));
+        return kvideopreset_get_preset_ptr(unsigned(strongestPresetId));
     }
 }
 
@@ -81,6 +75,20 @@ void kvideopreset_initialize(void)
     }
 
     return;
+}
+
+bool kvideopreset_is_preset_active(const video_preset_s *const preset)
+{
+    k_assert(preset, "Expected a non-null preset.");
+
+    const auto *activePreset = strongest_activating_preset();
+
+    if (!activePreset)
+    {
+        return false;
+    }
+
+    return (preset->id == activePreset->id);
 }
 
 void kvideopreset_release(void)

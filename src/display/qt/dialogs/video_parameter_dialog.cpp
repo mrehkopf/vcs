@@ -117,10 +117,17 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         ui->parameterGrid_videoParams->add_scroller("Red ct.");
         ui->parameterGrid_videoParams->add_scroller("Green ct.");
         ui->parameterGrid_videoParams->add_scroller("Blue ct.");
+
+        this->update_active_preset_indicator();
     }
 
     // Connect the GUI controls to consequences for changing their values.
     {
+        connect(this, &VideoParameterDialog::preset_activation_rules_changed, this, [this]
+        {
+            this->update_active_preset_indicator();
+        });
+
         connect(this, &VCSBaseDialog::data_filename_changed, this, [this](const QString &newFilename)
         {
             this->set_unsaved_changes(false);
@@ -130,6 +137,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         connect(ui->comboBox_presetList, &VideoPresetList::preset_selected, this, [this]
         {
             this->update_preset_controls_with_current_preset_data();
+            this->update_active_preset_indicator();
             kvideopreset_apply_current_active_preset();
         });
 
@@ -142,6 +150,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             ui->parameterGrid_videoParams->setEnabled(false);
             ui->pushButton_deletePreset->setEnabled(false);
             ui->lineEdit_presetName->clear();
+            this->update_active_preset_indicator();
         });
 
         connect(ui->comboBox_presetList, &VideoPresetList::list_became_populated, this, [this]
@@ -179,31 +188,43 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
         connect(ui->doubleSpinBox_refreshRateValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, [this](const double value)
         {
-            if (ui->comboBox_presetList->current_preset())
+            auto *selectedPreset = ui->comboBox_presetList->current_preset();
+
+            if (selectedPreset)
             {
-                ui->comboBox_presetList->current_preset()->activationRefreshRate = value;
-                ui->comboBox_presetList->update_preset_item_label(ui->comboBox_presetList->current_preset()->id);
+                selectedPreset->activationRefreshRate = value;
+                ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
+
                 kvideopreset_apply_current_active_preset();
+                emit this->preset_activation_rules_changed(selectedPreset);
             }
         });
 
         connect(ui->spinBox_resolutionX, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](const int value)
         {
-            if (ui->comboBox_presetList->current_preset())
+            auto *selectedPreset = ui->comboBox_presetList->current_preset();
+
+            if (selectedPreset)
             {
-                ui->comboBox_presetList->current_preset()->activationResolution.w = std::min(MAX_CAPTURE_WIDTH, unsigned(value));
-                ui->comboBox_presetList->update_preset_item_label(ui->comboBox_presetList->current_preset()->id);
+                selectedPreset->activationResolution.w = std::min(MAX_CAPTURE_WIDTH, unsigned(value));
+                ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
+
                 kvideopreset_apply_current_active_preset();
+                emit this->preset_activation_rules_changed(selectedPreset);
             }
         });
 
         connect(ui->spinBox_resolutionY, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](const int value)
         {
-            if (ui->comboBox_presetList->current_preset())
+            auto *selectedPreset = ui->comboBox_presetList->current_preset();
+
+            if (selectedPreset)
             {
-                ui->comboBox_presetList->current_preset()->activationResolution.h = std::min(MAX_CAPTURE_HEIGHT, unsigned(value));
-                ui->comboBox_presetList->update_preset_item_label(ui->comboBox_presetList->current_preset()->id);
+                selectedPreset->activationResolution.h = std::min(MAX_CAPTURE_HEIGHT, unsigned(value));
+                ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
+
                 kvideopreset_apply_current_active_preset();
+                emit this->preset_activation_rules_changed(selectedPreset);
             }
         });
 
@@ -219,10 +240,12 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
         connect(ui->lineEdit_presetName, &QLineEdit::textEdited, this, [this](const QString &text)
         {
-            if (ui->comboBox_presetList->current_preset())
+            auto *selectedPreset = ui->comboBox_presetList->current_preset();
+
+            if (selectedPreset)
             {
-                ui->comboBox_presetList->current_preset()->name = text.toStdString();
-                ui->comboBox_presetList->update_preset_item_label(ui->comboBox_presetList->current_preset()->id);
+                selectedPreset->name = text.toStdString();
+                ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
             }
         });
 
@@ -232,13 +255,16 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             ui->comboBox_refreshRateComparison->setEnabled(checked);
             ui->pushButton_refreshRateSeparator->setEnabled(checked);
 
-            if (ui->comboBox_presetList->current_preset())
+            auto *selectedPreset = ui->comboBox_presetList->current_preset();
+
+            if (selectedPreset)
             {
-                ui->comboBox_presetList->current_preset()->activatesWithRefreshRate = checked;
-                ui->comboBox_presetList->update_preset_item_label(ui->comboBox_presetList->current_preset()->id);
+                selectedPreset->activatesWithRefreshRate = checked;
+                ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
             }
 
             kvideopreset_apply_current_active_preset();
+            emit this->preset_activation_rules_changed(selectedPreset);
         });
 
         connect(ui->checkBox_activatorResolution, &QCheckBox::toggled, this, [this](const bool checked)
@@ -247,13 +273,16 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             ui->spinBox_resolutionY->setEnabled(checked);
             ui->pushButton_resolutionSeparator->setEnabled(checked);
 
-            if (ui->comboBox_presetList->current_preset())
+            auto *selectedPreset = ui->comboBox_presetList->current_preset();
+
+            if (selectedPreset)
             {
-                ui->comboBox_presetList->current_preset()->activatesWithResolution = checked;
-                ui->comboBox_presetList->update_preset_item_label(ui->comboBox_presetList->current_preset()->id);
+                selectedPreset->activatesWithResolution = checked;
+                ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
             }
 
             kvideopreset_apply_current_active_preset();
+            emit this->preset_activation_rules_changed(selectedPreset);
         });
 
         connect(ui->checkBox_activatorShortcut, &QCheckBox::toggled, this, [this](const bool checked)
@@ -262,10 +291,12 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             ui->comboBox_shortcutSecondKey->setEnabled(checked);
             ui->label_shortcutSeparator->setEnabled(checked);
 
-            if (ui->comboBox_presetList->current_preset())
+            auto *selectedPreset = ui->comboBox_presetList->current_preset();
+
+            if (selectedPreset)
             {
-                ui->comboBox_presetList->current_preset()->activatesWithShortcut = checked;
-                ui->comboBox_presetList->update_preset_item_label(ui->comboBox_presetList->current_preset()->id);
+                selectedPreset->activatesWithShortcut = checked;
+                ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
             }
         });
 
@@ -307,15 +338,19 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 ui->doubleSpinBox_refreshRateValue->setDecimals(0);
             }
 
-            if (ui->comboBox_presetList->current_preset())
-            {
-                if (text == "Exact")   ui->comboBox_presetList->current_preset()->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
-                if (text == "Rounded") ui->comboBox_presetList->current_preset()->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::rounded;
-                if (text == "Floored") ui->comboBox_presetList->current_preset()->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::floored;
-                if (text == "Ceiled")  ui->comboBox_presetList->current_preset()->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::ceiled;
+            auto *selectedPreset = ui->comboBox_presetList->current_preset();
 
-                ui->comboBox_presetList->update_preset_item_label(ui->comboBox_presetList->current_preset()->id);
+            if (selectedPreset)
+            {
+                if (text == "Exact")        selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
+                else if (text == "Rounded") selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::rounded;
+                else if (text == "Floored") selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::floored;
+                else if (text == "Ceiled")  selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::ceiled;
+
+                ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
+
                 kvideopreset_apply_current_active_preset();
+                emit this->preset_activation_rules_changed(selectedPreset);
             }
         });
     }
@@ -339,6 +374,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             {
                 this->update_preset_control_ranges();
             }
+
+            this->update_active_preset_indicator();
         });
     }
 
@@ -408,6 +445,29 @@ bool VideoParameterDialog::load_presets_from_file(const QString &filename)
     }
 
     return true;
+}
+
+void VideoParameterDialog::update_active_preset_indicator(void)
+{
+    const auto *preset = ui->comboBox_presetList->current_preset();
+
+    if (ui->comboBox_presetList->count() <= 0)
+    {
+        ui->label_isPresetCurrentlyActive->setStyleSheet("QLabel {color: dimgray; margin: 0;}");
+        ui->label_isPresetCurrentlyActive->setToolTip("");
+    }
+    else if (preset && kvideopreset_is_preset_active(preset))
+    {
+        ui->label_isPresetCurrentlyActive->setStyleSheet("QLabel {color: mediumseagreen; margin: 0;}");
+        ui->label_isPresetCurrentlyActive->setToolTip("This preset is active");
+    }
+    else
+    {
+        ui->label_isPresetCurrentlyActive->setStyleSheet("QLabel {color: gray; margin: 0;}");
+        ui->label_isPresetCurrentlyActive->setToolTip("This preset is inactive");
+    }
+
+    return;
 }
 
 void VideoParameterDialog::assign_presets(const std::vector<video_preset_s*> &presets)

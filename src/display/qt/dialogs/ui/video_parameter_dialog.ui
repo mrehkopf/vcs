@@ -77,6 +77,22 @@
             <number>6</number>
            </property>
            <item>
+            <widget class="QLabel" name="label_isPresetCurrentlyActive">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;⬤&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::RichText</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="VideoPresetList" name="comboBox_presetList"/>
            </item>
            <item>
@@ -103,7 +119,7 @@
               <enum>Qt::NoFocus</enum>
              </property>
              <property name="toolTip">
-              <string>Add new preset</string>
+              <string>Add a new preset</string>
              </property>
              <property name="text">
               <string/>
@@ -139,7 +155,7 @@
               <enum>Qt::NoFocus</enum>
              </property>
              <property name="toolTip">
-              <string>Delete preset</string>
+              <string>Delete this preset</string>
              </property>
              <property name="text">
               <string/>

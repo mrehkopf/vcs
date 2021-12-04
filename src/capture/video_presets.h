@@ -125,6 +125,8 @@ struct video_preset_s
 // kvideopreset_apply_current_active_preset() instead.
 extern vcs_event_c<const video_preset_s*> kc_evVideoPresetParamsChanged;
 
+bool kvideopreset_is_preset_active(const video_preset_s *const preset);
+
 void kvideopreset_initialize(void);
 
 void kvideopreset_release(void);
