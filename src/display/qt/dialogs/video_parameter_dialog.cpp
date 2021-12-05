@@ -123,6 +123,11 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
     // Connect the GUI controls to consequences for changing their values.
     {
+        connect(this, &VideoParameterDialog::preset_list_became_empty, this, [this]
+        {
+            this->set_unsaved_changes(false);
+        });
+
         connect(this, &VideoParameterDialog::preset_activation_rules_changed, this, [this]
         {
             this->update_active_preset_indicator();
@@ -165,15 +170,16 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
         connect(ui->pushButton_deletePreset, &QPushButton::clicked, this, [this]
         {
-            if (ui->comboBox_presetList->current_preset() &&
+            auto *const selectedPreset = ui->comboBox_presetList->current_preset();
+
+            if (selectedPreset &&
                 (QMessageBox::question(this, "Confirm deletion",
                                        "Delete this preset?",
                                        (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes))
             {
-                auto *const preset = ui->comboBox_presetList->current_preset();
 
-                ui->comboBox_presetList->remove_preset(preset->id);
-                kvideopreset_remove_preset(preset->id);
+                ui->comboBox_presetList->remove_preset(selectedPreset->id);
+                kvideopreset_remove_preset(selectedPreset->id);
             }
         });
 
@@ -316,12 +322,13 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         connect(ui->comboBox_shortcutSecondKey, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](const int idx)
         {
             const QString text = ui->comboBox_shortcutSecondKey->itemText(idx);
+            auto *selectedPreset = ui->comboBox_presetList->current_preset();
 
-            if (ui->comboBox_presetList->current_preset())
+            if (selectedPreset)
             {
                 QString newShortcut = QString("Ctrl+%1").arg(text);
                 ui->comboBox_presetList->current_preset()->activationShortcut = newShortcut.toStdString();
-                ui->comboBox_presetList->update_preset_item_label(ui->comboBox_presetList->current_preset()->id);
+                ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
             }
         });
 
@@ -442,6 +449,7 @@ bool VideoParameterDialog::load_presets_from_file(const QString &filename)
     {
         kvideopreset_assign_presets(presets);
         this->assign_presets(presets);
+        this->set_unsaved_changes(false);
     }
 
     return true;
@@ -481,6 +489,9 @@ void VideoParameterDialog::assign_presets(const std::vector<video_preset_s*> &pr
 
     /// TODO: It would be better to sort the items by (numeric) resolution.
     ui->comboBox_presetList->sort_alphabetically();
+
+    ui->comboBox_presetList->setCurrentIndex(0);
+    emit ui->comboBox_presetList->preset_selected(0); // Manually force the signal, in case there's only one preset in the list.
 
     return;
 }
