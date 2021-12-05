@@ -51,6 +51,27 @@ QGraphicsView
     border-radius: 0;
 }
 
+QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"]
+{
+    margin: 0;
+    padding: 0;
+}
+
+QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
+{
+    color: #a5a39f;
+}
+
+QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="active"]
+{
+    color: green;
+}
+
+QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="inactive"]
+{
+    color: #a5a39f;
+}
+
 QGroupBox > QTableWidget,
 QGroupBox > QTreeWidget,
 QGroupBox > QLabel

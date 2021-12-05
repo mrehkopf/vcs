@@ -457,23 +457,25 @@ bool VideoParameterDialog::load_presets_from_file(const QString &filename)
 
 void VideoParameterDialog::update_active_preset_indicator(void)
 {
-    const auto *preset = ui->comboBox_presetList->current_preset();
+    const auto *selectedPreset = ui->comboBox_presetList->current_preset();
 
     if (ui->comboBox_presetList->count() <= 0)
     {
-        ui->label_isPresetCurrentlyActive->setStyleSheet("QLabel {color: dimgray; margin: 0;}");
+        ui->label_isPresetCurrentlyActive->setProperty("presetStatus", "disabled");
         ui->label_isPresetCurrentlyActive->setToolTip("");
     }
-    else if (preset && kvideopreset_is_preset_active(preset))
+    else if (selectedPreset && kvideopreset_is_preset_active(selectedPreset))
     {
-        ui->label_isPresetCurrentlyActive->setStyleSheet("QLabel {color: mediumseagreen; margin: 0;}");
+        ui->label_isPresetCurrentlyActive->setProperty("presetStatus", "active");
         ui->label_isPresetCurrentlyActive->setToolTip("This preset is active");
     }
     else
     {
-        ui->label_isPresetCurrentlyActive->setStyleSheet("QLabel {color: gray; margin: 0;}");
+        ui->label_isPresetCurrentlyActive->setProperty("presetStatus", "inactive");
         ui->label_isPresetCurrentlyActive->setToolTip("This preset is inactive");
     }
+
+    this->style()->polish(ui->label_isPresetCurrentlyActive);
 
     return;
 }

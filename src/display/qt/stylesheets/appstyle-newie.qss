@@ -92,6 +92,27 @@ QDialog[objectName="InputResolutionDialog"] QFrame
     margin-bottom: 9px;
 }
 
+QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"]
+{
+    margin: 0;
+    padding: 0;
+}
+
+QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
+{
+    color: #4e4e4e;
+}
+
+QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="active"]
+{
+    color: mediumseagreen;
+}
+
+QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="inactive"]
+{
+    color: gray;
+}
+
 QScrollArea > QWidget > QWidget
 {
     background-color: transparent;
