@@ -57,7 +57,7 @@ signals:
 private:
     // Returns the list index of the given preset; or -1 if the list doesn't
     // contain the preset.
-    int find_preset_idx_in_list(const unsigned presetId);
+    int find_preset_idx_in_list(const int presetId);
 
     // Creates and returns a string to be displayed as the list item label for
     // the given present should the preset be added.
@@ -76,11 +76,11 @@ private:
             }
         }
 
-        unsigned back(void)
+        int back(void)
         {
             if (this->_history.empty())
             {
-                return 0;
+                return -1;
             }
 
             this->_history.pop_back();
