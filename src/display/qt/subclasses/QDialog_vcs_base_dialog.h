@@ -35,7 +35,9 @@ public:
 
     void set_data_filename(const QString &filename);
 
-    void set_unsaved_changes(const bool areUnsavedChanges);
+    void set_unsaved_changes_flag(const bool areUnsavedChanges);
+
+    void lock_unsaved_changes_flag(const bool isBlocked);
 
     const QString& data_filename(void) const;
 
@@ -67,6 +69,9 @@ private:
 
     // Indicates whether modifications to the dialog's data have been saved.
     bool _areUnsavedChanges = false;
+
+    // If true, the data_changed() signal won't modify the unsaved changes flag.
+    bool _isUnsavedChangesFlagLocked = false;
 
     // The dialog's name, to be shown in its window title.
     QString _name = "";

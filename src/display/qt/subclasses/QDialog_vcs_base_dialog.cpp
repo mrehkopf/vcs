@@ -18,7 +18,7 @@ VCSBaseDialog::VCSBaseDialog(QWidget *parent) : QDialog(parent)
 
     connect(this, &VCSBaseDialog::data_changed, this, [this]
     {
-        this->set_unsaved_changes(true);
+        this->set_unsaved_changes_flag(true);
     });
 
     return;
@@ -78,10 +78,24 @@ void VCSBaseDialog::set_data_filename(const QString &filename)
     return;
 }
 
-void VCSBaseDialog::set_unsaved_changes(const bool areUnsavedChanges)
+void VCSBaseDialog::set_unsaved_changes_flag(const bool areUnsavedChanges)
 {
+    if (this->_isUnsavedChangesFlagLocked)
+    {
+        return;
+    }
+
     this->_areUnsavedChanges = areUnsavedChanges;
     emit this->unsaved_changes_flag_changed(areUnsavedChanges);
+
+    return;
+}
+
+void VCSBaseDialog::lock_unsaved_changes_flag(const bool isBlocked)
+{
+    this->_isUnsavedChangesFlagLocked = isBlocked;
+
+    return;
 }
 
 const QString& VCSBaseDialog::data_filename(void) const
