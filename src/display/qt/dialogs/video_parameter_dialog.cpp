@@ -123,11 +123,6 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
     // Connect the GUI controls to consequences for changing their values.
     {
-        connect(this, &VideoParameterDialog::preset_list_became_empty, this, [this]
-        {
-            this->set_unsaved_changes(false);
-        });
-
         connect(this, &VideoParameterDialog::preset_activation_rules_changed, this, [this]
         {
             this->update_active_preset_indicator();
@@ -135,14 +130,16 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
         connect(this, &VCSBaseDialog::data_filename_changed, this, [this](const QString &newFilename)
         {
-            this->set_unsaved_changes(false);
             kpers_set_value(INI_GROUP_VIDEO_PRESETS, "presets_source_file", newFilename);
         });
 
         connect(ui->comboBox_presetList, &VideoPresetList::preset_selected, this, [this]
         {
+            this->lock_unsaved_changes_flag(true);
             this->update_preset_controls_with_current_preset_data();
             this->update_active_preset_indicator();
+            this->lock_unsaved_changes_flag(false);
+
             kvideopreset_apply_current_active_preset();
         });
 
@@ -180,6 +177,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
                 ui->comboBox_presetList->remove_preset(selectedPreset->id);
                 kvideopreset_remove_preset(selectedPreset->id);
+                emit this->data_changed();
             }
         });
 
@@ -203,6 +201,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
                 kvideopreset_apply_current_active_preset();
                 emit this->preset_activation_rules_changed(selectedPreset);
+                emit this->data_changed();
             }
         });
 
@@ -217,6 +216,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
                 kvideopreset_apply_current_active_preset();
                 emit this->preset_activation_rules_changed(selectedPreset);
+                emit this->data_changed();
             }
         });
 
@@ -231,6 +231,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
                 kvideopreset_apply_current_active_preset();
                 emit this->preset_activation_rules_changed(selectedPreset);
+                emit this->data_changed();
             }
         });
 
@@ -252,6 +253,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             {
                 selectedPreset->name = text.toStdString();
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
+                emit this->data_changed();
             }
         });
 
@@ -267,6 +269,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             {
                 selectedPreset->activatesWithRefreshRate = checked;
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
+                emit this->data_changed();
             }
 
             kvideopreset_apply_current_active_preset();
@@ -285,6 +288,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             {
                 selectedPreset->activatesWithResolution = checked;
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
+                emit this->data_changed();
             }
 
             kvideopreset_apply_current_active_preset();
@@ -303,6 +307,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             {
                 selectedPreset->activatesWithShortcut = checked;
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
+                emit this->data_changed();
             }
         });
 
@@ -329,6 +334,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 QString newShortcut = QString("Ctrl+%1").arg(text);
                 ui->comboBox_presetList->current_preset()->activationShortcut = newShortcut.toStdString();
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
+                emit this->data_changed();
             }
         });
 
@@ -358,6 +364,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
                 kvideopreset_apply_current_active_preset();
                 emit this->preset_activation_rules_changed(selectedPreset);
+                emit this->data_changed();
             }
         });
     }
@@ -449,7 +456,7 @@ bool VideoParameterDialog::load_presets_from_file(const QString &filename)
     {
         kvideopreset_assign_presets(presets);
         this->assign_presets(presets);
-        this->set_unsaved_changes(false);
+        this->set_unsaved_changes_flag(false);
     }
 
     return true;
