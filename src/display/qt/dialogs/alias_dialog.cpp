@@ -117,7 +117,6 @@ AliasDialog::AliasDialog(QWidget *parent) :
 
         connect(this, &VCSBaseDialog::data_filename_changed, this, [=](const QString &newFilename)
         {
-            this->set_unsaved_changes(false);
             kpers_set_value(INI_GROUP_ALIAS_RESOLUTIONS, "aliases_source_file", newFilename);
         });
     }

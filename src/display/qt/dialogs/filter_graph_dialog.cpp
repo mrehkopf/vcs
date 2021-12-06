@@ -207,8 +207,6 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             // are loaded in. Let's just force it to do so.
             this->refresh_filter_graph();
 
-            this->set_unsaved_changes(false);
-
             kpers_set_value(INI_GROUP_FILTER_GRAPH, "graph_source_file", newFilename);
         });
     }

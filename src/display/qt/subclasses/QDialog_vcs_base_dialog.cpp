@@ -21,6 +21,11 @@ VCSBaseDialog::VCSBaseDialog(QWidget *parent) : QDialog(parent)
         this->set_unsaved_changes_flag(true);
     });
 
+    connect(this, &VCSBaseDialog::data_filename_changed, this, [this]
+    {
+        this->set_unsaved_changes_flag(false);
+    });
+
     return;
 }
 
