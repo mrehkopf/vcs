@@ -105,7 +105,7 @@ QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurr
 
 QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="active"]
 {
-    color: mediumseagreen;
+    color: lawngreen;
 }
 
 QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="inactive"]
