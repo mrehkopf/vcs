@@ -380,7 +380,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         }
     }
 
-    // Listen for app events.
+    // Register app event listeners.
     {
         kc_evNewVideoMode.listen([this](const video_mode_s&)
         {
@@ -389,6 +389,11 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
                 this->update_preset_control_ranges();
             }
 
+            this->update_active_preset_indicator();
+        });
+
+        kc_evSignalLost.listen([this]
+        {
             this->update_active_preset_indicator();
         });
     }
