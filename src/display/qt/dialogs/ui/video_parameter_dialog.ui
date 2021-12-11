@@ -241,7 +241,7 @@
           <item>
            <widget class="QGroupBox" name="groupBox_videoPresetName">
             <property name="title">
-             <string>Name</string>
+             <string>Title</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
