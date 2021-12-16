@@ -79,34 +79,19 @@ On Linux, VCS uses the Datapath Vision driver to interface with Datapath capture
 
 To remove VCS's the dependency on the Datapath Vision driver, replace `CAPTURE_DEVICE_VISION_V4L` with `CAPTURE_DEVICE_VIRTUAL` in [vcs.pro](vcs.pro). This will also disable capturing, but will let you run the program without the drivers installed.
 
-## Code organization
+## Program flow
 
-VCS is largely a single-threaded application whose event loop is synchronized to the capture devices's rate of operation. VCS's main loop polls the capture device (which may run in a separate thread) until a capture event (e.g. new frame) occurs, then processes the event, and returns to the polling loop.
+VCS is a mostly single-threaded application whose event loop is synchronized to the capture device's rate of output. In general, VCS's main loop polls the capture device until a capture event (e.g. new frame) occurs, then processes the event, and returns to the polling loop.
 
-```
-.--> MAIN <--> CAPTURE <-- [Capture device]
-|     |
-|     v
-|    SCALE
-|     |
-|     v 
-|    FILTER
-|     |
-|     +--> RECORD
-|     |
-|     v
-`--- DISPLAY
-```
+![](./images/diagrams/code-flow.png)
 
-In the above diagram, MAIN polls CAPTURE, which returns information to MAIN about capture events. When it receives a new frame from CAPTURE, MAIN sends the frame data to SCALE for scaling, to FILTER for image filtering, and finally to DISPLAY for the scaled and filtered frame be rendered on screen - and optionally to RECORD for recording the frame into a video file.
+ The above diagram presents a step-by-step view of VCS's program flow. `Capture` communicates with the capture device (which likely runs in its own thread), receiving frame data and setting capture parameters. `Main` polls `Capture` to receive information about capture events.  When it receives a new frame from `Capture`, `Main` sends the frame data to `Scale` for scaling, which then forwards it to `Filter` for image filtering, which in turn sends it to `Display` to be rendered to screen. Optionally, if video recording is enabled, `Filter` sends the frame to `Record` instead, which then forwards it to `Display`.
 
-The modules marked in uppercase in the above diagram correspond to source code files roughly like so:
-
-| Module  | Source                             |
+| System  | Corresponding source code          |
 | ------- | ---------------------------------- |
-| Main    | [src/main.cpp](src/main.cpp)       |
-| Capture | [src/capture/](src/capture/)       |
-| Scale   | [src/scaler/](src/scaler/)         |
-| Filter  | [src/filter/](src/filter/)         |
-| Record  | [src/record/](src/record/)         |
-| Display | [src/display/](src/display/)       |
+| Main    | [src/main.cpp](./src/main.cpp)       |
+| Capture | [src/capture/*](./src/capture/)       |
+| Scale   | [src/scaler/*](./src/scaler/)         |
+| Filter  | [src/filter/*](./src/filter/)         |
+| Record  | [src/record/*](./src/record/)         |
+| Display | [src/display/*](./src/display/)       |
