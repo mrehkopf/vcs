@@ -85,13 +85,13 @@ VCS is a mostly single-threaded application whose event loop is synchronized to 
 
 ![](./images/diagrams/code-flow.png)
 
- The above diagram presents a step-by-step view of VCS's program flow. `Capture` communicates with the capture device (which likely runs in its own thread), receiving frame data and setting capture parameters. `Main` polls `Capture` to receive information about capture events.  When it receives a new frame from `Capture`, `Main` sends the frame data to `Scale` for scaling, which then forwards it to `Filter` for image filtering, which in turn sends it to `Display` to be rendered to screen. Optionally, if video recording is enabled, `Filter` sends the frame to `Record` instead, which then forwards it to `Display`.
+ The above diagram shows a general step-by-step view of VCS's program flow. `Capture` communicates with the capture device (which will typically be running in its own thread), receiving frame data and setting hardware-side capture parameters. `Main` polls `Capture` to receive information about capture events. When it receives a new frame from `Capture`, `Main` sends the frame's data to `Scale` for scaling, which then forwards it to `Filter` for image filtering, which in turn sends it to `Record` to be appended into a video file (if video recording is enabled) and then to `Display` to be rendered onto VCS's output window.
 
 | System  | Corresponding source code          |
 | ------- | ---------------------------------- |
-| Main    | [src/main.cpp](./src/main.cpp)       |
-| Capture | [src/capture/*](./src/capture/)       |
-| Scale   | [src/scaler/*](./src/scaler/)         |
-| Filter  | [src/filter/*](./src/filter/)         |
-| Record  | [src/record/*](./src/record/)         |
-| Display | [src/display/*](./src/display/)       |
+| Main    | [src/main.cpp](./src/main.cpp)     |
+| Capture | [src/capture/*](./src/capture/)    |
+| Scale   | [src/scaler/*](./src/scaler/)      |
+| Filter  | [src/filter/*](./src/filter/)      |
+| Record  | [src/record/*](./src/record/)      |
+| Display | [src/display/*](./src/display/)    |
