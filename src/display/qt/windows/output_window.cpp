@@ -143,7 +143,7 @@ MainWindow::MainWindow(QWidget *parent) :
                             inputChannel->setChecked(true);
                         }
 
-                        connect(inputChannel, &QAction::triggered, this, [=]{kc_set_input_channel(i);});
+                        connect(inputChannel, &QAction::triggered, this, [=]{kc_set_capture_input_channel(i);});
                     }
                 #endif
             }
