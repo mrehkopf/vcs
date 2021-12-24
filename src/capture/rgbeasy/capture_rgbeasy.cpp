@@ -155,8 +155,8 @@ namespace rgbeasy_callbacks_n
         FRAME_BUFFER.pixelFormat = CAPTURE_PIXEL_FORMAT;
 
         // Copy the frame's data into our local buffer so we can work on it.
-        memcpy(FRAME_BUFFER.pixels.ptr(), (u8*)frameData,
-               FRAME_BUFFER.pixels.up_to(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8)));
+        memcpy(FRAME_BUFFER.pixels.data(), (u8*)frameData,
+               FRAME_BUFFER.pixels.size_check(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8)));
 
         push_capture_event(capture_event_e::new_frame);
 
