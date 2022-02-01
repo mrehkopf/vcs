@@ -93,6 +93,7 @@
             .dokki-table td.with-inline-table > .dokki-table > header
             {
                 padding: 8px;
+                line-height: var(--dokkiCSS-content-line-height);
             }
         </style>
     </head>
@@ -232,7 +233,7 @@
                                 The input menu lets you customize various operational parameters of the capture device.
                             </p>
 
-                            <dokki-table expanded>
+                            <dokki-table>
                                 <template #caption>
                                     The input menu's sub-menus
                                 </template>
@@ -277,7 +278,7 @@
                                 prior to display in the <a href="#output-window">output window</a>.
                             </p>
 
-                            <dokki-table expanded>
+                            <dokki-table>
                                 <template #caption>
                                     The output menu's sub-menus
                                 </template>
@@ -286,7 +287,7 @@
                                         <tr>
                                             <td>
                                                 <i class="fas fa-fw fa-caret-right"></i>
-                                                <menu-path>Screenshot...</menu-path>
+                                                <menu-path>Screenshot</menu-path>
                                             </td>
                                             <td>Save the current output image into an image file.</td>
                                         </tr>
@@ -346,7 +347,7 @@
                             <i class="fas fa-fw fa-caret-right"></i>
                             <menu-path>Window</menu-path>
 
-                            <dokki-table expanded>
+                            <dokki-table>
                                 <template #caption>
                                     The window menu's sub-menus
                                 </template>
@@ -521,7 +522,7 @@
 
                             <p>For best image quality regardless of performance and/or file size, you can try the following settings:</p>
 
-                            <dokki-table expanded>
+                            <dokki-table>
                                 <template #caption>
                                     Recorder settings for the highest possible video quality
                                 </template>
@@ -717,7 +718,7 @@
 
                 <dokki-topic title="Mouse and keyboard shortcuts" id="mouse-keyboard-shortcuts">
                     
-                    <dokki-table expanded>
+                    <dokki-table>
 
                         <template #caption>
                             Mouse shortcuts
@@ -754,7 +755,7 @@
 
                     </dokki-table>
 
-                    <dokki-table expanded>
+                    <dokki-table>
 
                         <template #caption>
                             Keyboard shortcuts
@@ -822,7 +823,7 @@
 
                     <p>Optionally, you can pass one or more of following command-line arguments when launching VCS:</p>
 
-                    <dokki-table expanded>
+                    <dokki-table>
                         <template #caption>
                             VCS's command-line options
                         </template>
