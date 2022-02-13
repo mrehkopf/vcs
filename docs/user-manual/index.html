@@ -6,8 +6,8 @@
         
         <link rel="stylesheet" href="https://www.tarpeeksihyvaesoft.com/dokki/distributable/dokki.css">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" crossorigin="anonymous" integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc">
-        <script defer src="https://cdn.jsdelivr.net/npm/vue@3.1.1/dist/vue.global.js" crossorigin="anonymous" integrity="sha384-MIMvVyIyheJKNP5BQNBUzx4JieX7Q5OBTRfVcgjeuLBdllVTCmu1lBPgtkDVKaBN"></script>
-        <script defer src="https://unpkg.com/vuex@4.0.0/dist/vuex.global.js" crossorigin="anonymous" integrity="sha384-kyee6BrPEnlefRkepwMRF1Mf7h+8pxnolcmyvNq0now4MDG+sfhu32kmfca6Uprk"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/vue@3.1.1/dist/vue.global.prod.js" crossorigin="anonymous" integrity="sha384-Hg3VhjsO7jg5xqcLsx4q/KiOsuEvxbGA6yD+JZItAuz5nrMEccMLcyDWkFW6AhrQ"></script>
+        <script defer src="https://unpkg.com/vuex@4.0.0/dist/vuex.global.prod.js" crossorigin="anonymous" integrity="sha384-/6WtrxQ/nd/YVOF50CdgbnpT8ah4rEYpS/RLBbWhxpjU9SzUR/TZ1q0uOW/2goGa"></script>
         <script defer src="https://www.tarpeeksihyvaesoft.com/dokki/distributable/dokki.js"></script>
 
         <script type="module">
@@ -17,6 +17,26 @@
         </script>
 
         <style>
+            body[data-dokki-theme]
+            {
+                --dokkiCSS-embedded-header-bg-color: var(--dokkiCSS-page-inert-bg-color);
+            }
+
+            body[data-dokki-theme="light"]
+            {
+                --vcs-highlight-color: #f4f4f4;
+            }
+
+            body[data-dokki-theme="dark"]
+            {
+                --vcs-highlight-color: #323232;
+            }
+
+            .dokkiCSS-checker-background
+            {
+                background: none !important;
+            }
+                
             .dokki-topic strong
             {
                 font-weight: var(--dokkiCSS-bold-text-weight);
@@ -25,13 +45,8 @@
             .dokki-topic em
             {
                 font-style: inherit;
-                background-color: var(--dokkiCSS-embedded-header-bg-color);
+                background-color: var(--vcs-highlight-color);
                 font-weight: var(--dokkiCSS-bold-text-weight);
-            }
-            .dokki-topic h3
-            {
-                font-weight: normal;
-                font-style: italic;
             }
 
             .dokki-topic td > .dokkiCSS-embedded
@@ -48,7 +63,7 @@
             {
                 border: 1px solid var(--dokkiCSS-page-primary-line-color);
                 padding: 2px 4px;
-                border-radius: 4px;
+                border-radius: var(--dokkiCSS-embedded-border-radius);
                 background-color: var(--dokkiCSS-page-inert-bg-color);
             }
 
@@ -70,16 +85,23 @@
                 white-space: normal;
             }
 
+            .dokki-topic table th
+            {
+                font-weight: var(--dokkiCSS-bold-text-weight) !important;
+            }
+
             .dokki-topic .shortcut-list
             {
-                padding: var(--dokkiCSS-embedded-padding);
+                padding: calc(1px + var(--dokkiCSS-embedded-padding));
                 border-radius: var(--dokkiCSS-embedded-border-radius);
                 line-height: initial;
                 box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+                white-space: nowrap;
+                overflow: auto;
             }
             .dokki-topic .shortcut-list::before
             {
-                content: "Access: ";
+                content: "Access via ";
             }
 
             .dokki-topic .incompatibility-warning
@@ -87,16 +109,31 @@
                 background-image: linear-gradient(
                     135deg,
                     transparent 25%,
-                    var(--dokkiCSS-embedded-header-bg-color) 25%,
-                    var(--dokkiCSS-embedded-header-bg-color) 50%,
+                    var(--vcs-highlight-color) 25%,
+                    var(--vcs-highlight-color) 50%,
                     transparent 50%,
                     transparent 75%,
-                    var(--dokkiCSS-embedded-header-bg-color) 75%,
-                    var(--dokkiCSS-embedded-header-bg-color) 100%
+                    var(--vcs-highlight-color) 75%,
+                    var(--vcs-highlight-color) 100%
                 );
                 background-size: 11.31px 11.31px;
                 padding: var(--dokkiCSS-embedded-padding);
                 border-radius: var(--dokkiCSS-embedded-border-radius);
+            }
+
+            .dokki-topic .incompatibility-warning::before
+            {
+                content: "\f071";
+                font-family: "Font Awesome 5 Free";
+                font-weight: 900;
+                display: inline-block;
+                margin-right: 0.25ch;
+            }
+
+            .dokkiCSS-embedded.dokki-tip > header,
+            .dokkiCSS-embedded.dokki-warning > header
+            {
+                font-weight: normal;
             }
 
             .dokki-table td.with-inline-table
@@ -119,6 +156,12 @@
             {
                 padding: 8px;
                 line-height: var(--dokkiCSS-content-line-height);
+            }
+            
+            /* Assume the .dokki-hr handles the margin between it and the h2.*/
+            .dokki-topic .dokki-hr + .dokkiCSS-anchor + h2
+            {
+                margin-top: 0;
             }
         </style>
     </head>
@@ -234,7 +277,7 @@
                             <li><em>VCS</em> The program's name</li>
                             <li><em>R</em> <em>F</em> <em>O</em> <em>A</em> Indicators for whether certain functionality is enabled.
                             <ul>
-                                <li><em>R</em> Video recording (see the <a href="#video-record-dialog">Video record</a> dialog).</li>
+                                <li><em>R</em> Video recording (see the <a href="#video-record-dialog">Video recorder</a> dialog).</li>
                                 <li><em>F</em> Filter graph (see the <a href="#filter-graph-dialog">Filter graph</a> dialog).</li>
                                 <li><em>O</em> Overlay (see the <a href="#overlay-dialog">Overlay</a> dialog).</li>
                                 <li><em>A</em> Anti-tearing (see the <a href="#anti-tear-dialog">Anti-tear</a> dialog).</li>
@@ -442,7 +485,7 @@
                                             Place the <a href="#output-window">output window</a> into fullscreen mode.
                                             
                                             <p class="incompatibility-warning">
-                                                Won't work on some distributions of Linux.
+                                                Not fully supported on some distributions of Linux.
                                             </p>
 
                                             <dokki-tip>
@@ -533,12 +576,16 @@
 
                     <dokki-hr></dokki-hr>
                     
-                    <dokki-subtopic title="Video record" id="video-record-dialog">
+                    <dokki-subtopic title="Video recorder" id="video-record-dialog">
 
                         <p class="shortcut-list">
                             <key-combo>Ctrl + R</key-combo>
                             or
                             <menu-path>Context menu > Output > Dialogs > Video recorder...</menu-path>
+                        </p>
+
+                        <p class="incompatibility-warning">
+                            On Linux, the video encoder's quality settings can't be modified through VCS.
                         </p>
 
                         <p>The video recorder gives you the option to stream captured frames into a video file.</p>
@@ -557,51 +604,126 @@
                             <li>The <a href="#overlay-dialog">overlay</a> won't be recorded.</li>
                             <li>Encoder parameters influencing image quality (e.g. CRF) can't be customized in the Linux version of VCS. This is a limitation of OpenCV. You can, however, modify and recompile the OpenCV code with higher-quality default options (see e.g. <a href="https://www.researchgate.net/post/Is_it_possible_to_set_the_lossfree_option_for_the_X264_codec_in_OpenCV">here</a>).</li>
                         </ul>
+                    
+                        <dokki-table>
+                            <template #caption>
+                                Recorder settings explained
+                            </template>
+                            <template #table>
+                                <table class="wrap-last-td">
+                                    <tr>
+                                        <th>Setting<sup>*</sup></th>
+                                        <th>Description</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Nominal FPS</td>
+                                        <td>
+                                            The video's suggested playback rate. This setting doesn't affect the recording rate, only the rate
+                                            at which the video might be played back by your video player. The actual recording FPS will be
+                                            determined by the capture source's refresh rate.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Video container</td>
+                                        <td>
+                                            The file format used for storing the video on disk.
 
-                        <dokki-item title="Recorder settings">
-                            <p><em>Nominal FPS</em> The video's suggested playback rate. This setting doesn't affect the recording rate, only the rate at which the video might be played back by your video player. The actual recording FPS will be determined by the capture source's refresh rate.</p>
+                                            <dokki-tip>
+                                                The file format doesn't affect the choice of video codec.
+                                            </dokki-tip>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Video codec</td>
+                                        <td>
+                                            The codec used for encoding the video. Currently, only <em>x264</em> is supported.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Arguments</td>
+                                        <td>
+                                            You can enter any additional command-line arguments for the video codec.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <sup>*</sup>Only some of the available settings are included in this list; others depend on
+                                            the choice of video codec and are as per standard for that codec.
+                                        </td>
+                                    </tr>
+                                </table>
+                            </template>
+                        </dokki-table>
 
-                            <p><em>Additional x264 arguments</em> You put down in this field any custom x264 command-line arguments.</p>
+                        <dokki-table>
+                            <template #caption>
+                                Recorder settings for the highest possible video quality
+                            </template>
+                            <template #table>
+                                <table>
+                                    <tr>
+                                        <th>Setting</th>
+                                        <th>Value</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Video codec</td>
+                                        <td>x264</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Preset</td>
+                                        <td>Ultrafast</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Profile</td>
+                                        <td>High 4:4:4</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pixel format</td>
+                                        <td>RGB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>CRF</td>
+                                        <td>0</td>
+                                    </tr>
+                                </table>
+                            </template>
+                        </dokki-table>
 
-                            <p>For best image quality regardless of performance and/or file size, you can try the following settings:</p>
+                        <dokki-item title="Tips for performance">
 
-                            <dokki-table>
-                                <template #caption>
-                                    Recorder settings for the highest possible video quality
-                                </template>
-                                <template #table>
-                                    <table>
-                                        <tr>
-                                            <th>Setting</th>
-                                            <th>Value</th>
-                                        </tr>
-                                        <tr>
-                                            <td>Preset</td>
-                                            <td>Ultrafast</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Profile</td>
-                                            <td>High 4:4:4</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Pixel format</td>
-                                            <td>RGB</td>
-                                        </tr>
-                                        <tr>
-                                            <td>CRF</td>
-                                            <td>0</td>
-                                        </tr>
-                                    </table>
-                                </template>
-                            </dokki-table>
+                            <p>
+                                If the recorder dialog indicates that frames are being dropped while recording, your system
+                                may be limited in CPU or disk performance. Here are a few tips that may help you mitigate
+                                those issues.
+                            </p>
+                            
+                            <p>
+                                Since VCS is largely a single-threaded program, dragging or otherwise interacting with its
+                                GUI items (e.g. dialog windows) during recording may cause transient frame drops even if
+                                your system is otherwise capable.  
+                            </p>
+                            
+                            <p>
+                                During recording, frames are saved to disk in batches. If you get a bunch of frames dropped
+                                every couple of seconds but are fine otherwise, insufficient disk performance may be the reason.
+                                Optimizing the recorder's settings for a smaller file size should help, as would recording
+                                at a lower resolution (i.e. with a smaller-sized <a href="#output-window">output window</a>).
+                            </p>
 
-                            <p>To reduce file size while maintaining high image quality, you can set <em>Preset</em> to "Veryfast" or "Faster" and increase <em>CRF</em> to 10&ndash;15. For more tips and tricks, you can look up documentation specific to the x264 encoder.</p>
+                            <p>
+                                If recording fails and you receive an error in the VCS console window to the tune of "x264
+                                [error]: malloc of size xxxx failed", you may be running into a memory fragmentation issue (see
+                                <a href="https://github.com/leikareipa/vcs/issues/21">this issue report on GitHub</a>). VCS is
+                                a 32-bit program that, while recording video, shares its couple-gigabyte memory space with the
+                                x264 encoder, which may result in x264 being unable to allocate a large-enough contiguous block
+                                of memory for its own operation. You may be able to fix this issue either by selecting a <em>Preset</em>
+                                option closer to "Ultrafast", reducing the recording resolution (i.e. the size of the
+                                <a href="#output-window">output window</a>), or decreasing the size of VCS's pre-allocated memory
+                                cache (see the <em>-m</em> <a href="#command-line-options">command-line option</a>).
+                            </p>
 
-                            <p>If the recorder dialog indicates that frames are being dropped while recording, try to select recording options that require less CPU or IO performance.
-                            - Dragging or otherwise interacting with GUI items (e.g. dialog windows) during recording may cause transient frame drops.
-                            - During recording, frames will be saved to disk in batches. If you get a bunch of frames dropped every couple of seconds but no drops otherwise, insufficient disk performance may be the reason (i.e. writing the batch of frames takes too long).</p>
                         </dokki-item>
-                        
+
                     </dokki-subtopic>
 
                     <dokki-hr></dokki-hr>
@@ -634,16 +756,38 @@
                         </p>
 
                         <p class="incompatibility-warning">
-                            Not available while recording video (see the <a href="#video-record-dialog">Video record</a> dialog).
+                            Not available while recording video (see the <a href="#video-record-dialog">Video recorder</a> dialog).
                         </p>
 
                         <p>The output resolution dialog lets you resize the output window. This also resizes the frames being displayed in the window.</p>
 
-                        <dokki-item title="Settings">
-                            <p><em>Resolution</em> Lock the size of the output window so that changes to the capture resolution don't affect the output resolution. Frames will be scaled up or down as needed to match this resolution.</p>
-
-                            <p><em>Relative scale</em> Scale the size of the output window up or down by a percentage of its base size. The base size is either the capture resolution, or, if enabled, the locked output resolution.</p>
-                        </dokki-item>
+                        <dokki-table>
+                            <template #caption>
+                                Output resolution settings explained
+                            </template>
+                            <template #table>
+                                <table class="wrap-last-td">
+                                    <tr>
+                                        <th>Setting</th>
+                                        <th>Description</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Resolution</td>
+                                        <td>
+                                            Lock the size of the output window so that changes to the capture resolution don't affect the output
+                                            resolution. Frames will be scaled up or down as needed to match this resolution.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Relative scale</td>
+                                        <td>
+                                            Scale the size of the output window up or down by a percentage of its base size. The base size is
+                                            either the capture resolution, or, if enabled, the locked output resolution.
+                                        </td>
+                                    </tr>
+                                </table>
+                            </template>
+                        </dokki-table>
                         
                     </dokki-subtopic>
 
@@ -689,7 +833,7 @@
 
                         <dokki-table>
                             <template #caption>
-                                Anti-tear settings
+                                Anti-tear settings explained
                             </template>
                             <template #table>
                                 <table class="wrap-last-td">
@@ -847,7 +991,7 @@
                                     <th>Description</th>
                                 </tr>
                                 <tr>
-                                    <td>Double-click output window</td>
+                                    <td>Double-click <a href="#output-window">output window</a></td>
                                     <td>Toggle window border on/off.</td>
                                 </tr>
                                 <tr>
