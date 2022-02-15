@@ -148,7 +148,16 @@ bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
     {
         if (!input_channel_v4l_c::is_format_of_valid_signal(&format))
         {
+            std::lock_guard<std::mutex> lock(kc_capture_mutex());
+
+            this->captureStatus.invalidSignal = true;
+            this->push_capture_event(capture_event_e::invalid_signal);
+
             return true;
+        }
+        else
+        {
+            this->captureStatus.invalidSignal = false;
         }
 
         // Attempt to detect if aspects of the signal have changed.
@@ -161,7 +170,7 @@ bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
             {
                 this->captureStatus.refreshRate = LATEST_REFRESH_RATE = currentRefreshRate;
                 this->captureStatus.resolution = LATEST_RESOLUTION = {format.fmt.pix.width, format.fmt.pix.height, 32};
-                return true;
+                return false;
             }
         }
     }
@@ -171,7 +180,6 @@ bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
         std::lock_guard<std::mutex> lock(kc_capture_mutex());
 
         this->captureStatus.invalidSignal = true;
-
         this->push_capture_event(capture_event_e::unrecoverable_error);
 
         return true;
@@ -334,13 +342,20 @@ int input_channel_v4l_c::capture_thread(void)
     {
         if (capture_thread__has_source_mode_changed())
         {
-            std::lock_guard<std::mutex> lock(kc_capture_mutex());
+            if (!this->captureStatus.invalidSignal)
+            {
+                std::lock_guard<std::mutex> lock(kc_capture_mutex());
 
-            this->push_capture_event(capture_event_e::new_video_mode);
+                this->push_capture_event(capture_event_e::new_video_mode);
 
-            // The parent is expected to re-spawn this input channel, so we can exit the
-            // capture thread.
-            return 1;
+                // The parent is expected to re-spawn this input channel, so we can exit the
+                // capture thread.
+                return 1;
+            }
+            else
+            {
+                continue;
+            }
         }
 
         if (!capture_thread__has_signal())
