@@ -4,7 +4,8 @@ A third-party capture tool for Datapath's VisionRGB range of capture cards. Grea
 
 VCS interfaces with compatible capture device to display the capture output in a window on your desktop. Additionally, you can apply filters, scalers, anti-tearing, and various other adjustments to the output before it's displayed.
 
-![](./images/vcs-2.4-with-dialogs.png)
+![VCS 2.4](./images/vcs-2.4-with-dialogs.png)\
+*A screenshot of VCS 2.4 showing the capture window (in the background) and some of the control dialogs.*
 
 ## Features
 
