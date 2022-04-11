@@ -4,11 +4,11 @@
         <meta name="viewport" content="width=device-width">
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         
-        <link rel="stylesheet" href="https://www.tarpeeksihyvaesoft.com/dokki/distributable/dokki.css">
+        <link rel="stylesheet" href="/dokki/distributable/dokki.css">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" crossorigin="anonymous" integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc">
         <script defer src="https://cdn.jsdelivr.net/npm/vue@3.1.1/dist/vue.global.prod.js" crossorigin="anonymous" integrity="sha384-Hg3VhjsO7jg5xqcLsx4q/KiOsuEvxbGA6yD+JZItAuz5nrMEccMLcyDWkFW6AhrQ"></script>
         <script defer src="https://unpkg.com/vuex@4.0.0/dist/vuex.global.prod.js" crossorigin="anonymous" integrity="sha384-/6WtrxQ/nd/YVOF50CdgbnpT8ah4rEYpS/RLBbWhxpjU9SzUR/TZ1q0uOW/2goGa"></script>
-        <script defer src="https://www.tarpeeksihyvaesoft.com/dokki/distributable/dokki.js"></script>
+        <script defer src="/dokki/distributable/dokki.js"></script>
 
         <script type="module">
             import {keyboardKey, keyCombo} from "./js/dokki-components/key-combo.js";
@@ -16,27 +16,7 @@
             window.dokkiUserComponents = [menuPath, keyboardKey, keyCombo];
         </script>
 
-        <style>
-            body[data-dokki-theme]
-            {
-                --dokkiCSS-embedded-header-bg-color: var(--dokkiCSS-page-inert-bg-color);
-            }
-
-            body[data-dokki-theme="light"]
-            {
-                --vcs-highlight-color: #f4f4f4;
-            }
-
-            body[data-dokki-theme="dark"]
-            {
-                --vcs-highlight-color: #323232;
-            }
-
-            .dokkiCSS-checker-background
-            {
-                background: none !important;
-            }
-                
+        <style>  
             .dokki-topic strong
             {
                 font-weight: var(--dokkiCSS-bold-text-weight);
@@ -85,57 +65,6 @@
                 white-space: normal;
             }
 
-            .dokki-topic table th
-            {
-                font-weight: var(--dokkiCSS-bold-text-weight) !important;
-            }
-
-            .dokki-topic .shortcut-list
-            {
-                padding: calc(1px + var(--dokkiCSS-embedded-padding));
-                border-radius: var(--dokkiCSS-embedded-border-radius);
-                line-height: initial;
-                box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-                white-space: nowrap;
-                overflow: auto;
-            }
-            .dokki-topic .shortcut-list::before
-            {
-                content: "Access via ";
-            }
-
-            .dokki-topic .incompatibility-warning
-            {
-                background-image: linear-gradient(
-                    135deg,
-                    transparent 25%,
-                    var(--vcs-highlight-color) 25%,
-                    var(--vcs-highlight-color) 50%,
-                    transparent 50%,
-                    transparent 75%,
-                    var(--vcs-highlight-color) 75%,
-                    var(--vcs-highlight-color) 100%
-                );
-                background-size: 11.31px 11.31px;
-                padding: var(--dokkiCSS-embedded-padding);
-                border-radius: var(--dokkiCSS-embedded-border-radius);
-            }
-
-            .dokki-topic .incompatibility-warning::before
-            {
-                content: "\f071";
-                font-family: "Font Awesome 5 Free";
-                font-weight: 900;
-                display: inline-block;
-                margin-right: 0.25ch;
-            }
-
-            .dokkiCSS-embedded.dokki-tip > header,
-            .dokkiCSS-embedded.dokki-warning > header
-            {
-                font-weight: normal;
-            }
-
             .dokki-table td.with-inline-table
             {
                 padding: 0 !important;
@@ -157,19 +86,9 @@
                 padding: 8px;
                 line-height: var(--dokkiCSS-content-line-height);
             }
-            
-            /* Assume the .dokki-hr handles the margin between it and the h2.*/
-            .dokki-topic .dokki-hr + .dokkiCSS-anchor + h2
-            {
-                margin-top: 0;
-            }
         </style>
     </head>
     <body>
-        <div while-dokki-initializing>
-            Preparing the document...
-        </div>
-
         <template id="dokki-document">
 
             <dokki-header title="VCS User's Manual"
@@ -183,13 +102,58 @@
 
                 <dokki-topic title="System requirements" id="system-requirements">
 
-                    <p>VCS runs mainly on the CPU and in one thread, so it's most important to have a processor
-                    with strong single-core performance. An Intel Haswell or equivalent should be fine.</p>
-
-                    <p>VCS uses roughly 1 GB of RAM.</p>
-
-                    <p>When rendering with OpenGL (optional), an OpenGL 1.2 compatible video card is required.</p>
-
+                    <dokki-table headerless>
+                        <template #table>
+                            <table class="wrap-last-td">
+                                <tr>
+                                    <th>
+                                        OS
+                                    </th>
+                                    <td>
+                                        Windows XP or later (<a href="https://github.com/leikareipa/vcs/releases">download VCS
+                                        for Windows</a>). On Linux, you'll need kernel 5.x and OpenCV 3.2.0
+                                        (<a href="https://github.com/leikareipa/vcs">compile VCS for Linux</a>).
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        CPU
+                                    </th>
+                                    <td>
+                                        VCS is a largely single-threaded application built to depend on CPU processing,
+                                        so it's important to have a CPU with strong single-core speed. An Intel Haswell
+                                        or equivalent should be fine for capturing retro resolutions, whereas for
+                                        1080p@60, you'll want something slightly faster.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        GPU
+                                    </th>
+                                    <td>
+                                        For rendering with OpenGL (optional), an OpenGL 1.2-compatible video card is required.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        RAM
+                                    </th>
+                                    <td>
+                                        About 512 MB.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Drivers
+                                    </th>
+                                    <td>
+                                        The Datapath capture card drivers must be installed.
+                                    </td>
+                                </tr>
+                            </table>
+                        </template>
+                    </dokki-table>
+                    
                 </dokki-topic>
 
                 <dokki-topic title="Getting started" id="getting-started">
@@ -228,8 +192,6 @@
                         </template>
 
                     </dokki-image>
-
-                    <dokki-hr></dokki-hr>
                     
                     <dokki-subtopic title="Magnifying glass" id="output-window-magnifying-glass">
                         <p>If you press the middle mouse button over the output window, a magnifying glass will
@@ -238,34 +200,24 @@
                         </p>Note: The magnifying glass is not available with the OpenGL renderer.</p>
                     </dokki-subtopic>
 
-                    <dokki-hr></dokki-hr>
-
                     <dokki-subtopic title="Dragging" id="output-window-dragging">
                         <p>You can drag the output window by left-clicking and holding anywhere on the window.</p>
                     </dokki-subtopic>
-
-                    <dokki-hr></dokki-hr>
 
                     <dokki-subtopic title="Borderless mode" id="output-window-borderless-mode">
                         <p>You can double-click inside the output window to toggle borderless mode on/off. The F1
                         keyboard shortcut will also toggle this mode.</p>
                     </dokki-subtopic>
-
-                    <dokki-hr></dokki-hr>
                     
                     <dokki-subtopic title="Resizing" id="output-window-resizing">
                         <p>The output window - along with the frames it's displaying - can be resized via the <a href="#output-resolution-dialog">Output resolution</a> dialog. Spinning the mouse scroll wheel over the output window will also adjust the output size.</p>
                     </dokki-subtopic>
-
-                    <dokki-hr></dokki-hr>
 
                     <dokki-subtopic title="Fullscreen mode" id="output-window-fullscreen-mode">
                         <p>Although you can emulate a fullscreen mode by turning off the output window's border (see <a href="#output-window-borderless-mode">Borderless mode</a>) and then scaling the window to the size of the the display area (see <a href="#output-window-resizing">Resizing</a>), there's also a true fullscreen mode available. You can toggle it on/off with the F11 shortcut key.</p>
 
                         <dokki-tip>For the fullscreen mode to work best, you may first need to manually resize the output window to match the resolution of your screen (see <a href="#output-window-resizing">Resizing</a>).</dokki-tip>
                     </dokki-subtopic>
-
-                    <dokki-hr></dokki-hr>
 
                     <dokki-subtopic title="Title bar" id="output-window-title-bar">
                         <p>The output window's title bar shows information about VCS's current operating state; e.g. the input and output resolution.</p>
@@ -297,25 +249,23 @@
                         <p>You can also set a fully custom window title via the <em>Set title...</em> context menu option (See <a href="#output-window-context-menu">Context menu</a>).</p>
                     </dokki-subtopic>
 
-                    <dokki-hr></dokki-hr>
-
                     <dokki-subtopic title="Context menu" id="output-window-context-menu">
 
                         <p>Right-clicking inside the output window will bring up its context menu, which gives you access to the various controls and dialogs of VCS.</p>
 
-                        <i class="fas fa-fw fa-caret-right"></i>
+                        
                         <menu-path>Eye dropper</menu-path>
 
                         <p>The eye dropper is a special non-interactible element of the context menu. It shows the RGB color values of the pixel over which the context menu was opened.</p>
 
-                        <i class="fas fa-fw fa-caret-right"></i>
+                        
                         <menu-path>Input</menu-path>
 
                         <p>
                             The input menu lets you customize various operational parameters of the capture device.
                         </p>
 
-                        <dokki-table>
+                        <dokki-table headerless>
                             <template #caption>
                                 The input menu's sub-menus
                             </template>
@@ -323,21 +273,21 @@
                                 <table class="wrap-last-td">
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>Channel</menu-path>
                                         </td>
                                         <td>Set the capture device's active input channel.</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>Color depth</menu-path>
                                         </td>
                                         <td>Set the color depth in which the capture device outputs frames. In other words, the device is expected to convert frame data into this format prior to transferring them via the system bus to VCS. Prior to display, VCS will convert the data into the color depth of the <a href="#output-window">output window</a>.</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>De-interlacing</menu-path>
                                         </td>
                                         <td>
@@ -352,7 +302,7 @@
                             </template>
                         </dokki-table>
 
-                        <i class="fas fa-fw fa-caret-right"></i>
+                        
                         <menu-path>Output</menu-path>
 
                         <p>
@@ -360,7 +310,7 @@
                             prior to display in the <a href="#output-window">output window</a>.
                         </p>
 
-                        <dokki-table>
+                        <dokki-table headerless>
                             <template #caption>
                                 The output menu's sub-menus
                             </template>
@@ -368,37 +318,37 @@
                                 <table class="wrap-last-td">
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>Screenshot</menu-path>
                                         </td>
                                         <td>Save the current output image into an image file.</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>Aspect ratio</menu-path>
                                         </td>
                                         <td class="with-inline-table">
-                                            <dokki-table>
+                                            <dokki-table headerless>
                                                 <template #table>
                                                     <table class="wrap-last-td">
                                                         <tr>
                                                             <td>
-                                                                <i class="fas fa-fw fa-caret-right"></i>
+                                                                
                                                                 <menu-path>Native</menu-path>
                                                             </td>
                                                             <td>Don't force captured frames into a specific aspect ratio.</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
-                                                                <i class="fas fa-fw fa-caret-right"></i>
+                                                                
                                                                 <menu-path>Traditional 4:3</menu-path>
                                                             </td>
                                                             <td>Force captured frames into a 4:3 aspect ratio for such input resolutions that historically might have been meant to be displayed as such; for example, 720 &times; 400, 640 &times; 400, and 320 &times; 200.</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
-                                                                <i class="fas fa-fw fa-caret-right"></i>
+                                                                
                                                                 <menu-path>Always 4:3</menu-path>
                                                             </td>
                                                             <td>Force all captured frames into a 4:3 aspect ratio.</td>
@@ -410,14 +360,14 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>Upscaler</menu-path>
                                         </td>
                                         <td>Set the scaler to be used when frames are upscaled to fit the <a href="#output-window">output window</a>.</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>Downscaler</menu-path>
                                         </td>
                                         <td>Set the scaler to be used when frames are downscaled to fit the <a href="#output-window">output window</a>.</td>
@@ -426,10 +376,10 @@
                             </template>
                         </dokki-table>
                         
-                        <i class="fas fa-fw fa-caret-right"></i>
+                        
                         <menu-path>Window</menu-path>
 
-                        <dokki-table>
+                        <dokki-table headerless>
                             <template #caption>
                                 The window menu's sub-menus
                             </template>
@@ -437,31 +387,31 @@
                                 <table class="wrap-last-td">
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>Renderer</menu-path>
                                         </td>
                                         <td class="with-inline-table">
-                                            <dokki-table>
+                                            <dokki-table headerless>
                                                 <template #table>
                                                     <table class="wrap-last-td">
                                                         <tr>
                                                             <td>
-                                                                <i class="fas fa-fw fa-caret-right"></i>
+                                                                
                                                                 <menu-path>Software</menu-path>
                                                             </td>
                                                             <td>Draw the output window using software rendering.</td>
                                                         </tr>
                                                         <tr>
                                                             <td>
-                                                                <i class="fas fa-fw fa-caret-right"></i>
+                                                                
                                                                 <menu-path>OpenGL</menu-path>
                                                             </td>
                                                             <td>
                                                                 Draw the output window using OpenGL.
 
-                                                                <p class="incompatibility-warning">
+                                                                <dokki-warning>
                                                                     Not compatible with Windows XP nor the <a href="#output-window-magnifying-glass">magnifying glass</a> feature.
-                                                                </p>
+                                                                </dokki-warning>
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -471,22 +421,22 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>Border</menu-path>
                                         </td>
                                         <td>Set whether the <a href="#output-window">output window</a> should be displayed with a border.</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>Fullscreen</menu-path>
                                         </td>
                                         <td>
                                             Place the <a href="#output-window">output window</a> into fullscreen mode.
                                             
-                                            <p class="incompatibility-warning">
+                                            <dokki-warning>
                                                 Not fully supported on some distributions of Linux.
-                                            </p>
+                                            </dokki-warning>
 
                                             <dokki-tip>
                                                 For best results, you should first scale the window to the resolution of your screen before entering fullscreen mode.
@@ -495,21 +445,21 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>Center</menu-path>
                                         </td>
                                         <td>Snap the <a href="#output-window">output window</a> into the middle of the screen.</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>Top left</menu-path>
                                         </td>
                                         <td>Snap the <a href="#output-window">output window</a> into the top left corner of the screen.</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <i class="fas fa-fw fa-caret-right"></i>
+                                            
                                             <menu-path>Set title...</menu-path>
                                         </td>
                                         <td>
@@ -532,15 +482,14 @@
 
                     <p>The VCS user interface includes a number of dialogs, with which you can adjust the program's operational parameters.</p>
 
-                    <dokki-hr></dokki-hr>
-
                     <dokki-subtopic title="Video presets" id="video-presets-dialog">
 
-                        <p class="shortcut-list">
+                        <dokki-tip>
+                            Access via
                             <key-combo>Ctrl + V</key-combo>
                             or
                             <menu-path>Context menu > Input > Dialogs > Video presets...</menu-path>
-                        </p>
+                        </dokki-tip>
 
                         <p>The video presets dialog lets you to modify the capture devices's video signal parameters.</p>
                         
@@ -560,13 +509,12 @@
                         
                     </dokki-subtopic>
 
-                    <dokki-hr></dokki-hr>
-
                     <dokki-subtopic title="Alias resolutions" id="alias-resolutions-dialog">
 
-                        <p class="shortcut-list">
+                        <dokki-tip>
+                            Access via
                             <menu-path>Context menu > Input > Dialogs > Aliases...</menu-path>
-                        </p>
+                        </dokki-tip>
 
                         <p>With the alias resolutions dialog, you can instruct VCS to automatically override certain capture resolutions.</p>
 
@@ -574,19 +522,18 @@
                     
                     </dokki-subtopic>
 
-                    <dokki-hr></dokki-hr>
-                    
                     <dokki-subtopic title="Video recorder" id="video-record-dialog">
 
-                        <p class="shortcut-list">
+                        <dokki-tip>
+                            Access via
                             <key-combo>Ctrl + R</key-combo>
                             or
                             <menu-path>Context menu > Output > Dialogs > Video recorder...</menu-path>
-                        </p>
+                        </dokki-tip>
 
-                        <p class="incompatibility-warning">
+                        <dokki-warning>
                             On Linux, the video encoder's quality settings can't be modified through VCS.
-                        </p>
+                        </dokki-warning>
 
                         <p>The video recorder gives you the option to stream captured frames into a video file.</p>
                         
@@ -627,10 +574,6 @@
                                         <td>Video container</td>
                                         <td>
                                             The file format used for storing the video on disk.
-
-                                            <dokki-tip>
-                                                The file format doesn't affect the choice of video codec.
-                                            </dokki-tip>
                                         </td>
                                     </tr>
                                     <tr>
@@ -668,10 +611,6 @@
                                     <tr>
                                         <td>Video codec</td>
                                         <td>x264</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Preset</td>
-                                        <td>Ultrafast</td>
                                     </tr>
                                     <tr>
                                         <td>Profile</td>
@@ -726,38 +665,36 @@
 
                     </dokki-subtopic>
 
-                    <dokki-hr></dokki-hr>
-
                     <dokki-subtopic title="Input resolution" id="input-resolution-dialog">
 
-                        <p class="shortcut-list">
+                        <dokki-tip>
+                            Access via
                             <key-combo>Ctrl + I</key-combo>
                             or
                             <menu-path>Context menu > Capture > Dialogs > Resolution...</menu-path>
-                        </p>
+                        </dokki-tip>
 
-                        <p class="incompatibility-warning">
+                        <dokki-warning>
                             Not available on Linux.
-                        </p>
+                        </dokki-warning>
 
                         <p>Normally, the capture device will automatically set the capture resolution to match that of the input signal, but sometimes the result isn't quite right. The input resolution dialog lets you override this resolution with your own one.</p>
 
                         <p>You can change a button's assigned resolution by clicking on it while pressing the Alt key.</p>
                     </dokki-subtopic>
 
-                    <dokki-hr></dokki-hr>
-
                     <dokki-subtopic title="Output resolution" id="output-resolution-dialog">
 
-                        <p class="shortcut-list">
+                        <dokki-tip>
+                            Access via
                             <key-combo>Ctrl + O</key-combo>
                             or
                             <menu-path>Context menu > Output > Dialogs > Resolution...</menu-path>
-                        </p>
+                        </dokki-tip>
 
-                        <p class="incompatibility-warning">
+                        <dokki-warning>
                             Not available while recording video (see the <a href="#video-record-dialog">Video recorder</a> dialog).
-                        </p>
+                        </dokki-warning>
 
                         <p>The output resolution dialog lets you resize the output window. This also resizes the frames being displayed in the window.</p>
 
@@ -791,15 +728,14 @@
                         
                     </dokki-subtopic>
 
-                    <dokki-hr></dokki-hr>
-
                     <dokki-subtopic title="Overlay" id="overlay-dialog">
 
-                        <p class="shortcut-list">
+                        <dokki-tip>
+                            Access via
                             <key-combo>Ctrl + L</key-combo>
                             or
                             <menu-path>Context menu > Output > Dialogs > Overlay...</menu-path>
-                        </p>
+                        </dokki-tip>
 
                         <p>The overlay dialog lets you define a message to be overlaid on the <a href="#output-window">output window</a>.</p>
                         
@@ -815,15 +751,14 @@
 
                     </dokki-subtopic>
 
-                    <dokki-hr></dokki-hr>
-
                     <dokki-subtopic title="Anti-tear" id="anti-tear-dialog">
 
-                        <p class="shortcut-list">
+                        <dokki-tip>
+                            Access via
                             <key-combo>Ctrl + A</key-combo>
                             or
                             <menu-path>Context menu > Output > Dialogs > Anti-tear...</menu-path>
-                        </p>
+                        </dokki-tip>
 
                         <p>The anti-tear dialog provides functionality to remove tearing from captured frames.</p>
 
@@ -927,15 +862,14 @@
                     
                     </dokki-subtopic>
 
-                    <dokki-hr></dokki-hr>
-
                     <dokki-subtopic title="Filter graph" id="filter-graph-dialog">
 
-                        <p class="shortcut-list">
+                        <dokki-tip>
+                            Access via
                             <key-combo>Ctrl + F</key-combo>
                             or
                             <menu-path>Context menu > Output > Dialogs > Filter graph...</menu-path>
-                        </p>
+                        </dokki-tip>
 
                         <p>The filter graph dialog lets you to create chains of image filters to be applied to captured frames prior to display in the <a href="#output-window">output window</a>.</p>
 
