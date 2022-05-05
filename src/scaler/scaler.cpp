@@ -296,7 +296,7 @@ void s_scaler_nearest(SCALER_FUNC_PARAMS)
     #else
         double deltaW = (srcResolution.w / double(dstResolution.w));
         double deltaH = (srcResolution.h / double(dstResolution.h));
-        u8 *const dst = FRAME_BUFFER.pixels.ptr();
+        u8 *const dst = FRAME_BUFFER.pixels.data();
 
         for (uint y = 0; y < dstResolution.h; y++)
         {
