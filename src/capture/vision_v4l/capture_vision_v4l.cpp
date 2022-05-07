@@ -30,6 +30,7 @@
 #include "common/propagate/vcs_event.h"
 
 #define INCLUDE_VISION
+#include <visionrgb/include/rgb133control.h>
 #include <visionrgb/include/rgb133v4l2.h>
 
 // The input channel (/dev/videoX device) we're currently capturing from.
