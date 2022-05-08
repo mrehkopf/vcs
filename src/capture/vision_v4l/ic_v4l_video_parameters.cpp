@@ -18,6 +18,7 @@
 #include "capture/vision_v4l/ic_v4l_video_parameters.h"
 
 #define INCLUDE_VISION
+#include <visionrgb/include/rgb133control.h>
 #include <visionrgb/include/rgb133v4l2.h>
 
 ic_v4l_device_controls_c::ic_v4l_device_controls_c(const int v4lDeviceFileHandle) :

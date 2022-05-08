@@ -18,6 +18,7 @@
 #include "capture/vision_v4l/ic_v4l_video_parameters.h"
 
 #define INCLUDE_VISION
+#include <visionrgb/include/rgb133control.h>
 #include <visionrgb/include/rgb133v4l2.h>
 
 // We'll persist the resolution and refresh rate, so that when a new video mode
