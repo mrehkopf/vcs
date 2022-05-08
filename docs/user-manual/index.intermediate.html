@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<dokki>
+    <title>
+        VCS 2.5.0 &bull; User's manual
+    </title>
+    <topics>
+        ./md/system-requirements.md
+        ./md/getting-started.md
+        ./md/output-window.md
+        ./md/dialog-windows.md
+        ./md/video-presets-dialog.md
+        ./md/alias-resolutions-dialog.md
+        ./md/video-recorder-dialog.md
+        ./md/input-resolution-dialog.md
+        ./md/output-resolution-dialog.md
+        ./md/overlay-dialog.md
+        ./md/anti-tear-dialog.md
+        ./md/filter-graph-dialog.md
+        ./md/mouse-controls.md
+        ./md/keyboard-controls.md
+        ./md/command-line-options.md
+    </topics>
+</dokki>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+        <link rel="stylesheet" href="/assets/font-awesome-5-15-4/css/all.min.css">
+        <script defer src="/assets/font-awesome-5-15-4/attribution.js"></script>
+        <script defer src="/dokki/distributable/dokki.js"></script>
+
+        <script type="module">
+            import {keyboardKey, keyCombo} from "./js/dokki-components/key-combo.js";
+            import {menuPath} from "./js/dokki-components/menu-path.js";
+            window.dokkiUserComponents = [menuPath, keyboardKey, keyCombo];
+        </script>
+
+        <style>
+            .dokki-topic .menu-path,
+            .dokki-topic .key-combo
+            {
+                padding: 1px 8px;
+                border-radius: 4px;
+                background-color: var(--dokkiCSS-page-primary-fg-color);
+                color: var(--dokkiCSS-page-primary-bg-color);
+                margin: 2px 0;
+                white-space: nowrap;
+                display: inline-flex;
+                align-items: center;
+            }
+
+            .dokki-topic .menu-path a,
+            .dokki-topic .key-combo a
+            {
+                color: inherit !important;
+                text-decoration: underline;
+            }
+            
+            .dokki-topic strong
+            {
+                font-weight: var(--dokkiCSS-bold-text-weight);
+            }
+
+            .dokki-topic em
+            {
+                font-style: inherit;
+                background-color: var(--vcs-highlight-color);
+                font-weight: var(--dokkiCSS-bold-text-weight);
+            }
+
+            .dokki-topic td > .dokkiCSS-embedded
+            {
+                margin: 16px 0;
+            }
+
+            .dokki-topic td > .dokkiCSS-embedded:last-child
+            {
+                margin-bottom: 0;
+            }
+            
+            .dokki-topic td > .key-combo
+            {
+                margin: 0;
+            }
+
+            .dokki-topic .keyboard-key:not(:last-child)::after
+            {
+                content: "+";
+                margin: 0 0.125em;
+            }
+
+            .dokki-topic table.wrap-last-td td:last-child
+            {
+                white-space: normal;
+            }
+
+            .dokki-table td.with-inline-table
+            {
+                padding: 0 !important;
+
+                /* Force the <td> to not expand to fit the width of the inline table, so that the
+                * inline table - and not the parent table - gets the horizontal scroll bar.*/
+                max-width: 0;
+            }
+
+            .dokki-table td.with-inline-table > .dokki-table
+            {
+                margin: 0;
+                border: none;
+                border-radius: 0;
+                background-color: inherit;
+            }
+
+            .dokki-table td.with-inline-table > .dokki-table > header
+            {
+                padding: 8px;
+                line-height: var(--dokkiCSS-content-line-height);
+            }
+
+            .dokki-table td.with-inline-table > .dokki-table > header > .dokki0-expansion-indicator
+            {
+                margin-right: 0.75ch;
+            }
+
+            .dokki-table td.with-inline-table > .dokki-table > header > .caption > .icon
+            {
+                display: none;
+            }
+
+            .dokki-table td.with-inline-table > .dokki-table > header > .title
+            {
+                display: none;
+            }
+
+            .dokki-table ul
+            {
+                padding-inline-start: 1.25em !important;
+            }
+
+            .dokki-table ul li
+            {
+                line-height: 1;
+            }
+        </style>
+    </head>
+</html>
