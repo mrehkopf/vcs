@@ -7,7 +7,6 @@
         ./md/system-requirements.md
         ./md/getting-started.md
         ./md/output-window.md
-        ./md/dialog-windows.md
         ./md/video-presets-dialog.md
         ./md/alias-resolutions-dialog.md
         ./md/video-recorder-dialog.md
@@ -26,9 +25,9 @@
         <meta name="viewport" content="width=device-width">
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
-        <link rel="stylesheet" href="/assets/font-awesome-5-15-4/css/all.min.css">
-        <script defer src="/assets/font-awesome-5-15-4/attribution.js"></script>
-        <script defer src="/dokki/distributable/dokki.js"></script>
+        <link rel="stylesheet" href="https://www.tarpeeksihyvaesoft.com/assets/font-awesome-5-15-4/css/all.min.css">
+        <script defer src="https://www.tarpeeksihyvaesoft.com/assets/font-awesome-5-15-4/attribution.js"></script>
+        <script defer src="https://www.tarpeeksihyvaesoft.com/dokki/distributable/dokki.js"></script>
 
         <script type="module">
             import {keyboardKey, keyCombo} from "./js/dokki-components/key-combo.js";
@@ -40,23 +39,18 @@
             .dokki-topic .menu-path,
             .dokki-topic .key-combo
             {
-                padding: 1px 8px;
-                border-radius: 4px;
-                background-color: var(--dokkiCSS-page-primary-fg-color);
-                color: var(--dokkiCSS-page-primary-bg-color);
+                padding: 1px 6px;
+                border-radius: 3px;
                 margin: 2px 0;
                 white-space: nowrap;
                 display: inline-flex;
                 align-items: center;
+                border: 1px solid;
+                box-shadow: -1px 1px 0 #505050;
+                margin-left: 1px;
+                transform: translateY(-1px);
             }
 
-            .dokki-topic .menu-path a,
-            .dokki-topic .key-combo a
-            {
-                color: inherit !important;
-                text-decoration: underline;
-            }
-            
             .dokki-topic strong
             {
                 font-weight: var(--dokkiCSS-bold-text-weight);

@@ -13,19 +13,19 @@
             </td>
         </tr>
         <tr>
-            <td>-v <i>&lt;path + filename&gt;</i></td>
+            <td>-v <i>&lt;path&gt;</i></td>
             <td>
                 Load video presets from the given file on start-up. Video preset files typically have the .vcs-video suffix.
             </td>
         </tr>
         <tr>
-            <td>-f <i>&lt;path + filename&gt;</i></td>
+            <td>-f <i>&lt;path&gt;</i></td>
             <td>
                 Load a custom filter graph from the given file on start-up. Filter graph files typically have the .vcs-filter-graph suffix.
             </td>
         </tr>
         <tr>
-            <td>-a <i>&lt;path + filename&gt;</i></td>
+            <td>-a <i>&lt;path&gt;</i></td>
             <td>
                 Load alias resolutions from the given file on start-up. Alias resolution files typically have the .vcs-alias suffix.
             </td>

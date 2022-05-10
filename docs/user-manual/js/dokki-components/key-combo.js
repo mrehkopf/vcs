@@ -20,9 +20,15 @@ export const keyCombo = {
     },
     template: `
     <span class="key-combo">
+
+        <i class="fas fa-keyboard fa-sm" style="margin-right: 0.3em"/>
+
         <keyboard-key v-for="key in keys" :key="key">
+
             {{key}}
+
         </keyboard-key>
+        
     </span>
     `,
 };

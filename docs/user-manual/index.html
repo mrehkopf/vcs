@@ -5,9 +5,9 @@
         <meta name="viewport" content="width=device-width">
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
-        <link rel="stylesheet" href="/assets/font-awesome-5-15-4/css/all.min.css">
-        <script defer src="/assets/font-awesome-5-15-4/attribution.js"></script>
-        <script defer src="/dokki/distributable/dokki.js"></script>
+        <link rel="stylesheet" href="https://www.tarpeeksihyvaesoft.com/assets/font-awesome-5-15-4/css/all.min.css">
+        <script defer src="https://www.tarpeeksihyvaesoft.com/assets/font-awesome-5-15-4/attribution.js"></script>
+        <script defer src="https://www.tarpeeksihyvaesoft.com/dokki/distributable/dokki.js"></script>
 
         <script type="module">
             import {keyboardKey, keyCombo} from "./js/dokki-components/key-combo.js";
@@ -19,23 +19,18 @@
             .dokki-topic .menu-path,
             .dokki-topic .key-combo
             {
-                padding: 1px 8px;
-                border-radius: 4px;
-                background-color: var(--dokkiCSS-page-primary-fg-color);
-                color: var(--dokkiCSS-page-primary-bg-color);
+                padding: 1px 6px;
+                border-radius: 3px;
                 margin: 2px 0;
                 white-space: nowrap;
                 display: inline-flex;
                 align-items: center;
+                border: 1px solid;
+                box-shadow: -1px 1px 0 #505050;
+                margin-left: 1px;
+                transform: translateY(-1px);
             }
 
-            .dokki-topic .menu-path a,
-            .dokki-topic .key-combo a
-            {
-                color: inherit !important;
-                text-decoration: underline;
-            }
-            
             .dokki-topic strong
             {
                 font-weight: var(--dokkiCSS-bold-text-weight);
@@ -165,7 +160,7 @@
                     <template #table>
                         <tr>
                             <th>Capture resolution</th>
-                            <th>Required performance level</th>
+                            <th>Required performance level<sup>*</sup></th>
                         </tr>
                         <tr>
                             <td>VGA</td>
@@ -179,6 +174,11 @@
                             <td>1080p, 60 FPS</td>
                             <td>Intel Coffee Lake</td>
                         </tr>
+                        <tr>
+                            <td colspan="2">
+                                <sup>*</sup>Estimated.
+                            </td>
+                        </tr>
                     </template>
                 </dokki-table>
             </td>
@@ -186,7 +186,7 @@
         <tr>
             <th>GPU</th>
             <td>
-                For OpenGL rendering (optional), an OpenGL 1.2-compatible video card
+                For hardware rendering (optional), an OpenGL 1.2-compatible video card
             </td>
         </tr>
         <tr>
@@ -502,7 +502,7 @@
     </template>
 </dokki-table>
 </dokki-subtopic></dokki-topic><dokki-topic title='Video presets dialog'>
-<p>This dialog can be accessed with <key-combo>Ctrl + V</key-combo>or <menu-path>Context &gt; Input &gt; Dialogs &gt; Video presets...</menu-path>.</p>
+<p>This dialog can be accessed with <key-combo>Ctrl + V</key-combo> or <menu-path>Context &gt; Input &gt; Dialogs &gt; Video presets...</menu-path>.</p>
 <dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/video-presets-dialog.png width=513 height=656     ><template #caption>A screenshot of the video presets dialog</template>
                     </dokki-image>
 <p>The video presets dialog lets you to modify the capture devices's video signal parameters.</p>
@@ -569,7 +569,7 @@
         </tr>
     </template>
 </dokki-table>
-</dokki-subtopic><dokki-subtopic title='Settings for highest video quality'>
+</dokki-subtopic><dokki-subtopic title='Settings for the highest video quality'>
 <p>The following video recorder settings should result in the highest possible output video quality.</p>
 <dokki-table headerless>
     <template #table>
@@ -595,7 +595,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <sup>*</sup>Increasing the CRT value to 10&ndash;14 will considerably reduce the size of the resulting video file while maintaining high image quality.
+                <sup>*</sup>Increasing the CRF value to 10&ndash;14 will considerably reduce the size of the resulting video file while maintaining high image quality.
             </td>
         </tr>
     </template>
@@ -830,19 +830,19 @@
             </td>
         </tr>
         <tr>
-            <td>-v <i>&lt;path + filename&gt;</i></td>
+            <td>-v <i>&lt;path&gt;</i></td>
             <td>
                 Load video presets from the given file on start-up. Video preset files typically have the .vcs-video suffix.
             </td>
         </tr>
         <tr>
-            <td>-f <i>&lt;path + filename&gt;</i></td>
+            <td>-f <i>&lt;path&gt;</i></td>
             <td>
                 Load a custom filter graph from the given file on start-up. Filter graph files typically have the .vcs-filter-graph suffix.
             </td>
         </tr>
         <tr>
-            <td>-a <i>&lt;path + filename&gt;</i></td>
+            <td>-a <i>&lt;path&gt;</i></td>
             <td>
                 Load alias resolutions from the given file on start-up. Alias resolution files typically have the .vcs-alias suffix.
             </td>

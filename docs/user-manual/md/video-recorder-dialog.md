@@ -62,7 +62,7 @@ The recorder will write frames as they appear in the [output window](#output-win
     </template>
 </dokki-table>
 
-## Settings for highest video quality
+## Settings for the highest video quality
 
 The following video recorder settings should result in the highest possible output video quality.
 
@@ -90,7 +90,7 @@ The following video recorder settings should result in the highest possible outp
         </tr>
         <tr>
             <td colspan="2">
-                <sup>*</sup>Increasing the CRT value to 10&ndash;14 will considerably reduce the size of the resulting video file while maintaining high image quality.
+                <sup>*</sup>Increasing the CRF value to 10&ndash;14 will considerably reduce the size of the resulting video file while maintaining high image quality.
             </td>
         </tr>
     </template>

@@ -51,7 +51,7 @@
         <tr>
             <th>GPU</th>
             <td>
-                For OpenGL rendering (optional), an OpenGL 1.2-compatible video card
+                For hardware rendering (optional), an OpenGL 1.2-compatible video card
             </td>
         </tr>
         <tr>

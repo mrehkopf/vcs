@@ -1,6 +1,6 @@
 # Video presets dialog
 
-This dialog can be accessed with <key-combo>Ctrl + V</key-combo>or <menu-path>Context > Input > Dialogs > Video presets...</menu-path>.
+This dialog can be accessed with <key-combo>Ctrl + V</key-combo> or <menu-path>Context > Input > Dialogs > Video presets...</menu-path>.
 
 > A screenshot of the video presets dialog
 ![{image:513x656}](https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/video-presets-dialog.png)
