@@ -4,17 +4,10 @@
         VCS 2.5.0 &bull; User's manual
     </title>
     <topics>
-        ./md/system-requirements.md
-        ./md/getting-started.md
+        ./md/introduction.md
+        ./md/faq.md
         ./md/output-window.md
-        ./md/video-presets-dialog.md
-        ./md/alias-resolutions-dialog.md
-        ./md/video-recorder-dialog.md
-        ./md/input-resolution-dialog.md
-        ./md/output-resolution-dialog.md
-        ./md/overlay-dialog.md
-        ./md/anti-tear-dialog.md
-        ./md/filter-graph-dialog.md
+        ./md/dialog-windows.md
         ./md/mouse-controls.md
         ./md/keyboard-controls.md
         ./md/command-line-options.md
@@ -39,16 +32,25 @@
             .dokki-topic .menu-path,
             .dokki-topic .key-combo
             {
-                padding: 1px 6px;
+                padding: 0 6px;
                 border-radius: 3px;
                 margin: 2px 0;
                 white-space: nowrap;
                 display: inline-flex;
                 align-items: center;
-                border: 1px solid;
-                box-shadow: -1px 1px 0 #505050;
+                border: 1px solid var(--dokkiCSS-page-inert-fg-color);
+                box-shadow: -1px 1px 0 var(--dokkiCSS-page-inert-fg-color);
                 margin-left: 1px;
                 transform: translateY(-1px);
+            }
+
+            .dokki-topic td:first-child > .menu-path:first-child,
+            .dokki-topic td:first-child > .key-combo:first-child
+            {
+                /* Tables hide their overflow and have no space between the first <td> and
+                 * the edge of the table, so we need to offset this element a little or its
+                 * left-falling shadow gets cut off.*/
+                margin-left: 2px;
             }
 
             .dokki-topic strong

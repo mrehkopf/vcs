@@ -19,16 +19,25 @@
             .dokki-topic .menu-path,
             .dokki-topic .key-combo
             {
-                padding: 1px 6px;
+                padding: 0 6px;
                 border-radius: 3px;
                 margin: 2px 0;
                 white-space: nowrap;
                 display: inline-flex;
                 align-items: center;
-                border: 1px solid;
-                box-shadow: -1px 1px 0 #505050;
+                border: 1px solid var(--dokkiCSS-page-inert-fg-color);
+                box-shadow: -1px 1px 0 var(--dokkiCSS-page-inert-fg-color);
                 margin-left: 1px;
                 transform: translateY(-1px);
+            }
+
+            .dokki-topic td:first-child > .menu-path:first-child,
+            .dokki-topic td:first-child > .key-combo:first-child
+            {
+                /* Tables hide their overflow and have no space between the first <td> and
+                 * the edge of the table, so we need to offset this element a little or its
+                 * left-falling shadow gets cut off.*/
+                margin-left: 2px;
             }
 
             .dokki-topic strong
@@ -129,7 +138,49 @@
                     
                 </dokki-toolbar>
                 <dokki-topics>
-                    <dokki-topic title='System requirements'>
+                    <dokki-topic title='Introduction'>
+<p>VCS is a third-party capture tool for Datapath's VisionRGB range on capture hardware; developed especially for capturing retro PCs and consoles, whose dynamic, non-standard video signals aren't well supported by Datapath's default capture software.</p>
+<dokki-image src=https://www.tarpeeksihyvaesoft.com/soft/img/vcs/vcs-2.4-with-dialogs.png width=1189 height=878     ><template #caption>A screenshot of VCS 2.4, showing the capture window and some of the control dialogs</template>
+                    </dokki-image>
+<dokki-subtopic title='Main program features'>
+<ul>
+<li>Capture functionality tailored for the Datapath VisionRGB series</li>
+<li>Supports both modern and legacy VisionRGB hardware</li>
+<li>Runs on Windows (XP and later) and Linux (experimental)</li>
+<li>Unlimited video presets, allowing different capture settings for different resolutions and/or refresh rates</li>
+<li>Customizable frame scaling and filtering</li>
+<li>Anti-tearing to reduce/eliminate tears in captured frames</li>
+<li>On-screen display with HTML/CSS formatting</li>
+<li>Variable refresh rate output</li>
+<li>Minimal reliance on GPU features, runs well in virtual machines</li>
+<li>Open source (<a href="https://github.com/leikareipa/vcs">GitHub</a>)</li>
+</ul>
+</dokki-subtopic><dokki-subtopic title='Supported capture hardware'>
+<dokki-table headerless>
+    <template #table>
+        <tr>
+            <th>Vendor</th>
+            <th>Model</th>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-PRO1/PRO2</td>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-E1/E2</td>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-E1S/E2S</td>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-X2</td>
+        </tr>
+    </template>
+</dokki-table>
+</dokki-subtopic><dokki-subtopic title='System requirements'>
 <dokki-table headerless>
     <template #table>
         <tr>
@@ -204,15 +255,48 @@
         </tr>
     </template>
 </dokki-table>
-</dokki-topic><dokki-topic title='Getting started'>
-<p>Assuming you've installed the driver for your capture device, as well as unpacked the binary distribution of VCS (linked to, above) into a folder, getting VCS going is simply a matter of running its <em>vcs.exe</em> executable.</p>
-<p>When you run the executable, two windows will open: a console window, in which notifications about VCS's status will appear during operation; and the output window, in which captured frames are displayed.</p>
+</dokki-subtopic></dokki-topic><dokki-topic title='FAQ'>
+<dokki-subtopic title='Getting started'>
+<p>A download for the latest Windows version of VCS is <a href="https://github.com/leikareipa/vcs/releases">available on GitHub</a>. For Linux, you can grab the <a href="https://github.com/leikareipa/vcs/">VCS source code</a> and compile it for your platform.</p>
+<p>Assuming you've already installed the drivers for your capture device, simply run <em>vcs.exe</em> to get started with VCS.</p>
+<p>When you run the VCS executable, two windows should open: a console window, in which notifications about VCS's status will appear during operation; and the <a href="#output-window">capture window</a>, in which captured frames are displayed.</p>
 <dokki-tip>
-    You can use VCS's <a href="#command-line-options">command-line options</a> to automate
-    start-up tasks.
+    You can use VCS's <a href="#command-line-options">command-line options</a> to automate certain start-up tasks.
 </dokki-tip>
-<p>If this is your first time running VCS, the first thing you may want to do is adjust the capture video parameters (phase, position, colors, etc.). They can be set up via the <a href="#video-presets-dialog">video presets</a> dialog.</p>
-</dokki-topic><dokki-topic title='Output window'>
+</dokki-subtopic><dokki-subtopic title='Adjusting the color balance'>
+<p>The capture hardware may not always provide an accurate color balance by default.</p>
+<p>To correct this, you can use the <a href="#dialog-windows-video-presets-dialog">Video presets dialog</a> to manually adjust the balance, then save the settings to be applied automatically next time you run VCS in this video mode.</p>
+</dokki-subtopic><dokki-subtopic title='Reducing visual noise'>
+<p>When capturing an analog source, some visual noise is to be expected. VCS comes with a few ways to mitigate this.</p>
+<p>The first thing to check is that you have suitable analog capture parameters set, using the <a href="#dialog-windows-video-presets-dialog">Video presets dialog</a>. The <em>phase</em> setting is especially important to get right. What the exact correct settings are depends on your capture source and can't be pre-determined, so simply adjust them until the output looks correct. You can use the capture window's magnifying glass (see <a href="#output-window-features">Capture window: Features</a>) to inspect the output in closer detail. Once you're happy with the settings, you can save them to be applied automatically next time.</p>
+<p>Depending on the capture source, some noise may be present regardless of the capture parameters, in which case you can apply <a href="#dialog-windows-filter-graph-dialog">frame filtering</a> to reduce the noise further. The <em>Denoise (pixel gate)</em> filter can be used to eliminate pixel shimmer; and there's also the more powerful – but more performance-hungry – <em>Denoise (non-local means)</em> filter. If you're capturing a line-doubled source (e.g. VGA mode 13h), you can apply a 1× <em>Decimate</em> filter to remove sub-pixel noise. The <em>Delta histogram</em> filter will produce a visual indication of the amount of noise present, allowing you to better estimate the effect of the various filters (just make sure that this histogram filter is the last one in the filter chain, so that it sees the changes from the other filters).</p>
+</dokki-subtopic><dokki-subtopic title='Fixing an incorrect capture resolution'>
+<p>The capture hardware may not always correctly sense the resolution of the input signal, resulting in the displaying of malformed frames in VCS's <a href="#output-window">capture window</a> and/or the reporting of an incorrect input resolution in the capture window's <a href="#output-window-title-bar">title bar</a>.</p>
+<p>You can use the <a href="#dialog-windows-input-resolution-dialog">Input resolution dialog</a> to manually correct the resolution.</p>
+<p>If you find that a particular resolution is consistently misidentified by the capture hardware, you can have VCS correct it automatically via the <a href="#dialog-windows-alias-resolutions-dialog">Alias resolutions dialog</a>.</p>
+</dokki-subtopic><dokki-subtopic title='Resizing the capture window'>
+<p>The size of the capture window can be changed via the <a href="#dialog-windows-output-resolution-dialog">Output resolution dialog</a>.</p>
+</dokki-subtopic><dokki-subtopic title='Preventing the capture window from resizing'>
+<p>You can use the <a href="#dialog-windows-output-resolution-dialog">Output resolution dialog</a> to set a fixed resolution for the capture window. All captured frames will then be scaled automatically to that resolution using the currently-active scaler. (To customize the scaler, use the <menu-path>Context &gt; Output &gt; Upscaler</menu-path> and <menu-path>Context &gt; Output &gt; Downscaler</menu-path> menu options.)</p>
+</dokki-subtopic><dokki-subtopic title='Entering fullscreen mode'>
+<p>VCS supports two fullscreen modes: windowed fullscreen, and true fullscreen. In most cases, the windowed fullscreen mode is recommended, but the true fullscreen mode may be needed for variable refresh rate output.</p>
+<h3>Windowed fullscreen</h3>
+<p>To enter windowed fullscreen mode, first use the <a href="#dialog-windows-output-resolution-dialog">Output resolution dialog</a> to set the resolution of the capture window to the size of your screen, then press the <key-combo>F1</key-combo> key (or use the <menu-path>Context &gt; Window &gt; Border</menu-path> menu option) to set the capture window into borderless mode. While in borderless mode, the window will be positioned on top of other desktop elements (e.g. windows and task bars).
+<h3>True fullscreen</h3>
+</p><p>To enter true fullscreen mode, first use the <a href="#dialog-windows-output-resolution-dialog">Output resolution dialog</a> to set the resolution of the capture window to the size of your screen, then press the <key-combo>F11</key-combo> key to place the window into fullscreen mode.</p>
+<h3>Aspect ratio</h3>
+<p>To ensure that the capture window displays frames in their correct aspect ratio while in either of the fullscreen modes, select the <menu-path>Context &gt; Output &gt; Aspect ratio &gt; Traditional 4:3</menu-path> menu option.</p>
+</dokki-subtopic><dokki-subtopic title='Enabling variable refresh rate output'>
+<p>If you hardware supports variable refresh rate output with OpenGL, VCS should be able to take advantage of it.</p>
+<p>First, select the <menu-path>Context &gt; Window &gt; Renderer &gt; OpenGL</menu-path> menu option to enable OpenGL rendering, then press the <key-combo>F11</key-combo> key to enter fullscreen mode (see <a href="#faq-entering-fullscreen-mode">Entering fullscreen mode</a> for caveats). Your hardware's refresh rate should now be matched to the capture's refresh rate.</p>
+</dokki-subtopic><dokki-subtopic title='Fixing screen tearing'>
+<p>With some capture sources (e.g. DOS-mode VGA), you may find the image susceptible to tearing. This kind of tearing is present in the output signal and doesn't result from the capture process – you'd see it even if you were viewing the output directly through a monitor.</p>
+<dokki-image src=./img/tr1-torn.png width=600 height=374     ><template #caption>Screen tearing in Tomb Raider (DOS)</template>
+                    </dokki-image>
+<p>To reduce or even eliminate tearing of this sort, VCS provides anti-tearing functionality. See <a href="dialog-windows-anti-tear-dialog">Anti-tear dialog</a> for more information.</p>
+<dokki-video platform="youtube" src=_gNywFJFRWo     ><template #caption>Before (left) and after (right) applying VCS's anti-tearing</template>
+                    </dokki-video>
+</dokki-subtopic></dokki-topic><dokki-topic title='Output window'>
 <p>The central point of the VCS user interface is the output window, where captured frames are displayed as they arrive from the capture device and having undergone any of VCS's filtering and scaling.</p>
 <dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.3.0/output-window.png width=642 height=508     ><template #caption>A screenshot of the output window</template>
                     </dokki-image>
@@ -501,19 +585,66 @@
         </tr>
     </template>
 </dokki-table>
-</dokki-subtopic></dokki-topic><dokki-topic title='Video presets dialog'>
-<p>This dialog can be accessed with <key-combo>Ctrl + V</key-combo> or <menu-path>Context &gt; Input &gt; Dialogs &gt; Video presets...</menu-path>.</p>
-<dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/video-presets-dialog.png width=513 height=656     ><template #caption>A screenshot of the video presets dialog</template>
+</dokki-subtopic></dokki-topic><dokki-topic title='Dialog windows'>
+<dokki-subtopic title='Filter graph dialog'>
+<p>This dialog can be accessed with <key-combo>Ctrl + F</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Filter graph...</menu-path>.</p>
+<dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/filter-graph-dialog.png width=1187 height=556     ><template #caption>A screenshot of the filter graph dialog</template>
                     </dokki-image>
-<p>The video presets dialog lets you to modify the capture devices's video signal parameters.</p>
-<p>A given video preset's parameters will be applied when all of its &quot;Activates with&quot; conditions are met. For instance, if you've defined a preset's activation resolution as 800 × 600 and have disabled the other activating conditions, the preset's parameters will be applied when the capture video mode is 800 × 600.</p>
-<p>To add or delete a preset, click the + or - buttons next to the preset selector at the top of the dialog. Clicking the + button while holding the Alt key will create a new preset with the current preset's settings.</p>
-<p>If you want your changes to the video presets to persist after you exit VCS, remember to save them first! This can be done via <menu-path>File &gt; Save as…</menu-path>. Saved settings can be restored via <menu-path>File &gt; Open…</menu-path>. Any saved settings that're open when VCS exits will be reloaded automatically when you run VCS again.</p>
-</dokki-topic><dokki-topic title='Alias resolutions dialog'>
-<p>This dialog can be accessed with <menu-path>Context &gt; Input &gt; Dialogs &gt; Aliases...</menu-path>.</p>
-<p>With the alias resolutions dialog, you can instruct VCS to automatically override certain capture resolutions.</p>
-<p>For instance, if you find that your capture device is displaying 640 × 400 as 512 × 488 (or something to that effect), you can define 640 × 400 as an alias of 512 × 488. Whenever the capture device reports a new video mode of 512 × 488, VCS will tell the device to use 640 × 400, instead.</p>
-</dokki-topic><dokki-topic title='Video recorder dialog'>
+<p>The filter graph dialog lets you to create chains of image filters to be applied to captured frames prior to display in the <a href="#output-window">output window</a>.</p>
+<p>The filter graph is made up of nodes that can be connected together in a chain. These nodes come in three varieties: <em>input gate</em>, <em>output gate</em>, and <em>filter</em>.</p>
+<p>The input and output gates determine the resolutions for which the connected filters will be applied. For instance, if you set an input gate's width and height to 640 and 480, and the width and height of an output gate to 1920 and 1080, any filters you connect between these two nodes will be applied when the size of the output window is 1920 × 1080 and the original resolution of the frames (i.e. the capture resolution) is 640 × 480. You can also use the value 0 for a gate's width and/or height to allow VCS to match any value to that dimension: an input gate with a width and height of 0, for instance, will apply the connected filters to frames of all capture resolutions, provided that they also meet the resolution specified for the output gate. A filter graph can have multiple chains of these input-filter-output combos, and VCS will select the most suitable one (or none) given the current capture and output resolutions.</p>
+<dokki-tip>
+    <p>
+        When deciding which of multiple filter chains to use, VCS will prefer more specific chains to more general ones.
+    </p>
+    <p>
+        If you have e.g. an input gate whose width and height are 0, and another input gate whose width and height are 640 and 480, the latter will be used when the capture resolution is exactly 640 &times; 480, and the former otherwise.
+    </p>
+    <p>
+        Likewise, if your input gates are 0 &times; 0 and 640 &times; 0, the former will be applied for capture resolutions of <i>any</i> &times; <i>any</i>, except for 640 &times; <i>any</i>, where the latter chain will apply &ndash; except if you also have a third input gate of 640 &times; 480, in which case that will be used when the capture resolution is exactly 640 &times; 480.
+    </p>
+</dokki-tip>
+<p>To connect two nodes, click and drag with the left mouse button from one node's output edge (square) to another's input edge (circle), or vice versa. A node can be connected to as many other nodes as you like. To disconnect a node from another, right-click on the node's output edge, and select the other node from the list that pops up. To remove a node itself from the graph, right-click on the node and select to remove it. To add nodes to the graph, right-click on the graph's background to bring up the node menu, or select <menu-path>Filters</menu-path> from the dialog's menu bar.</p>
+</dokki-subtopic><dokki-subtopic title='Output resolution dialog'>
+<p>This dialog can be accessed with <key-combo>Ctrl + O</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Resolution...</menu-path>.</p>
+<p>The output resolution dialog lets you resize the <a href="#output-window">output window</a>. This also resizes the frames being displayed in the window.</p>
+<h3>Settings explained</h3>
+<dokki-table headerless>
+    <template #table>
+        <tr>
+            <th>Setting</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>Resolution</td>
+            <td>
+                Lock the size of the output window so that changes to the capture resolution don't affect the output
+                resolution. Frames will be scaled up or down as needed to match this resolution.
+            </td>
+        </tr>
+        <tr>
+            <td>Relative scale</td>
+            <td>
+                Scale the size of the output window up or down by a percentage of its base size. The base size is
+                either the capture resolution, or, if enabled, the locked output resolution.
+            </td>
+        </tr>
+    </template>
+</dokki-table>
+</dokki-subtopic><dokki-subtopic title='Input resolution dialog'>
+<p>This dialog can be accessed with <key-combo>Ctrl + I</key-combo> or <menu-path>Context &gt; Capture &gt; Dialogs &gt; Resolution...</menu-path>.</p>
+<dokki-warning>
+    Not available on Linux.
+</dokki-warning>
+<p>Normally, the capture device will automatically set the capture resolution to match that of the input signal, but sometimes the result isn't quite right. The input resolution dialog lets you override this resolution with your own one.</p>
+<p>You can change a button's assigned resolution by clicking on it while pressing the Alt key.</p>
+</dokki-subtopic><dokki-subtopic title='Overlay dialog'>
+<p>This dialog can be accessed with <key-combo>Ctrl + L</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Overlay...</menu-path>.</p>
+<dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.3.0/overlay-dialog.png width=878 height=508     ><template #caption>A screenshot of the overlay dialog</template>
+                    </dokki-image>
+<p>The overlay dialog lets you define a message to be overlaid on the <a href="#output-window">output window</a>.</p>
+<p>You can combine normal text with pre-set VCS variables and HTML/CSS formatting to create a message to be shown over the output window.</p>
+</dokki-subtopic><dokki-subtopic title='Video recorder dialog'>
 <p>This dialog can be accessed with <key-combo>Ctrl + R</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Video recorder...</menu-path>.</p>
 <dokki-warning>
     On Linux, the video encoder's quality settings can't be modified through VCS &ndash; you'd need to re-compile OpenCV with your desired encoder settings, instead.
@@ -531,7 +662,7 @@
 <li>The <a href="#overlay-dialog">overlay</a> won't be recorded.</li>
 <li>Encoder parameters influencing image quality (e.g. CRF) can't be customized in the Linux version of VCS. This is a limitation of OpenCV. You can, however, modify and recompile the OpenCV code with higher-quality default options (see e.g. <a href="https://www.researchgate.net/post/Is_it_possible_to_set_the_lossfree_option_for_the_X264_codec_in_OpenCV">here</a>).</li>
 </ul>
-<dokki-subtopic title='Settings explained'>
+<h3>Settings explained</h3>
 <dokki-table headerless>
     <template #table>
         <tr>
@@ -569,7 +700,7 @@
         </tr>
     </template>
 </dokki-table>
-</dokki-subtopic><dokki-subtopic title='Settings for the highest video quality'>
+<h3>Settings for the highest video quality</h3>
 <p>The following video recorder settings should result in the highest possible output video quality.</p>
 <dokki-table headerless>
     <template #table>
@@ -600,58 +731,27 @@
         </tr>
     </template>
 </dokki-table>
-</dokki-subtopic><dokki-subtopic title='Tips for performance'>
+<h3>Tips for performance</h3>
 <p>If the recorder dialog indicates that frames are being dropped while recording, your system may be limited in CPU or disk performance. Here are a few tips that may help you mitigate those issues.</p>
 <p>Since VCS is largely a single-threaded program, dragging or otherwise interacting with its GUI items (e.g. dialog windows) during recording may cause transient frame drops even if your system is otherwise capable.</p>
 <p>During recording, frames are saved to disk in batches. If you get a bunch of frames droppede very couple of seconds but are fine otherwise, insufficient disk performance may be the reason. Optimizing the recorder's settings for a smaller file size should help, as would recording at a lower resolution (i.e. with a smaller-sized <a href="#output-window">output window</a>.</p>
 <p>If recording fails and you receive an error in the VCS console window to the tune of &quot;x264 [error]: malloc of size ░ failed&quot;, you may be running into a memory fragmentation issue (see <a href="https://github.com/leikareipa/vcs/issues/21">this issue report on GitHub</a>). VCS is a 32-bit program that, while recording video, shares its couple-gigabyte memory space with the x264 encoder, which may result in x264 being unable to allocate a large-enough contiguous block of memory for its own operation. You may be able to fix this issue either by selecting a <em>Preset</em> option closer to &quot;Ultrafast&quot;, reducing the recording resolution (i.e. the size of the output window), or decreasing the size of VCS's pre-allocated memory cache (see the <em>-m</em> <a href="#command-line-options">command-line option</a>).</p>
-</dokki-subtopic></dokki-topic><dokki-topic title='Input resolution dialog'>
-<p>This dialog can be accessed with <key-combo>Ctrl + I</key-combo> or <menu-path>Context &gt; Capture &gt; Dialogs &gt; Resolution...</menu-path>.</p>
-<dokki-warning>
-    Not available on Linux.
-</dokki-warning>
-<p>Normally, the capture device will automatically set the capture resolution to match that of the input signal, but sometimes the result isn't quite right. The input resolution dialog lets you override this resolution with your own one.</p>
-<p>You can change a button's assigned resolution by clicking on it while pressing the Alt key.</p>
-</dokki-topic><dokki-topic title='Output resolution dialog'>
-<p>This dialog can be accessed with <key-combo>Ctrl + O</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Resolution...</menu-path>.</p>
-<p>The output resolution dialog lets you resize the <a href="#output-window">output window</a>. This also resizes the frames being displayed in the window.</p>
-<dokki-subtopic title='Settings explained'>
-<dokki-table headerless>
-    <template #table>
-        <tr>
-            <th>Setting</th>
-            <th>Description</th>
-        </tr>
-        <tr>
-            <td>Resolution</td>
-            <td>
-                Lock the size of the output window so that changes to the capture resolution don't affect the output
-                resolution. Frames will be scaled up or down as needed to match this resolution.
-            </td>
-        </tr>
-        <tr>
-            <td>Relative scale</td>
-            <td>
-                Scale the size of the output window up or down by a percentage of its base size. The base size is
-                either the capture resolution, or, if enabled, the locked output resolution.
-            </td>
-        </tr>
-    </template>
-</dokki-table>
-</dokki-subtopic></dokki-topic><dokki-topic title='Overlay dialog'>
-<p>This dialog can be accessed with <key-combo>Ctrl + L</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Overlay...</menu-path>.</p>
-<dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.3.0/overlay-dialog.png width=878 height=508     ><template #caption>A screenshot of the overlay dialog</template>
+</dokki-subtopic><dokki-subtopic title='Video presets dialog'>
+<p>This dialog can be accessed with <key-combo>Ctrl + V</key-combo> or <menu-path>Context &gt; Input &gt; Dialogs &gt; Video presets...</menu-path>.</p>
+<dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/video-presets-dialog.png width=513 height=656     ><template #caption>A screenshot of the video presets dialog</template>
                     </dokki-image>
-<p>The overlay dialog lets you define a message to be overlaid on the <a href="#output-window">output window</a>.</p>
-<p>You can combine normal text with pre-set VCS variables and HTML/CSS formatting to create a message to be shown over the output window.</p>
-</dokki-topic><dokki-topic title='Anti-tear dialog'>
+<p>The video presets dialog lets you to modify the capture devices's video signal parameters.</p>
+<p>A given video preset's parameters will be applied when all of its &quot;Activates with&quot; conditions are met. For instance, if you've defined a preset's activation resolution as 800 × 600 and have disabled the other activating conditions, the preset's parameters will be applied when the capture video mode is 800 × 600.</p>
+<p>To add or delete a preset, click the + or - buttons next to the preset selector at the top of the dialog. Clicking the + button while holding the Alt key will create a new preset with the current preset's settings.</p>
+<p>If you want your changes to the video presets to persist after you exit VCS, remember to save them first! This can be done via <menu-path>File &gt; Save as…</menu-path>. Saved settings can be restored via <menu-path>File &gt; Open…</menu-path>. Any saved settings that're open when VCS exits will be reloaded automatically when you run VCS again.</p>
+</dokki-subtopic><dokki-subtopic title='Anti-tear dialog'>
 <p>This dialog can be accessed with <key-combo>Ctrl + A</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Anti-tear...</menu-path>.</p>
 <dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/anti-tear-dialog.png width=489 height=502     ><template #caption>A screenshot of the anti-tear dialog</template>
                     </dokki-image>
 <p>The anti-tear dialog provides functionality to remove tearing from captured frames.</p>
 <p>Under some circumstances, like when the captured source doesn't sync its rendering with the refresh rate, captured frames can contain tearing. VCS's anti-tearer helps mitigate this issue.</p>
 <p>Anti-tearing should be considered an experimental feature of VCS. It works well in some cases and not that well in others. It'll completely fail to work if the captured source redraws the screen at a rate higher than the capture's refresh rate – e.g. a game running at 100 FPS with a refresh of 60 Hz.</p>
-<dokki-subtopic title='Settings explained'>
+<h3>Settings explained</h3>
 <dokki-table headerless>
     <template #table>
         <tr>
@@ -714,26 +814,11 @@
         </tr>
     </template>
 </dokki-table>
-</dokki-subtopic></dokki-topic><dokki-topic title='Filter graph dialog'>
-<p>This dialog can be accessed with <key-combo>Ctrl + F</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Filter graph...</menu-path>.</p>
-<dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/filter-graph-dialog.png width=1187 height=556     ><template #caption>A screenshot of the filter graph dialog</template>
-                    </dokki-image>
-<p>The filter graph dialog lets you to create chains of image filters to be applied to captured frames prior to display in the <a href="#output-window">output window</a>.</p>
-<p>The filter graph is made up of nodes that can be connected together in a chain. These nodes come in three varieties: <em>input gate</em>, <em>output gate</em>, and <em>filter</em>.</p>
-<p>The input and output gates determine the resolutions for which the connected filters will be applied. For instance, if you set an input gate's width and height to 640 and 480, and the width and height of an output gate to 1920 and 1080, any filters you connect between these two nodes will be applied when the size of the output window is 1920 × 1080 and the original resolution of the frames (i.e. the capture resolution) is 640 × 480. You can also use the value 0 for a gate's width and/or height to allow VCS to match any value to that dimension: an input gate with a width and height of 0, for instance, will apply the connected filters to frames of all capture resolutions, provided that they also meet the resolution specified for the output gate. A filter graph can have multiple chains of these input-filter-output combos, and VCS will select the most suitable one (or none) given the current capture and output resolutions.</p>
-<dokki-tip>
-    <p>
-        When deciding which of multiple filter chains to use, VCS will prefer more specific chains to more general ones.
-    </p>
-    <p>
-        If you have e.g. an input gate whose width and height are 0, and another input gate whose width and height are 640 and 480, the latter will be used when the capture resolution is exactly 640 &times; 480, and the former otherwise.
-    </p>
-    <p>
-        Likewise, if your input gates are 0 &times; 0 and 640 &times; 0, the former will be applied for capture resolutions of <i>any</i> &times; <i>any</i>, except for 640 &times; <i>any</i>, where the latter chain will apply &ndash; except if you also have a third input gate of 640 &times; 480, in which case that will be used when the capture resolution is exactly 640 &times; 480.
-    </p>
-</dokki-tip>
-<p>To connect two nodes, click and drag with the left mouse button from one node's output edge (square) to another's input edge (circle), or vice versa. A node can be connected to as many other nodes as you like. To disconnect a node from another, right-click on the node's output edge, and select the other node from the list that pops up. To remove a node itself from the graph, right-click on the node and select to remove it. To add nodes to the graph, right-click on the graph's background to bring up the node menu, or select <menu-path>Filters</menu-path> from the dialog's menu bar.</p>
-</dokki-topic><dokki-topic title='Mouse controls'>
+</dokki-subtopic><dokki-subtopic title='Alias resolutions dialog'>
+<p>This dialog can be accessed with <menu-path>Context &gt; Input &gt; Dialogs &gt; Aliases...</menu-path>.</p>
+<p>With the alias resolutions dialog, you can instruct VCS to automatically override certain capture resolutions.</p>
+<p>For instance, if you find that your capture device is displaying 640 × 400 as 512 × 488 (or something to that effect), you can define 640 × 400 as an alias of 512 × 488. Whenever the capture device reports a new video mode of 512 × 488, VCS will tell the device to use 640 × 400, instead.</p>
+</dokki-subtopic></dokki-topic><dokki-topic title='Mouse controls'>
 <dokki-table headerless>
     <template #table>
         <tr>

@@ -1,4 +1,51 @@
-# System requirements
+# Introduction
+
+VCS is a third-party capture tool for Datapath's VisionRGB range on capture hardware; developed especially for capturing retro PCs and consoles, whose dynamic, non-standard video signals aren't well supported by Datapath's default capture software.
+
+> A screenshot of VCS 2.4, showing the capture window and some of the control dialogs
+![{image:1189x878}](https://www.tarpeeksihyvaesoft.com/soft/img/vcs/vcs-2.4-with-dialogs.png)
+
+## Main program features
+
+- Capture functionality tailored for the Datapath VisionRGB series
+- Supports both modern and legacy VisionRGB hardware
+- Runs on Windows (XP and later) and Linux (experimental)
+- Unlimited video presets, allowing different capture settings for different resolutions and/or refresh rates
+- Customizable frame scaling and filtering
+- Anti-tearing to reduce/eliminate tears in captured frames
+- On-screen display with HTML/CSS formatting
+- Variable refresh rate output
+- Minimal reliance on GPU features, runs well in virtual machines
+- Open source ([GitHub](https://github.com/leikareipa/vcs))
+
+## Supported capture hardware
+
+<dokki-table headerless>
+    <template #table>
+        <tr>
+            <th>Vendor</th>
+            <th>Model</th>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-PRO1/PRO2</td>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-E1/E2</td>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-E1S/E2S</td>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-X2</td>
+        </tr>
+    </template>
+</dokki-table>
+
+## System requirements
 
 <dokki-table headerless>
     <template #table>
@@ -30,7 +77,7 @@
                     <template #table>
                         <tr>
                             <th>Capture resolution</th>
-                            <th>Required performance level</th>
+                            <th>Required performance level<sup>*</sup></th>
                         </tr>
                         <tr>
                             <td>VGA</td>
@@ -43,6 +90,11 @@
                         <tr>
                             <td>1080p, 60 FPS</td>
                             <td>Intel Coffee Lake</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <sup>*</sup>Estimated.
+                            </td>
                         </tr>
                     </template>
                 </dokki-table>
