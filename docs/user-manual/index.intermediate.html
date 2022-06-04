@@ -1,18 +1,4 @@
 <!DOCTYPE html>
-<dokki>
-    <title>
-        VCS 2.5.0 &bull; User's manual
-    </title>
-    <topics>
-        ./md/introduction.md
-        ./md/faq.md
-        ./md/output-window.md
-        ./md/dialog-windows.md
-        ./md/mouse-controls.md
-        ./md/keyboard-controls.md
-        ./md/command-line-options.md
-    </topics>
-</dokki>
 <html>
     <head>
         <meta name="viewport" content="width=device-width">
@@ -25,7 +11,9 @@
         <script type="module">
             import {keyboardKey, keyCombo} from "./js/dokki-components/key-combo.js";
             import {menuPath} from "./js/dokki-components/menu-path.js";
-            window.dokkiUserComponents = [menuPath, keyboardKey, keyCombo];
+            import thsFeedbackLink from "https://www.tarpeeksihyvaesoft.com/blog/+assets/ths-feedback-link.js";
+            import feedbackForm from "https://www.tarpeeksihyvaesoft.com/feedback/feedback.js";
+            window.dokkiUserComponents = [menuPath, keyboardKey, keyCombo, thsFeedbackLink, feedbackForm];
         </script>
 
         <style>
@@ -140,4 +128,24 @@
             }
         </style>
     </head>
+    <body>
+        <ths-feedback></ths-feedback>
+        <template dokki-document>
+            <section title>
+                VCS 2.5.0 &bull; User's manual
+            </section>
+            <section widgets>
+                <ths-feedback-link/>
+            </section>
+            <section content>
+                ./md/introduction.md
+                ./md/faq.md
+                ./md/output-window.md
+                ./md/dialog-windows.md
+                ./md/mouse-controls.md
+                ./md/keyboard-controls.md
+                ./md/command-line-options.md
+            </section>
+        </template>
+    </body>
 </html>
