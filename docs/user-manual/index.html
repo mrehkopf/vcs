@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
     <head>
         <meta name="viewport" content="width=device-width">
@@ -12,7 +11,9 @@
         <script type="module">
             import {keyboardKey, keyCombo} from "./js/dokki-components/key-combo.js";
             import {menuPath} from "./js/dokki-components/menu-path.js";
-            window.dokkiUserComponents = [menuPath, keyboardKey, keyCombo];
+            import thsFeedbackLink from "https://www.tarpeeksihyvaesoft.com/blog/+assets/ths-feedback-link.js";
+            import feedbackForm from "https://www.tarpeeksihyvaesoft.com/feedback/feedback.js";
+            window.dokkiUserComponents = [menuPath, keyboardKey, keyCombo, thsFeedbackLink, feedbackForm];
         </script>
 
         <style>
@@ -127,22 +128,28 @@
             }
         </style>
     </head>
-<body>
+    <body>
+        <ths-feedback></ths-feedback>
+        
+    
             <template id="dokki-document">
                 <dokki-toolbar>
                     <template #caption>
                         
-        VCS 2.5.0 • User's manual
-    
+                VCS 2.5.0 • User's manual
+            
                     </template>
-                    
+                    <template #widgets>
+                <ths-feedback-link></ths-feedback-link>
+            </template>
                 </dokki-toolbar>
                 <dokki-topics>
                     <dokki-topic title='Introduction'>
 <p>VCS is a third-party capture tool for Datapath's VisionRGB range on capture hardware; developed especially for capturing retro PCs and consoles, whose dynamic, non-standard video signals aren't well supported by Datapath's default capture software.</p>
+<p>VCS is <a href="https://github.com/leikareipa/vcs">available on GitHub</a>.</p>
 <dokki-image src=https://www.tarpeeksihyvaesoft.com/soft/img/vcs/vcs-2.4-with-dialogs.png width=1189 height=878     ><template #caption>A screenshot of VCS 2.4, showing the capture window and some of the control dialogs</template>
                     </dokki-image>
-<dokki-subtopic title='Main program features'>
+<dokki-subtopic title='Program features'>
 <ul>
 <li>Capture functionality tailored for the Datapath VisionRGB series</li>
 <li>Supports both modern and legacy VisionRGB hardware</li>
@@ -153,7 +160,6 @@
 <li>On-screen display with HTML/CSS formatting</li>
 <li>Variable refresh rate output</li>
 <li>Minimal reliance on GPU features, runs well in virtual machines</li>
-<li>Open source (<a href="https://github.com/leikareipa/vcs">GitHub</a>)</li>
 </ul>
 </dokki-subtopic><dokki-subtopic title='Supported capture hardware'>
 <dokki-table headerless>
@@ -164,15 +170,27 @@
         </tr>
         <tr>
             <td>Datapath</td>
-            <td>VisionRGB-PRO1/PRO2</td>
+            <td>VisionRGB-PRO1</td>
         </tr>
         <tr>
             <td>Datapath</td>
-            <td>VisionRGB-E1/E2</td>
+            <td>VisionRGB-PRO2</td>
         </tr>
         <tr>
             <td>Datapath</td>
-            <td>VisionRGB-E1S/E2S</td>
+            <td>VisionRGB-E1</td>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-E2</td>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-E1S</td>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-E2S</td>
         </tr>
         <tr>
             <td>Datapath</td>
@@ -289,7 +307,7 @@
 </dokki-subtopic><dokki-subtopic title='Enabling variable refresh rate output'>
 <p>If you hardware supports variable refresh rate output with OpenGL, VCS should be able to take advantage of it.</p>
 <p>First, select the <menu-path>Context &gt; Window &gt; Renderer &gt; OpenGL</menu-path> menu option to enable OpenGL rendering, then press the <key-combo>F11</key-combo> key to enter fullscreen mode (see <a href="#faq-entering-fullscreen-mode">Entering fullscreen mode</a> for caveats). Your hardware's refresh rate should now be matched to the capture's refresh rate.</p>
-</dokki-subtopic><dokki-subtopic title='Fixing screen tearing'>
+</dokki-subtopic><dokki-subtopic title='Reducing screen tearing'>
 <p>With some capture sources (e.g. DOS-mode VGA), you may find the image susceptible to tearing. This kind of tearing is present in the output signal and doesn't result from the capture process – you'd see it even if you were viewing the output directly through a monitor.</p>
 <dokki-image src=./img/tr1-torn.png width=600 height=374     ><template #caption>Screen tearing in Tomb Raider (DOS)</template>
                     </dokki-image>
@@ -586,7 +604,81 @@
     </template>
 </dokki-table>
 </dokki-subtopic></dokki-topic><dokki-topic title='Dialog windows'>
-<dokki-subtopic title='Filter graph dialog'>
+<dokki-subtopic title='Alias resolutions dialog'>
+<p>This dialog can be accessed with <menu-path>Context &gt; Input &gt; Dialogs &gt; Aliases...</menu-path>.</p>
+<p>With the alias resolutions dialog, you can instruct VCS to automatically override certain capture resolutions.</p>
+<p>For instance, if you find that your capture device is displaying 640 × 400 as 512 × 488 (or something to that effect), you can define 640 × 400 as an alias of 512 × 488. Whenever the capture device reports a new video mode of 512 × 488, VCS will tell the device to use 640 × 400, instead.</p>
+</dokki-subtopic><dokki-subtopic title='Anti-tear dialog'>
+<p>This dialog can be accessed with <key-combo>Ctrl + A</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Anti-tear...</menu-path>.</p>
+<dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/anti-tear-dialog.png width=489 height=502     ><template #caption>A screenshot of the anti-tear dialog</template>
+                    </dokki-image>
+<p>The anti-tear dialog provides functionality to remove tearing from captured frames.</p>
+<p>Under some circumstances, like when the captured source doesn't sync its rendering with the refresh rate, captured frames can contain tearing. VCS's anti-tearer helps mitigate this issue.</p>
+<p>Anti-tearing should be considered an experimental feature of VCS. It works well in some cases and not that well in others. It'll completely fail to work if the captured source redraws the screen at a rate higher than the capture's refresh rate – e.g. a game running at 100 FPS with a refresh of 60 Hz.</p>
+<h3>Settings explained</h3>
+<dokki-table headerless>
+    <template #table>
+        <tr>
+            <th>Setting</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>Scan start</td>
+            <td>
+                Set where the anti-tearer begins scanning each frame for tears. Static screen-wide content like a game's UI bar can prevent the anti-tearing from working, so you should set this value so that such content is excluded. You can choose to visualize the scan range to help you set it up.
+            </td>
+        </tr>
+        <tr>
+            <td>Scan end</td>
+            <td>
+                Same as <strong>Scan start</strong> but for where the scanning should end. This is an offset from the bottom of the screen up, so e.g. a value of 5 at a resolution of 640 &times; 480 would mean the scanning ends at pixel row 475.
+            </td>
+        </tr>
+        <tr>
+            <td>Scan direction</td>
+            <td>
+                If the captured source redraws its screen from bottom to top, set the scan direction to <em>Down</em>. Otherwise, use the <em>Up</em> setting. Using the wrong direction will fully prevent the anti-tearing from working (it may correctly detect tears but won't be able to remove them).
+            </td>
+        </tr>
+        <tr>
+            <td>Scan hint</td>
+            <td>
+                If the captured source redraws its screen at a rate higher than half of its refresh rate but lower than the full refresh rate (e.g. 35 FPS at 60 Hz), you may (or might not) have better results and/or performance by setting this option to <em>Look for one tear per frame</em>. Otherwise, use the <em>Look for multiple tears per frame</em> setting.
+            </td>
+        </tr>
+        <tr>
+            <td>Visualization</td>
+            <td>
+                Draw certain anti-tearing-related markers in the <a href="#output-window">output window</a>.
+            </td>
+        </tr>
+        <tr>
+            <td>Threshold</td>
+            <td>
+                The anti-tearer compares adjacent frames to find which parts of the new frame may be torn (where pixels from the previous frame are still visible). This setting controls the amount by which a pixel's color values are allowed to change between frames without the pixel being considered new (given inherent noise in analog pixels). In an ideal situation where there's no noise in the captured signal, you can set this to 0 or close to it. Otherwise, the value should be high enough to exclude capture noise.
+            </td>
+        </tr>
+        <tr>
+            <td>Window size</td>
+            <td>
+                When scanning frames for tears, the anti-tearer will average together a bunch of horizontal pixels' color values to reduce the negative effect of analog noise. This setting controls the pixel size of the sampling window. Lower values will result in better performance but possibly worse tear detection.
+            </td>
+        </tr>
+        <tr>
+            <td>Step size</td>
+            <td>
+                The number of pixels to skip horizontally when scanning for tears. Higher values will improve performance but may cause a failure to detect subtler tears.
+            </td>
+        </tr>
+        <tr>
+            <td>Matches req'd</td>
+            <td>
+                Set how many times the sampling window must find a pixel's color values to have exceeded the detection threshold for a horizontal row of pixels to be considered new relative to the previous frame. Higher values should reduce the chance of false positives but may also cause a failure to detect subtler tears.
+            </td>
+        </tr>
+    </template>
+</dokki-table>
+</dokki-subtopic><dokki-subtopic title='Filter graph dialog'>
 <p>This dialog can be accessed with <key-combo>Ctrl + F</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Filter graph...</menu-path>.</p>
 <dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/filter-graph-dialog.png width=1187 height=556     ><template #caption>A screenshot of the filter graph dialog</template>
                     </dokki-image>
@@ -605,6 +697,13 @@
     </p>
 </dokki-tip>
 <p>To connect two nodes, click and drag with the left mouse button from one node's output edge (square) to another's input edge (circle), or vice versa. A node can be connected to as many other nodes as you like. To disconnect a node from another, right-click on the node's output edge, and select the other node from the list that pops up. To remove a node itself from the graph, right-click on the node and select to remove it. To add nodes to the graph, right-click on the graph's background to bring up the node menu, or select <menu-path>Filters</menu-path> from the dialog's menu bar.</p>
+</dokki-subtopic><dokki-subtopic title='Input resolution dialog'>
+<p>This dialog can be accessed with <key-combo>Ctrl + I</key-combo> or <menu-path>Context &gt; Capture &gt; Dialogs &gt; Resolution...</menu-path>.</p>
+<dokki-warning>
+    Not available on Linux.
+</dokki-warning>
+<p>Normally, the capture device will automatically set the capture resolution to match that of the input signal, but sometimes the result isn't quite right. The input resolution dialog lets you override this resolution with your own one.</p>
+<p>You can change a button's assigned resolution by clicking on it while pressing the Alt key.</p>
 </dokki-subtopic><dokki-subtopic title='Output resolution dialog'>
 <p>This dialog can be accessed with <key-combo>Ctrl + O</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Resolution...</menu-path>.</p>
 <p>The output resolution dialog lets you resize the <a href="#output-window">output window</a>. This also resizes the frames being displayed in the window.</p>
@@ -631,19 +730,20 @@
         </tr>
     </template>
 </dokki-table>
-</dokki-subtopic><dokki-subtopic title='Input resolution dialog'>
-<p>This dialog can be accessed with <key-combo>Ctrl + I</key-combo> or <menu-path>Context &gt; Capture &gt; Dialogs &gt; Resolution...</menu-path>.</p>
-<dokki-warning>
-    Not available on Linux.
-</dokki-warning>
-<p>Normally, the capture device will automatically set the capture resolution to match that of the input signal, but sometimes the result isn't quite right. The input resolution dialog lets you override this resolution with your own one.</p>
-<p>You can change a button's assigned resolution by clicking on it while pressing the Alt key.</p>
 </dokki-subtopic><dokki-subtopic title='Overlay dialog'>
 <p>This dialog can be accessed with <key-combo>Ctrl + L</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Overlay...</menu-path>.</p>
 <dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.3.0/overlay-dialog.png width=878 height=508     ><template #caption>A screenshot of the overlay dialog</template>
                     </dokki-image>
 <p>The overlay dialog lets you define a message to be overlaid on the <a href="#output-window">output window</a>.</p>
 <p>You can combine normal text with pre-set VCS variables and HTML/CSS formatting to create a message to be shown over the output window.</p>
+</dokki-subtopic><dokki-subtopic title='Video presets dialog'>
+<p>This dialog can be accessed with <key-combo>Ctrl + V</key-combo> or <menu-path>Context &gt; Input &gt; Dialogs &gt; Video presets...</menu-path>.</p>
+<dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/video-presets-dialog.png width=513 height=656     ><template #caption>A screenshot of the video presets dialog</template>
+                    </dokki-image>
+<p>The video presets dialog lets you to modify the capture devices's video signal parameters.</p>
+<p>A given video preset's parameters will be applied when all of its &quot;Activates with&quot; conditions are met. For instance, if you've defined a preset's activation resolution as 800 × 600 and have disabled the other activating conditions, the preset's parameters will be applied when the capture video mode is 800 × 600.</p>
+<p>To add or delete a preset, click the + or - buttons next to the preset selector at the top of the dialog. Clicking the + button while holding the Alt key will create a new preset with the current preset's settings.</p>
+<p>If you want your changes to the video presets to persist after you exit VCS, remember to save them first! This can be done via <menu-path>File &gt; Save as…</menu-path>. Saved settings can be restored via <menu-path>File &gt; Open…</menu-path>. Any saved settings that're open when VCS exits will be reloaded automatically when you run VCS again.</p>
 </dokki-subtopic><dokki-subtopic title='Video recorder dialog'>
 <p>This dialog can be accessed with <key-combo>Ctrl + R</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Video recorder...</menu-path>.</p>
 <dokki-warning>
@@ -736,88 +836,6 @@
 <p>Since VCS is largely a single-threaded program, dragging or otherwise interacting with its GUI items (e.g. dialog windows) during recording may cause transient frame drops even if your system is otherwise capable.</p>
 <p>During recording, frames are saved to disk in batches. If you get a bunch of frames droppede very couple of seconds but are fine otherwise, insufficient disk performance may be the reason. Optimizing the recorder's settings for a smaller file size should help, as would recording at a lower resolution (i.e. with a smaller-sized <a href="#output-window">output window</a>.</p>
 <p>If recording fails and you receive an error in the VCS console window to the tune of &quot;x264 [error]: malloc of size ░ failed&quot;, you may be running into a memory fragmentation issue (see <a href="https://github.com/leikareipa/vcs/issues/21">this issue report on GitHub</a>). VCS is a 32-bit program that, while recording video, shares its couple-gigabyte memory space with the x264 encoder, which may result in x264 being unable to allocate a large-enough contiguous block of memory for its own operation. You may be able to fix this issue either by selecting a <em>Preset</em> option closer to &quot;Ultrafast&quot;, reducing the recording resolution (i.e. the size of the output window), or decreasing the size of VCS's pre-allocated memory cache (see the <em>-m</em> <a href="#command-line-options">command-line option</a>).</p>
-</dokki-subtopic><dokki-subtopic title='Video presets dialog'>
-<p>This dialog can be accessed with <key-combo>Ctrl + V</key-combo> or <menu-path>Context &gt; Input &gt; Dialogs &gt; Video presets...</menu-path>.</p>
-<dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/video-presets-dialog.png width=513 height=656     ><template #caption>A screenshot of the video presets dialog</template>
-                    </dokki-image>
-<p>The video presets dialog lets you to modify the capture devices's video signal parameters.</p>
-<p>A given video preset's parameters will be applied when all of its &quot;Activates with&quot; conditions are met. For instance, if you've defined a preset's activation resolution as 800 × 600 and have disabled the other activating conditions, the preset's parameters will be applied when the capture video mode is 800 × 600.</p>
-<p>To add or delete a preset, click the + or - buttons next to the preset selector at the top of the dialog. Clicking the + button while holding the Alt key will create a new preset with the current preset's settings.</p>
-<p>If you want your changes to the video presets to persist after you exit VCS, remember to save them first! This can be done via <menu-path>File &gt; Save as…</menu-path>. Saved settings can be restored via <menu-path>File &gt; Open…</menu-path>. Any saved settings that're open when VCS exits will be reloaded automatically when you run VCS again.</p>
-</dokki-subtopic><dokki-subtopic title='Anti-tear dialog'>
-<p>This dialog can be accessed with <key-combo>Ctrl + A</key-combo> or <menu-path>Context &gt; Output &gt; Dialogs &gt; Anti-tear...</menu-path>.</p>
-<dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/anti-tear-dialog.png width=489 height=502     ><template #caption>A screenshot of the anti-tear dialog</template>
-                    </dokki-image>
-<p>The anti-tear dialog provides functionality to remove tearing from captured frames.</p>
-<p>Under some circumstances, like when the captured source doesn't sync its rendering with the refresh rate, captured frames can contain tearing. VCS's anti-tearer helps mitigate this issue.</p>
-<p>Anti-tearing should be considered an experimental feature of VCS. It works well in some cases and not that well in others. It'll completely fail to work if the captured source redraws the screen at a rate higher than the capture's refresh rate – e.g. a game running at 100 FPS with a refresh of 60 Hz.</p>
-<h3>Settings explained</h3>
-<dokki-table headerless>
-    <template #table>
-        <tr>
-            <th>Setting</th>
-            <th>Description</th>
-        </tr>
-        <tr>
-            <td>Scan start</td>
-            <td>
-                Set where the anti-tearer begins scanning each frame for tears. Static screen-wide content like a game's UI bar can prevent the anti-tearing from working, so you should set this value so that such content is excluded. You can choose to visualize the scan range to help you set it up.
-            </td>
-        </tr>
-        <tr>
-            <td>Scan end</td>
-            <td>
-                Same as <strong>Scan start</strong> but for where the scanning should end. This is an offset from the bottom of the screen up, so e.g. a value of 5 at a resolution of 640 &times; 480 would mean the scanning ends at pixel row 475.
-            </td>
-        </tr>
-        <tr>
-            <td>Scan direction</td>
-            <td>
-                If the captured source redraws its screen from bottom to top, set the scan direction to <em>Down</em>. Otherwise, use the <em>Up</em> setting. Using the wrong direction will fully prevent the anti-tearing from working (it may correctly detect tears but won't be able to remove them).
-            </td>
-        </tr>
-        <tr>
-            <td>Scan hint</td>
-            <td>
-                If the captured source redraws its screen at a rate higher than half of its refresh rate but lower than the full refresh rate (e.g. 35 FPS at 60 Hz), you may (or might not) have better results and/or performance by setting this option to <em>Look for one tear per frame</em>. Otherwise, use the <em>Look for multiple tears per frame</em> setting.
-            </td>
-        </tr>
-        <tr>
-            <td>Visualization</td>
-            <td>
-                Draw certain anti-tearing-related markers in the <a href="#output-window">output window</a>.
-            </td>
-        </tr>
-        <tr>
-            <td>Threshold</td>
-            <td>
-                The anti-tearer compares adjacent frames to find which parts of the new frame may be torn (where pixels from the previous frame are still visible). This setting controls the amount by which a pixel's color values are allowed to change between frames without the pixel being considered new (given inherent noise in analog pixels). In an ideal situation where there's no noise in the captured signal, you can set this to 0 or close to it. Otherwise, the value should be high enough to exclude capture noise.
-            </td>
-        </tr>
-        <tr>
-            <td>Window size</td>
-            <td>
-                When scanning frames for tears, the anti-tearer will average together a bunch of horizontal pixels' color values to reduce the negative effect of analog noise. This setting controls the pixel size of the sampling window. Lower values will result in better performance but possibly worse tear detection.
-            </td>
-        </tr>
-        <tr>
-            <td>Step size</td>
-            <td>
-                The number of pixels to skip horizontally when scanning for tears. Higher values will improve performance but may cause a failure to detect subtler tears.
-            </td>
-        </tr>
-        <tr>
-            <td>Matches req'd</td>
-            <td>
-                Set how many times the sampling window must find a pixel's color values to have exceeded the detection threshold for a horizontal row of pixels to be considered new relative to the previous frame. Higher values should reduce the chance of false positives but may also cause a failure to detect subtler tears.
-            </td>
-        </tr>
-    </template>
-</dokki-table>
-</dokki-subtopic><dokki-subtopic title='Alias resolutions dialog'>
-<p>This dialog can be accessed with <menu-path>Context &gt; Input &gt; Dialogs &gt; Aliases...</menu-path>.</p>
-<p>With the alias resolutions dialog, you can instruct VCS to automatically override certain capture resolutions.</p>
-<p>For instance, if you find that your capture device is displaying 640 × 400 as 512 × 488 (or something to that effect), you can define 640 × 400 as an alias of 512 × 488. Whenever the capture device reports a new video mode of 512 × 488, VCS will tell the device to use 640 × 400, instead.</p>
 </dokki-subtopic></dokki-topic><dokki-topic title='Mouse controls'>
 <dokki-table headerless>
     <template #table>
@@ -943,4 +961,5 @@
 </dokki-topic>
                 </dokki-topics>
             </template>
-        </body></html>
+        </body>
+</html>

@@ -64,7 +64,7 @@ If you hardware supports variable refresh rate output with OpenGL, VCS should be
 
 First, select the <menu-path>Context > Window > Renderer > OpenGL</menu-path> menu option to enable OpenGL rendering, then press the <key-combo>F11</key-combo> key to enter fullscreen mode (see [Entering fullscreen mode](#faq-entering-fullscreen-mode) for caveats). Your hardware's refresh rate should now be matched to the capture's refresh rate.
 
-## Fixing screen tearing
+## Reducing screen tearing
 
 With some capture sources (e.g. DOS-mode VGA), you may find the image susceptible to tearing. This kind of tearing is present in the output signal and doesn't result from the capture process &ndash; you'd see it even if you were viewing the output directly through a monitor.
 

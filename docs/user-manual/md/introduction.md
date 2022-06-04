@@ -2,10 +2,12 @@
 
 VCS is a third-party capture tool for Datapath's VisionRGB range on capture hardware; developed especially for capturing retro PCs and consoles, whose dynamic, non-standard video signals aren't well supported by Datapath's default capture software.
 
+VCS is [available on GitHub](https://github.com/leikareipa/vcs).
+
 > A screenshot of VCS 2.4, showing the capture window and some of the control dialogs
 ![{image:1189x878}](https://www.tarpeeksihyvaesoft.com/soft/img/vcs/vcs-2.4-with-dialogs.png)
 
-## Main program features
+## Program features
 
 - Capture functionality tailored for the Datapath VisionRGB series
 - Supports both modern and legacy VisionRGB hardware
@@ -16,7 +18,6 @@ VCS is a third-party capture tool for Datapath's VisionRGB range on capture hard
 - On-screen display with HTML/CSS formatting
 - Variable refresh rate output
 - Minimal reliance on GPU features, runs well in virtual machines
-- Open source ([GitHub](https://github.com/leikareipa/vcs))
 
 ## Supported capture hardware
 
@@ -28,15 +29,27 @@ VCS is a third-party capture tool for Datapath's VisionRGB range on capture hard
         </tr>
         <tr>
             <td>Datapath</td>
-            <td>VisionRGB-PRO1/PRO2</td>
+            <td>VisionRGB-PRO1</td>
         </tr>
         <tr>
             <td>Datapath</td>
-            <td>VisionRGB-E1/E2</td>
+            <td>VisionRGB-PRO2</td>
         </tr>
         <tr>
             <td>Datapath</td>
-            <td>VisionRGB-E1S/E2S</td>
+            <td>VisionRGB-E1</td>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-E2</td>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-E1S</td>
+        </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionRGB-E2S</td>
         </tr>
         <tr>
             <td>Datapath</td>
