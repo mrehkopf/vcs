@@ -171,7 +171,7 @@ bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
             {
                 this->captureStatus.refreshRate = LATEST_REFRESH_RATE = currentRefreshRate;
                 this->captureStatus.resolution = LATEST_RESOLUTION = {format.fmt.pix.width, format.fmt.pix.height, 32};
-                return false;
+                return true;
             }
         }
     }
