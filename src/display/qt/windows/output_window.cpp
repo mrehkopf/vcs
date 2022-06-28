@@ -279,9 +279,6 @@ MainWindow::MainWindow(QWidget *parent) :
             #if CAPTURE_DEVICE_VISION_V4L
                 aliases->setEnabled(false);
                 INFO(("Aliases are not supported with Video4Linux."));
-
-                resolution->setEnabled(false);
-                INFO(("Custom input resolutions are not supported with Video4Linux."));
             #endif
 
             connect(signal, &QAction::triggered, this, [=]{this->signalDlg->open();});

@@ -50,6 +50,11 @@ static unsigned CUR_INPUT_CHANNEL_IDX = 0;
 // channel's value.
 static unsigned NUM_MISSED_FRAMES = 0;
 
+static bool reset_input_channel(void)
+{
+    return kc_set_capture_input_channel(kc_get_device_input_channel_idx());
+}
+
 capture_event_e kc_pop_capture_event_queue(void)
 {
     if (!CUR_INPUT_CHANNEL)
@@ -65,7 +70,7 @@ capture_event_e kc_pop_capture_event_queue(void)
     else if (CUR_INPUT_CHANNEL->pop_capture_event(capture_event_e::new_video_mode))
     {
         // Re-create the input channel for the new video mode.
-        kc_set_capture_input_channel(CUR_INPUT_CHANNEL_IDX);
+        reset_input_channel();
 
         return capture_event_e::none;
     }
@@ -108,16 +113,22 @@ resolution_s kc_get_capture_resolution(void)
 resolution_s kc_get_device_minimum_resolution(void)
 {
     /// TODO: Query actual hardware parameters for this.
-    return resolution_s{MIN_OUTPUT_WIDTH, MIN_OUTPUT_HEIGHT, 32};
+    return resolution_s{
+        MIN_OUTPUT_WIDTH,
+        MIN_OUTPUT_HEIGHT,
+        32
+    };
 }
 
 resolution_s kc_get_device_maximum_resolution(void)
 {
     /// TODO: Query actual hardware parameters for this.
 
-    return resolution_s{std::min(2048u, MAX_CAPTURE_WIDTH),
-                        std::min(1536u, MAX_CAPTURE_HEIGHT),
-                        std::min(32u, MAX_CAPTURE_BPP)};
+    return resolution_s{
+        std::min(2048u, MAX_CAPTURE_WIDTH),
+        std::min(1536u, MAX_CAPTURE_HEIGHT),
+        std::min(32u, MAX_CAPTURE_BPP)
+    };
 }
 
 refresh_rate_s kc_get_capture_refresh_rate(void)
@@ -250,7 +261,7 @@ int kc_get_device_maximum_input_count(void)
 
     // Returns true if the given V4L capabilities appear to indicate a Vision
     // capture device.
-    const auto is_vision_capture_device = [](const v4l2_capability *const caps) 
+    const auto is_vision_capture_device = [](const v4l2_capability *const caps)
     {
         const bool usesVisionDriver = (strcmp((const char*)caps->driver, "Vision") == 0);
         const bool isVisionControlDevice = (strcmp((const char*)caps->card, "Vision Control") == 0);
@@ -261,12 +272,12 @@ int kc_get_device_maximum_input_count(void)
     /// TODO: Make sure we only count inputs on the capture card that we're
     /// currently capturing on, rather than tallying up the number of inputs on
     /// all the Vision capture cards on the system.
-    for (int i = 0; i < 64; i++) 
+    for (int i = 0; i < 64; i++)
     {
-        v4l2_capability deviceCaps; 
+        v4l2_capability deviceCaps;
 
         const int deviceFile = open((baseDevicePath + std::to_string(i)).c_str(), O_RDONLY);
-        
+
         if (deviceFile < 0)
         {
             continue;
@@ -280,7 +291,7 @@ int kc_get_device_maximum_input_count(void)
 
         close(deviceFile);
     }
-    
+
     return numInputs;
 }
 
@@ -497,6 +508,53 @@ std::string kc_get_device_api_name(void)
     return "Vision/Video4Linux";
 }
 
+bool kc_set_capture_resolution(const resolution_s &r)
+{
+    k_assert(CUR_INPUT_CHANNEL, "Attempting to set the capture resolution on a null input channel.");
+
+    // Validate the resolution.
+    {
+        const auto minRes = kc_get_device_minimum_resolution();
+        const auto maxRes = kc_get_device_maximum_resolution();
+
+        if (
+            (r.w < minRes.w) ||
+            (r.w > maxRes.w) ||
+            (r.h < minRes.h) ||
+            (r.h > maxRes.h)
+        ){
+            NBENE(("Failed to set the capture resolution: resolution out of bounds"));
+            goto fail;
+        }
+    }
+
+    // Set the resolution.
+    {
+        struct v4l2_control control = {0};
+
+        control.id = RGB133_V4L2_CID_HOR_TIME;
+        control.value = r.w;
+        if (!CUR_INPUT_CHANNEL->device_ioctl(VIDIOC_S_CTRL, &control))
+        {
+            NBENE(("Failed to set the capture resolution: device error when setting width."));
+            return false;
+        }
+
+        control.id = RGB133_V4L2_CID_VER_TIME;
+        control.value = r.h;
+        if (!CUR_INPUT_CHANNEL->device_ioctl(VIDIOC_S_CTRL, &control))
+        {
+            NBENE(("Failed to set the capture resolution: device error when setting height."));
+            goto fail;
+        }
+    }
+
+    return true;
+
+    fail:
+    return false;
+}
+
 /// TODO: Implement.
 bool kc_set_capture_pixel_format(const capture_pixel_format_e pf)
 {
@@ -528,9 +586,11 @@ bool kc_set_capture_input_channel(const unsigned idx)
         delete CUR_INPUT_CHANNEL;
     }
 
-    CUR_INPUT_CHANNEL = new input_channel_v4l_c((std::string("/dev/video") + std::to_string(idx)),
-                                                3,
-                                                &FRAME_BUFFER);
+    CUR_INPUT_CHANNEL = new input_channel_v4l_c(
+        (std::string("/dev/video") + std::to_string(idx)),
+        3,
+        &FRAME_BUFFER
+    );
 
     CUR_INPUT_CHANNEL_IDX = idx;
 

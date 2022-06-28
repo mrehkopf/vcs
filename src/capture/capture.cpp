@@ -70,11 +70,6 @@ video_mode_s kc_get_capture_video_mode(void)
 
 bool kc_force_capture_resolution(const resolution_s &r)
 {
-    #if CAPTURE_DEVICE_VISION_V4L
-        NBENE(("Custom input resolutions are not supported with Video4Linux."));
-        return false;
-    #endif
-
     const resolution_s min = kc_get_device_minimum_resolution();
     const resolution_s max = kc_get_device_maximum_resolution();
 
