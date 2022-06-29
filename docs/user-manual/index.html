@@ -12,24 +12,21 @@
             import {keyboardKey, keyCombo} from "./js/dokki-components/key-combo.js";
             import {menuPath} from "./js/dokki-components/menu-path.js";
             import thsFeedbackLink from "https://www.tarpeeksihyvaesoft.com/blog/+assets/ths-feedback-link.js";
+            import thsFeedbackInlineButton from "https://www.tarpeeksihyvaesoft.com/blog/+assets/ths-feedback-inline-button.js";
             import feedbackForm from "https://www.tarpeeksihyvaesoft.com/feedback/feedback.js";
-            window.dokkiUserComponents = [menuPath, keyboardKey, keyCombo, thsFeedbackLink, feedbackForm];
+            window.dokkiUserComponents = [menuPath, keyboardKey, keyCombo, thsFeedbackLink, thsFeedbackInlineButton, feedbackForm];
         </script>
 
         <style>
             .dokki-topic .menu-path,
             .dokki-topic .key-combo
             {
-                padding: 0 6px;
+                padding: 1px 5px;
                 border-radius: 3px;
-                margin: 2px 0;
                 white-space: nowrap;
                 display: inline-flex;
                 align-items: center;
-                border: 1px solid var(--dokkiCSS-page-inert-fg-color);
-                box-shadow: -1px 1px 0 var(--dokkiCSS-page-inert-fg-color);
-                margin-left: 1px;
-                transform: translateY(-1px);
+                background-color: var(--dokkiCSS-embedded-auxiliary-color);
             }
 
             .dokki-topic td:first-child > .menu-path:first-child,
@@ -126,6 +123,23 @@
             {
                 line-height: 1;
             }
+
+            .dokki-topic .ths-inline-feedback-button
+            {
+                border-radius: 4px;
+                white-space: nowrap;
+                cursor: pointer;
+                padding: 1px 4px;
+                background-image: linear-gradient(rgb(240, 116, 213), rgb(163, 12, 191));
+                color: white;
+                display: inline-block;
+                font-size: 90%;
+            }
+
+            .dokki-topic .ths-inline-feedback-button:hover
+            {
+                text-decoration: none;
+            }
         </style>
     </head>
     <body>
@@ -144,9 +158,10 @@
             </template>
                 </dokki-toolbar>
                 <dokki-topics>
-                    <dokki-topic title='Introduction'>
-<p>VCS is a third-party capture tool for Datapath's VisionRGB range on capture hardware; developed especially for capturing retro PCs and consoles, whose dynamic, non-standard video signals aren't well supported by Datapath's default capture software.</p>
-<p>VCS is <a href="https://github.com/leikareipa/vcs">available on GitHub</a>.</p>
+                    
+<dokki-topic title='Introduction'>
+<p>VCS is a third-party capture tool by <a href="https://www.tarpeeksihyvaesoft.com">Tarpeeksi Hyvae Soft</a> for Datapath's VisionRGB range on capture hardware; developed especially for capturing retro PCs and consoles, whose dynamic, non-standard video signals aren't well supported by Datapath's default capture software.</p>
+<p>VCS is <a href="https://github.com/leikareipa/vcs">available on GitHub</a>. You can also <ths-inline-feedback-button> send direct feedback</ths-inline-feedback-button>.</p>
 <dokki-image src=https://www.tarpeeksihyvaesoft.com/soft/img/vcs/vcs-2.4-with-dialogs.png width=1189 height=878     ><template #caption>A screenshot of VCS 2.4, showing the capture window and some of the control dialogs</template>
                     </dokki-image>
 <dokki-subtopic title='Program features'>
@@ -267,13 +282,16 @@
             <td>
                 <ul>
                     <li>The Datapath capture card driver must be installed</li>
-                    <li>On Linux, the legacy OpenCV 3.2.0 library must be installed</li>
+                    <li>On Linux, OpenCV 3.2.0 and Qt 5 must be installed</li>
                 </ul>
             </td>
         </tr>
     </template>
 </dokki-table>
-</dokki-subtopic></dokki-topic><dokki-topic title='FAQ'>
+</dokki-subtopic></dokki-topic>
+
+<dokki-topic title='FAQ'>
+<p>In this section, you'll find answers to some of the common questions and problems that one might have when using VCS.</p>
 <dokki-subtopic title='Getting started'>
 <p>A download for the latest Windows version of VCS is <a href="https://github.com/leikareipa/vcs/releases">available on GitHub</a>. For Linux, you can grab the <a href="https://github.com/leikareipa/vcs/">VCS source code</a> and compile it for your platform.</p>
 <p>Assuming you've already installed the drivers for your capture device, simply run <em>vcs.exe</em> to get started with VCS.</p>
@@ -314,7 +332,9 @@
 <p>To reduce or even eliminate tearing of this sort, VCS provides anti-tearing functionality. See <a href="dialog-windows-anti-tear-dialog">Anti-tear dialog</a> for more information.</p>
 <dokki-video platform="youtube" src=_gNywFJFRWo     ><template #caption>Before (left) and after (right) applying VCS's anti-tearing</template>
                     </dokki-video>
-</dokki-subtopic></dokki-topic><dokki-topic title='Output window'>
+</dokki-subtopic></dokki-topic>
+
+<dokki-topic title='Output window'>
 <p>The central point of the VCS user interface is the output window, where captured frames are displayed as they arrive from the capture device and having undergone any of VCS's filtering and scaling.</p>
 <dokki-image src=https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.3.0/output-window.png width=642 height=508     ><template #caption>A screenshot of the output window</template>
                     </dokki-image>
@@ -603,7 +623,9 @@
         </tr>
     </template>
 </dokki-table>
-</dokki-subtopic></dokki-topic><dokki-topic title='Dialog windows'>
+</dokki-subtopic></dokki-topic>
+
+<dokki-topic title='Dialog windows'>
 <dokki-subtopic title='Alias resolutions dialog'>
 <p>This dialog can be accessed with <menu-path>Context &gt; Input &gt; Dialogs &gt; Aliases...</menu-path>.</p>
 <p>With the alias resolutions dialog, you can instruct VCS to automatically override certain capture resolutions.</p>
@@ -699,9 +721,6 @@
 <p>To connect two nodes, click and drag with the left mouse button from one node's output edge (square) to another's input edge (circle), or vice versa. A node can be connected to as many other nodes as you like. To disconnect a node from another, right-click on the node's output edge, and select the other node from the list that pops up. To remove a node itself from the graph, right-click on the node and select to remove it. To add nodes to the graph, right-click on the graph's background to bring up the node menu, or select <menu-path>Filters</menu-path> from the dialog's menu bar.</p>
 </dokki-subtopic><dokki-subtopic title='Input resolution dialog'>
 <p>This dialog can be accessed with <key-combo>Ctrl + I</key-combo> or <menu-path>Context &gt; Capture &gt; Dialogs &gt; Resolution...</menu-path>.</p>
-<dokki-warning>
-    Not available on Linux.
-</dokki-warning>
 <p>Normally, the capture device will automatically set the capture resolution to match that of the input signal, but sometimes the result isn't quite right. The input resolution dialog lets you override this resolution with your own one.</p>
 <p>You can change a button's assigned resolution by clicking on it while pressing the Alt key.</p>
 </dokki-subtopic><dokki-subtopic title='Output resolution dialog'>
@@ -836,7 +855,9 @@
 <p>Since VCS is largely a single-threaded program, dragging or otherwise interacting with its GUI items (e.g. dialog windows) during recording may cause transient frame drops even if your system is otherwise capable.</p>
 <p>During recording, frames are saved to disk in batches. If you get a bunch of frames droppede very couple of seconds but are fine otherwise, insufficient disk performance may be the reason. Optimizing the recorder's settings for a smaller file size should help, as would recording at a lower resolution (i.e. with a smaller-sized <a href="#output-window">output window</a>.</p>
 <p>If recording fails and you receive an error in the VCS console window to the tune of &quot;x264 [error]: malloc of size ░ failed&quot;, you may be running into a memory fragmentation issue (see <a href="https://github.com/leikareipa/vcs/issues/21">this issue report on GitHub</a>). VCS is a 32-bit program that, while recording video, shares its couple-gigabyte memory space with the x264 encoder, which may result in x264 being unable to allocate a large-enough contiguous block of memory for its own operation. You may be able to fix this issue either by selecting a <em>Preset</em> option closer to &quot;Ultrafast&quot;, reducing the recording resolution (i.e. the size of the output window), or decreasing the size of VCS's pre-allocated memory cache (see the <em>-m</em> <a href="#command-line-options">command-line option</a>).</p>
-</dokki-subtopic></dokki-topic><dokki-topic title='Mouse controls'>
+</dokki-subtopic></dokki-topic>
+
+<dokki-topic title='Mouse controls'>
 <dokki-table headerless>
     <template #table>
         <tr>
@@ -865,7 +886,9 @@
         </tr>
     </template>
 </dokki-table>
-</dokki-topic><dokki-topic title='Keyboard controls'>
+</dokki-topic>
+
+<dokki-topic title='Keyboard controls'>
 <dokki-table headerless>
     <template #table>
         <tr>
@@ -919,7 +942,9 @@
         </tr>
     </template>
 </dokki-table>
-</dokki-topic><dokki-topic title='Command-line options'>
+</dokki-topic>
+
+<dokki-topic title='Command-line options'>
 <dokki-table headerless>
     <template #table>
         <tr>
@@ -959,6 +984,7 @@
     </template>
 </dokki-table>
 </dokki-topic>
+
                 </dokki-topics>
             </template>
         </body>

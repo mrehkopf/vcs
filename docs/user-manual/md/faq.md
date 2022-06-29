@@ -1,5 +1,7 @@
 # FAQ
 
+In this section, you'll find answers to some of the common questions and problems that one might have when using VCS.
+
 ## Getting started
 
 A download for the latest Windows version of VCS is [available on GitHub](https://github.com/leikareipa/vcs/releases). For Linux, you can grab the [VCS source code](https://github.com/leikareipa/vcs/) and compile it for your platform.
