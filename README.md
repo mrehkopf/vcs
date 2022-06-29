@@ -34,7 +34,7 @@ The VisionAV range of cards should also work, albeit without their audio capture
 ## Manuals
 
 - [User's manual](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/)
-- [Developer's manual](https://www.tarpeeksihyvaesoft.com/vcs/devdocs/)
+- [Developer's manual](https://www.tarpeeksihyvaesoft.com/vcs/docs/developer-manual/)
 
 ## Building
 

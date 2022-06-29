@@ -1,7 +1,7 @@
 # VCS Developer Docs
 VCS comes with work-in-progress documentation in the Doxygen format.
 
-Pre-built docs are hosted [here](https://www.tarpeeksihyvaesoft.com/vcs/devdocs/).
+Pre-built docs are hosted [here](https://www.tarpeeksihyvaesoft.com/vcs/docs/developer-manual/).
 
 To build the documentation yourself:
 
