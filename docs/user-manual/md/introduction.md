@@ -2,11 +2,10 @@
 
 VCS is a third-party capture tool by [Tarpeeksi Hyvae Soft](https://www.tarpeeksihyvaesoft.com) for Datapath's VisionRGB range on capture hardware; developed especially for capturing retro PCs and consoles, whose dynamic, non-standard video signals aren't well supported by Datapath's default capture software.
 
-VCS is [available on GitHub](https://github.com/leikareipa/vcs). You can also <ths-inline-feedback-button> send direct feedback</ths-inline-feedback-button>.
+VCS is [available on GitHub](https://github.com/leikareipa/vcs). You can also <ths-inline-feedback-button>send direct feedback</ths-inline-feedback-button>.
 
-> A screenshot of VCS 2.4, showing the capture window and some of the control dialogs
-![{image:1189x878}](https://www.tarpeeksihyvaesoft.com/soft/img/vcs/vcs-2.4-with-dialogs.png)
-
+> A screenshot of VCS 2.4 showing the capture window and some of the control dialogs
+![{image:1189x878}{headerless}](https://www.tarpeeksihyvaesoft.com/soft/img/vcs/vcs-2.4-with-dialogs.png)
 
 ## Program features
 
@@ -128,8 +127,8 @@ VCS is [available on GitHub](https://github.com/leikareipa/vcs). You can also <t
             <th>Other</th>
             <td>
                 <ul>
-                    <li>The Datapath capture card driver must be installed</li>
-                    <li>On Linux, OpenCV 3.2.0 and Qt 5 must be installed</li>
+                    <li>The Datapath capture card driver must be installed.</li>
+                    <li>On Linux, OpenCV 3.2.0 and Qt 5 must be installed.</li>
                 </ul>
             </td>
         </tr>

@@ -3,7 +3,7 @@
 The central point of the VCS user interface is the output window, where captured frames are displayed as they arrive from the capture device and having undergone any of VCS's filtering and scaling.
 
 > A screenshot of the output window
-![{image:642x508}](https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.3.0/output-window.png)
+![{image:642x508}{headerless}](https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.3.0/output-window.png)
 
 ## Features
 
@@ -40,7 +40,7 @@ Although you can emulate a fullscreen mode by turning off the output window's bo
 The output window's title bar shows information about VCS's current operating state &ndash; for example, the input and output resolution.
 
 > A sample of the output window's title bar on Linux
-![{image:479x25}](./img/title-bar.png)
+![{image:479x25}{headerless}](./img/title-bar.png)
 
 The title bar may contain some or all of the following elements, from left to right:
 
@@ -63,7 +63,7 @@ The title bar may contain some or all of the following elements, from left to ri
             </td>
         </tr>
         <tr>
-            <td>- RFOA -</td>
+            <td>RFOA</td>
             <td class="with-inline-table">
                 <dokki-table>
                     <template #table>
@@ -156,9 +156,6 @@ The eye dropper is a special non-interactible element of the context menu. It sh
 The input menu lets you customize various operational parameters of the capture device. The menu provides the following options:
 
 <dokki-table headerless>
-    <template #caption>
-        The input menu's sub-menus
-    </template>
     <template #table>
         <tr>
             <th>Option</th>
@@ -190,9 +187,6 @@ The input menu lets you customize various operational parameters of the capture 
 The output menu lets you customize the way in which VCS processes captured frames prior to display in the [output window](#output-window). The menu provides the following options:
 
 <dokki-table headerless>
-    <template #caption>
-        The output menu's sub-menus
-    </template>
     <template #table>
         <tr>
             <th>Option</th>
@@ -255,9 +249,6 @@ The output menu lets you customize the way in which VCS processes captured frame
 The window menu lets you customize various properties of the [output window](#output-window). The menu provides the following options:
 
 <dokki-table headerless>
-    <template #caption>
-        The window menu's sub-menus
-    </template>
     <template #table>
         <tr>
             <th>Option</th>

@@ -21,12 +21,36 @@
             .dokki-topic .menu-path,
             .dokki-topic .key-combo
             {
-                padding: 1px 5px;
                 border-radius: 3px;
-                white-space: nowrap;
+                margin: 2px 1px;
                 display: inline-flex;
-                align-items: center;
-                background-color: var(--dokkiCSS-embedded-auxiliary-color);
+                align-items: baseline;
+                border: 1px solid var(--dokkiCSS-page-primary-line-color);
+            }
+
+            .dokki-topic .key-combo > .icon,
+            .dokki-topic .key-combo > .path,
+            .dokki-topic .menu-path > .icon,
+            .dokki-topic .menu-path > .path
+            {
+                padding: 0.12em 0.5em;
+            }
+
+            .dokki-topic .key-combo > .icon,
+            .dokki-topic .menu-path > .icon
+            {
+                padding-right: 0;
+            }
+
+            .dokki-topic .key-combo .separator,
+            .dokki-topic .menu-path .separator
+            {
+                color: var(--dokkiCSS-page-inert-fg-color);
+            }
+
+            .dokki-topic .menu-path .separator
+            {
+                margin: 0 0.6em;
             }
 
             .dokki-topic td:first-child > .menu-path:first-child,
@@ -38,15 +62,17 @@
                 margin-left: 2px;
             }
 
-            .dokki-topic strong
-            {
-                font-weight: var(--dokkiCSS-bold-text-weight);
-            }
-
             .dokki-topic em
             {
-                font-style: inherit;
-                background-color: var(--vcs-highlight-color);
+                font-style: italic;
+                background-color: var(--dokkiCSS-embedded-auxiliary-color);
+                border-radius: 4px;
+                padding: 1px 4px;
+                font-weight: normal !important;
+            }
+
+            .dokki-topic strong
+            {
                 font-weight: var(--dokkiCSS-bold-text-weight);
             }
 
@@ -63,12 +89,6 @@
             .dokki-topic td > .key-combo
             {
                 margin: 0;
-            }
-
-            .dokki-topic .keyboard-key:not(:last-child)::after
-            {
-                content: "+";
-                margin: 0 0.125em;
             }
 
             .dokki-topic table.wrap-last-td td:last-child
@@ -97,6 +117,7 @@
             {
                 padding: 8px;
                 line-height: var(--dokkiCSS-content-line-height);
+                box-shadow: none;
             }
 
             .dokki-table td.with-inline-table > .dokki-table > header > .dokki0-expansion-indicator
@@ -126,19 +147,13 @@
 
             .dokki-topic .ths-inline-feedback-button
             {
-                border-radius: 4px;
-                white-space: nowrap;
                 cursor: pointer;
-                padding: 1px 4px;
-                background-image: linear-gradient(rgb(240, 116, 213), rgb(163, 12, 191));
-                color: white;
-                display: inline-block;
-                font-size: 90%;
             }
 
-            .dokki-topic .ths-inline-feedback-button:hover
+            .dokki-topic h1 > .idx,
+            .dokki-topic h2 > .idx
             {
-                text-decoration: none;
+                display: initial !important;
             }
         </style>
     </head>

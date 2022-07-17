@@ -21,13 +21,27 @@ export const keyCombo = {
     template: `
     <span class="key-combo">
 
-        <i class="fas fa-keyboard fa-sm" style="margin-right: 0.3em"/>
+        <span class="icon">
+        
+            <i class="fas fa-keyboard fa-sm"/>
+            
+        </span>
 
-        <keyboard-key v-for="key in keys" :key="key">
+        <span class="path">
 
-            {{key}}
+            <keyboard-key v-for="(key, idx) in keys" :key="key">
 
-        </keyboard-key>
+                {{key}}
+
+                <span v-if="idx < (keys.length - 1)" class="separator">
+
+                    +
+
+                </span>
+
+            </keyboard-key>
+
+        </span>
         
     </span>
     `,

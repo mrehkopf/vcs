@@ -13,7 +13,7 @@ For instance, if you find that your capture device is displaying 640 &times; 400
 This dialog can be accessed with <key-combo>Ctrl + A</key-combo> or <menu-path>Context > Output > Dialogs > Anti-tear...</menu-path>.
 
 > A screenshot of the anti-tear dialog
-![{image:489x502}](https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/anti-tear-dialog.png)
+![{image:489x502}{headerless}](https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/anti-tear-dialog.png)
 
 The anti-tear dialog provides functionality to remove tearing from captured frames.
 
@@ -91,7 +91,7 @@ Anti-tearing should be considered an experimental feature of VCS. It works well 
 This dialog can be accessed with <key-combo>Ctrl + F</key-combo> or <menu-path>Context > Output > Dialogs > Filter graph...</menu-path>.
 
 > A screenshot of the filter graph dialog
-![{image:1187x556}](https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/filter-graph-dialog.png)
+![{image:1187x556}{headerless}](https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/filter-graph-dialog.png)
 
 The filter graph dialog lets you to create chains of image filters to be applied to captured frames prior to display in the [output window](#output-window).
 
@@ -157,7 +157,7 @@ The output resolution dialog lets you resize the [output window](#output-window)
 This dialog can be accessed with <key-combo>Ctrl + L</key-combo> or <menu-path>Context > Output > Dialogs > Overlay...</menu-path>.
 
 > A screenshot of the overlay dialog
-![{image:878x508}](https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.3.0/overlay-dialog.png)
+![{image:878x508}{headerless}](https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.3.0/overlay-dialog.png)
 
 The overlay dialog lets you define a message to be overlaid on the [output window](#output-window).
 
@@ -168,7 +168,7 @@ You can combine normal text with pre-set VCS variables and HTML/CSS formatting t
 This dialog can be accessed with <key-combo>Ctrl + V</key-combo> or <menu-path>Context > Input > Dialogs > Video presets...</menu-path>.
 
 > A screenshot of the video presets dialog
-![{image:513x656}](https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/video-presets-dialog.png)
+![{image:513x656}{headerless}](https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.4.0/video-presets-dialog.png)
 
 The video presets dialog lets you to modify the capture devices's video signal parameters.
 

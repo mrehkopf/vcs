@@ -12,21 +12,36 @@ export const menuPath = {
     template: `
     <span class="menu-path">
 
-        <i class="fas fa-mouse-pointer fa-sm" style="margin-right: 0.3em"/>
+        <span class="icon">
+        
+            <i class="fas fa-mouse-pointer fa-sm"/>
+        
+        </span>
 
-        <span v-for="(crumb, idx) in crumbs" :key="crumb">
+        <span class="path">
 
-            <span v-if="crumb == 'Context'">
-                <a href="#output-window-context-menu">
+            <span v-for="(crumb, idx) in crumbs" :key="crumb">
+
+                <span v-if="crumb == 'Context'">
+
+                    <a href="#output-window-context-menu">
+
+                        {{crumb}}
+
+                    </a>
+
+                </span>
+
+                <span v-else>
+
                     {{crumb}}
-                </a>
-            </span>
-            <span v-else>
-                {{crumb}}
+                    
+                </span>
+
+                <i v-if="idx < (crumbs.length - 1)" class="separator fas fa-sm fa-angle-right"/>
+                
             </span>
 
-            <i v-if="idx < (crumbs.length - 1)" class="fas fa-fw fa-caret-right"/>
-            
         </span>
 
     </span>
