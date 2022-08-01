@@ -1,6 +1,7 @@
 /*
- * 2018 Tarpeeksi Hyvae Soft /
- * VCS capture
+ * 2018 Tarpeeksi Hyvae Soft
+ * 
+ * Software: VCS
  *
  * Handles interactions with the capture hardware.
  *
@@ -34,7 +35,7 @@ std::mutex& kc_capture_mutex(void)
 
 void kc_initialize_capture(void)
 {
-     INFO(("Initializing the capture subsystem."));
+    INFO(("Initializing the capture subsystem."));
 
     kc_initialize_device();
 
