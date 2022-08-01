@@ -1,5 +1,5 @@
 /*
- * 2021 Tarpeeksi Hyvae Soft
+ * 2021-2022 Tarpeeksi Hyvae Soft
  * 
  * Software: VCS
  *
@@ -33,8 +33,8 @@ static captured_frame_s FRAME_BUFFER;
 
 static const char MMAP_STATUS_BUF_FILENAME[] = "vcs_dosbox_mmap_status";
 static const char MMAP_SCREEN_BUF_FILENAME[] = "vcs_dosbox_mmap_screen";
-static const unsigned MMAP_STATUS_BUF_SIZE = 9;
-static const unsigned MMAP_SCREEN_BUF_SIZE = (4 + MAX_NUM_BYTES_IN_CAPTURED_FRAME);
+static const unsigned MMAP_STATUS_BUF_SIZE = 1024;
+static const unsigned MMAP_SCREEN_BUF_SIZE = MAX_NUM_BYTES_IN_CAPTURED_FRAME;
 static uint8_t *MMAP_STATUS_BUF = nullptr;
 static uint8_t *MMAP_SCREEN_BUF = nullptr;
 
@@ -59,6 +59,9 @@ enum class status_buffer_value_e : unsigned
     // shared screen buffer; and to 0 by VCS whenever it finishes fetching a
     // frame from the shared screen buffer.
     is_new_frame_available,
+
+    // Length in bytes of the screen buffer.
+    screen_buffer_size,
 };
 
 static intptr_t get_screen_buffer_value(const screen_buffer_value_e valueEnum)
@@ -79,7 +82,7 @@ static intptr_t get_screen_buffer_value(const screen_buffer_value_e valueEnum)
         {
             return (intptr_t)&MMAP_SCREEN_BUF[4];
         }
-        default: k_assert(0, "Unrecognized value enum for querying the screen buffer.");
+        default: k_assert(0, "Unrecognized enum value for querying the screen buffer.");
     }
 
     // This is expected to never be reached - prior to this, either a proper value
@@ -95,9 +98,13 @@ static intptr_t get_status_buffer_value(const status_buffer_value_e valueEnum)
     {
         case status_buffer_value_e::is_new_frame_available:
         {
-            return MMAP_STATUS_BUF[0];
+            return bool(MMAP_STATUS_BUF[0]);
         }
-        default: k_assert(0, "Unrecognized value enum for querying the status buffer.");
+        case status_buffer_value_e::screen_buffer_size:
+        {
+            return *((uint32_t*)(&MMAP_STATUS_BUF[1]));
+        }
+        default: k_assert(0, "Unrecognized enum value for querying the status buffer.");
     }
 
     // This is expected to never be reached - prior to this, either a proper value
@@ -116,7 +123,12 @@ static void set_status_buffer_value(const status_buffer_value_e valueEnum, const
             MMAP_STATUS_BUF[0] = value;
             break;
         }
-        default: k_assert(0, "Unrecognized value enum for querying the status buffer.");
+        case status_buffer_value_e::screen_buffer_size:
+        {
+            *((uint32_t*)(&MMAP_STATUS_BUF[1])) = value;
+            break;
+        }
+        default: k_assert(0, "Unrecognized enum value for querying the status buffer.");
     }
 
     return;
@@ -207,6 +219,8 @@ bool kc_initialize_device(void)
         MMAP_SCREEN_BUF = (uint8_t*)mmap(nullptr, MMAP_SCREEN_BUF_SIZE, 0666, MAP_SHARED, fd, 0);
         k_assert(MMAP_SCREEN_BUF, "Failed to MMAP into the shared memory file (screen).");
     }
+
+    set_status_buffer_value(status_buffer_value_e::screen_buffer_size, MMAP_SCREEN_BUF_SIZE);
 
     // Start the capture thread.
     {

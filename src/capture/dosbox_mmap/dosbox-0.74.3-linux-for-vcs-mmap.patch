@@ -1,29 +1,23 @@
-diff -crB ./dosbox-0.74-3/Makefile.in ./dosbox-0.74-3-vcs/Makefile.in
-*** ./dosbox-0.74-3/Makefile.in	2019-06-26 17:55:11.000000000 +0300
---- ./dosbox-0.74-3-vcs/Makefile.in	2021-08-13 00:26:30.307321628 +0300
+diff -crB ./dosbox-0.74-3/configure ./dosbox-0.74-3-vcs/configure
+*** ./dosbox-0.74-3/configure	2019-06-26 17:55:12.000000000 +0300
+--- ./dosbox-0.74-3-vcs/configure	2022-08-01 03:56:51.211615000 +0300
 ***************
-*** 238,244 ****
-  INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-  LDFLAGS = @LDFLAGS@
-  LIBOBJS = @LIBOBJS@
-! LIBS = @LIBS@
-  LTLIBOBJS = @LTLIBOBJS@
-  MAKEINFO = @MAKEINFO@
-  MKDIR_P = @MKDIR_P@
---- 238,244 ----
-  INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-  LDFLAGS = @LDFLAGS@
-  LIBOBJS = @LIBOBJS@
-! LIBS = -lrt @LIBS@
-  LTLIBOBJS = @LTLIBOBJS@
-  MAKEINFO = @MAKEINFO@
-  MKDIR_P = @MKDIR_P@
+*** 2482,2487 ****
+--- 2482,2489 ----
+  ## Main body of script. ##
+  ## -------------------- ##
+  
++ LIBS="-lrt $LIBS"
++ 
+  ac_ext=c
+  ac_cpp='$CPP $CPPFLAGS'
+  ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmain.cpp
 *** ./dosbox-0.74-3/src/gui/sdlmain.cpp	2019-06-26 17:56:44.000000000 +0300
---- ./dosbox-0.74-3-vcs/src/gui/sdlmain.cpp	2021-08-13 00:29:50.243278307 +0300
+--- ./dosbox-0.74-3-vcs/src/gui/sdlmain.cpp	2022-08-01 03:38:59.120369000 +0300
 ***************
 *** 221,226 ****
---- 221,289 ----
+--- 221,293 ----
   
   static SDL_Block sdl;
   
@@ -36,11 +30,15 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
 + #include <cassert>
 + static unsigned char* ths_acquire_shared_memory_buffer(const char *name, const size_t size)
 + {
++ 	assert((size > 0) && "VCS: Invalid shared memory buffer size");
++ 	
 + 	const int fileDesc = shm_open(name, O_RDWR, 0666);
-+ 	assert((fileDesc >= 0) && "DOSBox/VCS: Failed to open the shared memory file.");
++ 	assert((fileDesc >= 0) && "VCS: Failed to open the shared memory file");
 + 
 + 	unsigned char *const bufPtr = (unsigned char*)mmap(NULL, size, 0666, MAP_SHARED, fileDesc, 0);
-+ 	assert(bufPtr && "DOSBox/VCS: Failed to map the shared memory file.");
++ 	assert(bufPtr && "VCS: Failed to map the shared memory file");
++ 
++ 	printf("VCS: Acquired shared memory buffer %s (%u bytes) to 0x%x\n", name, size, bufPtr);
 + 
 + 	return bufPtr;
 + }
@@ -51,13 +49,11 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
 + 		return;
 + 	}
 + 
-+ 	const unsigned int initBufSize = 9;
-+ 	const char sharedStatusBufName[] = "vcs_dosbox_mmap_status";
-+ 	const char sharedScreenBufName[] = "vcs_dosbox_mmap_screen";
++ 	const unsigned statusBufferSize = 1024;
++ 	THS_MMAP_STATUS_BUF = ths_acquire_shared_memory_buffer("vcs_dosbox_mmap_status", statusBufferSize);
 + 
-+ 	THS_MMAP_STATUS_BUF = ths_acquire_shared_memory_buffer(sharedStatusBufName, initBufSize);
-+ 	const unsigned screenBufSize = ((uint32_t*)THS_MMAP_STATUS_BUF)[0];
-+ 	THS_MMAP_SCREEN_BUF = ths_acquire_shared_memory_buffer(sharedScreenBufName, screenBufSize);
++ 	const unsigned screenBufferSize = *((uint32_t*)(&THS_MMAP_STATUS_BUF[1]));
++ 	THS_MMAP_SCREEN_BUF = ths_acquire_shared_memory_buffer("vcs_dosbox_mmap_screen", screenBufferSize);
 + 
 + 	THS_IS_SHARED_MEM_INIT = 1;
 + 	
@@ -79,8 +75,10 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
 + 	{
 + 		const unsigned frameWidth = sdl->draw.width;
 + 		const unsigned frameHeight = sdl->draw.height;
++ 		
 + 		*((uint16_t*)(&THS_MMAP_SCREEN_BUF[0])) = frameWidth;
 + 		*((uint16_t*)(&THS_MMAP_SCREEN_BUF[2])) = frameHeight;
++ 
 + 		memcpy(&THS_MMAP_SCREEN_BUF[4], sdl->opengl.framebuf, (frameHeight * sdl->opengl.pitch));
 + 	}
 + 
@@ -102,7 +100,7 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
   		}
   #else //C_OPENGL
   		SDL_FillRect(sdl.surface,NULL,SDL_MapRGB(sdl.surface->format,0,0,0));
---- 302,308 ----
+--- 306,312 ----
   		else {
   			glClearColor (0.0, 0.0, 0.0, 1.0);
   			glClear(GL_COLOR_BUFFER_BIT);
@@ -119,7 +117,7 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
   		glClear(GL_COLOR_BUFFER_BIT);
   		glShadeModel (GL_FLAT);
   		glDisable (GL_DEPTH_TEST);
---- 776,782 ----
+--- 780,786 ----
   
   		glClearColor (0.0, 0.0, 0.0, 1.0);
   		glClear(GL_COLOR_BUFFER_BIT);
@@ -136,7 +134,7 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
   		}
   		break;
   #endif
---- 1010,1016 ----
+--- 1014,1020 ----
   				index++;
   			}
   			glCallList(sdl.opengl.displaylist);
@@ -153,7 +151,7 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
   	if(gl_ext && *gl_ext){
   		sdl.opengl.packed_pixel=(strstr(gl_ext,"EXT_packed_pixels") != NULL);
   		sdl.opengl.paletted_texture=(strstr(gl_ext,"EXT_paletted_texture") != NULL);
---- 1314,1320 ----
+--- 1318,1324 ----
   	glBufferDataARB = (PFNGLBUFFERDATAARBPROC)SDL_GL_GetProcAddress("glBufferDataARB");
   	glMapBufferARB = (PFNGLMAPBUFFERARBPROC)SDL_GL_GetProcAddress("glMapBufferARB");
   	glUnmapBufferARB = (PFNGLUNMAPBUFFERARBPROC)SDL_GL_GetProcAddress("glUnmapBufferARB");
