@@ -24,7 +24,7 @@ Anti-tearing should be considered an experimental feature of VCS. It works well 
 ### Settings explained
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Setting</th>
             <th>Description</th>
@@ -83,7 +83,7 @@ Anti-tearing should be considered an experimental feature of VCS. It works well 
                 Set how many times the sampling window must find a pixel's color values to have exceeded the detection threshold for a horizontal row of pixels to be considered new relative to the previous frame. Higher values should reduce the chance of false positives but may also cause a failure to detect subtler tears.
             </td>
         </tr>
-    </template>
+    </table>
 </dokki-table>
 
 ## Filter graph dialog
@@ -130,7 +130,7 @@ The output resolution dialog lets you resize the [output window](#output-window)
 ### Settings explained
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Setting</th>
             <th>Description</th>
@@ -149,7 +149,7 @@ The output resolution dialog lets you resize the [output window](#output-window)
                 either the capture resolution, or, if enabled, the locked output resolution.
             </td>
         </tr>
-    </template>
+    </table>
 </dokki-table>
 
 ## Overlay dialog
@@ -204,7 +204,7 @@ The recorder will write frames as they appear in the [output window](#output-win
 ### Settings explained
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Setting<sup>*</sup></th>
             <th>Description</th>
@@ -238,7 +238,7 @@ The recorder will write frames as they appear in the [output window](#output-win
                 <sup>*</sup>Only some of the available settings are included in this list; others depend on the choice of video codec and are as per standard for that codec (e.g. CRF for x264).
             </td>
         </tr>
-    </template>
+    </table>
 </dokki-table>
 
 ### Settings for the highest video quality
@@ -246,7 +246,7 @@ The recorder will write frames as they appear in the [output window](#output-win
 The following video recorder settings should result in the highest possible output video quality.
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Setting</th>
             <th>Value</th>
@@ -272,7 +272,7 @@ The following video recorder settings should result in the highest possible outp
                 <sup>*</sup>Increasing the CRF value to 10&ndash;14 will considerably reduce the size of the resulting video file while maintaining high image quality.
             </td>
         </tr>
-    </template>
+    </table>
 </dokki-table>
 
 ### Tips for performance

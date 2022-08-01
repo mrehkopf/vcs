@@ -45,7 +45,7 @@ The output window's title bar shows information about VCS's current operating st
 The title bar may contain some or all of the following elements, from left to right:
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Element</th>
             <th>Desription</th>
@@ -66,7 +66,7 @@ The title bar may contain some or all of the following elements, from left to ri
             <td>RFOA</td>
             <td class="with-inline-table">
                 <dokki-table>
-                    <template #table>
+                    <table>
                         <tr>
                             <th>Element</th>
                             <th>Explanation</th>
@@ -95,7 +95,7 @@ The title bar may contain some or all of the following elements, from left to ri
                                 Shown when anti-tearing is active (see <a href="#anti-tear-dialog">Anti-tear dialog</a>)
                             </td>
                         </tr>
-                    </template>
+                    </table>
                 </dokki-table>
             </td>
         </tr>
@@ -111,13 +111,13 @@ The title bar may contain some or all of the following elements, from left to ri
                 The current output resolution and the rate at which the output is being updated.
             </td>
         </tr>
-    </template>
+    </table>
 </dokki-table>
 
 Under special circumstances, the title bar may also show one of these messages:
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Message</th>
             <th>Reason</th>
@@ -143,7 +143,7 @@ Under special circumstances, the title bar may also show one of these messages:
                 </dokki-tip> 
             </td>
         </tr>
-    </template>
+    </table>
 </dokki-table>
 
 ## Context menu
@@ -159,7 +159,7 @@ The eye dropper is a special non-interactible element of the context menu. It sh
 The input menu lets you customize various operational parameters of the capture device. The menu provides the following options:
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Option</th>
             <th>Explanation</th>
@@ -182,7 +182,7 @@ The input menu lets you customize various operational parameters of the capture 
                 Set the hardware-side de-interlacing mode for interlaced signals. This setting is expected to have no effect on non-interlaced signals.
             </td>
         </tr>
-    </template>
+    </table>
 </dokki-table>
         
 ### Output
@@ -190,7 +190,7 @@ The input menu lets you customize various operational parameters of the capture 
 The output menu lets you customize the way in which VCS processes captured frames prior to display in the [output window](#output-window). The menu provides the following options:
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Option</th>
             <th>Explanation</th>
@@ -205,7 +205,7 @@ The output menu lets you customize the way in which VCS processes captured frame
             <td>Aspect ratio</td>
             <td class="with-inline-table">
                 <dokki-table>
-                    <template #table>
+                    <table>
                         <tr>
                             <th>Sub-option</th>
                             <th>Explanation</th>
@@ -228,7 +228,7 @@ The output menu lets you customize the way in which VCS processes captured frame
                                 Force all captured frames into a 4:3 aspect ratio.
                             </td>
                         </tr>
-                    </template>
+                    </table>
                 </dokki-table>
             </td>
         </tr>
@@ -244,7 +244,7 @@ The output menu lets you customize the way in which VCS processes captured frame
                 Set the scaler to be used when frames are downscaled to fit the output window.
             </td>
         </tr>
-    </template>
+    </table>
 </dokki-table>
         
 ### Window
@@ -252,7 +252,7 @@ The output menu lets you customize the way in which VCS processes captured frame
 The window menu lets you customize various properties of the [output window](#output-window). The menu provides the following options:
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Option</th>
             <th>Explanation</th>
@@ -261,7 +261,7 @@ The window menu lets you customize various properties of the [output window](#ou
             <td>Renderer</td>
             <td class="with-inline-table">
                 <dokki-table>
-                    <template #table>
+                    <table>
                         <tr>
                             <th>Sub-option</th>
                             <th>Explanation</th>
@@ -280,7 +280,7 @@ The window menu lets you customize various properties of the [output window](#ou
                                 </p>
                             </td>
                         </tr>
-                    </template>
+                    </table>
                 </dokki-table>
             </td>
         </tr>
@@ -314,5 +314,5 @@ The window menu lets you customize various properties of the [output window](#ou
                 Give the output window a custom title. All of VCS's normal title bar information - except the frame drop indicator - will be replaced with the text you set. Setting an empty string will restore VCS's default title bar.
             </td>
         </tr>
-    </template>
+    </table>
 </dokki-table>

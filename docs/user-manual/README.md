@@ -8,7 +8,7 @@ A pre-built HTML version of the manual is hosted [here](https://www.tarpeeksihyv
 
 ## Building the manual
 
-As noted above, the VCS user's manual has been made using dokki, a framework for creating HTML documentation with Markdown. The manual needs to be built before it can be viewed.
+As noted above, the VCS user's manual has been made using dokki, a framework for creating HTML documentation with Markdown. The manual needs to be built before it can be viewed properly.
 
 To build the manual:
 
