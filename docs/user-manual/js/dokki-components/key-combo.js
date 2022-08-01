@@ -19,7 +19,7 @@ export const keyCombo = {
         }
     },
     template: `
-    <span class="key-combo">
+    <span class="key-combo" title="Keyboard shortcut">
 
         <span class="icon">
         

@@ -5,19 +5,24 @@ VCS is a third-party capture tool by [Tarpeeksi Hyvae Soft](https://www.tarpeeks
 VCS is [available on GitHub](https://github.com/leikareipa/vcs). You can also <ths-inline-feedback-button>send direct feedback</ths-inline-feedback-button>.
 
 > A screenshot of VCS 2.4 showing the capture window and some of the control dialogs
-![{image:1189x878}{headerless}](https://www.tarpeeksihyvaesoft.com/soft/img/vcs/vcs-2.4-with-dialogs.png)
+![{image:1189x878}{headerless}](./img/vcs-2.4-with-dialogs.png)
 
 ## Program features
 
-- Capture functionality tailored for the Datapath VisionRGB series
+- Augments the capabilities of the VisionRGB hardware for capturing dynamic signals (e.g. retro PCs)
+- Various feature and usability improvements over Datapath's default capture application
 - Supports both modern and legacy VisionRGB hardware
 - Runs on Windows (XP and later) and Linux (experimental)
-- Unlimited video presets, allowing different capture settings for different resolutions and/or refresh rates
-- Customizable frame scaling and filtering
-- Anti-tearing to reduce/eliminate tears in captured frames
+- Unlimited video presets with automatic programmable activation
+- Several scaling modes and customizable image filters
+- Post-processing to reduce or eliminate tearing in captured frames
 - On-screen display with HTML/CSS formatting
-- Variable refresh rate output
-- Minimal reliance on GPU features, runs well in virtual machines
+- Variable refresh rate output to match the input signal's frequency
+- Low reliance on GPU features, easy to run in virtual machines
+- Custom dark GUI theme
+- Good documentation for both end-users and developers
+- Modular code extendable to support capture hardware from other vendors
+- Free and open source
 
 ## Supported capture hardware
 
@@ -55,8 +60,21 @@ VCS is [available on GitHub](https://github.com/leikareipa/vcs). You can also <t
             <td>Datapath</td>
             <td>VisionRGB-X2</td>
         </tr>
+        <tr>
+            <td>Datapath</td>
+            <td>VisionAV series<sup>*</sup></td>
+        </tr>
+        <tfoot>
+            <tr>
+                <td colspan="2">
+                    <sup>*</sup>Can't be guaranteed, but user reports suggest compatibility.
+                </td>
+            </tr>
+        </tfoot>
     </template>
 </dokki-table>
+
+The VisionAV series 
 
 ## System requirements
 

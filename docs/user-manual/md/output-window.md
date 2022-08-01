@@ -3,7 +3,7 @@
 The central point of the VCS user interface is the output window, where captured frames are displayed as they arrive from the capture device and having undergone any of VCS's filtering and scaling.
 
 > A screenshot of the output window
-![{image:642x508}{headerless}](https://github.com/leikareipa/vcs/raw/master/images/screenshots/v2.3.0/output-window.png)
+![{image:642x508}{headerless}](./img/output-window.png)
 
 ## Features
 

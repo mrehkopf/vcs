@@ -21,7 +21,7 @@
             .dokki-topic .menu-path,
             .dokki-topic .key-combo
             {
-                border-radius: 3px;
+                border-radius: var(--dokkiCSS-embedded-border-radius);
                 margin: 2px 1px;
                 display: inline-flex;
                 align-items: baseline;
@@ -145,15 +145,15 @@
                 line-height: 1;
             }
 
-            .dokki-topic .ths-inline-feedback-button
-            {
-                cursor: pointer;
-            }
-
             .dokki-topic h1 > .idx,
             .dokki-topic h2 > .idx
             {
                 display: initial !important;
+            }
+
+            .ths-inline-feedback-button
+            {
+                cursor: pointer;
             }
         </style>
     </head>
@@ -161,7 +161,7 @@
         <ths-feedback></ths-feedback>
         <template dokki-document>
             <section title>
-                VCS 2.5.0 &bull; User's manual
+                User's manual for VCS 2.5.0
             </section>
             <section widgets>
                 <ths-feedback-link/>

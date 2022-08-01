@@ -10,7 +10,7 @@ export const menuPath = {
         }
     },
     template: `
-    <span class="menu-path">
+    <span class="menu-path" title="Menu path">
 
         <span class="icon">
         
@@ -35,7 +35,7 @@ export const menuPath = {
                 <span v-else>
 
                     {{crumb}}
-                    
+
                 </span>
 
                 <i v-if="idx < (crumbs.length - 1)" class="separator fas fa-sm fa-angle-right"/>
