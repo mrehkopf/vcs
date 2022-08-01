@@ -4,8 +4,8 @@ VCS is a third-party capture tool by [Tarpeeksi Hyvae Soft](https://www.tarpeeks
 
 VCS is [available on GitHub](https://github.com/leikareipa/vcs). You can also <ths-inline-feedback-button>send direct feedback</ths-inline-feedback-button>.
 
-> A screenshot of VCS 2.4 showing the capture window and some of the control dialogs
-![{image:1189x878}{headerless}](./img/vcs-2.4-with-dialogs.png)
+> A screenshot of VCS 2.4 showing the capture window and some of the control dialogs\
+![{image:1189x878}{headerless}](../img/vcs-2.4-with-dialogs.png)
 
 ## Program features
 
@@ -27,7 +27,7 @@ VCS is [available on GitHub](https://github.com/leikareipa/vcs). You can also <t
 ## Supported capture hardware
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Vendor</th>
             <th>Model</th>
@@ -71,20 +71,18 @@ VCS is [available on GitHub](https://github.com/leikareipa/vcs). You can also <t
                 </td>
             </tr>
         </tfoot>
-    </template>
+    </table>
 </dokki-table>
-
-The VisionAV series 
 
 ## System requirements
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>OS</th>
             <td class="with-inline-table">
                 <dokki-table>
-                    <template #table>
+                    <table>
                         <tr>
                             <th>Platform</th>
                             <th>Required version</th>
@@ -97,7 +95,7 @@ The VisionAV series
                             <td>Linux</td>
                             <td>Kernel 5</td>
                         </tr>
-                    </template>
+                    </table>
                 </dokki-table>
             </td>
         </tr>
@@ -105,7 +103,7 @@ The VisionAV series
             <th>CPU</th>
             <td class="with-inline-table">
                 <dokki-table>
-                    <template #table>
+                    <table>
                         <tr>
                             <th>Capture resolution</th>
                             <th>Required performance level<sup>*</sup></th>
@@ -127,7 +125,7 @@ The VisionAV series
                                 <sup>*</sup>Estimated.
                             </td>
                         </tr>
-                    </template>
+                    </table>
                 </dokki-table>
             </td>
         </tr>
@@ -150,5 +148,5 @@ The VisionAV series
                 </ul>
             </td>
         </tr>
-    </template>
+    </table>
 </dokki-table>

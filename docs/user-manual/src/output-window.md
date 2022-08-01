@@ -2,8 +2,8 @@
 
 The central point of the VCS user interface is the output window, where captured frames are displayed as they arrive from the capture device and having undergone any of VCS's filtering and scaling.
 
-> A screenshot of the output window
-![{image:642x508}{headerless}](./img/output-window.png)
+> A screenshot of the output window\
+![{image:642x508}{headerless}](../img/output-window.png)
 
 ## Features
 
@@ -39,8 +39,8 @@ Although you can emulate a fullscreen mode by turning off the output window's bo
 
 The output window's title bar shows information about VCS's current operating state &ndash; for example, the input and output resolution.
 
-> A sample of the output window's title bar on Linux
-![{image:479x25}{headerless}](./img/title-bar.png)
+> A sample of the output window's title bar on Linux\
+![{image:479x25}{headerless}](../img/title-bar.png)
 
 The title bar may contain some or all of the following elements, from left to right:
 

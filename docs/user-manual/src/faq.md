@@ -70,10 +70,10 @@ First, select the <menu-path>Context > Window > Renderer > OpenGL</menu-path> me
 
 With some capture sources (e.g. DOS-mode VGA), you may find the image susceptible to tearing. This kind of tearing is present in the output signal and doesn't result from the capture process &ndash; you'd see it even if you were viewing the output directly through a monitor.
 
-> Screen tearing in Tomb Raider (DOS)
-![{image:600x374}{headerless}](./img/tr1-torn.png)
+> Screen tearing in Tomb Raider (DOS)\
+![{image:600x374}{headerless}](../img/tr1-torn.png)
 
 To reduce or even eliminate tearing of this sort, VCS provides anti-tearing functionality. See [Anti-tear dialog](dialog-windows-anti-tear-dialog) for more information.
 
-> Before (left) and after (right) applying VCS's anti-tearing
+> Before (left) and after (right) applying VCS's anti-tearing\
 ![{youtube}](_gNywFJFRWo)

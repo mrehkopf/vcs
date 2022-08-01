@@ -1,7 +1,7 @@
 # Command-line options
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Option</th>
             <th>Description</th>
@@ -36,5 +36,5 @@
                 Set the amount of system memory that VCS reserves on startup. If you're getting error messages about the memory cache running out, increase this value. If you get x264 allocation errors when attempting to record video, try reducing this value. Default: 256 MB.
             </td>
         </tr>
-    </template>
+    </table>
 </dokki-table>

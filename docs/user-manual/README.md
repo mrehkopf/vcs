@@ -13,7 +13,7 @@ As noted above, the VCS user's manual has been made using dokki, a framework for
 To build the manual:
 
 1. Clone the [dokki repository](https://github.com/leikareipa/dokki/) and locate the `build-final.js` file in it.
-2. Build the manual by executing `$ node build-final.js index.intermediate.html index.html`. The working directory must be the manual's base directory (where this README is located) or the build process will fail to load the manual's image files.
+2. Build the manual by executing `$ node build-final.js index.intermediate.html ../index.html` from the [src/](./src/) directory.
 3. The build process should now have produced an `index.html` file, which along with the manual's [img/](./img/) and [js/](./js/) directories constitutes the built manual.
 
 ### Hosting the dependencies

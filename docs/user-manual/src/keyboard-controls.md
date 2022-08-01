@@ -1,7 +1,7 @@
 # Keyboard controls
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Key(s)</th>
             <th>Description</th>
@@ -51,5 +51,5 @@
             <td><key-combo>Shift + 1&hellip;2</key-combo></td>
             <td>Set the input channel index.</td>
         </tr>
-    </template>
+    </table>
 </dokki-table>

@@ -1,7 +1,7 @@
 # Mouse controls
 
 <dokki-table headerless>
-    <template #table>
+    <table>
         <tr>
             <th>Action</th>
             <th>Description</th>
@@ -26,5 +26,5 @@
             <td>Mouse wheel over output window</td>
             <td>Scale the output window up/down.</td>
         </tr>
-    </template>
+    </table>
 </dokki-table>
