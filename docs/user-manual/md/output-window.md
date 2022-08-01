@@ -131,13 +131,16 @@ Under special circumstances, the title bar may also show one of these messages:
         <tr>
             <td>Signal out of range</td>
             <td>
-                Either VCS or the capture device is unable to process the current video mode because the mode exceeds operating parameters (e.g. too high of a resolution).
+                Either VCS or the capture device is unable to process the signal's video mode due to the mode exceeding operating parameters. For example, the input resolution may be too high.
             </td>
         </tr>
         <tr>
             <td>Invalid capture channel</td>
             <td>
-                The requested input channel on the capture device is unavailable for use.
+                The requested input channel on the capture device, or the entire capture device, is unavailable for use. This could be caused e.g. by an out-of-range input channel index or the capture device driver not being installed.
+                <dokki-tip>
+                    On Linux, the Datapath Vision driver must be re-installed whenever your kernel is updated &ndash; failure to do so will result in this error message. Sometimes a kernel update will break compatibility with the driver, so ensure that the driver installer finishes successfully.
+                </dokki-tip> 
             </td>
         </tr>
     </template>
