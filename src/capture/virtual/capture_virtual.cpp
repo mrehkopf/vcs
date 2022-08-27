@@ -5,6 +5,7 @@
  *
  */
 
+#include <QColor>
 #include <chrono>
 #include "common/globals.h"
 #include "common/propagate/vcs_event.h"
@@ -33,9 +34,6 @@ static unsigned CUR_INPUT_CHANNEL_IDX = 0;
 
 static void refresh_test_pattern(void)
 {
-    static unsigned numFramesGenerated = 0;
-
-    numFramesGenerated++;
     NUM_FRAMES_PER_SECOND++;
 
     for (unsigned y = 0; y < FRAME_BUFFER.r.h; y++)
@@ -43,27 +41,35 @@ static void refresh_test_pattern(void)
         for (unsigned x = 0; x < FRAME_BUFFER.r.w; x++)
         {
             const unsigned idx = ((x + y * FRAME_BUFFER.r.w) * (FRAME_BUFFER.r.bpp / 8));
-            const u8 red = ((numFramesGenerated + x) % 256);
-            const u8 green = ((numFramesGenerated + y) % 256);
-            const u8 blue = 150;
+
+            /// TODO: Remove the dependency on Qt for the RGB -> HSL -> RGB conversion.
+            QColor rgbGradient;
+            const double widthRatio = (x / double(FRAME_BUFFER.r.w));
+            const double heightRatio = (y / double(FRAME_BUFFER.r.h));
+            rgbGradient.setHsl((widthRatio * 359), 255, (255 - (heightRatio * 255)));
+            rgbGradient = rgbGradient.toRgb();
+
+            const u8 red = rgbGradient.red();
+            const u8 green = rgbGradient.green();
+            const u8 blue = rgbGradient.blue();
             const u8 alpha = 255;
 
             switch (FRAME_BUFFER.pixelFormat)
             {
                 case capture_pixel_format_e::rgb_888:
                 {
-                    FRAME_BUFFER.pixels[idx + 0] = red;
+                    FRAME_BUFFER.pixels[idx + 0] = blue;
                     FRAME_BUFFER.pixels[idx + 1] = green;
-                    FRAME_BUFFER.pixels[idx + 2] = blue;
+                    FRAME_BUFFER.pixels[idx + 2] = red;
                     FRAME_BUFFER.pixels[idx + 3] = alpha;
 
                     break;
                 }
                 case capture_pixel_format_e::rgb_565:
                 {
-                    const u16 pixel = (((blue  / 8) << 11) |
+                    const u16 pixel = (((red   / 8) << 11) |
                                        ((green / 4) << 5)  |
-                                       ((red   / 8) << 0));
+                                       ((blue  / 8) << 0));
 
                     *((u16*)&FRAME_BUFFER.pixels[idx]) = pixel;
 
@@ -72,9 +78,9 @@ static void refresh_test_pattern(void)
                 case capture_pixel_format_e::rgb_555:
                 {
                     const u16 pixel = (((alpha / 256) << 11) |
-                                       ((blue  / 8)   << 10) |
+                                       ((red   / 8)   << 10) |
                                        ((green / 8)   << 5)  |
-                                       ((red   / 8)   << 0));
+                                       ((blue  / 8)   << 0));
 
                     *((u16*)&FRAME_BUFFER.pixels[idx]) = pixel;
 
