@@ -610,39 +610,40 @@ MainWindow::MainWindow(QWidget *parent) :
                 "Image files (*.png *.jpeg *.bmp *.ppm)"
             );
 
+            if (filename.isEmpty())
+            {
+                return;
+            }
+
             if (QFileInfo(filename).suffix().isEmpty())
             {
                 filename.append(".png");
             }
 
-            if (!filename.isEmpty())
+            const QImage frameImage = ([]()->QImage
             {
-                const QImage frameImage = ([]()->QImage
+                const captured_frame_s &frame = ks_frame_buffer();
+
+                k_assert((frame.pixelFormat == capture_pixel_format_e::rgb_888),
+                         "Expected frame pixel data to be 32-bit RGB.");
+
+                if (frame.pixels.is_null())
                 {
-                    const captured_frame_s &frame = ks_frame_buffer();
-
-                    k_assert((frame.pixelFormat == capture_pixel_format_e::rgb_888),
-                             "Expected frame pixel data to be 32-bit RGB.");
-
-                    if (frame.pixels.is_null())
-                    {
-                        DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
-                        return QImage();
-                    }
-                    else return QImage(frame.pixels.data(), frame.r.w, frame.r.h, QImage::Format_RGB32);
-                })();
-
-                if (frameImage.save(filename))
-                {
-                    DEBUG(("Screenshotted into \"%s\".", filename.toStdString().c_str()));
+                    DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
+                    return QImage();
                 }
-                else
-                {
-                    DEBUG(("Could not screenshot into \"%s\". Possibly an unrecognized file format.",
-                           filename.toStdString().c_str()));
-                }
+                else return QImage(frame.pixels.data(), frame.r.w, frame.r.h, QImage::Format_RGB32);
+            })();
+
+            if (frameImage.save(filename))
+            {
+                DEBUG(("Screenshotted into \"%s\".", filename.toStdString().c_str()));
             }
-
+            else
+            {
+                DEBUG(("Could not screenshot into \"%s\". Possibly an unrecognized file format.",
+                       filename.toStdString().c_str()));
+            }
         });
 
         this->contextMenu->addSeparator();
