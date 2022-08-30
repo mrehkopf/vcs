@@ -2,7 +2,7 @@
 
 ## Alias resolutions dialog
 
-This dialog can be accessed with <menu-path>Context > Input > Dialogs > Aliases...</menu-path>.
+This dialog can be accessed with <menu-path>Context > Input > Aliases...</menu-path>.
 
 With the alias resolutions dialog, you can instruct VCS to automatically override certain capture resolutions.
 
@@ -10,7 +10,7 @@ For instance, if you find that your capture device is displaying 640 &times; 400
 
 ## Anti-tear dialog
 
-This dialog can be accessed with <key-combo>Ctrl + A</key-combo> or <menu-path>Context > Output > Dialogs > Anti-tear...</menu-path>.
+This dialog can be accessed with <key-combo>Ctrl + A</key-combo> or <menu-path>Context > Output > Anti-tear...</menu-path>.
 
 > A screenshot of the anti-tear dialog\
 ![{image:489x502}{headerless}](../img/anti-tear-dialog.png)
@@ -88,7 +88,7 @@ Anti-tearing should be considered an experimental feature of VCS. It works well 
 
 ## Filter graph dialog
 
-This dialog can be accessed with <key-combo>Ctrl + F</key-combo> or <menu-path>Context > Output > Dialogs > Filter graph...</menu-path>.
+This dialog can be accessed with <key-combo>Ctrl + F</key-combo> or <menu-path>Context > Output > Filter graph...</menu-path>.
 
 > A screenshot of the filter graph dialog\
 ![{image:1187x556}{headerless}](../img/filter-graph-dialog.png)
@@ -115,7 +115,7 @@ To connect two nodes, click and drag with the left mouse button from one node's 
 
 ## Input resolution dialog
 
-This dialog can be accessed with <key-combo>Ctrl + I</key-combo> or <menu-path>Context > Capture > Dialogs > Resolution...</menu-path>.
+This dialog can be accessed with <key-combo>Ctrl + I</key-combo> or <menu-path>Context > Input > Resolution...</menu-path>.
 
 Normally, the capture device will automatically set the capture resolution to match that of the input signal, but sometimes the result isn't quite right. The input resolution dialog lets you override this resolution with your own one.
 
@@ -123,7 +123,7 @@ You can change a button's assigned resolution by clicking on it while pressing t
 
 ## Output resolution dialog
 
-This dialog can be accessed with <key-combo>Ctrl + O</key-combo> or <menu-path>Context > Output > Dialogs > Resolution...</menu-path>.
+This dialog can be accessed with <key-combo>Ctrl + O</key-combo> or <menu-path>Context > Output > Resolution...</menu-path>.
 
 The output resolution dialog lets you resize the [output window](#output-window). This also resizes the frames being displayed in the window.
 
@@ -154,7 +154,7 @@ The output resolution dialog lets you resize the [output window](#output-window)
 
 ## Overlay dialog
 
-This dialog can be accessed with <key-combo>Ctrl + L</key-combo> or <menu-path>Context > Output > Dialogs > Overlay...</menu-path>.
+This dialog can be accessed with <key-combo>Ctrl + L</key-combo> or <menu-path>Context > Output > Overlay...</menu-path>.
 
 > A screenshot of the overlay dialog\
 ![{image:878x508}{headerless}](../img/overlay-dialog.png)
@@ -165,7 +165,7 @@ You can combine normal text with pre-set VCS variables and HTML/CSS formatting t
 
 ## Video presets dialog
 
-This dialog can be accessed with <key-combo>Ctrl + V</key-combo> or <menu-path>Context > Input > Dialogs > Video presets...</menu-path>.
+This dialog can be accessed with <key-combo>Ctrl + V</key-combo> or <menu-path>Context > Input > Video presets...</menu-path>.
 
 > A screenshot of the video presets dialog\
 ![{image:513x656}{headerless}](../img/video-presets-dialog.png)
@@ -180,7 +180,7 @@ If you want your changes to the video presets to persist after you exit VCS, rem
 
 ## Video recorder dialog
 
-This dialog can be accessed with <key-combo>Ctrl + R</key-combo> or <menu-path>Context > Output > Dialogs > Video recorder...</menu-path>.
+This dialog can be accessed with <key-combo>Ctrl + R</key-combo> or <menu-path>Context > Output > Video recorder...</menu-path>.
 
 <dokki-warning>
     On Linux, the video encoder's quality settings can't be modified through VCS &ndash; you'd need to re-compile OpenCV with your desired encoder settings, instead.

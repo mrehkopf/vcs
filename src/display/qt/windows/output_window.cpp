@@ -110,8 +110,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
         QMenu *captureMenu = new QMenu("Input", this);
         {
-            QMenu *dialogs = new QMenu("Dialogs", this);
-
             QMenu *channel = new QMenu("Channel", this);
             {
                 #if __linux__
@@ -259,22 +257,21 @@ MainWindow::MainWindow(QWidget *parent) :
             captureMenu->addMenu(colorDepth);
             captureMenu->addMenu(deinterlacing);
             captureMenu->addSeparator();
-            captureMenu->addMenu(dialogs);
 
-            QAction *aliases = new QAction("Aliases", this);
-            dialogs->addAction(aliases);
+            QAction *aliases = new QAction("Aliases...", this);
+            captureMenu->addAction(aliases);
 
-            QAction *resolution = new QAction("Resolution", this);
+            QAction *resolution = new QAction("Resolution...", this);
             resolution->setShortcut(QKeySequence("ctrl+i"));
-            dialogs->addAction(resolution);
+            captureMenu->addAction(resolution);
 
-            QAction *signal = new QAction("Signal info", this);
+            QAction *signal = new QAction("Signal info...", this);
             signal->setShortcut(QKeySequence("ctrl+s"));
-            dialogs->addAction(signal);
+            captureMenu->addAction(signal);
 
-            QAction *videoParams = new QAction("Video presets", this);
+            QAction *videoParams = new QAction("Video presets...", this);
             videoParams->setShortcut(QKeySequence("ctrl+v"));
-            dialogs->addAction(videoParams);
+            captureMenu->addAction(videoParams);
 
             #if CAPTURE_DEVICE_VISION_V4L
                 aliases->setEnabled(false);
@@ -291,50 +288,6 @@ MainWindow::MainWindow(QWidget *parent) :
         {
             const std::vector<std::string> scalerNames = ks_scaling_filter_names();
             k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
-
-            connect(outputMenu->addAction("Screenshot..."), &QAction::triggered, this, [this]
-            {
-                QString filename = QFileDialog::getSaveFileName(this,
-                                                                "Save screenshot",
-                                                                "",
-                                                                "Image files (*.png *.jpeg *.bmp *.ppm)");
-
-                if (QFileInfo(filename).suffix().isEmpty())
-                {
-                    filename.append(".png");
-                }
-
-                if (!filename.isEmpty())
-                {
-                    const QImage frameImage = ([]()->QImage
-                    {
-                        const captured_frame_s &frame = ks_frame_buffer();
-
-                        k_assert((frame.pixelFormat == capture_pixel_format_e::rgb_888),
-                                 "Expected frame pixel data to be 32-bit RGB.");
-
-                        if (frame.pixels.is_null())
-                        {
-                            DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
-                            return QImage();
-                        }
-                        else return QImage(frame.pixels.data(), frame.r.w, frame.r.h, QImage::Format_RGB32);
-                    })();
-
-                    if (frameImage.save(filename))
-                    {
-                        DEBUG(("Screenshotted into \"%s\".", filename.toStdString().c_str()));
-                    }
-                    else
-                    {
-                        DEBUG(("Could not screenshot into \"%s\". Possibly an unrecognized file format.",
-                               filename.toStdString().c_str()));
-                    }
-                }
-
-            });
-
-            outputMenu->addSeparator();
 
             QMenu *upscaler = new QMenu("Upscaler", this);
             {
@@ -420,45 +373,76 @@ MainWindow::MainWindow(QWidget *parent) :
                 else if (defaultAspectRatio == "Traditional 4:3") traditional43->setChecked(true);
             }
 
-            QMenu *dialogs = new QMenu("Dialogs", this);
-
             outputMenu->addMenu(aspectRatio);
             outputMenu->addSeparator();
             outputMenu->addMenu(upscaler);
             outputMenu->addMenu(downscaler);
             outputMenu->addSeparator();
-            outputMenu->addMenu(dialogs);
 
-            QAction *overlay = new QAction("Overlay", this);
-            overlay->setShortcut(QKeySequence("ctrl+l"));
-            dialogs->addAction(overlay);
-            connect(overlay, &QAction::triggered, this, [=]{this->overlayDlg->open();});
-
-            QAction *antiTear = new QAction("Anti-tear", this);
+            QAction *antiTear = new QAction("Anti-tear...", this);
             antiTear->setShortcut(QKeySequence("ctrl+a"));
-            dialogs->addAction(antiTear);
+            outputMenu->addAction(antiTear);
             connect(antiTear, &QAction::triggered, this, [=]{this->antitearDlg->open();});
 
-            QAction *resolution = new QAction("Resolution", this);
-            resolution->setShortcut(QKeySequence("ctrl+o"));
-            dialogs->addAction(resolution);
-            connect(resolution, &QAction::triggered, this, [=]{this->outputResolutionDlg->open();});
-
-            QAction *filter = new QAction("Filter graph", this);
+            QAction *filter = new QAction("Filter graph...", this);
             filter->setShortcut(QKeySequence("ctrl+f"));
-            dialogs->addAction(filter);
+            outputMenu->addAction(filter);
             connect(filter, &QAction::triggered, this, [=]{this->filterGraphDlg->open();});
 
-            QAction *record = new QAction("Video recorder", this);
+            QAction *overlay = new QAction("Overlay...", this);
+            overlay->setShortcut(QKeySequence("ctrl+l"));
+            outputMenu->addAction(overlay);
+            connect(overlay, &QAction::triggered, this, [=]{this->overlayDlg->open();});
+
+            QAction *resolution = new QAction("Resolution...", this);
+            resolution->setShortcut(QKeySequence("ctrl+o"));
+            outputMenu->addAction(resolution);
+            connect(resolution, &QAction::triggered, this, [=]{this->outputResolutionDlg->open();});
+
+            QAction *record = new QAction("Video recorder...", this);
             record->setShortcut(QKeySequence("ctrl+r"));
-            dialogs->addAction(record);
+            outputMenu->addAction(record);
             connect(record, &QAction::triggered, this, [=]{this->recordDlg->open();});
         }
 
         QMenu *windowMenu = new QMenu("Window", this);
         {
             {
-                QMenu *rendererMenu = new QMenu("Renderer", this);
+                windowMenu->addSeparator();
+
+                QAction *customTitle = new QAction("Custom title...", this);
+
+                connect(customTitle, &QAction::triggered, this, [=]
+                {
+                    const QString newTitle = QInputDialog::getText(this,
+                                                                   "VCS - Enter a custom window title",
+                                                                   "Title (empty restores the default):",
+                                                                   QLineEdit::Normal,
+                                                                   this->windowTitleOverride);
+
+                    if (!newTitle.isNull())
+                    {
+                        this->windowTitleOverride = newTitle;
+                        this->update_window_title();
+                    }
+                });
+
+                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                {
+                    customTitle->setEnabled(false);
+                });
+
+                connect(this, &MainWindow::left_fullscreen, this, [=]
+                {
+                    customTitle->setEnabled(true);
+                });
+
+                windowMenu->addAction(customTitle);
+                windowMenu->addSeparator();
+            }
+
+            {
+                QMenu *rendererMenu = new QMenu("Render using", this);
 
                 QActionGroup *group = new QActionGroup(this);
 
@@ -605,39 +589,6 @@ MainWindow::MainWindow(QWidget *parent) :
                 windowMenu->addAction(center);
                 windowMenu->addAction(topLeft);
             }
-
-            {
-                windowMenu->addSeparator();
-
-                QAction *customTitle = new QAction("Set title...", this);
-
-                connect(customTitle, &QAction::triggered, this, [=]
-                {
-                    const QString newTitle = QInputDialog::getText(this,
-                                                                   "VCS - Enter a custom window title",
-                                                                   "Title (empty restores the default):",
-                                                                   QLineEdit::Normal,
-                                                                   this->windowTitleOverride);
-
-                    if (!newTitle.isNull())
-                    {
-                        this->windowTitleOverride = newTitle;
-                        this->update_window_title();
-                    }
-                });
-
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
-                {
-                    customTitle->setEnabled(false);
-                });
-
-                connect(this, &MainWindow::left_fullscreen, this, [=]
-                {
-                    customTitle->setEnabled(true);
-                });
-
-                windowMenu->addAction(customTitle);
-            }
         }
 
         QAction *about = new QAction("About...", this);
@@ -648,12 +599,55 @@ MainWindow::MainWindow(QWidget *parent) :
         this->contextMenuEyedropper = new QAction("0, 0, 0", this);
         this->contextMenuEyedropper->setEnabled(false);
         this->contextMenuEyedropper->setIcon(QIcon(":/res/images/icons/newie/eyedropper.png"));
-
         this->contextMenu->addAction(this->contextMenuEyedropper);
+
+        connect(this->contextMenu->addAction("Save screenshot..."), &QAction::triggered, this, [this]
+        {
+            QString filename = QFileDialog::getSaveFileName(
+                this,
+                "Save screenshot",
+                "",
+                "Image files (*.png *.jpeg *.bmp *.ppm)"
+            );
+
+            if (QFileInfo(filename).suffix().isEmpty())
+            {
+                filename.append(".png");
+            }
+
+            if (!filename.isEmpty())
+            {
+                const QImage frameImage = ([]()->QImage
+                {
+                    const captured_frame_s &frame = ks_frame_buffer();
+
+                    k_assert((frame.pixelFormat == capture_pixel_format_e::rgb_888),
+                             "Expected frame pixel data to be 32-bit RGB.");
+
+                    if (frame.pixels.is_null())
+                    {
+                        DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
+                        return QImage();
+                    }
+                    else return QImage(frame.pixels.data(), frame.r.w, frame.r.h, QImage::Format_RGB32);
+                })();
+
+                if (frameImage.save(filename))
+                {
+                    DEBUG(("Screenshotted into \"%s\".", filename.toStdString().c_str()));
+                }
+                else
+                {
+                    DEBUG(("Could not screenshot into \"%s\". Possibly an unrecognized file format.",
+                           filename.toStdString().c_str()));
+                }
+            }
+
+        });
+
         this->contextMenu->addSeparator();
         this->contextMenu->addMenu(captureMenu);
         this->contextMenu->addMenu(outputMenu);
-        this->contextMenu->addSeparator();
         this->contextMenu->addMenu(windowMenu);
         this->contextMenu->addSeparator();
         this->contextMenu->addAction(about);

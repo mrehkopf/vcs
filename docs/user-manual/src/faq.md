@@ -64,7 +64,7 @@ To ensure that the capture window displays frames in their correct aspect ratio 
 
 If you hardware supports variable refresh rate output with OpenGL, VCS should be able to take advantage of it.
 
-First, select the <menu-path>Context > Window > Renderer > OpenGL</menu-path> menu option to enable OpenGL rendering, then press the <key-combo>F11</key-combo> key to enter fullscreen mode (see [Entering fullscreen mode](#faq-entering-fullscreen-mode) for caveats). Your hardware's refresh rate should now be matched to the capture's refresh rate.
+First, select the <menu-path>Context > Window > Render using > OpenGL</menu-path> menu option to enable OpenGL rendering, then press the <key-combo>F11</key-combo> key to enter fullscreen mode (see [Entering fullscreen mode](#faq-entering-fullscreen-mode) for caveats). Your hardware's refresh rate should now be matched to the capture's refresh rate.
 
 ## Reducing screen tearing
 

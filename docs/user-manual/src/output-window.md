@@ -258,7 +258,7 @@ The window menu lets you customize various properties of the [output window](#ou
             <th>Explanation</th>
         </tr>
         <tr>
-            <td>Renderer</td>
+            <td>Render using</td>
             <td class="with-inline-table">
                 <dokki-table>
                     <table>
@@ -267,17 +267,17 @@ The window menu lets you customize various properties of the [output window](#ou
                             <th>Explanation</th>
                         </tr>
                         <tr>
-                            <td>Software</td>
-                            <td>
-                                Draw the window using software rendering. Performs well and supports the most features, but may not allow variable refresh rate output.
-                            </td>
-                        </tr>
-                        <tr>
                             <td>OpenGL</td>
                             <td>
                                 <p>
                                     Draw the window using OpenGL. Allows variable refresh rate output (if supported by your hardware), but is incompatible with Windows XP and the magnifying glass feature.
                                 </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Software</td>
+                            <td>
+                                Draw the window using software rendering. Performs well and supports the most features, but may not allow variable refresh rate output.
                             </td>
                         </tr>
                     </table>
@@ -309,7 +309,7 @@ The window menu lets you customize various properties of the [output window](#ou
             </td>
         </tr>
         <tr>
-            <td>Set title...</td>
+            <td>Custom title...</td>
             <td>
                 Give the output window a custom title. All of VCS's normal title bar information - except the frame drop indicator - will be replaced with the text you set. Setting an empty string will restore VCS's default title bar.
             </td>
