@@ -1,4 +1,4 @@
-/* A gray program-wide style for VCS's Qt-based GUI.
+/* A dark program-wide style for VCS's Qt-based GUI.
  *
  * Author: Tarpeeksi Hyvae Soft
  * Created: March 2021
@@ -21,7 +21,6 @@ QInputDialog
 {
     background-color: #454545;
     padding: 40px;
-    border: 2px dashed black;
     margin: 0;
 }
 
