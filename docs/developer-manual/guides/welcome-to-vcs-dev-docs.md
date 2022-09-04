@@ -1,6 +1,5 @@
 # Welcome to VCS Dev Docs
 
-# Introduction
 Welcome to VCS's technical documentation for developers!
 
 These docs aim to provide architectural and code-level information about VCS to developers -- although their contents are fairly sparse and scattered at the moment.
