@@ -1,6 +1,6 @@
 # Implementing a frame filter
 
-[Frame filters](@ref filter.h) provide functionality to the end-user of VCS for manipulating the pixels of captured frames. Blurring, cropping, and denoising are some examples of what these filters could be used for.
+[Frame filters](@ref src/filter/filter.h) provide functionality to the end-user of VCS for manipulating the pixels of captured frames. Blurring, cropping, and denoising are some examples of what these filters could be used for.
 
 In this guide, you'll learn how to implement new frame filters for VCS. The guide will go over a sample implementation of a filter that fills each pixel of an input frame with a solid color.
 
