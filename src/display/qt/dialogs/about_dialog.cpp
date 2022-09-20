@@ -30,9 +30,6 @@ AboutDialog::AboutDialog(QWidget *parent) :
         #endif
     }
 
-    // We'll set this label visible only when there's a new version of VCS available.
-    ui->label_newVersionNotice->setVisible(false);
-
     // Fill the feature matrix of the capture device's capabilities.
     {
         ui->groupBox_captureDeviceInfo->setTitle("Capture device: " + QString::fromStdString(kc_get_device_name()));
@@ -74,13 +71,6 @@ AboutDialog::~AboutDialog()
     }
 
     delete ui;
-
-    return;
-}
-
-void AboutDialog::notify_of_new_program_version(void)
-{
-    ui->label_newVersionNotice->setVisible(true);
 
     return;
 }

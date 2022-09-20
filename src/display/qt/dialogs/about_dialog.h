@@ -15,8 +15,6 @@ public:
     explicit AboutDialog(QWidget *parent = 0);
     ~AboutDialog();
 
-    void notify_of_new_program_version(void);
-
 private:
     Ui::AboutDialog *ui;
 };

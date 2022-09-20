@@ -9,9 +9,6 @@
  *
  */
 
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 #include <QElapsedTimer>
 #include <QTextDocument>
 #include <QElapsedTimer>
@@ -681,39 +678,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->activateWindow();
     this->raise();
-
-    // Check over the network whether there are updates available for VCS.
-    #ifdef RELEASE_BUILD
-    {
-        QNetworkAccessManager *network = new QNetworkAccessManager(this);
-        connect(network, &QNetworkAccessManager::finished, [=](QNetworkReply *reply)
-        {
-            if (reply->error() == QNetworkReply::NoError)
-            {
-                bool isNewVersionAvailable = reply->readAll().trimmed().toInt();
-
-                if (isNewVersionAvailable)
-                {
-                    INFO(("A newer version of VCS is available."));
-
-                    if (this->aboutDlg)
-                    {
-                        this->aboutDlg->notify_of_new_program_version();
-                    }
-                }
-            }
-            else
-            {
-                /// TODO. Handle the error.
-                return;
-            }
-        });
-
-        // Make the request.
-        const QString url = QString("http://www.tarpeeksihyvaesoft.com/vcs/is_newer_version_available.php?uv=%1").arg(PROGRAM_VERSION_STRING);
-        network->get(QNetworkRequest(QUrl(url)));
-    }
-    #endif
 
     // Apply any custom styling.
     {
