@@ -38,7 +38,7 @@ win32 {
     RC_ICONS = "src/display/qt/images/icons/appicon.ico"
 }
 
-QT += core gui network
+QT += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = vcs
