@@ -9,18 +9,22 @@ DEFINES += USE_OPENCV
 linux {
     DEFINES += CAPTURE_DEVICE_VISION_V4L
 
-    # The base path for Datapath's Linux Vision driver header files. These are
-    # bundled with the driver downloadable from Datapath's website. The files
-    # are expected to be in a visionrgb subdirectory of this path e.g.
-    # .../visionrgb/include/rgb133control.h.
-    INCLUDEPATH += $$(HOME)/sdk/ \
-                   /usr/local/include/ \
+    INCLUDEPATH += \
+        # The base path for Datapath's Linux Vision driver header files. These are
+        # bundled with the driver downloadable from Datapath's website. The header
+        # files are expected to be in a "visionrgb/" subdirectory of this path, eg.
+        # ".../visionrgb/include/rgb133control.h".
+        $$(HOME)/sdk/
 
     contains(DEFINES, USE_OPENCV) {
-        LIBS += -L /usr/local/lib/ -lopencv_imgproc -lopencv_videoio -lopencv_highgui -lopencv_core -lopencv_photo
+        LIBS += \
+            -L/usr/local/lib/ \
+            -lopencv_imgproc \
+            -lopencv_videoio \
+            -lopencv_highgui \
+            -lopencv_core \
+            -lopencv_photo
     }
-
-    QMAKE_RPATHDIR += /usr/local/lib/ \
 }
 
 win32 {
@@ -286,12 +290,14 @@ contains(DEFINES, CAPTURE_DEVICE_DOSBOX_MMAP) {
 }
 
 contains(DEFINES, CAPTURE_DEVICE_VISION_V4L) {
-    SOURCES += src/capture/vision_v4l/capture_vision_v4l.cpp \
-               src/capture/vision_v4l/input_channel_v4l.cpp \
-               src/capture/vision_v4l/ic_v4l_video_parameters.cpp
+    SOURCES += \
+        src/capture/vision_v4l/capture_vision_v4l.cpp \
+        src/capture/vision_v4l/input_channel_v4l.cpp \
+        src/capture/vision_v4l/ic_v4l_video_parameters.cpp
 
-    HEADERS += src/capture/vision_v4l/input_channel_v4l.h \
-               src/capture/vision_v4l/ic_v4l_video_parameters.h
+    HEADERS += \
+        src/capture/vision_v4l/input_channel_v4l.h \
+        src/capture/vision_v4l/ic_v4l_video_parameters.h
 }
 
 contains(DEFINES, CAPTURE_DEVICE_RGBEASY) {
@@ -303,10 +309,11 @@ contains(DEFINES, CAPTURE_DEVICE_RGBEASY) {
 }
 
 # C++. For GCC/Clang/MinGW.
-QMAKE_CXXFLAGS += -g
-QMAKE_CXXFLAGS += -O2
-QMAKE_CXXFLAGS += -Wall
-QMAKE_CXXFLAGS += -pipe
-QMAKE_CXXFLAGS += -pedantic
-QMAKE_CXXFLAGS += -std=c++11
-QMAKE_CXXFLAGS += -Wno-missing-field-initializers
+QMAKE_CXXFLAGS += \
+    -g \
+    -O2 \
+    -Wall \
+    -pipe \
+    -pedantic \
+    -std=c++11 \
+    -Wno-missing-field-initializers
