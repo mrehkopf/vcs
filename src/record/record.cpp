@@ -347,7 +347,7 @@ void krecord_record_frame(const captured_frame_s &frame)
                 
                 cv::Mat originalFrame(frame.r.h, frame.r.w, CV_8UC4, (u8*)frame.pixels.data());
                 cv::Mat convertedFrame = cv::Mat(frame.r.h, frame.r.w, CV_8UC3, bufferPtr);
-                cv::cvtColor(originalFrame, convertedFrame, CV_BGRA2BGR);
+                cv::cvtColor(originalFrame, convertedFrame, cv::COLOR_BGRA2BGR);
             }
         }
 

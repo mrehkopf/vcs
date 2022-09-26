@@ -64,9 +64,9 @@ void filter_delta_histogram_c::apply(u8 *const pixels, const resolution_s &r)
             const uint y1r = r.h - ((r.h / 256.0) * ((256.0 / maxval) * re[i-1]));
             const uint y2r = r.h - ((r.h / 256.0) * ((256.0 / maxval) * re[i]));
 
-            cv::line(output, cv::Point(x1, y1b), cv::Point(x2, y2b), cv::Scalar(255, 0, 0), 2, CV_AA);
-            cv::line(output, cv::Point(x1, y1g), cv::Point(x2, y2g), cv::Scalar(0, 255, 0), 2, CV_AA);
-            cv::line(output, cv::Point(x1, y1r), cv::Point(x2, y2r), cv::Scalar(0, 0, 255), 2, CV_AA);
+            cv::line(output, cv::Point(x1, y1b), cv::Point(x2, y2b), cv::Scalar(255, 0, 0), 2, cv::LINE_AA);
+            cv::line(output, cv::Point(x1, y1g), cv::Point(x2, y2g), cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
+            cv::line(output, cv::Point(x1, y1r), cv::Point(x2, y2r), cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
         }
 
         memcpy(prevFramePixels.data(), pixels, prevFramePixels.size_check(r.w * r.h * numColorChannels));

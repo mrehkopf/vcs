@@ -487,11 +487,11 @@ void s_convert_frame_to_bgra(const captured_frame_s &frame)
 
         if (frame.pixelFormat == capture_pixel_format_e::rgb_565)
         {
-            conversionType = CV_BGR5652BGRA;
+            conversionType = cv::COLOR_BGR5652BGRA;
         }
         else if (frame.pixelFormat == capture_pixel_format_e::rgb_555)
         {
-            conversionType = CV_BGR5552BGRA;
+            conversionType = cv::COLOR_BGR5552BGRA;
         }
         else // Unknown type, try to guesstimate it.
         {
@@ -500,15 +500,15 @@ void s_convert_frame_to_bgra(const captured_frame_s &frame)
 
             if (frame.r.bpp == 32)
             {
-                conversionType = CV_RGBA2BGRA;
+                conversionType = cv::COLOR_RGBA2BGRA;
             }
             if (frame.r.bpp == 24)
             {
-                conversionType = CV_BGR2BGRA;
+                conversionType = cv::COLOR_BGR2BGRA;
             }
             else
             {
-                conversionType = CV_BGR5652BGRA;
+                conversionType = cv::COLOR_BGR5652BGRA;
             }
         }
 
