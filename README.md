@@ -41,9 +41,17 @@ The VisionAV range of cards should also work, albeit without their audio capture
 
 ## Building
 
-Run `$ qmake && make` in the repo's root; or open [vcs.pro](vcs.pro) in Qt Creator. (See also dependencies, below.)
+Run `$ qmake && make` in the repo's root; or open [vcs.pro](vcs.pro) in Qt Creator. See also [Dependencies](#dependencies).
 
-I've been compiling VCS using GCC 5...9 on Linux and MinGW 5.3 on Windows. My Qt has been version 5.5...5.12 on Linux and 5.7 on Windows. Sticking with these tools should give you the least number of compatibility issues.
+I've been building VCS using GCC 9 on Linux and MinGW 5.3 on Windows. My Qt has been version 5.12 on Linux and 5.7 on Windows. Sticking with these tools should give you the least number of compatibility issues.
+
+### Release build vs debug build
+
+The default configuration in [vcs.pro](vcs.pro) produces a debug build, with &ndash; among other things &ndash; more copious run-time bounds-checking of memory accesses. The run-time debugging features are expected to reduce performance to some extent, but can help reveal programming errors.
+
+Defining `RELEASE_BUILD` globally will produce a release build, with fewer debugging checks in performance-critical sections of the program. Simply uncomment `DEFINES += RELEASE_BUILD` at the top of [vcs.pro](vcs.pro) and execute a full rebuild.
+
+To confirm whether the program is running in release or debug mode, check the About dialog (right-click VCS's output window and select "About&hellip;"). For debug builds, the program's version will be reported as "VCS x.x.x (non-release build)", whereas for release builds it'll be "VCS x.x.x".
 
 ### Dependencies
 
