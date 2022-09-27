@@ -14,10 +14,10 @@ diff -crB ./dosbox-0.74-3/configure ./dosbox-0.74-3-vcs/configure
   ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmain.cpp
 *** ./dosbox-0.74-3/src/gui/sdlmain.cpp	2019-06-26 17:56:44.000000000 +0300
---- ./dosbox-0.74-3-vcs/src/gui/sdlmain.cpp	2022-08-01 03:38:59.120369000 +0300
+--- ./dosbox-0.74-3-vcs/src/gui/sdlmain.cpp	2022-09-27 02:50:47.670811818 +0300
 ***************
 *** 221,226 ****
---- 221,293 ----
+--- 221,294 ----
   
   static SDL_Block sdl;
   
@@ -26,42 +26,43 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
 + static unsigned char *THS_MMAP_SCREEN_BUF;
 + static bool THS_IS_SHARED_MEM_INIT = false;
 + #include <sys/mman.h>
++ #include <sys/stat.h>
 + #include <fcntl.h>
 + #include <cassert>
-+ static unsigned char* ths_acquire_shared_memory_buffer(const char *name, const size_t size)
++ static unsigned char* ths_acquire_shared_memory_buffer(const char *filename)
 + {
-+ 	assert((size > 0) && "VCS: Invalid shared memory buffer size");
-+ 	
-+ 	const int fileDesc = shm_open(name, O_RDWR, 0666);
++ 	const int fileDesc = shm_open(filename, O_RDWR, 0666);
 + 	assert((fileDesc >= 0) && "VCS: Failed to open the shared memory file");
 + 
-+ 	unsigned char *const bufPtr = (unsigned char*)mmap(NULL, size, 0666, MAP_SHARED, fileDesc, 0);
++ 	struct stat fileStat;
++ 	if (fstat(fileDesc, &fileStat) != 0)
++ 	{
++ 		perror("VCS: fstat() error");
++ 		assert(!"VCS: Failed to stat a shared memory file.");
++ 		return NULL;
++ 	}
++ 
++ 	unsigned char *const bufPtr = (unsigned char*)mmap(NULL, fileStat.st_size, 0666, MAP_SHARED, fileDesc, 0);
 + 	assert(bufPtr && "VCS: Failed to map the shared memory file");
 + 
-+ 	printf("VCS: Acquired shared memory buffer %s (%u bytes) to 0x%x\n", name, size, bufPtr);
++ 	printf("VCS: Acquired shared memory buffer %s (%u bytes) to %p\n", filename, fileStat.st_size, (void*)bufPtr);
 + 
 + 	return bufPtr;
 + }
 + static void ths_init_shared_memory_interface(void)
 + {
-+ 	if (THS_IS_SHARED_MEM_INIT)
-+ 	{
-+ 		return;
-+ 	}
-+ 
-+ 	const unsigned statusBufferSize = 1024;
-+ 	THS_MMAP_STATUS_BUF = ths_acquire_shared_memory_buffer("vcs_dosbox_mmap_status", statusBufferSize);
-+ 
-+ 	const unsigned screenBufferSize = *((uint32_t*)(&THS_MMAP_STATUS_BUF[1]));
-+ 	THS_MMAP_SCREEN_BUF = ths_acquire_shared_memory_buffer("vcs_dosbox_mmap_screen", screenBufferSize);
-+ 
++ 	THS_MMAP_STATUS_BUF = ths_acquire_shared_memory_buffer("vcs_dosbox_mmap_status");
++ 	THS_MMAP_SCREEN_BUF = ths_acquire_shared_memory_buffer("vcs_dosbox_mmap_screen");
 + 	THS_IS_SHARED_MEM_INIT = 1;
 + 	
 + 	return;
 + }
 + static void ths_copy_frame_buffer(SDL_Block *sdl)
 + {
-+ 	ths_init_shared_memory_interface();
++ 	if (!THS_IS_SHARED_MEM_INIT)
++ 	{
++ 		ths_init_shared_memory_interface();
++ 	}
 + 
 + 	// VCS will set this value to 0 once it's done accessing the pixel buffer
 + 	// and DOSBox is free to modify the buffer again.
@@ -100,7 +101,7 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
   		}
   #else //C_OPENGL
   		SDL_FillRect(sdl.surface,NULL,SDL_MapRGB(sdl.surface->format,0,0,0));
---- 306,312 ----
+--- 307,313 ----
   		else {
   			glClearColor (0.0, 0.0, 0.0, 1.0);
   			glClear(GL_COLOR_BUFFER_BIT);
@@ -117,7 +118,7 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
   		glClear(GL_COLOR_BUFFER_BIT);
   		glShadeModel (GL_FLAT);
   		glDisable (GL_DEPTH_TEST);
---- 780,786 ----
+--- 781,787 ----
   
   		glClearColor (0.0, 0.0, 0.0, 1.0);
   		glClear(GL_COLOR_BUFFER_BIT);
@@ -134,7 +135,7 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
   		}
   		break;
   #endif
---- 1014,1020 ----
+--- 1015,1021 ----
   				index++;
   			}
   			glCallList(sdl.opengl.displaylist);
@@ -151,7 +152,7 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
   	if(gl_ext && *gl_ext){
   		sdl.opengl.packed_pixel=(strstr(gl_ext,"EXT_packed_pixels") != NULL);
   		sdl.opengl.paletted_texture=(strstr(gl_ext,"EXT_paletted_texture") != NULL);
---- 1318,1324 ----
+--- 1319,1325 ----
   	glBufferDataARB = (PFNGLBUFFERDATAARBPROC)SDL_GL_GetProcAddress("glBufferDataARB");
   	glMapBufferARB = (PFNGLMAPBUFFERARBPROC)SDL_GL_GetProcAddress("glMapBufferARB");
   	glUnmapBufferARB = (PFNGLUNMAPBUFFERARBPROC)SDL_GL_GetProcAddress("glUnmapBufferARB");
