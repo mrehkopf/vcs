@@ -106,7 +106,7 @@ The title bar may contain some or all of the following elements, from left to ri
             </td>
         </tr>
         <tr>
-            <td>scaled to ░ &times; ░ (░ FPS)</td>
+            <td>shown in ░ &times; ░ (░ FPS)</td>
             <td>
                 The current output resolution and the rate at which the output is being updated.
             </td>

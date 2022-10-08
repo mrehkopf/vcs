@@ -1219,7 +1219,7 @@ void MainWindow::update_window_title(void)
         }
         else
         {
-            title = QString("%1%2 - %3%4 \u00d7 %5 (%6 Hz) scaled to %7 \u00d7 %8 (%9 FPS)")
+            title = QString("%1%2 - %3%4 \u00d7 %5 (%6 Hz) shown in %7 \u00d7 %8 (%9 FPS)")
                     .arg(this->areFramesBeingDropped? (missedFramesMarker + " ") : "")
                     .arg(PROGRAM_NAME)
                     .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
