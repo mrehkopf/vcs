@@ -17,6 +17,15 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
 
     disable_output_size_controls(false);
 
+    // Initialize GUI controls to their starting values.
+    {
+        ui->spinBox_outputResX->setMaximum(MAX_OUTPUT_WIDTH);
+        ui->spinBox_outputResX->setMinimum(MIN_OUTPUT_WIDTH);
+
+        ui->spinBox_outputResY->setMaximum(MAX_OUTPUT_HEIGHT);
+        ui->spinBox_outputResY->setMinimum(MIN_OUTPUT_HEIGHT);
+    }
+
     // Connect the GUI controls to consequences for changing their values.
     {
         // Returns true if the given checkbox is in a proper checked state. Returns
