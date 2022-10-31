@@ -11,9 +11,9 @@ The central point of the VCS user interface is the output window, where captured
 
 If you press the middle mouse button over the output window, a magnifying glass will pop up, showing an elarged view of the area around the cursor.
 
-<dokki-tip>
-    The magnifying glass feature isn't available while using the OpenGL renderer.
-</dokki-tip>
+<dokki-warning>
+    The magnifying glass feature isn't available when using the OpenGL renderer.
+</dokki-warning>
 
 ### Dragging
 
@@ -31,9 +31,9 @@ The output window &ndash; along with the frames it's displaying &ndash; can be r
 
 Although you can emulate a fullscreen mode by turning off the output window's border and then scaling the window to the size of the the display area, there's also a true fullscreen mode available. You can toggle it on/off with the <key-combo>F11</key-combo> key.</p>
 
-<dokki-warning>
+<dokki-tip>
     For the fullscreen mode to work best, you may first need to manually resize the output window to match the resolution of your screen.
-</dokki-warning>
+</dokki-tip>
 
 ## Title bar
 
@@ -137,7 +137,9 @@ Under special circumstances, the title bar may also show one of these messages:
         <tr>
             <td>Invalid capture channel</td>
             <td>
-                The requested input channel on the capture device, or the entire capture device, is unavailable for use. This could be caused e.g. by an out-of-range input channel index or the capture device driver not being installed.
+                <p>
+                    The requested input channel on the capture device, or the entire capture device, is unavailable for use. This could be caused e.g. by an out-of-range input channel index or the capture device driver not being installed.
+                </p>
                 <dokki-tip>
                     On Linux, the Datapath Vision driver must be re-installed whenever your kernel is updated &ndash; failure to do so will result in this error message. Sometimes a kernel update will break compatibility with the driver, so ensure that the driver installer finishes successfully.
                 </dokki-tip> 
