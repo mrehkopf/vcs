@@ -8,13 +8,13 @@
         <script defer src="https://www.tarpeeksihyvaesoft.com/assets/font-awesome-5-15-4/attribution.js"></script>
         <script defer src="https://www.tarpeeksihyvaesoft.com/dokki/distributable/dokki.js"></script>
 
+        <script type="module" src="./js/manual-version-selector.js"></script>
+
         <script type="module">
             import {keyboardKey, keyCombo} from "./js/key-combo.js";
             import {menuPath} from "./js/menu-path.js";
-            import thsFeedbackLink from "https://www.tarpeeksihyvaesoft.com/blog/+assets/ths-feedback-link.js";
-            import thsFeedbackInlineButton from "https://www.tarpeeksihyvaesoft.com/blog/+assets/ths-feedback-inline-button.js";
-            import feedbackForm from "https://www.tarpeeksihyvaesoft.com/feedback/feedback.js";
-            window.dokkiUserComponents = [menuPath, keyboardKey, keyCombo, thsFeedbackLink, thsFeedbackInlineButton, feedbackForm];
+            window.dokkiUserComponents = (window.dokkiUserComponents || []);
+            window.dokkiUserComponents.push(menuPath, keyboardKey, keyCombo);
         </script>
 
         <style>
@@ -107,6 +107,7 @@
 
             .dokki-table td.with-inline-table > .dokki-table
             {
+                width: 100%;
                 margin: 0;
                 border: none;
                 border-radius: 0;
@@ -161,7 +162,10 @@
         <ths-feedback></ths-feedback>
         <template dokki-document>
             <section title>
-                User's manual for VCS 2.5.1
+                User's manual for VCS (master branch)
+            </section>
+            <section widgets>
+                <manual-version-selector/>
             </section>
             <section content>
                 <article src="introduction.md"></article>
