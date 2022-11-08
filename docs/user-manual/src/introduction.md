@@ -5,7 +5,7 @@ VCS is a third-party capture tool by [Tarpeeksi Hyvae Soft](https://www.tarpeeks
 VCS is [available on GitHub](https://github.com/leikareipa/vcs). You can also <ths-inline-feedback-button>send direct feedback</ths-inline-feedback-button>.
 
 > A screenshot of VCS 2.4 showing the capture window and some of the control dialogs\
-![{image:1189x878}{headerless}](../img/vcs-2.4-with-dialogs.png)
+![{image:1189x878}{headerless}](../img/vcs-2.4-with-dialogs.webp)
 
 ## Program features
 
