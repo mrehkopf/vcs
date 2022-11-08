@@ -588,67 +588,18 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         }
 
-        QAction *about = new QAction("About...", this);
-        {
-            connect(about, &QAction::triggered, this, [=]{this->aboutDlg->open();});
-        }
-
         this->contextMenuEyedropper = new QAction("0, 0, 0", this);
         this->contextMenuEyedropper->setEnabled(false);
         this->contextMenuEyedropper->setIcon(QIcon(":/res/images/icons/newie/eyedropper.png"));
+
         this->contextMenu->addAction(this->contextMenuEyedropper);
-
-        connect(this->contextMenu->addAction("Save screenshot..."), &QAction::triggered, this, [this]
-        {
-            QString filename = QFileDialog::getSaveFileName(
-                this,
-                "Save screenshot",
-                "",
-                "Image files (*.png *.jpeg *.bmp *.ppm)"
-            );
-
-            if (filename.isEmpty())
-            {
-                return;
-            }
-
-            if (QFileInfo(filename).suffix().isEmpty())
-            {
-                filename.append(".png");
-            }
-
-            const QImage frameImage = ([]()->QImage
-            {
-                const captured_frame_s &frame = ks_frame_buffer();
-
-                k_assert((frame.pixelFormat == capture_pixel_format_e::rgb_888),
-                         "Expected frame pixel data to be 32-bit RGB.");
-
-                if (frame.pixels.is_null())
-                {
-                    DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
-                    return QImage();
-                }
-                else return QImage(frame.pixels.data(), frame.r.w, frame.r.h, QImage::Format_RGB32);
-            })();
-
-            if (frameImage.save(filename))
-            {
-                DEBUG(("Screenshotted into \"%s\".", filename.toStdString().c_str()));
-            }
-            else
-            {
-                DEBUG(("Could not screenshot into \"%s\". Possibly an unrecognized file format.",
-                       filename.toStdString().c_str()));
-            }
-        });
-
+        connect(this->contextMenu->addAction("Save screenshot..."), &QAction::triggered, this, [=]{this->save_screenshot();});
         this->contextMenu->addSeparator();
         this->contextMenu->addMenu(captureMenu);
         this->contextMenu->addMenu(outputMenu);
         this->contextMenu->addMenu(windowMenu);
         this->contextMenu->addSeparator();
-        this->contextMenu->addAction(about);
+        connect(this->contextMenu->addAction("About..."), &QAction::triggered, this, [=]{this->aboutDlg->open();});
 
         // Ensure that action shortcuts can be used regardless of which dialog has focus.
         for (const auto *menu: {captureMenu, outputMenu, windowMenu})
@@ -1237,7 +1188,7 @@ void MainWindow::update_window_title(void)
     return;
 }
 
-void MainWindow::update_gui_state()
+void MainWindow::update_gui_state(void)
 {
     // Manually spin the event loop.
     QCoreApplication::sendPostedEvents();
@@ -1258,12 +1209,12 @@ void MainWindow::update_window_size(void)
     return;
 }
 
-bool MainWindow::window_has_border()
+bool MainWindow::window_has_border(void)
 {
     return !bool(windowFlags() & Qt::FramelessWindowHint);
 }
 
-void MainWindow::toggle_window_border()
+void MainWindow::toggle_window_border(void)
 {
     if (this->isFullScreen())
     {
@@ -1285,6 +1236,53 @@ void MainWindow::toggle_window_border()
 
     this->show();
     update_window_size();
+}
+
+void MainWindow::save_screenshot(void)
+{
+    QString filename = QFileDialog::getSaveFileName(
+        this,
+        "Save screenshot",
+        "",
+        "Image files (*.png *.jpeg *.bmp *.ppm)"
+    );
+
+    if (filename.isEmpty())
+    {
+        return;
+    }
+
+    if (QFileInfo(filename).suffix().isEmpty())
+    {
+        filename.append(".png");
+    }
+
+    const QImage frameImage = ([]()->QImage
+    {
+        const captured_frame_s &frame = ks_frame_buffer();
+
+        k_assert((frame.pixelFormat == capture_pixel_format_e::rgb_888),
+                 "Expected frame pixel data to be 32-bit RGB.");
+
+        if (frame.pixels.is_null())
+        {
+            DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
+            return QImage();
+        }
+        else return QImage(frame.pixels.data(), frame.r.w, frame.r.h, QImage::Format_RGB32);
+    })();
+
+    if (frameImage.save(filename))
+    {
+        DEBUG(("Screenshotted into \"%s\".", filename.toStdString().c_str()));
+    }
+    else
+    {
+        DEBUG(("Could not screenshot into \"%s\". Possibly an unrecognized file format.",
+               filename.toStdString().c_str()));
+    }
+
+    return;
 }
 
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)

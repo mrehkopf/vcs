@@ -106,6 +106,8 @@ private:
 
     void toggle_window_border(void);
 
+    void save_screenshot(void);
+
     Ui::MainWindow *ui = nullptr;
 
     // The menu items shown when the user right-clicks this window.
