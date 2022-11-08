@@ -34,7 +34,7 @@ const manualVersionSelector = {
         update_inline_svg_fill_color() {
             this.inlineSvgFillColor = (
                 getComputedStyle(document.body)
-                .getPropertyValue("--dokkiCSS-page-primary-fg-color")
+                .getPropertyValue("--dokkiCSS-page-secondary-fg-color")
                 .replace("#", "%23")
             );
         },
@@ -88,7 +88,7 @@ const manualVersionSelector = {
 
         .dokki-user-widget.manual-version-selector
         {
-            color: var(--dokkiCSS-page-primary-fg-color);
+            color: var(--dokkiCSS-page-secondary-fg-color);
             font-family: var(--dokkiCSS-regular-font-family);
             font-size: var(--dokkiCSS-regular-font-size);
         }
