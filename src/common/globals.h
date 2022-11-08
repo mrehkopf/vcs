@@ -18,7 +18,7 @@
 #include <cassert>
 
 const char PROGRAM_NAME[] = "VCS";
-const char PROGRAM_VERSION_STRING[] = "2.5.1";
+const char PROGRAM_VERSION_STRING[] = "2.5.2";
 
 // The minimum and maximum resolution we can output frames in.
 const uint MIN_OUTPUT_WIDTH = 160;
