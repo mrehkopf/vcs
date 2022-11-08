@@ -424,12 +424,12 @@ MainWindow::MainWindow(QWidget *parent) :
                     }
                 });
 
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                connect(this, &MainWindow::fullscreen_mode_enabled, this, [=]
                 {
                     customTitle->setEnabled(false);
                 });
 
-                connect(this, &MainWindow::left_fullscreen, this, [=]
+                connect(this, &MainWindow::fullscreen_mode_disabled, this, [=]
                 {
                     customTitle->setEnabled(true);
                 });
@@ -453,12 +453,12 @@ MainWindow::MainWindow(QWidget *parent) :
                 software->setCheckable(true);
                 rendererMenu->addAction(software);
 
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                connect(this, &MainWindow::fullscreen_mode_enabled, this, [=]
                 {
                     rendererMenu->setEnabled(false);
                 });
 
-                connect(this, &MainWindow::left_fullscreen, this, [=]
+                connect(this, &MainWindow::fullscreen_mode_disabled, this, [=]
                 {
                     rendererMenu->setEnabled(true);
                 });
@@ -499,17 +499,17 @@ MainWindow::MainWindow(QWidget *parent) :
                     showBorder->setChecked(false);
                 });
 
-                connect(this, &MainWindow::border_revealed, this, [=]
+                connect(this, &MainWindow::border_shown, this, [=]
                 {
                     showBorder->setChecked(true);
                 });
 
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                connect(this, &MainWindow::fullscreen_mode_enabled, this, [=]
                 {
                     showBorder->setEnabled(false);
                 });
 
-                connect(this, &MainWindow::left_fullscreen, this, [=]
+                connect(this, &MainWindow::fullscreen_mode_disabled, this, [=]
                 {
                     showBorder->setEnabled(true);
                 });
@@ -529,12 +529,12 @@ MainWindow::MainWindow(QWidget *parent) :
                 fullscreen->setChecked(this->isFullScreen());
                 fullscreen->setShortcut(QKeySequence("f11"));
 
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                connect(this, &MainWindow::fullscreen_mode_enabled, this, [=]
                 {
                     fullscreen->setChecked(true);
                 });
 
-                connect(this, &MainWindow::left_fullscreen, this, [=]
+                connect(this, &MainWindow::fullscreen_mode_disabled, this, [=]
                 {
                     fullscreen->setChecked(false);
                 });
@@ -570,13 +570,13 @@ MainWindow::MainWindow(QWidget *parent) :
                     this->move(0, 0);
                 });
 
-                connect(this, &MainWindow::entered_fullscreen, this, [=]
+                connect(this, &MainWindow::fullscreen_mode_enabled, this, [=]
                 {
                     center->setEnabled(false);
                     topLeft->setEnabled(false);
                 });
 
-                connect(this, &MainWindow::left_fullscreen, this, [=]
+                connect(this, &MainWindow::fullscreen_mode_disabled, this, [=]
                 {
                     center->setEnabled(true);
                     topLeft->setEnabled(true);
@@ -967,12 +967,12 @@ void MainWindow::changeEvent(QEvent *event)
         /// mode and back, not every time the window's state changes.
         if (this->windowState() & Qt::WindowFullScreen)
         {
-            emit this->entered_fullscreen();
+            emit this->fullscreen_mode_enabled();
             this->setCursor(QCursor(Qt::BlankCursor));
         }
         else
         {
-            emit this->left_fullscreen();
+            emit this->fullscreen_mode_disabled();
             this->unsetCursor();
         }
     }
@@ -1272,26 +1272,19 @@ void MainWindow::toggle_window_border()
 
     const Qt::WindowFlags borderlessFlags = (Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 
-    // Show the border.
     if (!window_has_border())
     {
         this->setWindowFlags(this->defaultWindowFlags & ~borderlessFlags);
-        this->show();
-
-        update_window_size();
-
-        emit this->border_revealed();
+        emit this->border_shown();
     }
-    // Hide the border.
     else
     {
         this->setWindowFlags(Qt::FramelessWindowHint | borderlessFlags);
-        this->show();
-
-        update_window_size();
-
         emit this->border_hidden();
     }
+
+    this->show();
+    update_window_size();
 }
 
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)

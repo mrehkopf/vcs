@@ -80,15 +80,10 @@ public:
     AboutDialog* about_dialog(void)                        const { return this->aboutDlg; }
 
 signals:
-    void entered_fullscreen(void);
-    void left_fullscreen(void);
-
-    // Emitted when the window border is toggled.
+    void fullscreen_mode_enabled(void);
+    void fullscreen_mode_disabled(void);
     void border_hidden(void);
-    void border_revealed(void);
-
-private slots:
-    void toggle_window_border(void);
+    void border_shown(void);
 
 private:
     void contextMenuEvent(QContextMenuEvent *event);
@@ -108,6 +103,8 @@ private:
     bool load_font(const QString &filename);
 
     void update_context_menu_eyedropper(const QPoint &scalerOutputPos);
+
+    void toggle_window_border(void);
 
     Ui::MainWindow *ui = nullptr;
 
