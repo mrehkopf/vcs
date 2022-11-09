@@ -594,7 +594,7 @@ MainWindow::MainWindow(QWidget *parent) :
         this->contextMenuEyedropper->setIcon(QIcon(":/res/images/icons/newie/eyedropper.png"));
 
         this->contextMenu->addAction(this->contextMenuEyedropper);
-        connect(this->contextMenu->addAction("Save screenshot..."), &QAction::triggered, this, [=]{this->save_screenshot();});
+        connect(this->contextMenu->addAction("Save as image"), &QAction::triggered, this, [=]{this->save_screenshot();});
         this->contextMenu->addSeparator();
         this->contextMenu->addMenu(captureMenu);
         this->contextMenu->addMenu(outputMenu);
@@ -1271,7 +1271,7 @@ void MainWindow::save_screenshot(void)
 
     if (frameImage.save(dateStampedFilename))
     {
-        INFO(("Screenshotted to \"%s\".", dateStampedFilename.toStdString().c_str()));
+        INFO(("Output saved to \"%s\".", dateStampedFilename.toStdString().c_str()));
     }
     else
     {
