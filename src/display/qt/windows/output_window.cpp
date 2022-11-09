@@ -18,9 +18,10 @@
 #include <QTreeWidget>
 #include <QMessageBox>
 #include <QMouseEvent>
-#include <QFileDialog>
+#include <QDateTime>
 #include <QShortcut>
 #include <QPainter>
+#include <QRegExp>
 #include <QScreen>
 #include <QImage>
 #include <QLabel>
@@ -1240,22 +1241,18 @@ void MainWindow::toggle_window_border(void)
 
 void MainWindow::save_screenshot(void)
 {
-    QString filename = QFileDialog::getSaveFileName(
-        this,
-        "Save screenshot",
-        "",
-        "Image files (*.png *.jpeg *.bmp *.ppm)"
-    );
-
-    if (filename.isEmpty())
+    const QString dateStampedFilename = ([]()->QString
     {
-        return;
-    }
+        QString filename = QString("vcs %1.png").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd 'at' hh:mm:ss"));
 
-    if (QFileInfo(filename).suffix().isEmpty())
-    {
-        filename.append(".png");
-    }
+        if (QFile::exists(filename))
+        {
+            // Append the current time's milliseconds, for some protection against filename collisions.
+            filename.replace(QRegExp(".png$"), QString(".%1.png").arg(QTime::currentTime().toString("z")));
+        }
+
+        return filename;
+    })();
 
     const QImage frameImage = ([]()->QImage
     {
@@ -1272,14 +1269,13 @@ void MainWindow::save_screenshot(void)
         else return QImage(frame.pixels.data(), frame.r.w, frame.r.h, QImage::Format_RGB32);
     })();
 
-    if (frameImage.save(filename))
+    if (frameImage.save(dateStampedFilename))
     {
-        DEBUG(("Screenshotted into \"%s\".", filename.toStdString().c_str()));
+        INFO(("Screenshotted to \"%s\".", dateStampedFilename.toStdString().c_str()));
     }
     else
     {
-        DEBUG(("Could not screenshot into \"%s\". Possibly an unrecognized file format.",
-               filename.toStdString().c_str()));
+        NBENE(("Failed to take a screenshot."));
     }
 
     return;
