@@ -70,7 +70,6 @@ const manualVersionSelector = {
         class="manual-version-selector"
         title="Select a different version of VCS"
     >
-        <i class="widget-icon fas fa-book"></i>
         <select @change="on_select">
             <option
                 v-for="version in supported_manual_versions"
@@ -82,16 +81,21 @@ const manualVersionSelector = {
     </dokki-user-widget>
 
     <component is="style" type="text/css">
-        .dokki-user-widget.manual-version-selector i
-        {
-            margin-right: 0.25em !important;
-        }
-
         .dokki-user-widget.manual-version-selector
         {
             color: var(--dokkiCSS-page-secondary-fg-color);
             font-family: var(--dokkiCSS-regular-font-family);
             font-size: var(--dokkiCSS-regular-font-size);
+            border-radius: var(--dokkiCSS-embedded-border-radius);
+            padding: min(10px, 0.4em);
+            margin-top: max(-11px, calc(-1 * (0.4em + 1px))) !important;
+            margin-bottom: max(-11px, calc(-1 * (0.4em + 1px))) !important;
+            border: 1px solid var(--dokkiCSS-page-primary-line-color);
+        }
+
+        .dokki-user-widget.manual-version-selector i
+        {
+            margin-right: 0.25em !important;
         }
 
         .dokki-user-widget.manual-version-selector select
