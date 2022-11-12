@@ -22,31 +22,6 @@
         </script>
 
         <style>
-            .dokki-topic .menu-path,
-            .dokki-topic .key-combo
-            {
-                border-radius: var(--dokkiCSS-embedded-border-radius);
-                margin: 2px 1px;
-                display: inline-flex;
-                align-items: baseline;
-                border: 1px solid var(--dokkiCSS-page-primary-line-color);
-            }
-
-            .dokki-topic .key-combo > .icon,
-            .dokki-topic .key-combo > .path,
-            .dokki-topic .menu-path > .icon,
-            .dokki-topic .menu-path > .path
-            {
-                padding: 0.15em 0.6em;
-            }
-            
-            .dokki-topic .key-combo > .path,
-            .dokki-topic .menu-path > .path
-            {
-                box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-                border-radius: 10px;
-            }
-
             .dokki-topic .key-combo > .icon,
             .dokki-topic .menu-path > .icon
             {
@@ -54,6 +29,12 @@
                 padding-left: 0.7em;
                 padding-right: 0.7em;
                 background-color: var(--dokkiCSS-page-primary-line-color);
+            }
+
+            .dokki-topic .key-combo .separator,
+            .dokki-topic .menu-path .separator
+            {
+                color: var(--dokkiCSS-page-inert-fg-color);
             }
 
             .dokki-topic .menu-path .separator
@@ -70,13 +51,19 @@
                 margin-left: 2px;
             }
 
-            .dokki-topic em
+            .dokki-topic em,
+            .dokki-topic .menu-path,
+            .dokki-topic .key-combo
             {
-                font-style: italic;
+                font-style: normal;
                 background-color: var(--dokkiCSS-embedded-auxiliary-color);
                 border-radius: 10px;
-                padding: 1px 4px;
                 font-weight: normal !important;
+                padding: 0.13rem 0.5rem;
+                margin: 1px;
+                display: inline-flex;
+                color: var(--dokkiCSS-page-primary-fg-color);
+                font-size: 95%;
             }
 
             .dokki-topic strong

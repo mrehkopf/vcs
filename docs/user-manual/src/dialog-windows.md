@@ -119,7 +119,7 @@ This dialog can be accessed with <key-combo>Ctrl + I</key-combo> or <menu-path>C
 
 Normally, the capture device will automatically set the capture resolution to match that of the input signal, but sometimes the result isn't quite right. The input resolution dialog lets you override this resolution with your own one.
 
-You can change a button's assigned resolution by clicking on it while pressing the Alt key.
+You can change a button's assigned resolution by clicking on it while pressing the <key-combo>Alt</key-combo> key.
 
 ## Output resolution dialog
 
@@ -253,19 +253,19 @@ The following video recorder settings should result in the highest possible outp
         </tr>
         <tr>
             <td>Video codec</td>
-            <td>x264</td>
+            <td><em>x264</em></td>
         </tr>
         <tr>
             <td>Profile</td>
-            <td>High 4:4:4</td>
+            <td><em>High 4:4:4</em></td>
         </tr>
         <tr>
             <td>Pixel format</td>
-            <td>RGB</td>
+            <td><em>RGB</em></td>
         </tr>
         <tr>
             <td>CRF</td>
-            <td>0<sup>*</sup></td>
+            <td><em>0</em><sup>*</sup></td>
         </tr>
         <tr>
             <td colspan="2">
