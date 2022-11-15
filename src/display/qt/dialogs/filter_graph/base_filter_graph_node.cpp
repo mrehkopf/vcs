@@ -63,7 +63,7 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
             const bool isSelected = (option->state & QStyle::State_Selected);
 
             // Node's background.
-            painter->setPen(QPen(QColor(isSelected? "#bb7900" : this->current_background_color()), 2, Qt::SolidLine));
+            painter->setPen(QPen(QColor(isSelected? "#a0a0a0" : this->current_background_color()), 2, Qt::SolidLine));
             painter->setBrush(QBrush(QColor("#454545")));
             painter->drawRoundedRect(QRect(0, 0, this->width, this->height), borderRadius, borderRadius);
 
@@ -76,9 +76,9 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
         // Connection points (edges).
         for (const auto &edge: this->edges)
         {
-            painter->setPen(QPen(QColor("black"), 1.5, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor("#ffc04d")));
-            painter->drawEllipse(edge.rect.center(), 10, 10);
+            painter->setPen(QPen(QColor("#ffc04d"), 1.5, Qt::SolidLine));
+            painter->setBrush(QBrush(QColor("#151515")));
+            painter->drawEllipse(edge.rect.center(), 7, 7);
         }
     }
 
