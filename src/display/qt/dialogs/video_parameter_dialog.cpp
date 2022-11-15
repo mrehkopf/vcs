@@ -4,8 +4,6 @@
 #include <QTimer>
 #include <functional>
 #include <cstring>
-#include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
-#include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/subclasses/QComboBox_video_preset_list.h"
 #include "display/qt/subclasses/QGroupBox_parameter_grid.h"
 #include "display/qt/subclasses/QMenu_dialog_file_menu.h"

@@ -24,6 +24,7 @@
 #include <QRegExp>
 #include <QScreen>
 #include <QImage>
+#include <QMenu>
 #include <QLabel>
 #include <cmath>
 #include "display/qt/subclasses/QLabel_magnifying_glass.h"

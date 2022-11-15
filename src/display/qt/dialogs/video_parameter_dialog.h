@@ -3,30 +3,11 @@
 
 #include <deque>
 #include "filter/filter.h"
-#include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 
-class InteractibleNodeGraph;
-class VideoGraphNode;
 class QMenuBar;
 
 struct video_preset_s;
-
-enum class video_graph_node_type_e
-{
-    video_parameters,
-    resolution,
-    label,
-    refresh_rate,
-    shortcut
-};
-
-class VideoGraphNode : public QObject, public InteractibleNodeGraphNode
-{
-    Q_OBJECT
-
-public:
-};
 
 namespace Ui {
 class VideoParameterDialog;
@@ -80,13 +61,6 @@ private:
     void update_active_preset_indicator(void);
 
     Ui::VideoParameterDialog *ui;
-
-    InteractibleNodeGraph *graphicsScene = nullptr;
-
-    // All the nodes that are currently in the graph.
-    std::vector<BaseFilterGraphNode*> inputGateNodes;
-
-    unsigned numNodesAdded = 0;
 };
 
 #endif
