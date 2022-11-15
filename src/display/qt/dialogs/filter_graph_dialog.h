@@ -5,7 +5,7 @@
 #include "filter/filter.h"
 
 class InteractibleNodeGraph;
-class FilterGraphNode;
+class BaseFilterGraphNode;
 class QMenuBar;
 class QMenu;
 
@@ -34,8 +34,8 @@ public:
     bool load_graph_from_file(const QString &filename);
 
 private:
-    FilterGraphNode* add_filter_graph_node(const std::string &filterTypeUuid,
-                                           const std::vector<std::pair<unsigned, double>> &initialParamValues = {});
+    BaseFilterGraphNode* add_filter_graph_node(const std::string &filterTypeUuid,
+                                               const std::vector<std::pair<unsigned, double>> &initialParamValues = {});
 
     void reset_graph(const bool autoAccept = false);
 
@@ -50,7 +50,7 @@ private:
     QMenu *filtersMenu = nullptr;
 
     // All the nodes that are currently in the graph.
-    std::vector<FilterGraphNode*> inputGateNodes;
+    std::vector<BaseFilterGraphNode*> inputGateNodes;
 
     unsigned numNodesAdded = 0;
 };

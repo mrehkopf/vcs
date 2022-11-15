@@ -5,6 +5,7 @@
  *
  */
 
+#include "display/qt/dialogs/filter_graph/base_filter_graph_node.h"
 #include "common/disk/file_writers/file_writer_filter_graph.h"
 #include "common/disk/file_streamer.h"
 #include "common/globals.h"
@@ -12,7 +13,7 @@
 #include "filter/abstract_filter.h"
 
 bool file_writer::filter_graph::version_b::write(const std::string &filename,
-                                                 const std::vector<FilterGraphNode*> &nodes,
+                                                 const std::vector<BaseFilterGraphNode*> &nodes,
                                                  const std::vector<filter_graph_option_s> &graphOptions)
 {   
     file_streamer_c outFile(filename);
@@ -24,7 +25,7 @@ bool file_writer::filter_graph::version_b::write(const std::string &filename,
     {
         outFile << "filterCount," << nodes.size() << "\n";
 
-        for (FilterGraphNode *const node: nodes)
+        for (BaseFilterGraphNode *const node: nodes)
         {
             outFile << "id,{" << QString::fromStdString(node->associatedFilter->uuid()) << "}\n";
 
@@ -41,7 +42,7 @@ bool file_writer::filter_graph::version_b::write(const std::string &filename,
     {
         outFile << "nodeCount," << nodes.size() << "\n";
 
-        for (FilterGraphNode *const node: nodes)
+        for (BaseFilterGraphNode *const node: nodes)
         {
             // How many individual parameters (like scenePosition, backgroundColor, etc.)
             // we'll save.

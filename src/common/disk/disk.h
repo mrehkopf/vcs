@@ -25,8 +25,7 @@
 #include "common/propagate/vcs_event.h"
 #include "display/display.h"
 
-class FilterGraphNode;
-class QString;
+class BaseFilterGraphNode;
 
 struct filter_graph_option_s;
 struct video_signal_parameters_s;
@@ -52,7 +51,7 @@ bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
  * @see
  * kdisk_load_filter_graph()
  */
-bool kdisk_save_filter_graph(const std::vector<FilterGraphNode*> &nodes,
+bool kdisk_save_filter_graph(const std::vector<BaseFilterGraphNode*> &nodes,
                              const std::string &filename);
 
 /*!

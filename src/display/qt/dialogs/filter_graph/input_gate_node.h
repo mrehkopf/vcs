@@ -9,14 +9,14 @@
 #define VCS_DISPLAY_QT_DIALOGS_FILTER_GRAPH_INPUT_GATE_NODE_H
 
 #include "filter/filter.h"
-#include "display/qt/dialogs/filter_graph/filter_graph_node.h"
+#include "display/qt/dialogs/filter_graph/base_filter_graph_node.h"
 
-class InputGateNode : public FilterGraphNode
+class InputGateNode : public BaseFilterGraphNode
 {
 public:
     InputGateNode(const QString title,
                   const unsigned width = 200,
-                  const unsigned height = 130) : FilterGraphNode(filter_node_type_e::gate, title, width, height)
+                  const unsigned height = 130) : BaseFilterGraphNode(filter_node_type_e::gate, title, width, height)
     {
         this->edges =
         {

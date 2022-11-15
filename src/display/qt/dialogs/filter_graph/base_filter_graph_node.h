@@ -18,16 +18,16 @@ enum class filter_node_type_e
     filter,
 };
 
-class FilterGraphNode : public QObject, public InteractibleNodeGraphNode
+class BaseFilterGraphNode : public QObject, public InteractibleNodeGraphNode
 {
     Q_OBJECT
 
 public:
-    FilterGraphNode(const filter_node_type_e filterType,
+    BaseFilterGraphNode(const filter_node_type_e filterType,
                     const QString title,
                     const unsigned width = 240,
                     const unsigned height = 130);
-    virtual ~FilterGraphNode();
+    virtual ~BaseFilterGraphNode();
 
     abstract_filter_c *associatedFilter = nullptr;
 

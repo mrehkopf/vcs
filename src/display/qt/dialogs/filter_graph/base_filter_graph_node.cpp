@@ -10,10 +10,10 @@
 #include <QStyle>
 #include "filter/filter.h"
 #include "common/globals.h"
-#include "display/qt/dialogs/filter_graph/filter_graph_node.h"
+#include "display/qt/dialogs/filter_graph/base_filter_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 
-FilterGraphNode::FilterGraphNode(const filter_node_type_e type,
+BaseFilterGraphNode::BaseFilterGraphNode(const filter_node_type_e type,
                                  const QString title,
                                  const unsigned width,
                                  const unsigned height) :
@@ -25,7 +25,7 @@ FilterGraphNode::FilterGraphNode(const filter_node_type_e type,
     return;
 }
 
-FilterGraphNode::~FilterGraphNode()
+BaseFilterGraphNode::~BaseFilterGraphNode()
 {
     kf_delete_filter_instance(this->associatedFilter);
 
@@ -35,7 +35,7 @@ FilterGraphNode::~FilterGraphNode()
     return;
 }
 
-QRectF FilterGraphNode::boundingRect(void) const
+QRectF BaseFilterGraphNode::boundingRect(void) const
 {
     const int margin = 7;
 
@@ -45,7 +45,7 @@ QRectF FilterGraphNode::boundingRect(void) const
                   (this->height + (margin * 2)));
 }
 
-void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     (void)widget;
 
@@ -90,7 +90,7 @@ void FilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
     return;
 }
 
-void FilterGraphNode::set_background_color(const QString &colorName)
+void BaseFilterGraphNode::set_background_color(const QString &colorName)
 {
     // If we recognize this color name.
     if ((this->backgroundColorList.indexOf(colorName) >= 0) &&
@@ -105,17 +105,17 @@ void FilterGraphNode::set_background_color(const QString &colorName)
     return;
 }
 
-const QList<QString>& FilterGraphNode::background_color_list(void)
+const QList<QString>& BaseFilterGraphNode::background_color_list(void)
 {
     return this->backgroundColorList;
 }
 
-const QString& FilterGraphNode::current_background_color_name(void)
+const QString& BaseFilterGraphNode::current_background_color_name(void)
 {
     return this->backgroundColor;
 }
 
-const QColor FilterGraphNode::current_background_color(void)
+const QColor BaseFilterGraphNode::current_background_color(void)
 {
     const QString currentColor = this->backgroundColor.toLower();
 
@@ -126,12 +126,12 @@ const QColor FilterGraphNode::current_background_color(void)
     return this->backgroundColor;
 }
 
-bool FilterGraphNode::is_enabled(void) const
+bool BaseFilterGraphNode::is_enabled(void) const
 {
     return this->isEnabled;
 }
 
-void FilterGraphNode::set_enabled(const bool isEnabled)
+void BaseFilterGraphNode::set_enabled(const bool isEnabled)
 {
     this->isEnabled = isEnabled;
     emit this->enabled_state_set(isEnabled);
@@ -141,7 +141,7 @@ void FilterGraphNode::set_enabled(const bool isEnabled)
     return;
 }
 
-void FilterGraphNode::generate_right_click_menu(void)
+void BaseFilterGraphNode::generate_right_click_menu(void)
 {
     if (this->rightClickMenu)
     {
@@ -164,7 +164,7 @@ void FilterGraphNode::generate_right_click_menu(void)
         enabled->setCheckable(true);
         enabled->setChecked(this->isEnabled);
 
-        connect(this, &FilterGraphNode::enabled_state_set, this, [=](const bool isEnabled)
+        connect(this, &BaseFilterGraphNode::enabled_state_set, this, [=](const bool isEnabled)
         {
             enabled->setChecked(isEnabled);
         });

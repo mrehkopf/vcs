@@ -9,14 +9,14 @@
 #define VCS_DISPLAY_QT_DIALOGS_FILTER_GRAPH_FILTER_NODE_H
 
 #include "filter/filter.h"
-#include "display/qt/dialogs/filter_graph/filter_graph_node.h"
+#include "display/qt/dialogs/filter_graph/base_filter_graph_node.h"
 
-class FilterNode : public FilterGraphNode
+class FilterNode : public BaseFilterGraphNode
 {
 public:
     FilterNode(const QString title,
                const unsigned width = 240,
-               const unsigned height = 130) : FilterGraphNode(filter_node_type_e::filter, title, width, height)
+               const unsigned height = 130) : BaseFilterGraphNode(filter_node_type_e::filter, title, width, height)
     {
         this->edges =
         {

@@ -84,7 +84,7 @@ private:
     InteractibleNodeGraph *graphicsScene = nullptr;
 
     // All the nodes that are currently in the graph.
-    std::vector<FilterGraphNode*> inputGateNodes;
+    std::vector<BaseFilterGraphNode*> inputGateNodes;
 
     unsigned numNodesAdded = 0;
 };

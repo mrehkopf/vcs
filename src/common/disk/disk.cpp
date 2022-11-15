@@ -11,7 +11,7 @@
 #include <QString>
 #include <QDebug>
 #include <QFile>
-#include "display/qt/dialogs/filter_graph/filter_graph_node.h"
+#include "display/qt/dialogs/filter_graph/base_filter_graph_node.h"
 #include "common/disk/file_streamer.h"
 #include "common/disk/file_reader.h"
 #include "common/disk/file_writers/file_writer_video_presets.h"
@@ -206,7 +206,7 @@ bool kdisk_save_aliases(const std::vector<resolution_alias_s> &aliases,
     return false;
 }
 
-bool kdisk_save_filter_graph(const std::vector<FilterGraphNode*> &nodes,
+bool kdisk_save_filter_graph(const std::vector<BaseFilterGraphNode*> &nodes,
                              const std::string &filename)
 {
     if (!file_writer::filter_graph::version_b::write(filename, nodes, {}))

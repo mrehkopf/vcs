@@ -6,7 +6,7 @@
 #include <QTimer>
 #include <QLabel>
 #include <functional>
-#include "display/qt/dialogs/filter_graph/filter_graph_node.h"
+#include "display/qt/dialogs/filter_graph/base_filter_graph_node.h"
 #include "display/qt/dialogs/filter_graph/filter_node.h"
 #include "display/qt/dialogs/filter_graph/input_gate_node.h"
 #include "display/qt/dialogs/filter_graph/output_gate_node.h"
@@ -232,7 +232,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
         connect(this->graphicsScene, &InteractibleNodeGraph::nodeRemoved, this, [this](InteractibleNodeGraphNode *const node)
         {
-            FilterGraphNode *const filterNode = dynamic_cast<FilterGraphNode*>(node);
+            BaseFilterGraphNode *const filterNode = dynamic_cast<BaseFilterGraphNode*>(node);
 
             if (filterNode)
             {
@@ -310,11 +310,11 @@ bool FilterGraphDialog::load_graph_from_file(const QString &filename)
 
         // Add the loaded nodes to the filter graph.
         {
-            std::vector<FilterGraphNode*> addedNodes;
+            std::vector<BaseFilterGraphNode*> addedNodes;
 
             for (const auto &abstractNode: loadedAbstractNodes)
             {
-                FilterGraphNode *const node = this->add_filter_graph_node(abstractNode.typeUuid, abstractNode.parameters);
+                BaseFilterGraphNode *const node = this->add_filter_graph_node(abstractNode.typeUuid, abstractNode.parameters);
                 k_assert(node, "Failed to create a filter graph node.");
 
                 node->setPos(abstractNode.position.first, abstractNode.position.second);
@@ -368,11 +368,11 @@ void FilterGraphDialog::save_graph_into_file(QString filename)
         filename += ".vcs-filter-graph";
     }
 
-    std::vector<FilterGraphNode*> filterNodes;
+    std::vector<BaseFilterGraphNode*> filterNodes;
     {
         for (auto node: this->graphicsScene->items())
         {
-            const auto filterNode = dynamic_cast<FilterGraphNode*>(node);
+            const auto filterNode = dynamic_cast<BaseFilterGraphNode*>(node);
 
             if (filterNode)
             {
@@ -391,7 +391,7 @@ void FilterGraphDialog::save_graph_into_file(QString filename)
 
 // Adds a new instance of the given filter type into the node graph. Returns a
 // pointer to the new node.
-FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const std::string &filterTypeUuid,
+BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(const std::string &filterTypeUuid,
                                                           const std::vector<std::pair<unsigned, double>> &initialParamValues)
 {
     abstract_filter_c *const filter = kf_create_filter_instance(filterTypeUuid, initialParamValues);
@@ -403,7 +403,7 @@ FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const std::string &fil
     const unsigned filterWidgetHeight = (guiWidget->height() + 29);
     const QString nodeTitle = QString("%1. %2").arg(this->numNodesAdded+1).arg(QString::fromStdString(filter->name()));
 
-    FilterGraphNode *newNode = nullptr;
+    BaseFilterGraphNode *newNode = nullptr;
 
     // Initialize the node.
     {
@@ -454,12 +454,12 @@ FilterGraphNode* FilterGraphDialog::add_filter_graph_node(const std::string &fil
         this->data_changed();
     });
 
-    connect(newNode, &FilterGraphNode::background_color_changed, this, [this]
+    connect(newNode, &BaseFilterGraphNode::background_color_changed, this, [this]
     {
         this->data_changed();
     });
 
-    connect(newNode, &FilterGraphNode::enabled_state_set, this, [this]
+    connect(newNode, &BaseFilterGraphNode::enabled_state_set, this, [this]
     {
         this->data_changed();
     });
@@ -478,8 +478,8 @@ void FilterGraphDialog::recalculate_filter_chains(void)
 {
     kf_unregister_all_filter_chains();
 
-    const std::function<void(FilterGraphNode *const, std::vector<abstract_filter_c*>)> traverse_filter_node =
-          [&](FilterGraphNode *const node, std::vector<abstract_filter_c*> accumulatedFilterChain)
+    const std::function<void(BaseFilterGraphNode *const, std::vector<abstract_filter_c*>)> traverse_filter_node =
+          [&](BaseFilterGraphNode *const node, std::vector<abstract_filter_c*> accumulatedFilterChain)
     {
         k_assert((node && node->associatedFilter), "Trying to visit an invalid node.");
 
@@ -509,7 +509,7 @@ void FilterGraphDialog::recalculate_filter_chains(void)
         // NOTE: This assumes that each node in the graph only has one output edge.
         for (auto outgoing: node->output_edge()->connectedTo)
         {
-            traverse_filter_node(dynamic_cast<FilterGraphNode*>(outgoing->parentNode), accumulatedFilterChain);
+            traverse_filter_node(dynamic_cast<BaseFilterGraphNode*>(outgoing->parentNode), accumulatedFilterChain);
         }
 
         return;

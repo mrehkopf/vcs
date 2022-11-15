@@ -54,13 +54,15 @@ RCC_DIR = generated_files
 MOC_DIR = generated_files
 UI_DIR = generated_files
 
-INCLUDEPATH += $$PWD/src/ \
-               $$PWD/src/display/qt/subclasses/
+INCLUDEPATH += \
+    $$PWD/src/ \
+    $$PWD/src/display/qt/subclasses/
 
 RESOURCES += \
     src/display/qt/res.qrc
 
 SOURCES += \
+    src/display/qt/dialogs/filter_graph/base_filter_graph_node.cpp \
     src/main.cpp \
     src/display/display.cpp \
     src/display/qt/subclasses/QLabel_magnifying_glass.cpp \
@@ -151,7 +153,6 @@ SOURCES += \
     src/display/qt/dialogs/filter_graph/output_gate_node.cpp \
     src/display/qt/dialogs/filter_graph/input_gate_node.cpp \
     src/display/qt/dialogs/filter_graph/filter_node.cpp \
-    src/display/qt/dialogs/filter_graph/filter_graph_node.cpp \
     src/display/qt/dialogs/video_parameter_dialog.cpp \
     src/capture/video_presets.cpp \
     src/common/disk/file_writers/file_writer_video_presets_version_a.cpp \
@@ -164,6 +165,7 @@ SOURCES += \
 HEADERS += \
     src/common/globals.h \
     src/common/types.h \
+    src/display/qt/dialogs/filter_graph/base_filter_graph_node.h \
     src/display/qt/subclasses/QComboBox_video_preset_list.h \
     src/display/qt/subclasses/QDialog_vcs_base_dialog.h \
     src/display/qt/subclasses/QFrame_filtergui_for_qt.h \
@@ -252,7 +254,6 @@ HEADERS += \
     src/display/qt/dialogs/filter_graph/output_gate_node.h \
     src/display/qt/dialogs/filter_graph/input_gate_node.h \
     src/display/qt/dialogs/filter_graph/filter_node.h \
-    src/display/qt/dialogs/filter_graph/filter_graph_node.h \
     src/display/qt/dialogs/video_parameter_dialog.h \
     src/common/refresh_rate.h \
     src/capture/video_presets.h \
