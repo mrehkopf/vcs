@@ -170,7 +170,7 @@ void InteractibleNodeGraph::update_scene_connections(void)
         }
         else
         {
-            this->connectionEvent.graphicsLine = this->addLine(line, QPen(QColor("lightseagreen"), 4, Qt::DotLine));
+            this->connectionEvent.graphicsLine = this->addLine(line, QPen(QColor("#ffc04d"), 2, Qt::DashLine));
         }
     }
 
@@ -237,8 +237,7 @@ void InteractibleNodeGraph::connect_scene_edges(const node_edge_s *const sourceE
     }
     else
     {
-        this->edgeConnections.push_back(node_edge_connection_s(sourceEdge, targetEdge,
-                                                               this->addLine(line, QPen(QColor("lightseagreen"), 3))));
+        this->edgeConnections.push_back(node_edge_connection_s(sourceEdge, targetEdge, this->addLine(line, QPen(QColor("#bb7900"), 2))));
     }
 
     emit this->edgeConnectionAdded(sourceEdge, targetEdge);

@@ -20,7 +20,7 @@ public:
     {
         this->edges =
         {
-            node_edge_s(node_edge_s::direction_e::in, QRect(-8, 6, 24, 28), this),
+            node_edge_s(node_edge_s::direction_e::in, QRect(-12, 6, 24, 74), this),
         };
 
         return;

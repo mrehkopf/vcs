@@ -52,7 +52,6 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
     QFont bodyFont = painter->font();
     QFont titleFont = painter->font();
 
-    const unsigned edgePenThickness = 2;
     const unsigned borderRadius = 3;
 
     // Draw the node's body.
@@ -61,31 +60,33 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
         // Background.
         {
+            const bool isSelected = (option->state & QStyle::State_Selected);
+
             // Node's background.
-            painter->setPen(QPen(QColor((option->state & QStyle::State_Selected)? "#c0c0c0" : this->current_background_color()), edgePenThickness, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor("#555555")));
+            painter->setPen(QPen(QColor(isSelected? "#bb7900" : this->current_background_color()), 2, Qt::SolidLine));
+            painter->setBrush(QBrush(QColor("#454545")));
             painter->drawRoundedRect(QRect(0, 0, this->width, this->height), borderRadius, borderRadius);
 
             // Title bar's background.
             painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor("black"), (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
-            painter->drawRoundedRect(QRect(6, 8, (this->width - 12), 24), borderRadius, borderRadius);
+            painter->setBrush(QBrush(QColor("#151515"), (this->is_enabled()? Qt::SolidPattern : Qt::DiagCrossPattern)));
+            painter->drawRoundedRect(QRect(4, 4, (this->width - 8), 28), borderRadius, borderRadius);
         }
 
         // Connection points (edges).
         for (const auto &edge: this->edges)
         {
-            painter->setPen(QPen(QColor("black"), edgePenThickness, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor("lightseagreen")));
-            painter->drawRoundedRect(edge.rect, borderRadius, borderRadius);
+            painter->setPen(QPen(QColor("black"), 1.5, Qt::SolidLine));
+            painter->setBrush(QBrush(QColor("#ffc04d")));
+            painter->drawEllipse(edge.rect.center(), 10, 10);
         }
     }
 
     // Draw the title.
     const QString elidedTitle = QFontMetrics(titleFont).elidedText(this->title, Qt::ElideRight, (this->width - 42));
     painter->setFont(titleFont);
-    painter->setPen(QColor(this->is_enabled()? "white" : "lightgray"));
-    painter->drawText((this->input_edge()? 22 : 14), 26, elidedTitle);
+    painter->setPen(QColor(this->is_enabled()? "whitesmoke" : "lightgray"));
+    painter->drawText(12, 23, elidedTitle);
 
     return;
 }
