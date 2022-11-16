@@ -64,7 +64,7 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
             // Node's background.
             painter->setPen(QPen(QColor(isSelected? "#a0a0a0" : this->current_background_color()), 2, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor("#454545")));
+            painter->setBrush(QBrush(QColor(69, 69, 69, 215)));
             painter->drawRoundedRect(QRect(0, 0, this->width, this->height), borderRadius, borderRadius);
 
             // Title bar's background.
