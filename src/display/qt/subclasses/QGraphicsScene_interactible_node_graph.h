@@ -23,19 +23,8 @@ public:
     void connect_scene_edges(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
     void disconnect_scene_edges(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge, const bool noEmit = false);
     void remove_node(InteractibleNodeGraphNode *const node);
-    void reset_scene();
-
-private:
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-
-    void complete_connection_event(node_edge_s *const finalEdge);
-    void start_connection_event(node_edge_s *const sourceEdge, const QPointF mousePos);
-    void reset_current_connection_event(void);
-
-    node_connection_event_s connectionEvent;
-    std::vector<node_edge_connection_s> edgeConnections;
+    void reset_scene(void);
+    int grid_size(void) const;
 
 signals:
     // Emitted when the given two edges are connected in the scene.
@@ -46,6 +35,21 @@ signals:
 
     // Emitted when the given node is removed from the scene.
     void nodeRemoved(InteractibleNodeGraphNode *const node);
+
+private:
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void drawBackground(QPainter *painter, const QRectF &rect);
+
+    void complete_connection_event(node_edge_s *const finalEdge);
+    void start_connection_event(node_edge_s *const sourceEdge, const QPointF mousePos);
+    void reset_current_connection_event(void);
+
+    node_connection_event_s connectionEvent;
+    std::vector<node_edge_connection_s> edgeConnections;
+
+    int gridSize = 15;
 };
 
 #endif

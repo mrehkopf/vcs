@@ -51,7 +51,6 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
     QFont bodyFont = painter->font();
     QFont titleFont = painter->font();
-
     const unsigned borderRadius = 3;
 
     // Draw the node's body.

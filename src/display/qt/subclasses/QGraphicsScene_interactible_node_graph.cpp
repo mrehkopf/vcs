@@ -29,6 +29,7 @@
  */
 
 #include <QApplication>
+#include <QPainter>
 #include <QWidget>
 #include <QCursor>
 #include <QDebug>
@@ -133,6 +134,34 @@ void InteractibleNodeGraph::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     return;
 }
 
+void InteractibleNodeGraph::drawBackground(QPainter *painter, const QRectF &rect)
+{
+    // Draw a grid over the background.
+    {
+        painter->setPen(QPen(QColor(0, 0, 0, 80), 1, Qt::SolidLine));
+
+        const QRect intRect = rect.toRect();
+        int x = (intRect.left() - (intRect.left() % this->grid_size()));
+        int y = (intRect.top() - (intRect.top() % this->grid_size()));
+
+        while (x <= intRect.right())
+        {
+            painter->drawLine(x, intRect.top(), x, intRect.bottom());
+            x += this->grid_size();
+        }
+
+        while (y <= intRect.bottom())
+        {
+            painter->drawLine(intRect.left(), y, intRect.right(), y);
+            y += this->grid_size();
+        }
+    }
+
+    QGraphicsScene::drawBackground(painter, rect);
+
+    return;
+}
+
 // Reposition any connections between nodes in the scene, to account for any changes
 // in the nodes' positioning etc.
 void InteractibleNodeGraph::update_scene_connections(void)
@@ -169,7 +198,7 @@ void InteractibleNodeGraph::update_scene_connections(void)
         }
         else
         {
-            this->connectionEvent.graphicsLine = this->addLine(line, QPen(QColor("#ffc04d"), 2, Qt::DashLine));
+            this->connectionEvent.graphicsLine = this->addLine(line, QPen(QColor("#ffc04d"), 2));
         }
     }
 
@@ -295,4 +324,9 @@ void InteractibleNodeGraph::reset_scene(void)
     this->edgeConnections.clear();
 
     return;
+}
+
+int InteractibleNodeGraph::grid_size() const
+{
+    return this->gridSize;
 }

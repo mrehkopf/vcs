@@ -49,10 +49,10 @@ void InteractibleNodeGraphNode::disconnect_all_edges(void)
 void InteractibleNodeGraphNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     // If we were dragging any nodes, snap them to a grid.
-    if (QApplication::keyboardModifiers() & Qt::ControlModifier)
+    if (QApplication::keyboardModifiers() & Qt::ShiftModifier)
     {
-        const double gridSize = 15;
         InteractibleNodeGraph *const scene = dynamic_cast<InteractibleNodeGraph*>(this->scene());
+        const double gridSize = double(scene->grid_size());
 
         for (auto *selectedItem: scene->selectedItems())
         {
