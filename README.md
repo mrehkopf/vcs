@@ -35,7 +35,7 @@ The VisionAV range of cards should also work, albeit without their audio capture
 
 - [VCS Developer's Manual](https://www.tarpeeksihyvaesoft.com/vcs/docs/developer-manual/)
 - VCS User's Manual
-    - [master branch](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/) (includes changes not yet released in a binary distributable)
+    - [master branch](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/) (includes changes not yet released in a versioned distributable)
     - [2.5.2](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.5.2/)
     - [2.5.1](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.5.1/)
     - [2.5.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.5.0/)
