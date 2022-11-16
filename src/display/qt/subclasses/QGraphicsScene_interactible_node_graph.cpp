@@ -127,7 +127,6 @@ void InteractibleNodeGraph::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     if (QApplication::mouseButtons() == Qt::LeftButton)
     {
         this->update_scene_connections();
-
         this->connectionEvent.mousePos = event->scenePos();
     }
 

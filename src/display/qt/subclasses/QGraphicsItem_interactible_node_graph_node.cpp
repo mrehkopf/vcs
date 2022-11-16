@@ -11,6 +11,8 @@
  *
  */
 
+#include <QApplication>
+#include <cmath>
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 
@@ -40,6 +42,30 @@ void InteractibleNodeGraphNode::disconnect_all_edges(void)
             edge.disconnect_from(connection);
         }
     }
+
+    return;
+}
+
+void InteractibleNodeGraphNode::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    // If we were dragging any nodes, snap them to a grid.
+    if (QApplication::keyboardModifiers() & Qt::ControlModifier)
+    {
+        const double gridSize = 15;
+        InteractibleNodeGraph *const scene = dynamic_cast<InteractibleNodeGraph*>(this->scene());
+
+        for (auto *selectedItem: scene->selectedItems())
+        {
+            selectedItem->setPos(
+                (gridSize * std::round(selectedItem->x() / gridSize)),
+                (gridSize * std::round(selectedItem->y() / gridSize))
+            );
+        }
+
+        scene->update_scene_connections();
+    }
+
+    QGraphicsItem::mouseReleaseEvent(event);
 
     return;
 }

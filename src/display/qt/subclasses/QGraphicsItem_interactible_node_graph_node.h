@@ -95,6 +95,7 @@ protected:
     std::vector<node_edge_s> edges;
 
 private:
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif
