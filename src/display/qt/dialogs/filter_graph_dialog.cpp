@@ -391,9 +391,10 @@ void FilterGraphDialog::save_graph_into_file(QString filename)
 
 // Adds a new instance of the given filter type into the node graph. Returns a
 // pointer to the new node.
-BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(const std::string &filterTypeUuid,
-                                                          const std::vector<std::pair<unsigned, double>> &initialParamValues)
-{
+BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(
+    const std::string &filterTypeUuid,
+    const std::vector<std::pair<unsigned, double>> &initialParamValues
+){
     abstract_filter_c *const filter = kf_create_filter_instance(filterTypeUuid, initialParamValues);
     k_assert(filter, "Failed to create a new filter node.");
 
@@ -401,7 +402,7 @@ BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(const std::string 
 
     const unsigned filterWidgetWidth = (guiWidget->width() + 10);
     const unsigned filterWidgetHeight = (guiWidget->height() + 29);
-    const QString nodeTitle = QString("%1. %2").arg(this->numNodesAdded+1).arg(QString::fromStdString(filter->name()));
+    const QString nodeTitle = QString("%1: %2").arg(this->numNodesAdded+1).arg(QString::fromStdString(filter->name()));
 
     BaseFilterGraphNode *newNode = nullptr;
 
