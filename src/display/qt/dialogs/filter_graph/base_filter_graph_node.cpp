@@ -52,6 +52,7 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
     QFont bodyFont = painter->font();
     QFont titleFont = painter->font();
     const unsigned borderRadius = 3;
+    const bool isGate = (this->filterType == filter_node_type_e::gate);
 
     // Draw the node's body.
     {
@@ -68,7 +69,7 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
             // Title bar's background.
             painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor("#151515"), (this->is_enabled()? Qt::SolidPattern : Qt::DiagCrossPattern)));
+            painter->setBrush(QBrush(QColor(isGate? "#252525" : "#151515"), (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
             painter->drawRoundedRect(QRect(4, 4, (this->width - 8), 28), borderRadius, borderRadius);
         }
 
@@ -84,7 +85,7 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
     // Draw the title.
     const QString elidedTitle = QFontMetrics(titleFont).elidedText(this->title, Qt::ElideRight, (this->width - 42));
     painter->setFont(titleFont);
-    painter->setPen(QColor(this->is_enabled()? "whitesmoke" : "lightgray"));
+    painter->setPen(isGate? "#b9b9b9" : QColor(this->is_enabled()? "whitesmoke" : "lightgray"));
     painter->drawText(12, 23, elidedTitle);
 
     return;

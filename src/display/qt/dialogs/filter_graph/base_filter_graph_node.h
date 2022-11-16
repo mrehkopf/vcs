@@ -40,14 +40,11 @@ public:
     const QString& current_background_color_name(void);
     const QColor current_background_color(void);
     bool is_enabled(void) const;
-
     void set_enabled(const bool isEnabled);
-
     QRectF boundingRect(void) const;
 
 signals:
     void enabled_state_set(const bool isEnabled);
-
     void background_color_changed(const QString &newColor);
 
 protected:

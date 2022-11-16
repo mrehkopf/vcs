@@ -138,20 +138,25 @@ void InteractibleNodeGraph::drawBackground(QPainter *painter, const QRectF &rect
 {
     // Draw a grid over the background.
     {
-        painter->setPen(QPen(QColor(0, 0, 0, 80), 1, Qt::SolidLine));
-
         const QRect intRect = rect.toRect();
         int x = (intRect.left() - (intRect.left() % this->grid_size()));
         int y = (intRect.top() - (intRect.top() % this->grid_size()));
 
+        const auto line_opacity_at = [this](const int value)->int
+        {
+            return ((value % (this->grid_size() * 5))? 70 : 120);
+        };
+
         while (x <= intRect.right())
         {
+            painter->setPen(QPen(QColor(0, 0, 0, line_opacity_at(x)), 1, Qt::SolidLine));
             painter->drawLine(x, intRect.top(), x, intRect.bottom());
             x += this->grid_size();
         }
 
         while (y <= intRect.bottom())
         {
+            painter->setPen(QPen(QColor(0, 0, 0, line_opacity_at(y)), 1, Qt::SolidLine));
             painter->drawLine(intRect.left(), y, intRect.right(), y);
             y += this->grid_size();
         }
