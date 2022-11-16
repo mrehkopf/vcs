@@ -144,7 +144,7 @@ void InteractibleNodeGraph::drawBackground(QPainter *painter, const QRectF &rect
 
         const auto line_opacity_at = [this](const int value)->int
         {
-            return ((value % (this->grid_size() * 5))? 70 : 120);
+            return ((value % (this->grid_size() * 5))? 60 : 120);
         };
 
         while (x <= intRect.right())
