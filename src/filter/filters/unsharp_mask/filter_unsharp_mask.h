@@ -28,7 +28,7 @@ public:
     CLONABLE_FILTER_TYPE(filter_unsharp_mask_c)
 
     std::string uuid(void) const override { return "03847778-bb9c-4e8c-96d5-0c10335c4f34"; }
-    std::string name(void) const override { return "Unsharp Mask"; }
+    std::string name(void) const override { return "Unsharp mask"; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
 
     void apply(u8 *const pixels, const resolution_s &r) override;
