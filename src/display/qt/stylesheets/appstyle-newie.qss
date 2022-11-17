@@ -44,7 +44,6 @@ QScrollArea
 }
 
 QGraphicsView
-
 {
     background-color: #353535;
     margin: 0;
@@ -83,6 +82,20 @@ QGroupBox > PropertyTable
 {
     margin-left: 6px;
     margin-right: 6px;
+}
+
+QDialog[objectName="OverlayDialog"] QPlainTextEdit,
+QDialog[objectName="OverlayDialog"] QGroupBox
+{
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+}
+
+QDialog[objectName="OverlayDialog"] QPlainTextEdit
+{
+    padding: 6px;
 }
 
 QDialog[objectName="InputResolutionDialog"] QFrame

@@ -47,8 +47,6 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
             connect(this, &VCSBaseDialog::enabled_state_set, this, [=](const bool isEnabled)
             {
                 enable->setChecked(isEnabled);
-                ui->groupBox_overlayEditor->setEnabled(isEnabled);
-
                 kd_update_output_window_title();
             });
 
