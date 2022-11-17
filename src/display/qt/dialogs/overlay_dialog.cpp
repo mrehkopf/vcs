@@ -129,6 +129,20 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
                 htmlMenu->addSeparator();
 
+                connect(htmlMenu->addAction("Table"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor(
+                        "<table style=\"color: white; background-color: black;\">\n"
+                        "\t<tr>\n"
+                        "\t\t<td>Cell 1</td>\n"
+                        "\t\t<td>Cell 2</td>\n"
+                        "\t</tr>\n"
+                        "</table>\n"
+                    );
+                });
+
+                htmlMenu->addSeparator();
+
                 connect(htmlMenu->addAction("Align left"), &QAction::triggered, this, [=]
                 {
                     this->insert_text_into_overlay_editor("<div style=\"text-align: left;\"></div>\n");
