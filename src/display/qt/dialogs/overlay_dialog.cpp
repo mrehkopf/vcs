@@ -40,7 +40,9 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
         {
             QMenu *fileMenu = new QMenu("File", this->menuBar);
 
-            // Intentionally left blank for now.
+            // This menu is intentionally left blank for now.
+            fileMenu->addAction("No actions available");
+            fileMenu->actions().at(0)->setEnabled(false);
 
             this->menuBar->addMenu(fileMenu);
         }
@@ -145,6 +147,17 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
                         "\t\t<td>Cell 2</td>\n"
                         "\t</tr>\n"
                         "</table>\n"
+                    );
+                });
+
+                connect(htmlMenu->addAction("Style block"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor(
+                        "<style>\n"
+                        "\tdiv {\n"
+                        "\t\tcolor: red;\n"
+                        "\t}\n"
+                        "</style>\n"
                     );
                 });
 
