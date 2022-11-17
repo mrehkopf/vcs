@@ -146,7 +146,7 @@ void InteractibleNodeGraphView::populate_edge_click_menu(node_edge_s *const edge
 
     this->edgeClickMenu->clear();
 
-    this->edgeClickMenu->addAction("Disconnect from");
+    this->edgeClickMenu->addAction("Disconnect from...");
     this->edgeClickMenu->actions().at(0)->setEnabled(false);
 
     this->edgeClickMenu->addSeparator();

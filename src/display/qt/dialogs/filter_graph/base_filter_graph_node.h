@@ -23,13 +23,13 @@ class BaseFilterGraphNode : public QObject, public InteractibleNodeGraphNode
     Q_OBJECT
 
 public:
-    BaseFilterGraphNode(const filter_node_type_e filterType,
-                    const QString title,
-                    const unsigned width = 240,
-                    const unsigned height = 130);
+    BaseFilterGraphNode(
+        const filter_node_type_e filterType,
+        const QString title,
+        const unsigned width = 240,
+        const unsigned height = 130
+        );
     virtual ~BaseFilterGraphNode();
-
-    abstract_filter_c *associatedFilter = nullptr;
 
     // Convenience functions that can be used to access the node's (default) input and output edge.
     virtual node_edge_s* input_edge(void) { return nullptr; }
@@ -42,6 +42,9 @@ public:
     bool is_enabled(void) const;
     void set_enabled(const bool isEnabled);
     QRectF boundingRect(void) const;
+    void generate_right_click_menu(void);
+
+    abstract_filter_c *associatedFilter = nullptr;
 
 signals:
     void enabled_state_set(const bool isEnabled);
@@ -66,9 +69,6 @@ protected:
     bool isEnabled = true;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
-private:
-    void generate_right_click_menu(void);
 };
 
 #endif
