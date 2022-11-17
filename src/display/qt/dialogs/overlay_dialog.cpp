@@ -62,114 +62,92 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
             this->menuBar->addMenu(overlayMenu);
         }
 
-        // Variables...
+        // Insert...
         {
-            QMenu *variablesMenu = new QMenu("Variables", this->menuBar);
+            QMenu *insertMenu = new QMenu("Insert", this->menuBar);
 
-            // Capture input.
+            // Variables
             {
-                QMenu *inputMenu = new QMenu("Input", this->menuBar);
+                QMenu *variablesMenu = new QMenu("Variables", this->menuBar);
 
-                connect(inputMenu->addAction("Resolution"), &QAction::triggered, this, [=]
+                connect(variablesMenu->addAction("Input resolution"), &QAction::triggered, this, [=]
                 {
                     this->insert_text_into_overlay_editor("$inputResolution");
                 });
 
-                connect(inputMenu->addAction("Refresh rate (Hz)"), &QAction::triggered, this, [=]
+                connect(variablesMenu->addAction("Input refresh rate (Hz)"), &QAction::triggered, this, [=]
                 {
                     this->insert_text_into_overlay_editor("$inputHz");
                 });
 
-                variablesMenu->addMenu(inputMenu);
-            }
+                variablesMenu->addSeparator();
 
-            // Capture output.
-            {
-                QMenu *outputMenu = new QMenu("Output", this->menuBar);
-
-                connect(outputMenu->addAction("Resolution"), &QAction::triggered, this, [=]
+                connect(variablesMenu->addAction("Output resolution"), &QAction::triggered, this, [=]
                 {
                     this->insert_text_into_overlay_editor("$outputResolution");
                 });
 
-                connect(outputMenu->addAction("Frames dropped?"), &QAction::triggered, this, [=]
+                connect(variablesMenu->addAction("Frames dropped?"), &QAction::triggered, this, [=]
                 {
                     this->insert_text_into_overlay_editor("$areFramesDropped");
                 });
 
-                variablesMenu->addMenu(outputMenu);
-            }
+                variablesMenu->addSeparator();
 
-            variablesMenu->addSeparator();
-
-            // System.
-            {
-                QMenu *systemMenu = new QMenu("System", this->menuBar);
-
-                connect(systemMenu->addAction("Time"), &QAction::triggered, this, [=]
+                connect(variablesMenu->addAction("System time"), &QAction::triggered, this, [=]
                 {
                     this->insert_text_into_overlay_editor("$systemTime");
                 });
 
-                connect(systemMenu->addAction("Date"), &QAction::triggered, this, [=]
+                connect(variablesMenu->addAction("System date"), &QAction::triggered, this, [=]
                 {
                     this->insert_text_into_overlay_editor("$systemDate");
                 });
 
-                variablesMenu->addMenu(systemMenu);
+                insertMenu->addMenu(variablesMenu);
             }
 
-            this->menuBar->addMenu(variablesMenu);
-        }
-
-        // Formatting...
-        {
-            QMenu *formattingMenu = new QMenu("Formatting", this->menuBar);
-
-            connect(formattingMenu->addAction("Line break"), &QAction::triggered, this, [=]
+            // HTML
             {
-                this->insert_text_into_overlay_editor("<br>\n");
-            });
+                QMenu *htmlMenu = new QMenu("HTML", this->menuBar);
 
-            connect(formattingMenu->addAction("Image..."), &QAction::triggered, this, [=]
-            {
-                const QString filename = QFileDialog::getOpenFileName(this, "Select an image", "",
-                                                                      "Image files (*.png *.gif *.jpeg *.jpg *.bmp);;"
-                                                                      "All files(*.*)");
-
-                if (filename.isEmpty())
+                connect(htmlMenu->addAction("Image..."), &QAction::triggered, this, [=]
                 {
-                    return;
-                }
+                    const QString filename = QFileDialog::getOpenFileName(
+                        this,
+                        "Select an image", "",
+                        "Image files (*.png *.gif *.jpeg *.jpg *.bmp);; All files(*.*)"
+                    );
 
-                insert_text_into_overlay_editor("<img src=\"" + filename + "\">");
-            });
+                    if (filename.isEmpty())
+                    {
+                        return;
+                    }
 
-            formattingMenu->addSeparator();
-
-            // Align.
-            {
-                QMenu *alignMenu = new QMenu("Align", this->menuBar);
-
-                connect(alignMenu->addAction("Left"), &QAction::triggered, this, [=]
-                {
-                    this->insert_text_into_overlay_editor("<div style=\"text-align: left;\"></div>");
+                    insert_text_into_overlay_editor("<img src=\"" + filename + "\">\n");
                 });
 
-                connect(alignMenu->addAction("Right"), &QAction::triggered, this, [=]
+                htmlMenu->addSeparator();
+
+                connect(htmlMenu->addAction("Align left"), &QAction::triggered, this, [=]
                 {
-                    this->insert_text_into_overlay_editor("<div style=\"text-align: right;\"></div>");
+                    this->insert_text_into_overlay_editor("<div style=\"text-align: left;\"></div>\n");
                 });
 
-                connect(alignMenu->addAction("Center"), &QAction::triggered, this, [=]
+                connect(htmlMenu->addAction("Align right"), &QAction::triggered, this, [=]
                 {
-                    this->insert_text_into_overlay_editor("<div style=\"text-align: center;\"></div>");
+                    this->insert_text_into_overlay_editor("<div style=\"text-align: right;\"></div>\n");
                 });
 
-                formattingMenu->addMenu(alignMenu);
+                connect(htmlMenu->addAction("Align center"), &QAction::triggered, this, [=]
+                {
+                    this->insert_text_into_overlay_editor("<div style=\"text-align: center;\"></div>\n");
+                });
+
+                insertMenu->addMenu(htmlMenu);
             }
 
-            this->menuBar->addMenu(formattingMenu);
+            this->menuBar->addMenu(insertMenu);
         }
 
         this->layout()->setMenuBar(this->menuBar);
