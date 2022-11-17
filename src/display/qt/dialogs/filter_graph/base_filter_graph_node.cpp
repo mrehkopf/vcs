@@ -63,13 +63,13 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
             const bool isSelected = (option->state & QStyle::State_Selected);
 
             // Node's background.
-            painter->setPen(QPen(QColor(isSelected? "#a0a0c0" : this->current_background_color()), (isSelected + 1), Qt::SolidLine));
+            painter->setPen(QPen(QColor(isSelected? "#a0a0a0" : this->current_background_color()), 2, Qt::SolidLine));
             painter->setBrush(QBrush(QColor(72, 72, 72, 215)));
             painter->drawRoundedRect(QRect(0, 0, this->width, this->height), borderRadius, borderRadius);
 
             // Title bar's background.
             painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
-            painter->setBrush(QBrush(QColor(isGate? "#1c1c1c" : "#151515"), (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
+            painter->setBrush(QBrush(QColor(this->current_background_color()), (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
             painter->drawRoundedRect(QRect(4, 4, (this->width - 8), 28), borderRadius, borderRadius);
         }
 
@@ -88,7 +88,7 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
         const QString elidedTitle = QFontMetrics(titleFont).elidedText(this->title, Qt::ElideRight, (this->width - 42));
 
-        painter->setPen(isGate? "#c5c5c5" : this->is_enabled()? "whitesmoke" : "lightgray");
+        painter->setPen(this->is_enabled()? "white" : "lightgray");
         painter->drawText(12, 23, elidedTitle);
     }
 
@@ -124,9 +124,12 @@ const QColor BaseFilterGraphNode::current_background_color(void)
 {
     const QString currentColor = this->backgroundColor.toLower();
 
-    if (currentColor == "black") return QColor("black");
-    else if (currentColor == "green") return QColor("lawngreen");
-    else if (currentColor == "magenta") return QColor("mediumvioletred");
+    if (currentColor == "blue") return QColor("medium blue");
+    else if (currentColor == "cyan") return QColor("dark cyan");
+    else if (currentColor == "green") return QColor("forest green");
+    else if (currentColor == "magenta") return QColor("dark magenta");
+    else if (currentColor == "red") return QColor("fire brick");
+    else if (currentColor == "yellow") return QColor("dark goldenrod");
 
     return this->backgroundColor;
 }
