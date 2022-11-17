@@ -152,9 +152,9 @@ The output resolution dialog lets you resize the [output window](#output-window)
     </table>
 </dokki-table>
 
-## Overlay dialog
+## Overlay editor dialog
 
-This dialog can be accessed with <key-combo>Ctrl + L</key-combo> or <menu-path>Context > Output > Overlay...</menu-path>.
+This dialog can be accessed with <key-combo>Ctrl + L</key-combo> or <menu-path>Context > Output > Overlay editor...</menu-path>.
 
 > A screenshot of the overlay dialog\
 ![{image:878x508}{headerless}](../img/overlay-dialog.webp)
@@ -198,7 +198,7 @@ The recorder will write frames as they appear in the [output window](#output-win
 - The video will be recorded in the H.264 format using an x264 codec.
 - The video resolution will be that of the current output size (see the [Output resolution](#output-resolution-dialog) dialog).
 - The output size can't be changed while recording; all frames will be scaled automatically to fit the current size.
-- The [overlay](#overlay-dialog) won't be recorded.
+- The [overlay](#overlay-editor-dialog) won't be recorded.
 - Encoder parameters influencing image quality (e.g. CRF) can't be customized in the Linux version of VCS. This is a limitation of OpenCV. You can, however, modify and recompile the OpenCV code with higher-quality default options (see e.g. [here](https://www.researchgate.net/post/Is_it_possible_to_set_the_lossfree_option_for_the_X264_codec_in_OpenCV)).
 
 ### Settings explained

@@ -388,7 +388,7 @@ MainWindow::MainWindow(QWidget *parent) :
             outputMenu->addAction(filter);
             connect(filter, &QAction::triggered, this, [=]{this->filterGraphDlg->open();});
 
-            QAction *overlay = new QAction("Overlay...", this);
+            QAction *overlay = new QAction("Overlay editor...", this);
             overlay->setShortcut(QKeySequence("ctrl+l"));
             outputMenu->addAction(overlay);
             connect(overlay, &QAction::triggered, this, [=]{this->overlayDlg->open();});

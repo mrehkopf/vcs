@@ -30,11 +30,20 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
     ui->setupUi(this);
 
-    this->set_name("Overlay");
+    this->set_name("Overlay editor");
 
     // Create the dialog's menu bar.
     {
         this->menuBar = new QMenuBar(this);
+
+        // File...
+        {
+            QMenu *fileMenu = new QMenu("File", this->menuBar);
+
+            // Intentionally left blank for now.
+
+            this->menuBar->addMenu(fileMenu);
+        }
 
         // Overlay...
         {

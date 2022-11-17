@@ -86,7 +86,7 @@ The title bar may contain some or all of the following elements, from left to ri
                         <tr>
                             <td>O</td>
                             <td>
-                                Shown when the overlay is active (see <a href="#dialogs-overlay-dialog">Overlay dialog</a>)
+                                Shown when the overlay is active (see <a href="#dialogs-overlay-editor-dialog">Overlay editor dialog</a>)
                             </td>
                         </tr>
                         <tr>
