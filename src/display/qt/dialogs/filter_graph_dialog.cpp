@@ -416,6 +416,7 @@ BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(
         }
 
         newNode->associatedFilter = filter;
+        newNode->generate_right_click_menu();
         newNode->setFlags(newNode->flags() | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsSelectable);
         this->graphicsScene->addItem(newNode);
 
@@ -427,8 +428,17 @@ BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(
         {
             this->inputGateNodes.push_back(newNode);
         }
+    }
 
-        newNode->moveBy(rand()%20, rand()%20);
+    // Position the node.
+    {
+        const QGraphicsView *const view = this->graphicsScene->views().at(0);
+        const QPoint centeredOnCursor = {
+            (QCursor::pos().x() - int(filterWidgetWidth / 2)),
+            (QCursor::pos().y() - int(filterWidgetHeight / 2))
+        };
+
+        newNode->setPos(view->mapToScene(view->mapFromGlobal(centeredOnCursor)));
     }
 
     // Make sure the node shows up top.
