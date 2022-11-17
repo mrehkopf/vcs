@@ -63,6 +63,8 @@ RESOURCES += \
 
 SOURCES += \
     src/display/qt/dialogs/filter_graph/base_filter_graph_node.cpp \
+    src/filter/filters/source_fps_estimate/filter_source_fps_estimate.cpp \
+    src/filter/filters/source_fps_estimate/gui/filtergui_source_fps_estimate.cpp \
     src/main.cpp \
     src/display/display.cpp \
     src/display/qt/subclasses/QLabel_magnifying_glass.cpp \
@@ -100,8 +102,6 @@ SOURCES += \
     src/filter/filtergui.cpp \
     src/filter/filters/flip/filter_flip.cpp \
     src/filter/filters/flip/gui/filtergui_flip.cpp \
-    src/filter/filters/frame_rate/filter_frame_rate.cpp \
-    src/filter/filters/frame_rate/gui/filtergui_frame_rate.cpp \
     src/filter/filters/input_gate/filter_input_gate.cpp \
     src/filter/filters/input_gate/gui/filtergui_input_gate.cpp \
     src/filter/filters/kernel_3x3/filter_kernel_3x3.cpp \
@@ -197,8 +197,8 @@ HEADERS += \
     src/filter/filters/filters.h \
     src/filter/filters/flip/filter_flip.h \
     src/filter/filters/flip/gui/filtergui_flip.h \
-    src/filter/filters/frame_rate/filter_frame_rate.h \
-    src/filter/filters/frame_rate/gui/filtergui_frame_rate.h \
+    src/filter/filters/source_fps_estimate/filter_source_fps_estimate.h \
+    src/filter/filters/source_fps_estimate/gui/filtergui_source_fps_estimate.h \
     src/filter/filters/input_gate/filter_input_gate.h \
     src/filter/filters/input_gate/gui/filtergui_input_gate.h \
     src/filter/filters/kernel_3x3/filter_kernel_3x3.h \

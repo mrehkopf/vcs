@@ -10,7 +10,7 @@
 
 #include <chrono>
 #include "filter/abstract_filter.h"
-#include "filter/filters/frame_rate/gui/filtergui_frame_rate.h"
+#include "filter/filters/source_fps_estimate/gui/filtergui_source_fps_estimate.h"
 
 class filter_frame_rate_c : public abstract_filter_c
 {
@@ -41,13 +41,13 @@ public:
                            {PARAM_TEXT_COLOR, TEXT_YELLOW}},
                           initialParamValues)
     {
-        this->guiDescription = new filtergui_frame_rate_c(this);
+        this->guiDescription = new filtergui_source_fps_estimate_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_frame_rate_c)
 
     std::string uuid(void) const override { return "badb0129-f48c-4253-a66f-b0ec94e225a0"; }
-    std::string name(void) const override { return "Frame rate"; }
+    std::string name(void) const override { return "Source FPS estimate"; }
     filter_category_e category(void) const override { return filter_category_e::meta; }
 
     void apply(u8 *const pixels, const resolution_s &r) override;

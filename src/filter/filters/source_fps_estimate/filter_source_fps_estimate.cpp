@@ -5,7 +5,7 @@
  *
  */
 
-#include "filter/filters/frame_rate/filter_frame_rate.h"
+#include "filter/filters/source_fps_estimate/filter_source_fps_estimate.h"
 
 #ifdef USE_OPENCV
     #include <opencv2/imgproc/imgproc.hpp>

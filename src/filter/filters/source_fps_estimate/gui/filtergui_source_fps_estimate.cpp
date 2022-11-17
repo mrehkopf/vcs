@@ -6,10 +6,10 @@
  */
 
 #include <cmath>
-#include "filter/filters/frame_rate/filter_frame_rate.h"
-#include "filter/filters/frame_rate/gui/filtergui_frame_rate.h"
+#include "filter/filters/source_fps_estimate/filter_source_fps_estimate.h"
+#include "filter/filters/source_fps_estimate/gui/filtergui_source_fps_estimate.h"
 
-filtergui_frame_rate_c::filtergui_frame_rate_c(abstract_filter_c *const filter)
+filtergui_source_fps_estimate_c::filtergui_source_fps_estimate_c(abstract_filter_c *const filter)
 {
     {
         auto *const threshold = new filtergui_spinbox_s;
@@ -29,7 +29,7 @@ filtergui_frame_rate_c::filtergui_frame_rate_c(abstract_filter_c *const filter)
         corner->set_value = [=](const double value){filter->set_parameter(filter_frame_rate_c::PARAM_CORNER, value);};
         corner->items = {"Top left", "Top right", "Bottom right", "Bottom left"};
 
-        this->guiFields.push_back({"Show in", {corner}});
+        this->guiFields.push_back({"Position", {corner}});
     }
 
     {

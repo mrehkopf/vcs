@@ -15,7 +15,7 @@
 #include "filter/filters/denoise_nonlocal_means/filter_denoise_nonlocal_means.h"
 #include "filter/filters/denoise_pixel_gate/filter_denoise_pixel_gate.h"
 #include "filter/filters/flip/filter_flip.h"
-#include "filter/filters/frame_rate/filter_frame_rate.h"
+#include "filter/filters/source_fps_estimate/filter_source_fps_estimate.h"
 #include "filter/filters/median/filter_median.h"
 #include "filter/filters/rotate/filter_rotate.h"
 #include "filter/filters/sharpen/filter_sharpen.h"
