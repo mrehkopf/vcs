@@ -31,6 +31,8 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
     this->set_name("Overlay editor");
 
+    ui->plainTextEdit->setTabStopDistance(QFontMetrics(ui->plainTextEdit->font()).horizontalAdvance("     "));
+
     // Listen for app events.
     {
         kc_evNewVideoMode.listen([this](const video_mode_s &videoMode)
@@ -51,6 +53,11 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
         kc_evMissedFramesCount.listen([this](const unsigned &numMissed)
         {
             this->liveCaptureStats.areFramesBeingDropped = numMissed;
+        });
+
+        ks_evInputChannelChanged.listen([this]
+        {
+            this->liveCaptureStats.inputChannelIdx = kc_get_device_input_channel_idx();
         });
     }
 
@@ -236,9 +243,16 @@ QImage OverlayDialog::rendered(void)
 
         source.replace("$inWidth", QString::number(this->liveCaptureStats.inputMode.resolution.w));
         source.replace("$inHeight", QString::number(this->liveCaptureStats.inputMode.resolution.h));
+        source.replace("$inRate", QString::number(this->liveCaptureStats.inputMode.refreshRate.value<double>(), 'f', 3));
+        source.replace("$inChannel",
+        #if __linux__
+            QString("/dev/video%1").arg(this->liveCaptureStats.inputChannelIdx)
+        #else
+            QString::number(this->liveCaptureStats.inputChannelIdx + 1)
+        #endif
+        );
         source.replace("$outWidth", QString::number(this->liveCaptureStats.outputMode.resolution.w));
         source.replace("$outHeight", QString::number(this->liveCaptureStats.outputMode.resolution.h));
-        source.replace("$inRate", QString::number(this->liveCaptureStats.inputMode.refreshRate.value<double>()));
         source.replace("$outRate", QString::number(this->liveCaptureStats.outputMode.refreshRate.value<double>()));
         source.replace("$frameDropIndicator", (this->liveCaptureStats.areFramesBeingDropped? "Dropping frames" : ""));
         source.replace("$time", QDateTime::currentDateTime().time().toString());

@@ -40,7 +40,8 @@ private:
     {
         video_mode_s inputMode;
         video_mode_s outputMode;
-        bool areFramesBeingDropped;
+        unsigned inputChannelIdx = 0;
+        bool areFramesBeingDropped = false;
     } liveCaptureStats;
 };
 
