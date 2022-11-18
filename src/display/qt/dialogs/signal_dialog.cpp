@@ -49,11 +49,11 @@ SignalDialog::SignalDialog(QWidget *parent) :
         // Initialize the table of information. Note that this also sets
         // the vertical order in which the table's parameters are shown.
         {
-            ui->tableWidget_propertyTable->modify_property("Input channel",  "No signal");
-            ui->tableWidget_propertyTable->modify_property("Resolution",     "-");
-            ui->tableWidget_propertyTable->modify_property("Refresh rate",   "-");
-            ui->tableWidget_propertyTable->modify_property("Frame rate",   "-");
-            ui->tableWidget_propertyTable->modify_property("Uptime",         "-");
+            ui->tableWidget_propertyTable->modify_property("Device channel", "None");
+            ui->tableWidget_propertyTable->modify_property("Resolution", "-");
+            ui->tableWidget_propertyTable->modify_property("Refresh rate", "-");
+            ui->tableWidget_propertyTable->modify_property("Output framerate", "-");
+            ui->tableWidget_propertyTable->modify_property("Uptime", "-");
             ui->tableWidget_propertyTable->modify_property("Frames dropped", "-");
         }
 
@@ -140,7 +140,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
 
         ks_evFramesPerSecond.listen([this](const unsigned fps)
         {
-            ui->tableWidget_propertyTable->modify_property("Frame rate", QString("%1 FPS").arg(fps));
+            ui->tableWidget_propertyTable->modify_property("Output framerate", QString("%1 FPS").arg(fps));
         });
 
         kc_evNewVideoMode.listen([update_info](const video_mode_s&)
@@ -178,7 +178,7 @@ void SignalDialog::update_information_table(const bool isReceivingSignal)
 {
     const auto inputChannelIdx = kc_get_device_input_channel_idx();
 
-    ui->tableWidget_propertyTable->modify_property("Input channel",
+    ui->tableWidget_propertyTable->modify_property("Device channel",
     #if __linux__
                                                    QString("/dev/video%1").arg(inputChannelIdx));
     #else
