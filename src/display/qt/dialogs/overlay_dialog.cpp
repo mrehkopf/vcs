@@ -18,7 +18,6 @@
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "display/display.h"
-#include "capture/capture.h"
 #include "ui_overlay_dialog.h"
 
 OverlayDialog::OverlayDialog(QWidget *parent) :
@@ -32,9 +31,38 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
     this->set_name("Overlay editor");
 
+    // Listen for app events.
+    {
+        kc_evNewVideoMode.listen([this](const video_mode_s &videoMode)
+        {
+            this->liveCaptureStats.inputMode = videoMode;
+        });
+
+        ks_evNewOutputResolution.listen([this](const resolution_s &resolution)
+        {
+            this->liveCaptureStats.outputMode.resolution = resolution;
+        });
+
+        ks_evFramesPerSecond.listen([this](const unsigned fps)
+        {
+            this->liveCaptureStats.outputMode.refreshRate = fps;
+        });
+
+        kc_evMissedFramesCount.listen([this](const unsigned &numMissed)
+        {
+            this->liveCaptureStats.areFramesBeingDropped = numMissed;
+        });
+    }
+
     // Create the dialog's menu bar.
     {
         this->menuBar = new QMenuBar(this);
+
+        const auto insert_text = [this](const QString &text)
+        {
+            this->ui->plainTextEdit->insertPlainText(text);
+            this->ui->plainTextEdit->setFocus();
+        };
 
         // File...
         {
@@ -51,22 +79,24 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
         {
             QMenu *overlayMenu = new QMenu("Overlay", this->menuBar);
 
-            QAction *enable = new QAction("Enabled", this->menuBar);
-            enable->setCheckable(true);
-            enable->setChecked(this->is_enabled());
-
-            connect(this, &VCSBaseDialog::enabled_state_set, this, [=](const bool isEnabled)
             {
-                enable->setChecked(isEnabled);
-                kd_update_output_window_title();
-            });
+                QAction *enable = new QAction("Enabled", this->menuBar);
+                enable->setCheckable(true);
+                enable->setChecked(this->is_enabled());
 
-            connect(enable, &QAction::triggered, this, [=]
-            {
-                this->set_enabled(!this->is_enabled());
-            });
+                connect(this, &VCSBaseDialog::enabled_state_set, this, [=](const bool isEnabled)
+                {
+                    enable->setChecked(isEnabled);
+                    kd_update_output_window_title();
+                });
 
-            overlayMenu->addAction(enable);
+                connect(enable, &QAction::triggered, this, [=]
+                {
+                    this->set_enabled(!this->is_enabled());
+                });
+
+                overlayMenu->addAction(enable);
+            }
 
             this->menuBar->addMenu(overlayMenu);
         }
@@ -79,39 +109,22 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
             {
                 QMenu *variablesMenu = new QMenu("Variables", this->menuBar);
 
-                connect(variablesMenu->addAction("Input resolution"), &QAction::triggered, this, [=]
+                const auto add_variable_action = [this, variablesMenu, insert_text](const QString &title, const QString &code)
                 {
-                    this->insert_text_into_overlay_editor("$inputResolution");
-                });
+                    connect(variablesMenu->addAction(title), &QAction::triggered, this, [=]{insert_text(code);});
+                };
 
-                connect(variablesMenu->addAction("Input refresh rate (Hz)"), &QAction::triggered, this, [=]
-                {
-                    this->insert_text_into_overlay_editor("$inputHz");
-                });
-
+                add_variable_action("Capture width", "$inWidth");
+                add_variable_action("Capture height", "$inHeight");
+                add_variable_action("Capture refresh rate", "$inRate");
                 variablesMenu->addSeparator();
-
-                connect(variablesMenu->addAction("Output resolution"), &QAction::triggered, this, [=]
-                {
-                    this->insert_text_into_overlay_editor("$outputResolution");
-                });
-
-                connect(variablesMenu->addAction("Frames dropped?"), &QAction::triggered, this, [=]
-                {
-                    this->insert_text_into_overlay_editor("$areFramesDropped");
-                });
-
+                add_variable_action("Output width", "$outWidth");
+                add_variable_action("Output height", "$outHeight");
+                add_variable_action("Output refresh rate", "$outRate");
+                add_variable_action("Frame drop indicator", "$frameDropIndicator");
                 variablesMenu->addSeparator();
-
-                connect(variablesMenu->addAction("System time"), &QAction::triggered, this, [=]
-                {
-                    this->insert_text_into_overlay_editor("$systemTime");
-                });
-
-                connect(variablesMenu->addAction("System date"), &QAction::triggered, this, [=]
-                {
-                    this->insert_text_into_overlay_editor("$systemDate");
-                });
+                add_variable_action("Current time", "$time");
+                add_variable_action("Current date", "$date");
 
                 insertMenu->addMenu(variablesMenu);
             }
@@ -133,14 +146,14 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
                         return;
                     }
 
-                    insert_text_into_overlay_editor("<img src=\"" + filename + "\">\n");
+                    insert_text("<img src=\"" + filename + "\">\n");
                 });
 
                 htmlMenu->addSeparator();
 
                 connect(htmlMenu->addAction("Table"), &QAction::triggered, this, [=]
                 {
-                    this->insert_text_into_overlay_editor(
+                    insert_text(
                         "<table style=\"color: white; background-color: black;\">\n"
                         "\t<tr>\n"
                         "\t\t<td>Cell 1</td>\n"
@@ -152,7 +165,7 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
                 connect(htmlMenu->addAction("Style block"), &QAction::triggered, this, [=]
                 {
-                    this->insert_text_into_overlay_editor(
+                    insert_text(
                         "<style>\n"
                         "\tdiv {\n"
                         "\t\tcolor: red;\n"
@@ -163,19 +176,14 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
                 htmlMenu->addSeparator();
 
-                connect(htmlMenu->addAction("Align left"), &QAction::triggered, this, [=]
-                {
-                    this->insert_text_into_overlay_editor("<div style=\"text-align: left;\"></div>\n");
-                });
-
                 connect(htmlMenu->addAction("Align right"), &QAction::triggered, this, [=]
                 {
-                    this->insert_text_into_overlay_editor("<div style=\"text-align: right;\"></div>\n");
+                    insert_text("<div style=\"text-align: right;\">Text</div>\n");
                 });
 
                 connect(htmlMenu->addAction("Align center"), &QAction::triggered, this, [=]
                 {
-                    this->insert_text_into_overlay_editor("<div style=\"text-align: center;\"></div>\n");
+                    insert_text("<div style=\"text-align: center;\">Text</div>\n");
                 });
 
                 insertMenu->addMenu(htmlMenu);
@@ -220,45 +228,35 @@ void OverlayDialog::set_overlay_max_width(const uint width)
 }
 
 // Renders the overlay into a QImage, and returns the image.
-QImage OverlayDialog::overlay_as_qimage(void)
+QImage OverlayDialog::rendered(void)
 {
-    const resolution_s outputRes = ks_output_resolution();
+    const QString overlaySource = ([this]()->QString
+    {
+        QString source = this->ui->plainTextEdit->toPlainText();
 
-    QImage image = QImage(outputRes.w, outputRes.h, QImage::Format_ARGB32_Premultiplied);
-    image.fill(QColor(0, 0, 0, 0));
+        source.replace("$inWidth", QString::number(this->liveCaptureStats.inputMode.resolution.w));
+        source.replace("$inHeight", QString::number(this->liveCaptureStats.inputMode.resolution.h));
+        source.replace("$outWidth", QString::number(this->liveCaptureStats.outputMode.resolution.w));
+        source.replace("$outHeight", QString::number(this->liveCaptureStats.outputMode.resolution.h));
+        source.replace("$inRate", QString::number(this->liveCaptureStats.inputMode.refreshRate.value<double>()));
+        source.replace("$outRate", QString::number(this->liveCaptureStats.outputMode.refreshRate.value<double>()));
+        source.replace("$frameDropIndicator", (this->liveCaptureStats.areFramesBeingDropped? "Dropping frames" : ""));
+        source.replace("$time", QDateTime::currentDateTime().time().toString());
+        source.replace("$date", QDateTime::currentDateTime().date().toString());
+
+        return (
+            "<span style=\"font-size: large; color: white;\">" +
+            source +
+            "</span>"
+        );
+    })();
+
+    QImage image = QImage(this->liveCaptureStats.outputMode.resolution.w, this->liveCaptureStats.outputMode.resolution.h, QImage::Format_ARGB32_Premultiplied);
+    image.fill("transparent");
 
     QPainter painter(&image);
-    overlayDocument.setHtml(parsed_overlay_string());
+    overlayDocument.setHtml(overlaySource);
     overlayDocument.drawContents(&painter, image.rect());
 
     return image;
-}
-
-// Appends the given bit of text into the overlay editor's text field at its
-// current cursor position.
-void OverlayDialog::insert_text_into_overlay_editor(const QString &text)
-{
-    ui->plainTextEdit->insertPlainText(text);
-    ui->plainTextEdit->setFocus();
-
-    return;
-}
-
-// Parses the overlay string to replace variable tags with their corresponding
-// data, and returns the parsed version.
-QString OverlayDialog::parsed_overlay_string(void)
-{
-    QString parsed = ui->plainTextEdit->toPlainText();
-
-    const auto inRes = kc_get_capture_resolution();
-    const auto outRes = ks_output_resolution();
-
-    parsed.replace("$inputResolution",  QString("%1 \u00d7 %2").arg(inRes.w).arg(inRes.h));
-    parsed.replace("$outputResolution", QString("%1 \u00d7 %2").arg(outRes.w).arg(outRes.h));
-    parsed.replace("$inputHz",          QString::number(kc_get_capture_refresh_rate().value<unsigned>()));
-    parsed.replace("$areFramesDropped", ((kc_get_missed_frames_count() > 0)? "Dropping frames" : ""));
-    parsed.replace("$systemTime",       QDateTime::currentDateTime().time().toString());
-    parsed.replace("$systemDate",       QDateTime::currentDateTime().date().toString());
-
-    return ("<font style=\"font-size: large; color: white; background-color: black;\">" + parsed + "</font>");
 }

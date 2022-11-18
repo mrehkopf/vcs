@@ -95,7 +95,11 @@ QDialog[objectName="OverlayDialog"] QGroupBox
 
 QDialog[objectName="OverlayDialog"] QPlainTextEdit
 {
-    padding: 6px;
+    padding: 7px;
+    background-color: #303030;
+    color: #d9d9d9;
+    selection-color: white;
+    selection-background-color: #808080;
 }
 
 QDialog[objectName="InputResolutionDialog"] QFrame

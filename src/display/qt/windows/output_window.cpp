@@ -1014,7 +1014,7 @@ QImage MainWindow::overlay_image(void)
         overlayDlg != nullptr &&
         overlayDlg->is_enabled())
     {
-        return overlayDlg->overlay_as_qimage();
+        return overlayDlg->rendered();
     }
     else return QImage();
 }
