@@ -124,6 +124,7 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
                 add_variable_action("Capture width", "$inWidth");
                 add_variable_action("Capture height", "$inHeight");
                 add_variable_action("Capture refresh rate", "$inRate");
+                add_variable_action("Capture channel", "$inChannel");
                 variablesMenu->addSeparator();
                 add_variable_action("Output width", "$outWidth");
                 add_variable_action("Output height", "$outHeight");
