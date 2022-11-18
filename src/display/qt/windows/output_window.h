@@ -66,7 +66,9 @@ public:
     // mouse wheel over the capture window.
     bool is_mouse_wheel_scaling_allowed(void);
 
-    bool apply_programwide_styling(const QString &filename);
+    bool apply_global_stylesheet(const QString &qssFilename);
+
+    bool set_global_font_size(const unsigned fontSize);
 
     OutputResolutionDialog* output_resolution_dialog(void) const { return this->outputResolutionDlg; }
     InputResolutionDialog* input_resolution_dialog(void)   const { return this->inputResolutionDlg; }
@@ -140,6 +142,11 @@ private:
 
     // A user-definable custom title for the output window.
     QString windowTitleOverride = "";
+
+    // The currently-active app-wide QSS style sheet.
+    QString appwideStyleSheet = "";
+
+    unsigned appwideFontSize = 15;
 
     // Set to true if the capture subsystem is currently reporting that captured frames
     // are being dropped; false otherwise. The value gets updated at some interval,

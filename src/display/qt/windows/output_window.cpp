@@ -78,6 +78,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->magnifyingGlass = new MagnifyingGlass(this);
 
+    // Restore persistent settings.
+    {
+        this->appwideFontSize = kpers_value_of(INI_GROUP_OUTPUT, "font_size", this->appwideFontSize).toUInt();
+    }
+
     // Set up the child dialogs.
     {
         outputResolutionDlg = new OutputResolutionDialog;
@@ -413,11 +418,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 connect(customTitle, &QAction::triggered, this, [=]
                 {
-                    const QString newTitle = QInputDialog::getText(this,
-                                                                   "VCS - Enter a custom window title",
-                                                                   "Title (empty restores the default):",
-                                                                   QLineEdit::Normal,
-                                                                   this->windowTitleOverride);
+                    const QString newTitle = QInputDialog::getText(
+                        this,
+                        "VCS - Enter a custom window title",
+                        "Title (empty restores the default):",
+                        QLineEdit::Normal,
+                        this->windowTitleOverride
+                    );
 
                     if (!newTitle.isNull())
                     {
@@ -437,12 +444,12 @@ MainWindow::MainWindow(QWidget *parent) :
                 });
 
                 windowMenu->addAction(customTitle);
-                windowMenu->addSeparator();
             }
 
             {
-                QMenu *rendererMenu = new QMenu("Render using", this);
+                windowMenu->addSeparator();
 
+                QMenu *rendererMenu = new QMenu("Render using", this);
                 QActionGroup *group = new QActionGroup(this);
 
                 QAction *opengl = new QAction("OpenGL", this);
@@ -485,6 +492,36 @@ MainWindow::MainWindow(QWidget *parent) :
                 }
 
                 windowMenu->addMenu(rendererMenu);
+            }
+
+            {
+                windowMenu->addSeparator();
+
+                QMenu *const fontSizeMenu = new QMenu("Dialog font size", this);
+                QActionGroup *const group = new QActionGroup(this);
+
+                const auto add_size_action = [this, group, fontSizeMenu](const unsigned pxSize)
+                {
+                    QAction *const action  = new QAction(QString::number(pxSize), this);
+
+                    action->setActionGroup(group);
+                    action->setCheckable(true);
+                    fontSizeMenu->addAction(action);
+
+                    connect(action, &QAction::triggered, this, [this, pxSize]{this->set_global_font_size(pxSize);});
+
+                    if (pxSize == this->appwideFontSize)
+                    {
+                        action->setChecked(true);
+                    }
+                };
+
+                for (unsigned size = 14; size <= 22; size++)
+                {
+                    add_size_action(size);
+                }
+
+                windowMenu->addMenu(fontSizeMenu);
             }
 
             {
@@ -632,10 +669,11 @@ MainWindow::MainWindow(QWidget *parent) :
     this->activateWindow();
     this->raise();
 
-    // Apply any custom styling.
+    // Apply any custom app-wide styling styling.
     {
         qApp->setWindowIcon(QIcon(":/res/images/icons/appicon.ico"));
-        this->apply_programwide_styling(":/res/stylesheets/appstyle-newie.qss");
+        this->apply_global_stylesheet(":/res/stylesheets/appstyle-newie.qss");
+        this->set_global_font_size(this->appwideFontSize);
     }
 
     // Listen for app events.
@@ -745,31 +783,38 @@ void MainWindow::update_context_menu_eyedropper(const QPoint &scalerOutputPos)
     return;
 }
 
-// Loads a QSS stylesheet from the given file, and assigns it to the entire
-// program. Returns true if the file was successfully opened; false otherwise;
-// will not signal whether actually assigning the stylesheet succeeded or not.
-bool MainWindow::apply_programwide_styling(const QString &filename)
+bool MainWindow::apply_global_stylesheet(const QString &qssFilename)
 {
-    // Take an empty filename to mean that all custom stylings should be removed.
-    if (filename.isEmpty())
-    {
-        qApp->setStyleSheet("");
+    QFile styleFile(qssFilename);
 
+    if (styleFile.open(QIODevice::ReadOnly))
+    {
+        const QString styleSheet = styleFile.readAll();
+        this->appwideStyleSheet = styleSheet;
+        qApp->setStyleSheet(styleSheet);
         return true;
     }
 
-    // Apply the given style, prepended by an OS-specific font style.
-    QFile styleFile(filename);
-    #if _WIN32
-        QFile defaultFontStyleFile(":/res/stylesheets/font-windows.qss");
-    #else
-        QFile defaultFontStyleFile(":/res/stylesheets/font-linux.qss");
-    #endif
-    if (styleFile.open(QIODevice::ReadOnly) &&
-        defaultFontStyleFile.open(QIODevice::ReadOnly))
+    return false;
+}
+
+bool MainWindow::set_global_font_size(const unsigned fontSize)
+{
+#if _WIN32
+    QFile fontStyleFile(":/res/stylesheets/font-windows.qss");
+#elif __linux__
+    QFile fontStyleFile(":/res/stylesheets/font-linux.qss");
+#else
+    #error "Unknown platform."
+#endif
+
+    if (fontStyleFile.open(QIODevice::ReadOnly))
     {
-        qApp->setStyleSheet(QString("%1 %2").arg(QString(styleFile.readAll()))
-                                            .arg(QString(defaultFontStyleFile.readAll())));
+        QString fontStyleSheet = fontStyleFile.readAll();
+        fontStyleSheet.replace("%FONT_SIZE%", QString("%1px").arg(fontSize));
+
+        qApp->setStyleSheet(this->appwideStyleSheet + "\n" + fontStyleSheet);
+        this->appwideFontSize = fontSize;
 
         return true;
     }
@@ -796,6 +841,7 @@ MainWindow::~MainWindow()
         kpers_set_value(INI_GROUP_OUTPUT, "renderer", (OGL_SURFACE? "OpenGL" : "Software"));
         kpers_set_value(INI_GROUP_OUTPUT, "upscaler", QString::fromStdString(ks_upscaling_filter_name()));
         kpers_set_value(INI_GROUP_OUTPUT, "downscaler", QString::fromStdString(ks_downscaling_filter_name()));
+        kpers_set_value(INI_GROUP_OUTPUT, "font_size", QString::number(this->appwideFontSize));
     }
 
     delete ui;

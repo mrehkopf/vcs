@@ -28,7 +28,9 @@ QAbstractItemView,
 QTreeWidget QHeaderView::section
 {
     font-family: "MS Sans Serif";
-    font-size: 15px;
+
+    /* This value will be set programmatically.*/
+    font-size: %FONT_SIZE%;
 }
 
 /* We want group box titles to be in bold, while all other text uses

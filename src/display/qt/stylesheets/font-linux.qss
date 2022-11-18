@@ -27,6 +27,9 @@ QHeaderView::section,
 QAbstractItemView,
 QTreeWidget QHeaderView::section
 {
-    font-family: "Ubuntu"; /* Assumes the Ubuntu font is bundled with VCS.*/
-    font-size: 15px;
+    /* Assumes the Ubuntu font is bundled with VCS.*/
+    font-family: "Ubuntu";
+
+    /* This value will be set programmatically.*/
+    font-size: %FONT_SIZE%;
 }
