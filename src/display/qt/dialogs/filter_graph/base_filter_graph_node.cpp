@@ -189,7 +189,7 @@ void BaseFilterGraphNode::generate_right_click_menu(void)
     // Add options to change the node's color.
     if (!this->background_color_list().empty())
     {
-        QMenu *colorMenu = new QMenu("Color", this->rightClickMenu);
+        QMenu *colorMenu = new QMenu("Color code", this->rightClickMenu);
 
         for (const auto &color : this->backgroundColorList)
         {
