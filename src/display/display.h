@@ -96,6 +96,17 @@ struct resolution_s
 
 /*!
  * @brief
+ * Generic container for the data and metadata of a 2D image.
+ */
+struct image_s
+{
+    uint8_t *const pixels;
+    const resolution_s resolution;
+    image_s(uint8_t *const pixels, const resolution_s &resolution) : pixels(pixels), resolution(resolution) {}
+};
+
+/*!
+ * @brief
  * Maps a value to a named filter graph property.
  */
 struct filter_graph_option_s
