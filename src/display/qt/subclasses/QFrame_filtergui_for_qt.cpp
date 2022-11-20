@@ -10,6 +10,7 @@
 #include <QFormLayout>
 #include <QComboBox>
 #include <QCheckBox>
+#include <QPlainTextEdit>
 #include <QWidget>
 #include <QFrame>
 #include <QLabel>
@@ -17,12 +18,13 @@
 #include "filter/filter.h"
 #include "filter/abstract_filter.h"
 
-FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter,
-                               QWidget *parent) :
+FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *parent) :
     QFrame(parent)
 {
     const auto &guiDescription = filter->gui_description();
     auto *const widgetLayout = new QFormLayout(this);
+
+    widgetLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
 
     if (guiDescription.empty())
     {
@@ -57,6 +59,32 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter,
                         label->setStyleSheet("margin-bottom: .25em;");
 
                         containerLayout->addWidget(label);
+
+                        break;
+                    }
+                    case filtergui_component_e::textedit:
+                    {
+                        auto *const c = ((filtergui_textedit_s*)component);
+                        auto *const textEdit = new QPlainTextEdit(QString::fromStdString(c->text), this);
+
+                        textEdit->setMinimumWidth(150);
+                        textEdit->setMaximumHeight(90);
+                        textEdit->insertPlainText(QString::fromStdString(c->get_string()));
+
+                        connect(textEdit, &QPlainTextEdit::textChanged, [=]
+                        {
+                            QString text = textEdit->toPlainText();
+
+                            textEdit->setProperty("overLengthLimit", (std::size_t(text.length()) > c->maxLength)? "true" : "false");
+                            this->style()->polish(textEdit);
+
+                            text.resize(std::min(std::size_t(text.length()), c->maxLength));
+                            c->set_string(text.toStdString());
+
+                            emit this->parameter_changed();
+                        });
+
+                        containerLayout->addWidget(textEdit);
 
                         break;
                     }

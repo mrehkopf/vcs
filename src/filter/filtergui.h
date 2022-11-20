@@ -24,6 +24,7 @@ enum class filtergui_component_e
     doublespinbox,
     combobox,
     checkbox,
+    textedit,
 };
 
 struct filtergui_component_s
@@ -34,6 +35,9 @@ struct filtergui_component_s
 
     std::function<void(const double)> set_value;
     std::function<double(void)> get_value;
+
+    std::function<void(const std::string&)> set_string;
+    std::function<std::string(void)> get_string;
 };
 
 struct filtergui_label_s : public filtergui_component_s
@@ -41,6 +45,14 @@ struct filtergui_label_s : public filtergui_component_s
     filtergui_component_e type(void) const override { return filtergui_component_e::label; }
 
     std::string text;
+};
+
+struct filtergui_textedit_s : public filtergui_component_s
+{
+    filtergui_component_e type(void) const override { return filtergui_component_e::textedit; }
+
+    std::string text;
+    std::size_t maxLength = 255;
 };
 
 struct filtergui_checkbox_s : public filtergui_component_s
