@@ -21,10 +21,10 @@
 
 /*!
  * @brief
- * An image filter.
+ * A frame filter.
  *
  * Applies a pre-set effect (e.g blurring, sharpening, or the like) onto the
- * pixels of an image.
+ * pixels of a captured frame (or of any raster image).
  */
 class abstract_filter_c
 {
@@ -42,9 +42,15 @@ public:
 
     std::vector<std::pair<unsigned, double>> parameters(void) const;
 
+    std::string string_parameter(std::size_t offset) const;
+
+    std::vector<char> parameter_data_block(const std::size_t startIdx = 0, const std::size_t count = ~0) const;
+
     void set_parameter(const unsigned offset, const double value);
 
     void set_parameters(const std::vector<std::pair<unsigned, double>> &parameters);
+
+    void set_parameter_string(const unsigned offset, const std::string &string, const std::size_t maxLength = ~0);
 
     virtual abstract_filter_c* create_clone(void) const = 0;
 
