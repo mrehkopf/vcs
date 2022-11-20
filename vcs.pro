@@ -63,6 +63,8 @@ RESOURCES += \
 
 SOURCES += \
     src/display/qt/dialogs/filter_graph/base_filter_graph_node.cpp \
+    src/filter/filters/render_text/filter_render_text.cpp \
+    src/filter/filters/render_text/gui/filtergui_render_text.cpp \
     src/filter/filters/source_fps_estimate/filter_source_fps_estimate.cpp \
     src/filter/filters/source_fps_estimate/gui/filtergui_source_fps_estimate.cpp \
     src/main.cpp \
@@ -197,6 +199,8 @@ HEADERS += \
     src/filter/filters/filters.h \
     src/filter/filters/flip/filter_flip.h \
     src/filter/filters/flip/gui/filtergui_flip.h \
+    src/filter/filters/render_text/font.h \
+    src/filter/filters/render_text/font_5x3.h \
     src/filter/filters/source_fps_estimate/filter_source_fps_estimate.h \
     src/filter/filters/source_fps_estimate/gui/filtergui_source_fps_estimate.h \
     src/filter/filters/input_gate/filter_input_gate.h \
@@ -211,6 +215,8 @@ HEADERS += \
     src/filter/filters/rotate/gui/filtergui_rotate.h \
     src/filter/filters/sharpen/filter_sharpen.h \
     src/filter/filters/sharpen/gui/filtergui_sharpen.h \
+    src/filter/filters/render_text/filter_render_text.h \
+    src/filter/filters/render_text/gui/filtergui_render_text.h \
     src/filter/filters/unsharp_mask/filter_unsharp_mask.h \
     src/filter/filters/unsharp_mask/gui/filtergui_unsharp_mask.h \
     src/scaler/scaler.h \

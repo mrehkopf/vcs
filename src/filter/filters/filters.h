@@ -18,6 +18,7 @@
 #include "filter/filters/source_fps_estimate/filter_source_fps_estimate.h"
 #include "filter/filters/median/filter_median.h"
 #include "filter/filters/rotate/filter_rotate.h"
+#include "filter/filters/render_text/filter_render_text.h"
 #include "filter/filters/sharpen/filter_sharpen.h"
 #include "filter/filters/unsharp_mask/filter_unsharp_mask.h"
 #include "filter/filters/kernel_3x3/filter_kernel_3x3.h"

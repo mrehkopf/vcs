@@ -61,6 +61,7 @@ void kf_initialize_filters(void)
         new filter_anti_tear_c(),
         new filter_input_gate_c(),
         new filter_output_gate_c(),
+        new filter_render_text_c(),
     };
 
     for (unsigned i = 0; i < KNOWN_FILTER_TYPES.size(); i++)
