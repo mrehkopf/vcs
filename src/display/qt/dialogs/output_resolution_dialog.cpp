@@ -131,6 +131,18 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
         {
             this->disable_output_size_controls(false);
         });
+
+        ks_evCustomScalingFilterEnabled.listen([this]
+        {
+            // The output scaling filter handles output sizing, so we want to bar the
+            // user from manipulating it via this dialog.
+            this->disable_output_size_controls(true);
+        });
+
+        ks_evCustomScalingFilterDisabled.listen([this]
+        {
+            this->disable_output_size_controls(false);
+        });
     }
 
     return;

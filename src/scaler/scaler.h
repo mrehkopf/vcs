@@ -65,6 +65,21 @@
 
 struct captured_frame_s;
 
+// The arguments taken by scaling functions.
+#define SCALER_FUNC_PARAMS u8 *const pixelData, const resolution_s &srcResolution, const resolution_s &dstResolution
+
+/*!
+ * Basic container for an image scaler.
+ */
+struct image_scaler_s
+{
+     /*! The scaler's display name. Will be shown in the GUI etc.*/
+    std::string name;
+
+    /*! A function that executes the scaler on the given pixels.*/
+    void (*apply)(SCALER_FUNC_PARAMS);
+};
+
 /*!
  * An event fired when the scaler subsystem scales a frame into a resolution
  * different from the previous frame's.
@@ -110,6 +125,18 @@ extern vcs_event_c<const captured_frame_s&> ks_evNewScaledImage;
  * ks_scale_frame()
  */
 extern vcs_event_c<unsigned> ks_evFramesPerSecond;
+
+/*!
+ * An event fired when an output scaling filter becomes active, i.e. when captured
+ * frames begin being scaled using such a filter.
+ */
+extern vcs_event_c<void> ks_evCustomScalingFilterEnabled;
+
+/*!
+ * An event fired when there's no longer an output scaling filter being used to
+ * scale captured frames.
+ */
+extern vcs_event_c<void> ks_evCustomScalingFilterDisabled;
 
 /*!
  * Enumerates the aspect ratios recognized by the scaler subsystem.
@@ -367,6 +394,12 @@ const std::string &ks_upscaling_filter_name(void);
 const std::string& ks_downscaling_filter_name(void);
 
 /*!
+ * Returns a scaling filter matching the given name, or nullptr if no such scaler
+ * was found.
+ */
+const image_scaler_s* ks_scaler_for_name_string(const std::string &name);
+
+/*!
  * Returns a list of the names of the scaling filters available in this build of
  * VCS.
  * 
@@ -379,7 +412,7 @@ const std::string& ks_downscaling_filter_name(void);
  * The presence or absence of the USE_OPENCV build flag affects the availability
  * of scaling filters.
  */
-std::vector<std::string> ks_scaling_filter_names(void);
+std::vector<std::string> ks_scaler_names(void);
 
 /*!
  * Sets the multiplier by which input frames are scaled. The multiplier applies

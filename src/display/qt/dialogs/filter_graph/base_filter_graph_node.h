@@ -15,6 +15,7 @@ class abstract_filter_c;
 enum class filter_node_type_e
 {
     gate,
+    scaler,
     filter,
 };
 

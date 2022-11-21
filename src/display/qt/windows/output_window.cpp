@@ -290,7 +290,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         QMenu *outputMenu = new QMenu("Output", this);
         {
-            const std::vector<std::string> scalerNames = ks_scaling_filter_names();
+            const std::vector<std::string> scalerNames = ks_scaler_names();
             k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
 
             QMenu *upscaler = new QMenu("Upscaler", this);

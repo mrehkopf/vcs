@@ -10,6 +10,7 @@
 #include "display/qt/dialogs/filter_graph/filter_node.h"
 #include "display/qt/dialogs/filter_graph/input_gate_node.h"
 #include "display/qt/dialogs/filter_graph/output_gate_node.h"
+#include "display/qt/dialogs/filter_graph/output_scaler_node.h"
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/subclasses/QMenu_dialog_file_menu.h"
@@ -153,6 +154,22 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
                 filtersMenu->addSeparator();
 
+                // Add output scalers.
+                for (const auto filter: knownFilterTypes)
+                {
+                    if (filter->category() != filter_category_e::output_scaler)
+                    {
+                        continue;
+                    }
+
+                    connect(filtersMenu->addAction(QString::fromStdString(filter->name())), &QAction::triggered, this, [=]
+                    {
+                        this->add_filter_graph_node(filter->uuid());
+                    });
+                }
+
+                filtersMenu->addSeparator();
+
                 // Add filters.
                 {
                     filtersMenu->addMenu(enhanceMenu);
@@ -163,7 +180,8 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                     for (const auto filter: knownFilterTypes)
                     {
                         if ((filter->category() == filter_category_e::input_condition) ||
-                            (filter->category() == filter_category_e::output_condition))
+                            (filter->category() == filter_category_e::output_condition) ||
+                            (filter->category() == filter_category_e::output_scaler))
                         {
                             continue;
                         }
@@ -412,6 +430,7 @@ BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(
         {
             case filter_category_e::input_condition: newNode = new InputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
             case filter_category_e::output_condition: newNode = new OutputGateNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
+            case filter_category_e::output_scaler: newNode = new OutputScalerNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
             default: newNode = new FilterNode(nodeTitle, filterWidgetWidth, filterWidgetHeight); break;
         }
 
@@ -511,8 +530,10 @@ void FilterGraphDialog::recalculate_filter_chains(void)
             accumulatedFilterChain.push_back(node->associatedFilter);
         }
 
-        if (node->associatedFilter->category() == filter_category_e::output_condition)
-        {
+        if (
+            (node->associatedFilter->category() == filter_category_e::output_condition) ||
+            (node->associatedFilter->category() == filter_category_e::output_scaler)
+        ){
             kf_register_filter_chain(accumulatedFilterChain);
             return;
         }

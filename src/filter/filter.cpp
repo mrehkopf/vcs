@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 2018 Tarpeeksi Hyvae Soft /
  * VCS filter
  *
@@ -62,6 +62,7 @@ void kf_initialize_filters(void)
         new filter_input_gate_c(),
         new filter_output_gate_c(),
         new filter_render_text_c(),
+        new filter_output_scaler_c(),
     };
 
     for (unsigned i = 0; i < KNOWN_FILTER_TYPES.size(); i++)
@@ -76,11 +77,12 @@ void kf_initialize_filters(void)
     return;
 }
 
-// Apply to the given pixel buffer the chain of filters (if any) whose input gate
-// matches the frame's resolution and output gate that of the current output resolution.
-void kf_apply_matching_filter_chain(u8 *const pixels, const resolution_s &r)
+abstract_filter_c* kf_apply_matching_filter_chain(u8 *const pixels, const resolution_s &r)
 {
-    if (!FILTERING_ENABLED) return;
+    if (!FILTERING_ENABLED)
+    {
+        return nullptr;
+    }
 
     k_assert((r.bpp == 32), "Filters can only be applied to 32-bit pixel data.");
 
@@ -88,7 +90,7 @@ void kf_apply_matching_filter_chain(u8 *const pixels, const resolution_s &r)
     std::pair<const std::vector<abstract_filter_c*>*, unsigned> openMatch = {nullptr, 0};
     const resolution_s outputRes = ks_output_resolution();
 
-    static const auto apply_chain = [&pixels, &r](const std::vector<abstract_filter_c*> &chain, const unsigned idx)
+    static const auto apply_chain = [&pixels, &r, outputRes](const std::vector<abstract_filter_c*> &chain, const unsigned idx)->abstract_filter_c*
     {
         // The gate filters are expected to be #first and #last, while the actual
         // applicable filters are the ones in-between.
@@ -99,7 +101,11 @@ void kf_apply_matching_filter_chain(u8 *const pixels, const resolution_s &r)
 
         MOST_RECENT_FILTER_CHAIN_IDX = idx;
 
-        return;
+        return (
+            (chain.back()->category() == filter_category_e::output_scaler)
+            ? chain.back()
+            : nullptr
+        );
     };
 
     // Apply the first filter chain, if any, whose input and output resolution matches
@@ -113,46 +119,64 @@ void kf_apply_matching_filter_chain(u8 *const pixels, const resolution_s &r)
         const unsigned inputGateWidth = filterChain.front()->parameter(filter_input_gate_c::PARAM_WIDTH);
         const unsigned inputGateHeight = filterChain.front()->parameter(filter_input_gate_c::PARAM_HEIGHT);
 
-        const unsigned outputGateWidth = filterChain.back()->parameter(filter_output_gate_c::PARAM_WIDTH);
-        const unsigned outputGateHeight = filterChain.back()->parameter(filter_output_gate_c::PARAM_HEIGHT);
-
-        // A gate size of 0 in either dimension means pass all values. Otherwise, the
-        // value must match the corresponding size of the frame or output.
-        if (!inputGateWidth &&
-            !inputGateHeight &&
-            !outputGateWidth &&
-            !outputGateHeight)
+        if (filterChain.back()->category() == filter_category_e::output_scaler)
         {
-            openMatch = {&filterChain, i};
+            if (!inputGateWidth && !inputGateHeight)
+            {
+                openMatch = {&filterChain, i};
+            }
+            else if ((!inputGateWidth || inputGateWidth == r.w) &&
+                     (!inputGateHeight || inputGateHeight == r.h))
+            {
+                partialMatch = {&filterChain, i};
+            }
+            else if ((r.w == inputGateWidth) &&
+                     (r.h == inputGateHeight))
+            {
+                return apply_chain(filterChain, i);
+            }
         }
-        else if ((!inputGateWidth || inputGateWidth == r.w) &&
-                 (!inputGateHeight || inputGateHeight == r.h) &&
-                 (!outputGateWidth || outputGateWidth == outputRes.w) &&
-                 (!outputGateHeight || outputGateHeight == outputRes.h))
+        else
         {
-            partialMatch = {&filterChain, i};
-        }
-        else if ((r.w == inputGateWidth) &&
-                 (r.h == inputGateHeight) &&
-                 (outputRes.w == outputGateWidth) &&
-                 (outputRes.h == outputGateHeight))
-        {
-            apply_chain(filterChain, i);
+            const unsigned outputGateWidth = filterChain.back()->parameter(filter_output_gate_c::PARAM_WIDTH);
+            const unsigned outputGateHeight = filterChain.back()->parameter(filter_output_gate_c::PARAM_HEIGHT);
 
-            return;
+            // A gate size of 0 in either dimension means pass all values. Otherwise, the
+            // value must match the corresponding size of the frame or output.
+            if (!inputGateWidth &&
+                !inputGateHeight &&
+                !outputGateWidth &&
+                !outputGateHeight)
+            {
+                openMatch = {&filterChain, i};
+            }
+            else if ((!inputGateWidth || inputGateWidth == r.w) &&
+                     (!inputGateHeight || inputGateHeight == r.h) &&
+                     (!outputGateWidth || outputGateWidth == outputRes.w) &&
+                     (!outputGateHeight || outputGateHeight == outputRes.h))
+            {
+                partialMatch = {&filterChain, i};
+            }
+            else if ((r.w == inputGateWidth) &&
+                     (r.h == inputGateHeight) &&
+                     (outputRes.w == outputGateWidth) &&
+                     (outputRes.h == outputGateHeight))
+            {
+                return apply_chain(filterChain, i);
+            }
         }
     }
 
     if (partialMatch.first)
     {
-        apply_chain(*partialMatch.first, partialMatch.second);
+        return apply_chain(*partialMatch.first, partialMatch.second);
     }
     else if (openMatch.first)
     {
-        apply_chain(*openMatch.first, openMatch.second);
+        return apply_chain(*openMatch.first, openMatch.second);
     }
 
-    return;
+    return nullptr;
 }
 
 const std::vector<const abstract_filter_c*>& kf_available_filter_types(void)
@@ -163,8 +187,9 @@ const std::vector<const abstract_filter_c*>& kf_available_filter_types(void)
 void kf_register_filter_chain(std::vector<abstract_filter_c*> newChain)
 {
     k_assert((newChain.size() >= 2) &&
-             (newChain.at(0)->category() == filter_category_e::input_condition) &&
-             (newChain.at(newChain.size()-1)->category() == filter_category_e::output_condition),
+             (newChain.front()->category() == filter_category_e::input_condition) &&
+             ((newChain.back()->category() == filter_category_e::output_condition) ||
+              (newChain.back()->category() == filter_category_e::output_scaler)),
              "Detected a malformed filter chain.");
 
     FILTER_CHAINS.push_back(newChain);

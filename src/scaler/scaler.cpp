@@ -17,6 +17,8 @@
 #include "common/globals.h"
 #include "common/memory/memory.h"
 #include "filter/filter.h"
+#include "filter/abstract_filter.h"
+#include "filter/filters/output_scaler/filter_output_scaler.h"
 #include "record/record.h"
 #include "scaler/scaler.h"
 #include "common/timer/timer.h"
@@ -26,25 +28,11 @@
     #include <opencv2/core/core.hpp>
 #endif
 
-// The arguments taken by scaling functions.
-#define SCALER_FUNC_PARAMS u8 *const pixelData, const resolution_s &srcResolution, const resolution_s &dstResolution
-
 vcs_event_c<const resolution_s&> ks_evNewOutputResolution;
-
-// The most recent captured frame has now been processed and is ready for display.
 vcs_event_c<const captured_frame_s&> ks_evNewScaledImage;
-
-// The number of frames processed (see newFrame) in the last second.
 vcs_event_c<unsigned> ks_evFramesPerSecond;
-
-struct image_scaler_s
-{
-    // The public name of the scaler. Shown in the GUI etc.
-    std::string name;
-
-    // The function that executes the scaler with the given pixels.
-    void (*scale)(SCALER_FUNC_PARAMS);
-};
+vcs_event_c<void> ks_evCustomScalingFilterEnabled;
+vcs_event_c<void> ks_evCustomScalingFilterDisabled;
 
 // For keeping track of the number of frames scaled per second.
 static unsigned NUM_FRAMES_SCALED_PER_SECOND = 0;
@@ -78,6 +66,11 @@ static heap_mem<u8> TMP_BUFFER;
 
  // The frame buffer's target bit depth.
 static const u32 OUTPUT_BIT_DEPTH = 32;
+
+// Whether the current output scaling is done via an output scaling filter that
+// the user has specified in a filter chain.
+static bool IS_CUSTOM_SCALER_FILTER_USED = false;
+static resolution_s CUSTOM_SCALER_FILTER_RESOLUTION = {0, 0};
 
 // By default, the base resolution for scaling is the resolution of the input
 // frame. But the user can also provide an override resolution that takes the
@@ -130,6 +123,11 @@ resolution_s ks_output_resolution(void)
     {
         const auto r = krecord_video_resolution();
         return {r.w, r.h, OUTPUT_BIT_DEPTH};
+    }
+
+    if (IS_CUSTOM_SCALER_FILTER_USED)
+    {
+        return CUSTOM_SCALER_FILTER_RESOLUTION;
     }
 
     resolution_s inRes = kc_get_capture_resolution();
@@ -542,48 +540,48 @@ void ks_scale_frame(const captured_frame_s &frame)
         {
             NBENE(("Was asked to scale a frame with an incompatible bit depth (%u). Ignoring it.",
                     frame.r.bpp));
-            goto done;
+            return;
         }
         else if (outputRes.w > MAX_OUTPUT_WIDTH ||
                  outputRes.h > MAX_OUTPUT_HEIGHT)
         {
             NBENE(("Was asked to scale a frame with an output size (%u x %u) larger than the maximum allowed (%u x %u). Ignoring it.",
                     outputRes.w, outputRes.h, MAX_OUTPUT_WIDTH, MAX_OUTPUT_HEIGHT));
-            goto done;
+            return;
         }
         else if (pixelData == nullptr)
         {
             NBENE(("Was asked to scale a null frame. Ignoring it."));
-            goto done;
+            return;
         }
         else if (frame.pixelFormat != kc_get_capture_pixel_format())
         {
             NBENE(("Was asked to scale a frame whose pixel format differed from the expected. Ignoring it."));
-            goto done;
+            return;
         }
         else if (frame.r.bpp > MAX_OUTPUT_BPP)
         {
             NBENE(("Was asked to scale a frame with a color depth (%u bits) higher than that allowed (%u bits). Ignoring it.",
                    frame.r.bpp, MAX_OUTPUT_BPP));
-            goto done;
+            return;
         }
         else if (frame.r.w < minres.w ||
                  frame.r.h < minres.h)
         {
             NBENE(("Was asked to scale a frame with an input size (%u x %u) smaller than the minimum allowed (%u x %u). Ignoring it.",
                    frame.r.w, frame.r.h, minres.w, minres.h));
-            goto done;
+            return;
         }
         else if (frame.r.w > maxres.w ||
                  frame.r.h > maxres.h)
         {
             NBENE(("Was asked to scale a frame with an input size (%u x %u) larger than the maximum allowed (%u x %u). Ignoring it.",
                    frame.r.w, frame.r.h, maxres.w, maxres.h));
-            goto done;
+            return;
         }
         else if (FRAME_BUFFER.pixels.is_null())
         {
-            goto done;
+            return;
         }
     }
 
@@ -595,19 +593,46 @@ void ks_scale_frame(const captured_frame_s &frame)
     if (frame.r.bpp != OUTPUT_BIT_DEPTH)
     {
         s_convert_frame_to_bgra(frame);
-        frameRes.bpp = 32;
-
+        frameRes.bpp = OUTPUT_BIT_DEPTH;
         pixelData = COLORCONV_BUFFER.data();
     }
 
     pixelData = kat_anti_tear(pixelData, frameRes);
 
-    /// TODO: If anti-tearing has visualization options turned on, we'd ideally
-    /// draw them AFTER applying filtering.
-    kf_apply_matching_filter_chain(pixelData, frameRes);
+    abstract_filter_c *customScaler = kf_apply_matching_filter_chain(pixelData, frameRes);
 
-    // Scale the frame to the desired output size.
+    // If the active filter chain provided a custom output scaler, it'll override our
+    // default scaler.
+    if (customScaler)
     {
+        k_assert(
+            (customScaler->category() == filter_category_e::output_scaler),
+            "Invalid filter category for custom output scaler."
+        );
+
+        if (!IS_CUSTOM_SCALER_FILTER_USED)
+        {
+            ks_evCustomScalingFilterEnabled.fire();
+        }
+
+        customScaler->apply(pixelData, frameRes);
+
+        IS_CUSTOM_SCALER_FILTER_USED = true;
+        CUSTOM_SCALER_FILTER_RESOLUTION = {
+            unsigned(customScaler->parameter(filter_output_scaler_c::PARAM_WIDTH)),
+            unsigned(customScaler->parameter(filter_output_scaler_c::PARAM_HEIGHT)),
+            OUTPUT_BIT_DEPTH
+        };
+    }
+    else
+    {
+        if (IS_CUSTOM_SCALER_FILTER_USED)
+        {
+            ks_evCustomScalingFilterDisabled.fire();
+        }
+
+        IS_CUSTOM_SCALER_FILTER_USED = false;
+
         // If no need to scale, just copy the data over.
         if ((!IS_ASPECT_RATIO_ENABLED || ASPECT_RATIO == scaler_aspect_ratio_e::native) &&
             frameRes.w == outputRes.w &&
@@ -638,21 +663,20 @@ void ks_scale_frame(const captured_frame_s &frame)
             }
             else
             {
-                scaler->scale(pixelData, frameRes, outputRes);
+                scaler->apply(pixelData, frameRes, outputRes);
             }
         }
-
-        if ((FRAME_BUFFER.r.w != outputRes.w) ||
-            (FRAME_BUFFER.r.h != outputRes.h))
-        {
-            ks_evNewOutputResolution.fire(outputRes);
-            FRAME_BUFFER.r = outputRes;
-        }
-
-        ks_evNewScaledImage.fire(ks_frame_buffer());
     }
 
-    done:
+    if ((FRAME_BUFFER.r.w != outputRes.w) ||
+        (FRAME_BUFFER.r.h != outputRes.h))
+    {
+        ks_evNewOutputResolution.fire(outputRes);
+        FRAME_BUFFER.r = outputRes;
+    }
+
+    ks_evNewScaledImage.fire(ks_frame_buffer());
+
     return;
 }
 
@@ -731,10 +755,9 @@ const captured_frame_s& ks_frame_buffer(void)
     return FRAME_BUFFER;
 }
 
-// Returns a list of GUI-displayable names of the scaling filters that're
-// available.
+// Returns a list of GUI-displayable names of the scalers that're available.
 //
-std::vector<std::string> ks_scaling_filter_names(void)
+std::vector<std::string> ks_scaler_names(void)
 {
     std::vector<std::string> names;
 
@@ -746,9 +769,7 @@ std::vector<std::string> ks_scaling_filter_names(void)
     return names;
 }
 
-// Returns a scaling filter matching the given name.
-//
-static const image_scaler_s* scaler_for_name_string(const std::string &name)
+const image_scaler_s* ks_scaler_for_name_string(const std::string &name)
 {
     const image_scaler_s *f = nullptr;
 
@@ -791,7 +812,7 @@ const std::string& ks_downscaling_filter_name(void)
 
 void ks_set_upscaling_filter(const std::string &name)
 {
-    const auto newScaler = scaler_for_name_string(name);
+    const auto newScaler = ks_scaler_for_name_string(name);
 
     if (CUR_UPSCALER != newScaler)
     {
@@ -803,7 +824,7 @@ void ks_set_upscaling_filter(const std::string &name)
 
 void ks_set_downscaling_filter(const std::string &name)
 {
-    const auto newScaler = scaler_for_name_string(name);
+    const auto newScaler = ks_scaler_for_name_string(name);
 
     if (CUR_DOWNSCALER != newScaler)
     {

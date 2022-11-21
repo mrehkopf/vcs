@@ -167,6 +167,13 @@ enum class filter_category_e
     meta,
 
     /*!
+     * Filters that resize the final image. Note that these filters can operate
+     * only as the last link in the filter chain, rather than as intermediate
+     * scalers.
+     */
+    output_scaler,
+
+    /*!
      * Special case, not for use by filters. Used as a control in filter chains.
      */
     input_condition,
@@ -249,6 +256,9 @@ void kf_unregister_all_filter_chains(void);
  * 
  * If the filter subsystem is disabled, or if there are no registered filter
  * chains, calling this function has no effect.
+ *
+ * Returns a pointer to the filter chain's output scaler, if the chain has one;
+ * otherwise, returns @a nullptr.
  * 
  * @note
  * @p pixels is expected to be in BGRA/8888 format, each pixel being 4 bytes in
@@ -257,7 +267,7 @@ void kf_unregister_all_filter_chains(void);
  * @see
  * kf_register_filter_chain(), ks_output_resolution(), kf_set_filtering_enabled()
  */
-void kf_apply_matching_filter_chain(u8 *const pixels, const resolution_s &r);
+abstract_filter_c *kf_apply_matching_filter_chain(u8 *const pixels, const resolution_s &r);
 
 /*!
  * Returns a list of the filter types that're available via this subsystem
