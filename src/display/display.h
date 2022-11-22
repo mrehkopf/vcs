@@ -31,13 +31,18 @@
 
 #include <string>
 #include <vector>
+#include <cassert>
+#include <cstring>
 #include "common/types.h"
 #include "common/propagate/vcs_event.h"
 
 struct log_entry_s;
 struct resolution_alias_s;
 
-// Marks the output window as dirty, i.e. in need of redrawing.
+/*!
+ * An event that can be fired by subsystems to indicate that the output window should
+ * redraw its contents.
+ */
 extern vcs_event_c<void> kd_evDirty;
 
 /*!
@@ -92,6 +97,15 @@ struct resolution_s
 
     /*! Number of bits per pixel.*/
     unsigned long bpp;
+
+    bool operator==(const resolution_s &other) const
+    {
+        return (
+            (this->w == other.w) &&
+            (this->h == other.h) &&
+            (this->bpp == other.bpp)
+        );
+    }
 };
 
 /*!
@@ -102,7 +116,19 @@ struct image_s
 {
     uint8_t *const pixels;
     const resolution_s resolution;
+
     image_s(uint8_t *const pixels, const resolution_s &resolution) : pixels(pixels), resolution(resolution) {}
+
+    std::size_t byte_size(void) const
+    {
+        return (this->resolution.w * this->resolution.h * (this->resolution.bpp / 8));
+    }
+
+    void operator=(const image_s &other)
+    {
+        assert((this->resolution == other.resolution) && "Attempting to copy images with mismatching resolutions.");
+        std::memcpy(this->pixels, other.pixels, this->byte_size());
+    }
 };
 
 /*!

@@ -53,7 +53,7 @@ The default configuration in [vcs.pro](vcs.pro) produces a debug build, with &nd
 
 Defining `RELEASE_BUILD` globally will produce a release build, with fewer debugging checks in performance-critical sections of the program. Simply uncomment `DEFINES += RELEASE_BUILD` at the top of [vcs.pro](vcs.pro) and execute a full rebuild.
 
-To confirm whether the program is running in release or debug mode, check the About dialog (right-click VCS's output window and select "About&hellip;"). For debug builds, the program's version will be reported as "VCS x.x.x (non-release build)", whereas for release builds it'll be "VCS x.x.x".
+To confirm whether the program is running in release or debug mode, check the About dialog (right-click VCS's output window and select "About VCS&hellip;"). For debug builds, the program's version will be reported as "VCS x.x.x (non-release build)", whereas for release builds it'll be "VCS x.x.x".
 
 ### Dependencies
 

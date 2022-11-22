@@ -7,6 +7,7 @@
 #define VCS_FILTER_FILTERS_RENDER_TEXT_FONT_H
 
 #include <algorithm>
+#include <numeric>
 #include <vector>
 #include <string>
 #include "display/display.h"
@@ -125,8 +126,21 @@ public:
     // (e.g. '?').
     unsigned height_of(const std::string &string) const
     {
-        const unsigned numLines = (1 + std::count(string.begin(), string.end(), '\n'));
-        return (numLines * (this->cap_height() + this->line_spacing()));
+        std::vector<unsigned> lineHeights = {0};
+
+        for (const char ch: string)
+        {
+            if (ch == '\n')
+            {
+                lineHeights.push_back(0);
+                continue;
+            }
+
+            const font_glyph_s &glyph = this->glyph_at(ch);
+            lineHeights.back() = std::max(lineHeights.back(), (this->cap_height() - glyph.baseline));
+        }
+
+        return (std::reduce(lineHeights.begin(), lineHeights.end()) + ((lineHeights.size() - 1) * this->line_spacing()));
     }
 
     // Renders the given string into the given image using this font.
@@ -155,7 +169,7 @@ public:
         if (!bgColor.empty())
         {
             const unsigned bgWidth = ((this->width_of(string) + 2) * scale);
-            const unsigned bgHeight = (this->height_of(string) * scale);
+            const unsigned bgHeight = ((this->height_of(string) + 2) * scale);
 
             for (unsigned bgY = 0; bgY < bgHeight; bgY++)
             {
