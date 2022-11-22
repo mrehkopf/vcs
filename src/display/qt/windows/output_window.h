@@ -104,8 +104,6 @@ private:
     // Load the font pointed to by the given filename, and make it available to the program.
     bool load_font(const QString &filename);
 
-    void update_context_menu_eyedropper(const QPoint &scalerOutputPos);
-
     void toggle_window_border(void);
 
     void save_screenshot(void);
@@ -152,10 +150,6 @@ private:
     // are being dropped; false otherwise. The value gets updated at some interval,
     // e.g. 1 second.
     bool areFramesBeingDropped = false;
-
-    // Displayed in the window's context menu; shows the color values of the
-    // pixel under the cursor where the context menu was spawned.
-    QAction *contextMenuEyedropper;
 
     const Qt::WindowFlags defaultWindowFlags = (Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 };

@@ -152,10 +152,6 @@ Under special circumstances, the title bar may also show one of these messages:
 
 Right-clicking inside the output window will bring up its context menu, which gives you access to the various controls and dialogs of VCS.
 
-### Eye dropper
-
-The eye dropper is a special non-interactible element of the context menu. It shows the RGB color values of the pixel over which the context menu was opened.
-
 ### Save as image
 
 Selecting this option will save the output window's contents into a PNG image file under VCS's working directory. The VCS terminal window will show the name of the file.

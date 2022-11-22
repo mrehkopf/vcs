@@ -570,11 +570,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
         }
 
-        this->contextMenuEyedropper = new QAction("0, 0, 0", this);
-        this->contextMenuEyedropper->setEnabled(false);
-        this->contextMenuEyedropper->setIcon(QIcon(":/res/images/icons/newie/eyedropper.png"));
-
-        this->contextMenu->addAction(this->contextMenuEyedropper);
         connect(this->contextMenu->addAction("Save as image"), &QAction::triggered, this, [=]{this->save_screenshot();});
         this->contextMenu->addSeparator();
         this->contextMenu->addMenu(captureMenu);
@@ -701,28 +696,6 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
     }
-
-    return;
-}
-
-void MainWindow::update_context_menu_eyedropper(const QPoint &scalerOutputPos)
-{
-    const captured_frame_s &frame = ks_frame_buffer();
-
-    if (((unsigned long)scalerOutputPos.x() >= frame.r.w) ||
-        ((unsigned long)scalerOutputPos.y() >= frame.r.h))
-    {
-        this->contextMenuEyedropper->setText("No eyedrop");
-        return;
-    }
-
-    const unsigned idx = ((scalerOutputPos.x() + scalerOutputPos.y() * frame.r.w) * (frame.r.bpp / 8));
-
-    const u8 red =   frame.pixels[idx + 2];
-    const u8 green = frame.pixels[idx + 1];
-    const u8 blue =  frame.pixels[idx + 0];
-
-    this->contextMenuEyedropper->setText(QString("%1, %2, %3").arg(red).arg(green).arg(blue));
 
     return;
 }
@@ -1261,7 +1234,6 @@ void MainWindow::save_screenshot(void)
 
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
-    this->update_context_menu_eyedropper(this->mapFromGlobal(event->globalPos()));
     this->contextMenu->popup(event->globalPos());
 
     return;
