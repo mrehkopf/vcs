@@ -6,7 +6,6 @@
  */
 
 #include "filter/filters/output_scaler/filter_output_scaler.h"
-#include "filter/filters/output_scaler/scaler_functions.cpp"
 #include "capture/capture.h"
 #include "scaler/scaler.h"
 
@@ -30,8 +29,6 @@ void filter_output_scaler_c::apply(u8 *const pixels, const resolution_s &r)
 }
 
 #if USE_OPENCV
-    // Scales the given pixel data using OpenCV.
-    //
     static void scale_using_opencv(const image_s &srcImage, image_s *const dstImage, const cv::InterpolationFlags interpolator)
     {
         const cv::Mat src = cv::Mat(srcImage.resolution.h, srcImage.resolution.w, CV_8UC4, srcImage.pixels);
