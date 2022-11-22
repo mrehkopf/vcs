@@ -358,15 +358,14 @@ MainWindow::MainWindow(QWidget *parent) :
             {
                 windowMenu->addSeparator();
 
-                QAction *customTitle = new QAction("Custom title...", this);
+                QAction *customTitle = new QAction("Set title...", this);
 
                 connect(customTitle, &QAction::triggered, this, [=]
                 {
-                    const QString newTitle = QInputDialog::getText(
+                    const QString newTitle = QInputDialog::getMultiLineText(
                         this,
-                        "VCS - Enter a custom window title",
-                        "Title (empty restores the default):",
-                        QLineEdit::Normal,
+                        "VCS - Custom window title",
+                        "Enter a title for the output window, or leave empty to restore to default.",
                         this->windowTitleOverride
                     );
 
