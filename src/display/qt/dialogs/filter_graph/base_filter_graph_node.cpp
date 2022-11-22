@@ -165,7 +165,7 @@ void BaseFilterGraphNode::generate_right_click_menu(void)
 
     // Add an option to enable/disable this node. Nodes that are disabled will act
     // as passthroughs, and their corresponding filter won't be applied.
-    if (this->filterType != filter_node_type_e::gate)
+    if (this->filterType == filter_node_type_e::filter)
     {
         QAction *enabled = new QAction("Active", this->rightClickMenu);
 

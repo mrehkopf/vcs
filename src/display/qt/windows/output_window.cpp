@@ -293,94 +293,38 @@ MainWindow::MainWindow(QWidget *parent) :
             const std::vector<std::string> scalerNames = ks_scaler_names();
             k_assert(!scalerNames.empty(), "Expected to receive a list of scalers, but got an empty list.");
 
-            QMenu *upscaler = new QMenu("Upscaler", this);
+            QMenu *defaultScalerMenu = new QMenu("Scaler", this);
             {
                 QActionGroup *group = new QActionGroup(this);
 
-                const QString defaultUpscalerName = kpers_value_of(INI_GROUP_OUTPUT, "upscaler", "Linear").toString();
+                const QString defaultUpscalerName = kpers_value_of(INI_GROUP_OUTPUT, "default_scaler", "Linear").toString();
 
                 for (const auto &scalerName: scalerNames)
                 {
-                    QAction *scaler = new QAction(QString::fromStdString(scalerName), this);
-                    scaler->setActionGroup(group);
-                    scaler->setCheckable(true);
-                    upscaler->addAction(scaler);
+                    QAction *scalerAction = new QAction(QString::fromStdString(scalerName), this);
+                    scalerAction->setActionGroup(group);
+                    scalerAction->setCheckable(true);
+                    defaultScalerMenu->addAction(scalerAction);
 
-                    connect(scaler, &QAction::toggled, this, [=](const bool checked)
+                    connect(scalerAction, &QAction::toggled, this, [=](const bool checked)
                     {
                         if (checked)
                         {
-                            ks_set_upscaling_filter(scalerName);
+                            ks_set_default_scaler(scalerName);
                         }
                     });
 
                     if (QString::fromStdString(scalerName) == defaultUpscalerName)
                     {
-                        scaler->setChecked(true);
+                        scalerAction->setChecked(true);
                     }
                 }
+
+                ks_evCustomScalerEnabled.listen([=]{defaultScalerMenu->setEnabled(false);});
+                ks_evCustomScalerDisabled.listen([=]{defaultScalerMenu->setEnabled(true);});
             }
 
-            QMenu *downscaler = new QMenu("Downscaler", this);
-            {
-                QActionGroup *group = new QActionGroup(this);
-
-                const QString defaultDownscalerName = kpers_value_of(INI_GROUP_OUTPUT, "downscaler", "Linear").toString();
-
-                for (const auto &scalerName: scalerNames)
-                {
-                    QAction *scaler = new QAction(QString::fromStdString(scalerName), this);
-                    scaler->setActionGroup(group);
-                    scaler->setCheckable(true);
-                    downscaler->addAction(scaler);
-
-                    connect(scaler, &QAction::toggled, this, [=](const bool checked){if (checked) ks_set_downscaling_filter(scalerName);});
-
-
-                    if (QString::fromStdString(scalerName) == defaultDownscalerName)
-                    {
-                        scaler->setChecked(true);
-                    }
-                }
-            }
-
-            QMenu *aspectRatio = new QMenu("Aspect ratio", this);
-            {
-                QActionGroup *group = new QActionGroup(this);
-
-                QAction *native = new QAction("Native", this);
-                native->setActionGroup(group);
-                native->setCheckable(true);
-                aspectRatio->addAction(native);
-
-                QAction *always43 = new QAction("Always 4:3", this);
-                always43->setActionGroup(group);
-                always43->setCheckable(true);
-                aspectRatio->addAction(always43);
-
-                QAction *traditional43 = new QAction("Traditional 4:3", this);
-                traditional43->setActionGroup(group);
-                traditional43->setCheckable(true);
-                aspectRatio->addAction(traditional43);
-
-                const QString defaultAspectRatio = kpers_value_of(INI_GROUP_OUTPUT, "aspect_mode", "Native").toString();
-
-                connect(native, &QAction::toggled, this,
-                        [=](const bool checked){if (checked) { ks_set_aspect_ratio_enabled(false); ks_set_aspect_ratio(scaler_aspect_ratio_e::native);}});
-                connect(traditional43, &QAction::toggled, this,
-                        [=](const bool checked){if (checked) { ks_set_aspect_ratio_enabled(true); ks_set_aspect_ratio(scaler_aspect_ratio_e::traditional_4_3);}});
-                connect(always43, &QAction::toggled, this,
-                        [=](const bool checked){if (checked) { ks_set_aspect_ratio_enabled(true); ks_set_aspect_ratio(scaler_aspect_ratio_e::all_4_3);}});
-
-                if (defaultAspectRatio == "Native") native->setChecked(true);
-                else if (defaultAspectRatio == "Always 4:3") always43->setChecked(true);
-                else if (defaultAspectRatio == "Traditional 4:3") traditional43->setChecked(true);
-            }
-
-            outputMenu->addMenu(aspectRatio);
-            outputMenu->addSeparator();
-            outputMenu->addMenu(upscaler);
-            outputMenu->addMenu(downscaler);
+            outputMenu->addMenu(defaultScalerMenu);
             outputMenu->addSeparator();
 
             QAction *antiTear = new QAction("Anti-tear...", this);
@@ -449,7 +393,7 @@ MainWindow::MainWindow(QWidget *parent) :
             {
                 windowMenu->addSeparator();
 
-                QMenu *rendererMenu = new QMenu("Render using", this);
+                QMenu *rendererMenu = new QMenu("Renderer", this);
                 QActionGroup *group = new QActionGroup(this);
 
                 QAction *opengl = new QAction("OpenGL", this);
@@ -636,9 +580,10 @@ MainWindow::MainWindow(QWidget *parent) :
         this->contextMenu->addSeparator();
         this->contextMenu->addMenu(captureMenu);
         this->contextMenu->addMenu(outputMenu);
+        this->contextMenu->addSeparator();
         this->contextMenu->addMenu(windowMenu);
         this->contextMenu->addSeparator();
-        connect(this->contextMenu->addAction("About..."), &QAction::triggered, this, [=]{this->aboutDlg->open();});
+        connect(this->contextMenu->addAction("About VCS..."), &QAction::triggered, this, [=]{this->aboutDlg->open();});
 
         // Ensure that action shortcuts can be used regardless of which dialog has focus.
         for (const auto *menu: {captureMenu, outputMenu, windowMenu})
@@ -826,21 +771,8 @@ MainWindow::~MainWindow()
 {
     // Save persistent settings.
     {
-        const QString aspectMode = []()->QString
-        {
-            switch (ks_aspect_ratio())
-            {
-                case scaler_aspect_ratio_e::native: return "Native";
-                case scaler_aspect_ratio_e::all_4_3: return "Always 4:3";
-                case scaler_aspect_ratio_e::traditional_4_3: return "Traditional 4:3";
-                default: return "(Unknown)";
-            }
-        }();
-
-        kpers_set_value(INI_GROUP_OUTPUT, "aspect_mode", aspectMode);
         kpers_set_value(INI_GROUP_OUTPUT, "renderer", (OGL_SURFACE? "OpenGL" : "Software"));
-        kpers_set_value(INI_GROUP_OUTPUT, "upscaler", QString::fromStdString(ks_upscaling_filter_name()));
-        kpers_set_value(INI_GROUP_OUTPUT, "downscaler", QString::fromStdString(ks_downscaling_filter_name()));
+        kpers_set_value(INI_GROUP_OUTPUT, "default_scaler", QString::fromStdString(ks_default_scaler()->name));
         kpers_set_value(INI_GROUP_OUTPUT, "font_size", QString::number(this->appwideFontSize));
     }
 

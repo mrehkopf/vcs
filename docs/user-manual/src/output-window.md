@@ -239,15 +239,9 @@ The output menu lets you customize the way in which VCS processes captured frame
             </td>
         </tr>
         <tr>
-            <td>Upscaler</td>
+            <td>Scaler</td>
             <td>
-                Set the scaler to be used when frames are upscaled to fit the output window.
-            </td>
-        </tr>
-        <tr>
-            <td>Downscaler</td>
-            <td>
-                Set the scaler to be used when frames are downscaled to fit the output window.
+                Set the scaler to be used when captured frames are scaled to fit the output window.
             </td>
         </tr>
     </table>
@@ -264,7 +258,7 @@ The window menu lets you customize various properties of the [output window](#ou
             <th>Explanation</th>
         </tr>
         <tr>
-            <td>Render using</td>
+            <td>Renderer</td>
             <td class="with-inline-table">
                 <dokki-table>
                     <table>

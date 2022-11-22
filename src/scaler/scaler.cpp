@@ -31,31 +31,25 @@
 vcs_event_c<const resolution_s&> ks_evNewOutputResolution;
 vcs_event_c<const captured_frame_s&> ks_evNewScaledImage;
 vcs_event_c<unsigned> ks_evFramesPerSecond;
-vcs_event_c<void> ks_evCustomScalingFilterEnabled;
-vcs_event_c<void> ks_evCustomScalingFilterDisabled;
+vcs_event_c<void> ks_evCustomScalerEnabled;
+vcs_event_c<void> ks_evCustomScalerDisabled;
 
 // For keeping track of the number of frames scaled per second.
 static unsigned NUM_FRAMES_SCALED_PER_SECOND = 0;
 
-// The available scaling filters.
-void s_scaler_nearest(SCALER_FUNC_PARAMS);
-void s_scaler_linear(SCALER_FUNC_PARAMS);
-void s_scaler_area(SCALER_FUNC_PARAMS);
-void s_scaler_cubic(SCALER_FUNC_PARAMS);
-void s_scaler_lanczos(SCALER_FUNC_PARAMS);
+// The image scalers available to VCS.
 static const std::vector<image_scaler_s> KNOWN_SCALERS =
-#ifdef USE_OPENCV
-    {{"Nearest", &s_scaler_nearest},
-     {"Linear",  &s_scaler_linear},
-     {"Area",    &s_scaler_area},
-     {"Cubic",   &s_scaler_cubic},
-     {"Lanczos", &s_scaler_lanczos}};
-#else
-    {{"Nearest", &s_scaler_nearest}};
-#endif
+    #ifdef USE_OPENCV
+        {{"Nearest", filter_output_scaler_c::nearest},
+        {"Linear",  filter_output_scaler_c::linear},
+        {"Area",    filter_output_scaler_c::area},
+        {"Cubic",   filter_output_scaler_c::cubic},
+        {"Lanczos", filter_output_scaler_c::lanczos}};
+    #else
+        {{"Nearest", filter_output_scaler_c::nearest}};
+    #endif
 
-static const image_scaler_s *CUR_UPSCALER = nullptr;
-static const image_scaler_s *CUR_DOWNSCALER = nullptr;
+static const image_scaler_s *DEFAULT_SCALER = nullptr;
 
 // The frame buffer where scaled frames are to be placed.
 static captured_frame_s FRAME_BUFFER;
@@ -69,7 +63,7 @@ static const u32 OUTPUT_BIT_DEPTH = 32;
 
 // Whether the current output scaling is done via an output scaling filter that
 // the user has specified in a filter chain.
-static bool IS_CUSTOM_SCALER_FILTER_USED = false;
+static bool IS_CUSTOM_SCALER_USED = false;
 static resolution_s CUSTOM_SCALER_FILTER_RESOLUTION = {0, 0};
 
 // By default, the base resolution for scaling is the resolution of the input
@@ -78,34 +72,9 @@ static resolution_s CUSTOM_SCALER_FILTER_RESOLUTION = {0, 0};
 static resolution_s RESOLUTION_OVERRIDE = {640, 480};
 static bool IS_RESOLUTION_OVERRIDE_ENABLED = false;
 
-// To which aspect ratio we should force the base resolution.
-static scaler_aspect_ratio_e ASPECT_RATIO = scaler_aspect_ratio_e::native;
-static bool IS_ASPECT_RATIO_ENABLED = true;
-
 // An additional multiplier to be applied to the base resolution.
 static double SCALING_MULTIPLIER = 1;
 static bool IS_SCALING_MULTIPLIER_ENABLED = false;
-
-// Returns the aspect ratio (e.g. 4:3) of the given resolution.
-static std::pair<unsigned, unsigned> resolution_to_aspect(const resolution_s &r)
-{
-    const int gcd = std::__gcd(r.w, r.h);
-
-    return {(r.w / gcd),
-            (r.h / gcd)};
-}
-
-void ks_set_aspect_ratio(const scaler_aspect_ratio_e ratio)
-{
-    ASPECT_RATIO = ratio;
-
-    return;
-}
-
-scaler_aspect_ratio_e ks_aspect_ratio(void)
-{
-    return ASPECT_RATIO;
-}
 
 resolution_s ks_base_resolution(void)
 {
@@ -125,7 +94,7 @@ resolution_s ks_output_resolution(void)
         return {r.w, r.h, OUTPUT_BIT_DEPTH};
     }
 
-    if (IS_CUSTOM_SCALER_FILTER_USED)
+    if (IS_CUSTOM_SCALER_USED)
     {
         return CUSTOM_SCALER_FILTER_RESOLUTION;
     }
@@ -172,222 +141,9 @@ resolution_s ks_output_resolution(void)
     return outRes;
 }
 
-bool ks_is_aspect_ratio_enabled(void)
-{
-    return IS_ASPECT_RATIO_ENABLED;
-}
-
-#if USE_OPENCV
-// Returns a resolution corresponding to srcResolution scaled up to dstResolution but
-// maintaining srcResolution's aspect ratio according to the scaler's current aspect
-// mode.
-//
-static resolution_s padded_resolution(const resolution_s &srcResolution, const resolution_s &dstResolution)
-{
-    const auto aspect = [srcResolution]()->std::pair<int, int>
-    {
-        switch (ASPECT_RATIO)
-        {
-            case scaler_aspect_ratio_e::native: return resolution_to_aspect(srcResolution);
-            case scaler_aspect_ratio_e::all_4_3: return {4, 3};
-            case scaler_aspect_ratio_e::traditional_4_3:
-            {
-                if ((srcResolution.w == 720 && srcResolution.h == 400) ||
-                    (srcResolution.w == 640 && srcResolution.h == 400) ||
-                    (srcResolution.w == 320 && srcResolution.h == 200))
-                {
-                    return {4, 3};
-                }
-                else
-                {
-                    return resolution_to_aspect(srcResolution);
-                }
-            }
-            default: k_assert(0, "Unknown aspect mode."); return resolution_to_aspect(srcResolution);
-        }
-    }();
-    const double aspectRatio = (aspect.first / (double)aspect.second);
-    uint w = std::round(dstResolution.h * aspectRatio);
-    uint h = dstResolution.h;
-    if (w > dstResolution.w)
-    {
-        const double aspectRatio = (aspect.first / (double)aspect.second);
-        w = dstResolution.w;
-        h = std::round(dstResolution.w * aspectRatio);
-    }
-
-    return {w, h, OUTPUT_BIT_DEPTH};
-}
-
-// Returns border padding sizes for cv::copyMakeBorder()
-//
-static cv::Vec4i border_padding(const resolution_s &paddedRes, const resolution_s &dstResolution)
-{
-    cv::Vec4i p;
-
-    p[0] = ((dstResolution.h - paddedRes.h) / 2);     // Top.
-    p[1] = ((dstResolution.h - paddedRes.h + 1) / 2); // Bottom.
-    p[2] = ((dstResolution.w - paddedRes.w) / 2);     // Left.
-    p[3] = ((dstResolution.w - paddedRes.w + 1) / 2); // Right.
-
-    return p;
-}
-
-// Copies src into dsts and adds a border of the given size.
-//
-void copy_with_border(const cv::Mat &src, cv::Mat &dst, const cv::Vec4i &borderSides)
-{
-    cv::copyMakeBorder(src, dst, borderSides[0], borderSides[1], borderSides[2], borderSides[3], cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
-
-    return;
-}
-
-// Scales the given pixel data using OpenCV.
-//
-void opencv_scale(u8 *const pixelData,
-                  u8 *const outputBuffer,
-                  const resolution_s &srcResolution,
-                  const resolution_s &dstResolution,
-                  const cv::InterpolationFlags interpolator)
-{
-    cv::Mat scratch = cv::Mat(srcResolution.h, srcResolution.w, CV_8UC4, pixelData);
-    cv::Mat output = cv::Mat(dstResolution.h, dstResolution.w, CV_8UC4, outputBuffer);
-
-    if (ks_is_aspect_ratio_enabled())
-    {
-        const resolution_s paddedRes = padded_resolution(srcResolution, dstResolution);
-        cv::Mat tmp = cv::Mat(paddedRes.h, paddedRes.w, CV_8UC4, TMP_BUFFER.data());
-
-        if ((paddedRes.h == dstResolution.h) &&
-            (paddedRes.w == dstResolution.w))
-        {
-            // No padding is needed, so we can resize directly into the output buffer.
-            cv::resize(scratch, output, output.size(), 0, 0, interpolator);
-        }
-        else
-        {
-            cv::resize(scratch, tmp, tmp.size(), 0, 0, interpolator);
-            copy_with_border(tmp, output, border_padding(paddedRes, dstResolution));
-        }
-    }
-    else
-    {
-        cv::resize(scratch, output, output.size(), 0, 0, interpolator);
-    }
-
-    return;
-}
-
-#endif
-
-void s_scaler_nearest(SCALER_FUNC_PARAMS)
-{
-    k_assert((srcResolution.bpp == 32) && (dstResolution.bpp == 32),
-             "This filter requires 32-bit source and target color.")
-    if (pixelData == nullptr)
-    {
-        return;
-    }
-
-    #if USE_OPENCV
-        opencv_scale(pixelData, FRAME_BUFFER.pixels.data(), srcResolution, dstResolution, cv::INTER_NEAREST);
-    #else
-        double deltaW = (srcResolution.w / double(dstResolution.w));
-        double deltaH = (srcResolution.h / double(dstResolution.h));
-        u8 *const dst = FRAME_BUFFER.pixels.data();
-
-        for (uint y = 0; y < dstResolution.h; y++)
-        {
-            for (uint x = 0; x < dstResolution.w; x++)
-            {
-                const uint dstIdx = ((x + y * dstResolution.w) * 4);
-                const uint srcIdx = ((uint(x * deltaW) + uint(y * deltaH) * srcResolution.w) * 4);
-
-                memcpy(&dst[dstIdx], &pixelData[srcIdx], 4);
-            }
-        }
-    #endif
-
-    return;
-}
-
-void s_scaler_linear(SCALER_FUNC_PARAMS)
-{
-    k_assert((srcResolution.bpp == 32) && (dstResolution.bpp == 32),
-             "This filter requires 32-bit source and target color.")
-    if (pixelData == nullptr)
-    {
-        return;
-    }
-
-    #if USE_OPENCV
-        opencv_scale(pixelData, FRAME_BUFFER.pixels.data(), srcResolution, dstResolution, cv::INTER_LINEAR);
-    #else
-        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
-    #endif
-
-    return;
-}
-
-void s_scaler_area(SCALER_FUNC_PARAMS)
-{
-    k_assert((srcResolution.bpp == 32) && (dstResolution.bpp == 32),
-             "This filter requires 32-bit source and target color.")
-    if (pixelData == nullptr)
-    {
-        return;
-    }
-
-    #if USE_OPENCV
-        opencv_scale(pixelData, FRAME_BUFFER.pixels.data(), srcResolution, dstResolution, cv::INTER_AREA);
-    #else
-        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
-    #endif
-
-    return;
-}
-
-void s_scaler_cubic(SCALER_FUNC_PARAMS)
-{
-    k_assert((srcResolution.bpp == 32) && (dstResolution.bpp == 32),
-             "This filter requires 32-bit source and target color.")
-    if (pixelData == nullptr)
-    {
-        return;
-    }
-
-    #if USE_OPENCV
-        opencv_scale(pixelData, FRAME_BUFFER.pixels.data(), srcResolution, dstResolution, cv::INTER_CUBIC);
-    #else
-        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
-    #endif
-
-    return;
-}
-
-void s_scaler_lanczos(SCALER_FUNC_PARAMS)
-{
-    k_assert((srcResolution.bpp == 32) && (dstResolution.bpp == 32),
-             "This filter requires 32-bit source and target color.")
-
-    if (pixelData == nullptr)
-    {
-        return;
-    }
-
-    #if USE_OPENCV
-        opencv_scale(pixelData, FRAME_BUFFER.pixels.data(), srcResolution, dstResolution, cv::INTER_LANCZOS4);
-    #else
-        k_assert(0, "Attempted to use a scaling filter that hasn't been implemented for non-OpenCV builds.");
-    #endif
-
-    return;
-}
-
 // Replaces OpenCV's default error handler.
 //
-int cv_error_handler(int status, const char* func_name,
-                     const char* err_msg, const char* file_name, int line, void* userdata)
+static int cv_error_handler(int status, const char* func_name, const char* err_msg, const char* file_name, int line, void* userdata)
 {
     NBENE(("OpenCV reports an error: '%s'.", err_msg));
     k_assert(0, "OpenCV reported an error.");
@@ -417,8 +173,7 @@ void ks_initialize_scaler(void)
     FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
     FRAME_BUFFER.r = {0, 0, 0};
 
-    ks_set_upscaling_filter(KNOWN_SCALERS.at(0).name);
-    ks_set_downscaling_filter(KNOWN_SCALERS.at(0).name);
+    ks_set_default_scaler(KNOWN_SCALERS.at(0).name);
 
     kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
     {
@@ -464,7 +219,7 @@ void ks_release_scaler(void)
 }
 
 // Converts the given non-BGRA frame into the BGRA format.
-void s_convert_frame_to_bgra(const captured_frame_s &frame)
+static void convert_frame_to_bgra(const captured_frame_s &frame)
 {
     // RGB888 frames are already stored in BGRA format.
     if (frame.pixelFormat == capture_pixel_format_e::rgb_888)
@@ -592,7 +347,7 @@ void ks_scale_frame(const captured_frame_s &frame)
     // proper order.
     if (frame.r.bpp != OUTPUT_BIT_DEPTH)
     {
-        s_convert_frame_to_bgra(frame);
+        convert_frame_to_bgra(frame);
         frameRes.bpp = OUTPUT_BIT_DEPTH;
         pixelData = COLORCONV_BUFFER.data();
     }
@@ -610,14 +365,15 @@ void ks_scale_frame(const captured_frame_s &frame)
             "Invalid filter category for custom output scaler."
         );
 
-        if (!IS_CUSTOM_SCALER_FILTER_USED)
+        if (!IS_CUSTOM_SCALER_USED)
         {
-            ks_evCustomScalingFilterEnabled.fire();
+            ks_evCustomScalerEnabled.fire();
         }
+
+        IS_CUSTOM_SCALER_USED = true;
 
         customScaler->apply(pixelData, frameRes);
 
-        IS_CUSTOM_SCALER_FILTER_USED = true;
         CUSTOM_SCALER_FILTER_RESOLUTION = {
             unsigned(customScaler->parameter(filter_output_scaler_c::PARAM_WIDTH)),
             unsigned(customScaler->parameter(filter_output_scaler_c::PARAM_HEIGHT)),
@@ -626,45 +382,25 @@ void ks_scale_frame(const captured_frame_s &frame)
     }
     else
     {
-        if (IS_CUSTOM_SCALER_FILTER_USED)
+        if (IS_CUSTOM_SCALER_USED)
         {
-            ks_evCustomScalingFilterDisabled.fire();
+            ks_evCustomScalerDisabled.fire();
         }
 
-        IS_CUSTOM_SCALER_FILTER_USED = false;
+        IS_CUSTOM_SCALER_USED = false;
 
         // If no need to scale, just copy the data over.
-        if ((!IS_ASPECT_RATIO_ENABLED || ASPECT_RATIO == scaler_aspect_ratio_e::native) &&
-            frameRes.w == outputRes.w &&
-            frameRes.h == outputRes.h)
+        if (frameRes == outputRes)
         {
-            memcpy(FRAME_BUFFER.pixels.data(), pixelData, FRAME_BUFFER.pixels.size_check(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
+            std::memcpy(FRAME_BUFFER.pixels.data(), pixelData, FRAME_BUFFER.pixels.size_check(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
         }
         else
         {
-            const image_scaler_s *scaler;
+            k_assert(DEFAULT_SCALER, "A default scaler has not been defined.");
 
-            if ((frameRes.w < outputRes.w) ||
-                (frameRes.h < outputRes.h))
-            {
-                scaler = CUR_UPSCALER;
-            }
-            else
-            {
-                scaler = CUR_DOWNSCALER;
-            }
-
-            if (!scaler)
-            {
-                NBENE(("Upscale or downscale filter is null. Refusing to scale."));
-
-                outputRes = frameRes;
-                memcpy(FRAME_BUFFER.pixels.data(), pixelData, FRAME_BUFFER.pixels.size_check(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
-            }
-            else
-            {
-                scaler->apply(pixelData, frameRes, outputRes);
-            }
+            const image_s srcImage = image_s(pixelData, frameRes);
+            image_s dstImage = image_s(FRAME_BUFFER.pixels.data(), outputRes);
+            DEFAULT_SCALER->apply(srcImage, &dstImage);
         }
     }
 
@@ -683,14 +419,6 @@ void ks_scale_frame(const captured_frame_s &frame)
 void ks_set_base_resolution_enabled(const bool enabled)
 {
     IS_RESOLUTION_OVERRIDE_ENABLED = enabled;
-    kd_update_output_window_size();
-
-    return;
-}
-
-void ks_set_aspect_ratio_enabled(const bool state)
-{
-    IS_ASPECT_RATIO_ENABLED = state;
     kd_update_output_window_size();
 
     return;
@@ -750,7 +478,7 @@ void ks_indicate_invalid_signal(void)
     return;
 }
 
-const captured_frame_s& ks_frame_buffer(void)
+captured_frame_s& ks_frame_buffer(void)
 {
     return FRAME_BUFFER;
 }
@@ -794,42 +522,14 @@ const image_scaler_s* ks_scaler_for_name_string(const std::string &name)
     return f;
 }
 
-const std::string& ks_upscaling_filter_name(void)
+void ks_set_default_scaler(const std::string &name)
 {
-    k_assert(CUR_UPSCALER != nullptr,
-             "Tried to get the name of a null upscale filter.");
-
-    return CUR_UPSCALER->name;
-}
-
-const std::string& ks_downscaling_filter_name(void)
-{
-    k_assert(CUR_UPSCALER != nullptr,
-             "Tried to get the name of a null downscale filter.")
-
-    return CUR_DOWNSCALER->name;
-}
-
-void ks_set_upscaling_filter(const std::string &name)
-{
-    const auto newScaler = ks_scaler_for_name_string(name);
-
-    if (CUR_UPSCALER != newScaler)
-    {
-        CUR_UPSCALER = newScaler;
-    }
+    DEFAULT_SCALER = ks_scaler_for_name_string(name);
 
     return;
 }
 
-void ks_set_downscaling_filter(const std::string &name)
+const image_scaler_s* ks_default_scaler(void)
 {
-    const auto newScaler = ks_scaler_for_name_string(name);
-
-    if (CUR_DOWNSCALER != newScaler)
-    {
-        CUR_DOWNSCALER = newScaler;
-    }
-
-    return;
+    return DEFAULT_SCALER;
 }

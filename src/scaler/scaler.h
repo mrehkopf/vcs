@@ -65,9 +65,6 @@
 
 struct captured_frame_s;
 
-// The arguments taken by scaling functions.
-#define SCALER_FUNC_PARAMS u8 *const pixelData, const resolution_s &srcResolution, const resolution_s &dstResolution
-
 /*!
  * Basic container for an image scaler.
  */
@@ -77,7 +74,7 @@ struct image_scaler_s
     std::string name;
 
     /*! A function that executes the scaler on the given pixels.*/
-    void (*apply)(SCALER_FUNC_PARAMS);
+    void (*apply)(const image_s &srcImage, image_s *const dstImage);
 };
 
 /*!
@@ -130,34 +127,13 @@ extern vcs_event_c<unsigned> ks_evFramesPerSecond;
  * An event fired when an output scaling filter becomes active, i.e. when captured
  * frames begin being scaled using such a filter.
  */
-extern vcs_event_c<void> ks_evCustomScalingFilterEnabled;
+extern vcs_event_c<void> ks_evCustomScalerEnabled;
 
 /*!
  * An event fired when there's no longer an output scaling filter being used to
  * scale captured frames.
  */
-extern vcs_event_c<void> ks_evCustomScalingFilterDisabled;
-
-/*!
- * Enumerates the aspect ratios recognized by the scaler subsystem.
- * 
- * @see
- * ks_set_aspect_ratio()
- */
-enum class scaler_aspect_ratio_e
-{
-    /*! An image's native aspect ratio (width / height).*/
-    native,
-
-    /*!
-     * An image's native aspect ratio (width / height), except for certain
-     * historically 4:3 aspect ratio resolutions like 720 x 400.
-     */
-    traditional_4_3,
-
-    /*! An aspect ratio of 4:3, disregarding the image's native ratio.*/
-    all_4_3
-};
+extern vcs_event_c<void> ks_evCustomScalerDisabled;
 
 /*!
  * Returns the resolution to which the scaler will scale input frames, prior to
@@ -177,15 +153,6 @@ resolution_s ks_base_resolution(void);
  * ks_scale_frame(), ks_base_resolution
  */
 resolution_s ks_output_resolution(void);
-
-/*!
- * Returns true if the scaler is currently forcing scaled frames into a particular
- * aspect ratio.
- * 
- * @see
- * ks_set_aspect_ratio()
- */
-bool ks_is_aspect_ratio_enabled(void);
 
 /*!
  * Initializes the scaler subsystem.
@@ -240,53 +207,7 @@ void ks_release_scaler(void);
  */
 void ks_scale_frame(const captured_frame_s &frame);
 
-/*!
- * Sets the aspect ratio to which the scaler subsystem scales input frames.
- * 
- * When scaling to a particular aspect ratio, input frames are squished to the
- * given ratio, then padded with black borders as necessary to fit the output
- * size.
- * 
- * @code
- * // A frame of size 640 x 400 (16:10 aspect ratio).
- * auto frame = ...;
- * 
- * ks_set_base_resolution({640, 400});
- * ks_set_aspect_ratio(scaler_aspect_ratio_e::all_4_3);
- * ks_scale_frame(frame);
- * 
- * // The scaled frame will have been padded to 640 x 400, with the original
- * // frame's pixels squished to 533 x 400 (4:3 aspect ratio).
- * auto scaledFrame = ks_frame_buffer();
- * @endcode
- * 
- * @see
- * ks_aspect_ratio(), ks_set_aspect_ratio_enabled()
- */
-void ks_set_aspect_ratio(const scaler_aspect_ratio_e aspect);
-
-/*!
- * Enables or disables the scaler subsystem's aspect ratio.
- * 
- * If disabled, input frames will be scaled to their native aspect ratios.
- */
-void ks_set_aspect_ratio_enabled(const bool state);
-
-/*!
- * Returns the scaler subsystem's current aspect ratio.
- * 
- * @see
- * ks_set_aspect_ratio(), ks_set_aspect_ratio_enabled()
- */
-scaler_aspect_ratio_e ks_aspect_ratio(void);
-
-/*!
- * Returns the scaler subsystem's current scaling multiplier.
- * 
- * @see
- * ks_set_scaling_multiplier(), ks_set_scaling_multiplier_enabled()
- */
-scaler_aspect_ratio_e ks_set_scaling_multiplier(void);
+void ks_set_scaling_multiplier(void);
 
 /*!
  * Enables or disables the scaler subsystem's scaling multiplier.
@@ -298,8 +219,8 @@ void ks_set_scaling_multiplier_enabled(const bool enabled);
 
 /*!
  * Sets the resolution to which input frames are to be scaled, before applying
- * size modifiers like aspect ratio correction or a scaling multiplier. By default,
- * the scaler will apply the modifiers to each input frame's own resolution.
+ * size modifiers like scaling multiplier. By default, the scaler will apply the
+ * modifiers to each input frame's own resolution.
  * 
  * @code
  * // Frames will be scaled to 2x of their original resolution.
@@ -375,23 +296,7 @@ void ks_indicate_invalid_signal(void);
  * @see
  * ks_scale_frame(), ks_indicate_no_signal(), ks_indicate_invalid_signal()
  */
-const captured_frame_s& ks_frame_buffer(void);
-
-/*!
- * Returns the name of the current upscaling filter.
- * 
- * @see
- * ks_set_upscaling_filter(), ks_scaling_filter_names()
- */
-const std::string &ks_upscaling_filter_name(void);
-
-/*!
- * Returns the name of the current downscaling filter.
- * 
- * @see
- * ks_set_downscaling_filter(), ks_scaling_filter_names()
- */
-const std::string& ks_downscaling_filter_name(void);
+captured_frame_s& ks_frame_buffer(void);
 
 /*!
  * Returns a scaling filter matching the given name, or nullptr if no such scaler
@@ -400,11 +305,10 @@ const std::string& ks_downscaling_filter_name(void);
 const image_scaler_s* ks_scaler_for_name_string(const std::string &name);
 
 /*!
- * Returns a list of the names of the scaling filters available in this build of
- * VCS.
+ * Returns a list of the names of the image scalers available in this build of VCS.
  * 
  * @code
- * const auto list = ks_scaling_filter_names();
+ * const auto list = ks_scaler_names();
  * // list == {"Nearest", "Linear", "Area", ...}.
  * @endcode
  * 
@@ -427,52 +331,36 @@ std::vector<std::string> ks_scaler_names(void);
  * @endcode
  * 
  * @see
- * ks_scale_frame(), ks_set_downscaling_filter(), ks_set_upscaling_filter()
+ * ks_scale_frame()
  */
 void ks_set_scaling_multiplier(const double s);
 
 /*!
- * Sets the scaling filter to be used when frames are downscaled, i.e. when the
- * scaling multiplier is < 1. The desired filter is identified by @p name.
+ * Sets the scaler to be used when the resolution of captured frames doesn't match
+ * the resolution of the output window, such that the frames are scaled to the size
+ * of the window. The desired filter is identified by @p name.
  * 
  * @code
  * // Produce an image downscaled by 0.75x using a linearly sampling scaler.
- * ks_set_downscaling_filter("Linear");
+ * ks_set_default_scaler("Linear");
  * ks_set_scaling_multiplier(0.75);
  * ks_scale_frame(frame);
- * 
  * const auto &scaledImage = ks_frame_buffer();
  * @endcode
  * 
  * @note
- * @p name must be one of the strings returned by ks_scaling_filter_names().
+ * @p name must be one of the strings returned by ks_scaler_names().
  * 
  * @see
- * ks_scaling_filter_names(), ks_set_scaling_multiplier(),
- * ks_downscaling_filter_name()
+ * ks_scaler_names(), ks_set_scaling_multiplier()
  */
-void ks_set_downscaling_filter(const std::string &name);
+void ks_set_default_scaler(const std::string &name);
 
 /*!
- * Sets the scaling filter to be used when frames are upscaled, i.e. when the
- * scaling multiplier is > 1. The desired filter is identified by @p name.
- * 
- * @code
- * // Produce an image upscaled by 1.25x using a linearly sampling scaler.
- * ks_set_upscaling_filter("Linear");
- * ks_set_scaling_multiplier(1.25);
- * ks_scale_frame(frame);
- * 
- * const auto &scaledImage = ks_frame_buffer();
- * @endcode
- * 
- * @note
- * @p name must be one of the strings returned by ks_scaling_filter_names().
- * 
+ * Returns a pointer to the currently-active default scaler.
+ *
  * @see
- * ks_scaling_filter_names() ks_set_scaling_multiplier(),
- * ks_upscaling_filter_name()
+ * ks_set_default_scaler()
  */
-void ks_set_upscaling_filter(const std::string &name);
-
+const image_scaler_s* ks_default_scaler(void);
 #endif
