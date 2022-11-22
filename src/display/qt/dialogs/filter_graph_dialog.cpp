@@ -38,11 +38,11 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         auto *const bar = new QStatusBar();
         this->layout()->addWidget(bar);
 
-        auto *const viewScale = new QLabel("Scale: 1.0");
+        auto *const viewScale = new QLabel("Zoom level: 1.0");
 
         connect(ui->graphicsView, &InteractibleNodeGraphView::scale_changed, this, [=](const double newScale)
         {
-            viewScale->setText(QString("Scale: %1").arg(QString::number(newScale, 'f', 1)));
+            viewScale->setText(QString("Zoom level: %1").arg(QString::number(newScale, 'f', 1)));
         });
 
         connect(ui->graphicsView, &InteractibleNodeGraphView::right_clicked_on_background, this, [=](const QPoint &globalPos)
