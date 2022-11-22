@@ -29,7 +29,7 @@ public:
         const QString title,
         const unsigned width = 240,
         const unsigned height = 130
-        );
+    );
     virtual ~BaseFilterGraphNode();
 
     // Convenience functions that can be used to access the node's (default) input and output edge.
