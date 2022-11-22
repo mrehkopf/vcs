@@ -10,6 +10,9 @@
 
 #include "filter/abstract_filter.h"
 #include "filter/filters/output_scaler/gui/filtergui_output_scaler.h"
+#include "display/display.h"
+
+struct captured_frame_s;
 
 class filter_output_scaler_c : public abstract_filter_c
 {
@@ -45,6 +48,12 @@ public:
     filter_category_e category(void) const override { return filter_category_e::output_scaler; }
     void apply(u8 *const pixels, const resolution_s &r) override;
 
+    // Scaler functions; for scaling a source image's data into a destination image.
+    static void nearest(const image_s &srcImage, image_s *const dstImage);
+    static void linear(const image_s &srcImage, image_s *const dstImage);
+    static void area(const image_s &srcImage, image_s *const dstImage);
+    static void cubic(const image_s &srcImage, image_s *const dstImage);
+    static void lanczos(const image_s &srcImage, image_s *const dstImage);
 private:
 };
 

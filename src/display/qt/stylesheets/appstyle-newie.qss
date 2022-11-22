@@ -166,17 +166,6 @@ QTabBar::tab:selected
     color: black;
 }
 
-QPlainTextEdit
-{
-    border: none;
-    border-radius: 2px;
-    border: 1px solid black;
-    color: black;
-    background-color: whitesmoke;
-    margin-left: 6px;
-    margin-right: 6px;
-}
-
 QPushButton:flat:pressed,
 QPushButton:flat:hover:pressed
 {
@@ -396,8 +385,6 @@ QScrollBar::handle:vertical
     border-radius: 0;
     background-color: #808080;
     border: none;
-    border-top: 1px solid #353535;
-    border-bottom: 1px solid #353535;
 
     background-image: url(:/res/images/icons/newie/handle_grip.png);
     background-position: center;
@@ -458,8 +445,6 @@ QScrollBar::handle:horizontal
     min-width: 24px;
     border-radius: 0px;
     background-color: #808080;
-    border-left: 1px solid #353535;
-    border-right: 1px solid #353535;
 
     background-image: url(:/res/images/icons/newie/handle_grip.png);
     background-position: center;
@@ -582,10 +567,12 @@ QSpinBox,
 QDoubleSpinBox,
 QComboBox,
 QLineEdit,
+QPlainTextEdit,
 QTextEdit,
 QSpinBox:read-only:focus,
 QDoubleSpinBox:read-only:focus,
 QLineEdit:read-only:focus,
+QPlainTextEdit:read-only:focus,
 QTextEdit:read-only:focus
 {
     min-height: 22px;
@@ -594,6 +581,12 @@ QTextEdit:read-only:focus
     border-radius: 2px;
     border: 1px solid black;
     padding: 2px;
+    margin: 0;
+}
+
+QPlainTextEdit[overLengthLimit="true"]
+{
+    color: crimson;
 }
 
 QGroupBox[objectName="groupBox_presetList"] QComboBox
@@ -610,6 +603,7 @@ QSpinBox:focus,
 QSpinBox:focus,
 QDoubleSpinBox:focus,
 QLineEdit:focus,
+QPlainTextEdit:focus,
 QTextEdit:focus
 {
     background-color: white;
@@ -684,6 +678,7 @@ QFrame[frameShape="4"]
 QSpinBox:disabled,
 QDoubleSpinBox:disabled,
 QLineEdit:disabled,
+QPlainTextEdit:disabled,
 QComboBox:disabled,
 QPushButton:disabled,
 QPushButton:flat:disabled,
@@ -706,6 +701,7 @@ QScrollBar:disabled
 QSpinBox:disabled,
 QDoubleSpinBox:disabled,
 QLineEdit:disabled,
+QPlainTextEdit:disabled,
 QComboBox:disabled,
 QScrollBar:disabled,
 QPlainTextEdit:disabled,
