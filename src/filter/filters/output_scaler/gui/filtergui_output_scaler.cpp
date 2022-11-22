@@ -27,16 +27,16 @@ filtergui_output_scaler_c::filtergui_output_scaler_c(abstract_filter_c *const fi
         height->minValue = MIN_OUTPUT_WIDTH;
         height->maxValue = MAX_OUTPUT_WIDTH;
 
-        this->guiFields.push_back({"Resolution", {width, separator, height}});
+        this->guiFields.push_back({"Scale to", {width, separator, height}});
     }
 
     {
         auto *const scalerName = new filtergui_combobox_s;
-        scalerName->get_value = [=]{return filter->parameter(filter_output_scaler_c::PARAM_SCALER_NAME);};
-        scalerName->set_value = [=](const double value){filter->set_parameter(filter_output_scaler_c::PARAM_SCALER_NAME, value);};
+        scalerName->get_value = [=]{return filter->parameter(filter_output_scaler_c::PARAM_SCALER);};
+        scalerName->set_value = [=](const double value){filter->set_parameter(filter_output_scaler_c::PARAM_SCALER, value);};
         scalerName->items = ks_scaler_names();
 
-        this->guiFields.push_back({"Sampling", {scalerName}});
+        this->guiFields.push_back({"Sampler", {scalerName}});
     }
 
     return;

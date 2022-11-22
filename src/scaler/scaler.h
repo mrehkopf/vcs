@@ -299,12 +299,6 @@ void ks_indicate_invalid_signal(void);
 captured_frame_s& ks_frame_buffer(void);
 
 /*!
- * Returns a scaling filter matching the given name, or nullptr if no such scaler
- * was found.
- */
-const image_scaler_s* ks_scaler_for_name_string(const std::string &name);
-
-/*!
  * Returns a list of the names of the image scalers available in this build of VCS.
  * 
  * @code

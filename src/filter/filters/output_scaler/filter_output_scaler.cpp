@@ -20,10 +20,24 @@ void filter_output_scaler_c::apply(u8 *const pixels, const resolution_s &r)
 
     const unsigned width = this->parameter(filter_output_scaler_c::PARAM_WIDTH);
     const unsigned height = this->parameter(filter_output_scaler_c::PARAM_HEIGHT);
+    const unsigned scalerId = this->parameter(filter_output_scaler_c::PARAM_SCALER);
+
+    const auto scaler_function = ([scalerId]
+    {
+        switch (scalerId)
+        {
+            case SCALER_NEAREST: return filter_output_scaler_c::nearest;
+            case SCALER_LINEAR: return filter_output_scaler_c::linear;
+            case SCALER_AREA: return filter_output_scaler_c::area;
+            case SCALER_CUBIC: return filter_output_scaler_c::cubic;
+            case SCALER_LANCZOS: return filter_output_scaler_c::lanczos;
+            default: return filter_output_scaler_c::nearest;
+        }
+    })();
 
     const image_s srcImage = image_s(pixels, r);
     image_s dstImage = image_s(ks_frame_buffer().pixels.data(), {width, height, 32});
-    filter_output_scaler_c::linear(srcImage, &dstImage);
+    scaler_function(srcImage, &dstImage);
 
     return;
 }

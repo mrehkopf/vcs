@@ -497,7 +497,7 @@ std::vector<std::string> ks_scaler_names(void)
     return names;
 }
 
-const image_scaler_s* ks_scaler_for_name_string(const std::string &name)
+static const image_scaler_s* scaler_for_name_string(const std::string &name)
 {
     const image_scaler_s *f = nullptr;
 
@@ -524,7 +524,7 @@ const image_scaler_s* ks_scaler_for_name_string(const std::string &name)
 
 void ks_set_default_scaler(const std::string &name)
 {
-    DEFAULT_SCALER = ks_scaler_for_name_string(name);
+    DEFAULT_SCALER = scaler_for_name_string(name);
 
     return;
 }

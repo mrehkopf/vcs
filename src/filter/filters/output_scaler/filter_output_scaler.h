@@ -20,7 +20,7 @@ public:
     enum {
         PARAM_WIDTH,
         PARAM_HEIGHT,
-        PARAM_SCALER_NAME,
+        PARAM_SCALER,
     };
 
     enum {
@@ -35,7 +35,7 @@ public:
         abstract_filter_c({
             {PARAM_WIDTH, 640},
             {PARAM_HEIGHT, 480},
-            {PARAM_SCALER_NAME, SCALER_NEAREST}
+            {PARAM_SCALER, SCALER_NEAREST}
         },initialParamValues)
     {
         this->guiDescription = new filtergui_output_scaler_c(this);
