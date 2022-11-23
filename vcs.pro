@@ -2,10 +2,6 @@
 # non-stable etc. (undefined/commented out).
 #DEFINES += RELEASE_BUILD
 
-# Comment out to disable OpenCV. You'll have no filtering or scaler, but you also
-# don't need to provide the dependencies.
-DEFINES += USE_OPENCV
-
 linux {
     DEFINES += CAPTURE_DEVICE_VISION_V4L
 
@@ -16,7 +12,6 @@ linux {
         # ".../visionrgb/include/rgb133control.h".
         $$(HOME)/sdk/
 
-    contains(DEFINES, USE_OPENCV) {
         LIBS += \
             -L/usr/local/lib/ \
             -lopencv_imgproc \
@@ -24,20 +19,19 @@ linux {
             -lopencv_highgui \
             -lopencv_core \
             -lopencv_photo
-    }
 }
 
 win32 {
     DEFINES += CAPTURE_DEVICE_RGBEASY
 
-    INCLUDEPATH += "C:/VisionSDK/RGBEASY 1.0/INCLUDE"
-    LIBS += "C:/VisionSDK/RGBEASY 1.0/LIB/Win32/Release/RGBEASY.lib"
+    INCLUDEPATH += \
+        "C:/VisionSDK/RGBEASY 1.0/INCLUDE" \
+        "C:/OpenCV/3.2.0/include"
 
-    contains(DEFINES, USE_OPENCV) {
-        INCLUDEPATH += "C:/OpenCV/3.2.0/include"
-        LIBS += -L"C:/OpenCV/3.2.0/bin/mingw"
-        LIBS += -lopencv_world320
-    }
+    LIBS += \
+        "C:/VisionSDK/RGBEASY 1.0/LIB/Win32/Release/RGBEASY.lib" \
+        -L"C:/OpenCV/3.2.0/bin/mingw" \
+        -lopencv_world320
 
     RC_ICONS = "src/display/qt/images/icons/appicon.ico"
 }

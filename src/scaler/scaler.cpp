@@ -22,11 +22,7 @@
 #include "record/record.h"
 #include "scaler/scaler.h"
 #include "common/timer/timer.h"
-
-#ifdef USE_OPENCV
-    #include <opencv2/imgproc/imgproc.hpp>
-    #include <opencv2/core/core.hpp>
-#endif
+#include <opencv2/imgproc/imgproc.hpp>
 
 vcs_event_c<const resolution_s&> ks_evNewOutputResolution;
 vcs_event_c<const captured_frame_s&> ks_evNewScaledImage;
@@ -39,15 +35,11 @@ static unsigned NUM_FRAMES_SCALED_PER_SECOND = 0;
 
 // The image scalers available to VCS.
 static const std::vector<image_scaler_s> KNOWN_SCALERS =
-    #ifdef USE_OPENCV
-        {{"Nearest", filter_output_scaler_c::nearest},
-        {"Linear",  filter_output_scaler_c::linear},
-        {"Area",    filter_output_scaler_c::area},
-        {"Cubic",   filter_output_scaler_c::cubic},
-        {"Lanczos", filter_output_scaler_c::lanczos}};
-    #else
-        {{"Nearest", filter_output_scaler_c::nearest}};
-    #endif
+    {{"Nearest", filter_output_scaler_c::nearest},
+     {"Linear",  filter_output_scaler_c::linear},
+     {"Area",    filter_output_scaler_c::area},
+     {"Cubic",   filter_output_scaler_c::cubic},
+     {"Lanczos", filter_output_scaler_c::lanczos}};
 
 static const image_scaler_s *DEFAULT_SCALER = nullptr;
 
@@ -166,9 +158,7 @@ void ks_initialize_scaler(void)
 {
     INFO(("Initializing the scaler subsystem."));
 
-    #if USE_OPENCV
-        cv::redirectError(cv_error_handler);
-    #endif
+    cv::redirectError(cv_error_handler);
 
     COLORCONV_BUFFER.allocate(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Scaler color conversion buffer");
 
@@ -229,49 +219,44 @@ static void convert_frame_to_bgra(const captured_frame_s &frame)
         return;
     }
 
-    #ifdef USE_OPENCV
-        u32 conversionType = 0;
-        const u32 numColorChan = (frame.r.bpp / 8);
+    u32 conversionType = 0;
+    const u32 numColorChan = (frame.r.bpp / 8);
 
-        cv::Mat input = cv::Mat(frame.r.h, frame.r.w, CV_MAKETYPE(CV_8U,numColorChan), frame.pixels.data());
-        cv::Mat colorConv = cv::Mat(frame.r.h, frame.r.w, CV_8UC4, COLORCONV_BUFFER.data());
+    cv::Mat input = cv::Mat(frame.r.h, frame.r.w, CV_MAKETYPE(CV_8U,numColorChan), frame.pixels.data());
+    cv::Mat colorConv = cv::Mat(frame.r.h, frame.r.w, CV_8UC4, COLORCONV_BUFFER.data());
 
-        k_assert(!COLORCONV_BUFFER.is_null(),
-                 "Was asked to convert a frame's color depth, but the color conversion buffer "
-                 "was null.");
+    k_assert(!COLORCONV_BUFFER.is_null(),
+             "Was asked to convert a frame's color depth, but the color conversion buffer "
+             "was null.");
 
-        if (frame.pixelFormat == capture_pixel_format_e::rgb_565)
+    if (frame.pixelFormat == capture_pixel_format_e::rgb_565)
+    {
+        conversionType = cv::COLOR_BGR5652BGRA;
+    }
+    else if (frame.pixelFormat == capture_pixel_format_e::rgb_555)
+    {
+        conversionType = cv::COLOR_BGR5552BGRA;
+    }
+    else // Unknown type, try to guesstimate it.
+    {
+        NBENE(("Detected an unknown output pixel format (depth: %u) while converting a frame to BGRA. Attempting to guess its type...",
+               frame.r.bpp));
+
+        if (frame.r.bpp == 32)
+        {
+            conversionType = cv::COLOR_RGBA2BGRA;
+        }
+        if (frame.r.bpp == 24)
+        {
+            conversionType = cv::COLOR_BGR2BGRA;
+        }
+        else
         {
             conversionType = cv::COLOR_BGR5652BGRA;
         }
-        else if (frame.pixelFormat == capture_pixel_format_e::rgb_555)
-        {
-            conversionType = cv::COLOR_BGR5552BGRA;
-        }
-        else // Unknown type, try to guesstimate it.
-        {
-            NBENE(("Detected an unknown output pixel format (depth: %u) while converting a frame to BGRA. Attempting to guess its type...",
-                   frame.r.bpp));
+    }
 
-            if (frame.r.bpp == 32)
-            {
-                conversionType = cv::COLOR_RGBA2BGRA;
-            }
-            if (frame.r.bpp == 24)
-            {
-                conversionType = cv::COLOR_BGR2BGRA;
-            }
-            else
-            {
-                conversionType = cv::COLOR_BGR5652BGRA;
-            }
-        }
-
-        cv::cvtColor(input, colorConv, conversionType);
-    #else
-        (void)frame;
-        k_assert(0, "Was asked to convert the frame to BGRA, but OpenCV had been disabled in the build. Can't do it.");
-    #endif
+    cv::cvtColor(input, colorConv, conversionType);
 
     return;
 }

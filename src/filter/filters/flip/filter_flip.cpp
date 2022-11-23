@@ -6,12 +6,7 @@
  */
 
 #include "filter/filters/flip/filter_flip.h"
-
-#ifdef USE_OPENCV
-    #include <opencv2/imgproc/imgproc.hpp>
-    #include <opencv2/photo/photo.hpp>
-    #include <opencv2/core/core.hpp>
-#endif
+#include <opencv2/imgproc/imgproc.hpp>
 
 // Flips the frame horizontally and/or vertically.
 void filter_flip_c::apply(u8 *const pixels, const resolution_s &r)
@@ -25,15 +20,11 @@ void filter_flip_c::apply(u8 *const pixels, const resolution_s &r)
     // 0 = vertical, 1 = horizontal, -1 = both.
     axis = ((axis == 2)? -1 : axis);
 
-    #ifdef USE_OPENCV
-        cv::Mat output = cv::Mat(r.h, r.w, CV_8UC4, pixels);
-        cv::Mat temp = cv::Mat(r.h, r.w, CV_8UC4, scratch.data());
+    cv::Mat output = cv::Mat(r.h, r.w, CV_8UC4, pixels);
+    cv::Mat temp = cv::Mat(r.h, r.w, CV_8UC4, scratch.data());
 
-        cv::flip(output, temp, axis);
-        temp.copyTo(output);
-    #else
-        (void)axis;
-    #endif
+    cv::flip(output, temp, axis);
+    temp.copyTo(output);
 
     return;
 }

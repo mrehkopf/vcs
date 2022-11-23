@@ -7,12 +7,6 @@
 
 #include "filter/filters/color_depth/filter_color_depth.h"
 
-#ifdef USE_OPENCV
-    #include <opencv2/imgproc/imgproc.hpp>
-    #include <opencv2/photo/photo.hpp>
-    #include <opencv2/core/core.hpp>
-#endif
-
 void filter_color_depth_c::apply(u8 *const pixels, const resolution_s &r)
 {
     this->assert_input_validity(pixels, r);
@@ -20,7 +14,6 @@ void filter_color_depth_c::apply(u8 *const pixels, const resolution_s &r)
     const unsigned maskRed   = (255u << unsigned(8 - this->parameter(PARAM_BIT_COUNT_RED)));
     const unsigned maskGreen = (255u << unsigned(8 - this->parameter(PARAM_BIT_COUNT_GREEN)));
     const unsigned maskBlue  = (255u << unsigned(8 - this->parameter(PARAM_BIT_COUNT_BLUE)));
-
     const unsigned numImageBytes = (r.w * r.h * (r.bpp / 8));
 
     // Assumes 32-bit pixels (BGRA8888).

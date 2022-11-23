@@ -310,10 +310,6 @@ captured_frame_s& ks_frame_buffer(void);
  * const auto list = ks_scaler_names();
  * // list == {"Nearest", "Linear", "Area", ...}.
  * @endcode
- * 
- * @note
- * The presence or absence of the USE_OPENCV build flag affects the availability
- * of scaling filters.
  */
 std::vector<std::string> ks_scaler_names(void);
 

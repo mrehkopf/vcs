@@ -25,14 +25,10 @@
 #include "record/recording_buffer.h"
 #include "record/framerate_estimator.h"
 #include "capture/capture.h"
-
-#ifdef USE_OPENCV
-    #include <opencv2/core/core.hpp>
-    #include <opencv2/imgproc/imgproc.hpp>
-    #include <opencv2/videoio/videoio.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/videoio/videoio.hpp>
 
     static cv::VideoWriter VIDEO_WRITER;
-#endif
 
 vcs_event_c<void> krecord_evRecordingStarted;
 vcs_event_c<void> krecord_evRecordingEnded;
@@ -73,7 +69,6 @@ void krecord_initialize(void)
 static bool runEncoder = false;
 static std::string encoderError = {};
 
-#ifdef USE_OPENCV
 // A thread launched by the recorder to encode and save to disk any captured
 // frames.
 static bool encoder_thread(void)
@@ -131,7 +126,6 @@ static bool encoder_thread(void)
 
     return true;
 }
-#endif
 
 // Prepare the OpenCV video writer for recording frames into a video.ssss
 // Returns true if successful, false otherwise.
@@ -141,18 +135,6 @@ bool krecord_start_recording(const char *const filename,
                              const uint height,
                              const uint frameRate)
 {
-#ifndef USE_OPENCV
-    kd_show_headless_info_message("VCS can't start recording",
-                                  "Recording functionality is not available in this build of VCS. "
-                                  "(Missing OpenCV.)");
-
-    (void)filename;
-    (void)width;
-    (void)height;
-    (void)frameRate;
-
-    return false;
-#else
     k_assert(!VIDEO_WRITER.isOpened(),
              "Attempting to intialize a recording that has already been initialized.");
 
@@ -231,16 +213,11 @@ bool krecord_start_recording(const char *const filename,
     krecord_evRecordingStarted.fire();
 
     return true;
-#endif
 }
 
 bool krecord_is_recording(void)
 {
-#ifdef USE_OPENCV
     return VIDEO_WRITER.isOpened();
-#else
-    return false;
-#endif
 }
 
 uint krecord_playback_framerate(void)
@@ -294,7 +271,6 @@ void krecord_record_frame(const captured_frame_s &frame)
         return;
     }
 
-#ifdef USE_OPENCV
     k_assert(VIDEO_WRITER.isOpened(),
              "Attempted to record a video frame before video recording had been initialized.");
 
@@ -356,7 +332,6 @@ void krecord_record_frame(const captured_frame_s &frame)
     }
 
     return;
-#endif
 }
 
 void krecord_release(void)
@@ -368,7 +343,6 @@ void krecord_release(void)
 
 void krecord_stop_recording(void)
 {
-#ifdef USE_OPENCV
     if (RECORDING.encoderThreadFuture.valid())
     {
         runEncoder = false;
@@ -380,5 +354,4 @@ void krecord_stop_recording(void)
     krecord_evRecordingEnded.fire();
 
     return;
-#endif
 }

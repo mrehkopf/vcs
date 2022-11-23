@@ -6,12 +6,7 @@
  */
 
 #include "filter/filters/rotate/filter_rotate.h"
-
-#ifdef USE_OPENCV
-    #include <opencv2/imgproc/imgproc.hpp>
-    #include <opencv2/photo/photo.hpp>
-    #include <opencv2/core/core.hpp>
-#endif
+#include <opencv2/imgproc/imgproc.hpp>
 
 void filter_rotate_c::apply(u8 *const pixels, const resolution_s &r)
 {
@@ -21,18 +16,12 @@ void filter_rotate_c::apply(u8 *const pixels, const resolution_s &r)
 
     const double angle = this->parameter(PARAM_ROT);
     const double scale = this->parameter(PARAM_SCALE);
-
-    #ifdef USE_OPENCV
-        cv::Mat output = cv::Mat(r.h, r.w, CV_8UC4, pixels);
-        cv::Mat temp = cv::Mat(r.h, r.w, CV_8UC4, scratch.data());
-
-        cv::Mat transf = cv::getRotationMatrix2D(cv::Point2d((r.w / 2), (r.h / 2)), -angle, scale);
-        cv::warpAffine(output, temp, transf, cv::Size(r.w, r.h));
-        temp.copyTo(output);
-    #else
-        (void)angle;
-        (void)scale;
-    #endif
+    cv::Mat output = cv::Mat(r.h, r.w, CV_8UC4, pixels);
+    cv::Mat temp = cv::Mat(r.h, r.w, CV_8UC4, scratch.data());
+    cv::Mat transf = cv::getRotationMatrix2D(cv::Point2d((r.w / 2), (r.h / 2)), -angle, scale);
+    
+    cv::warpAffine(output, temp, transf, cv::Size(r.w, r.h));
+    temp.copyTo(output);
 
     return;
 }

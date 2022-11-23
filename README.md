@@ -77,8 +77,6 @@ Non-GUI code interacts with the GUI through a wrapper interface ([src/display/di
 
 VCS uses the [OpenCV](https://opencv.org/) 3.2.0 library for image filtering/scaling and video recording. For Windows, the binary distribution of VCS includes a pre-compiled DLL compatible with MinGW 5.3. For Linux, you can get the OpenCV 3.2.0 source code [here](https://github.com/opencv/opencv/tree/3.2.0) and follow the build instructions [here](https://docs.opencv.org/3.2.0/d7/d9f/tutorial_linux_install.html) (maybe also see [this](https://stackoverflow.com/questions/46884682/error-in-building-opencv-with-ffmpeg) in case of build errors).
 
-The dependency on OpenCV can be removed by undefining `USE_OPENCV` in [vcs.pro](vcs.pro). If undefined, most forms of image filtering and scaling will be unavailable, video recording won't be possible, etc.
-
 #### Datapath RGBEasy
 
 On Windows, VCS uses the Datapath RGBEasy 1.0* API to interface with your VisionRGB capture device. The drivers for your Datapath capture card should include the required libraries, though you may need to adjust the paths to them in [vcs.pro](vcs.pro).

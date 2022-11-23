@@ -76,29 +76,8 @@ void filter_filler_c::apply(u8 *const pixels, const resolution_s &resolution)
     const uint8_t blue  = this->parameter(PARAM_BLUE);
     const uint8_t alpha = 255;
     
-    // If VCS has been built with support for OpenCV (as it is by default), we
-    // can use OpenCV features.
-    #if USE_OPENCV
-        cv::Mat output = cv::Mat(resolution.h, resolution.w, CV_8UC4, pixels);
-        output = cv::Scalar(blue, green, red, alpha);
-    // Fallback for when VCS has been built without OpenCV support. Note: You
-    // must always provide at least a non-OpenCV path in your apply() function.
-    // If you use no OpenCV functionality in the function, you don't need to
-    // test for USE_OPENCV.
-    #else
-        for (unsigned y = 0; y < resolution.h; y++)
-        {
-            for (unsigned x = 0; x < resolution.w; x++)
-            {
-                const unsigned pixelIdx = ((x + y * resolution.w) * 4);
-    
-                pixels[pixelIdx + 0] = blue;
-                pixels[pixelIdx + 1] = green;
-                pixels[pixelIdx + 2] = red;
-                pixels[pixelIdx + 3] = alpha;
-            }
-        }
-    #endif
+    cv::Mat output = cv::Mat(resolution.h, resolution.w, CV_8UC4, pixels);
+    output = cv::Scalar(blue, green, red, alpha);
 
     return;
 }
