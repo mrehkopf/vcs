@@ -21,6 +21,10 @@ public:
         PARAM_WIDTH,
         PARAM_HEIGHT,
         PARAM_SCALER,
+        PARAM_PADDING_TOP,
+        PARAM_PADDING_BOTTOM,
+        PARAM_PADDING_LEFT,
+        PARAM_PADDING_RIGHT,
     };
 
     enum {
@@ -35,7 +39,11 @@ public:
         abstract_filter_c({
             {PARAM_WIDTH, 640},
             {PARAM_HEIGHT, 480},
-            {PARAM_SCALER, SCALER_NEAREST}
+            {PARAM_SCALER, SCALER_NEAREST},
+            {PARAM_PADDING_TOP, 0},
+            {PARAM_PADDING_BOTTOM, 0},
+            {PARAM_PADDING_LEFT, 0},
+            {PARAM_PADDING_RIGHT, 0},
         },initialParamValues)
     {
         this->guiDescription = new filtergui_output_scaler_c(this);
@@ -48,12 +56,15 @@ public:
     filter_category_e category(void) const override { return filter_category_e::output_scaler; }
     void apply(u8 *const pixels, const resolution_s &r) override;
 
+    // Returns the resolution of the output image, including any padding.
+    resolution_s output_resolution(void) const;
+
     // Scaler functions; for scaling a source image's data into a destination image.
-    static void nearest(const image_s &srcImage, image_s *const dstImage);
-    static void linear(const image_s &srcImage, image_s *const dstImage);
-    static void area(const image_s &srcImage, image_s *const dstImage);
-    static void cubic(const image_s &srcImage, image_s *const dstImage);
-    static void lanczos(const image_s &srcImage, image_s *const dstImage);
+    static void nearest(const image_s &srcImage, image_s *const dstImage, const std::array<unsigned, 4> padding = {0, 0, 0, 0});
+    static void linear(const image_s &srcImage, image_s *const dstImage, const std::array<unsigned, 4> padding = {0, 0, 0, 0});
+    static void area(const image_s &srcImage, image_s *const dstImage, const std::array<unsigned, 4> padding = {0, 0, 0, 0});
+    static void cubic(const image_s &srcImage, image_s *const dstImage, const std::array<unsigned, 4> padding = {0, 0, 0, 0});
+    static void lanczos(const image_s &srcImage, image_s *const dstImage, const std::array<unsigned, 4> padding = {0, 0, 0, 0});
 private:
 };
 

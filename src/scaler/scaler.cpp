@@ -54,9 +54,8 @@ static const image_scaler_s *DEFAULT_SCALER = nullptr;
 // The frame buffer where scaled frames are to be placed.
 static captured_frame_s FRAME_BUFFER;
 
-// Scratch buffers.
+// Scratch image buffers.
 static heap_mem<u8> COLORCONV_BUFFER;
-static heap_mem<u8> TMP_BUFFER;
 
  // The frame buffer's target bit depth.
 static const u32 OUTPUT_BIT_DEPTH = 32;
@@ -167,7 +166,6 @@ void ks_initialize_scaler(void)
     #endif
 
     COLORCONV_BUFFER.allocate(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Scaler color conversion buffer");
-    TMP_BUFFER.allocate(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler scratch buffer");
 
     FRAME_BUFFER.pixels.allocate(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler output buffer");
     FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
@@ -213,7 +211,6 @@ void ks_release_scaler(void)
 
     COLORCONV_BUFFER.release();
     FRAME_BUFFER.pixels.release();
-    TMP_BUFFER.release();
 
     return;
 }
@@ -373,12 +370,7 @@ void ks_scale_frame(const captured_frame_s &frame)
         IS_CUSTOM_SCALER_USED = true;
 
         customScaler->apply(pixelData, frameRes);
-
-        CUSTOM_SCALER_FILTER_RESOLUTION = {
-            unsigned(customScaler->parameter(filter_output_scaler_c::PARAM_WIDTH)),
-            unsigned(customScaler->parameter(filter_output_scaler_c::PARAM_HEIGHT)),
-            OUTPUT_BIT_DEPTH
-        };
+        CUSTOM_SCALER_FILTER_RESOLUTION = dynamic_cast<filter_output_scaler_c*>(customScaler)->output_resolution();
     }
     else
     {
@@ -400,7 +392,7 @@ void ks_scale_frame(const captured_frame_s &frame)
 
             const image_s srcImage = image_s(pixelData, frameRes);
             image_s dstImage = image_s(FRAME_BUFFER.pixels.data(), outputRes);
-            DEFAULT_SCALER->apply(srcImage, &dstImage);
+            DEFAULT_SCALER->apply(srcImage, &dstImage, {0, 0, 0, 0});
         }
     }
 

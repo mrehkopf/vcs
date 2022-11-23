@@ -74,7 +74,7 @@ struct image_scaler_s
     std::string name;
 
     /*! A function that executes the scaler on the given pixels.*/
-    void (*apply)(const image_s &srcImage, image_s *const dstImage);
+    void (*apply)(const image_s &srcImage, image_s *const dstImage, const std::array<unsigned, 4> padding);
 };
 
 /*!
