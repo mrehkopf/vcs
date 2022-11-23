@@ -155,6 +155,11 @@ resolution_s ks_base_resolution(void);
 resolution_s ks_output_resolution(void);
 
 /*!
+ * Returns true if a custom output scaling filter is currently active; false otherwise.
+ */
+bool ks_is_custom_scaler_active(void);
+
+/*!
  * Initializes the scaler subsystem.
  * 
  * @note

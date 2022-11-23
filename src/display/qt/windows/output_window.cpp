@@ -954,8 +954,11 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 bool MainWindow::is_mouse_wheel_scaling_allowed(void)
 {
-    return (!kd_is_fullscreen() && // On my virtual machine, at least, wheel scaling while in full-screen messes up the full-screen mode.
-            !krecord_is_recording());
+    return (
+        !kd_is_fullscreen() && // On my virtual machine, at least, wheel scaling while in full-screen messes up the full-screen mode.
+        !krecord_is_recording() &&
+        !ks_is_custom_scaler_active()
+    );
 }
 
 QImage MainWindow::overlay_image(void)

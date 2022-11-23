@@ -157,6 +157,11 @@ static int cv_error_handler(int status, const char* func_name, const char* err_m
     return 1;
 }
 
+bool ks_is_custom_scaler_active(void)
+{
+    return IS_CUSTOM_SCALER_USED;
+}
+
 void ks_initialize_scaler(void)
 {
     INFO(("Initializing the scaler subsystem."));
