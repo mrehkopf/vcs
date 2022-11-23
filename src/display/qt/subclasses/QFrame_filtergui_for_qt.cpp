@@ -6,11 +6,11 @@
  */
 
 #include <QDoubleSpinBox>
+#include <QPlainTextEdit>
 #include <QHBoxLayout>
 #include <QFormLayout>
 #include <QComboBox>
 #include <QCheckBox>
-#include <QPlainTextEdit>
 #include <QWidget>
 #include <QFrame>
 #include <QLabel>
@@ -25,6 +25,7 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
     auto *const widgetLayout = new QFormLayout(this);
 
     widgetLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+    widgetLayout->setRowWrapPolicy(QFormLayout::DontWrapRows);
 
     if (guiDescription.empty())
     {
@@ -133,8 +134,17 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                         auto *const c = ((filtergui_spinbox_s*)component);
                         auto *const spinbox = new QSpinBox(this);
 
+                        spinbox->setButtonSymbols(QAbstractSpinBox::NoButtons);
                         spinbox->setRange(c->minValue, c->maxValue);
                         spinbox->setValue(c->get_value());
+
+                        switch (c->alignment)
+                        {
+                            case filtergui_alignment_e::left: spinbox->setAlignment(Qt::AlignLeft); break;
+                            case filtergui_alignment_e::right: spinbox->setAlignment(Qt::AlignRight); break;
+                            case filtergui_alignment_e::center: spinbox->setAlignment(Qt::AlignHCenter); break;
+                            default: k_assert(0, "Unrecognized filter GUI alignment enumerator."); break;
+                        }
 
                         connect(spinbox, QOverload<int>::of(&QSpinBox::valueChanged), [=](const double newValue)
                         {
@@ -151,10 +161,19 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                         auto *const c = ((filtergui_doublespinbox_s*)component);
                         auto *const doublespinbox = new QDoubleSpinBox(this);
 
+                        doublespinbox->setButtonSymbols(QAbstractSpinBox::NoButtons);
                         doublespinbox->setRange(c->minValue, c->maxValue);
                         doublespinbox->setDecimals(c->numDecimals);
                         doublespinbox->setValue(c->get_value());
                         doublespinbox->setSingleStep(c->stepSize);
+
+                        switch (c->alignment)
+                        {
+                            case filtergui_alignment_e::left: doublespinbox->setAlignment(Qt::AlignLeft); break;
+                            case filtergui_alignment_e::right: doublespinbox->setAlignment(Qt::AlignRight); break;
+                            case filtergui_alignment_e::center: doublespinbox->setAlignment(Qt::AlignHCenter); break;
+                            default: k_assert(0, "Unrecognized filter GUI alignment enumerator."); break;
+                        }
 
                         connect(doublespinbox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [=](const double newValue)
                         {

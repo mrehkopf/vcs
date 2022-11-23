@@ -16,6 +16,13 @@
 
 class abstract_filter_c;
 
+enum class filtergui_alignment_e
+{
+    left,
+    right,
+    center
+};
+
 // The possible types of GUI components.
 enum class filtergui_component_e
 {
@@ -68,6 +75,7 @@ struct filtergui_spinbox_s : public filtergui_component_s
 
     int maxValue = 0;
     int minValue = 0;
+    filtergui_alignment_e alignment = filtergui_alignment_e::left;
 };
 
 struct filtergui_doublespinbox_s : public filtergui_component_s
@@ -78,6 +86,7 @@ struct filtergui_doublespinbox_s : public filtergui_component_s
     double minValue = 0;
     int numDecimals = 1;
     double stepSize = 1;
+    filtergui_alignment_e alignment = filtergui_alignment_e::left;
 };
 
 struct filtergui_combobox_s : public filtergui_component_s
