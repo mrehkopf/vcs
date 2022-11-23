@@ -36,7 +36,7 @@ filtergui_output_scaler_c::filtergui_output_scaler_c(abstract_filter_c *const fi
         scalerName->set_value = [=](const double value){filter->set_parameter(filter_output_scaler_c::PARAM_SCALER, value);};
         scalerName->items = ks_scaler_names();
 
-        this->guiFields.push_back({"Sampling", {scalerName}});
+        this->guiFields.push_back({"Sampler", {scalerName}});
     }
 
     {
