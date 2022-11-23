@@ -239,6 +239,21 @@ RecordDialog::RecordDialog(QDialog *parent) :
                 this->update_recording_metainfo();
             }
         });
+
+        ks_evCustomScalerEnabled.listen([this]
+        {
+            if (krecord_is_recording())
+            {
+                krecord_stop_recording();
+            }
+
+            ui->groupBox_videoFile->setEnabled(false);
+        });
+
+        ks_evCustomScalerDisabled.listen([this]
+        {
+            ui->groupBox_videoFile->setEnabled(true);
+        });
     }
 
     // Reset the metainfo values to their defaults.

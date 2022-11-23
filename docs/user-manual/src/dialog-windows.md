@@ -183,6 +183,10 @@ If you want your changes to the video presets to persist after you exit VCS, rem
 This dialog can be accessed with <key-combo>Ctrl + R</key-combo> or <menu-path>Context > Output > Video recorder...</menu-path>.
 
 <dokki-warning>
+    Video recording is not available while using an [output scaling filter](#dialog-windows-filter-graph-dialog).
+</dokki-warning>
+
+<dokki-warning>
     On Linux, the video encoder's quality settings can't be modified through VCS &ndash; you'd need to re-compile OpenCV with your desired encoder settings, instead.
 </dokki-warning>
 
@@ -192,6 +196,7 @@ To use the video recorder in Windows, you'll need to install the 32-bit version 
 
 The recorder will write frames as they appear in the [output window](#output-window) into a video file, with the following caveats:
 
+- The maximum supported resolution is 1024 &times; 768.
 - Audio won't be recorded.
 - Frames will be inserted into the video at the rate of capture; the recorder doesn't try to maintain any particular frame rate (e.g. by duplicating or dropping frames). For example, if your capture source is 57.5 Hz, one minute of video will have 57.5 * 60 frames, and if that video is played back at 60 FPS, it will appear slightly sped up.
 - If VCS drops any frames during recording (e.g. due to insufficient system performance), the video's playback will be non-linear. So if you're recording a separate audio file and are planning to sync it with the video, you want there to be no frames dropped while recording the video.
