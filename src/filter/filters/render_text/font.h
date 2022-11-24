@@ -74,9 +74,19 @@ struct font_glyph_s
                             "Image buffer overflow in string rendering."
                         );
 
-                        for (unsigned i = 0; i < color.size(); i++)
+                        // Alpha blend.
+                        if (color.size() == 4)
                         {
-                            dstImage.pixels[idx + i] = color[i];
+                            dstImage.pixels[idx + 0] = LERP(dstImage.pixels[idx + 0], color[0], (color[3] / 255.0));
+                            dstImage.pixels[idx + 1] = LERP(dstImage.pixels[idx + 1], color[1], (color[3] / 255.0));
+                            dstImage.pixels[idx + 2] = LERP(dstImage.pixels[idx + 2], color[2], (color[3] / 255.0));
+                        }
+                        else
+                        {
+                            for (unsigned i = 0; i < color.size(); i++)
+                            {
+                                dstImage.pixels[idx + i] = color[i];
+                            }
                         }
                     }
                 }
@@ -188,9 +198,19 @@ public:
                         "Image buffer overflow in string rendering."
                     );
 
-                    for (unsigned i = 0; i < bgColor.size(); i++)
+                    // Alpha blend.
+                    if (bgColor.size() == 4)
                     {
-                        dstImage.pixels[idx + i] = bgColor[i];
+                        dstImage.pixels[idx + 0] = LERP(dstImage.pixels[idx + 0], bgColor[0], (bgColor[3] / 255.0));
+                        dstImage.pixels[idx + 1] = LERP(dstImage.pixels[idx + 1], bgColor[1], (bgColor[3] / 255.0));
+                        dstImage.pixels[idx + 2] = LERP(dstImage.pixels[idx + 2], bgColor[2], (bgColor[3] / 255.0));
+                    }
+                    else
+                    {
+                        for (unsigned i = 0; i < bgColor.size(); i++)
+                        {
+                            dstImage.pixels[idx + i] = bgColor[i];
+                        }
                     }
                 }
             }

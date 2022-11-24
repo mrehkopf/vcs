@@ -59,6 +59,8 @@ const u32 MAX_NUM_BYTES_IN_CAPTURED_FRAME = (MAX_CAPTURE_WIDTH * MAX_CAPTURE_HEI
 #define NBENE(args)         (klog_log_error args)
 #define INFO(args)          (klog_log_info args)
 
+#define LERP(a, b, t) ((a) + ((t) * ((b) - (a))))
+
 extern unsigned int FRAME_SKIP;
 
 extern i32 PROGRAM_EXIT_REQUESTED;
