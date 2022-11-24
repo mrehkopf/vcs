@@ -60,7 +60,8 @@ public:
 
     enum {
         FONT_MINIMALIST,
-        FONT_RETRO_SERIF
+        FONT_RETRO_SERIF,
+        FONT_RETRO_SANS_SERIF,
     };
 
     static const std::size_t maxStringLength = 255;

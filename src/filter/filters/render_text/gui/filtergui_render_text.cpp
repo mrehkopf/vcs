@@ -50,7 +50,7 @@ filtergui_render_text_c::filtergui_render_text_c(abstract_filter_c *const filter
         auto *const font = new filtergui_combobox_s;
         font->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_FONT);};
         font->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_FONT, value);};
-        font->items = {"Minimalist", "Retro Serif"};
+        font->items = {"Minimalist", "Retro Serif", "Retro Sans Serif"};
 
         this->guiFields.push_back({"Font", {font}});
     }

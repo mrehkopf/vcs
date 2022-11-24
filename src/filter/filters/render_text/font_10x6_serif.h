@@ -3,15 +3,15 @@
  *
  */
 
-#ifndef VCS_FILTER_FILTERS_RENDER_TEXT_FONT_10X6_H
-#define VCS_FILTER_FILTERS_RENDER_TEXT_FONT_10X6_H
+#ifndef VCS_FILTER_FILTERS_RENDER_TEXT_FONT_10X6_SERIF_H
+#define VCS_FILTER_FILTERS_RENDER_TEXT_FONT_10X6_SERIF_H
 
 #include <unordered_map>
 #include <vector>
 #include "filter/filters/render_text/font.h"
 
 // A retro-looking 10 x 6 serif font.
-class font_10x6_c : public font_c
+class font_10x6_serif_c : public font_c
 {
 public:
     unsigned cap_height() const override
@@ -209,16 +209,16 @@ private:
                 {X,0,0,X,0},
                 {0,X,X,0,X}}}},
 
-        {'E', {{{X,X,X,X,X,X},
-                {X,0,0,0,0,X},
-                {X,0,0,0,0,0},
-                {X,0,0,0,0,0},
-                {X,X,X,X,0,0},
-                {X,0,0,0,0,0},
-                {X,0,0,0,0,0},
-                {X,0,0,0,0,0},
-                {X,0,0,0,0,X},
-                {X,X,X,X,X,X}}}},
+        {'E', {{{X,X,X,X,X,X,X},
+                {0,X,0,0,0,0,X},
+                {0,X,0,0,0,0,0},
+                {0,X,0,0,0,0,0},
+                {0,X,X,X,X,0,0},
+                {0,X,0,0,0,0,0},
+                {0,X,0,0,0,0,0},
+                {0,X,0,0,0,0,0},
+                {0,X,0,0,0,0,X},
+                {X,X,X,X,X,X,X}}}},
 
         {'e', {{{0,X,X,0},
                 {X,0,0,X},
@@ -439,7 +439,7 @@ private:
                 {X,0,0,X},
                 {0,X,X,0}}}},
 
-        {'P', {{{0,X,X,X,X,X,0},
+        {'P', {{{X,X,X,X,X,X,0},
                 {0,X,0,0,0,0,X},
                 {0,X,0,0,0,0,X},
                 {0,X,0,0,0,0,X},
@@ -481,7 +481,7 @@ private:
                 {0,0,0,X,0},
                 {0,0,0,X,0}},-2}},
 
-        {'R', {{{0,X,X,X,X,X,0,0},
+        {'R', {{{X,X,X,X,X,X,0,0},
                 {0,X,0,0,0,0,X,0},
                 {0,X,0,0,0,0,X,0},
                 {0,X,0,0,0,0,X,0},

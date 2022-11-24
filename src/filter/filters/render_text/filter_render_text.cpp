@@ -8,7 +8,8 @@
 #include <algorithm>
 #include "filter/filters/render_text/filter_render_text.h"
 #include "filter/filters/render_text/font_5x3.h"
-#include "filter/filters/render_text/font_10x6.h"
+#include "filter/filters/render_text/font_10x6_serif.h"
+#include "filter/filters/render_text/font_10x6_sans_serif.h"
 #include "display/display.h"
 
 void filter_render_text_c::apply(u8 *const pixels, const resolution_s &r)
@@ -54,7 +55,8 @@ void filter_render_text_c::apply(u8 *const pixels, const resolution_s &r)
         switch (fontId)
         {
             case FONT_MINIMALIST: return new font_5x3_c;
-            case FONT_RETRO_SERIF: return new font_10x6_c;
+            case FONT_RETRO_SERIF: return new font_10x6_serif_c;
+            case FONT_RETRO_SANS_SERIF: return new font_10x6_sans_serif_c;
             default: return new font_5x3_c;
         }
     })();
