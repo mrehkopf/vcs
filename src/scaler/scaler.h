@@ -62,8 +62,18 @@
 
 #include "common/globals.h"
 #include "common/propagate/vcs_event.h"
+#include "filter/filters/render_text/font_5x3.h"
 
+class abstract_filter_c;
 struct captured_frame_s;
+
+/*!
+ * Callable inside a filter's apply() function to inform the user of an error
+ * related to the filter's operation. The error string will be printed onto the
+ * current output frame.
+ */
+#define KS_PRINT_FILTER_ERROR(errorString) \
+    font_5x3_c().render(("FILTER ERROR [" + (this->name()) + "]:\n" + errorString), {pixels, r}, 0, 0, 2, {0, 0, 255}, {0, 0, 0});
 
 /*!
  * Basic container for an image scaler.

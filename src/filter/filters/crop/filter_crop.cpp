@@ -7,6 +7,7 @@
 
 #include "filter/filters/crop/filter_crop.h"
 #include <opencv2/imgproc/imgproc.hpp>
+#include "scaler/scaler.h"
 
 // Takes a subregion of the frame and either scales it up to fill the whole frame or
 // fills its surroundings with black.
@@ -20,20 +21,24 @@ void filter_crop_c::apply(u8 *const pixels, const resolution_s &r)
     const unsigned h = this->parameter(PARAM_HEIGHT);
     const unsigned scalerType = this->parameter(PARAM_SCALER);
 
-    int cvScaler = -1;
-
-    switch (scalerType)
+    const int cvScaler = ([scalerType]
     {
-        case SCALE_LINEAR:  cvScaler = cv::INTER_LINEAR; break;
-        case SCALE_NEAREST: cvScaler = cv::INTER_NEAREST; break;
-        case SCALE_NONE:    cvScaler = -1; break;
-        default: k_assert(0, "Unknown scaler type for the crop filter."); break;
+        switch (scalerType)
+        {
+            case SCALE_LINEAR: return cv::INTER_LINEAR;
+            case SCALE_NEAREST: return cv::INTER_NEAREST;
+            case SCALE_NONE: return cv::INTER_NEAREST;
+            default: k_assert(0, "Unknown scaler type for the crop filter."); return cv::INTER_NEAREST;
+        }
+    })();
+
+    if ((x + w) > r.w)
+    {
+        KS_PRINT_FILTER_ERROR("The crop region is wider than the input image");
     }
-
-    if (((x + w) > r.w) || ((y + h) > r.h))
+    else if ((y + h) > r.h)
     {
-        /// TODO: Signal a user-facing but non-obtrusive message about the crop
-        /// params being invalid.
+        KS_PRINT_FILTER_ERROR("The crop region is taller than the input image");
     }
     else
     {
