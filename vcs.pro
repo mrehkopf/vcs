@@ -200,6 +200,7 @@ HEADERS += \
     src/filter/filters/output_scaler/filter_output_scaler.h \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.h \
     src/filter/filters/render_text/font.h \
+    src/filter/filters/render_text/font_10x6.h \
     src/filter/filters/render_text/font_5x3.h \
     src/filter/filters/source_fps_estimate/filter_source_fps_estimate.h \
     src/filter/filters/source_fps_estimate/gui/filtergui_source_fps_estimate.h \

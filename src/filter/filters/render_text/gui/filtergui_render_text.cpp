@@ -33,7 +33,7 @@ filtergui_render_text_c::filtergui_render_text_c(abstract_filter_c *const filter
         y->minValue = -MAX_CAPTURE_HEIGHT;
         y->maxValue = MAX_CAPTURE_HEIGHT;
 
-        this->guiFields.push_back({"X, Y", {x, y}});
+        this->guiFields.push_back({"XY", {x, y}});
     }
 
     {
@@ -50,7 +50,7 @@ filtergui_render_text_c::filtergui_render_text_c(abstract_filter_c *const filter
         auto *const font = new filtergui_combobox_s;
         font->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_FONT);};
         font->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_FONT, value);};
-        font->items = {"5 \u00d7 3"};
+        font->items = {"Minimalist", "Retro Serif"};
 
         this->guiFields.push_back({"Font", {font}});
     }

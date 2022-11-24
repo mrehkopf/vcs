@@ -59,7 +59,8 @@ public:
     };
 
     enum {
-        FONT_5X3,
+        FONT_MINIMALIST,
+        FONT_RETRO_SERIF
     };
 
     static const std::size_t maxStringLength = 255;
@@ -71,7 +72,7 @@ public:
             {PARAM_COLOR, COLOR_BLACK},
             {PARAM_BG_COLOR, COLOR_TRANSPARENT},
             {PARAM_SCALE, 1},
-            {PARAM_FONT, FONT_5X3},
+            {PARAM_FONT, FONT_MINIMALIST},
             {PARAM_UNUSED1, 0},
             {PARAM_UNUSED2, 0},
             {PARAM_UNUSED3, 0},
