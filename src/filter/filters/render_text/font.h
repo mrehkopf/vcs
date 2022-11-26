@@ -136,13 +136,13 @@ public:
     // (e.g. '?').
     unsigned height_of(const std::string &string) const
     {
-        std::vector<unsigned> lineHeights = {0};
+        std::vector<unsigned> lineHeights = {this->cap_height()};
 
         for (const char ch: string)
         {
             if (ch == '\n')
             {
-                lineHeights.push_back(0);
+                lineHeights.push_back(this->cap_height());
                 continue;
             }
 
