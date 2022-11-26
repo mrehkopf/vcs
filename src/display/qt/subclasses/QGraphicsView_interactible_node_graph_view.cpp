@@ -42,6 +42,8 @@ void InteractibleNodeGraphView::keyPressEvent(QKeyEvent *event)
         }
     }
 
+    QGraphicsView::keyPressEvent(event);
+
     return;
 }
 
