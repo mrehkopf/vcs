@@ -221,19 +221,23 @@ public:
         {
             int runningX = x;
             int runningY = y;
+            int curLineHeight = this->cap_height();
 
             for (const char ch: string)
             {
                 if (ch == '\n')
                 {
-                    runningY += ((this->cap_height() + this->line_spacing()) * scale);
+                    runningY += ((curLineHeight + this->line_spacing()) * scale);
                     runningX = x;
+                    curLineHeight = this->cap_height();
                     continue;
                 }
 
                 const font_glyph_s &glyph = this->glyph_at(ch);
+
                 glyph.render(dstImage, runningX, runningY, scale, color);
                 runningX += ((glyph.width() * scale) + (this->letter_spacing() * scale));
+                curLineHeight = std::max(curLineHeight, (int(this->cap_height()) - glyph.baseline));
             }
         }
 
