@@ -27,6 +27,7 @@ signals:
 private:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
     void wheelEvent(QWheelEvent *event);
 
     void populate_edge_click_menu(node_edge_s *const edge);

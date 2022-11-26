@@ -32,6 +32,19 @@ InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphic
     return;
 }
 
+void InteractibleNodeGraphView::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Delete)
+    {
+        for (QGraphicsItem *selectedItem: this->scene()->selectedItems())
+        {
+            dynamic_cast<InteractibleNodeGraph*>(this->scene())->remove_node(dynamic_cast<InteractibleNodeGraphNode*>(selectedItem));
+        }
+    }
+
+    return;
+}
+
 void InteractibleNodeGraphView::mousePressEvent(QMouseEvent *event)
 {
     // Dragging with the middle button translates the view.
