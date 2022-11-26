@@ -90,8 +90,8 @@ Anti-tearing should be considered an experimental feature of VCS. It works well 
 
 This dialog can be accessed with <key-combo>Ctrl + F</key-combo> or <menu-path>Context > Output > Filter graph...</menu-path>.
 
-> A screenshot of the filter graph dialog\
-![{image:1187x556}{headerless}](../img/filter-graph-dialog.webp)
+> The filter graph dialog showing a chain of frame filters\
+![{image}{headerless}](../img/vcs-2.6-filter-graph.webp)
 
 The filter graph dialog lets you to create chains of image filters to be applied to captured frames prior to display in the [output window](#output-window).
 
@@ -156,8 +156,8 @@ The output resolution dialog lets you resize the [output window](#output-window)
 
 This dialog can be accessed with <key-combo>Ctrl + L</key-combo> or <menu-path>Context > Output > Overlay editor...</menu-path>.
 
-> A screenshot of the overlay dialog\
-![{image:878x508}{headerless}](../img/overlay-dialog.webp)
+> The overlay editor dialog (right) showing the HTML/CSS source of an overlay (top left) in this capture of a Linux desktop\
+![{image}{headerless}](../img/vcs-2.6-overlay.webp)
 
 The overlay dialog lets you define a message to be overlaid on the [output window](#output-window).
 
