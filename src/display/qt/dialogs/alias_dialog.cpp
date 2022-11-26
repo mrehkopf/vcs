@@ -101,11 +101,10 @@ AliasDialog::AliasDialog(QWidget *parent) :
 
         connect(ui->pushButton_deleteSelectedAliases, &QPushButton::clicked, this, [=]
         {
-            if ((ui->treeWidget_knownAliases->selectedItems().count() > 0) &&
-                (QMessageBox::question(this, "Confirm deletion",
-                                       "Delete the selected alias(es)?",
-                                       (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes))
-            {
+            if (
+                (ui->treeWidget_knownAliases->selectedItems().count() > 0) &&
+                (QMessageBox::question(this, "Confirm alias deletion", "Are you sure you want to delete the selected alias(es)?", (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes)
+            ){
                 this->remove_selected_aliases();
             }
         });

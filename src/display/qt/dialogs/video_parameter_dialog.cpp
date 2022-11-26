@@ -167,12 +167,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
         {
             auto *const selectedPreset = ui->comboBox_presetList->current_preset();
 
-            if (selectedPreset &&
-                (QMessageBox::question(this, "Confirm deletion",
-                                       "Delete this preset?",
-                                       (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes))
+            if (selectedPreset && (QMessageBox::question(this, "Confirm preset deletion", "Are you sure you want to delete this preset?", (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes))
             {
-
                 ui->comboBox_presetList->remove_preset(selectedPreset->id);
                 kvideopreset_remove_preset(selectedPreset->id);
                 emit this->data_changed();
