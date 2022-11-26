@@ -17,38 +17,18 @@ void filter_render_text_c::apply(u8 *const pixels, const resolution_s &r)
     this->assert_input_validity(pixels, r);
 
     const std::string text = this->string_parameter(filter_render_text_c::PARAM_STRING);
-    const int textColorId = this->parameter(filter_render_text_c::PARAM_COLOR);
-    const int bgColorId = this->parameter(filter_render_text_c::PARAM_BG_COLOR);
+    const uint8_t fgColorRed = this->parameter(filter_render_text_c::PARAM_FG_COLOR_RED);
+    const uint8_t fgColorGreen = this->parameter(filter_render_text_c::PARAM_FG_COLOR_GREEN);
+    const uint8_t fgColorBlue = this->parameter(filter_render_text_c::PARAM_FG_COLOR_BLUE);
+    const uint8_t fgColorAlpha = this->parameter(filter_render_text_c::PARAM_FG_COLOR_ALPHA);
+    const uint8_t bgColorRed = this->parameter(filter_render_text_c::PARAM_BG_COLOR_RED);
+    const uint8_t bgColorGreen = this->parameter(filter_render_text_c::PARAM_BG_COLOR_GREEN);
+    const uint8_t bgColorBlue = this->parameter(filter_render_text_c::PARAM_BG_COLOR_BLUE);
+    const uint8_t bgColorAlpha = this->parameter(filter_render_text_c::PARAM_BG_COLOR_ALPHA);
     const int fontId = this->parameter(filter_render_text_c::PARAM_FONT);
     const int scale = this->parameter(filter_render_text_c::PARAM_SCALE);
     const unsigned x = this->parameter(filter_render_text_c::PARAM_POS_X);
     const unsigned y = this->parameter(filter_render_text_c::PARAM_POS_Y);
-
-    const auto textColor = ([textColorId]()->std::vector<uint8_t>
-    {
-        switch (textColorId)
-        {
-            case COLOR_BLACK: return {0, 0, 0};
-            case COLOR_GREEN: return {0, 255, 0};
-            case COLOR_WHITE: return {255, 255, 255};
-            case COLOR_YELLOW: return {0, 255, 255};
-            case COLOR_TRANSPARENT: return {};
-            default: return {255, 0, 255};
-        }
-    })();
-
-    const auto bgColor = ([bgColorId]()->std::vector<uint8_t>
-    {
-        switch (bgColorId)
-        {
-            case COLOR_BLACK: return {0, 0, 0};
-            case COLOR_GREEN: return {0, 255, 0};
-            case COLOR_WHITE: return {255, 255, 255};
-            case COLOR_YELLOW: return {0, 255, 255};
-            case COLOR_TRANSPARENT: return {};
-            default: return {255, 0, 255};
-        }
-    })();
 
     const font_c *const font = ([fontId]()->font_c*
     {
@@ -61,7 +41,12 @@ void filter_render_text_c::apply(u8 *const pixels, const resolution_s &r)
         }
     })();
 
-    font->render(text, {pixels, r}, x, y, scale, textColor, bgColor);
+    font->render(
+        text,
+        {pixels, r}, x, y, scale,
+        {fgColorBlue, fgColorGreen, fgColorRed, fgColorAlpha},
+        {bgColorBlue, bgColorGreen, bgColorRed, bgColorAlpha}
+    );
 
     return;
 }

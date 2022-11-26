@@ -19,10 +19,16 @@ public:
     enum {
         PARAM_POS_X,
         PARAM_POS_Y,
-        PARAM_COLOR,
-        PARAM_BG_COLOR,
         PARAM_SCALE,
         PARAM_FONT,
+        PARAM_FG_COLOR_RED,
+        PARAM_FG_COLOR_GREEN,
+        PARAM_FG_COLOR_BLUE,
+        PARAM_FG_COLOR_ALPHA,
+        PARAM_BG_COLOR_RED,
+        PARAM_BG_COLOR_GREEN,
+        PARAM_BG_COLOR_BLUE,
+        PARAM_BG_COLOR_ALPHA,
 
         // REPURPOSE THESE FOR NEW PARAMETERS AS NEEDED.
         //
@@ -51,14 +57,6 @@ public:
     };
 
     enum {
-        COLOR_BLACK,
-        COLOR_GREEN,
-        COLOR_YELLOW,
-        COLOR_WHITE,
-        COLOR_TRANSPARENT,
-    };
-
-    enum {
         FONT_MINIMALIST,
         FONT_RETRO_SERIF,
         FONT_RETRO_SANS_SERIF,
@@ -70,8 +68,14 @@ public:
         abstract_filter_c({
             {PARAM_POS_X, 0},
             {PARAM_POS_Y, 0},
-            {PARAM_COLOR, COLOR_BLACK},
-            {PARAM_BG_COLOR, COLOR_TRANSPARENT},
+            {PARAM_FG_COLOR_RED, 255},
+            {PARAM_FG_COLOR_GREEN, 255},
+            {PARAM_FG_COLOR_BLUE, 0},
+            {PARAM_FG_COLOR_ALPHA, 255},
+            {PARAM_BG_COLOR_RED, 0},
+            {PARAM_BG_COLOR_GREEN, 0},
+            {PARAM_BG_COLOR_BLUE, 0},
+            {PARAM_BG_COLOR_ALPHA, 255},
             {PARAM_SCALE, 1},
             {PARAM_FONT, FONT_MINIMALIST},
             {PARAM_UNUSED1, 0},
