@@ -201,9 +201,9 @@ The recorder will write frames as they appear in the [output window](#output-win
 - Frames will be inserted into the video at the rate of capture; the recorder doesn't try to maintain any particular frame rate (e.g. by duplicating or dropping frames). For example, if your capture source is 57.5 Hz, one minute of video will have 57.5 * 60 frames, and if that video is played back at 60 FPS, it will appear slightly sped up.
 - If VCS drops any frames during recording (e.g. due to insufficient system performance), the video's playback will be non-linear. So if you're recording a separate audio file and are planning to sync it with the video, you want there to be no frames dropped while recording the video.
 - The video will be recorded in the H.264 format using an x264 codec.
-- The video resolution will be that of the current output size (see the [Output resolution](#output-resolution-dialog) dialog).
+- The video resolution will be that of the current output size (see the [Output resolution](#dialog-windows-output-resolution-dialog) dialog).
 - The output size can't be changed while recording; all frames will be scaled automatically to fit the current size.
-- The [overlay](#overlay-editor-dialog) won't be recorded.
+- The [overlay](#dialog-windows-overlay-editor-dialog) won't be recorded.
 - Encoder parameters influencing image quality (e.g. CRF) can't be customized in the Linux version of VCS. This is a limitation of OpenCV. You can, however, modify and recompile the OpenCV code with higher-quality default options (see e.g. [here](https://www.researchgate.net/post/Is_it_possible_to_set_the_lossfree_option_for_the_X264_codec_in_OpenCV)).
 
 ### Settings explained

@@ -74,25 +74,25 @@ The title bar may contain some or all of the following elements, from left to ri
                         <tr>
                             <td>R</td>
                             <td>
-                                Shown when video recording is active (see <a href="#dialogs-video-recorder-dialog">Video recorder dialog</a>)
+                                Shown when video recording is active (see <a href="#dialog-windows-video-recorder-dialog">Video recorder dialog</a>)
                             </td>
                         </tr>
                         <tr>
                             <td>F</td>
                             <td>
-                                Shown when the filter graph is active (see <a href="#dialogs filter-graph-dialog">Filter graph dialog</a>)
+                                Shown when the filter graph is active (see <a href="#dialog-windows-filter-graph-dialog">Filter graph dialog</a>)
                             </td>
                         </tr>
                         <tr>
                             <td>O</td>
                             <td>
-                                Shown when the overlay is active (see <a href="#dialogs-overlay-editor-dialog">Overlay editor dialog</a>)
+                                Shown when the overlay is active (see <a href="#dialog-windows-overlay-editor-dialog">Overlay editor dialog</a>)
                             </td>
                         </tr>
                         <tr>
                             <td>A</td>
                             <td>
-                                Shown when anti-tearing is active (see <a href="#dialogs-anti-tear-dialog">Anti-tear dialog</a>)
+                                Shown when anti-tearing is active (see <a href="#dialog-windows-anti-tear-dialog">Anti-tear dialog</a>)
                             </td>
                         </tr>
                     </table>
