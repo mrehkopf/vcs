@@ -370,13 +370,11 @@ QScrollBar::handle:disabled:vertical
 
 QScrollBar:vertical
 {
-    width: 22px;
-    min-width: 22px;
+    width: 20px;
+    min-width: 20px;
     margin: 23px 0 23px -1px;
     border: none;
     background-color: #c9c9c9;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
 }
 
 QScrollBar::handle:vertical
@@ -385,16 +383,12 @@ QScrollBar::handle:vertical
     border-radius: 0;
     background-color: #808080;
     border: none;
-
-    background-image: url(:/res/images/icons/newie/handle_grip.png);
-    background-position: center;
-    background-repeat: none;
 }
 
 QScrollBar::add-line:vertical
 {
     height: 22px;
-    width: 22px;
+    width: 20px;
     subcontrol-position: bottom;
     subcontrol-origin: margin;
     image: url(:/res/images/icons/newie/arrow_down.png);
@@ -413,7 +407,7 @@ QScrollBar::add-line:vertical:disabled
 QScrollBar::sub-line:vertical
 {
     height: 22px;
-    width: 22px;
+    width: 20px;
     subcontrol-position: top;
     subcontrol-origin: margin;
     image: url(:/res/images/icons/newie/arrow_up.png);
@@ -431,13 +425,11 @@ QScrollBar::sub-line:vertical:disabled
 
 QScrollBar:horizontal
 {
-    height: 22px;
-    min-height: 22px;
+    height: 20px;
+    min-height: 20px;
     border: none;
     background-color: #c9c9c9;
     margin: -1px 23px 0 23px;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
 }
 
 QScrollBar::handle:horizontal
@@ -445,16 +437,12 @@ QScrollBar::handle:horizontal
     min-width: 24px;
     border-radius: 0px;
     background-color: #808080;
-
-    background-image: url(:/res/images/icons/newie/handle_grip.png);
-    background-position: center;
-    background-repeat: none;
 }
 
 QScrollBar::add-line:horizontal
 {
     width: 22px;
-    height: 22px;
+    height: 20px;
     subcontrol-position: right;
     subcontrol-origin: margin;
     image: url(:/res/images/icons/newie/arrow_right.png);
@@ -473,7 +461,7 @@ QScrollBar::add-line:horizontal:disabled
 QScrollBar::sub-line:horizontal
 {
     width: 22px;
-    height: 22px;
+    height: 20px;
     subcontrol-position: left;
     subcontrol-origin: margin;
     image: url(:/res/images/icons/newie/arrow_left.png);
@@ -484,16 +472,21 @@ QScrollBar::sub-line:horizontal
     margin-bottom: 1px;
 }
 
+/* Temp hack. Horizontal scroll bars in group boxes are used in place of sliders,
+   so we need to style them to be consistent with line edit fields.*/
 QGroupBox QScrollBar::sub-line:horizontal,
 QGroupBox QScrollBar::add-line:horizontal
 {
     height: 26px;
     margin-bottom: 0px;
 }
-
 QGroupBox QScrollBar:horizontal
 {
+    height: 22px;
+    min-height: 22px;
     margin: 0px 23px 0 23px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 QScrollBar::sub-line:horizontal:disabled
