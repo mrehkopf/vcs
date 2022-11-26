@@ -68,6 +68,10 @@ void InteractibleNodeGraphView::mousePressEvent(QMouseEvent *event)
 
             if (nodeUnderCursor)
             {
+                // Make sure only the clicked node is selected.
+                this->scene()->setSelectionArea(QPainterPath());
+                nodeUnderCursor->setSelected(true);
+
                 node_edge_s *const edgeUnderCursor = nodeUnderCursor->intersected_edge(scenePos);
 
                 if (edgeUnderCursor)
