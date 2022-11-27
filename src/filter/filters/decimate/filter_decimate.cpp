@@ -7,17 +7,17 @@
 
 #include "filter/filters/decimate/filter_decimate.h"
 
-void filter_decimate_c::apply(u8 *const pixels, const resolution_s &r)
+void filter_decimate_c::apply(image_s *const image)
 {
-    this->assert_input_validity(pixels, r);
+    this->assert_input_validity(image);
 
-    const unsigned factor = this->parameter(PARAM_FACTOR);
+    const int factor = this->parameter(PARAM_FACTOR);
     const unsigned type = this->parameter(PARAM_TYPE);
-    const unsigned numColorChannels = (r.bpp / 8);
+    const unsigned numColorChannels = (image->resolution.bpp / 8);
 
-    for (u32 y = 0; y < r.h; y += factor)
+    for (unsigned y = 0; y < image->resolution.h; y += factor)
     {
-        for (u32 x = 0; x < r.w; x += factor)
+        for (unsigned x = 0; x < image->resolution.w; x += factor)
         {
             int ar = 0, ag = 0, ab = 0;
 
@@ -27,35 +27,33 @@ void filter_decimate_c::apply(u8 *const pixels, const resolution_s &r)
                 {
                     for (int xd = 0; xd < factor; xd++)
                     {
-                        const u32 idx = ((x + xd) + (y + yd) * r.w) * numColorChannels;
-
-                        ab += pixels[idx + 0];
-                        ag += pixels[idx + 1];
-                        ar += pixels[idx + 2];
+                        const unsigned idx = ((x + xd) + (y + yd) * image->resolution.w) * numColorChannels;
+                        ab += image->pixels[idx + 0];
+                        ag += image->pixels[idx + 1];
+                        ar += image->pixels[idx + 2];
                     }
                 }
+
                 ar /= (factor * factor);
                 ag /= (factor * factor);
                 ab /= (factor * factor);
             }
             else if (type == SAMPLE_NEAREST)
             {
-                const u32 idx = (x + y * r.w) * numColorChannels;
-
-                ab = pixels[idx + 0];
-                ag = pixels[idx + 1];
-                ar = pixels[idx + 2];
+                const unsigned idx = (x + y * image->resolution.w) * numColorChannels;
+                ab = image->pixels[idx + 0];
+                ag = image->pixels[idx + 1];
+                ar = image->pixels[idx + 2];
             }
 
             for (int yd = 0; yd < factor; yd++)
             {
                 for (int xd = 0; xd < factor; xd++)
                 {
-                    const u32 idx = ((x + xd) + (y + yd) * r.w) * numColorChannels;
-
-                    pixels[idx + 0] = ab;
-                    pixels[idx + 1] = ag;
-                    pixels[idx + 2] = ar;
+                    const unsigned idx = ((x + xd) + (y + yd) * image->resolution.w) * numColorChannels;
+                    image->pixels[idx + 0] = ab;
+                    image->pixels[idx + 1] = ag;
+                    image->pixels[idx + 2] = ar;
                 }
             }
         }

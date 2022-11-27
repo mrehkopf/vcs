@@ -34,8 +34,7 @@ public:
     std::string uuid(void) const override { return "e31d5ee3-f5df-4e7c-81b8-227fc39cbe76"; }
     std::string name(void) const override { return "Denoise (non-local means)"; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
-
-    void apply(u8 *const pixels, const resolution_s &r) override;
+    void apply(image_s *const image) override;
 
 private:
 };

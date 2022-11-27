@@ -104,7 +104,7 @@ public:
     std::string uuid(void) const override { return "b87db194-d76a-4a15-9f0f-a5cd9f2a209b"; }
     std::string name(void) const override { return "Render text"; }
     filter_category_e category(void) const override { return filter_category_e::meta; }
-    void apply(u8 *const pixels, const resolution_s &r) override;
+    void apply(image_s *const image) override;
 
 private:
 };

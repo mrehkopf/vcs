@@ -86,17 +86,18 @@ abstract_filter_c* kf_apply_matching_filter_chain(u8 *const pixels, const resolu
 
     k_assert((r.bpp == 32), "Filters can only be applied to 32-bit pixel data.");
 
+    image_s targetImage = {pixels, r};
     std::pair<const std::vector<abstract_filter_c*>*, unsigned> partialMatch = {nullptr, 0};
     std::pair<const std::vector<abstract_filter_c*>*, unsigned> openMatch = {nullptr, 0};
     const resolution_s outputRes = ks_output_resolution();
 
-    static const auto apply_chain = [&pixels, &r, outputRes](const std::vector<abstract_filter_c*> &chain, const unsigned idx)->abstract_filter_c*
+    static const auto apply_chain = [&targetImage, &outputRes](const std::vector<abstract_filter_c*> &chain, const unsigned idx)->abstract_filter_c*
     {
         // The gate filters are expected to be #first and #last, while the actual
         // applicable filters are the ones in-between.
         for (unsigned c = 1; c < (chain.size() - 1); c++)
         {
-            chain[c]->apply(pixels, r);
+            chain[c]->apply(&targetImage);
         }
 
         MOST_RECENT_FILTER_CHAIN_IDX = idx;

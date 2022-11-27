@@ -8,9 +8,9 @@
 #include "filter/filters/anti_tear/filter_anti_tear.h"
 #include "anti_tear/anti_tearer.h"
 
-void filter_anti_tear_c::apply(u8 *const pixels, const resolution_s &r)
+void filter_anti_tear_c::apply(image_s *const image)
 {
-    this->assert_input_validity(pixels, r);
+    this->assert_input_validity(image);
 
     static anti_tearer_c antiTearer;
     static bool isInitialized= false;
@@ -36,8 +36,8 @@ void filter_anti_tear_c::apply(u8 *const pixels, const resolution_s &r)
                            ? anti_tear_scan_hint_e::look_for_one_tear
                            : anti_tear_scan_hint_e::look_for_multiple_tears);
 
-    auto *const processedPixels = antiTearer.process(pixels, r);
-    memcpy(pixels, processedPixels, (r.w * r.h * (r.bpp / 8)));
+    const uint8_t *const processedPixels = antiTearer.process(image->pixels, image->resolution);
+    memcpy(image->pixels, processedPixels, (image->resolution.w * image->resolution.h * (image->resolution.bpp / 8)));
 
     return;
 }

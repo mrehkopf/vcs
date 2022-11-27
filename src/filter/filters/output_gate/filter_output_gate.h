@@ -30,8 +30,7 @@ public:
     std::string uuid(void) const override { return "be8443e2-4355-40fd-aded-63cebcbfb8ce"; }
     std::string name(void) const override { return "Output gate"; }
     filter_category_e category(void) const override { return filter_category_e::output_condition; }
-
-    void apply(u8 *const pixels, const resolution_s &r) override;
+    void apply(image_s *const image) override;
 
 private:
 };

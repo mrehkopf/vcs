@@ -73,7 +73,7 @@ struct captured_frame_s;
  * current output frame.
  */
 #define KS_PRINT_FILTER_ERROR(errorString) \
-    font_5x3_c().render(("FILTER ERROR [" + (this->name()) + "]:\n" + errorString), {pixels, r}, 0, 0, 2, {0, 0, 255}, {0, 0, 0});
+    font_5x3_c().render(("FILTER ERROR [" + (this->name()) + "]:\n" + errorString), image, 0, 0, 2, {0, 0, 255}, {0, 0, 0});
 
 /*!
  * Basic container for an image scaler.

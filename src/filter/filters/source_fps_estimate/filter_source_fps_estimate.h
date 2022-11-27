@@ -53,8 +53,7 @@ public:
     std::string uuid(void) const override { return "badb0129-f48c-4253-a66f-b0ec94e225a0"; }
     std::string name(void) const override { return "Source FPS estimate"; }
     filter_category_e category(void) const override { return filter_category_e::meta; }
-
-    void apply(u8 *const pixels, const resolution_s &r) override;
+    void apply(image_s *const image) override;
 
 private:
 };

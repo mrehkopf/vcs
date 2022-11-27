@@ -29,8 +29,7 @@ public:
 
     CLONABLE_FILTER_TYPE(filter_color_depth_c)
 
-    void apply(u8 *const pixels, const resolution_s &r) override;
-
+    void apply(image_s *const image) override;
     std::string name(void) const override { return "Color depth"; }
     std::string uuid(void) const override { return "c87f6967-b82d-4a10-b74f-9923f5ed00f8"; }
     filter_category_e category(void) const override { return filter_category_e::reduce; }

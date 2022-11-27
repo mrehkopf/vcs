@@ -29,14 +29,14 @@ struct font_glyph_s
     }
 
     void render(
-        image_s dstImage,
+        image_s *const dstImage,
         const int x,
         const int y,
         const unsigned scale = 1,
         const std::vector<uint8_t> color = {0, 0, 0}
     ) const
     {
-        k_assert_optional((color.size() <= (dstImage.resolution.bpp / 8)), "Malformed color for glyph rendering.");
+        k_assert_optional((color.size() <= (dstImage->resolution.bpp / 8)), "Malformed color for glyph rendering.");
 
         for (unsigned glyphY = 0; glyphY < this->height(); glyphY++)
         {
@@ -54,7 +54,7 @@ struct font_glyph_s
                 {
                     const int scaledPixelY = (pixelY + repeatY);
 
-                    if ((scaledPixelY < 0) || (unsigned(scaledPixelY) >= dstImage.resolution.h))
+                    if ((scaledPixelY < 0) || (unsigned(scaledPixelY) >= dstImage->resolution.h))
                     {
                         continue;
                     }
@@ -63,29 +63,29 @@ struct font_glyph_s
                     {
                         const int scaledPixelX = (pixelX + repeatX);
 
-                        if ((scaledPixelX < 0) || (unsigned(scaledPixelX) >= dstImage.resolution.w))
+                        if ((scaledPixelX < 0) || (unsigned(scaledPixelX) >= dstImage->resolution.w))
                         {
                             continue;
                         }
 
-                        const unsigned idx = ((scaledPixelX + scaledPixelY * dstImage.resolution.w) * (dstImage.resolution.bpp / 8));
+                        const unsigned idx = ((scaledPixelX + scaledPixelY * dstImage->resolution.w) * (dstImage->resolution.bpp / 8));
                         k_assert_optional(
-                            (idx < (color.size() + (dstImage.resolution.w * dstImage.resolution.h * (dstImage.resolution.bpp / 8)))),
+                            (idx < (color.size() + (dstImage->resolution.w * dstImage->resolution.h * (dstImage->resolution.bpp / 8)))),
                             "Image buffer overflow in string rendering."
                         );
 
                         // Alpha blend.
                         if (color.size() == 4)
                         {
-                            dstImage.pixels[idx + 0] = LERP(dstImage.pixels[idx + 0], color[0], (color[3] / 255.0));
-                            dstImage.pixels[idx + 1] = LERP(dstImage.pixels[idx + 1], color[1], (color[3] / 255.0));
-                            dstImage.pixels[idx + 2] = LERP(dstImage.pixels[idx + 2], color[2], (color[3] / 255.0));
+                            dstImage->pixels[idx + 0] = LERP(dstImage->pixels[idx + 0], color[0], (color[3] / 255.0));
+                            dstImage->pixels[idx + 1] = LERP(dstImage->pixels[idx + 1], color[1], (color[3] / 255.0));
+                            dstImage->pixels[idx + 2] = LERP(dstImage->pixels[idx + 2], color[2], (color[3] / 255.0));
                         }
                         else
                         {
                             for (unsigned i = 0; i < color.size(); i++)
                             {
-                                dstImage.pixels[idx + i] = color[i];
+                                dstImage->pixels[idx + i] = color[i];
                             }
                         }
                     }
@@ -169,7 +169,7 @@ public:
     // Renders the given string into the given image using this font.
     void render(
         const std::string &string,
-        image_s dstImage,
+        image_s *const dstImage,
         int x,
         int y,
         const unsigned scale = 1,
@@ -177,8 +177,8 @@ public:
         const std::vector<uint8_t> bgColor = {}
     ) const
     {
-        k_assert_optional((color.size() <= (dstImage.resolution.bpp / 8)), "Malformed color for string rendering.");
-        k_assert_optional((bgColor.size() <= (dstImage.resolution.bpp / 8)), "Malformed background color for string rendering.");
+        k_assert_optional((color.size() <= (dstImage->resolution.bpp / 8)), "Malformed color for string rendering.");
+        k_assert_optional((bgColor.size() <= (dstImage->resolution.bpp / 8)), "Malformed background color for string rendering.");
 
         if (string.empty())
         {
@@ -200,29 +200,29 @@ public:
                 {
                     const unsigned x_ = (bgX + (x - scale));
                     const unsigned y_ = (bgY + (y - (this->cap_height() * scale)));
-                    if ((x_ >= dstImage.resolution.w || (y_ >= dstImage.resolution.h)))
+                    if ((x_ >= dstImage->resolution.w || (y_ >= dstImage->resolution.h)))
                     {
                         continue;
                     }
 
-                    const unsigned idx = ((x_ + y_ * dstImage.resolution.w) * (dstImage.resolution.bpp / 8));
+                    const unsigned idx = ((x_ + y_ * dstImage->resolution.w) * (dstImage->resolution.bpp / 8));
                     k_assert_optional(
-                        (idx < (bgColor.size() + (dstImage.resolution.w * dstImage.resolution.h * (dstImage.resolution.bpp / 8)))),
+                        (idx < (bgColor.size() + (dstImage->resolution.w * dstImage->resolution.h * (dstImage->resolution.bpp / 8)))),
                         "Image buffer overflow in string rendering."
                     );
 
                     // Alpha blend.
                     if (bgColor.size() == 4)
                     {
-                        dstImage.pixels[idx + 0] = LERP(dstImage.pixels[idx + 0], bgColor[0], (bgColor[3] / 255.0));
-                        dstImage.pixels[idx + 1] = LERP(dstImage.pixels[idx + 1], bgColor[1], (bgColor[3] / 255.0));
-                        dstImage.pixels[idx + 2] = LERP(dstImage.pixels[idx + 2], bgColor[2], (bgColor[3] / 255.0));
+                        dstImage->pixels[idx + 0] = LERP(dstImage->pixels[idx + 0], bgColor[0], (bgColor[3] / 255.0));
+                        dstImage->pixels[idx + 1] = LERP(dstImage->pixels[idx + 1], bgColor[1], (bgColor[3] / 255.0));
+                        dstImage->pixels[idx + 2] = LERP(dstImage->pixels[idx + 2], bgColor[2], (bgColor[3] / 255.0));
                     }
                     else
                     {
                         for (unsigned i = 0; i < bgColor.size(); i++)
                         {
-                            dstImage.pixels[idx + i] = bgColor[i];
+                            dstImage->pixels[idx + i] = bgColor[i];
                         }
                     }
                 }

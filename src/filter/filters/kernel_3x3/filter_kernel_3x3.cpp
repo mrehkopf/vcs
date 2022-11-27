@@ -8,9 +8,9 @@
 #include "filter/filters/kernel_3x3/filter_kernel_3x3.h"
 #include <opencv2/imgproc/imgproc.hpp>
 
-void filter_kernel_3x3_c::apply(u8 *const pixels, const resolution_s &r)
+void filter_kernel_3x3_c::apply(image_s *const image)
 {
-    this->assert_input_validity(pixels, r);
+    this->assert_input_validity(image);
 
     const float v11 = this->parameter(PARAM_11);
     const float v12 = this->parameter(PARAM_12);
@@ -29,7 +29,7 @@ void filter_kernel_3x3_c::apply(u8 *const pixels, const resolution_s &r)
     };
 
     cv::Mat ker = cv::Mat(3, 3, CV_32F, &kernel);
-    cv::Mat output = cv::Mat(r.h, r.w, CV_8UC4, pixels);
+    cv::Mat output = cv::Mat(image->resolution.h, image->resolution.w, CV_8UC4, image->pixels);
     cv::filter2D(output, output, -1, ker);
 
     return;

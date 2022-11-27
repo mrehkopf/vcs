@@ -30,8 +30,7 @@ public:
     std::string uuid(void) const override { return "140c514d-a4b0-4882-abc6-b4e9e1ff4451"; }
     std::string name(void) const override { return "Rotate"; }
     filter_category_e category(void) const override { return filter_category_e::distort; }
-
-    void apply(u8 *const pixels, const resolution_s &r) override;
+    void apply(image_s *const image) override;
 
 private:
 };

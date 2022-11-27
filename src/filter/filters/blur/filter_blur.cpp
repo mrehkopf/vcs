@@ -8,12 +8,12 @@
 #include "filter/filters/blur/filter_blur.h"
 #include <opencv2/imgproc/imgproc.hpp>
 
-void filter_blur_c::apply(u8 *const pixels, const resolution_s &r)
+void filter_blur_c::apply(image_s *const image)
 {
-    this->assert_input_validity(pixels, r);
+    this->assert_input_validity(image);
 
     const double kernelSize = this->parameter(PARAM_KERNEL_SIZE);
-    cv::Mat output = cv::Mat(r.h, r.w, CV_8UC4, pixels);
+    cv::Mat output = cv::Mat(image->resolution.h, image->resolution.w, CV_8UC4, image->pixels);
 
     if (this->parameter(PARAM_TYPE) == BLUR_GAUSSIAN)
     {

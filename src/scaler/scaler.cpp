@@ -359,7 +359,8 @@ void ks_scale_frame(const captured_frame_s &frame)
 
         IS_CUSTOM_SCALER_USED = true;
 
-        customScaler->apply(pixelData, frameRes);
+        image_s dstImage = {pixelData, frameRes};
+        customScaler->apply(&dstImage);
         CUSTOM_SCALER_FILTER_RESOLUTION = dynamic_cast<filter_output_scaler_c*>(customScaler)->output_resolution();
     }
     else

@@ -11,9 +11,9 @@
 
 // Takes a subregion of the frame and either scales it up to fill the whole frame or
 // fills its surroundings with black.
-void filter_crop_c::apply(u8 *const pixels, const resolution_s &r)
+void filter_crop_c::apply(image_s *const image)
 {
-    this->assert_input_validity(pixels, r);
+    this->assert_input_validity(image);
 
     const unsigned x = this->parameter(PARAM_X);
     const unsigned y = this->parameter(PARAM_Y);
@@ -32,22 +32,22 @@ void filter_crop_c::apply(u8 *const pixels, const resolution_s &r)
         }
     })();
 
-    if ((x + w) > r.w)
+    if ((x + w) > image->resolution.w)
     {
         KS_PRINT_FILTER_ERROR("The crop region is wider than the input image");
     }
-    else if ((y + h) > r.h)
+    else if ((y + h) > image->resolution.h)
     {
         KS_PRINT_FILTER_ERROR("The crop region is taller than the input image");
     }
     else
     {
-        cv::Mat output = cv::Mat(r.h, r.w, CV_8UC4, pixels);
+        cv::Mat output = cv::Mat(image->resolution.h, image->resolution.w, CV_8UC4, image->pixels);
         cv::Mat cropped = output(cv::Rect(x, y, w, h)).clone();
 
         // If the user doesn't want scaling, just append some black borders around the
         // cropping. Otherwise, stretch the cropped region to fill the entire frame.
-        if (cvScaler < 0) cv::copyMakeBorder(cropped, output, y, (r.h - (h + y)), x, (r.w - (w + x)), cv::BORDER_CONSTANT, 0);
+        if (cvScaler < 0) cv::copyMakeBorder(cropped, output, y, (image->resolution.h - (h + y)), x, (image->resolution.w - (w + x)), cv::BORDER_CONSTANT, 0);
         else cv::resize(cropped, output, output.size(), 0, 0, cvScaler);
     }
 

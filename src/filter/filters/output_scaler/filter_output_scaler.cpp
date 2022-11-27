@@ -11,9 +11,9 @@
 #include "scaler/scaler.h"
 #include <opencv2/imgproc/imgproc.hpp>
 
-void filter_output_scaler_c::apply(u8 *const pixels, const resolution_s &r)
+void filter_output_scaler_c::apply(image_s *const image)
 {
-    assert_input_validity(pixels, r);
+    assert_input_validity(image);
 
     const unsigned width = this->parameter(filter_output_scaler_c::PARAM_WIDTH);
     const unsigned height = this->parameter(filter_output_scaler_c::PARAM_HEIGHT);
@@ -36,9 +36,8 @@ void filter_output_scaler_c::apply(u8 *const pixels, const resolution_s &r)
         }
     })();
 
-    const image_s srcImage = image_s(pixels, r);
     image_s dstImage = image_s(ks_frame_buffer().pixels.data(), {width, height, 32});
-    scaler_function(srcImage, &dstImage, {padTop, padRight, padBottom, padLeft});
+    scaler_function(*image, &dstImage, {padTop, padRight, padBottom, padLeft});
 
     return;
 }

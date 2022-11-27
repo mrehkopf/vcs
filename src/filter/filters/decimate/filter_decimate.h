@@ -30,8 +30,7 @@ public:
 
     CLONABLE_FILTER_TYPE(filter_decimate_c)
 
-    void apply(u8 *const pixels, const resolution_s &r) override;
-
+    void apply(image_s *const image) override;
     std::string uuid(void) const override { return "eb586eb4-2d9d-41b4-9e32-5cbcf0bbbf03"; }
     std::string name(void) const override { return "Decimate"; }
     filter_category_e category(void) const override { return filter_category_e::reduce; }

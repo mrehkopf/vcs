@@ -27,8 +27,7 @@ public:
     std::string uuid(void) const override { return "94adffac-be42-43ac-9839-9cc53a6d615c"; }
     std::string name(void) const override { return "Denoise (pixel gate)"; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
-
-    void apply(u8 *const pixels, const resolution_s &r) override;
+    void apply(image_s *const image) override;
 
 private:
 };

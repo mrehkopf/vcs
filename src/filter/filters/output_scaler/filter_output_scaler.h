@@ -54,7 +54,7 @@ public:
     std::string uuid(void) const override { return "5365fc0e-78a8-4262-a9eb-e5ef1941a9ed"; }
     std::string name(void) const override { return "Output scaler"; }
     filter_category_e category(void) const override { return filter_category_e::output_scaler; }
-    void apply(u8 *const pixels, const resolution_s &r) override;
+    void apply(image_s *const image) override;
 
     // Returns the resolution of the output image, including any padding.
     resolution_s output_resolution(void) const;

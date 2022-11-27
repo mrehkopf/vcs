@@ -25,8 +25,7 @@ public:
     std::string uuid(void) const override { return "1c25bbb1-dbf4-4a03-93a1-adf24b311070"; }
     std::string name(void) const override { return "Sharpen"; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
-
-    void apply(u8 *const pixels, const resolution_s &r) override;
+    void apply(image_s *const image) override;
 
 private:
 };

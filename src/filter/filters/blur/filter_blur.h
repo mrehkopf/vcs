@@ -30,8 +30,7 @@ public:
 
     CLONABLE_FILTER_TYPE(filter_blur_c)
 
-    void apply(u8 *const pixels, const resolution_s &r) override;
-
+    void apply(image_s *const image) override;
     std::string name(void) const override { return "Blur"; }
     std::string uuid(void) const override { return "a5426f2e-b060-48a9-adf8-1646a2d3bd41"; }
     filter_category_e category(void) const override { return filter_category_e::reduce; }

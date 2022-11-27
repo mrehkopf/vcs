@@ -63,10 +63,10 @@ public:
     /*!
      * Applies the filter's image processing to an image's pixels.
      *
-     * This function is allowed only to alter the image's pixel values, not
-     * e.g. its size.
+     * This function is allowed only to alter the image's pixel values, not e.g. its
+     * size.
      */
-    virtual void apply(u8 *const pixels, const resolution_s &r) = 0;
+    virtual void apply(image_s *const image) = 0;
 
     /*!
      * The filter's GUI widget, which provides the end-user with controls for
@@ -83,14 +83,16 @@ protected:
      * Triggers an assertion failure if @p pixels or @p r are out of bounds for
      * a filter's apply() function.
      */
-    void assert_input_validity(const u8 *const pixels, const resolution_s &r)
+    void assert_input_validity(image_s *const image)
     {
-        k_assert(((r.bpp == 32) &&
-                  (r.w <= MAX_CAPTURE_WIDTH) &&
-                  (r.h <= MAX_CAPTURE_HEIGHT)),
-                 "Unsupported frame format.");
+        k_assert(
+            ((image->resolution.bpp == 32) &&
+             (image->resolution.w <= MAX_CAPTURE_WIDTH) &&
+             (image->resolution.h <= MAX_CAPTURE_HEIGHT)),
+            "Unsupported frame format."
+        );
 
-        k_assert(pixels, "Null pixel data,");
+        k_assert(image->pixels, "Null pixel data,");
     }
 
 private:

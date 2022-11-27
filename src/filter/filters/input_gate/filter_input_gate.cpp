@@ -7,12 +7,11 @@
 
 #include "filter/filters/input_gate/filter_input_gate.h"
 
-void filter_input_gate_c::apply(u8 *const pixels, const resolution_s &r)
+void filter_input_gate_c::apply(image_s *const image)
 {
     /// Input gates do not modify pixel data.
 
-    (void)pixels;
-    (void)r;
+    (void)image;
 
     return;
 }

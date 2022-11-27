@@ -9,30 +9,31 @@
 
 // Reduces temporal image noise by requiring that pixels between frames vary by at
 // least a threshold value before being updated on screen.
-void filter_denoise_pixel_gate_c::apply(u8 *const pixels, const resolution_s &r)
+void filter_denoise_pixel_gate_c::apply(image_s *const image)
 {
-    this->assert_input_validity(pixels, r);
+    this->assert_input_validity(image);
 
     const unsigned threshold = this->parameter(PARAM_THRESHOLD);
-    static heap_mem<u8> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Denoising filter buffer");
+    static heap_mem<uint8_t> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Denoising filter buffer");
 
-    for (uint i = 0; i < (r.h * r.w); i++)
+    for (unsigned i = 0; i < (image->resolution.h * image->resolution.w); i++)
     {
-        const u32 idx = (i * (r.bpp / 8));
+        const unsigned idx = (i * (image->resolution.bpp / 8));
 
-        if ((abs(pixels[idx + 0] - prevPixels[idx + 0]) > threshold) ||
-            (abs(pixels[idx + 1] - prevPixels[idx + 1]) > threshold) ||
-            (abs(pixels[idx + 2] - prevPixels[idx + 2]) > threshold))
-        {
-            prevPixels[idx + 0] = pixels[idx + 0];
-            prevPixels[idx + 1] = pixels[idx + 1];
-            prevPixels[idx + 2] = pixels[idx + 2];
+        if (
+            (std::abs(image->pixels[idx + 0] - prevPixels[idx + 0]) > threshold) ||
+            (std::abs(image->pixels[idx + 1] - prevPixels[idx + 1]) > threshold) ||
+            (std::abs(image->pixels[idx + 2] - prevPixels[idx + 2]) > threshold)
+        ){
+            prevPixels[idx + 0] = image->pixels[idx + 0];
+            prevPixels[idx + 1] = image->pixels[idx + 1];
+            prevPixels[idx + 2] = image->pixels[idx + 2];
         }
         else
         {
-            pixels[idx + 0] = prevPixels[idx + 0];
-            pixels[idx + 1] = prevPixels[idx + 1];
-            pixels[idx + 2] = prevPixels[idx + 2];
+            image->pixels[idx + 0] = prevPixels[idx + 0];
+            image->pixels[idx + 1] = prevPixels[idx + 1];
+            image->pixels[idx + 2] = prevPixels[idx + 2];
         }
     }
 

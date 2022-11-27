@@ -12,9 +12,9 @@
 #include "filter/filters/render_text/font_10x6_sans_serif.h"
 #include "display/display.h"
 
-void filter_render_text_c::apply(u8 *const pixels, const resolution_s &r)
+void filter_render_text_c::apply(image_s *const image)
 {
-    this->assert_input_validity(pixels, r);
+    this->assert_input_validity(image);
 
     const std::string text = this->string_parameter(filter_render_text_c::PARAM_STRING);
     const uint8_t fgColorRed = this->parameter(filter_render_text_c::PARAM_FG_COLOR_RED);
@@ -43,7 +43,8 @@ void filter_render_text_c::apply(u8 *const pixels, const resolution_s &r)
 
     font->render(
         text,
-        {pixels, r}, x, y, scale,
+        image,
+        x, y, scale,
         {fgColorBlue, fgColorGreen, fgColorRed, fgColorAlpha},
         {bgColorBlue, bgColorGreen, bgColorRed, bgColorAlpha}
     );

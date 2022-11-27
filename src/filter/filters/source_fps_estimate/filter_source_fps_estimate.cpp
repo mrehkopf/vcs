@@ -16,9 +16,9 @@ static const unsigned TEXT_SIZE = 4;
 // Counts the number of unique frames per second, i.e. frames in which the pixels
 // change between frames by less than a set threshold (which is to account for
 // analog capture artefacts).
-void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
+void filter_frame_rate_c::apply(image_s *const image)
 {
-    this->assert_input_validity(pixels, r);
+    this->assert_input_validity(image);
 
     static heap_mem<uint8_t> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Frame rate filter buffer");
     static auto timeElapsed = std::chrono::system_clock::now();
@@ -33,19 +33,19 @@ void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
     // Find out whether any pixel in the current frame differs from the previous frame
     // by more than the threshold.
     {
-        for (unsigned i = 0; i < (r.w * r.h); i += (r.bpp / 8))
+        for (unsigned i = 0; i < (image->resolution.w * image->resolution.h); i += (image->resolution.bpp / 8))
         {
             if (
-                (abs(pixels[i + 0] - prevPixels[i + 0]) >= threshold) ||
-                (abs(pixels[i + 1] - prevPixels[i + 1]) >= threshold) ||
-                (abs(pixels[i + 2] - prevPixels[i + 2]) >= threshold)
+                (std::abs(image->pixels[i + 0] - prevPixels[i + 0]) >= threshold) ||
+                (std::abs(image->pixels[i + 1] - prevPixels[i + 1]) >= threshold) ||
+                (std::abs(image->pixels[i + 2] - prevPixels[i + 2]) >= threshold)
             ){
                 numUniqueFramesProcessed++;
                 break;
             }
         }
 
-        memcpy(prevPixels.data(), pixels, prevPixels.size_check(r.w * r.h * (r.bpp / 8)));
+        memcpy(prevPixels.data(), image->pixels, prevPixels.size_check(image->resolution.w * image->resolution.h * (image->resolution.bpp / 8)));
 
         const auto timeNow = std::chrono::system_clock::now();
         const double secsElapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - timeElapsed).count() / 1000.0);
@@ -61,7 +61,7 @@ void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
     {
         const std::string outputString = ('~' + std::to_string(estimatedFPS));
 
-        const auto [x, y] = ([cornerId, &outputString, &r]()->std::pair<unsigned, unsigned>
+        const auto [x, y] = ([cornerId, &outputString, image]()->std::pair<unsigned, unsigned>
         {
             const unsigned textWidth = (TEXT_SIZE * FONT.width_of(outputString));
             const unsigned textHeight = (TEXT_SIZE * FONT.height_of(outputString));
@@ -70,9 +70,9 @@ void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
             {
                 default:
                 case TOP_LEFT: return {0, 0};
-                case TOP_RIGHT: return {(r.w - textWidth), 0};
-                case BOTTOM_RIGHT: return {(r.w - textWidth), (r.h - textHeight)};
-                case BOTTOM_LEFT: return {0, (r.h - textHeight)};
+                case TOP_RIGHT: return {(image->resolution.w - textWidth), 0};
+                case BOTTOM_RIGHT: return {(image->resolution.w - textWidth), (image->resolution.h - textHeight)};
+                case BOTTOM_LEFT: return {0, (image->resolution.h - textHeight)};
             }
         })();
 
@@ -89,7 +89,7 @@ void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
             }
         })();
 
-        FONT.render(outputString, {pixels, r}, x, y, TEXT_SIZE, fgColor, {0, 0, 0, bgAlpha});
+        FONT.render(outputString, image, x, y, TEXT_SIZE, fgColor, {0, 0, 0, bgAlpha});
     }
 
     return;
