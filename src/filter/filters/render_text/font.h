@@ -105,11 +105,11 @@ public:
     // If the string contains characters that are not supported by this font, the width
     // is calculated based on those characters replaced with the font's fallback glyph
     // (e.g. '?').
-    unsigned width_of(const std::string &string) const
+    unsigned width_of(const std::string &string, const bool includeBackground = true) const
     {
         if (string.empty())
         {
-            return 0;
+            return includeBackground;
         }
 
         std::vector<unsigned> lineWidths = {0};
@@ -126,7 +126,11 @@ public:
             lineWidths.back() += (glyph.width() + this->letter_spacing());
         }
 
-        return (*std::max_element(lineWidths.begin(), lineWidths.end()) - this->letter_spacing());
+        return (
+            *std::max_element(lineWidths.begin(), lineWidths.end()) -
+            this->letter_spacing() +
+            (includeBackground? 2 : 0)
+        );
     }
 
     // Returns the height in pixels of the given string using this font. If the string
@@ -134,8 +138,13 @@ public:
     // If the string contains characters that are not supported by this font, the height
     // is calculated based on those characters replaced with the font's fallback glyph
     // (e.g. '?').
-    unsigned height_of(const std::string &string) const
+    unsigned height_of(const std::string &string, const bool includeBackground = true) const
     {
+        if (string.empty())
+        {
+            return includeBackground;
+        }
+
         std::vector<unsigned> lineHeights = {this->cap_height()};
 
         for (const char ch: string)
@@ -150,7 +159,11 @@ public:
             lineHeights.back() = std::max(lineHeights.back(), (this->cap_height() - glyph.baseline));
         }
 
-        return (std::reduce(lineHeights.begin(), lineHeights.end()) + ((lineHeights.size() - 1) * this->line_spacing()));
+        return (
+            std::reduce(lineHeights.begin(), lineHeights.end()) +
+            ((lineHeights.size() - 1) * this->line_spacing()) +
+            (includeBackground? 2 : 0)
+        );
     }
 
     // Renders the given string into the given image using this font.
@@ -178,8 +191,8 @@ public:
         // Render the background.
         if (!bgColor.empty())
         {
-            const unsigned bgWidth = ((this->width_of(string) + 2) * scale);
-            const unsigned bgHeight = ((this->height_of(string) + 2) * scale);
+            const unsigned bgWidth = (this->width_of(string) * scale);
+            const unsigned bgHeight = (this->height_of(string) * scale);
 
             for (unsigned bgY = 0; bgY < bgHeight; bgY++)
             {
