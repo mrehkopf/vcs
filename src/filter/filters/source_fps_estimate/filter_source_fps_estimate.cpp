@@ -49,7 +49,7 @@ void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
 
         const auto timeNow = std::chrono::system_clock::now();
         const double secsElapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - timeElapsed).count() / 1000.0);
-        if (secsElapsed >= 1)
+        if (secsElapsed >= 0.5)
         {
             estimatedFPS = std::round(numUniqueFramesProcessed / secsElapsed);
             numUniqueFramesProcessed = 0;
