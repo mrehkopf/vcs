@@ -15,31 +15,34 @@
 class filter_frame_rate_c : public abstract_filter_c
 {
 public:
-    enum { PARAM_THRESHOLD,
-           PARAM_CORNER,
-           PARAM_BG_COLOR,
-           PARAM_TEXT_COLOR,};
+    enum {
+        PARAM_THRESHOLD,
+        PARAM_CORNER,
+        PARAM_BG_OPAQUE,
+        PARAM_TEXT_COLOR
+    };
 
-    enum { TOP_LEFT = 0,
-           TOP_RIGHT = 1,
-           BOTTOM_RIGHT = 2,
-           BOTTOM_LEFT = 3 };
+    enum {
+        TOP_LEFT,
+        TOP_RIGHT,
+        BOTTOM_RIGHT,
+        BOTTOM_LEFT
+    };
 
-    enum { BG_TRANSPARENT = 0,
-           BG_BLACK = 1,
-           BG_WHITE = 2 };
-
-    enum { TEXT_YELLOW = 0,
-           TEXT_PURPLE = 1,
-           TEXT_BLACK = 2,
-           TEXT_WHITE = 3 };
+    enum {
+        TEXT_YELLOW,
+        TEXT_PURPLE,
+        TEXT_BLACK,
+        TEXT_WHITE
+    };
 
     filter_frame_rate_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
-        abstract_filter_c({{PARAM_THRESHOLD, 20},
-                           {PARAM_CORNER, TOP_LEFT},
-                           {PARAM_BG_COLOR, BG_TRANSPARENT},
-                           {PARAM_TEXT_COLOR, TEXT_YELLOW}},
-                          initialParamValues)
+        abstract_filter_c({
+            {PARAM_THRESHOLD, 20},
+            {PARAM_CORNER, TOP_LEFT},
+            {PARAM_BG_OPAQUE, true},
+            {PARAM_TEXT_COLOR, TEXT_YELLOW}
+        }, initialParamValues)
     {
         this->guiDescription = new filtergui_source_fps_estimate_c(this);
     }

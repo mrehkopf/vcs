@@ -5,6 +5,7 @@
  *
  */
 
+#include <cmath>
 #include "filter/filters/source_fps_estimate/filter_source_fps_estimate.h"
 #include "filter/filters/render_text/filter_render_text.h"
 #include "filter/filters/render_text/font_5x3.h"
@@ -27,7 +28,7 @@ void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
     const unsigned threshold = this->parameter(PARAM_THRESHOLD);
     const unsigned cornerId = this->parameter(PARAM_CORNER);
     const unsigned fgColorId = this->parameter(PARAM_TEXT_COLOR);
-    const unsigned bgColorId = this->parameter(PARAM_BG_COLOR);
+    const std::vector<uint8_t> bgColor = (this->parameter(PARAM_BG_OPAQUE)? std::vector<uint8_t>{0, 0, 0} : std::vector<uint8_t>{});
 
     // Find out whether any pixel in the current frame differs from the previous frame
     // by more than the threshold.
@@ -60,7 +61,7 @@ void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
     {
         const std::string outputString = ('~' + std::to_string(estimatedFPS));
 
-        const auto [x, y] = ([cornerId, bgColorId, &outputString, &r]()->std::pair<unsigned, unsigned>
+        const auto [x, y] = ([cornerId, &outputString, &r]()->std::pair<unsigned, unsigned>
         {
             const unsigned textWidth = (TEXT_SIZE * FONT.width_of(outputString));
             const unsigned textHeight = (TEXT_SIZE * FONT.height_of(outputString));
@@ -84,17 +85,6 @@ void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
                 case TEXT_PURPLE: return {255, 0, 255};
                 case TEXT_BLACK: return {0, 0, 0};
                 case TEXT_WHITE: return {255, 255, 255};
-            }
-        })();
-
-        const auto bgColor = ([bgColorId]()->std::vector<uint8_t>
-        {
-            switch (bgColorId)
-            {
-                default:
-                case BG_BLACK: return {0, 0, 0};
-                case BG_WHITE: return {255, 255, 255};
-                case BG_TRANSPARENT: return {};
             }
         })();
 
