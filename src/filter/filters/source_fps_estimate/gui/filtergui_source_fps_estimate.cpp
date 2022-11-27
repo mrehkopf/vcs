@@ -36,16 +36,17 @@ filtergui_source_fps_estimate_c::filtergui_source_fps_estimate_c(abstract_filter
         textColor->set_value = [=](const double value){filter->set_parameter(filter_frame_rate_c::PARAM_TEXT_COLOR, value);};
         textColor->items = {"Green", "Purple", "Red", "Yellow", "White"};
 
-        this->guiFields.push_back({"Color", {textColor}});
+        this->guiFields.push_back({"Fg. color", {textColor}});
     }
 
     {
-        auto *bgOpaque = new filtergui_checkbox_s;
-        bgOpaque->get_value = [=]{return filter->parameter(filter_frame_rate_c::PARAM_BG_OPAQUE);};
-        bgOpaque->set_value = [=](const double value){filter->set_parameter(filter_frame_rate_c::PARAM_BG_OPAQUE, value);};
-        bgOpaque->label = "Opaque";
+        auto *bgAlpha = new filtergui_spinbox_s;
+        bgAlpha->get_value = [=]{return filter->parameter(filter_frame_rate_c::PARAM_BG_ALPHA);};
+        bgAlpha->set_value = [=](const double value){filter->set_parameter(filter_frame_rate_c::PARAM_BG_ALPHA, value);};
+        bgAlpha->minValue = 0;
+        bgAlpha->maxValue = 255;
 
-        this->guiFields.push_back({"Background", {bgOpaque}});
+        this->guiFields.push_back({"Bg. alpha", {bgAlpha}});
     }
 
     return;

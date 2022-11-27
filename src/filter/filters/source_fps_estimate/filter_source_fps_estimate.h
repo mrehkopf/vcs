@@ -18,8 +18,8 @@ public:
     enum {
         PARAM_THRESHOLD,
         PARAM_CORNER,
-        PARAM_BG_OPAQUE,
-        PARAM_TEXT_COLOR
+        PARAM_TEXT_COLOR,
+        PARAM_BG_ALPHA
     };
 
     enum {
@@ -41,8 +41,8 @@ public:
         abstract_filter_c({
             {PARAM_THRESHOLD, 20},
             {PARAM_CORNER, TOP_LEFT},
-            {PARAM_BG_OPAQUE, true},
-            {PARAM_TEXT_COLOR, TEXT_YELLOW}
+            {PARAM_TEXT_COLOR, TEXT_YELLOW},
+            {PARAM_BG_ALPHA, 255}
         }, initialParamValues)
     {
         this->guiDescription = new filtergui_source_fps_estimate_c(this);

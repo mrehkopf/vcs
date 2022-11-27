@@ -28,7 +28,7 @@ void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
     const unsigned threshold = this->parameter(PARAM_THRESHOLD);
     const unsigned cornerId = this->parameter(PARAM_CORNER);
     const unsigned fgColorId = this->parameter(PARAM_TEXT_COLOR);
-    const std::vector<uint8_t> bgColor = (this->parameter(PARAM_BG_OPAQUE)? std::vector<uint8_t>{0, 0, 0} : std::vector<uint8_t>{});
+    const uint8_t bgAlpha = this->parameter(PARAM_BG_ALPHA);
 
     // Find out whether any pixel in the current frame differs from the previous frame
     // by more than the threshold.
@@ -89,7 +89,7 @@ void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
             }
         })();
 
-        FONT.render(outputString, {pixels, r}, x, y, TEXT_SIZE, fgColor, bgColor);
+        FONT.render(outputString, {pixels, r}, x, y, TEXT_SIZE, fgColor, {0, 0, 0, bgAlpha});
     }
 
     return;
