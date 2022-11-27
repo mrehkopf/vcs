@@ -30,9 +30,10 @@ public:
     };
 
     enum {
-        TEXT_YELLOW,
+        TEXT_GREEN,
         TEXT_PURPLE,
-        TEXT_BLACK,
+        TEXT_RED,
+        TEXT_YELLOW,
         TEXT_WHITE
     };
 

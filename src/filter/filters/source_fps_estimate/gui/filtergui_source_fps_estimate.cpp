@@ -34,7 +34,7 @@ filtergui_source_fps_estimate_c::filtergui_source_fps_estimate_c(abstract_filter
         auto *textColor = new filtergui_combobox_s;
         textColor->get_value = [=]{return filter->parameter(filter_frame_rate_c::PARAM_TEXT_COLOR);};
         textColor->set_value = [=](const double value){filter->set_parameter(filter_frame_rate_c::PARAM_TEXT_COLOR, value);};
-        textColor->items = {"Yellow", "Purple", "Black", "White"};
+        textColor->items = {"Green", "Purple", "Red", "Yellow", "White"};
 
         this->guiFields.push_back({"Color", {textColor}});
     }

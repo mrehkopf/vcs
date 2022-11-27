@@ -81,9 +81,10 @@ void filter_frame_rate_c::apply(u8 *const pixels, const resolution_s &r)
             switch (fgColorId)
             {
                 default:
-                case TEXT_YELLOW: return {0, 255, 255};
+                case TEXT_GREEN: return {0, 255, 0};
                 case TEXT_PURPLE: return {255, 0, 255};
-                case TEXT_BLACK: return {0, 0, 0};
+                case TEXT_RED: return {0, 0, 255};
+                case TEXT_YELLOW: return {0, 255, 255};
                 case TEXT_WHITE: return {255, 255, 255};
             }
         })();
