@@ -1,6 +1,7 @@
 /*
- * 2018 Tarpeeksi Hyvae Soft /
- * VCS main
+ * 2018-2022 Tarpeeksi Hyvae Soft
+ *
+ * Software: VCS
  *
  */
 
@@ -17,7 +18,6 @@
 #include "display/qt/windows/output_window.h"
 #include "common/command_line/command_line.h"
 #include "anti_tear/anti_tear.h"
-#include "common/propagate/vcs_event.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
@@ -29,10 +29,17 @@
 #include "common/memory/memory.h"
 #include "common/disk/disk.h"
 #include "common/timer/timer.h"
+#include "main.h"
 
-// Set to !0 when we want to exit the program.
+vcs_event_c<void> k_evEcoModeEnabled;
+vcs_event_c<void> k_evEcoModeDisabled;
+
+// Set to true when we want to break out of the program's main loop and terminate.
 /// TODO. Don't have this global.
-i32 PROGRAM_EXIT_REQUESTED = 0;
+bool PROGRAM_EXIT_REQUESTED = false;
+
+static bool IS_ECO_MODE_ENABLED = false;
+static auto ECO_REFERENCE_TIME = std::chrono::system_clock::now();
 
 static void cleanup_all(void)
 {
@@ -57,6 +64,11 @@ static void cleanup_all(void)
 
 static bool initialize_all(void)
 {
+    k_evEcoModeEnabled.listen([]
+    {
+        ECO_REFERENCE_TIME = std::chrono::system_clock::now();
+    });
+
     kc_evUnrecoverableError.listen([]
     {
         PROGRAM_EXIT_REQUESTED = true;
@@ -168,14 +180,10 @@ static capture_event_e process_next_capture_event(void)
         case capture_event_e::sleep:
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(4)); /// TODO. Is 4 the best wait-time?
-
             break;
         }
         case capture_event_e::none:
         {
-            /// TODO. Technically we might loop until we get an event other than
-            /// none, but for now we just move on.
-
             break;
         }
         default:
@@ -197,6 +205,72 @@ static void load_user_data(void)
     return;
 }
 
+void k_set_eco_mode_enabled(const bool isEnabled)
+{
+    if (isEnabled == IS_ECO_MODE_ENABLED)
+    {
+        return;
+    }
+
+    IS_ECO_MODE_ENABLED = isEnabled;
+    isEnabled? k_evEcoModeEnabled.fire() : k_evEcoModeDisabled.fire();
+
+    return;
+}
+
+bool k_is_eco_mode_enabled(void)
+{
+    return IS_ECO_MODE_ENABLED;
+}
+
+// VCS's eco mode. Tries to figure out the average latency between capture events and
+// put this main VCS thread to sleep for nearly that long between the capture events,
+// rather than having the CPU spin its wheels in a busy loop for that duration.
+//
+// There's basically two categories in VCS capture events: something happened, or nothing
+// happened. In a non-eco busy loop, the main VCS thread will keep polling the capture
+// thread for new events, mostly receiving the 'nothing happened' event until a new frame
+// comes in. This wastes CPU cycles but ensures low latency in reacting to capture events.
+// In eco mode, the idea is that capture events generally occur at predictable intervals,
+// so if one is happening e.g. every ~16 milliseconds (new captured frame at 60 Hz) and
+// it's taking VCS ~4 ms to process each event, we can reasonably assume that we can sleep
+// for at least 8 ms without missing the next one. So in that case we sleep for 8 ms (as
+// an example), then return to the busy loop to be ready to immediately receive the next
+// frame when it comes in.
+static void eco_sleep(const capture_event_e event)
+{
+    if (
+        !IS_ECO_MODE_ENABLED ||
+        (event == capture_event_e::none) ||
+        !kc_is_receiving_signal()
+    ){
+        return;
+    }
+
+    const unsigned maxTimeToSleepMs = 10;
+    static double timeToSleepMs = 0;
+    static unsigned numDroppedFrames = kc_get_missed_frames_count();
+
+    const unsigned numNewDroppedFrames = (kc_get_missed_frames_count() - numDroppedFrames);
+    numDroppedFrames += numNewDroppedFrames;
+
+    const double msSinceLastEvent = (0.85 * std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - ECO_REFERENCE_TIME).count());
+
+    // If we drop frames, we shorten the sleep duration, and otherwise we creep toward
+    // the maximum possible sleep time given the current rate of capture events.
+    timeToSleepMs = LERP((timeToSleepMs / (numNewDroppedFrames? 1.5 : 1)), msSinceLastEvent, 0.01);
+
+    // We have time to sleep only if we're not dropping frames.
+    if (!numNewDroppedFrames)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(std::min(maxTimeToSleepMs, unsigned(timeToSleepMs))));
+    }
+
+    ECO_REFERENCE_TIME = std::chrono::system_clock::now();
+
+    return;
+}
+
 int main(int argc, char *argv[])
 {
     printf("VCS %s\n---------+\n", PROGRAM_VERSION_STRING);
@@ -211,9 +285,7 @@ int main(int argc, char *argv[])
     // performance until the computer is rebooted.)
     std::set_terminate([]
     {
-        NBENE(("VCS has encountered a runtime error and has decided that it's best "
-               "to close down."));
-
+        NBENE(("VCS has encountered a run-time error and has decided that it's best to close down."));
         PROGRAM_EXIT_REQUESTED = true;
         cleanup_all();
     });
@@ -228,12 +300,14 @@ int main(int argc, char *argv[])
     INFO(("Initializing VCS."));
     if (!initialize_all())
     {
-        kd_show_headless_error_message("",
-                                       "VCS has to exit because it encountered one or more "
-                                       "unrecoverable errors while initializing itself. "
-                                       "More information will have been printed into "
-                                       "the console. If a console window was not already "
-                                       "open, run VCS again from the command line.");
+        kd_show_headless_error_message(
+            "",
+           "VCS has to exit because it encountered one or more "
+           "unrecoverable errors while initializing itself. "
+           "More information will have been printed into "
+           "the console. If a console window was not already "
+           "open, run VCS again from the command line."
+        );
 
         cleanup_all();
         return EXIT_FAILURE;
@@ -243,20 +317,19 @@ int main(int argc, char *argv[])
         load_user_data();
     }
 
-    INFO(("Entering the main loop."));
+    // Propagate the initial video mode to VCS.
+    if (kc_has_valid_signal())
     {
-        // Propagate the initial video mode to VCS.
-        if (kc_has_valid_signal())
-        {
-            kc_evNewProposedVideoMode.fire(kc_get_capture_video_mode());
-        }
+        kc_evNewProposedVideoMode.fire(kc_get_capture_video_mode());
+    }
 
-        while (!PROGRAM_EXIT_REQUESTED)
-        {
-            process_next_capture_event();
-            kt_update_timers();
-            kd_spin_event_loop();
-        }
+    INFO(("Entering the main loop."));
+    while (!PROGRAM_EXIT_REQUESTED)
+    {
+        const capture_event_e e = process_next_capture_event();
+        kt_update_timers();
+        kd_spin_event_loop();
+        eco_sleep(e);
     }
 
     cleanup_all();

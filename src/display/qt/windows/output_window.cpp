@@ -1,11 +1,11 @@
 /*
- * 2018 Tarpeeksi Hyvae Soft /
- * VCS main qt window
+ * 2018-2022 Tarpeeksi Hyvae Soft
  *
- * The program's main window. About half of what it does is display the filtered and
- * scaled captured frames, and the other half is relay messages from the non-ui parts
- * of the program to the control panel dialog, which needs to reflect changes in the
- * rest of the system (e.g. user-facing information about the current capture resolution).
+ * Software: VCS
+ *
+ *
+ * VCS's main window. Displays captured frames and provides the user access to child dialogs
+ * for adjusting various program settings.
  *
  */
 
@@ -52,6 +52,7 @@
 #include "common/globals.h"
 #include "record/record.h"
 #include "scaler/scaler.h"
+#include "main.h"
 #include "ui_output_window.h"
 
 // For an optional OpenGL render surface.
@@ -80,7 +81,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Restore persistent settings.
     {
-        this->appwideFontSize = kpers_value_of(INI_GROUP_OUTPUT, "font_size", this->appwideFontSize).toUInt();
+        this->appwideFontSize = kpers_value_of(INI_GROUP_APP, "font_size", this->appwideFontSize).toUInt();
+        k_set_eco_mode_enabled(kpers_value_of(INI_GROUP_APP, "eco_mode", k_is_eco_mode_enabled()).toBool());
     }
 
     // Set up the child dialogs.
@@ -567,7 +569,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 windowMenu->addMenu(fontSizeMenu);
             }
+        }
 
+        QAction *ecoMode = new QAction("Eco mode", this);
+        {
+            ecoMode->setCheckable(true);
+            ecoMode->setChecked(k_is_eco_mode_enabled());
+
+            connect(ecoMode, &QAction::toggled, this, [](bool checked)
+            {
+                k_set_eco_mode_enabled(checked);
+            });
         }
 
         connect(this->contextMenu->addAction("Save as image"), &QAction::triggered, this, [=]{this->save_screenshot();});
@@ -576,6 +588,8 @@ MainWindow::MainWindow(QWidget *parent) :
         this->contextMenu->addMenu(outputMenu);
         this->contextMenu->addSeparator();
         this->contextMenu->addMenu(windowMenu);
+        this->contextMenu->addSeparator();
+        this->contextMenu->addAction(ecoMode);
         this->contextMenu->addSeparator();
         connect(this->contextMenu->addAction("About VCS..."), &QAction::triggered, this, [=]{this->aboutDlg->open();});
 
@@ -629,6 +643,16 @@ MainWindow::MainWindow(QWidget *parent) :
                 CURRENT_OUTPUT_FPS = fps;
                 this->update_window_title();
             }
+        });
+
+        k_evEcoModeEnabled.listen([this]
+        {
+            this->update_window_title();
+        });
+
+        k_evEcoModeDisabled.listen([this]
+        {
+            this->update_window_title();
         });
 
         ks_evNewOutputResolution.listen([this]
@@ -745,7 +769,8 @@ MainWindow::~MainWindow()
     {
         kpers_set_value(INI_GROUP_OUTPUT, "renderer", (OGL_SURFACE? "OpenGL" : "Software"));
         kpers_set_value(INI_GROUP_OUTPUT, "default_scaler", QString::fromStdString(ks_default_scaler()->name));
-        kpers_set_value(INI_GROUP_OUTPUT, "font_size", QString::number(this->appwideFontSize));
+        kpers_set_value(INI_GROUP_APP, "font_size", QString::number(this->appwideFontSize));
+        kpers_set_value(INI_GROUP_APP, "eco_mode", k_is_eco_mode_enabled());
     }
 
     delete ui;
@@ -1125,9 +1150,10 @@ void MainWindow::update_window_title(void)
         }
         else
         {
-            title = QString("%1%2 - %3%4 \u00d7 %5 (%6 Hz) shown in %7 \u00d7 %8 (%9 FPS)")
+            title = QString("%1%2%3 - %4%5 \u00d7 %6 (%7 Hz) shown in %8 \u00d7 %9 (%10 FPS)")
                     .arg(this->areFramesBeingDropped? (missedFramesMarker + " ") : "")
                     .arg(PROGRAM_NAME)
+                    .arg(k_is_eco_mode_enabled()? " Eco" : "")
                     .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
                     .arg(inRes.w)
                     .arg(inRes.h)

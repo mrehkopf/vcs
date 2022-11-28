@@ -62,9 +62,7 @@ const u32 MAX_NUM_BYTES_IN_CAPTURED_FRAME = (MAX_CAPTURE_WIDTH * MAX_CAPTURE_HEI
 #define LERP(a, b, t) ((a) + ((t) * ((b) - (a))))
 
 extern unsigned int FRAME_SKIP;
-
-extern i32 PROGRAM_EXIT_REQUESTED;
-
+extern bool PROGRAM_EXIT_REQUESTED;
 extern unsigned int INPUT_CHANNEL_IDX;
 
 #endif
