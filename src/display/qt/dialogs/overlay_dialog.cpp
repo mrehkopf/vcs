@@ -50,7 +50,7 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
             this->liveCaptureStats.outputMode.refreshRate = fps;
         });
 
-        kc_evMissedFramesCount.listen([this](const unsigned &numMissed)
+        kc_evMissedFramesCount.listen([this](const unsigned numMissed)
         {
             this->liveCaptureStats.areFramesBeingDropped = numMissed;
         });
