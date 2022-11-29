@@ -40,7 +40,7 @@ public:
     void apply(image_s *const image) override;
     std::string uuid(void) const override { return "2448cf4a-112d-4d70-9fc1-b3e9176b6684"; }
     std::string name(void) const override { return "Crop"; }
-    filter_category_e category(void) const override { return filter_category_e::reduce; }
+    filter_category_e category(void) const override { return filter_category_e::distort; }
 
 private:
 };
