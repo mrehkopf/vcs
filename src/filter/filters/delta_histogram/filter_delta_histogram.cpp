@@ -1,69 +1,115 @@
 /*
- * 2021 Tarpeeksi Hyvae Soft
+ * 2021-2022 Tarpeeksi Hyvae Soft
  *
  * Software: VCS
  *
  */
 
+#include <cmath>
+#include "filter/filters/output_scaler/filter_output_scaler.h"
 #include "filter/filters/delta_histogram/filter_delta_histogram.h"
-#include <opencv2/imgproc/imgproc.hpp>
 
-// Draws a histogram by color value of the number of pixels changed between frames.
+// Draws a histogram indicating the amount by which pixel values differ between two consecutive
+// frames. A single tall bar at the middle of the graph means that pixels don't differ at all,
+// while spread toward the edges of the graph means pixels differ - the more the closer the
+// bars get to an edge of the graph.
 void filter_delta_histogram_c::apply(image_s *const image)
 {
     this->assert_input_validity(image);
 
-    static heap_mem<u8> prevFramePixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Delta histogram buffer");
+    static const unsigned numBins = 511; // Representing the range [-255,255].
+    static const unsigned graphHeight = 256;
+    static heap_mem<uint8_t> prevFramePixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Delta histogram comparison buffer");
+    static heap_mem<uint8_t> scaledGraph(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Delta histogram scaled graph buffer");
+    static heap_mem<uint8_t> graph((numBins * graphHeight * 4), "Delta histogram graph buffer");
+    static unsigned redBin[numBins];
+    static unsigned greenBin[numBins];
+    static unsigned blueBin[numBins];
 
-    const unsigned numBins = 512;
     const unsigned numColorChannels = (image->resolution.bpp / 8);
 
-    // For each RGB channel, count into bins how many times a particular delta
-    // between pixels in the previous frame and this one occurred.
-    uint bl[numBins] = {0};
-    uint gr[numBins] = {0};
-    uint re[numBins] = {0};
-    for (uint i = 0; i < (image->resolution.w * image->resolution.h); i++)
+    // For each RGB channel in a given pixel coordinate, count how many times a particular
+    // delta value occurred.
     {
-        const uint idx = i * numColorChannels;
-        const uint deltaBlue = (image->pixels[idx + 0] - prevFramePixels[idx + 0]) + 255;
-        const uint deltaGreen = (image->pixels[idx + 1] - prevFramePixels[idx + 1]) + 255;
-        const uint deltaRed = (image->pixels[idx + 2] - prevFramePixels[idx + 2]) + 255;
+        for (unsigned *const binToReset: {redBin, greenBin, blueBin})
+        {
+            std::memset(binToReset, 0, (numBins * sizeof(binToReset[0])));
+        }
 
-        k_assert(deltaBlue < numBins, "");
-        k_assert(deltaGreen < numBins, "");
-        k_assert(deltaRed < numBins, "");
+        for (unsigned i = 0; i < (image->resolution.w * image->resolution.h * numColorChannels); i += numColorChannels)
+        {
+            const unsigned deltaBlue  = ((image->pixels[i+0] + 255) - prevFramePixels[i+0]);
+            const unsigned deltaGreen = ((image->pixels[i+1] + 255) - prevFramePixels[i+1]);
+            const unsigned deltaRed   = ((image->pixels[i+2] + 255) - prevFramePixels[i+2]);
 
-        bl[deltaBlue]++;
-        gr[deltaGreen]++;
-        re[deltaRed]++;
+            blueBin[deltaBlue]++;
+            greenBin[deltaGreen]++;
+            redBin[deltaRed]++;
+        }
+
+        std::memcpy(
+            prevFramePixels.data(),
+            image->pixels,
+            prevFramePixels.size_check(image->resolution.w * image->resolution.h * numColorChannels)
+        );
     }
 
-    // Draw the bins into the frame as a line graph.
-    cv::Mat output = cv::Mat(image->resolution.h, image->resolution.w, CV_8UC4, image->pixels);
-    for (uint i = 1; i < numBins; i++)
+    // Draw the bins into the histogram graph.
     {
-        const uint maxval = image->resolution.w * image->resolution.h;
-        real xskip = (image->resolution.w / (real)numBins);
+        memset(graph.data(), 0, graph.size());
 
-        uint x2 = xskip * i;
-        uint x1 = x2-xskip;
+        for (unsigned x = 0; x < numBins; x++)
+        {
+            const double maxBinHeight = (image->resolution.w * image->resolution.h);
+            static const auto draw_bin = [&](const unsigned *const srcBin, std::array<uint8_t, 3> color)
+            {
+                const unsigned binHeight = std::round((srcBin[x] / maxBinHeight) * (graphHeight - 1));
+                for (unsigned y = 0; y < binHeight; y++)
+                {
+                    const unsigned idx = ((x + (y + (graphHeight / 2) - (binHeight / 2)) * numBins) * numColorChannels);
+                    graph[idx+0] = color[0];
+                    graph[idx+1] = color[1];
+                    graph[idx+2] = color[2];
+                    graph[idx+3] = 255;
+                }
+            };
 
-        const uint y1b = image->resolution.h - ((image->resolution.h / 256.0) * ((256.0 / maxval) * bl[i-1]));
-        const uint y2b = image->resolution.h - ((image->resolution.h / 256.0) * ((256.0 / maxval) * bl[i]));
-
-        const uint y1g = image->resolution.h - ((image->resolution.h / 256.0) * ((256.0 / maxval) * gr[i-1]));
-        const uint y2g = image->resolution.h - ((image->resolution.h / 256.0) * ((256.0 / maxval) * gr[i]));
-
-        const uint y1r = image->resolution.h - ((image->resolution.h / 256.0) * ((256.0 / maxval) * re[i-1]));
-        const uint y2r = image->resolution.h - ((image->resolution.h / 256.0) * ((256.0 / maxval) * re[i]));
-
-        cv::line(output, cv::Point(x1, y1b), cv::Point(x2, y2b), cv::Scalar(255, 0, 0), 2, cv::LINE_AA);
-        cv::line(output, cv::Point(x1, y1g), cv::Point(x2, y2g), cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
-        cv::line(output, cv::Point(x1, y1r), cv::Point(x2, y2r), cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
+            draw_bin(blueBin, {255, 150, 0});
+            draw_bin(greenBin, {0, 255, 0});
+            draw_bin(redBin, {0, 0, 255});
+        }
     }
 
-    memcpy(prevFramePixels.data(), image->pixels, prevFramePixels.size_check(image->resolution.w * image->resolution.h * numColorChannels));
+    // Copy the histogram graph into the output image.
+    {
+        const image_s graphImage = image_s(graph.data(), {numBins, graphHeight, 32});
+        image_s scaledGraphImage = image_s(scaledGraph.data(), image->resolution);
+
+        filter_output_scaler_c::nearest(graphImage, &scaledGraphImage);
+
+        for (unsigned y = 0; y < image->resolution.h; y++)
+        {
+            for (unsigned x = 0; x < image->resolution.w; x++)
+            {
+                const unsigned idx = ((x + y * image->resolution.w) * 4);
+
+                // Foreground.
+                if (scaledGraph[idx+3])
+                {
+                    image->pixels[idx+0] = scaledGraph[idx+0];
+                    image->pixels[idx+1] = scaledGraph[idx+1];
+                    image->pixels[idx+2] = scaledGraph[idx+2];
+                }
+                // Background.
+                else
+                {
+                    image->pixels[idx+0] = LERP(0, image->pixels[idx+0], 0.25);
+                    image->pixels[idx+1] = LERP(0, image->pixels[idx+1], 0.25);
+                    image->pixels[idx+2] = LERP(0, image->pixels[idx+2], 0.25);
+                }
+            }
+        }
+    }
 
     return;
 }
