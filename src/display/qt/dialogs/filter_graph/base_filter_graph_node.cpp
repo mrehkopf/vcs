@@ -49,14 +49,13 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
 {
     (void)widget;
 
-    QFont bodyFont = painter->font();
-    QFont titleFont = painter->font();
     const unsigned borderRadius = 3;
+    const unsigned titleBarHeight = 24;
+    const QRect titleBarRect = QRect(4, 4, (this->width - 8), (titleBarHeight + 4));
+    const QRect titleBarTextRect = QRect(12, 4, (this->width - 18), (titleBarHeight + 4));
 
     // Draw the node's body.
     {
-        painter->setFont(bodyFont);
-
         // Background.
         {
             const bool isSelected = (option->state & QStyle::State_Selected);
@@ -69,7 +68,7 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
             // Title bar's background.
             painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
             painter->setBrush(QBrush(QColor(this->current_background_color()), (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
-            painter->drawRoundedRect(QRect(4, 4, (this->width - 8), 28), borderRadius, borderRadius);
+            painter->drawRoundedRect(titleBarRect, borderRadius, borderRadius);
         }
 
         // Connection points.
@@ -83,12 +82,9 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
     // Draw the node's title.
     {
-        painter->setFont(titleFont);
-
-        const QString elidedTitle = QFontMetrics(titleFont).elidedText(this->title, Qt::ElideRight, (this->width - 42));
-
+        const QString elidedTitle = QFontMetrics(painter->font()).elidedText(this->title, Qt::ElideRight, titleBarTextRect.width());
         painter->setPen(this->is_enabled()? "white" : "lightgray");
-        painter->drawText(12, 23, elidedTitle);
+        painter->drawText(titleBarTextRect, (Qt::AlignLeft | Qt::AlignVCenter), elidedTitle);
     }
 
     return;
