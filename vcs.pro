@@ -221,6 +221,7 @@ HEADERS += \
     src/filter/filters/render_text/gui/filtergui_render_text.h \
     src/filter/filters/unsharp_mask/filter_unsharp_mask.h \
     src/filter/filters/unsharp_mask/gui/filtergui_unsharp_mask.h \
+    src/main.h \
     src/scaler/scaler.h \
     src/capture/capture.h \
     src/display/display.h \
