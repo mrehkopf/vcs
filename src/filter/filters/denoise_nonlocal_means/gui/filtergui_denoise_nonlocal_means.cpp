@@ -41,7 +41,7 @@ filtergui_denoise_nonlocal_means_c::filtergui_denoise_nonlocal_means_c(abstract_
         templateWindow->minValue = 0;
         templateWindow->maxValue = 255;
 
-        this->guiFields.push_back({"Template window", {templateWindow}});
+        this->guiFields.push_back({"Template wnd.", {templateWindow}});
     }
 
     {
@@ -52,7 +52,7 @@ filtergui_denoise_nonlocal_means_c::filtergui_denoise_nonlocal_means_c(abstract_
         searchWindow->minValue = 0;
         searchWindow->maxValue = 255;
 
-        this->guiFields.push_back({"Search window", {searchWindow}});
+        this->guiFields.push_back({"Search wnd.", {searchWindow}});
     }
     
     return;

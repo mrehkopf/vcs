@@ -30,7 +30,7 @@ filtergui_color_depth_c::filtergui_color_depth_c(abstract_filter_c *const filter
         blue->minValue = 1;
         blue->maxValue = 8;
 
-        this->guiFields.push_back({"RGB", {red, green, blue}});
+        this->guiFields.push_back({"", {red, green, blue}});
     }
 
     return;
