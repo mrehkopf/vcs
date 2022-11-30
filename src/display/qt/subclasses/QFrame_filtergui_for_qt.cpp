@@ -134,9 +134,13 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                         auto *const c = ((filtergui_spinbox_s*)component);
                         auto *const spinbox = new QSpinBox(this);
 
-                        spinbox->setButtonSymbols(QAbstractSpinBox::NoButtons);
                         spinbox->setRange(c->minValue, c->maxValue);
                         spinbox->setValue(c->get_value());
+                        spinbox->setButtonSymbols(
+                            (c->alignment == filtergui_alignment_e::left)
+                            ? QAbstractSpinBox::UpDownArrows
+                            : QAbstractSpinBox::NoButtons
+                        );
 
                         switch (c->alignment)
                         {
@@ -161,11 +165,15 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                         auto *const c = ((filtergui_doublespinbox_s*)component);
                         auto *const doublespinbox = new QDoubleSpinBox(this);
 
-                        doublespinbox->setButtonSymbols(QAbstractSpinBox::NoButtons);
                         doublespinbox->setRange(c->minValue, c->maxValue);
                         doublespinbox->setDecimals(c->numDecimals);
                         doublespinbox->setValue(c->get_value());
                         doublespinbox->setSingleStep(c->stepSize);
+                        doublespinbox->setButtonSymbols(
+                            (c->alignment == filtergui_alignment_e::left)
+                            ? QAbstractSpinBox::UpDownArrows
+                            : QAbstractSpinBox::NoButtons
+                        );
 
                         switch (c->alignment)
                         {
