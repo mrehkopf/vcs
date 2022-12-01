@@ -239,31 +239,40 @@ bool k_is_eco_mode_enabled(void)
 // frame when it comes in.
 static void eco_sleep(const capture_event_e event)
 {
-    if (
-        !IS_ECO_MODE_ENABLED ||
-        (event == capture_event_e::none) ||
-        !kc_is_receiving_signal()
-    ){
+    if (!IS_ECO_MODE_ENABLED)
+    {
         return;
     }
 
     const unsigned maxTimeToSleepMs = 10;
-    static double timeToSleepMs = 0;
-    static unsigned numDroppedFrames = kc_get_missed_frames_count();
 
-    const unsigned numNewDroppedFrames = (kc_get_missed_frames_count() - numDroppedFrames);
-    numDroppedFrames += numNewDroppedFrames;
-
-    const double msSinceLastEvent = (0.85 * std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - ECO_REFERENCE_TIME).count());
-
-    // If we drop frames, we shorten the sleep duration, and otherwise we creep toward
-    // the maximum possible sleep time given the current rate of capture events.
-    timeToSleepMs = LERP((timeToSleepMs / (numNewDroppedFrames? 1.5 : 1)), msSinceLastEvent, 0.01);
-
-    // We have time to sleep only if we're not dropping frames.
-    if (!numNewDroppedFrames)
+    if (!kc_is_receiving_signal())
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(std::min(maxTimeToSleepMs, unsigned(timeToSleepMs))));
+        std::this_thread::sleep_for(std::chrono::milliseconds(maxTimeToSleepMs));
+        return;
+    }
+    else if (event == capture_event_e::none)
+    {
+        return;
+    }
+    else
+    {
+        static double timeToSleepMs = 0;
+        static unsigned numDroppedFrames = kc_get_missed_frames_count();
+        const double msSinceLastEvent = (0.85 * std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - ECO_REFERENCE_TIME).count());
+
+        const unsigned numNewDroppedFrames = (kc_get_missed_frames_count() - numDroppedFrames);
+        numDroppedFrames += numNewDroppedFrames;
+
+        // If we drop frames, we shorten the sleep duration, and otherwise we creep toward
+        // the maximum possible sleep time given the current rate of capture events.
+        timeToSleepMs = LERP((timeToSleepMs / (numNewDroppedFrames? 1.5 : 1)), msSinceLastEvent, 0.01);
+
+        // We have time to sleep only if we're not dropping frames.
+        if (!numNewDroppedFrames)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(std::min(maxTimeToSleepMs, unsigned(timeToSleepMs))));
+        }
     }
 
     ECO_REFERENCE_TIME = std::chrono::system_clock::now();
