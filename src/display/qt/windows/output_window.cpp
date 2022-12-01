@@ -631,6 +631,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Listen for app events.
     {
+        kd_evDirty.listen([this]
+        {
+            this->redraw();
+        });
+
         ks_evNewScaledImage.listen([this]
         {
             this->redraw();
