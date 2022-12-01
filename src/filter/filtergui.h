@@ -75,6 +75,8 @@ struct filtergui_spinbox_s : public filtergui_component_s
 
     int maxValue = 0;
     int minValue = 0;
+    std::string prefix = "";
+    std::string suffix = "";
     filtergui_alignment_e alignment = filtergui_alignment_e::left;
 };
 
@@ -86,6 +88,8 @@ struct filtergui_doublespinbox_s : public filtergui_component_s
     double minValue = 0;
     int numDecimals = 1;
     double stepSize = 1;
+    std::string prefix = "";
+    std::string suffix = "";
     filtergui_alignment_e alignment = filtergui_alignment_e::left;
 };
 
