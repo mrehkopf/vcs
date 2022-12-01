@@ -37,22 +37,19 @@ filtergui_render_text_c::filtergui_render_text_c(abstract_filter_c *const filter
     }
 
     {
-        auto scale = new filtergui_spinbox_s;
-        scale->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_SCALE);};
-        scale->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_SCALE, value);};
-        scale->minValue = 1;
-        scale->maxValue = 20;
-
-        this->guiFields.push_back({"Scale", {scale}});
-    }
-
-    {
         auto font = new filtergui_combobox_s;
         font->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_FONT);};
         font->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_FONT, value);};
         font->items = {"Minimalist", "Retro Serif", "Retro Sans Serif"};
 
-        this->guiFields.push_back({"Font", {font}});
+        auto scale = new filtergui_spinbox_s;
+        scale->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_SCALE);};
+        scale->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_SCALE, value);};
+        scale->minValue = 1;
+        scale->maxValue = 20;
+        scale->suffix = "\u00d7";
+
+        this->guiFields.push_back({"Font", {font, scale}});
     }
 
     {
