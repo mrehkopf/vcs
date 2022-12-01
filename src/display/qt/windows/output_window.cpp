@@ -1109,23 +1109,24 @@ void MainWindow::set_keyboard_shortcuts(void)
 
 void MainWindow::update_window_title(void)
 {
-    QString title = PROGRAM_NAME;
+    QString programName = QString("%1%2").arg(PROGRAM_NAME).arg(k_is_eco_mode_enabled()? " Eco" : "");
+    QString title = programName;
 
     if (PROGRAM_EXIT_REQUESTED)
     {
-        title = QString("%1 - Closing...").arg(PROGRAM_NAME);
+        title = QString("%1 - Closing...").arg(programName);
     }
     else if (!kc_has_valid_device())
     {
-        title = QString("%1 - Invalid capture channel").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
+        title = QString("%1 - Invalid capture channel").arg(this->windowTitleOverride.isEmpty()? programName : this->windowTitleOverride);
     }
     else if (!kc_has_valid_signal())
     {
-        title = QString("%1 - Signal out of range").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
+        title = QString("%1 - Signal out of range").arg(this->windowTitleOverride.isEmpty()? programName : this->windowTitleOverride);
     }
     else if (!kc_is_receiving_signal())
     {
-        title = QString("%1 - No signal").arg(this->windowTitleOverride.isEmpty()? PROGRAM_NAME : this->windowTitleOverride);
+        title = QString("%1 - No signal").arg(this->windowTitleOverride.isEmpty()? programName : this->windowTitleOverride);
     }
     else
     {
@@ -1150,10 +1151,9 @@ void MainWindow::update_window_title(void)
         }
         else
         {
-            title = QString("%1%2%3 - %4%5 \u00d7 %6 (%7 Hz) shown in %8 \u00d7 %9 (%10 FPS)")
+            title = QString("%1%2 - %3%4 \u00d7 %5 (%6 Hz) shown in %7 \u00d7 %8 (%9 FPS)")
                     .arg(this->areFramesBeingDropped? (missedFramesMarker + " ") : "")
-                    .arg(PROGRAM_NAME)
-                    .arg(k_is_eco_mode_enabled()? " Eco" : "")
+                    .arg(programName)
                     .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
                     .arg(inRes.w)
                     .arg(inRes.h)
