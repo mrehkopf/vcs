@@ -262,8 +262,7 @@ static void convert_frame_to_bgra(const captured_frame_s &frame)
 }
 
 // Takes the given image and scales it according to the scaler's current internal
-// resolution settings. The scaled image is placed in the scaler's internal buffer,
-// not in the source buffer.
+// resolution settings. The scaled image is placed in the scaler's internal buffer.
 //
 void ks_scale_frame(const captured_frame_s &frame)
 {
@@ -361,7 +360,7 @@ void ks_scale_frame(const captured_frame_s &frame)
 
         image_s dstImage = {pixelData, frameRes};
         customScaler->apply(&dstImage);
-        CUSTOM_SCALER_FILTER_RESOLUTION = dynamic_cast<filter_output_scaler_c*>(customScaler)->output_resolution();
+        outputRes = CUSTOM_SCALER_FILTER_RESOLUTION = dynamic_cast<filter_output_scaler_c*>(customScaler)->output_resolution();
     }
     else
     {
@@ -387,11 +386,12 @@ void ks_scale_frame(const captured_frame_s &frame)
         }
     }
 
-    if ((FRAME_BUFFER.r.w != outputRes.w) ||
-        (FRAME_BUFFER.r.h != outputRes.h))
+    const bool didResolutionChange = ((FRAME_BUFFER.r.w != outputRes.w) || (FRAME_BUFFER.r.h != outputRes.h));
+    
+    if (didResolutionChange)
     {
-        ks_evNewOutputResolution.fire(outputRes);
         FRAME_BUFFER.r = outputRes;
+        ks_evNewOutputResolution.fire(outputRes);
     }
 
     ks_evNewScaledImage.fire(ks_frame_buffer());
