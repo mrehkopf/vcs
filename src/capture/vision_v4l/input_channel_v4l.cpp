@@ -114,7 +114,7 @@ resolution_s input_channel_v4l_c::source_resolution(void)
 
 bool input_channel_v4l_c::capture_thread__has_signal(void)
 {
-    /// FIXME: We're only assuming this is the correct ID for the "signal_type" control.
+    /// FIXME: We're only assuming this is the correct ID for the V4L "signal_type" control.
     static const unsigned v4lSignalTypeControlId = 0x8000013;
 
     /// FIXME: We're only assuming this value of the "signal_type" control means "no signal".
@@ -128,7 +128,7 @@ bool input_channel_v4l_c::capture_thread__has_signal(void)
         const bool hasNoSignal = (v4lc.value == noSignalControlValue);
         const bool hasStatusChanged = (hasNoSignal != this->captureStatus.noSignal);
 
-        this->captureStatus.noSignal = (v4lc.value == noSignalControlValue);
+        this->captureStatus.noSignal = hasNoSignal;
 
         if (hasStatusChanged)
         {
@@ -341,6 +341,12 @@ int input_channel_v4l_c::capture_thread(void)
 
     while (this->run)
     {
+        if (!capture_thread__has_signal())
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            continue;
+        }
+
         if (capture_thread__has_source_mode_changed())
         {
             if (!this->captureStatus.invalidSignal)
@@ -357,12 +363,6 @@ int input_channel_v4l_c::capture_thread(void)
             {
                 continue;
             }
-        }
-
-        if (!capture_thread__has_signal())
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            continue;
         }
 
         if (!capture_thread__get_next_frame())
