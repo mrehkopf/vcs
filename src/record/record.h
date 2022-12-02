@@ -12,7 +12,7 @@
 #include "common/types.h"
 #include "common/propagate/vcs_event.h"
 
-struct captured_frame_s;
+struct image_s;
 
 extern vcs_event_c<void> krecord_evRecordingStarted;
 extern vcs_event_c<void> krecord_evRecordingEnded;
@@ -40,7 +40,7 @@ std::string krecord_video_filename(void);
 
 bool krecord_is_recording(void);
 
-void krecord_record_frame(const captured_frame_s &frame);
+void krecord_record_frame(const image_s &image);
 
 void krecord_stop_recording(void);
 

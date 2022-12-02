@@ -46,9 +46,9 @@
  *      });
  * 
  *      // Executed each time the scaler subsystem produces a new scaled image.
- *      ks_evNewScaledImage.listen([](const captured_frame_s &frame)
+ *      ks_evNewScaledImage.listen([](const image_s &image)
  *      {
- *          printf("A frame was scaled to %lu x %lu.\n", frame.r.w, frame.r.h);
+ *          printf("A frame was scaled to %lu x %lu.\n", image.resolution.w, image.resolution.h);
  *      });
  *      @endcode
  *
@@ -66,6 +66,7 @@
 
 class abstract_filter_c;
 struct captured_frame_s;
+struct image_s;
 
 /*!
  * Callable inside a filter's apply() function to inform the user of an error
@@ -106,16 +107,16 @@ extern vcs_event_c<const resolution_s&> ks_evNewOutputResolution;
  * An event fired when the scaler subsystem has finished scaling a frame.
  * 
  * @code
- * ks_evNewScaledImage.listen([](const captured_frame_s &scaledImage)
+ * ks_evNewScaledImage.listen([](const image_s &scaledImage)
  * {
- *     printf("Scaled a frame to %lu x %lu.\n", scaledImage.r.w, scaledImage.r.h);
+ *     printf("Scaled a frame to %lu x %lu.\n", scaledImage.resolution.w, scaledImage.resolution.h);
  * });
  * @endcode
  * 
  * @see
  * ks_scale_frame()
  */
-extern vcs_event_c<const captured_frame_s&> ks_evNewScaledImage;
+extern vcs_event_c<const image_s&> ks_evNewScaledImage;
 
 /*!
  * An event fired once per second, giving the number of input frames the scaler
@@ -211,9 +212,9 @@ void ks_release_scaler(void);
  * });
  * 
  * // Receive scaled frames from the scaler.
- * ks_evNewScaledImage.listen([](const captured_frame_s &frame)
+ * ks_evNewScaledImage.listen([](const image_s &image)
  * {
- *     printf("A frame was scaled to %lu x %lu.\n", frame.r.w, frame.r.h);
+ *     printf("A frame was scaled to %lu x %lu.\n", image.resolution.w, image.resolution.h);
  * });
  * @endcode
  * 
@@ -311,7 +312,7 @@ void ks_indicate_invalid_signal(void);
  * @see
  * ks_scale_frame(), ks_indicate_no_signal(), ks_indicate_invalid_signal()
  */
-captured_frame_s& ks_frame_buffer(void);
+image_s ks_frame_buffer(void);
 
 /*!
  * Returns a list of the names of the image scalers available in this build of VCS.

@@ -12,6 +12,7 @@
 #include <QMatrix4x4>
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
 #include "capture/capture.h"
+#include "display/display.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
 
@@ -76,13 +77,23 @@ void OGLWidget::resizeGL(int w, int h)
 void OGLWidget::paintGL()
 {
     // Draw the output frame.
-    const captured_frame_s &frame = ks_frame_buffer();
-    if (!frame.pixels.is_null())
+    const image_s outputImage = ks_frame_buffer();
+    if (outputImage.pixels)
     {
         this->glDisable(GL_BLEND);
 
         this->glBindTexture(GL_TEXTURE_2D, FRAMEBUFFER_TEXTURE);
-        this->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, frame.r.w, frame.r.h, 0, GL_BGRA, GL_UNSIGNED_BYTE, frame.pixels.data());
+        this->glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            GL_RGBA8,
+            outputImage.resolution.w,
+            outputImage.resolution.h,
+            0,
+            GL_BGRA,
+            GL_UNSIGNED_BYTE,
+            outputImage.pixels
+        );
 
         glBegin(GL_TRIANGLES);
             glTexCoord2i(0, 0); glVertex2i(0,             0);
@@ -96,13 +107,23 @@ void OGLWidget::paintGL()
     }
 
     // Draw the overlay, if any.
-    const QImage image = OVERLAY_AS_QIMAGE_F();
-    if (!image.isNull())
+    const QImage overlay = OVERLAY_AS_QIMAGE_F();
+    if (!overlay.isNull())
     {
         this->glEnable(GL_BLEND);
 
         this->glBindTexture(GL_TEXTURE_2D, OVERLAY_TEXTURE);
-        this->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width(), image.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, image.constBits());
+        this->glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            GL_RGBA8,
+            overlay.width(),
+            overlay.height(),
+            0,
+            GL_BGRA,
+            GL_UNSIGNED_BYTE,
+            overlay.constBits()
+        );
 
         glBegin(GL_TRIANGLES);
             glTexCoord2i(0, 0); glVertex2i(0,             0);

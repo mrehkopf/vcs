@@ -118,9 +118,9 @@ struct video_mode_s;
  * });
  * 
  * // Receive a notification whenever a frame has been scaled.
- * ks_evNewScaledImage.listen([](const captured_frame_s &frame)
+ * ks_evNewScaledImage.listen([](const image_s &image)
  * {
- *     printf("Scaled to %lu x %lu.\n", frame.r.w, frame.r.h);
+ *     printf("Scaled to %lu x %lu.\n", image.resolution.w, image.resolution.h);
  * });
  * @endcode
  * 
@@ -368,7 +368,6 @@ enum class capture_event_e
 struct video_mode_s
 {
     resolution_s resolution;
-
     refresh_rate_s refreshRate;
 };
 

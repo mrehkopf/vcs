@@ -45,11 +45,11 @@ void krecord_initialize(void)
 {
     RECORDING_BUFFER.initialize(RECORDING_BUFFER_CAPACITY);
 
-    ks_evNewScaledImage.listen([](const captured_frame_s &frame)
+    ks_evNewScaledImage.listen([](const image_s &image)
     {
         if (krecord_is_recording())
         {
-            krecord_record_frame(frame);
+            krecord_record_frame(image);
         }
     });
 
@@ -263,14 +263,8 @@ resolution_s krecord_video_resolution(void)
 }
 
 // Encode the given frame into video.
-void krecord_record_frame(const captured_frame_s &frame)
+void krecord_record_frame(const image_s &image)
 {
-    if (frame.pixels.is_null())
-    {
-        DEBUG(("Attempted to record a null frame into the video. Ignoring it."));
-        return;
-    }
-
     k_assert(VIDEO_WRITER.isOpened(),
              "Attempted to record a video frame before video recording had been initialized.");
 
@@ -290,8 +284,8 @@ void krecord_record_frame(const captured_frame_s &frame)
         return;
     }
 
-    k_assert((frame.r.w == RECORDING.resolution.w &&
-              frame.r.h == RECORDING.resolution.h), "Incompatible frame for recording: mismatched resolution.");
+    k_assert((image.resolution.w == RECORDING.resolution.w &&
+              image.resolution.h == RECORDING.resolution.h), "Incompatible frame for recording: mismatched resolution.");
 
     // Queue the frame to be encoded by the encoder thread.
     {
@@ -321,8 +315,8 @@ void krecord_record_frame(const captured_frame_s &frame)
                 /// place for this before we allow the recording to start, but you
                 /// never know...
                 
-                cv::Mat originalFrame(frame.r.h, frame.r.w, CV_8UC4, (u8*)frame.pixels.data());
-                cv::Mat convertedFrame = cv::Mat(frame.r.h, frame.r.w, CV_8UC3, bufferPtr);
+                cv::Mat originalFrame(image.resolution.h, image.resolution.w, CV_8UC4, image.pixels);
+                cv::Mat convertedFrame = cv::Mat(image.resolution.h, image.resolution.w, CV_8UC3, bufferPtr);
                 cv::cvtColor(originalFrame, convertedFrame, cv::COLOR_BGRA2BGR);
             }
         }

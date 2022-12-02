@@ -25,7 +25,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 vcs_event_c<const resolution_s&> ks_evNewOutputResolution;
-vcs_event_c<const captured_frame_s&> ks_evNewScaledImage;
+vcs_event_c<const image_s&> ks_evNewScaledImage;
 vcs_event_c<unsigned> ks_evFramesPerSecond;
 vcs_event_c<void> ks_evCustomScalerEnabled;
 vcs_event_c<void> ks_evCustomScalerDisabled;
@@ -44,10 +44,8 @@ static const std::vector<image_scaler_s> KNOWN_SCALERS =
 static const image_scaler_s *DEFAULT_SCALER = nullptr;
 
 // The frame buffer where scaled frames are to be placed.
-static captured_frame_s FRAME_BUFFER;
-
-// Scratch image buffers.
-static heap_mem<u8> COLORCONV_BUFFER;
+static uint8_t *FRAME_BUFFER_PIXELS = nullptr;
+static resolution_s FRAME_BUFFER_RESOLUTION = {0};
 
  // The frame buffer's target bit depth.
 static const u32 OUTPUT_BIT_DEPTH = 32;
@@ -160,11 +158,8 @@ void ks_initialize_scaler(void)
 
     cv::redirectError(cv_error_handler);
 
-    COLORCONV_BUFFER.allocate(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Scaler color conversion buffer");
-
-    FRAME_BUFFER.pixels.allocate(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler output buffer");
-    FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
-    FRAME_BUFFER.r = {0, 0, 0};
+    FRAME_BUFFER_PIXELS = (uint8_t*)kmem_allocate(MAX_NUM_BYTES_IN_OUTPUT_FRAME, "Scaler output buffer");
+    FRAME_BUFFER_RESOLUTION = {0, 0, OUTPUT_BIT_DEPTH};
 
     ks_set_default_scaler(KNOWN_SCALERS.at(0).name);
 
@@ -204,8 +199,7 @@ void ks_release_scaler(void)
 {
     INFO(("Releasing the scaler."));
 
-    COLORCONV_BUFFER.release();
-    FRAME_BUFFER.pixels.release();
+    kmem_release((void**)&FRAME_BUFFER_PIXELS);
 
     return;
 }
@@ -213,50 +207,45 @@ void ks_release_scaler(void)
 // Converts the given non-BGRA frame into the BGRA format.
 static void convert_frame_to_bgra(const captured_frame_s &frame)
 {
-    // RGB888 frames are already stored in BGRA format.
+    // RGB/888 frames are already in BGRA.
     if (frame.pixelFormat == capture_pixel_format_e::rgb_888)
     {
         return;
     }
 
-    u32 conversionType = 0;
-    const u32 numColorChan = (frame.r.bpp / 8);
+    k_assert_optional(
+        FRAME_BUFFER_PIXELS,
+        "Was asked to convert a frame's color depth, but the scratch buffer was uninitialized."
+    );
 
-    cv::Mat input = cv::Mat(frame.r.h, frame.r.w, CV_MAKETYPE(CV_8U,numColorChan), frame.pixels.data());
-    cv::Mat colorConv = cv::Mat(frame.r.h, frame.r.w, CV_8UC4, COLORCONV_BUFFER.data());
-
-    k_assert(!COLORCONV_BUFFER.is_null(),
-             "Was asked to convert a frame's color depth, but the color conversion buffer "
-             "was null.");
-
-    if (frame.pixelFormat == capture_pixel_format_e::rgb_565)
+    cv::Mat src = cv::Mat(frame.r.h, frame.r.w, CV_MAKETYPE(CV_8U,(frame.r.bpp / 8)), frame.pixels.data());
+    cv::Mat scratchBuffer = cv::Mat(frame.r.h, frame.r.w, CV_8UC4, FRAME_BUFFER_PIXELS);
+    const unsigned conversionType = ([&frame]
     {
-        conversionType = cv::COLOR_BGR5652BGRA;
-    }
-    else if (frame.pixelFormat == capture_pixel_format_e::rgb_555)
-    {
-        conversionType = cv::COLOR_BGR5552BGRA;
-    }
-    else // Unknown type, try to guesstimate it.
-    {
-        NBENE(("Detected an unknown output pixel format (depth: %u) while converting a frame to BGRA. Attempting to guess its type...",
-               frame.r.bpp));
+        switch (frame.pixelFormat)
+        {
+            case capture_pixel_format_e::rgb_565: return cv::COLOR_BGR5652BGRA;
+            case capture_pixel_format_e::rgb_555: return cv::COLOR_BGR5552BGRA;
+            default:
+            {
+                NBENE((
+                    "Detected an unknown output pixel format (depth: %u) while converting "
+                    "a frame to BGRA. Will attempt to guess its type.",
+                    frame.r.bpp
+                ));
 
-        if (frame.r.bpp == 32)
-        {
-            conversionType = cv::COLOR_RGBA2BGRA;
+                switch (frame.r.bpp)
+                {
+                    case 32: return cv::COLOR_RGBA2BGRA;
+                    case 24: return cv::COLOR_BGR2BGRA;
+                    default: return cv::COLOR_BGR5652BGRA;
+                }
+            }
         }
-        if (frame.r.bpp == 24)
-        {
-            conversionType = cv::COLOR_BGR2BGRA;
-        }
-        else
-        {
-            conversionType = cv::COLOR_BGR5652BGRA;
-        }
-    }
+    })();
 
-    cv::cvtColor(input, colorConv, conversionType);
+    cv::cvtColor(src, scratchBuffer, conversionType);
+    std::memcpy(frame.pixels.data(), scratchBuffer.data, frame.pixels.size_check(frame.r.w * frame.r.h * (frame.r.bpp / 8)));
 
     return;
 }
@@ -320,7 +309,7 @@ void ks_scale_frame(const captured_frame_s &frame)
                    frame.r.w, frame.r.h, maxres.w, maxres.h));
             return;
         }
-        else if (FRAME_BUFFER.pixels.is_null())
+        else if (!FRAME_BUFFER_PIXELS)
         {
             return;
         }
@@ -335,7 +324,6 @@ void ks_scale_frame(const captured_frame_s &frame)
     {
         convert_frame_to_bgra(frame);
         frameRes.bpp = OUTPUT_BIT_DEPTH;
-        pixelData = COLORCONV_BUFFER.data();
     }
 
     pixelData = kat_anti_tear(pixelData, frameRes);
@@ -374,23 +362,23 @@ void ks_scale_frame(const captured_frame_s &frame)
         // If no need to scale, just copy the data over.
         if (frameRes == outputRes)
         {
-            std::memcpy(FRAME_BUFFER.pixels.data(), pixelData, FRAME_BUFFER.pixels.size_check(frameRes.w * frameRes.h * (frameRes.bpp / 8)));
+            std::memcpy(FRAME_BUFFER_PIXELS, pixelData, (frameRes.w * frameRes.h * (frameRes.bpp / 8)));
         }
         else
         {
             k_assert(DEFAULT_SCALER, "A default scaler has not been defined.");
 
             const image_s srcImage = image_s(pixelData, frameRes);
-            image_s dstImage = image_s(FRAME_BUFFER.pixels.data(), outputRes);
+            image_s dstImage = image_s(FRAME_BUFFER_PIXELS, outputRes);
             DEFAULT_SCALER->apply(srcImage, &dstImage, {0, 0, 0, 0});
         }
     }
 
-    const bool didResolutionChange = ((FRAME_BUFFER.r.w != outputRes.w) || (FRAME_BUFFER.r.h != outputRes.h));
+    const bool didResolutionChange = ((FRAME_BUFFER_RESOLUTION.w != outputRes.w) || (FRAME_BUFFER_RESOLUTION.h != outputRes.h));
     
     if (didResolutionChange)
     {
-        FRAME_BUFFER.r = outputRes;
+        FRAME_BUFFER_RESOLUTION = outputRes;
         ks_evNewOutputResolution.fire(outputRes);
     }
 
@@ -431,7 +419,6 @@ double ks_scaling_multiplier(void)
 void ks_set_scaling_multiplier_enabled(const bool enabled)
 {
     IS_SCALING_MULTIPLIER_ENABLED = enabled;
-
     kd_update_output_window_size();
 
     return;
@@ -439,10 +426,9 @@ void ks_set_scaling_multiplier_enabled(const bool enabled)
 
 static void clear_frame_buffer(void)
 {
-    k_assert(!FRAME_BUFFER.pixels.is_null(),
-             "Can't access the output buffer: it was unexpectedly null.");
+    k_assert(FRAME_BUFFER_PIXELS, "Couldn't access the output buffer: it was unexpectedly null.");
 
-    memset(FRAME_BUFFER.pixels.data(), 0, FRAME_BUFFER.pixels.size_check(MAX_NUM_BYTES_IN_OUTPUT_FRAME));
+    memset(FRAME_BUFFER_PIXELS, 0, MAX_NUM_BYTES_IN_OUTPUT_FRAME);
 
     return;
 }
@@ -461,9 +447,12 @@ void ks_indicate_invalid_signal(void)
     return;
 }
 
-captured_frame_s& ks_frame_buffer(void)
+image_s ks_frame_buffer(void)
 {
-    return FRAME_BUFFER;
+    return {
+        FRAME_BUFFER_PIXELS,
+        FRAME_BUFFER_RESOLUTION
+    };
 }
 
 // Returns a list of GUI-displayable names of the scalers that're available.

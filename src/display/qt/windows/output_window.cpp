@@ -1008,19 +1008,20 @@ void MainWindow::paintEvent(QPaintEvent *)
     if (OGL_SURFACE != nullptr) return;
 
     // Convert the output buffer into a QImage frame.
-    const QImage frameImage = ([]()->QImage
+    const QImage frameImage = ([]
     {
-       const captured_frame_s &frame = ks_frame_buffer();
+       const image_s image = ks_frame_buffer();
+       k_assert((image.resolution.bpp == 32), "Expected output image data to be 32-bit.");
 
-       k_assert((frame.pixelFormat == capture_pixel_format_e::rgb_888),
-                "Expected frame pixel data to be 32-bit RGB.");
-
-       if (frame.pixels.is_null())
+       if (!image.pixels)
        {
            DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
            return QImage();
        }
-       else return QImage(frame.pixels.data(), frame.r.w, frame.r.h, QImage::Format_RGB32);
+       else
+       {
+           return QImage(image.pixels, image.resolution.w, image.resolution.h, QImage::Format_RGB32);
+       }
     })();
 
     QPainter painter(this);
@@ -1241,17 +1242,17 @@ void MainWindow::save_screenshot(void)
 
     const QImage frameImage = ([]()->QImage
     {
-        const captured_frame_s &frame = ks_frame_buffer();
+        const image_s curOutputImage = ks_frame_buffer();
 
-        k_assert((frame.pixelFormat == capture_pixel_format_e::rgb_888),
-                 "Expected frame pixel data to be 32-bit RGB.");
-
-        if (frame.pixels.is_null())
+        if (!curOutputImage.pixels)
         {
             DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
             return QImage();
         }
-        else return QImage(frame.pixels.data(), frame.r.w, frame.r.h, QImage::Format_RGB32);
+        else
+        {
+            return QImage(curOutputImage.pixels, curOutputImage.resolution.w, curOutputImage.resolution.h, QImage::Format_RGB32);
+        }
     })();
 
     if (frameImage.save(dateStampedFilename))
