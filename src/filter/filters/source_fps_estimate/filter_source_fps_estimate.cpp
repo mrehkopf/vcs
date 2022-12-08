@@ -61,7 +61,7 @@ void filter_frame_rate_c::apply(image_s *const image)
     {
         const std::string outputString = ('~' + std::to_string(estimatedFPS));
 
-        const auto [x, y] = ([cornerId, &outputString, image]()->std::pair<unsigned, unsigned>
+        const std::pair<unsigned, unsigned> screenCoords = ([cornerId, &outputString, image]()->std::pair<unsigned, unsigned>
         {
             const unsigned textWidth = (TEXT_SIZE * FONT.width_of(outputString));
             const unsigned textHeight = (TEXT_SIZE * FONT.height_of(outputString));
@@ -89,7 +89,7 @@ void filter_frame_rate_c::apply(image_s *const image)
             }
         })();
 
-        FONT.render(outputString, image, x, y, TEXT_SIZE, fgColor, {0, 0, 0, bgAlpha});
+        FONT.render(outputString, image, screenCoords.first, screenCoords.second, TEXT_SIZE, fgColor, {0, 0, 0, bgAlpha});
     }
 
     return;

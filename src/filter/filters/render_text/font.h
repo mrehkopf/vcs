@@ -16,7 +16,7 @@
 struct font_glyph_s
 {
     std::vector<std::vector<bool>> rows;
-    int baseline = 0;
+    int baseline;
 
     unsigned width(void) const
     {
@@ -160,7 +160,7 @@ public:
         }
 
         return (
-            std::reduce(lineHeights.begin(), lineHeights.end()) +
+            std::accumulate(lineHeights.begin(), lineHeights.end(), 0) +
             ((lineHeights.size() - 1) * this->line_spacing()) +
             (includeBackground? 2 : 0)
         );

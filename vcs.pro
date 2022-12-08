@@ -41,7 +41,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = vcs
 TEMPLATE = app
-CONFIG += console c++17
+CONFIG += console c++11
 
 OBJECTS_DIR = generated_files
 RCC_DIR = generated_files
@@ -325,5 +325,5 @@ QMAKE_CXXFLAGS += \
     -Wall \
     -pipe \
     -pedantic \
-    -std=c++17 \
+    -std=c++11 \
     -Wno-missing-field-initializers
