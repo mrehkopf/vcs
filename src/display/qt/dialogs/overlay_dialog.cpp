@@ -31,7 +31,7 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
 
     this->set_name("Overlay editor");
 
-    ui->plainTextEdit->setTabStopDistance(QFontMetrics(ui->plainTextEdit->font()).horizontalAdvance("     "));
+    ui->plainTextEdit->setTabStopWidth(22);
 
     // Listen for app events.
     {
