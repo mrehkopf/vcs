@@ -71,17 +71,6 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
             this->ui->plainTextEdit->setFocus();
         };
 
-        // File...
-        {
-            QMenu *fileMenu = new QMenu("File", this->menuBar);
-
-            // This menu is intentionally left blank for now.
-            fileMenu->addAction("No actions available");
-            fileMenu->actions().at(0)->setEnabled(false);
-
-            this->menuBar->addMenu(fileMenu);
-        }
-
         // Overlay...
         {
             QMenu *overlayMenu = new QMenu("Overlay", this->menuBar);
