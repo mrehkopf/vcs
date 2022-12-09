@@ -278,7 +278,7 @@ RecordDialog::~RecordDialog()
                 kpers_set_value(INI_GROUP_RECORDING, "pixel_format", ui->comboBox_recordingEncoderPixelFormat->currentText());
                 kpers_set_value(INI_GROUP_RECORDING, "preset", ui->comboBox_recordingEncoderPreset->currentText());
                 kpers_set_value(INI_GROUP_RECORDING, "crf", ui->spinBox_recordingEncoderCRF->value());
-                kpers_set_value(INI_GROUP_RECORDING, "zero_latency", ui->comboBox_recordingEncoderZeroLatency->currentIndex());
+                kpers_set_value(INI_GROUP_RECORDING, "zero_latency", ui->comboBox_recordingEncoderZeroLatency->currentText());
                 kpers_set_value(INI_GROUP_RECORDING, "command_line", ui->lineEdit_recordingEncoderArguments->text());
             #endif
         }
