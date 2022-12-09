@@ -30,8 +30,11 @@ public:
         int idx = targetBox->findText(string, Qt::MatchExactly);
         if (idx == -1)
         {
-            NBENE(("Unable to find a combo-box item called '%s'. Defaulting to the box's first entry.",
-                   string.toStdString().c_str()));
+            NBENE((
+                "Unable to find a combo-box item called '%s' in '%s'. Defaulting to the box's first entry.",
+                string.toStdString().c_str(),
+                targetBox->objectName().toStdString().c_str()
+            ));
 
             idx = 0;
         }
