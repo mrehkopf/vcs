@@ -438,6 +438,37 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 windowMenu->addMenu(rendererMenu);
             }
+
+            {
+                windowMenu->addSeparator();
+
+                QMenu *const fontSizeMenu = new QMenu("Font size in dialogs", this);
+                QActionGroup *const group = new QActionGroup(this);
+
+                const auto add_size_action = [this, group, fontSizeMenu](const unsigned pxSize)
+                {
+                    QAction *const action  = new QAction(QString::number(pxSize), this);
+
+                    action->setActionGroup(group);
+                    action->setCheckable(true);
+                    fontSizeMenu->addAction(action);
+
+                    connect(action, &QAction::triggered, this, [this, pxSize]{this->set_global_font_size(pxSize);});
+
+                    if (pxSize == this->appwideFontSize)
+                    {
+                        action->setChecked(true);
+                    }
+                };
+
+                for (unsigned size = 15; size <= 22; size++)
+                {
+                    add_size_action(size);
+                }
+
+                windowMenu->addMenu(fontSizeMenu);
+            }
+
             {
                 windowMenu->addSeparator();
 
@@ -538,36 +569,6 @@ MainWindow::MainWindow(QWidget *parent) :
                 windowMenu->addSeparator();
                 windowMenu->addAction(center);
                 windowMenu->addAction(topLeft);
-            }
-
-            {
-                windowMenu->addSeparator();
-
-                QMenu *const fontSizeMenu = new QMenu("Font size in dialogs", this);
-                QActionGroup *const group = new QActionGroup(this);
-
-                const auto add_size_action = [this, group, fontSizeMenu](const unsigned pxSize)
-                {
-                    QAction *const action  = new QAction(QString::number(pxSize), this);
-
-                    action->setActionGroup(group);
-                    action->setCheckable(true);
-                    fontSizeMenu->addAction(action);
-
-                    connect(action, &QAction::triggered, this, [this, pxSize]{this->set_global_font_size(pxSize);});
-
-                    if (pxSize == this->appwideFontSize)
-                    {
-                        action->setChecked(true);
-                    }
-                };
-
-                for (unsigned size = 15; size <= 22; size++)
-                {
-                    add_size_action(size);
-                }
-
-                windowMenu->addMenu(fontSizeMenu);
             }
         }
 
