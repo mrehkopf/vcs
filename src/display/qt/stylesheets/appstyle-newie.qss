@@ -330,7 +330,7 @@ QGroupBox::title
 QScrollBar:vertical,
 QScrollBar:horizontal
 {
-    background-color: #454545;
+    background-color: #303030;
 }
 
 QScrollBar::handle:vertical,
@@ -697,6 +697,12 @@ QFrame[frameShape="4"]:disabled
     border: none;
     border-top: 2px solid #303030;
     border-bottom: 1px solid #555555;
+}
+
+QFrame[frameShape="4"]:disabled
+{
+    border-top: 2px solid #3d3d3d;
+    border-bottom: 1px solid #505050;
 }
 
 QSpinBox:disabled,

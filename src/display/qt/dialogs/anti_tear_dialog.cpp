@@ -66,14 +66,10 @@ AntiTearDialog::AntiTearDialog(QWidget *parent) :
         ui->checkBox_visualizeRange->setChecked(KAT_DEFAULT_VISUALIZE_SCAN_RANGE);
         ui->checkBox_visualizeTear->setChecked(KAT_DEFAULT_VISUALIZE_TEARS);
 
-        ui->parameterGrid_parameters->add_combobox("Scan direction", {"Down",
-                                                                      "Up"});
-        ui->parameterGrid_parameters->add_combobox("Scan hint", {"Look for one tear per frame",
-                                                                 "Look for multiple tears per frame"});
-        ui->parameterGrid_parameters->add_separator();
+        ui->parameterGrid_parameters->add_combobox("Scan direction", {"Down", "Up"});
+        ui->parameterGrid_parameters->add_combobox("Scan hint", {"Look for one tear per frame", "Look for multiple tears per frame"});
         ui->parameterGrid_parameters->add_scroller("Scan start", 0, 0, 640);
         ui->parameterGrid_parameters->add_scroller("Scan end", 0, 0, 640);
-        ui->parameterGrid_parameters->add_separator();
         ui->parameterGrid_parameters->add_scroller("Threshold", KAT_DEFAULT_THRESHOLD, 0, 255);
         ui->parameterGrid_parameters->add_scroller("Window size", KAT_DEFAULT_WINDOW_LENGTH, 1, 640);
         ui->parameterGrid_parameters->add_scroller("Step size", KAT_DEFAULT_STEP_SIZE, 1, 640);
