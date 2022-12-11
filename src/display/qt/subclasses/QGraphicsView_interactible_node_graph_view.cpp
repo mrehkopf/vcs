@@ -34,8 +34,11 @@ InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphic
 
 void InteractibleNodeGraphView::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Delete)
-    {
+    if (
+        (Qt::Key_Delete == event->key()) &&
+        (Qt::ShiftModifier & QApplication::keyboardModifiers()) &&
+        (Qt::ControlModifier & QApplication::keyboardModifiers())
+    ){
         for (QGraphicsItem *selectedItem: this->scene()->selectedItems())
         {
             dynamic_cast<InteractibleNodeGraph*>(this->scene())->remove_node(dynamic_cast<InteractibleNodeGraphNode*>(selectedItem));
