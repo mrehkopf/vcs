@@ -361,14 +361,22 @@ enum class capture_event_e
     num_enumerators
 };
 
-/*!
- * @brief
- * A video mode of the capture device's input signal.
- */
 struct video_mode_s
 {
     resolution_s resolution;
     refresh_rate_s refreshRate;
+};
+
+/*!
+ * @brief
+ * Contains information about the current state of capture.
+ */
+struct capture_state_s
+{
+    video_mode_s input;
+    video_mode_s output;
+    unsigned hardwareChannelIdx = 0;
+    bool areFramesBeingDropped = false;
 };
 
 /*!
@@ -534,6 +542,20 @@ video_mode_s kc_get_capture_video_mode(void);
  * captured image may display incorrectly.
  */
 bool kc_force_capture_resolution(const resolution_s &r);
+
+/*!
+ * Returns cached information about the current state of capture; e.g. the
+ * current input resolution.
+ *
+ * The struct reference returned is valid for the duration of the program's
+ * execution, and the information it points to is automatically updated as the
+ * capture state changes.
+ *
+ * @note
+ * To be notified of changes to the capture state as they occur, subscribe to
+ * the relevant capture events (e.g. @ref kc_evNewVideoMode).
+ */
+const capture_state_s& kc_current_capture_state(void);
 
 /*!
  * Returns true if the capture device is capable of capturing from a

@@ -28,9 +28,16 @@ static unsigned LAST_KNOWN_MISSED_FRAMES_COUNT = 0;
 
 static std::mutex CAPTURE_MUTEX;
 
+static capture_state_s CAPTURE_STATUS;
+
 std::mutex& kc_capture_mutex(void)
 {
     return CAPTURE_MUTEX;
+}
+
+const capture_state_s& kc_current_capture_state(void)
+{
+    return CAPTURE_STATUS;
 }
 
 void kc_initialize_capture(void)
@@ -47,6 +54,36 @@ void kc_initialize_capture(void)
         LAST_KNOWN_MISSED_FRAMES_COUNT = numMissedCurrent;
 
         kc_evMissedFramesCount.fire(numMissedFrames);
+    });
+
+    kc_evSignalLost.listen([]
+    {
+        CAPTURE_STATUS.input = {0};
+    });
+
+    kc_evNewVideoMode.listen([](const video_mode_s &videoMode)
+    {
+        CAPTURE_STATUS.input = videoMode;
+    });
+
+    ks_evNewOutputResolution.listen([](const resolution_s &resolution)
+    {
+        CAPTURE_STATUS.output.resolution = resolution;
+    });
+
+    ks_evFramesPerSecond.listen([](const unsigned fps)
+    {
+        CAPTURE_STATUS.output.refreshRate = fps;
+    });
+
+    kc_evMissedFramesCount.listen([](const unsigned numMissed)
+    {
+        CAPTURE_STATUS.areFramesBeingDropped = numMissed;
+    });
+
+    ks_evInputChannelChanged.listen([]
+    {
+        CAPTURE_STATUS.hardwareChannelIdx = kc_get_device_input_channel_idx();
     });
 
     return;
