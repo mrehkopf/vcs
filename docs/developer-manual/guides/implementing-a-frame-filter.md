@@ -39,10 +39,11 @@ public:
     // Note: We set the default fill color to 150, 10, 200. Instances of the filter
     // will start with those values unless 'initialParamValues' specifies other values.
     filter_filler_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
-        abstract_filter_c({{PARAM_RED, 150},
-                           {PARAM_GREEN, 10},
-                           {PARAM_BLUE, 200}},
-                          initialParamValues)
+        abstract_filter_c({
+            {PARAM_RED, 150},
+            {PARAM_GREEN, 10},
+            {PARAM_BLUE, 200}
+        }, initialParamValues)
     {
         // Note: We'll create the filter's GUI (filtergui_filler_c) later in this guide.
         // In any case, here we attach an instance of the GUI to this new instance of
@@ -51,7 +52,7 @@ public:
     }
 
     // Applies the filter's processing onto the pixels of an input frame.
-    void apply(u8 *const pixels, const resolution_s &resolution) override;
+    void apply(image_s *const image) override;
 
     // Metadata about the filter. These data serve both to uniquely identify the filter
     // and for presenting it to the end-user in the VCS UI.
@@ -64,10 +65,10 @@ public:
 In another new file, *filter_filler.cpp*, we'll provide an implementation of the filter's `apply()` function:
 
 ```cpp
-void filter_filler_c::apply(u8 *const pixels, const resolution_s &resolution)
+void filter_filler_c::apply(image_s *const image)
 {
     // All filters should assert the validity of their input data in this way.
-    this->assert_input_validity(pixels, r);
+    this->assert_input_validity(image);
 
     // The RGB fill color. Note: The parameter values (e.g. PARAM_RED) can be
     // customized by the end-user at run-time via the filter's GUI.
@@ -76,7 +77,7 @@ void filter_filler_c::apply(u8 *const pixels, const resolution_s &resolution)
     const uint8_t blue  = this->parameter(PARAM_BLUE);
     const uint8_t alpha = 255;
     
-    cv::Mat output = cv::Mat(resolution.h, resolution.w, CV_8UC4, pixels);
+    cv::Mat output = cv::Mat(image->resolution.h, image->resolution.w, CV_8UC4, image->pixels);
     output = cv::Scalar(blue, green, red, alpha);
 
     return;
@@ -196,5 +197,5 @@ colorFill->set_parameters({
     {filter_filler_c::PARAM_BLUE,  0}
 });
 
-colorFill->apply(pixels, resolution);
+colorFill->apply(image);
 ```
