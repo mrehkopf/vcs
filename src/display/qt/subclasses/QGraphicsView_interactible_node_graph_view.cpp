@@ -1,5 +1,5 @@
 /*
- * 2018 Tarpeeksi Hyvae Soft
+ * 2018-2022 Tarpeeksi Hyvae Soft
  *
  * Software: VCS
  *
@@ -17,6 +17,7 @@
 #include "display/qt/subclasses/QGraphicsView_interactible_node_graph_view.h"
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
+#include "display/qt/keyboard_shortcuts.h"
 #include "common/globals.h"
 #include "filter/filter.h"
 
@@ -28,8 +29,7 @@ InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphic
 
     // Set up keyboard shortcuts.
     {
-        // Delete all selected nodes.
-        connect(new QShortcut(QKeySequence("shift+del"), this), &QShortcut::activated, this, [this]
+        connect(kd_make_key_shortcut("filter-graph-dialog: delete-selected-nodes", this), &QShortcut::activated, this, [this]
         {
             for (QGraphicsItem *selectedItem: this->scene()->selectedItems())
             {

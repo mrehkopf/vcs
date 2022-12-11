@@ -98,8 +98,6 @@ private:
     void closeEvent(QCloseEvent *event);
     void wheelEvent(QWheelEvent *event);
 
-    void set_keyboard_shortcuts(void);
-
     // Load the font pointed to by the given filename, and make it available to the program.
     bool load_font(const QString &filename);
 

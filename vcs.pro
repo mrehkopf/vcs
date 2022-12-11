@@ -58,6 +58,7 @@ RESOURCES += \
 SOURCES += \
     src/display/qt/dialogs/filter_graph/base_filter_graph_node.cpp \
     src/display/qt/dialogs/filter_graph/output_scaler_node.cpp \
+    src/display/qt/keyboard_shortcuts.cpp \
     src/filter/filters/output_scaler/filter_output_scaler.cpp \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.cpp \
     src/filter/filters/render_text/filter_render_text.cpp \
@@ -166,6 +167,7 @@ HEADERS += \
     src/common/types.h \
     src/display/qt/dialogs/filter_graph/base_filter_graph_node.h \
     src/display/qt/dialogs/filter_graph/output_scaler_node.h \
+    src/display/qt/keyboard_shortcuts.h \
     src/display/qt/subclasses/QComboBox_video_preset_list.h \
     src/display/qt/subclasses/QDialog_vcs_base_dialog.h \
     src/display/qt/subclasses/QFrame_filtergui_for_qt.h \

@@ -44,6 +44,7 @@
 #include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/dialogs/about_dialog.h"
 #include "display/qt/persistent_settings.h"
+#include "display/qt/keyboard_shortcuts.h"
 #include "anti_tear/anti_tear.h"
 #include "common/propagate/vcs_event.h"
 #include "capture/video_presets.h"
@@ -268,15 +269,15 @@ MainWindow::MainWindow(QWidget *parent) :
             captureMenu->addAction(aliases);
 
             QAction *resolution = new QAction("Resolution...", this);
-            resolution->setShortcut(QKeySequence("ctrl+i"));
+            resolution->setShortcut(kd_get_key_sequence("output-window: open-input-resolution-dialog"));
             captureMenu->addAction(resolution);
 
             QAction *signal = new QAction("Signal info...", this);
-            signal->setShortcut(QKeySequence("ctrl+s"));
+            signal->setShortcut(kd_get_key_sequence("output-window: open-signal-info-dialog"));
             captureMenu->addAction(signal);
 
             QAction *videoParams = new QAction("Video presets...", this);
-            videoParams->setShortcut(QKeySequence("ctrl+v"));
+            videoParams->setShortcut(kd_get_key_sequence("output-window: open-video-presets-dialog"));
             captureMenu->addAction(videoParams);
 
             #if CAPTURE_DEVICE_VISION_V4L
@@ -330,27 +331,27 @@ MainWindow::MainWindow(QWidget *parent) :
             outputMenu->addSeparator();
 
             QAction *antiTear = new QAction("Anti-tear...", this);
-            antiTear->setShortcut(QKeySequence("ctrl+a"));
+            antiTear->setShortcut(kd_get_key_sequence("output-window: open-anti-tear-dialog"));
             outputMenu->addAction(antiTear);
             connect(antiTear, &QAction::triggered, this, [=]{this->antitearDlg->open();});
 
             QAction *filter = new QAction("Filter graph...", this);
-            filter->setShortcut(QKeySequence("ctrl+f"));
+            filter->setShortcut(kd_get_key_sequence("output-window: open-filter-graph-dialog"));
             outputMenu->addAction(filter);
             connect(filter, &QAction::triggered, this, [=]{this->filterGraphDlg->open();});
 
             QAction *overlay = new QAction("Overlay editor...", this);
-            overlay->setShortcut(QKeySequence("ctrl+l"));
+            overlay->setShortcut(kd_get_key_sequence("output-window: open-overlay-dialog"));
             outputMenu->addAction(overlay);
             connect(overlay, &QAction::triggered, this, [=]{this->overlayDlg->open();});
 
             QAction *resolution = new QAction("Resolution...", this);
-            resolution->setShortcut(QKeySequence("ctrl+o"));
+            resolution->setShortcut(kd_get_key_sequence("output-window: open-output-resolution-dialog"));
             outputMenu->addAction(resolution);
             connect(resolution, &QAction::triggered, this, [=]{this->outputResolutionDlg->open();});
 
             QAction *record = new QAction("Video recorder...", this);
-            record->setShortcut(QKeySequence("ctrl+r"));
+            record->setShortcut(kd_get_key_sequence("output-window: open-record-dialog"));
             outputMenu->addAction(record);
             connect(record, &QAction::triggered, this, [=]{this->recordDlg->open();});
         }
@@ -476,7 +477,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 showBorder->setCheckable(true);
                 showBorder->setChecked(this->window_has_border());
-                showBorder->setShortcut(QKeySequence("f1"));
+                showBorder->setShortcut(kd_get_key_sequence("output-window: toggle-window-border"));
 
                 connect(this, &MainWindow::border_hidden, this, [=]
                 {
@@ -511,7 +512,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
                 fullscreen->setCheckable(true);
                 fullscreen->setChecked(this->isFullScreen());
-                fullscreen->setShortcut(QKeySequence("f11"));
+                fullscreen->setShortcut(kd_get_key_sequence("output-window: toggle-fullscreen-mode"));
 
                 connect(this, &MainWindow::fullscreen_mode_enabled, this, [=]
                 {
@@ -542,7 +543,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 QAction *center = new QAction("Center", this);
 
                 QAction *topLeft = new QAction("Top left", this);
-                topLeft->setShortcut(QKeySequence("f2"));
+                topLeft->setShortcut(kd_get_key_sequence("output-window: snap-to-left"));
 
                 connect(center, &QAction::triggered, this, [=]
                 {
@@ -606,10 +607,56 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     }
 
-    // Set up keyboard shortcuts.
+    // We intend to repaint the entire window every time we update it, so ask for no automatic fill.
+    this->setAttribute(Qt::WA_OpaquePaintEvent, true);
+
+    this->update_window_size();
+    this->update_window_title();
+
+    // Set keyboard shortcuts.
     {
-        // Exit out of fullscreen.
-        connect(new QShortcut(QKeySequence("esc"), this), &QShortcut::activated, this, [this]
+        auto makeAppwideShortcut = [this](const std::string label)->QShortcut*
+        {
+            QShortcut *shortcut = kd_make_key_shortcut(label, this);
+
+            shortcut->setContext(Qt::ApplicationShortcut);
+            shortcut->setAutoRepeat(false);
+
+            return shortcut;
+        };
+
+        // Numkeys 1 through 9.
+        k_assert(this->inputResolutionDlg != nullptr, "");
+        for (uint i = 1; i <= 9; i++)
+        {
+            const std::string shortcutString = ("input-resolution-dialog: resolution-activator-" + std::to_string(i));
+
+            connect(makeAppwideShortcut(shortcutString), &QShortcut::activated, [=]
+            {
+                this->inputResolutionDlg->activate_resolution_button(i);
+            });
+        }
+
+        connect(makeAppwideShortcut("filter-graph-dialog: toggle-enabled"), &QShortcut::activated, [=]{this->filterGraphDlg->set_enabled(!this->filterGraphDlg->is_enabled());});
+        connect(makeAppwideShortcut("overlay-dialog: toggle-enabled"), &QShortcut::activated, [=]{this->overlayDlg->set_enabled(!this->overlayDlg->is_enabled());});
+        connect(makeAppwideShortcut("anti-tear-dialog: toggle-enabled"), &QShortcut::activated, [=]{this->antitearDlg->set_enabled(!this->antitearDlg->is_enabled());});
+        connect(makeAppwideShortcut("record-dialog: toggle-enabled"), &QShortcut::activated, [=]{this->recordDlg->set_enabled(!this->recordDlg->is_enabled());});
+
+        // F1 through F12.
+        for (uint i = 1; i <= 12; i++)
+        {
+            const std::string shortcutString = ("video-preset-dialog: preset-activator-" + std::to_string(i));
+
+            connect(makeAppwideShortcut(shortcutString), &QShortcut::activated, this, [=]
+            {
+                kvideopreset_activate_keyboard_shortcut(shortcutString);
+            });
+        }
+
+        connect(makeAppwideShortcut("output-window: set-input-channel-1"), &QShortcut::activated, []{kc_set_capture_input_channel(0);});
+        connect(makeAppwideShortcut("output-window: set-input-channel-2"), &QShortcut::activated, []{kc_set_capture_input_channel(1);});
+
+        connect(kd_make_key_shortcut("output-window: exit-fullscreen-mode", this), &QShortcut::activated, this, [this]
         {
             if (this->isFullScreen())
             {
@@ -617,13 +664,6 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         });
     }
-
-    // We intend to repaint the entire window every time we update it, so ask for no automatic fill.
-    this->setAttribute(Qt::WA_OpaquePaintEvent, true);
-
-    this->update_window_size();
-    this->update_window_title();
-    this->set_keyboard_shortcuts();
 
 #ifdef _WIN32
     /// Temp hack. On my system, need to toggle this or there'll be a 2-pixel
@@ -1053,64 +1093,6 @@ void MainWindow::paintEvent(QPaintEvent *)
     {
         this->magnifyingGlass->hide();
     }
-
-    return;
-}
-
-void MainWindow::set_keyboard_shortcuts(void)
-{
-    // Creates a new QShortcut instance assigned to the given QKeySequence-
-    // compatible sequence string (e.g. "F1" for the F1 key).
-    auto keyboardShortcut = [this](const std::string keySequence)->QShortcut*
-    {
-        QShortcut *shortcut = new QShortcut(QKeySequence(keySequence.c_str()), this);
-
-        shortcut->setContext(Qt::ApplicationShortcut);
-        shortcut->setAutoRepeat(false);
-
-        return shortcut;
-    };
-
-    // Assign ctrl + numeral key 1-9 to the input resolution force buttons.
-    k_assert(this->inputResolutionDlg != nullptr, "");
-    for (uint i = 1; i <= 9; i++)
-    {
-        connect(keyboardShortcut(QString("ctrl+%1").arg(QString::number(i)).toStdString()),
-                &QShortcut::activated, [=]{this->inputResolutionDlg->activate_resolution_button(i);});
-    }
-
-    // Make Ctrl + Shift + <x> toggle the various dialogs' functionality on/off.
-    connect(keyboardShortcut("ctrl+shift+f"), &QShortcut::activated, [=]{this->filterGraphDlg->set_enabled(!this->filterGraphDlg->is_enabled());});
-    connect(keyboardShortcut("ctrl+shift+l"), &QShortcut::activated, [=]{this->overlayDlg->set_enabled(!this->overlayDlg->is_enabled());});
-    connect(keyboardShortcut("ctrl+shift+a"), &QShortcut::activated, [=]{this->antitearDlg->set_enabled(!this->antitearDlg->is_enabled());});
-    connect(keyboardShortcut("ctrl+shift+r"), &QShortcut::activated, [=]{this->recordDlg->set_enabled(!this->recordDlg->is_enabled());});
-
-    // Ctrl + function keys maps to video presets.
-    for (uint i = 1; i <= 12; i++)
-    {
-        const std::string shortcutString = QString("ctrl+f%1").arg(QString::number(i)).toStdString();
-
-        connect(keyboardShortcut(shortcutString), &QShortcut::activated, this, [=]
-        {
-            kvideopreset_activate_keyboard_shortcut(shortcutString);
-        });
-    }
-
-    // Shift + number assigns the current input channel.
-    connect(keyboardShortcut("shift+1"), &QShortcut::activated, [=]
-    {
-        if (kc_get_device_input_channel_idx() != 0)
-        {
-            kc_set_capture_input_channel(0);
-        }
-    });
-    connect(keyboardShortcut("shift+2"), &QShortcut::activated, [=]
-    {
-        if (kc_get_device_input_channel_idx() != 1)
-        {
-            kc_set_capture_input_channel(1);
-        }
-    });
 
     return;
 }
