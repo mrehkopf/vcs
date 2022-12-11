@@ -9,6 +9,7 @@
 #include "filter/filters/source_fps_estimate/filter_source_fps_estimate.h"
 #include "filter/filters/render_text/filter_render_text.h"
 #include "filter/filters/render_text/font_5x3.h"
+#include "capture/capture.h"
 
 static const auto FONT = font_5x3_c();
 static const unsigned TEXT_SIZE = 4;
@@ -59,7 +60,8 @@ void filter_frame_rate_c::apply(image_s *const image)
 
     // Draw the FPS counter into the current frame.
     {
-        const std::string outputString = ('~' + std::to_string(estimatedFPS));
+        const unsigned signalRefreshRate = kc_current_capture_state().input.refreshRate.value<unsigned>();
+        const std::string outputString = ((estimatedFPS >= signalRefreshRate? "> " : "~") + std::to_string(estimatedFPS));
 
         const std::pair<unsigned, unsigned> screenCoords = ([cornerId, &outputString, image]()->std::pair<unsigned, unsigned>
         {
