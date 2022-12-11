@@ -606,6 +606,18 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     }
 
+    // Set up keyboard shortcuts.
+    {
+        // Exit out of fullscreen.
+        connect(new QShortcut(QKeySequence("esc"), this), &QShortcut::activated, this, [this]
+        {
+            if (this->isFullScreen())
+            {
+                this->showNormal();
+            }
+        });
+    }
+
     // We intend to repaint the entire window every time we update it, so ask for no automatic fill.
     this->setAttribute(Qt::WA_OpaquePaintEvent, true);
 
@@ -967,17 +979,6 @@ void MainWindow::wheelEvent(QWheelEvent *event)
         // Adjust the size of the capture window with the mouse scroll wheel.
         const int dir = (event->angleDelta().y() < 0)? 1 : -1;
         this->outputResolutionDlg->adjust_output_scaling(dir);
-    }
-
-    return;
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-    if ((event->key() == Qt::Key_Escape) &&
-        this->isFullScreen())
-    {
-        this->showNormal();
     }
 
     return;

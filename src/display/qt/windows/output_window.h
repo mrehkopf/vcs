@@ -93,7 +93,6 @@ private:
     void mouseReleaseEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
-    void keyPressEvent(QKeyEvent *event);
     void changeEvent(QEvent *event);
     void paintEvent(QPaintEvent *);
     void closeEvent(QCloseEvent *event);

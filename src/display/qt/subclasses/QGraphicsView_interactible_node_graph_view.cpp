@@ -11,6 +11,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QScrollBar>
+#include <QShortcut>
 #include <QDebug>
 #include <QMenu>
 #include "display/qt/subclasses/QGraphicsView_interactible_node_graph_view.h"
@@ -21,31 +22,21 @@
 
 InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphicsView(parent)
 {
-    // Create and set up menus.
-    {
-        this->edgeClickMenu = new QMenu(this);
-    }
-
+    this->edgeClickMenu = new QMenu(this);
     this->setRenderHints(QPainter::Antialiasing);
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
-    return;
-}
-
-void InteractibleNodeGraphView::keyPressEvent(QKeyEvent *event)
-{
-    if (
-        (Qt::Key_Delete == event->key()) &&
-        (Qt::ShiftModifier & QApplication::keyboardModifiers()) &&
-        (Qt::ControlModifier & QApplication::keyboardModifiers())
-    ){
-        for (QGraphicsItem *selectedItem: this->scene()->selectedItems())
+    // Set up keyboard shortcuts.
+    {
+        // Delete all selected nodes.
+        connect(new QShortcut(QKeySequence("ctrl+shift+del"), this), &QShortcut::activated, this, [this]
         {
-            dynamic_cast<InteractibleNodeGraph*>(this->scene())->remove_node(dynamic_cast<InteractibleNodeGraphNode*>(selectedItem));
-        }
+            for (QGraphicsItem *selectedItem: this->scene()->selectedItems())
+            {
+                dynamic_cast<InteractibleNodeGraph*>(this->scene())->remove_node(dynamic_cast<InteractibleNodeGraphNode*>(selectedItem));
+            }
+        });
     }
-
-    QGraphicsView::keyPressEvent(event);
 
     return;
 }
