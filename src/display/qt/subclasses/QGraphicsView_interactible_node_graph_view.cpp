@@ -29,7 +29,7 @@ InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphic
     // Set up keyboard shortcuts.
     {
         // Delete all selected nodes.
-        connect(new QShortcut(QKeySequence("ctrl+shift+del"), this), &QShortcut::activated, this, [this]
+        connect(new QShortcut(QKeySequence("shift+del"), this), &QShortcut::activated, this, [this]
         {
             for (QGraphicsItem *selectedItem: this->scene()->selectedItems())
             {
