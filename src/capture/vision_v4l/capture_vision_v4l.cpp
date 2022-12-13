@@ -228,10 +228,6 @@ bool kc_initialize_device(void)
     kc_set_capture_input_channel(INPUT_CHANNEL_IDX);
 
     return true;
-
-    fail:
-    PROGRAM_EXIT_REQUESTED = 1;
-    return false;
 }
 
 bool kc_release_device(void)
