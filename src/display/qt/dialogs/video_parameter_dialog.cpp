@@ -94,6 +94,8 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
     // Set the GUI controls to their proper initial values.
     {
+        ui->label_warnOfDigitalInput->setVisible(false);
+
         // The file format we save presets into reserves the { and } characters;
         // these characters shouldn't occur in preset names.
         ui->lineEdit_presetName->setValidator(new QRegExpValidator(QRegExp("[^{}]*"), this));
@@ -396,11 +398,13 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
             }
 
             this->update_active_preset_indicator();
+            this->ui->label_warnOfDigitalInput->setVisible(kc_current_capture_state().signalFormat == signal_format_e::digital);
         });
 
         kc_evSignalLost.listen([this]
         {
             this->update_active_preset_indicator();
+            this->ui->label_warnOfDigitalInput->setVisible(false);
         });
     }
 

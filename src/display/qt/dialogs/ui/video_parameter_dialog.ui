@@ -30,6 +30,19 @@
     <number>0</number>
    </property>
    <item>
+    <widget class="QLabel" name="label_warnOfDigitalInput">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You're currently capturing a &lt;span style=&quot; font-weight:600;&quot;&gt;digital signal&lt;/span&gt;. Video presets are intended for analog capture, and may have no effect on a digital source.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="groupBox_videoPresetSelector">
      <property name="title">
       <string>Preset selector</string>
@@ -198,7 +211,7 @@
         <x>0</x>
         <y>0</y>
         <width>405</width>
-        <height>404</height>
+        <height>344</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -655,7 +668,7 @@
              </sizepolicy>
             </property>
             <property name="title">
-             <string>Analog parameters</string>
+             <string>Parameters</string>
             </property>
            </widget>
           </item>
