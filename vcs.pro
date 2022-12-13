@@ -3,7 +3,7 @@
 #DEFINES += RELEASE_BUILD
 
 linux {
-    DEFINES += CAPTURE_DEVICE_VISION_V4L
+    DEFINES += CAPTURE_BACKEND_VISION_V4L
 
     INCLUDEPATH += \
         # The base path for Datapath's Linux Vision driver header files. These are
@@ -22,7 +22,7 @@ linux {
 }
 
 win32 {
-    DEFINES += CAPTURE_DEVICE_RGBEASY
+    DEFINES += CAPTURE_BACKEND_RGBEASY
 
     INCLUDEPATH += \
         "C:/VisionSDK/RGBEASY 1.0/INCLUDE" \
@@ -292,16 +292,16 @@ FORMS += \
     src/display/qt/dialogs/ui/signal_dialog.ui \
     src/display/qt/dialogs/ui/linux_device_selector_dialog.ui
 
-contains(DEFINES, CAPTURE_DEVICE_VIRTUAL) {
+contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
     SOURCES += src/capture/virtual/capture_virtual.cpp
 }
 
-contains(DEFINES, CAPTURE_DEVICE_DOSBOX_MMAP) {
+contains(DEFINES, CAPTURE_BACKEND_DOSBOX_MMAP) {
     SOURCES += src/capture/dosbox_mmap/capture_dosbox_mmap.cpp
     LIBS += -lrt
 }
 
-contains(DEFINES, CAPTURE_DEVICE_VISION_V4L) {
+contains(DEFINES, CAPTURE_BACKEND_VISION_V4L) {
     SOURCES += \
         src/capture/vision_v4l/capture_vision_v4l.cpp \
         src/capture/vision_v4l/input_channel_v4l.cpp \
@@ -312,7 +312,7 @@ contains(DEFINES, CAPTURE_DEVICE_VISION_V4L) {
         src/capture/vision_v4l/ic_v4l_video_parameters.h
 }
 
-contains(DEFINES, CAPTURE_DEVICE_RGBEASY) {
+contains(DEFINES, CAPTURE_BACKEND_RGBEASY) {
     SOURCES += src/capture/rgbeasy/capture_rgbeasy.cpp
 
     linux {

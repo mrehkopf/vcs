@@ -8,8 +8,6 @@
  *
  */
 
-#ifdef CAPTURE_DEVICE_VISION_V4L
-
 #ifndef VCS_CAPTURE_INPUT_CHANNEL_V4L_H
 #define VCS_CAPTURE_INPUT_CHANNEL_V4L_H
 
@@ -171,7 +169,5 @@ private:
     // run until this is set to false.
     std::atomic<bool> run = {false};
 };
-
-#endif
 
 #endif

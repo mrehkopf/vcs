@@ -5,11 +5,11 @@
  *
  */
 
-#if (!defined(CAPTURE_DEVICE_VIRTUAL) &&\
-     !defined(CAPTURE_DEVICE_VISION_V4L) &&\
-     !defined(CAPTURE_DEVICE_RGBEASY) &&\
-     !defined(CAPTURE_DEVICE_DOSBOX_MMAP))
-    #error "Unrecognized value for the capture device toggle"
+#if (!defined(CAPTURE_BACKEND_VIRTUAL) &&\
+     !defined(CAPTURE_BACKEND_VISION_V4L) &&\
+     !defined(CAPTURE_BACKEND_RGBEASY) &&\
+     !defined(CAPTURE_BACKEND_DOSBOX_MMAP))
+    #error "Unrecognized value for the capture backend toggle"
 #endif
 
 #include <chrono>

@@ -5,8 +5,6 @@
  *
  */
 
-#ifdef CAPTURE_DEVICE_VISION_V4L
-
 #include <poll.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -204,5 +202,3 @@ ic_v4l_device_controls_c::control_type_e ic_v4l_device_controls_c::type_for_name
 
     return control_type_e::unknown;
 }
-
-#endif

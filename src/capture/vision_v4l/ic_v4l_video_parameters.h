@@ -7,8 +7,6 @@
  *
  */
 
-#ifdef CAPTURE_DEVICE_VISION_V4L
-
 #ifndef VCS_CAPTURE_IC_V4L_VIDEO_PARAMETERS_H
 #define VCS_CAPTURE_IC_V4L_VIDEO_PARAMETERS_H
 
@@ -83,7 +81,5 @@ private:
 
     int v4lDeviceFileHandle = -1;
 };
-
-#endif
 
 #endif

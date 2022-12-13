@@ -5,8 +5,6 @@
  *
  */
 
-#ifdef CAPTURE_DEVICE_VISION_V4L
-
 #include <poll.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -677,5 +675,3 @@ int input_channel_v4l_c::stop_capturing(void)
 
     return retVal;
 }
-
-#endif
