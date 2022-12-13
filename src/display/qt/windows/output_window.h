@@ -25,7 +25,6 @@ class VCSBaseDialog;
 class QAction;
 class MagnifyingGlass;
 
-struct signal_info_s;
 struct resolution_alias_s;
 
 namespace Ui {

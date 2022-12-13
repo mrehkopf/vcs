@@ -187,6 +187,7 @@ void ic_v4l_device_controls_c::update()
 
 ic_v4l_device_controls_c::control_type_e ic_v4l_device_controls_c::type_for_name(const std::string &name)
 {
+    if (name == "signal_type")         return control_type_e::signal_type;
     if (name == "horizontal_size")     return control_type_e::horizontal_size;
     if (name == "horizontal_position") return control_type_e::horizontal_position;
     if (name == "vertical_position")   return control_type_e::vertical_position;

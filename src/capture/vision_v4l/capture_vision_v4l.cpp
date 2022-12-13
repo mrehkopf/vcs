@@ -155,6 +155,38 @@ bool kc_has_valid_signal(void)
     return !CUR_INPUT_CHANNEL->captureStatus.invalidSignal;
 }
 
+bool kc_has_digital_signal(void)
+{
+    k_assert(CUR_INPUT_CHANNEL, "Attempting to query input channel parameters on a null channel.");
+
+    auto videoParams = CUR_INPUT_CHANNEL->captureStatus.videoParameters;
+
+    /// TODO: Have a way to update only the specific control we're interested in,
+    /// rather than having to update them all.
+    videoParams.update();
+
+    // I'm assuming the following values for the "signal_type" V4L control:
+    //
+    // 0: No Signal
+    // 1: DVI
+    // 2: DVI Dual Link
+    // 3: SDI
+    // 4: Video
+    // 5: 3-Wire Sync On Green
+    // 6: 4-Wire Composite Sync
+    // 7: 5-Wire Separate Syncs
+    // 8: YPRPB
+    // 9: CVBS
+    // 10: YC
+    // 11: Unknown
+    const bool isDigital = (
+        kc_has_valid_signal() &&
+        (videoParams.value(ic_v4l_device_controls_c::control_type_e::signal_type) <= 3)
+    );
+
+    return isDigital;
+}
+
 bool kc_has_valid_device(void)
 {
     k_assert(CUR_INPUT_CHANNEL,

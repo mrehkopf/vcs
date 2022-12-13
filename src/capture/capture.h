@@ -367,6 +367,13 @@ struct video_mode_s
     refresh_rate_s refreshRate;
 };
 
+enum class signal_format_e
+{
+    none = 0,
+    analog,
+    digital,
+};
+
 /*!
  * @brief
  * Contains information about the current state of capture.
@@ -375,6 +382,7 @@ struct capture_state_s
 {
     video_mode_s input;
     video_mode_s output;
+    signal_format_e signalFormat = signal_format_e::none;
     unsigned hardwareChannelIdx = 0;
     bool areFramesBeingDropped = false;
 };
@@ -394,14 +402,6 @@ struct captured_frame_s
     // Will be set to true after the frame's data has been processed for
     // display and is no longer needed.
     bool processed = false;
-};
-
-struct signal_info_s
-{
-    resolution_s r;
-    int refreshRate;
-    bool isInterlaced;
-    bool isDigital;
 };
 
 struct video_signal_parameters_s
@@ -815,6 +815,11 @@ bool kc_has_valid_signal(void);
  * Returns true if the current capture device is valid; false otherwise.
  */
 bool kc_has_valid_device(void);
+
+/*!
+ * Returns true if the current input signal is digital; false otherwise.
+ */
+bool kc_has_digital_signal(void);
 
 /*!
  * Returns true if the capture device's active input channel is currently

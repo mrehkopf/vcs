@@ -17,7 +17,6 @@ class SignalDialog;
 
 struct capture_video_settings_s;
 struct capture_color_settings_s;
-struct signal_info_s;
 struct resolution_s;
 
 class SignalDialog : public VCSBaseDialog

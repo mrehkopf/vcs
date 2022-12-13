@@ -59,11 +59,13 @@ void kc_initialize_capture(void)
     kc_evSignalLost.listen([]
     {
         CAPTURE_STATUS.input = {0};
+        CAPTURE_STATUS.signalFormat = signal_format_e::none;
     });
 
     kc_evNewVideoMode.listen([](const video_mode_s &videoMode)
     {
         CAPTURE_STATUS.input = videoMode;
+        CAPTURE_STATUS.signalFormat = (kc_has_digital_signal()? signal_format_e::digital : signal_format_e::analog);
     });
 
     ks_evNewOutputResolution.listen([](const resolution_s &resolution)

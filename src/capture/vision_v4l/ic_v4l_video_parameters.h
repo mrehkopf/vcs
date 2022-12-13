@@ -25,6 +25,7 @@ public:
     // These correspond to the video parameters recognized by VCS.
     enum class control_type_e
     {
+        signal_type,
         horizontal_size,
         horizontal_position,
         vertical_position,

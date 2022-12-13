@@ -432,6 +432,11 @@ bool kc_mark_frame_buffer_as_processed(void)
     return false;
 }
 
+bool kc_has_digital_signal(void)
+{
+    return true;
+}
+
 bool kc_has_valid_signal(void)
 {
     return IS_VALID_SIGNAL;

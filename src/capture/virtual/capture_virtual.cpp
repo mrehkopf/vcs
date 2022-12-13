@@ -278,6 +278,11 @@ bool kc_device_supports_yuv(void)
     return true;
 }
 
+bool kc_has_digital_signal(void)
+{
+    return true;
+}
+
 bool kc_has_valid_device(void)
 {
     return true;

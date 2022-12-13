@@ -46,11 +46,11 @@ static captured_frame_s FRAME_BUFFER;
 // receive and so which we had to skip.
 static std::atomic<unsigned int> NUM_NEW_FRAME_EVENTS_SKIPPED(0);
 
-// Whether the capture hardware is receiving a signal from its input.
-static bool RECEIVING_A_SIGNAL = true;
+static bool IS_RECEIVING_A_SIGNAL = true;
 
-// If the current signal we're receiving is invalid.
 static bool IS_SIGNAL_INVALID = false;
+
+static bool IS_SIGNAL_DIGITAL = false;
 
 // The current input resolution.
 static resolution_s CAPTURE_RESOLUTION = {640, 480, 32};
@@ -166,7 +166,7 @@ namespace rgbeasy_callbacks_n
     }
 
     // Called by the capture hardware when the input video mode changes.
-    void RGBCBKAPI video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO, ULONG_PTR)
+    void RGBCBKAPI video_mode_changed(HWND, HRGB, PRGBMODECHANGEDINFO modeInfo, ULONG_PTR)
     {
         std::lock_guard<std::mutex> lock(kc_capture_mutex());
 
@@ -176,8 +176,9 @@ namespace rgbeasy_callbacks_n
             goto done;
         }
 
+        IS_SIGNAL_DIGITAL = modeInfo->BDVI;
         IS_SIGNAL_INVALID = false;
-        RECEIVING_A_SIGNAL = true;
+        IS_RECEIVING_A_SIGNAL = true;
 
         push_capture_event(capture_event_e::new_video_mode);
 
@@ -200,7 +201,7 @@ namespace rgbeasy_callbacks_n
         RGBInvalidSignal(CAPTURE_HANDLE, horClock, verClock);
 
         IS_SIGNAL_INVALID = true;
-        RECEIVING_A_SIGNAL = false;
+        IS_RECEIVING_A_SIGNAL = false;
 
         push_capture_event(capture_event_e::invalid_signal);
 
@@ -216,7 +217,7 @@ namespace rgbeasy_callbacks_n
         // Let the card apply its own 'no signal' handler as well, just in case.
         RGBNoSignal(CAPTURE_HANDLE);
 
-        RECEIVING_A_SIGNAL = false;
+        IS_RECEIVING_A_SIGNAL = false;
 
         push_capture_event(capture_event_e::signal_lost);
 
@@ -227,7 +228,7 @@ namespace rgbeasy_callbacks_n
     {
         std::lock_guard<std::mutex> lock(kc_capture_mutex());
 
-        RECEIVING_A_SIGNAL = false;
+        IS_RECEIVING_A_SIGNAL = false;
 
         push_capture_event(capture_event_e::unrecoverable_error);
 
@@ -780,7 +781,7 @@ capture_event_e kc_pop_capture_event_queue(void)
     }
 
     // If there were no events we should notify the caller about.
-    return (RECEIVING_A_SIGNAL? capture_event_e::none : capture_event_e::sleep);
+    return (IS_RECEIVING_A_SIGNAL? capture_event_e::none : capture_event_e::sleep);
 }
 
 refresh_rate_s kc_get_capture_refresh_rate(void)
@@ -990,6 +991,10 @@ bool is_capturing(void)
     return IS_CAPTURE_ACTIVE;
 }
 
+bool kc_has_digital_signal(void)
+{
+    return IS_SIGNAL_DIGITAL;
+}
 
 bool kc_has_valid_signal(void)
 {
@@ -998,7 +1003,7 @@ bool kc_has_valid_signal(void)
 
 bool kc_is_receiving_signal(void)
 {
-    return RECEIVING_A_SIGNAL;
+    return IS_RECEIVING_A_SIGNAL;
 }
 
 /// TODO: Implement, if it can be done with the RGBEASY API.
