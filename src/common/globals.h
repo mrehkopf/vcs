@@ -42,7 +42,7 @@ const u32 MAX_NUM_BYTES_IN_CAPTURED_FRAME = (MAX_CAPTURE_WIDTH * MAX_CAPTURE_HEI
 #define k_assert(condition, error_string) \
     if (!(condition))\
     {\
-        DEBUG_(("Assertion failure in %s:%d: \"%s\"", __FILE__, __LINE__, error_string));\
+        klog_log_assert("Assertion failure in %s:%d: \"%s\"", __FILE__, __LINE__, error_string);\
         kd_show_headless_assert_error_message(error_string, __FILE__, __LINE__);\
         throw std::runtime_error(error_string);\
     }
@@ -54,10 +54,9 @@ const u32 MAX_NUM_BYTES_IN_CAPTURED_FRAME = (MAX_CAPTURE_WIDTH * MAX_CAPTURE_HEI
     #define k_assert_optional(...)
 #endif
 
-#define DEBUG_(args)        (printf("[Debug] {%s:%i} ", __FILE__, __LINE__), printf args, printf("\n"), fflush(stdout)) /// Temp hack.
-#define DEBUG(args)         (klog_log_debug args)
-#define NBENE(args)         (klog_log_error args)
-#define INFO(args)          (klog_log_info args)
+#define DEBUG(args) (klog_log_debug args)
+#define NBENE(args) (klog_log_error args)
+#define INFO(args)  (klog_log_info args)
 
 #define LERP(a, b, t) ((a) + ((t) * ((b) - (a))))
 

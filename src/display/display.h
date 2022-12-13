@@ -333,15 +333,6 @@ void kd_show_headless_error_message(const char *const title, const char *const m
 void kd_show_headless_assert_error_message(const char *const msg, const char * const filename, const uint lineNum);
 
 /*!
- * Lets the GUI know that VCS has created a new log entry, and provides a copy
- * of it as a parameter.
- * 
- * If the GUI has a view to VCS's log entries, it should update that view
- * accordingly.
- */
-bool kd_add_log_entry(const log_entry_s e);
-
-/*!
  * Returns true if the output window is in fullscreen mode; false
  * otherwise.
  */

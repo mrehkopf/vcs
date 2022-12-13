@@ -22,13 +22,8 @@ struct log_entry_s
 };
 
 void klog_log_error(const char *const msg, ...);
-
 void klog_log_debug(const char *const msg, ...);
-
+void klog_log_assert(const char *const msg, ...);
 void klog_log_info(const char *const msg, ...);
-
-void klog_set_logging_enabled(const bool state);
-
-void klog_initialize(void);
 
 #endif

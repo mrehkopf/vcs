@@ -63,20 +63,24 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
 
             connect(file, &DialogFileMenu::open, this, [=]
             {
-                QString filename = QFileDialog::getOpenFileName(this,
-                                                                "Load video presets from...",
-                                                                "",
-                                                                "Video presets (*.vcs-video);;All files(*.*)");
+                QString filename = QFileDialog::getOpenFileName(
+                    this,
+                    "Load video presets from...",
+                    "",
+                    "Video presets (*.vcs-video);;All files(*.*)"
+                );
 
                 this->load_presets_from_file(filename);
             });
 
             connect(file, &DialogFileMenu::save_as, this, [=](const QString &originalFilename)
             {
-                QString filename = QFileDialog::getSaveFileName(this,
-                                                                "Save video presets as...",
-                                                                originalFilename,
-                                                                "Video presets (*.vcs-video);;All files (*.*)");
+                QString filename = QFileDialog::getSaveFileName(
+                    this,
+                    "Save video presets as...",
+                    originalFilename,
+                    "Video presets (*.vcs-video);;All files (*.*)"
+                );
 
                 this->save_video_presets_to_file(filename);
             });

@@ -15,7 +15,7 @@
 
 #include "common/globals.h"
 
-#define NULL_RGBEASY_FUNCTION(fn_name)      DEBUG_(("Function called: %s.", fn_name))
+#define NULL_RGBEASY_FUNCTION(fn_name)      (DEBUG(("Function called: %s.", fn_name)), RGBERROR_NO_ERROR)
 #define NULL_RGBEASY_CONSTANT               -1
 #define NULL_RGBEASY_POINTER                void*
 #ifndef _WIN32 /// Temp hack.

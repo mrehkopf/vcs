@@ -104,7 +104,6 @@ static bool initialize_all(void)
     if (!PROGRAM_EXIT_REQUESTED) kt_initialize_timers();
     if (!PROGRAM_EXIT_REQUESTED) ka_initialize_aliases();
     if (!PROGRAM_EXIT_REQUESTED) krecord_initialize();
-    if (!PROGRAM_EXIT_REQUESTED) klog_initialize();
     if (!PROGRAM_EXIT_REQUESTED) kvideopreset_initialize();
     if (!PROGRAM_EXIT_REQUESTED) ks_initialize_scaler();
     if (!PROGRAM_EXIT_REQUESTED) kc_initialize_capture();
@@ -282,7 +281,7 @@ static void eco_sleep(const capture_event_e event)
 
 int main(int argc, char *argv[])
 {
-    printf("VCS %s\n---------+\n", PROGRAM_VERSION_STRING);
+    printf("VCS %s\n", PROGRAM_VERSION_STRING);
 
     #ifndef RELEASE_BUILD
         printf("NON-RELEASE BUILD\n");

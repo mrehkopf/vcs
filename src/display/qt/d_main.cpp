@@ -60,15 +60,6 @@ void kd_acquire_output_window(void)
     return;
 }
 
-bool kd_add_log_entry(const log_entry_s e)
-{
-    (void)e;
-
-    /* TODO.*/
-
-    return false;
-}
-
 void kd_release_output_window(void)
 {
     INFO(("Releasing the display."));
@@ -204,8 +195,6 @@ void kd_show_headless_assert_error_message(const char *const msg,
 
         mb.exec();
     }
-
-    NBENE(("%s %s %d", msg, filename, lineNum));
 
     return;
 }
