@@ -180,7 +180,7 @@ bool kc_has_digital_signal(void)
     // 10: YC
     // 11: Unknown
     const bool isDigital = (
-        kc_has_valid_signal() &&
+        kc_is_receiving_signal() &&
         (videoParams.value(ic_v4l_device_controls_c::control_type_e::signal_type) <= 3)
     );
 
