@@ -108,29 +108,29 @@ QDialog[objectName="InputResolutionDialog"] QFrame
     margin-bottom: 9px;
 }
 
-QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_warnOfDigitalInput"]
+QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_warnOfDigitalInput"]
 {
     padding: 9px;
     color: #ababab;
 }
 
-QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"]
+QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurrentlyActive"]
 {
     margin: 0;
     padding: 0;
 }
 
-QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
+QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
 {
     color: #4e4e4e;
 }
 
-QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="active"]
+QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="active"]
 {
     color: greenyellow;
 }
 
-QDialog[objectName="VideoParameterDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="inactive"]
+QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="inactive"]
 {
     color: gray;
 }
