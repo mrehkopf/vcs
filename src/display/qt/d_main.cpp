@@ -12,7 +12,7 @@
 #include <cassert>
 #include <thread>
 #include "display/qt/windows/output_window.h"
-#include "display/qt/dialogs/video_parameter_dialog.h"
+#include "display/qt/dialogs/video_presets_dialog.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/dialogs/output_resolution_dialog.h"

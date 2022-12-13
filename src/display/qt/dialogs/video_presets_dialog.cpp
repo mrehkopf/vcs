@@ -7,7 +7,7 @@
 #include "display/qt/subclasses/QComboBox_video_preset_list.h"
 #include "display/qt/subclasses/QGroupBox_parameter_grid.h"
 #include "display/qt/subclasses/QMenu_dialog_file_menu.h"
-#include "display/qt/dialogs/video_parameter_dialog.h"
+#include "display/qt/dialogs/video_presets_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "common/command_line/command_line.h"
@@ -17,7 +17,7 @@
 #include "common/propagate/vcs_event.h"
 #include "capture/capture.h"
 #include "capture/video_presets.h"
-#include "ui_video_parameter_dialog.h"
+#include "ui_video_presets_dialog.h"
 
 // By default, values from the GUI's controls (sliders and spinboxes) will be
 // sent to the capture card in real-time, i.e. as the controls are operated.
@@ -38,9 +38,9 @@ static bool CONTROLS_LIVE_UPDATE = true;
 #define PARAM_LABEL_GREEN_CONTRAST "Contrast: G"
 #define PARAM_LABEL_BLUE_CONTRAST "Contrast: B"
 
-VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
+VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
     VCSBaseDialog(parent),
-    ui(new Ui::VideoParameterDialog)
+    ui(new Ui::VideoPresetsDialog)
 {
     ui->setupUi(this);
 
@@ -135,7 +135,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
 
     // Connect the GUI controls to consequences for changing their values.
     {
-        connect(this, &VideoParameterDialog::preset_activation_rules_changed, this, [this]
+        connect(this, &VideoPresetsDialog::preset_activation_rules_changed, this, [this]
         {
             this->update_active_preset_indicator();
         });
@@ -422,7 +422,7 @@ VideoParameterDialog::VideoParameterDialog(QWidget *parent) :
     return;
 }
 
-VideoParameterDialog::~VideoParameterDialog()
+VideoPresetsDialog::~VideoPresetsDialog()
 {
     // Save persistent settings.
     {
@@ -434,7 +434,7 @@ VideoParameterDialog::~VideoParameterDialog()
     return;
 }
 
-bool VideoParameterDialog::save_video_presets_to_file(QString filename)
+bool VideoPresetsDialog::save_video_presets_to_file(QString filename)
 {
     if (filename.isEmpty())
     {
@@ -456,7 +456,7 @@ bool VideoParameterDialog::save_video_presets_to_file(QString filename)
     return false;
 }
 
-bool VideoParameterDialog::load_presets_from_file(const QString &filename)
+bool VideoPresetsDialog::load_presets_from_file(const QString &filename)
 {
     if (filename.isEmpty())
     {
@@ -477,7 +477,7 @@ bool VideoParameterDialog::load_presets_from_file(const QString &filename)
     return true;
 }
 
-void VideoParameterDialog::update_active_preset_indicator(void)
+void VideoPresetsDialog::update_active_preset_indicator(void)
 {
     const auto *selectedPreset = ui->comboBox_presetList->current_preset();
 
@@ -502,7 +502,7 @@ void VideoParameterDialog::update_active_preset_indicator(void)
     return;
 }
 
-void VideoParameterDialog::assign_presets(const std::vector<video_preset_s*> &presets)
+void VideoPresetsDialog::assign_presets(const std::vector<video_preset_s*> &presets)
 {
     ui->comboBox_presetList->clear();
 
@@ -520,7 +520,7 @@ void VideoParameterDialog::assign_presets(const std::vector<video_preset_s*> &pr
     return;
 }
 
-void VideoParameterDialog::broadcast_current_preset_parameters(void)
+void VideoPresetsDialog::broadcast_current_preset_parameters(void)
 {
     auto *const preset = ui->comboBox_presetList->current_preset();
 
@@ -549,7 +549,7 @@ void VideoParameterDialog::broadcast_current_preset_parameters(void)
     return;
 }
 
-void VideoParameterDialog::update_preset_control_ranges(void)
+void VideoPresetsDialog::update_preset_control_ranges(void)
 {
     video_signal_parameters_s currentParams = {};
 
@@ -612,7 +612,7 @@ void VideoParameterDialog::update_preset_control_ranges(void)
     return;
 }
 
-void VideoParameterDialog::update_preset_controls_with_current_preset_data(void)
+void VideoPresetsDialog::update_preset_controls_with_current_preset_data(void)
 {
     auto *const preset = ui->comboBox_presetList->current_preset();
 

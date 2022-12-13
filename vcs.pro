@@ -58,6 +58,7 @@ RESOURCES += \
 SOURCES += \
     src/display/qt/dialogs/filter_graph/base_filter_graph_node.cpp \
     src/display/qt/dialogs/filter_graph/output_scaler_node.cpp \
+    src/display/qt/dialogs/video_presets_dialog.cpp \
     src/display/qt/keyboard_shortcuts.cpp \
     src/filter/filters/output_scaler/filter_output_scaler.cpp \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.cpp \
@@ -153,7 +154,6 @@ SOURCES += \
     src/display/qt/dialogs/filter_graph/output_gate_node.cpp \
     src/display/qt/dialogs/filter_graph/input_gate_node.cpp \
     src/display/qt/dialogs/filter_graph/filter_node.cpp \
-    src/display/qt/dialogs/video_parameter_dialog.cpp \
     src/capture/video_presets.cpp \
     src/common/disk/file_writers/file_writer_video_presets_version_a.cpp \
     src/common/disk/file_readers/file_reader_video_presets_version_a.cpp \
@@ -167,6 +167,7 @@ HEADERS += \
     src/common/types.h \
     src/display/qt/dialogs/filter_graph/base_filter_graph_node.h \
     src/display/qt/dialogs/filter_graph/output_scaler_node.h \
+    src/display/qt/dialogs/video_presets_dialog.h \
     src/display/qt/keyboard_shortcuts.h \
     src/display/qt/subclasses/QComboBox_video_preset_list.h \
     src/display/qt/subclasses/QDialog_vcs_base_dialog.h \
@@ -265,7 +266,6 @@ HEADERS += \
     src/display/qt/dialogs/filter_graph/output_gate_node.h \
     src/display/qt/dialogs/filter_graph/input_gate_node.h \
     src/display/qt/dialogs/filter_graph/filter_node.h \
-    src/display/qt/dialogs/video_parameter_dialog.h \
     src/common/refresh_rate.h \
     src/capture/video_presets.h \
     src/common/disk/file_writers/file_writer_video_presets.h \
@@ -278,6 +278,7 @@ HEADERS += \
     src/display/qt/dialogs/linux_device_selector_dialog.h
 
 FORMS += \
+    src/display/qt/dialogs/ui/video_presets_dialog.ui \
     src/display/qt/windows/ui/output_window.ui \
     src/display/qt/dialogs/ui/overlay_dialog.ui \
     src/display/qt/dialogs/ui/resolution_dialog.ui \
@@ -289,7 +290,6 @@ FORMS += \
     src/display/qt/dialogs/ui/output_resolution_dialog.ui \
     src/display/qt/dialogs/ui/input_resolution_dialog.ui \
     src/display/qt/dialogs/ui/signal_dialog.ui \
-    src/display/qt/dialogs/ui/video_parameter_dialog.ui \
     src/display/qt/dialogs/ui/linux_device_selector_dialog.ui
 
 contains(DEFINES, CAPTURE_DEVICE_VIRTUAL) {

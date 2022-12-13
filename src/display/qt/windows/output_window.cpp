@@ -32,7 +32,7 @@
 #include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 #include "display/qt/dialogs/linux_device_selector_dialog.h"
 #include "display/qt/dialogs/output_resolution_dialog.h"
-#include "display/qt/dialogs/video_parameter_dialog.h"
+#include "display/qt/dialogs/video_presets_dialog.h"
 #include "display/qt/dialogs/input_resolution_dialog.h"
 #include "display/qt/dialogs/signal_dialog.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
@@ -90,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         outputResolutionDlg = new OutputResolutionDialog;
         inputResolutionDlg = new InputResolutionDialog;
-        videoParamDlg = new VideoParameterDialog;
+        videoPresetsDlg = new VideoPresetsDialog;
         filterGraphDlg = new FilterGraphDialog;
         antitearDlg = new AntiTearDialog;
         overlayDlg = new OverlayDialog;
@@ -102,7 +102,7 @@ MainWindow::MainWindow(QWidget *parent) :
         this->dialogs << outputResolutionDlg
                       << inputResolutionDlg
                       << filterGraphDlg
-                      << videoParamDlg
+                      << videoPresetsDlg
                       << antitearDlg
                       << overlayDlg
                       << signalDlg
@@ -276,9 +276,9 @@ MainWindow::MainWindow(QWidget *parent) :
             signal->setShortcut(kd_get_key_sequence("output-window: open-signal-info-dialog"));
             captureMenu->addAction(signal);
 
-            QAction *videoParams = new QAction("Video presets...", this);
-            videoParams->setShortcut(kd_get_key_sequence("output-window: open-video-presets-dialog"));
-            captureMenu->addAction(videoParams);
+            QAction *videoPresets = new QAction("Video presets...", this);
+            videoPresets->setShortcut(kd_get_key_sequence("output-window: open-video-presets-dialog"));
+            captureMenu->addAction(videoPresets);
 
             #if CAPTURE_DEVICE_VISION_V4L
                 aliases->setEnabled(false);
@@ -286,7 +286,7 @@ MainWindow::MainWindow(QWidget *parent) :
             #endif
 
             connect(signal, &QAction::triggered, this, [=]{this->signalDlg->open();});
-            connect(videoParams, &QAction::triggered, this, [=]{this->videoParamDlg->open();});
+            connect(videoPresets, &QAction::triggered, this, [=]{this->videoPresetsDlg->open();});
             connect(resolution, &QAction::triggered, this, [=]{this->inputResolutionDlg->open();});
             connect(aliases, &QAction::triggered, this, [=]{this->aliasDlg->open();});
         }

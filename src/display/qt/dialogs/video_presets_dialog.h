@@ -5,21 +5,19 @@
 #include "filter/filter.h"
 #include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 
-class QMenuBar;
-
 struct video_preset_s;
 
 namespace Ui {
-class VideoParameterDialog;
+class VideoPresetsDialog;
 }
 
-class VideoParameterDialog : public VCSBaseDialog
+class VideoPresetsDialog : public VCSBaseDialog
 {
     Q_OBJECT
 
 public:
-    explicit VideoParameterDialog(QWidget *parent = 0);
-    ~VideoParameterDialog();
+    explicit VideoPresetsDialog(QWidget *parent = 0);
+    ~VideoPresetsDialog();
 
     // Called to inform the dialog of a new source file for video presets.
     void assign_presets(const std::vector<video_preset_s*> &presets);
@@ -60,7 +58,7 @@ private:
 
     void update_active_preset_indicator(void);
 
-    Ui::VideoParameterDialog *ui;
+    Ui::VideoPresetsDialog *ui;
 };
 
 #endif

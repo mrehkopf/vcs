@@ -13,7 +13,7 @@
 
 class OutputResolutionDialog;
 class InputResolutionDialog;
-class VideoParameterDialog;
+class VideoPresetsDialog;
 class FilterGraphDialog;
 class AntiTearDialog;
 class OverlayDialog;
@@ -71,8 +71,8 @@ public:
 
     OutputResolutionDialog* output_resolution_dialog(void) const { return this->outputResolutionDlg; }
     InputResolutionDialog* input_resolution_dialog(void)   const { return this->inputResolutionDlg; }
-    VideoParameterDialog* video_presets_dialog(void)       const { return this->videoParamDlg; }
     FilterGraphDialog* filter_graph_dialog(void)           const { return this->filterGraphDlg; }
+    VideoPresetsDialog* video_presets_dialog(void)         const { return this->videoPresetsDlg; }
     AntiTearDialog* anti_tear_dialog(void)                 const { return this->antitearDlg; }
     OverlayDialog* overlay_dialog(void)                    const { return this->overlayDlg; }
     RecordDialog* recordDialog(void)                       const { return this->recordDlg; }
@@ -112,7 +112,7 @@ private:
 
     OutputResolutionDialog *outputResolutionDlg = nullptr;
     InputResolutionDialog *inputResolutionDlg = nullptr;
-    VideoParameterDialog *videoParamDlg = nullptr;
+    VideoPresetsDialog *videoPresetsDlg = nullptr;
     FilterGraphDialog *filterGraphDlg = nullptr;
     AntiTearDialog *antitearDlg = nullptr;
     OverlayDialog *overlayDlg = nullptr;
