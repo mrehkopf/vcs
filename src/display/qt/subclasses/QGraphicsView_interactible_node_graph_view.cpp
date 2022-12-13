@@ -29,12 +29,9 @@ InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphic
 
     // Set up keyboard shortcuts.
     {
-        connect(kd_make_key_shortcut("filter-graph-dialog: delete-selected-nodes", this), &QShortcut::activated, this, [this]
+        connect(kd_make_key_shortcut("filter-graph-dialog: delete-selected-nodes", this), &QShortcut::activated, this, [this, parent]
         {
-            for (QGraphicsItem *selectedItem: this->scene()->selectedItems())
-            {
-                dynamic_cast<InteractibleNodeGraph*>(this->scene())->remove_node(dynamic_cast<InteractibleNodeGraphNode*>(selectedItem));
-            }
+            dynamic_cast<InteractibleNodeGraph*>(this->scene())->remove_selected_nodes();
         });
     }
 

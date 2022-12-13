@@ -22,7 +22,8 @@ public:
     void update_scene_connections(void);
     void connect_scene_edges(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge);
     void disconnect_scene_edges(const node_edge_s *const sourceEdge, const node_edge_s *const targetEdge, const bool noEmit = false);
-    void remove_node(InteractibleNodeGraphNode *const node);
+    void remove_node(InteractibleNodeGraphNode *const node, const bool haveUserPermission = false);
+    void remove_selected_nodes(void);
     void reset_scene(void);
     int grid_size(void) const;
 
@@ -42,6 +43,7 @@ private:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void drawBackground(QPainter *painter, const QRectF &rect);
 
+    bool get_user_permission_for_node_deletion(void) const;
     void complete_connection_event(node_edge_s *const finalEdge);
     void start_connection_event(node_edge_s *const sourceEdge, const QPointF mousePos);
     void reset_current_connection_event(void);

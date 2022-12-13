@@ -29,6 +29,7 @@
  */
 
 #include <QApplication>
+#include <QMessageBox>
 #include <QPainter>
 #include <QWidget>
 #include <QCursor>
@@ -210,13 +211,43 @@ void InteractibleNodeGraph::update_scene_connections(void)
     return;
 }
 
-void InteractibleNodeGraph::remove_node(InteractibleNodeGraphNode *const node)
+bool InteractibleNodeGraph::get_user_permission_for_node_deletion(void) const
 {
-    node->disconnect_all_edges();
+    return (
+        QMessageBox::Yes == QMessageBox::question(
+            nullptr,
+            "Confirm node deletion",
+            "Are you sure you want to delete the selected node(s)?",
+            (QMessageBox::No | QMessageBox::Yes)
+        )
+    );
+}
 
-    this->removeItem(node);
+void InteractibleNodeGraph::remove_selected_nodes(void)
+{
+    const QList<QGraphicsItem*> selectedNodes = this->selectedItems();
 
-    emit this->nodeRemoved(node);
+    if (
+        selectedNodes.count() &&
+        this->get_user_permission_for_node_deletion()
+    ){
+        for (QGraphicsItem *node: selectedNodes)
+        {
+            this->remove_node(dynamic_cast<InteractibleNodeGraphNode*>(node), true);
+        }
+    }
+
+    return;
+}
+
+void InteractibleNodeGraph::remove_node(InteractibleNodeGraphNode *const node, const bool haveUserPermission)
+{
+    if (node && (haveUserPermission || this->get_user_permission_for_node_deletion()))
+    {
+        node->disconnect_all_edges();
+        this->removeItem(node);
+        emit this->nodeRemoved(node);
+    }
 
     return;
 }
