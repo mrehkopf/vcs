@@ -29,6 +29,7 @@ public:
         PARAM_BG_COLOR_GREEN,
         PARAM_BG_COLOR_BLUE,
         PARAM_BG_COLOR_ALPHA,
+        PARAM_ALIGN,
 
         // REPURPOSE THESE FOR NEW PARAMETERS AS NEEDED.
         //
@@ -62,6 +63,12 @@ public:
         FONT_RETRO_SANS_SERIF,
     };
 
+    enum {
+        ALIGN_LEFT,
+        ALIGN_CENTER,
+        ALIGN_RIGHT,
+    };
+
     static const std::size_t maxStringLength = 255;
 
     filter_render_text_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
@@ -78,6 +85,7 @@ public:
             {PARAM_BG_COLOR_ALPHA, 255},
             {PARAM_SCALE, 1},
             {PARAM_FONT, FONT_MINIMALIST},
+            {PARAM_ALIGN, ALIGN_LEFT},
             {PARAM_UNUSED1, 0},
             {PARAM_UNUSED2, 0},
             {PARAM_UNUSED3, 0},
