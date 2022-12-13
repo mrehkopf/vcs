@@ -47,13 +47,28 @@ Run `$ qmake && make` in the repo's root; or open [vcs.pro](vcs.pro) in Qt Creat
 
 I've been building VCS using GCC 9 on Linux and MinGW 5.3 on Windows. My Qt has been version 5.12 on Linux and 5.7 on Windows. Sticking with these tools should give you the least number of compatibility issues.
 
-### Release build vs debug build
+### Release build vs. debug build
 
 The default configuration in [vcs.pro](vcs.pro) produces a debug build, with &ndash; among other things &ndash; more copious run-time bounds-checking of memory accesses. The run-time debugging features are expected to reduce performance to some extent, but can help reveal programming errors.
 
 Defining `RELEASE_BUILD` globally will produce a release build, with fewer debugging checks in performance-critical sections of the program. Simply uncomment `DEFINES += RELEASE_BUILD` at the top of [vcs.pro](vcs.pro) and execute a full rebuild.
 
 To confirm whether the program is running in release or debug mode, check the About dialog (right-click VCS's output window and select "About VCS&hellip;"). For debug builds, the program's version will be reported as "VCS x.x.x (non-release build)", whereas for release builds it'll be "VCS x.x.x".
+
+### The capture backend
+
+A capture backend in VCS is an implementation providing support for a particular capture device. For example, Datapath's VisionRGB capture cards are supported in VCS on Windows by the [RGBEasy capture backend](./src/capture/rgbeasy/), which uses the Datapath RGBEasy API.
+
+One (and only one) capture backend must be active in any build of VCS. To select which one it is, set its identifier in the `DEFINES` variable in [vcs.pro](vcs.pro). By default, VCS uses Datapath's RGBEasy (CAPTURE_BACKEND_RGBEASY) on Windows and Vision (CAPTURE_BACKEND_VISION_V4L) on Linux, supporting the VisionRGB range of capture cards on those platforms.
+
+The following capture backends are available:
+
+| Identifier                  | Explanation |
+| --------------------------- | ----------- |
+| CAPTURE_BACKEND_RGBEASY     | Supports the Datapath VisionRGB range of capture cards on Windows; requires the Datapath VisionRGB driver to be installed. If used when building on Linux, will provide a debug implementation that announces in the terminal which RGBEasy API functions would be called if you were to run the program on Windows. |
+| CAPTURE_BACKEND_VISION_V4L  | Supports the Datapath VisionRGB range of capture cards on Linux; requires the Datapath Vision driver to be installed. |
+| CAPTURE_BACKEND_VIRTUAL     | Provides a device-independent capture source that generates a test image. Useful for debugging, and doesn't require capture drivers to be installed. |
+| CAPTURE_BACKEND_DOSBOX_MMAP | Allows capturing DOSBox's frame buffer on Linux. Intended for debugging. See [this blog post](https://www.tarpeeksihyvaesoft.com/blog/capturing-dosboxs-frame-buffer-via-shared-memory/) for details.|
 
 ### Dependencies
 
@@ -83,13 +98,13 @@ On Windows, VCS uses the Datapath RGBEasy 1.0* API to interface with your Vision
 
 \*As distributed with the VisionRGB-PRO driver package v8.1.2.
 
-To remove VCS's the dependency on RGBEasy, replace `CAPTURE_DEVICE_RGBEASY` with `CAPTURE_DEVICE_VIRTUAL` in [vcs.pro](vcs.pro). This will also disable capturing, but will let you run the program without the Datapath drivers/dependencies installed.
+To remove VCS's the dependency on RGBEasy, replace `CAPTURE_BACKEND_RGBEASY` with `CAPTURE_BACKEND_VIRTUAL` in [vcs.pro](vcs.pro). This will also disable capturing, but will let you run the program without the Datapath drivers/dependencies installed.
 
 #### Datapath Vision
 
 On Linux, VCS uses the Datapath Vision driver to interface with Datapath capture devices. You'll need to download and install the kernel module driver from Datapath's website (and re-install it every time your kernel updates).
 
-To remove VCS's the dependency on the Datapath Vision driver, replace `CAPTURE_DEVICE_VISION_V4L` with `CAPTURE_DEVICE_VIRTUAL` in [vcs.pro](vcs.pro). This will also disable capturing, but will let you run the program without the drivers installed.
+To remove VCS's the dependency on the Datapath Vision driver, replace `CAPTURE_BACKEND_VISION_V4L` with `CAPTURE_BACKEND_VIRTUAL` in [vcs.pro](vcs.pro). This will also disable capturing, but will let you run the program without the drivers installed.
 
 ## Program flow
 
