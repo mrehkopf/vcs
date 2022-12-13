@@ -10,6 +10,7 @@
 #include <numeric>
 #include <vector>
 #include <string>
+#include "filter/filters/render_text/filter_render_text.h"
 #include "display/display.h"
 #include "common/globals.h"
 
@@ -174,7 +175,8 @@ public:
         int y,
         const unsigned scale = 1,
         const std::vector<uint8_t> color = {0, 0, 0},
-        const std::vector<uint8_t> bgColor = {}
+        const std::vector<uint8_t> bgColor = {},
+        const unsigned alignment = filter_render_text_c::ALIGN_LEFT
     ) const
     {
         k_assert_optional((color.size() <= (dstImage->resolution.bpp / 8)), "Malformed color for string rendering.");
@@ -185,18 +187,26 @@ public:
             return;
         }
 
+        const unsigned stringWidth = (this->width_of(string) * scale);
+        const unsigned stringHeight = (this->height_of(string) * scale);
+
         x += scale;
         y += (this->cap_height() * scale);
+
+        switch (alignment)
+        {
+            default:
+            case filter_render_text_c::ALIGN_LEFT: break;
+            case filter_render_text_c::ALIGN_RIGHT: x -= stringWidth; break;
+            case filter_render_text_c::ALIGN_CENTER: x -= (stringWidth / 2); break;
+        }
 
         // Render the background.
         if (!bgColor.empty())
         {
-            const unsigned bgWidth = (this->width_of(string) * scale);
-            const unsigned bgHeight = (this->height_of(string) * scale);
-
-            for (unsigned bgY = 0; bgY < bgHeight; bgY++)
+            for (unsigned bgY = 0; bgY < stringHeight; bgY++)
             {
-                for (unsigned bgX = 0; bgX < bgWidth; bgX++)
+                for (unsigned bgX = 0; bgX < stringWidth; bgX++)
                 {
                     const unsigned x_ = (bgX + (x - scale));
                     const unsigned y_ = (bgY + (y - (this->cap_height() * scale)));

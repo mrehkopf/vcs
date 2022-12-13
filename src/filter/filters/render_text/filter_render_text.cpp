@@ -26,7 +26,8 @@ void filter_render_text_c::apply(image_s *const image)
     const uint8_t bgColorBlue = this->parameter(filter_render_text_c::PARAM_BG_COLOR_BLUE);
     const uint8_t bgColorAlpha = this->parameter(filter_render_text_c::PARAM_BG_COLOR_ALPHA);
     const int fontId = this->parameter(filter_render_text_c::PARAM_FONT);
-    const int scale = this->parameter(filter_render_text_c::PARAM_SCALE);
+    const unsigned scale = this->parameter(filter_render_text_c::PARAM_SCALE);
+    const unsigned alignment = this->parameter(filter_render_text_c::PARAM_ALIGN);
     const unsigned x = this->parameter(filter_render_text_c::PARAM_POS_X);
     const unsigned y = this->parameter(filter_render_text_c::PARAM_POS_Y);
 
@@ -46,7 +47,8 @@ void filter_render_text_c::apply(image_s *const image)
         image,
         x, y, scale,
         {fgColorBlue, fgColorGreen, fgColorRed, fgColorAlpha},
-        {bgColorBlue, bgColorGreen, bgColorRed, bgColorAlpha}
+        {bgColorBlue, bgColorGreen, bgColorRed, bgColorAlpha},
+        alignment
     );
 
     return;

@@ -21,22 +21,6 @@ filtergui_render_text_c::filtergui_render_text_c(abstract_filter_c *const filter
     }
 
     {
-        auto x = new filtergui_spinbox_s;
-        x->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_POS_X);};
-        x->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_POS_X, value);};
-        x->minValue = -MAX_CAPTURE_WIDTH;
-        x->maxValue = MAX_CAPTURE_WIDTH;
-
-        auto y = new filtergui_spinbox_s;
-        y->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_POS_Y);};
-        y->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_POS_Y, value);};
-        y->minValue = -MAX_CAPTURE_HEIGHT;
-        y->maxValue = MAX_CAPTURE_HEIGHT;
-
-        this->guiFields.push_back({"XY", {x, y}});
-    }
-
-    {
         auto font = new filtergui_combobox_s;
         font->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_FONT);};
         font->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_FONT, value);};
@@ -49,7 +33,32 @@ filtergui_render_text_c::filtergui_render_text_c(abstract_filter_c *const filter
         scale->maxValue = 20;
         scale->suffix = "\u00d7";
 
-        this->guiFields.push_back({"Font", {font, scale}});
+        this->guiFields.push_back({"Font", {scale, font}});
+    }
+
+    {
+        auto x = new filtergui_spinbox_s;
+        x->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_POS_X);};
+        x->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_POS_X, value);};
+        x->minValue = -MAX_CAPTURE_WIDTH;
+        x->maxValue = MAX_CAPTURE_WIDTH;
+
+        auto y = new filtergui_spinbox_s;
+        y->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_POS_Y);};
+        y->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_POS_Y, value);};
+        y->minValue = -MAX_CAPTURE_HEIGHT;
+        y->maxValue = MAX_CAPTURE_HEIGHT;
+
+        this->guiFields.push_back({"Position", {x, y}});
+    }
+
+    {
+        auto align = new filtergui_combobox_s;
+        align->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_ALIGN);};
+        align->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_ALIGN, value);};
+        align->items = {"Left", "Center", "Right"};
+
+        this->guiFields.push_back({"H. align", {align}});
     }
 
     {
