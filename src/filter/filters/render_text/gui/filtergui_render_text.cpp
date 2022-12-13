@@ -21,22 +21,6 @@ filtergui_render_text_c::filtergui_render_text_c(abstract_filter_c *const filter
     }
 
     {
-        auto font = new filtergui_combobox_s;
-        font->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_FONT);};
-        font->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_FONT, value);};
-        font->items = {"Minimalist", "Retro Serif", "Retro Sans Serif"};
-
-        auto scale = new filtergui_spinbox_s;
-        scale->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_SCALE);};
-        scale->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_SCALE, value);};
-        scale->minValue = 1;
-        scale->maxValue = 20;
-        scale->suffix = "\u00d7";
-
-        this->guiFields.push_back({"Font", {scale, font}});
-    }
-
-    {
         auto x = new filtergui_spinbox_s;
         x->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_POS_X);};
         x->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_POS_X, value);};
@@ -50,6 +34,22 @@ filtergui_render_text_c::filtergui_render_text_c(abstract_filter_c *const filter
         y->maxValue = MAX_CAPTURE_HEIGHT;
 
         this->guiFields.push_back({"Position", {x, y}});
+    }
+
+    {
+        auto font = new filtergui_combobox_s;
+        font->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_FONT);};
+        font->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_FONT, value);};
+        font->items = {"Minimalist", "Retro Serif", "Retro Sans Serif"};
+
+        auto scale = new filtergui_spinbox_s;
+        scale->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_SCALE);};
+        scale->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_SCALE, value);};
+        scale->minValue = 1;
+        scale->maxValue = 20;
+        scale->suffix = "\u00d7";
+
+        this->guiFields.push_back({"Font", {scale, font}});
     }
 
     {
