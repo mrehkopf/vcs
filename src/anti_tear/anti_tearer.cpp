@@ -171,7 +171,13 @@ void anti_tearer_c::copy_frame_pixel_rows(const anti_tear_frame_s *const srcFram
         return;
     }
 
-    k_assert(((fromRow < toRow) && (toRow <= srcFrame->resolution.h)), "Malformed parameters.");
+    if (
+        (fromRow > toRow) ||
+        (toRow > srcFrame->resolution.h)
+    ){
+        DEBUG(("Anti-tear tried overflowing frame buffer in copy_frame_pixel_rows(). Ignoring it."));
+        return;
+    }
 
     const unsigned bpp = (srcFrame->resolution.bpp / 8);
     const unsigned idx = ((fromRow * srcFrame->resolution.w) * bpp);
