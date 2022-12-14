@@ -33,14 +33,19 @@ filtergui_render_text_c::filtergui_render_text_c(abstract_filter_c *const filter
         y->minValue = -MAX_CAPTURE_HEIGHT;
         y->maxValue = MAX_CAPTURE_HEIGHT;
 
-        this->guiFields.push_back({"Position", {x, y}});
+        auto align = new filtergui_combobox_s;
+        align->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_ALIGN);};
+        align->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_ALIGN, value);};
+        align->items = {"Left", "Center", "Right"};
+
+        this->guiFields.push_back({"Position", {x, y, align}});
     }
 
     {
         auto font = new filtergui_combobox_s;
         font->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_FONT);};
         font->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_FONT, value);};
-        font->items = {"Minimalist", "Retro Serif", "Retro Sans Serif"};
+        font->items = {"Minimalist", "Retro Serif", "Retro Sans"};
 
         auto scale = new filtergui_spinbox_s;
         scale->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_SCALE);};
@@ -49,16 +54,7 @@ filtergui_render_text_c::filtergui_render_text_c(abstract_filter_c *const filter
         scale->maxValue = 20;
         scale->suffix = "\u00d7";
 
-        this->guiFields.push_back({"Font", {scale, font}});
-    }
-
-    {
-        auto align = new filtergui_combobox_s;
-        align->get_value = [=]{return filter->parameter(filter_render_text_c::PARAM_ALIGN);};
-        align->set_value = [=](const double value){filter->set_parameter(filter_render_text_c::PARAM_ALIGN, value);};
-        align->items = {"Left", "Center", "Right"};
-
-        this->guiFields.push_back({"H. align", {align}});
+        this->guiFields.push_back({"Font", {font, scale}});
     }
 
     {
