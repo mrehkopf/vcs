@@ -14,16 +14,16 @@
 static const auto FONT = font_5x3_c();
 static const unsigned TEXT_SIZE = 4;
 
-// Counts the number of unique frames per second, i.e. frames in which the pixels
-// change between frames by less than a set threshold (which is to account for
-// analog capture artefacts).
+// Counts the number of unique frames per second, i.e. frames in which the pixels change
+// between frames by less than a set threshold (which is to account for analog capture
+// artefacts).
 void filter_frame_rate_c::apply(image_s *const image)
 {
     this->assert_input_validity(image);
 
     static heap_mem<uint8_t> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Frame rate filter buffer");
     static auto timeElapsed = std::chrono::system_clock::now();
-    static unsigned numUniqueFramesProcessed = 0;
+    static unsigned numUniqueFrames = 0;
     static unsigned estimatedFPS = 0;
 
     const unsigned threshold = this->parameter(PARAM_THRESHOLD);
@@ -34,26 +34,27 @@ void filter_frame_rate_c::apply(image_s *const image)
     // Find out whether any pixel in the current frame differs from the previous frame
     // by more than the threshold.
     {
-        for (unsigned i = 0; i < (image->resolution.w * image->resolution.h); i += (image->resolution.bpp / 8))
+        const unsigned imageBitsPerPixel = (image->resolution.bpp / 8);
+        const unsigned imageByteSize = (image->resolution.w * image->resolution.h * imageBitsPerPixel);
+        for (unsigned i = 0; i < imageByteSize; i += imageBitsPerPixel)
         {
             if (
-                (std::abs(image->pixels[i + 0] - prevPixels[i + 0]) >= threshold) ||
-                (std::abs(image->pixels[i + 1] - prevPixels[i + 1]) >= threshold) ||
-                (std::abs(image->pixels[i + 2] - prevPixels[i + 2]) >= threshold)
+                (std::abs(int(image->pixels[i + 0]) - int(prevPixels[i + 0])) >= threshold) ||
+                (std::abs(int(image->pixels[i + 1]) - int(prevPixels[i + 1])) >= threshold) ||
+                (std::abs(int(image->pixels[i + 2]) - int(prevPixels[i + 2])) >= threshold)
             ){
-                numUniqueFramesProcessed++;
+                numUniqueFrames++;
+                memcpy(prevPixels.data(), image->pixels, prevPixels.size_check(imageByteSize));
                 break;
             }
         }
-
-        memcpy(prevPixels.data(), image->pixels, prevPixels.size_check(image->resolution.w * image->resolution.h * (image->resolution.bpp / 8)));
 
         const auto timeNow = std::chrono::system_clock::now();
         const double secsElapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - timeElapsed).count() / 1000.0);
         if (secsElapsed >= 0.5)
         {
-            estimatedFPS = std::round(numUniqueFramesProcessed / secsElapsed);
-            numUniqueFramesProcessed = 0;
+            estimatedFPS = std::round(numUniqueFrames / secsElapsed);
+            numUniqueFrames = 0;
             timeElapsed = std::chrono::system_clock::now();
         }
     }
