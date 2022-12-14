@@ -29,7 +29,7 @@ bool ic_v4l_device_controls_c::set_value(const int newValue, const ic_v4l_device
 {
     if (this->v4l_id(control) < 0)
     {
-        DEBUG(("Asked to modify an unrecognized V4L control; ignoring this."));
+        DEBUG(("Asked to modify an unrecognized V4L control. Ignoring it."));
         return false;
     }
 

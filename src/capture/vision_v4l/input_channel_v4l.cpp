@@ -613,7 +613,7 @@ bool input_channel_v4l_c::start_capturing()
         }
     }
 
-    DEBUG(("Capturing on %s.", this->v4lDeviceFileName.c_str()));
+    INFO(("Capturing on %s.", this->v4lDeviceFileName.c_str()));
 
     return true;
 
