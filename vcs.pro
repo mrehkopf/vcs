@@ -206,6 +206,7 @@ HEADERS += \
     src/filter/filters/render_text/font_10x6_sans_serif.h \
     src/filter/filters/render_text/font_10x6_serif.h \
     src/filter/filters/render_text/font_5x3.h \
+    src/filter/filters/render_text/font_fraps.h \
     src/filter/filters/source_fps_estimate/filter_source_fps_estimate.h \
     src/filter/filters/source_fps_estimate/gui/filtergui_source_fps_estimate.h \
     src/filter/filters/input_gate/filter_input_gate.h \
