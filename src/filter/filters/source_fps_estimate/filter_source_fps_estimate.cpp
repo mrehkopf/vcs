@@ -8,11 +8,11 @@
 #include <cmath>
 #include "filter/filters/source_fps_estimate/filter_source_fps_estimate.h"
 #include "filter/filters/render_text/filter_render_text.h"
-#include "filter/filters/render_text/font_5x3.h"
+#include "filter/filters/render_text/font_fraps.h"
 #include "capture/capture.h"
 
-static const auto FONT = font_5x3_c();
-static const unsigned TEXT_SIZE = 4;
+static const auto FONT = font_fraps_c();
+static const unsigned FONT_SIZE = 2;
 
 // Counts the number of unique frames per second, i.e. frames in which the pixels change
 // between frames by less than a set threshold (which is to account for analog capture
@@ -51,7 +51,7 @@ void filter_frame_rate_c::apply(image_s *const image)
 
         const auto timeNow = std::chrono::system_clock::now();
         const double secsElapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - timeElapsed).count() / 1000.0);
-        if (secsElapsed >= 0.5)
+        if (secsElapsed >= 0.25)
         {
             estimatedFPS = std::round(numUniqueFrames / secsElapsed);
             numUniqueFrames = 0;
@@ -62,12 +62,12 @@ void filter_frame_rate_c::apply(image_s *const image)
     // Draw the FPS counter into the current frame.
     {
         const unsigned signalRefreshRate = kc_current_capture_state().input.refreshRate.value<unsigned>();
-        const std::string outputString = ((estimatedFPS >= signalRefreshRate? "> " : "~") + std::to_string(estimatedFPS));
+        const std::string outputString = (std::to_string(estimatedFPS) + ((estimatedFPS >= signalRefreshRate)? "+" : ""));
 
         const std::pair<unsigned, unsigned> screenCoords = ([cornerId, &outputString, image]()->std::pair<unsigned, unsigned>
         {
-            const unsigned textWidth = (TEXT_SIZE * FONT.width_of(outputString));
-            const unsigned textHeight = (TEXT_SIZE * FONT.height_of(outputString));
+            const unsigned textWidth = (FONT_SIZE * FONT.width_of(outputString));
+            const unsigned textHeight = (FONT_SIZE * FONT.height_of(outputString));
 
             switch (cornerId)
             {
@@ -92,7 +92,7 @@ void filter_frame_rate_c::apply(image_s *const image)
             }
         })();
 
-        FONT.render(outputString, image, screenCoords.first, screenCoords.second, TEXT_SIZE, fgColor, {0, 0, 0, bgAlpha});
+        FONT.render(outputString, image, screenCoords.first, screenCoords.second, FONT_SIZE, fgColor, {0, 0, 0, bgAlpha});
     }
 
     return;
