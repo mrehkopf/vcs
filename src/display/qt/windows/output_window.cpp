@@ -462,7 +462,7 @@ MainWindow::MainWindow(QWidget *parent) :
                     }
                 };
 
-                for (unsigned size = 15; size <= 22; size++)
+                for (unsigned size = 15; size <= 19; size++)
                 {
                     add_size_action(size);
                 }
