@@ -13,7 +13,7 @@ OutputResolutionDialog::OutputResolutionDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->set_name("Output resolution");
+    this->set_name("Output size");
 
     disable_output_size_controls(false);
 

@@ -345,7 +345,7 @@ MainWindow::MainWindow(QWidget *parent) :
             outputMenu->addAction(overlay);
             connect(overlay, &QAction::triggered, this, [=]{this->overlayDlg->open();});
 
-            QAction *resolution = new QAction("Resolution...", this);
+            QAction *resolution = new QAction("Size...", this);
             resolution->setShortcut(kd_get_key_sequence("output-window: open-output-resolution-dialog"));
             outputMenu->addAction(resolution);
             connect(resolution, &QAction::triggered, this, [=]{this->outputResolutionDlg->open();});
