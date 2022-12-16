@@ -790,6 +790,16 @@ QPushButton:flat
     background: transparent;
 }
 
+QPushButton:hover,
+QComboBox:hover,
+QScrollBar::add-line:vertical:hover,
+QScrollBar::sub-line:vertical:hover,
+QScrollBar::add-line:horizontal:hover,
+QScrollBar::sub-line:horizontal:hover
+{
+    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #6c6c6c, stop: 1 #505050);
+}
+
 QPushButton:pressed,
 QPushButton:flat:pressed,
 QPushButton:flat:hover:pressed,
