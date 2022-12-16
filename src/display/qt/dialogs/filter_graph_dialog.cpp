@@ -248,6 +248,11 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             this->recalculate_filter_chains();
         });
 
+        connect(this->graphicsScene, &InteractibleNodeGraph::nodeMoved, this, [this]
+        {
+            emit this->data_changed();
+        });
+
         connect(this->graphicsScene, &InteractibleNodeGraph::nodeRemoved, this, [this](InteractibleNodeGraphNode *const node)
         {
             BaseFilterGraphNode *const filterNode = dynamic_cast<BaseFilterGraphNode*>(node);

@@ -128,7 +128,12 @@ void InteractibleNodeGraph::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     // the cursor, they're dragging one of the items in the scene.
     if (QApplication::mouseButtons() == Qt::LeftButton)
     {
-        this->update_scene_connections();
+        if (this->selectedItems().count())
+        {
+            this->update_scene_connections();
+            emit this->nodeMoved();
+        }
+
         this->connectionEvent.mousePos = event->scenePos();
     }
 

@@ -37,6 +37,9 @@ signals:
     // Emitted when the given node is removed from the scene.
     void nodeRemoved(InteractibleNodeGraphNode *const node);
 
+    // Emitted when one or mode nodes in the scene are moved.
+    void nodeMoved(void);
+
 private:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
