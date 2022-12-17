@@ -79,7 +79,6 @@ void ParameterGrid::add_combobox(const QString name,
         auto *const resetButton = new QPushButton();
         resetButton->setIcon(resetButtonIcon);
         resetButton->setFixedWidth(24);
-        resetButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
         resetButton->setEnabled(false);
         resetButton->setToolTip("Reset to default");
 
@@ -172,7 +171,6 @@ void ParameterGrid::add_scroller(const QString name,
         auto *const resetButton = new QPushButton();
         resetButton->setIcon(resetButtonIcon);
         resetButton->setFixedWidth(24);
-        resetButton->setFocusPolicy(Qt::FocusPolicy::NoFocus);
         resetButton->setEnabled(false);
         resetButton->setToolTip("Reset to default");
 

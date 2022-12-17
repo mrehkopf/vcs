@@ -31,6 +31,9 @@
    </property>
    <item>
     <widget class="QScrollArea" name="scrollArea">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
@@ -43,7 +46,7 @@
         <x>0</x>
         <y>0</y>
         <width>382</width>
-        <height>674</height>
+        <height>707</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -154,9 +157,6 @@
              </item>
              <item>
               <widget class="QPushButton" name="pushButton_startStopRecording">
-               <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
-               </property>
                <property name="text">
                 <string>Record</string>
                </property>
@@ -205,6 +205,9 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
                </property>
               </widget>
              </item>
@@ -592,6 +595,20 @@
    <header>QTableWidget_property_table.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>lineEdit_recordingFilename</tabstop>
+  <tabstop>pushButton_recordingSelectFilename</tabstop>
+  <tabstop>pushButton_startStopRecording</tabstop>
+  <tabstop>spinBox_recordingFramerate</tabstop>
+  <tabstop>comboBox_recordingContainer</tabstop>
+  <tabstop>comboBox_recordingEncoding</tabstop>
+  <tabstop>spinBox_recordingEncoderCRF</tabstop>
+  <tabstop>comboBox_recordingEncoderProfile</tabstop>
+  <tabstop>comboBox_recordingEncoderPixelFormat</tabstop>
+  <tabstop>comboBox_recordingEncoderPreset</tabstop>
+  <tabstop>comboBox_recordingEncoderZeroLatency</tabstop>
+  <tabstop>lineEdit_recordingEncoderArguments</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

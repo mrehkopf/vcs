@@ -131,9 +131,6 @@
                <height>16777215</height>
               </size>
              </property>
-             <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
-             </property>
              <property name="toolTip">
               <string>Add a new preset</string>
              </property>
@@ -167,9 +164,6 @@
                <height>16777215</height>
               </size>
              </property>
-             <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
-             </property>
              <property name="toolTip">
               <string>Delete this preset</string>
              </property>
@@ -199,6 +193,9 @@
    </item>
    <item>
     <widget class="QScrollArea" name="scrollArea">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
@@ -442,6 +439,9 @@
                  <height>16777215</height>
                 </size>
                </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
                <property name="toolTip">
                 <string>Copy current resolution</string>
                </property>
@@ -503,6 +503,9 @@
                  <width>22</width>
                  <height>16777215</height>
                 </size>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="toolTip">
                 <string>Copy current refresh rate</string>
@@ -696,6 +699,9 @@
  </customwidgets>
  <tabstops>
   <tabstop>comboBox_presetList</tabstop>
+  <tabstop>pushButton_addNewPreset</tabstop>
+  <tabstop>pushButton_deletePreset</tabstop>
+  <tabstop>scrollArea</tabstop>
   <tabstop>lineEdit_presetName</tabstop>
   <tabstop>checkBox_activatorResolution</tabstop>
   <tabstop>spinBox_resolutionX</tabstop>
@@ -708,7 +714,6 @@
   <tabstop>checkBox_activatorShortcut</tabstop>
   <tabstop>comboBox_shortcutFirstKey</tabstop>
   <tabstop>comboBox_shortcutSecondKey</tabstop>
-  <tabstop>scrollArea</tabstop>
  </tabstops>
  <resources>
   <include location="../../res.qrc"/>

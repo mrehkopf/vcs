@@ -10,6 +10,9 @@
     <height>280</height>
    </rect>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
+  </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
@@ -31,6 +34,9 @@
    </property>
    <item>
     <widget class="QScrollArea" name="scrollArea">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
@@ -118,6 +124,9 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
                <property name="frameShape">
                 <enum>QFrame::NoFrame</enum>
                </property>
@@ -156,6 +165,12 @@
    <header>QTableWidget_property_table.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>tableWidget_propertyTable</tabstop>
+  <tabstop>pushButton_resetMissedFramesCount</tabstop>
+  <tabstop>pushButton_resetUptime</tabstop>
+  <tabstop>scrollArea</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
