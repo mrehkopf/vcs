@@ -62,7 +62,7 @@ void filter_frame_rate_c::apply(image_s *const image)
     // Draw the FPS counter into the current frame.
     {
         const unsigned signalRefreshRate = kc_current_capture_state().input.refreshRate.value<unsigned>();
-        const std::string outputString = (std::to_string(estimatedFPS) + ((estimatedFPS >= signalRefreshRate)? "+" : ""));
+        const std::string outputString = (std::to_string(std::min(estimatedFPS, signalRefreshRate)) + ((estimatedFPS >= signalRefreshRate)? "+" : ""));
 
         const std::pair<unsigned, unsigned> screenCoords = ([cornerId, &outputString, image]()->std::pair<unsigned, unsigned>
         {
