@@ -384,7 +384,7 @@ QScrollBar:vertical
 
 QScrollBar::handle:vertical
 {
-    min-height: 24px;
+    min-height: 10px;
 }
 
 QScrollBar::add-line:vertical
@@ -431,7 +431,7 @@ QScrollBar:horizontal
 
 QScrollBar::handle:horizontal
 {
-    min-width: 24px;
+    min-width: 10px;
 }
 
 QScrollBar::add-line:horizontal
