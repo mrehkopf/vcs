@@ -26,6 +26,7 @@
 #include <QImage>
 #include <QMenu>
 #include <QLabel>
+#include <QDir>
 #include <cmath>
 #include "display/qt/subclasses/QLabel_magnifying_glass.h"
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
@@ -1211,18 +1212,22 @@ void MainWindow::toggle_window_border(void)
 
 void MainWindow::save_screenshot(void)
 {
-    const QString dateStampedFilename = ([]()->QString
-    {
-        QString filename = QString("vcs %1.png").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd 'at' hh.mm.ss"));
-
-        if (QFile::exists(filename))
+    const QString datestampedFilename = (
+        QDir::currentPath() +
+        "/" +
+        ([]()->QString
         {
-            // Append the current time's milliseconds, for some protection against filename collisions.
-            filename.replace(QRegExp(".png$"), QString(".%1.png").arg(QTime::currentTime().toString("z")));
-        }
+            QString filename = QString("vcs %1.png").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd 'at' hh.mm.ss"));
 
-        return filename;
-    })();
+            if (QFile::exists(filename))
+            {
+                // Append the current time's milliseconds, for some protection against filename collisions.
+                filename.replace(QRegExp(".png$"), QString(".%1.png").arg(QTime::currentTime().toString("z")));
+            }
+
+            return filename;
+        })()
+    );
 
     const QImage frameImage = ([]()->QImage
     {
@@ -1239,13 +1244,21 @@ void MainWindow::save_screenshot(void)
         }
     })();
 
-    if (frameImage.save(dateStampedFilename))
+    if (frameImage.save(datestampedFilename))
     {
-        INFO(("Output saved to \"%s\".", dateStampedFilename.toStdString().c_str()));
+        INFO(("Output image saved to \"%s\".", QDir::toNativeSeparators(datestampedFilename).toStdString().c_str()));
     }
     else
     {
-        NBENE(("Failed to take a screenshot."));
+        NBENE(("Failed to save the output image to \"%s\".", QDir::toNativeSeparators(datestampedFilename).toStdString().c_str()));
+
+        QMessageBox::critical(
+            this,
+            "Error saving image",
+            QString(
+                "The following location could not be written to:<br><br><b>%1</b>"
+            ).arg(QDir::toNativeSeparators(QFileInfo(datestampedFilename).absolutePath()))
+        );
     }
 
     return;
