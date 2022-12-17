@@ -210,7 +210,7 @@ QImage OverlayDialog::rendered(void)
         #if __linux__
             QString("/dev/video%1").arg(kc_current_capture_state().hardwareChannelIdx)
         #else
-            QString::number(this->liveCaptureStats.inputChannelIdx + 1)
+            QString::number(kc_current_capture_state().hardwareChannelIdx + 1)
         #endif
         );
         source.replace("$outWidth", QString::number(kc_current_capture_state().output.resolution.w));
