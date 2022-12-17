@@ -1213,7 +1213,7 @@ void MainWindow::save_screenshot(void)
 {
     const QString dateStampedFilename = ([]()->QString
     {
-        QString filename = QString("vcs %1.png").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd 'at' hh:mm:ss"));
+        QString filename = QString("vcs %1.png").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd 'at' hh.mm.ss"));
 
         if (QFile::exists(filename))
         {
