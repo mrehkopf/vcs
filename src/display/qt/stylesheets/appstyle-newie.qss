@@ -800,6 +800,21 @@ QScrollBar::sub-line:horizontal:hover
     background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #6c6c6c, stop: 1 #505050);
 }
 
+QPushButton:focus,
+QComboBox:focus,
+QScrollBar::add-line:vertical:focus,
+QScrollBar::sub-line:vertical:focus,
+QScrollBar::add-line:horizontal:focus,
+QScrollBar::sub-line:horizontal:focus,
+QCheckBox::indicator:focus,
+QSpinBox:focus,
+QDoubleSpinBox:focus,
+QLineEdit:focus,
+QPlainTextEdit:focus
+{
+    border-color: #ffc04d;
+}
+
 QPushButton:pressed,
 QPushButton:flat:pressed,
 QPushButton:flat:hover:pressed,
