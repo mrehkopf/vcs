@@ -52,7 +52,14 @@ The VCS user's manual is available for the following versions of VCS:
 
 Run `$ qmake && make` in the repo's root; or open [vcs.pro](vcs.pro) in Qt Creator. See also [Dependencies](#dependencies).
 
-I've been building VCS using GCC 9 on Linux and MinGW 5.3 on Windows. My Qt has been version 5.12 on Linux and 5.7 on Windows. Sticking with these tools should give you the least number of compatibility issues.
+I use the following toolchains when working on VCS &ndash; sticking close to them should give you the least number of compatibility issues:
+
+| OS      | Compiler           | Qt   |
+| ------- | ------------------ | ---- |
+| Linux   | GCC 9.4 (64-bit)   | 5.12 |
+| Windows | MinGW 5.3 (32-bit) | 5.7  |
+
+Windows is VCS's primary platform for distribution, and the codebase needs to remain compatible with the Windows toolchain.
 
 ### Release build vs. debug build
 
