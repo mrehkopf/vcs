@@ -218,7 +218,10 @@ bool kc_initialize_device(void)
     kc_evSignalGained.listen([]
     {
         CUR_INPUT_CHANNEL->captureStatus.videoParameters.update();
-        kc_evNewProposedVideoMode.fire(kc_get_capture_video_mode());
+        kc_evNewProposedVideoMode.fire({
+            kc_get_capture_resolution(),
+            kc_get_capture_refresh_rate(),
+        });
     });
 
     FRAME_BUFFER.r = {640, 480, 32};

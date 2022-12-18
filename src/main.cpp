@@ -76,10 +76,12 @@ static bool initialize_all(void)
 
     kc_evNewVideoMode.listen([](const video_mode_s &videoMode)
     {
-        INFO(("Video mode: %u x %u @ %.3f Hz.",
-              videoMode.resolution.w,
-              videoMode.resolution.h,
-              videoMode.refreshRate.value<double>()));
+        INFO((
+            "Video mode: %u x %u @ %.3f Hz.",
+            videoMode.resolution.w,
+            videoMode.resolution.h,
+            videoMode.refreshRate.value<double>()
+        ));
     });
 
     // The capture device has received a new video mode. We'll inspect the
@@ -122,7 +124,6 @@ static bool initialize_all(void)
 static capture_event_e process_next_capture_event(void)
 {
     std::lock_guard<std::mutex> lock(kc_capture_mutex());
-
     const capture_event_e e = kc_pop_capture_event_queue();
 
     switch (e)
@@ -151,7 +152,10 @@ static capture_event_e process_next_capture_event(void)
         {
             if (kc_has_valid_signal())
             {
-                kc_evNewProposedVideoMode.fire(kc_get_capture_video_mode());
+                kc_evNewProposedVideoMode.fire({
+                    kc_get_capture_resolution(),
+                    kc_get_capture_refresh_rate(),
+                });
             }
 
             break;
@@ -328,7 +332,10 @@ int main(int argc, char *argv[])
     // Propagate the initial video mode to VCS.
     if (kc_has_valid_signal())
     {
-        kc_evNewProposedVideoMode.fire(kc_get_capture_video_mode());
+        kc_evNewProposedVideoMode.fire({
+           kc_get_capture_resolution(),
+           kc_get_capture_refresh_rate(),
+       });
     }
 
     INFO(("Entering the main loop."));

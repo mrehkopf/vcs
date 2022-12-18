@@ -100,14 +100,6 @@ void kc_release_capture(void)
     return;
 }
 
-video_mode_s kc_get_capture_video_mode(void)
-{
-    return {
-        kc_get_capture_resolution(),
-        kc_get_capture_refresh_rate(),
-    };
-}
-
 bool kc_force_capture_resolution(const resolution_s &r)
 {
     const resolution_s min = kc_get_device_minimum_resolution();
@@ -135,7 +127,10 @@ bool kc_force_capture_resolution(const resolution_s &r)
         return false;
     }
 
-    kc_evNewVideoMode.fire(kc_get_capture_video_mode());
+    kc_evNewVideoMode.fire({
+        kc_get_capture_resolution(),
+        kc_get_capture_refresh_rate(),
+    });
 
     return true;
 }

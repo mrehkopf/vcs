@@ -333,7 +333,7 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
 
         connect(ui->pushButton_refreshRateSeparator, &QPushButton::clicked, this, [this](void)
         {
-            ui->doubleSpinBox_refreshRateValue->setValue(kc_get_capture_refresh_rate().value<double>());
+            ui->doubleSpinBox_refreshRateValue->setValue(kc_current_capture_state().input.refreshRate.value<double>());
         });
 
         connect(ui->comboBox_shortcutSecondKey, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](const int idx)

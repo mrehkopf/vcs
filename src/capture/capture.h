@@ -524,14 +524,6 @@ void kc_release_capture(void);
 bool kc_release_device(void);
 
 /*!
- * Returns the current video mode of the capture device's input signal.
- *
- * @see
- * kc_get_capture_resolution(), kc_get_capture_refresh_rate(), kc_evNewVideoMode
- */
-video_mode_s kc_get_capture_video_mode(void);
-
-/*!
  * Asks the capture device to set its input resolution to the one given,
  * overriding the current input resolution.
  * 

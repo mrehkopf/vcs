@@ -25,8 +25,8 @@ static video_preset_s* strongest_activating_preset(void)
         return nullptr;
     }
 
-    const resolution_s resolution = kc_get_capture_resolution();
-    const refresh_rate_s refreshRate = kc_get_capture_refresh_rate();
+    const resolution_s resolution = kc_current_capture_state().input.resolution;
+    const refresh_rate_s refreshRate = kc_current_capture_state().input.refreshRate;
 
     std::vector<std::pair<unsigned/*preset id*/,
                           int/*preset activation level*/>> activationLevels;

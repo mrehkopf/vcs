@@ -1124,9 +1124,9 @@ void MainWindow::update_window_title(void)
         // A symbol shown in the title if VCS is currently dropping frames.
         const QString missedFramesMarker = "{!}";
 
-        const resolution_s inRes = kc_get_capture_resolution();
+        const resolution_s inRes = kc_current_capture_state().input.resolution;
         const resolution_s outRes = ks_output_resolution();
-        const refresh_rate_s refreshRate = kc_get_capture_refresh_rate();
+        const refresh_rate_s refreshRate = kc_current_capture_state().input.refreshRate;
 
         QStringList programStatus;
         if (recordDlg->is_enabled())      programStatus << "R";
