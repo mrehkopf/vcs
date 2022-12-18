@@ -33,8 +33,8 @@ static bool IS_CAPTURE_ACTIVE = false;
 // handled that event.
 static bool CAPTURE_EVENT_FLAGS[static_cast<int>(capture_event_e::num_enumerators)] = {false};
 
-static std::atomic<unsigned int> CNT_FRAMES_PROCESSED(0);
-static std::atomic<unsigned int> CNT_FRAMES_RECEIVED(0);
+static std::atomic<unsigned int> NUM_FRAMES_PROCESSED(0);
+static std::atomic<unsigned int> NUM_FRAMES_RECEIVED(0);
 
 // The pixel format in which the capture device sends captured frames.
 static capture_pixel_format_e CAPTURE_PIXEL_FORMAT = capture_pixel_format_e::rgb_888;
@@ -52,11 +52,10 @@ static bool IS_SIGNAL_INVALID = false;
 
 static bool IS_SIGNAL_DIGITAL = false;
 
-// The current input resolution.
-static resolution_s CAPTURE_RESOLUTION = {640, 480, 32};
-
 // The maximum image depth that the capture device can handle.
 static const unsigned MAX_BIT_DEPTH = 32;
+
+static resolution_s INPUT_RESOLUTION = {640, 480, MAX_BIT_DEPTH};
 
 static bool apicall_succeeded(long callReturnValue)
 {
@@ -84,6 +83,22 @@ static bool pop_capture_event(capture_event_e event)
     CAPTURE_EVENT_FLAGS[static_cast<int>(event)] = false;
 
     return eventOccurred;
+}
+
+static resolution_s get_current_input_resolution_from_api(void)
+{
+    resolution_s r = INPUT_RESOLUTION;
+
+    if (!apicall_succeeded(RGBGetCaptureWidth(CAPTURE_HANDLE, &r.w)) ||
+        !apicall_succeeded(RGBGetCaptureHeight(CAPTURE_HANDLE, &r.h)))
+    {
+        DEBUG(("The capture device didn't report an input resolution. Using a default."));
+        return {640, 480, MAX_BIT_DEPTH};
+    }
+
+    r.bpp = kc_get_capture_color_depth();
+
+    return r;
 }
 
 // Callback functions for the RGBEasy API, through which the API communicates
@@ -138,14 +153,18 @@ namespace rgbeasy_callbacks_n
 
             if ((frameInfo->biWidth < MIN_CAPTURE_WIDTH) ||
                 (frameInfo->biWidth > MAX_CAPTURE_WIDTH) ||
-                (abs(frameInfo->biHeight) < MIN_CAPTURE_HEIGHT) ||
-                (abs(frameInfo->biHeight) > MAX_CAPTURE_HEIGHT))
+                (std::abs(frameInfo->biHeight) < MIN_CAPTURE_HEIGHT) ||
+                (std::abs(frameInfo->biHeight) > MAX_CAPTURE_HEIGHT))
             {
                 IS_SIGNAL_INVALID = true;
-
                 push_capture_event(capture_event_e::invalid_signal);
-
                 goto done;
+            }
+
+            if ((frameInfo->biWidth != FRAME_BUFFER.r.w) ||
+                (std::abs(frameInfo->biHeight) != FRAME_BUFFER.r.h))
+            {
+                push_capture_event(capture_event_e::new_video_mode);
             }
         }
 
@@ -155,8 +174,11 @@ namespace rgbeasy_callbacks_n
         FRAME_BUFFER.pixelFormat = CAPTURE_PIXEL_FORMAT;
 
         // Copy the frame's data into our local buffer so we can work on it.
-        memcpy(FRAME_BUFFER.pixels.data(), (u8*)frameData,
-               FRAME_BUFFER.pixels.size_check(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8)));
+        std::memcpy(
+            FRAME_BUFFER.pixels.data(),
+            (u8*)frameData,
+            FRAME_BUFFER.pixels.size_check(FRAME_BUFFER.r.w * FRAME_BUFFER.r.h * (FRAME_BUFFER.r.bpp / 8))
+        );
 
         push_capture_event(capture_event_e::new_frame);
 
@@ -178,8 +200,11 @@ namespace rgbeasy_callbacks_n
 
         IS_SIGNAL_DIGITAL = modeInfo->BDVI;
         IS_SIGNAL_INVALID = false;
+        if (!IS_RECEIVING_A_SIGNAL)
+        {
+            push_capture_event(capture_event_e::signal_gained);
+        }
         IS_RECEIVING_A_SIGNAL = true;
-
         push_capture_event(capture_event_e::new_video_mode);
 
         done:
@@ -201,8 +226,6 @@ namespace rgbeasy_callbacks_n
         RGBInvalidSignal(CAPTURE_HANDLE, horClock, verClock);
 
         IS_SIGNAL_INVALID = true;
-        IS_RECEIVING_A_SIGNAL = false;
-
         push_capture_event(capture_event_e::invalid_signal);
 
         done:
@@ -218,7 +241,6 @@ namespace rgbeasy_callbacks_n
         RGBNoSignal(CAPTURE_HANDLE);
 
         IS_RECEIVING_A_SIGNAL = false;
-
         push_capture_event(capture_event_e::signal_lost);
 
         return;
@@ -227,8 +249,6 @@ namespace rgbeasy_callbacks_n
     void RGBCBKAPI error(HWND, HRGB, unsigned long, ULONG_PTR, unsigned long*)
     {
         std::lock_guard<std::mutex> lock(kc_capture_mutex());
-
-        IS_RECEIVING_A_SIGNAL = false;
 
         push_capture_event(capture_event_e::unrecoverable_error);
 
@@ -355,6 +375,8 @@ bool kc_initialize_device(void)
         PROGRAM_EXIT_REQUESTED = 1;
         goto done;
     }
+
+    INPUT_RESOLUTION = get_current_input_resolution_from_api();
 
     done:
     // We can successfully exit if the initialization didn't trigger a request
@@ -689,24 +711,9 @@ video_signal_parameters_s kc_get_device_video_parameter_maximums(void)
     return p;
 }
 
-static resolution_s kc_get_resolution_from_api(void)
-{
-    resolution_s r = {640, 480, 32};
-
-    if (!apicall_succeeded(RGBGetCaptureWidth(CAPTURE_HANDLE, &r.w)) ||
-        !apicall_succeeded(RGBGetCaptureHeight(CAPTURE_HANDLE, &r.h)))
-    {
-        k_assert(0, "The capture hardware failed to report its input resolution.");
-    }
-
-    r.bpp = kc_get_capture_color_depth();
-
-    return r;
-}
-
 resolution_s kc_get_capture_resolution(void)
 {
-    return CAPTURE_RESOLUTION;
+    return INPUT_RESOLUTION;
 }
 
 resolution_s kc_get_device_minimum_resolution(void)
@@ -748,7 +755,7 @@ const captured_frame_s& kc_get_frame_buffer(void)
 
 bool kc_mark_frame_buffer_as_processed(void)
 {
-    CNT_FRAMES_PROCESSED = CNT_FRAMES_RECEIVED.load();
+    NUM_FRAMES_PROCESSED = NUM_FRAMES_RECEIVED.load();
 
     FRAME_BUFFER.processed = true;
 
@@ -763,13 +770,17 @@ capture_event_e kc_pop_capture_event_queue(void)
     }
     else if (pop_capture_event(capture_event_e::new_video_mode))
     {
-        CAPTURE_RESOLUTION = kc_get_resolution_from_api();
+        INPUT_RESOLUTION = get_current_input_resolution_from_api();
 
         return capture_event_e::new_video_mode;
     }
     else if (pop_capture_event(capture_event_e::signal_lost))
     {
         return capture_event_e::signal_lost;
+    }
+    else if (pop_capture_event(capture_event_e::signal_gained))
+    {
+        return capture_event_e::signal_gained;
     }
     else if (pop_capture_event(capture_event_e::invalid_signal))
     {
@@ -852,11 +863,11 @@ bool kc_set_video_signal_parameters(const video_signal_parameters_s &p)
     RGBSetBrightness(CAPTURE_HANDLE,    p.overallBrightness);
     RGBSetContrast(CAPTURE_HANDLE,      p.overallContrast);
     RGBSetColourBalance(CAPTURE_HANDLE, p.redBrightness,
-                                             p.greenBrightness,
-                                             p.blueBrightness,
-                                             p.redContrast,
-                                             p.greenContrast,
-                                             p.blueContrast);
+                                        p.greenBrightness,
+                                        p.blueBrightness,
+                                        p.redContrast,
+                                        p.greenContrast,
+                                        p.blueContrast);
 
     return true;
 }
@@ -957,7 +968,7 @@ bool kc_set_capture_resolution(const resolution_s &r)
         goto fail;
     }
 
-    CAPTURE_RESOLUTION = kc_get_resolution_from_api();
+    INPUT_RESOLUTION = get_current_input_resolution_from_api();
 
     return true;
 
