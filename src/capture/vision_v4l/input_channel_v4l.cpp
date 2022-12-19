@@ -290,7 +290,7 @@ bool input_channel_v4l_c::device_ioctl(const unsigned long request, void *data)
 
     if (retVal < 0)
     {
-        NBENE(("A call to ioctl() failed. Request: %d, error: %d.", request, retVal));
+        NBENE(("A call to ioctl() failed. Request: %lu, error: %d.", request, retVal));
         return false;
     }
 
