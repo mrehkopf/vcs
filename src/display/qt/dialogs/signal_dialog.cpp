@@ -52,6 +52,7 @@ SignalDialog::SignalDialog(QWidget *parent) :
             ui->tableWidget_propertyTable->modify_property("Device channel", "None");
             ui->tableWidget_propertyTable->modify_property("Resolution", "-");
             ui->tableWidget_propertyTable->modify_property("Refresh rate", "-");
+            ui->tableWidget_propertyTable->modify_property("Analog", "-");
             ui->tableWidget_propertyTable->modify_property("Output framerate", "-");
             ui->tableWidget_propertyTable->modify_property("Uptime", "-");
             ui->tableWidget_propertyTable->modify_property("Frames dropped", "-");
@@ -194,11 +195,13 @@ void SignalDialog::update_information_table(const bool isReceivingSignal)
 
         ui->tableWidget_propertyTable->modify_property("Refresh rate", QString("%1 Hz").arg(QString::number(refreshRate, 'f', 3)));
         ui->tableWidget_propertyTable->modify_property("Resolution", QString("%1 \u00d7 %2").arg(resolution.w).arg(resolution.h));
+        ui->tableWidget_propertyTable->modify_property("Analog", (kc_current_capture_state().signalFormat == signal_format_e::digital)? "No" : "Yes");
     }
     else
     {
         ui->tableWidget_propertyTable->modify_property("Resolution", "-");
         ui->tableWidget_propertyTable->modify_property("Refresh rate", "-");
+        ui->tableWidget_propertyTable->modify_property("Analog", "-");
     }
 
     return;
