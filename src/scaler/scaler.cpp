@@ -34,12 +34,13 @@ vcs_event_c<void> ks_evCustomScalerDisabled;
 static unsigned NUM_FRAMES_SCALED_PER_SECOND = 0;
 
 // The image scalers available to VCS.
-static const std::vector<image_scaler_s> KNOWN_SCALERS =
-    {{"Nearest", filter_output_scaler_c::nearest},
-     {"Linear",  filter_output_scaler_c::linear},
-     {"Area",    filter_output_scaler_c::area},
-     {"Cubic",   filter_output_scaler_c::cubic},
-     {"Lanczos", filter_output_scaler_c::lanczos}};
+static const std::vector<image_scaler_s> KNOWN_SCALERS = {
+    {"Nearest", filter_output_scaler_c::nearest},
+    {"Linear",  filter_output_scaler_c::linear},
+    {"Area",    filter_output_scaler_c::area},
+    {"Cubic",   filter_output_scaler_c::cubic},
+    {"Lanczos", filter_output_scaler_c::lanczos}
+};
 
 static const image_scaler_s *DEFAULT_SCALER = nullptr;
 
@@ -375,7 +376,7 @@ void ks_scale_frame(const captured_frame_s &frame)
     }
 
     const bool didResolutionChange = ((FRAME_BUFFER_RESOLUTION.w != outputRes.w) || (FRAME_BUFFER_RESOLUTION.h != outputRes.h));
-    
+
     if (didResolutionChange)
     {
         FRAME_BUFFER_RESOLUTION = outputRes;
