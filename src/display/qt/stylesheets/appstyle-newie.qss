@@ -124,16 +124,19 @@ QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurren
 QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
 {
     color: #4e4e4e;
+    image: url(:/res/images/icons/newie/preset_disabled.png);
 }
 
 QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="active"]
 {
     color: greenyellow;
+    image: url(:/res/images/icons/newie/preset_active.png);
 }
 
 QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="inactive"]
 {
     color: gray;
+    image: url(:/res/images/icons/newie/preset_inactive.png);
 }
 
 QScrollArea > QWidget > QWidget
