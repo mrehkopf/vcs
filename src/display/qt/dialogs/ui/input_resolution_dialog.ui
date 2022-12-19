@@ -32,7 +32,7 @@
    <item>
     <widget class="QLabel" name="label_warnOfDigitalInput">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You're currently capturing a &lt;span style=&quot; font-weight:600;&quot;&gt;digital signal&lt;/span&gt;. The functionality of this dialog may apply only to analog signals.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You're currently capturing a &lt;span style=&quot; font-weight:600;&quot;&gt;digital signal&lt;/span&gt;. This dialog's functionality may apply only to analog signals.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
