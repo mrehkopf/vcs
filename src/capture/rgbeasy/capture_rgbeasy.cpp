@@ -115,7 +115,7 @@ namespace rgbeasy_callbacks_n
         // If the hardware is sending us a new frame while we're still unfinished
         // with processing the previous frame. In that case, we'll need to skip
         // this new frame.
-        if (CNT_FRAMES_RECEIVED != CNT_FRAMES_PROCESSED)
+        if (NUM_FRAMES_RECEIVED != NUM_FRAMES_PROCESSED)
         {
             NUM_NEW_FRAME_EVENTS_SKIPPED++;
             return;
@@ -183,7 +183,7 @@ namespace rgbeasy_callbacks_n
         push_capture_event(capture_event_e::new_frame);
 
         done:
-        CNT_FRAMES_RECEIVED++;
+        NUM_FRAMES_RECEIVED++;
         return;
     }
 
