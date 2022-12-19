@@ -37,12 +37,12 @@ AboutDialog::AboutDialog(QWidget *parent) :
         const resolution_s &minres = kc_get_device_minimum_resolution();
         const resolution_s &maxres = kc_get_device_maximum_resolution();
 
-        ui->tableWidget_captureDeviceFeatures->modify_property("Minimum resolution", QString("%1 \u00d7 %2").arg(minres.w).arg(minres.h));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Maximum resolution", QString("%1 \u00d7 %2").arg(maxres.w).arg(maxres.h));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Input channels",     QString::number(kc_get_device_maximum_input_count()));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Firmware",           QString::fromStdString(kc_get_device_firmware_version()));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Driver",             QString::fromStdString(kc_get_device_driver_version()));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Capture API",        QString::fromStdString(kc_get_device_api_name()));
+        ui->tableWidget_captureDeviceFeatures->modify_property("Minimum input resolution", QString("%1 \u00d7 %2").arg(minres.w).arg(minres.h));
+        ui->tableWidget_captureDeviceFeatures->modify_property("Maximum input resolution", QString("%1 \u00d7 %2").arg(maxres.w).arg(maxres.h));
+        ui->tableWidget_captureDeviceFeatures->modify_property("Channel count", QString::number(kc_get_device_maximum_input_count()));
+        ui->tableWidget_captureDeviceFeatures->modify_property("Firmware", QString::fromStdString(kc_get_device_firmware_version()));
+        ui->tableWidget_captureDeviceFeatures->modify_property("Driver", QString::fromStdString(kc_get_device_driver_version()));
+        ui->tableWidget_captureDeviceFeatures->modify_property("Capture backend", QString::fromStdString(kc_get_device_api_name()));
         #ifndef __linux__ // The Linux capture API doesn't support querying these parameters.
             ui->tableWidget_captureDeviceFeatures->modify_property("DMA transfer",       (kc_device_supports_dma()?               "Supported" : "Not supported"));
             ui->tableWidget_captureDeviceFeatures->modify_property("Deinterlacing",      (kc_device_supports_deinterlacing()?     "Supported" : "Not supported"));
