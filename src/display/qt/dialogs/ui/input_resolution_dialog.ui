@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>381</width>
+    <width>400</width>
     <height>327</height>
    </rect>
   </property>
@@ -30,6 +30,16 @@
     <number>0</number>
    </property>
    <item>
+    <widget class="QLabel" name="label_warnOfDigitalInput">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You're currently capturing a &lt;span style=&quot; font-weight:600;&quot;&gt;digital signal&lt;/span&gt;. The functionality of this dialog may apply only to analog signals.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="groupBox_main">
      <property name="title">
       <string/>
@@ -42,7 +52,7 @@
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>3</number>
+       <number>0</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
@@ -53,7 +63,7 @@
       <item>
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
-         <string>Force a capture resolution</string>
+         <string>Force the input resolution</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
          <property name="spacing">

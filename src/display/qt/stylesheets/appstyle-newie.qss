@@ -108,7 +108,8 @@ QDialog[objectName="InputResolutionDialog"] QFrame
     margin-bottom: 9px;
 }
 
-QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_warnOfDigitalInput"]
+QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_warnOfDigitalInput"],
+QDialog[objectName="InputResolutionDialog"] QLabel[objectName="label_warnOfDigitalInput"]
 {
     padding: 9px;
     color: #ababab;

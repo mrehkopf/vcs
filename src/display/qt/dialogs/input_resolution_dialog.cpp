@@ -18,7 +18,9 @@ InputResolutionDialog::InputResolutionDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->set_name("Capture resolution");
+    this->set_name("Input resolution");
+
+    ui->label_warnOfDigitalInput->setVisible(false);
 
     // Connect GUI controls to consequences for operating them.
     {
@@ -103,6 +105,19 @@ InputResolutionDialog::InputResolutionDialog(QWidget *parent) :
     // Restore persistent settings.
     {
         this->resize(kpers_value_of(INI_GROUP_GEOMETRY, "input_resolution", this->size()).toSize());
+    }
+
+    // Register app event listeners.
+    {
+        kc_evNewVideoMode.listen([this](const video_mode_s&)
+        {
+            this->ui->label_warnOfDigitalInput->setVisible(kc_current_capture_state().signalFormat == signal_format_e::digital);
+        });
+
+        kc_evSignalLost.listen([this]
+        {
+            this->ui->label_warnOfDigitalInput->setVisible(false);
+        });
     }
 
     return;
