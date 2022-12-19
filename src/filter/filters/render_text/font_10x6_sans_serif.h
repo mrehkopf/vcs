@@ -7,7 +7,6 @@
 #define VCS_FILTER_FILTERS_RENDER_TEXT_FONT_10X6_SANS_SERIF_H
 
 #include <unordered_map>
-#include <vector>
 #include "filter/filters/render_text/font.h"
 
 // A retro-looking 10 x 6 sans serif font.
@@ -639,7 +638,7 @@ private:
                 {X,0,0,X,0,0,X},
                 {X,0,0,X,0,0,X},
                 {X,0,0,X,0,0,X},
-                {X,X,X,0,X,X,0}}}},
+                {0,X,X,0,X,X,0}}}},
 
         {'X', {{{X,0,0,0,0,0,X},
                 {X,0,0,0,0,0,X},

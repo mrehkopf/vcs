@@ -7,7 +7,6 @@
 #define VCS_FILTER_FILTERS_RENDER_TEXT_FONT_5X3_H
 
 #include <unordered_map>
-#include <vector>
 #include "filter/filters/render_text/font.h"
 
 // A retro-looking, uppercase-only, 5 x 3 font with monospaced digits.
@@ -260,7 +259,7 @@ private:
                 {X,0,X,0,X},
                 {X,0,X,0,X},
                 {X,0,X,0,X},
-                {X,X,0,X,0}}}},
+                {0,X,0,X,0}}}},
 
         {'X', {{{X,0,X},
                 {X,0,X},
