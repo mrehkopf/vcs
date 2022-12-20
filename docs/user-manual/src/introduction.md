@@ -80,8 +80,8 @@ VCS is [available on GitHub](https://github.com/leikareipa/vcs).
     <table>
         <tr>
             <th>OS</th>
-            <td class="with-inline-table">
-                <dokki-table>
+            <td>
+                <dokki-table headerless>
                     <table>
                         <tr>
                             <th>Platform</th>
@@ -101,12 +101,12 @@ VCS is [available on GitHub](https://github.com/leikareipa/vcs).
         </tr>
         <tr>
             <th>CPU</th>
-            <td class="with-inline-table">
-                <dokki-table>
+            <td>
+                <dokki-table headerless>
                     <table>
                         <tr>
                             <th>Capture resolution</th>
-                            <th>Required performance level<sup>*</sup></th>
+                            <th>Recommended performance level</th>
                         </tr>
                         <tr>
                             <td>VGA</td>
@@ -120,11 +120,6 @@ VCS is [available on GitHub](https://github.com/leikareipa/vcs).
                             <td>1080p, 60 FPS</td>
                             <td>Intel Coffee Lake</td>
                         </tr>
-                        <tr>
-                            <td colspan="2">
-                                <sup>*</sup>Estimated.
-                            </td>
-                        </tr>
                     </table>
                 </dokki-table>
             </td>
@@ -132,7 +127,7 @@ VCS is [available on GitHub](https://github.com/leikareipa/vcs).
         <tr>
             <th>GPU</th>
             <td>
-                For hardware rendering (optional), a graphics card with OpenGL 1.2 support
+                For hardware rendering (optional), a graphics card with support for OpenGL 1.2
             </td>
         </tr>
         <tr>
