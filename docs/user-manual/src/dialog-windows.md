@@ -161,7 +161,9 @@ This dialog can be accessed with <key-combo>Ctrl + L</key-combo> or <menu-path>C
 
 The overlay dialog lets you define a message to be overlaid on the [output window](#output-window), with optional HTML/CSS styling.
 
-For a list of the HTML and CSS features supported, see [Qt5: Supported HTML Subset](https://doc.qt.io/qt-5/richtext-html-subset.html).
+### Formatting
+
+For a list of the HTML and CSS formatting features supported, see [Qt5: Supported HTML Subset](https://doc.qt.io/qt-5/richtext-html-subset.html).
 
 > A sample overlay with HTML/CSS formatting that displays information about the current video mode
 ```html [{headerless}]
@@ -182,6 +184,59 @@ For a list of the HTML and CSS features supported, see [Qt5: Supported HTML Subs
 ```text [{headerless}]
 Input: $inWidth x $inHeight, $inRate Hz
 ```
+
+### Variables
+
+The following variables will expand to dynamic values in the overlay:
+
+<dokki-table headerless>
+    <table>
+        <tr>
+            <th>Variable</th>
+            <th>Explanation</th>
+        </tr>
+        <tr>
+            <td><em>$inWidth</em></td>
+            <td>The width of the current input resolution.</td>
+        </tr>
+        <tr>
+            <td><em>$inHeight</em></td>
+            <td>The height of the current input resolution.</td>
+        </tr>
+        <tr>
+            <td><em>$inRate</em></td>
+            <td>The refresh rate of the current input signal.</td>
+        </tr>
+        <tr>
+            <td><em>$inChannel</em></td>
+            <td>The index of the current input channel on the capture device.</td>
+        </tr>
+        <tr>
+            <td><em>$outWidth</em></td>
+            <td>The width of the current output resolution.</td>
+        </tr>
+        <tr>
+            <td><em>$outHeight</em></td>
+            <td>The height of the current output resolution.</td>
+        </tr>
+        <tr>
+            <td><em>$outRate</em></td>
+            <td>The current output frame rate.</td>
+        </tr>
+        <tr>
+            <td><em>$frameDropIndicator</em></td>
+            <td>Shows a warning label if frames are currently being dropped, or nothing if they aren't.</td>
+        </tr>
+        <tr>
+            <td><em>$time</em></td>
+            <td>Current system time.</td>
+        </tr>
+        <tr>
+            <td><em>$date</em></td>
+            <td>Current system date.</td>
+        </tr>
+    </table>
+</dokki-table>
 
 ## Video presets dialog
 
