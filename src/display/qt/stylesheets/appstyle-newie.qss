@@ -115,6 +115,11 @@ QDialog[objectName="InputResolutionDialog"] QLabel[objectName="label_warnOfDigit
     color: #ababab;
 }
 
+QDialog[objectName="InputResolutionDialog"] QLabel[objectName="label_warnOfDigitalInput"]
+{
+    padding-bottom: 6px;
+}
+
 QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurrentlyActive"]
 {
     margin: 0;
