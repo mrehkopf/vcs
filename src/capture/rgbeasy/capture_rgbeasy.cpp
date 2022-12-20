@@ -61,7 +61,7 @@ static bool apicall_succeeded(long callReturnValue)
 {
     if (callReturnValue != RGBERROR_NO_ERROR)
     {
-        NBENE(("A call to the RGBEasy API returned with error code (0x%x).", callReturnValue));
+        DEBUG(("A call to the RGBEasy API returned with error code (0x%x).", callReturnValue));
         return false;
     }
 
@@ -839,7 +839,7 @@ bool kc_set_deinterlacing_mode(const capture_deinterlacing_mode_e mode)
     }
     else
     {
-        INFO(("Failed to set the deinterlacing mode."));
+        DEBUG(("The deinterlacing mode couldn't be set."));
         return false;
     }
 }
