@@ -28,11 +28,13 @@ AboutDialog::AboutDialog(QWidget *parent) :
         #ifndef RELEASE_BUILD
             ui->groupBox_aboutVCS->setTitle(ui->groupBox_aboutVCS->title() + " (non-release build)");
         #endif
+
+        ui->label_aboutVCS->setText(ui->label_aboutVCS->text().replace("%VCS_VERSION_STRING%", PROGRAM_VERSION_STRING));
     }
 
     // Fill the feature matrix of the capture device's capabilities.
     {
-        ui->groupBox_captureDeviceInfo->setTitle("Capture device: " + QString::fromStdString(kc_get_device_name()));
+        ui->groupBox_captureDeviceInfo->setTitle(QString::fromStdString(kc_get_device_name()));
 
         const resolution_s &minres = kc_get_device_minimum_resolution();
         const resolution_s &maxres = kc_get_device_maximum_resolution();
