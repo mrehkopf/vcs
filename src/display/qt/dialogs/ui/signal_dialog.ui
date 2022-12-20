@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="focusPolicy">
-   <enum>Qt::StrongFocus</enum>
+   <enum>Qt::ClickFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>

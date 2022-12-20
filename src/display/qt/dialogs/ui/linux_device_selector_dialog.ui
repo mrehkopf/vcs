@@ -7,8 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>374</width>
-    <height>124</height>
+    <height>130</height>
    </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::ClickFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -53,7 +56,7 @@
       <item>
        <widget class="QGroupBox" name="groupBox_channelSelect">
         <property name="title">
-         <string>Select an input channel</string>
+         <string>Capture source</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <property name="bottomMargin">
