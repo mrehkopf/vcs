@@ -105,13 +105,13 @@
               <number>0</number>
              </property>
              <property name="topMargin">
-              <number>9</number>
+              <number>2</number>
              </property>
              <property name="rightMargin">
-              <number>9</number>
+              <number>0</number>
              </property>
              <property name="bottomMargin">
-              <number>9</number>
+              <number>6</number>
              </property>
              <item>
               <widget class="QFrame" name="frame">
@@ -180,7 +180,7 @@
              </sizepolicy>
             </property>
             <property name="title">
-             <string>Capture device: Unknown</string>
+             <string>Capture device</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -196,7 +196,7 @@
               <number>0</number>
              </property>
              <property name="topMargin">
-              <number>6</number>
+              <number>5</number>
              </property>
              <property name="rightMargin">
               <number>0</number>

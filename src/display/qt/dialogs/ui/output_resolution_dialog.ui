@@ -56,9 +56,12 @@
       <item>
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
-         <string>Set the output size</string>
+         <string>Output size</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
+         <property name="topMargin">
+          <number>11</number>
+         </property>
          <item row="1" column="0">
           <widget class="QCheckBox" name="checkBox_forceOutputScale">
            <property name="sizePolicy">

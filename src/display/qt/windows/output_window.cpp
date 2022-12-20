@@ -368,7 +368,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 {
                     const QString newTitle = QInputDialog::getMultiLineText(
                         this,
-                        "VCS - Custom window title",
+                        QString("Custom window title - %2").arg(PROGRAM_NAME),
                         "Enter a title for the output window, or leave empty to restore to default.",
                         this->windowTitleOverride
                     );

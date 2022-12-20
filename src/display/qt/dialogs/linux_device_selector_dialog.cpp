@@ -16,7 +16,7 @@ LinuxDeviceSelectorDialog::LinuxDeviceSelectorDialog(unsigned *const deviceIdx, 
 {
     ui->setupUi(this);
 
-    this->setWindowTitle("Select an input channel");
+    this->setWindowTitle(QString("Select an input channel - %2").arg(PROGRAM_NAME));
 
     ui->spinBox_deviceIdx->setValue(*deviceIdx);
     ui->spinBox_deviceIdx->setFocus();

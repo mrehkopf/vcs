@@ -59,6 +59,9 @@
          <string>Specify a resolution</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="topMargin">
+          <number>11</number>
+         </property>
          <property name="bottomMargin">
           <number>6</number>
          </property>

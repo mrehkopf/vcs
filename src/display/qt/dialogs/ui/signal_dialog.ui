@@ -49,7 +49,7 @@
         <x>0</x>
         <y>0</y>
         <width>294</width>
-        <height>300</height>
+        <height>302</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -98,7 +98,7 @@
              </sizepolicy>
             </property>
             <property name="title">
-             <string>Current input signal</string>
+             <string>Signal info</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <property name="spacing">
@@ -108,7 +108,7 @@
               <number>0</number>
              </property>
              <property name="topMargin">
-              <number>3</number>
+              <number>5</number>
              </property>
              <property name="rightMargin">
               <number>0</number>

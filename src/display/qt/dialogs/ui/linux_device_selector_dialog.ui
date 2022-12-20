@@ -56,9 +56,12 @@
       <item>
        <widget class="QGroupBox" name="groupBox_channelSelect">
         <property name="title">
-         <string>Capture source</string>
+         <string>Select an input channel</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="topMargin">
+          <number>11</number>
+         </property>
          <property name="bottomMargin">
           <number>6</number>
          </property>

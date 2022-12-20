@@ -49,7 +49,7 @@
         <x>0</x>
         <y>0</y>
         <width>382</width>
-        <height>707</height>
+        <height>713</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -107,6 +107,9 @@
              <bool>false</bool>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_2">
+             <property name="topMargin">
+              <number>11</number>
+             </property>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_2">
                <item>
@@ -193,7 +196,7 @@
               <number>0</number>
              </property>
              <property name="topMargin">
-              <number>6</number>
+              <number>8</number>
              </property>
              <property name="rightMargin">
               <number>0</number>
@@ -231,6 +234,9 @@
             <layout class="QGridLayout" name="gridLayout">
              <property name="leftMargin">
               <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>11</number>
              </property>
              <property name="spacing">
               <number>6</number>

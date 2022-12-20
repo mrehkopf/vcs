@@ -59,14 +59,14 @@
       <item>
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
-         <string>Configure alias resolutions</string>
+         <string>Alias resolutions</string>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="spacing">
           <number>3</number>
          </property>
          <property name="topMargin">
-          <number>3</number>
+          <number>5</number>
          </property>
          <item>
           <widget class="QTreeWidget" name="treeWidget_knownAliases">

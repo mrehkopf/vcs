@@ -56,6 +56,16 @@ QDialog[objectName="FilterGraphDialog"] QStatusBar::item
     border: 0px;
 }
 
+QGroupBox
+{
+    font-weight: bold;
+}
+
+QGroupBox::title
+{
+    padding: 2px 0;
+}
+
 QGroupBox > QTableWidget,
 QGroupBox > QTreeWidget,
 QGroupBox > QLabel
