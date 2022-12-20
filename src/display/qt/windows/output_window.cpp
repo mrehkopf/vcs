@@ -62,6 +62,8 @@ static OGLWidget *OGL_SURFACE = nullptr;
 
 static unsigned CURRENT_OUTPUT_FPS = 0;
 
+static bool IS_FRAME_DROP_INDICATOR_ENABLED = true;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -83,6 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Restore persistent settings.
     {
+        IS_FRAME_DROP_INDICATOR_ENABLED = kpers_value_of(INI_GROUP_OUTPUT, "frame_drop_indicator", IS_FRAME_DROP_INDICATOR_ENABLED).toBool();
         this->appwideFontSize = kpers_value_of(INI_GROUP_APP, "font_size", this->appwideFontSize).toUInt();
         k_set_eco_mode_enabled(kpers_value_of(INI_GROUP_APP, "eco_mode", k_is_eco_mode_enabled()).toBool());
     }
@@ -391,6 +394,21 @@ MainWindow::MainWindow(QWidget *parent) :
                 });
 
                 windowMenu->addAction(customTitle);
+            }
+
+            {
+                QAction *toggleDropIndicator = new QAction("Frame drop indicator", this);
+
+                toggleDropIndicator->setCheckable(true);
+                toggleDropIndicator->setChecked(IS_FRAME_DROP_INDICATOR_ENABLED);
+
+                connect(toggleDropIndicator, &QAction::triggered, this, [=]
+                {
+                    IS_FRAME_DROP_INDICATOR_ENABLED = !IS_FRAME_DROP_INDICATOR_ENABLED;
+                    this->update_window_title();
+                });
+
+                windowMenu->addAction(toggleDropIndicator);
             }
 
             {
@@ -826,6 +844,7 @@ MainWindow::~MainWindow()
 {
     // Save persistent settings.
     {
+        kpers_set_value(INI_GROUP_OUTPUT, "frame_drop_indicator", IS_FRAME_DROP_INDICATOR_ENABLED);
         kpers_set_value(INI_GROUP_OUTPUT, "renderer", (OGL_SURFACE? "OpenGL" : "Software"));
         kpers_set_value(INI_GROUP_OUTPUT, "default_scaler", QString::fromStdString(ks_default_scaler()->name));
         kpers_set_value(INI_GROUP_APP, "font_size", QString::number(this->appwideFontSize));
@@ -1122,7 +1141,7 @@ void MainWindow::update_window_title(void)
     else
     {
         // A symbol shown in the title if VCS is currently dropping frames.
-        const QString missedFramesMarker = "{!}";
+        const QString missedFramesMarker = ((IS_FRAME_DROP_INDICATOR_ENABLED && this->areFramesBeingDropped)? "{!} " : "");
 
         const resolution_s inRes = kc_current_capture_state().input.resolution;
         const resolution_s outRes = ks_output_resolution();
@@ -1136,14 +1155,12 @@ void MainWindow::update_window_title(void)
 
         if (!this->windowTitleOverride.isEmpty())
         {
-            title = QString("%1%2")
-                    .arg(this->areFramesBeingDropped? (missedFramesMarker + " ") : "")
-                    .arg(this->windowTitleOverride);
+            title = QString("%1%2").arg(missedFramesMarker).arg(this->windowTitleOverride);
         }
         else
         {
             title = QString("%1%2 - %3%4 \u00d7 %5 (%6 Hz) shown in %7 \u00d7 %8 (%9 FPS)")
-                    .arg(this->areFramesBeingDropped? (missedFramesMarker + " ") : "")
+                    .arg(missedFramesMarker)
                     .arg(programName)
                     .arg(programStatus.count()? QString("%1 - ").arg(programStatus.join("")) : "")
                     .arg(inRes.w)

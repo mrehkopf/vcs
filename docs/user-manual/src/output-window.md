@@ -260,6 +260,13 @@ The window menu lets you customize various properties of the [output window](#ou
             </td>
         </tr>
         <tr>
+            <td>Frame drop indicator</td>
+            <td>
+                If enabled, the symbol "{!}" will be shown in the output window's title bar when frames
+                are being dropped.
+            </td>
+        </tr>
+        <tr>
             <td>Renderer</td>
             <td class="with-inline-table">
                 <dokki-table>
