@@ -362,7 +362,7 @@ static bool stop_capture(void)
 
 bool kc_initialize_device(void)
 {
-    INFO(("Initializing the RGBEASY capture device."));
+    DEBUG(("Initializing the RGBEASY capture device."));
 
     FRAME_BUFFER.pixels.allocate(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Capture frame buffer (RGBEASY)");
 

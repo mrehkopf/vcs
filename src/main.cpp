@@ -302,7 +302,7 @@ int main(int argc, char *argv[])
         cleanup_all();
     });
 
-    INFO(("Parsing the command line."));
+    DEBUG(("Parsing the command line."));
     if (!kcom_parse_command_line(argc, argv))
     {
         NBENE(("Command line parse failed. Exiting."));
@@ -338,7 +338,7 @@ int main(int argc, char *argv[])
        });
     }
 
-    INFO(("Entering the main loop."));
+    DEBUG(("Entering the main loop."));
     while (!PROGRAM_EXIT_REQUESTED)
     {
         const capture_event_e e = process_next_capture_event();

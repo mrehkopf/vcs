@@ -55,12 +55,12 @@ void krecord_initialize(void)
 
     krecord_evRecordingStarted.listen([]
     {
-        DEBUG(("Recording into \"%s\".", RECORDING.filename.c_str()));
+        INFO(("Recording into \"%s\".", RECORDING.filename.c_str()));
     });
 
     krecord_evRecordingEnded.listen([]
     {
-        DEBUG(("Finished recording into \"%s\".", RECORDING.filename.c_str()));
+        INFO(("Finished recording into \"%s\".", RECORDING.filename.c_str()));
     });
 
     return;

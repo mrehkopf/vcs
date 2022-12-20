@@ -100,7 +100,7 @@ static void initialize(void)
 
     MEMORY_BUFFER_SIZE_B = (kcom_mem_cache_size_mb() * 1024 * 1024);
 
-    INFO(("Initializing the memory subsystem with a buffer of %u MB.", (MEMORY_BUFFER_SIZE_B / 1024 / 1024)));
+    DEBUG(("Initializing the memory subsystem with a buffer of %u MB.", (MEMORY_BUFFER_SIZE_B / 1024 / 1024)));
 
     MEMORY_BUFFER = (u8*)calloc(MEMORY_BUFFER_SIZE_B, 1);
     NEXT_FREE = MEMORY_BUFFER;

@@ -42,7 +42,7 @@ const capture_state_s& kc_current_capture_state(void)
 
 void kc_initialize_capture(void)
 {
-    INFO(("Initializing the capture subsystem."));
+    DEBUG(("Initializing the capture subsystem."));
 
     kc_initialize_device();
 
@@ -93,7 +93,7 @@ void kc_initialize_capture(void)
 
 void kc_release_capture(void)
 {
-    INFO(("Releasing the capture subsystem."));
+    DEBUG(("Releasing the capture subsystem."));
 
     kc_release_device();
 

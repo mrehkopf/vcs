@@ -213,7 +213,7 @@ capture_pixel_format_e kc_get_capture_pixel_format(void)
 
 bool kc_initialize_device(void)
 {
-    INFO(("Initializing the Vision/V4L capture device."));
+    DEBUG(("Initializing the Vision/V4L capture device."));
 
     kc_evSignalGained.listen([]
     {

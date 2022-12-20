@@ -40,7 +40,7 @@ static int MOST_RECENT_FILTER_CHAIN_IDX = -1;
 
 void kf_initialize_filters(void)
 {
-    INFO(("Initializing the filter subsystem."));
+    DEBUG(("Initializing the filter subsystem."));
 
     KNOWN_FILTER_TYPES =
     {
@@ -256,7 +256,7 @@ bool kf_is_known_filter_uuid(const std::string &filterTypeUuid)
 
 void kf_release_filters(void)
 {
-    INFO(("Releasing custom filtering."));
+    DEBUG(("Releasing custom filtering."));
 
     MOST_RECENT_FILTER_CHAIN_IDX = -1;
 

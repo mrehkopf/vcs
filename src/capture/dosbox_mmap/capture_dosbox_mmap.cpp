@@ -185,7 +185,7 @@ static int capture_thread(void)
 
 bool kc_initialize_device(void)
 {
-    INFO(("Initializing the virtual capture device."));
+    DEBUG(("Initializing the virtual capture device."));
 
     FRAME_BUFFER.r = {640, 480, 32};
     FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;

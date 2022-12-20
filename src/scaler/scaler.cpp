@@ -155,7 +155,7 @@ bool ks_is_custom_scaler_active(void)
 
 void ks_initialize_scaler(void)
 {
-    INFO(("Initializing the scaler subsystem."));
+    DEBUG(("Initializing the scaler subsystem."));
 
     cv::redirectError(cv_error_handler);
 
@@ -198,7 +198,7 @@ void ks_initialize_scaler(void)
 
 void ks_release_scaler(void)
 {
-    INFO(("Releasing the scaler."));
+    DEBUG(("Releasing the scaler."));
 
     kmem_release((void**)&FRAME_BUFFER_PIXELS);
 
