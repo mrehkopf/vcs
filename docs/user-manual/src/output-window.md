@@ -254,6 +254,12 @@ The window menu lets you customize various properties of the [output window](#ou
             <th>Explanation</th>
         </tr>
         <tr>
+            <td>Set title...</td>
+            <td>
+                Give the output window a custom title. All of VCS's normal title bar information - except the frame drop indicator - will be replaced with the text you set. Setting an empty string will restore VCS's default title bar.
+            </td>
+        </tr>
+        <tr>
             <td>Renderer</td>
             <td class="with-inline-table">
                 <dokki-table>
@@ -281,6 +287,12 @@ The window menu lets you customize various properties of the [output window](#ou
             </td>
         </tr>
         <tr>
+            <td>Font size in dialogs</td>
+            <td>
+                Select the font size to be used in VCS <a href="#dialog-windows">dialogs</a>.
+            </td>
+        </tr>
+        <tr>
             <td>Border</td>
             <td>
                 A hint to the operating system on whether to decorate the output window with the system's window border and title bar. When the window is in borderless mode, the operating system is also asked to position it on top of other desktop elements. You can achieve a windowed fullscreen mode by disabling the window border and setting the <a href="#output-resolution-dialog">Output resolution</a> to match your desktop resolution (see also the <em>Top left</em> menu option).
@@ -304,11 +316,13 @@ The window menu lets you customize various properties of the [output window](#ou
                 Snap the output window to the top left corner of the screen.
             </td>
         </tr>
-        <tr>
-            <td>Custom title...</td>
-            <td>
-                Give the output window a custom title. All of VCS's normal title bar information - except the frame drop indicator - will be replaced with the text you set. Setting an empty string will restore VCS's default title bar.
-            </td>
-        </tr>
     </table>
 </dokki-table>
+
+### Eco mode
+
+Toggle a power-saving mode in which VCS will micro-sleep between capture events to reduce its overall CPU usage.
+
+The eco mode may increase capture latency by a bit in some situations, and the responsiveness of the GUI will also suffer to some extent. But you may find these acceptable tradeoffs for energy savings and a cooler-running CPU.
+
+The eco mode works best when the output resolution is the same as the input resolution, i.e. when VCS has to spend minimal CPU resources processing captured frames, allowing most of the time to be spent in a resource-efficient sleep state.

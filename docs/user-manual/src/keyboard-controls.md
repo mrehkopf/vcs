@@ -1,5 +1,7 @@
 # Keyboard controls
 
+## Program-wide
+
 <dokki-table headerless>
     <table>
         <tr>
@@ -40,8 +42,7 @@
         </tr>
         <tr>
             <td><key-combo>Ctrl + Shift + key</key-combo></td>
-            <td>Toggle the corresponding dialog's functionality on/off (e.g.
-                <key-combo>Ctrl + Shift + R</key-combo> for recording).</td>
+            <td>Toggle the corresponding dialog's functionality on/off (e.g. <key-combo>Ctrl + Shift + R</key-combo> for recording).</td>
         </tr>
         <tr>
             <td><key-combo>Ctrl + 1&hellip;9</key-combo></td>
@@ -50,6 +51,29 @@
         <tr>
             <td><key-combo>Shift + 1&hellip;2</key-combo></td>
             <td>Set the input channel index.</td>
+        </tr>
+    </table>
+</dokki-table>
+
+## Filter graph dialog
+
+<dokki-table headerless>
+    <table>
+        <tr>
+            <th>Key(s)</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><key-combo>Shift + Del</key-combo></td>
+            <td>Delete the selected node(s).</td>
+        </tr>
+        <tr>
+            <td><key-combo>Shift + Mouse drag</key-combo></td>
+            <td>When dragging a node, snap it to a grid.</td>
+        </tr>
+        <tr>
+            <td><key-combo>Ctrl + Mouse wheel</key-combo></td>
+            <td>Zoom the view in and out.</td>
         </tr>
     </table>
 </dokki-table>

@@ -121,11 +121,11 @@ Normally, the capture device will automatically set the capture resolution to ma
 
 You can change a button's assigned resolution by clicking on it while pressing the <key-combo>Alt</key-combo> key.
 
-## Output resolution dialog
+## Output size dialog
 
-This dialog can be accessed with <key-combo>Ctrl + O</key-combo> or <menu-path>Context > Output > Resolution...</menu-path>.
+This dialog can be accessed with <key-combo>Ctrl + O</key-combo> or <menu-path>Context > Output > Size...</menu-path>.
 
-The output resolution dialog lets you resize the [output window](#output-window). This also resizes the frames being displayed in the window.
+The dialog lets you resize the [output window](#output-window).
 
 ### Settings explained
 
@@ -136,17 +136,17 @@ The output resolution dialog lets you resize the [output window](#output-window)
             <th>Description</th>
         </tr>
         <tr>
-            <td>Resolution</td>
+            <td>Constant</td>
             <td>
                 Lock the size of the output window so that changes to the capture resolution don't affect the output
                 resolution. Frames will be scaled up or down as needed to match this resolution.
             </td>
         </tr>
         <tr>
-            <td>Relative scale</td>
+            <td>Scale</td>
             <td>
                 Scale the size of the output window up or down by a percentage of its base size. The base size is
-                either the capture resolution, or, if enabled, the locked output resolution.
+                either the capture resolution, or, if enabled, the <strong>Constant</strong> resolution.
             </td>
         </tr>
     </table>
@@ -159,9 +159,29 @@ This dialog can be accessed with <key-combo>Ctrl + L</key-combo> or <menu-path>C
 > The overlay editor dialog (right) showing the HTML/CSS source of an overlay (top left) in this capture of a Linux desktop\
 ![{image}{headerless}](../img/vcs-2.6-overlay.webp)
 
-The overlay dialog lets you define a message to be overlaid on the [output window](#output-window).
+The overlay dialog lets you define a message to be overlaid on the [output window](#output-window), with optional HTML/CSS styling.
 
-You can combine normal text with pre-set VCS variables and HTML/CSS formatting to create a message to be shown over the output window.
+For a list of the HTML and CSS features supported, see [Qt5: Supported HTML Subset](https://doc.qt.io/qt-5/richtext-html-subset.html).
+
+> A sample overlay with HTML/CSS formatting that displays information about the current video mode
+```html [{headerless}]
+<style>
+    video-mode {
+        color: yellow;
+        background-color: black;
+        font-family: "Comic Sans MS";
+    }
+</style>
+
+<video-mode>
+    Input: $inWidth &times; $inHeight, $inRate Hz
+</video-mode>
+```
+
+> A sample overlay without HTML/CSS formatting that displays information about the current video mode
+```text [{headerless}]
+Input: $inWidth x $inHeight, $inRate Hz
+```
 
 ## Video presets dialog
 

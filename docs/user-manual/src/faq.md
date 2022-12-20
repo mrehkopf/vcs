@@ -2,17 +2,17 @@
 
 In this section, you'll find answers to some of the common questions and problems that one might have when using VCS.
 
+## Where to download VCS?
+
+A download for the latest Windows version of VCS is [available on GitHub](https://github.com/leikareipa/vcs/releases).
+
+For Linux, you can grab the [VCS source code](https://github.com/leikareipa/vcs/) and compile it for your platform.
+
 ## Getting started
 
-A download for the latest Windows version of VCS is [available on GitHub](https://github.com/leikareipa/vcs/releases). For Linux, you can grab the [VCS source code](https://github.com/leikareipa/vcs/) and compile it for your platform.
+Assuming you've installed the drivers for your capture device, simply run the VCS executable (e.g. **vcs.exe** on Windows) to get started.
 
-Assuming you've already installed the drivers for your capture device, simply run *vcs.exe* to get started with VCS.
-
-When you run the VCS executable, two windows should open: a console window, in which notifications about VCS's status will appear during operation; and the [capture window](#output-window), in which captured frames are displayed.
-
-<dokki-tip>
-    You can use VCS's <a href="#command-line-options">command-line options</a> to automate certain start-up tasks.
-</dokki-tip>
+When you start up VCS, two windows should open: a console window, in which notifications about VCS's status will appear during operation; and the [output window](#output-window), in which captured frames are displayed. Right-clicking inside the output window will open a context menu that gives you access to the various controls of VCS.
 
 ## Adjusting the color balance
 
@@ -39,6 +39,13 @@ If you find that a particular resolution is consistently misidentified by the ca
 ## Resizing the capture window
 
 The size of the capture window can be changed via the [Output resolution dialog](#dialog-windows-output-resolution-dialog).
+
+## Changing the output aspect ratio
+
+There are two ways to set a custom output aspect ratio:
+
+1. Use the [Output size dialog](#dialog-windows-output-size-dialog) to force a particular resolution. This setting applies to all captured frames regardless of their native resolution.
+2. Use the output scaling filter of the [Filter graph dialog](#dialog-windows-filter-graph-dialog) to set a custom output resolution with optional letterboxing. This method allows you to have different settings for different input resolutions.
 
 ## Preventing the capture window from resizing
 
@@ -73,7 +80,11 @@ With some capture sources (e.g. DOS-mode VGA), you may find the image susceptibl
 > Screen tearing in Tomb Raider (DOS)\
 ![{image:600x374}{headerless}](../img/tr1-torn.webp)
 
-To reduce or even eliminate tearing of this sort, VCS provides anti-tearing functionality. See [Anti-tear dialog](dialog-windows-anti-tear-dialog) for more information.
+To reduce or even eliminate this kind of tearing, VCS provides anti-tearing functionality. See [Anti-tear dialog](#dialog-windows-anti-tear-dialog) for more information.
 
 > Before (left) and after (right) applying VCS's anti-tearing\
 ![{youtube}](_gNywFJFRWo)
+
+## How much capture latency is there?
+
+VCS with a Datapath VisionRGB capture card should exhibit minimal latency, typically one or two frames (10~20 milliseconds).
