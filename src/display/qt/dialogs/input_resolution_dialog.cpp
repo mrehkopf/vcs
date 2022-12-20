@@ -95,7 +95,7 @@ InputResolutionDialog::InputResolutionDialog(QWidget *parent) :
         {
             resolution_s customResolution = {1920, 1080};
 
-            if (ResolutionDialog("Force a capture resolution", &customResolution, parentWidget()).exec() == QDialog::Accepted)
+            if (ResolutionDialog("Force an input resolution", &customResolution, parentWidget()).exec() == QDialog::Accepted)
             {
                 kc_force_capture_resolution(customResolution);
             }

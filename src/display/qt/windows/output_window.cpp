@@ -920,10 +920,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
         }
 
         if (dialogsWithUnsavedChanges.count() &&
-            (QMessageBox::question(this, "Confirm VCS exit",
+            (QMessageBox::question(this, "Confirm exit",
                                    "The following dialogs have unsaved changes:"
-                                   "<br><br>" + dialogsWithUnsavedChanges.join("<br>") +
-                                   "<br><br>Exit and lose unsaved changes?",
+                                   "<b><br><br>" + dialogsWithUnsavedChanges.join("<br>") +
+                                   "</b><br><br>Exit and lose unsaved changes?",
                                    (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::No))
         {
             return;
