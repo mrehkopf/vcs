@@ -77,7 +77,7 @@ static bool initialize_all(void)
     kc_evNewVideoMode.listen([](const video_mode_s &videoMode)
     {
         INFO((
-            "Video mode: %u x %u @ %.3f Hz.",
+            "Video mode: %u x %u at %.3f Hz.",
             videoMode.resolution.w,
             videoMode.resolution.h,
             videoMode.refreshRate.value<double>()
@@ -329,13 +329,9 @@ int main(int argc, char *argv[])
         load_user_data();
     }
 
-    // Propagate the initial video mode to VCS.
-    if (kc_has_valid_signal())
+    if (!kc_is_receiving_signal())
     {
-        kc_evNewProposedVideoMode.fire({
-           kc_get_capture_resolution(),
-           kc_get_capture_refresh_rate(),
-       });
+        INFO(("No signal."));
     }
 
     DEBUG(("Entering the main loop."));
