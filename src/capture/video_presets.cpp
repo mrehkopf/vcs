@@ -128,8 +128,11 @@ void kvideopreset_remove_all_presets(void)
 
 void kvideopreset_apply_current_active_preset(void)
 {
-    if (!kc_is_receiving_signal())
-    {
+    if (
+        !kc_is_receiving_signal() ||
+        !kc_has_valid_signal() ||
+        (kc_current_capture_state().signalFormat != signal_format_e::analog)
+    ){
         return;
     }
 
