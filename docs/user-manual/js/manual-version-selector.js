@@ -22,6 +22,7 @@ const manualVersionSelector = {
         supported_manual_versions() {
             return [
                 "master",
+                "2.6.0",
                 "2.5.2",
                 "2.5.1",
                 "2.5.0",
