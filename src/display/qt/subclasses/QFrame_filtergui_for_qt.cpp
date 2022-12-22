@@ -9,8 +9,8 @@
 #include <QPlainTextEdit>
 #include <QHBoxLayout>
 #include <QFormLayout>
-#include <QComboBox>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QWidget>
 #include <QFrame>
 #include <QLabel>
@@ -48,25 +48,25 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
 
             for (auto *component: field.components)
             {
+                QWidget *widget = nullptr;
+
                 switch (component->type())
                 {
                     case filtergui_component_e::label:
                     {
                         auto *const c = ((filtergui_label_s*)component);
-                        auto *const label = new QLabel(QString::fromStdString(c->text), this);
+                        auto *const label = qobject_cast<QLabel*>(widget = new QLabel(QString::fromStdString(c->text), this));
 
                         label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
                         label->setAlignment(Qt::AlignCenter);
                         label->setStyleSheet("margin-bottom: .25em;");
-
-                        containerLayout->addWidget(label);
 
                         break;
                     }
                     case filtergui_component_e::textedit:
                     {
                         auto *const c = ((filtergui_textedit_s*)component);
-                        auto *const textEdit = new QPlainTextEdit(QString::fromStdString(c->text), this);
+                        auto *const textEdit = qobject_cast<QPlainTextEdit*>(widget = new QPlainTextEdit(QString::fromStdString(c->text), this));
 
                         textEdit->setMinimumWidth(150);
                         textEdit->setMaximumHeight(70);
@@ -86,17 +86,16 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                             emit this->parameter_changed();
                         });
 
-                        containerLayout->addWidget(textEdit);
-
                         break;
                     }
                     case filtergui_component_e::checkbox:
                     {
                         auto *const c = ((filtergui_checkbox_s*)component);
-                        auto *const checkbox = new QCheckBox(this);
+                        auto *const checkbox = qobject_cast<QCheckBox*>(widget = new QCheckBox(this));
 
                         checkbox->setChecked(c->get_value());
                         checkbox->setText(QString::fromStdString(c->label));
+                        checkbox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
                         connect(checkbox, &QCheckBox::toggled, [=](const bool isChecked)
                         {
@@ -104,14 +103,12 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                             emit this->parameter_changed();
                         });
 
-                        containerLayout->addWidget(checkbox);
-
                         break;
                     }
                     case filtergui_component_e::combobox:
                     {
                         auto *const c = ((filtergui_combobox_s*)component);
-                        auto *const combobox = new QComboBox(this);
+                        auto *const combobox = qobject_cast<QComboBox*>(widget = new QComboBox(this));
 
                         for (const auto &item: c->items)
                         {
@@ -126,14 +123,12 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                             emit this->parameter_changed();
                         });
 
-                        containerLayout->addWidget(combobox);
-
                         break;
                     }
                     case filtergui_component_e::spinbox:
                     {
                         auto *const c = ((filtergui_spinbox_s*)component);
-                        auto *const spinbox = new QSpinBox(this);
+                        auto *const spinbox = qobject_cast<QSpinBox*>(widget = new QSpinBox(this));
 
                         spinbox->setRange(c->minValue, c->maxValue);
                         spinbox->setValue(c->get_value());
@@ -159,14 +154,12 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                             emit this->parameter_changed();
                         });
 
-                        containerLayout->addWidget(spinbox);
-
                         break;
                     }
                     case filtergui_component_e::doublespinbox:
                     {
                         auto *const c = ((filtergui_doublespinbox_s*)component);
-                        auto *const doublespinbox = new QDoubleSpinBox(this);
+                        auto *const doublespinbox = qobject_cast<QDoubleSpinBox*>(widget = new QDoubleSpinBox(this));
 
                         doublespinbox->setRange(c->minValue, c->maxValue);
                         doublespinbox->setDecimals(c->numDecimals);
@@ -194,12 +187,16 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                             emit this->parameter_changed();
                         });
 
-                        containerLayout->addWidget(doublespinbox);
-
                         break;
                     }
                     default: k_assert(0, "Unrecognized filter GUI component."); break;
                 }
+
+                k_assert(widget, "Expected the filter GUI widget to have been initialized.");
+                widget->setEnabled(component->isInitiallyEnabled);
+                component->set_enabled = [widget](const bool isEnabled){widget->setEnabled(isEnabled);};
+
+                containerLayout->addWidget(widget);
             }
 
             auto *const label = (field.label.empty()? nullptr : new QLabel(QString::fromStdString(field.label), this));

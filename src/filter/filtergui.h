@@ -11,7 +11,7 @@
 #include <functional>
 #include <cstring>
 #include <string>
-#include "common/globals.h"
+#include <vector>
 #include "common/types.h"
 
 class abstract_filter_c;
@@ -39,6 +39,9 @@ struct filtergui_component_s
     virtual ~filtergui_component_s(void){}
 
     virtual filtergui_component_e type(void) const = 0;
+
+    std::function<void(const bool)> set_enabled;
+    bool isInitiallyEnabled = true;
 
     std::function<void(const double)> set_value;
     std::function<double(void)> get_value;
