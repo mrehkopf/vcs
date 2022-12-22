@@ -8,18 +8,20 @@
  */
 
 #include "filter/abstract_filter.h"
+#include "common/globals.h"
 
-abstract_filter_c::abstract_filter_c(const std::vector<std::pair<unsigned, double>> &parameters,
-                                     const std::vector<std::pair<unsigned, double>> &overrideParameterValues)
-{
-    this->parameterValues.resize(std::max(parameters.size(), overrideParameterValues.size()));
+abstract_filter_c::abstract_filter_c(
+    const filter_params_t &parameters,
+    const filter_params_t &overrideParamValues
+){
+    this->parameterValues.resize(std::max(parameters.size(), overrideParamValues.size()));
 
     for (const auto &parameter: parameters)
     {
         this->set_parameter(parameter.first, parameter.second);
     }
 
-    for (const auto &parameter: overrideParameterValues)
+    for (const auto &parameter: overrideParamValues)
     {
         this->set_parameter(parameter.first, parameter.second);
     }
@@ -73,7 +75,21 @@ void abstract_filter_c::set_parameter_string(const unsigned offset, const std::s
 
     return;
 }
-void abstract_filter_c::set_parameters(const std::vector<std::pair<unsigned, double>> &parameters)
+
+void abstract_filter_c::assert_input_validity(image_s *const image)
+{
+    k_assert(
+        ((image->resolution.bpp == 32) &&
+         (image->resolution.w <= MAX_CAPTURE_WIDTH) &&
+         (image->resolution.h <= MAX_CAPTURE_HEIGHT)),
+        "Unsupported frame format."
+    );
+
+    k_assert(image->pixels, "Null pixel data,");
+
+    return;
+}
+void abstract_filter_c::set_parameters(const filter_params_t &parameters)
 {
     this->parameterValues.resize(std::max(parameters.size(), this->parameterValues.size()));
 
@@ -85,9 +101,9 @@ void abstract_filter_c::set_parameters(const std::vector<std::pair<unsigned, dou
     return;
 }
 
-std::vector<std::pair<unsigned, double>> abstract_filter_c::parameters(void) const
+filter_params_t abstract_filter_c::parameters(void) const
 {
-    auto params = std::vector<std::pair<unsigned, double>>{};
+    auto params = filter_params_t{};
 
     for (std::size_t i = 0; i < this->parameterValues.size(); i++)
     {

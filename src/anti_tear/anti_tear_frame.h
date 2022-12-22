@@ -9,7 +9,9 @@
 #define VCS_FILTER_ANTI_TEAR_FRAME_H
 
 #include "common/globals.h"
+#include "common/assert.h"
 #include "common/memory/heap_mem.h"
+#include "display/display.h"
 
 struct anti_tear_frame_s
 {

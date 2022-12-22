@@ -19,7 +19,7 @@ public:
            PARAM_TEMPLATE_WINDOW_SIZE,
            PARAM_SEARCH_WINDOW_SIZE};
 
-    filter_denoise_nonlocal_means_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_denoise_nonlocal_means_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_H, 10},
                            {PARAM_H_COLOR, 10},
                            {PARAM_TEMPLATE_WINDOW_SIZE, 7},

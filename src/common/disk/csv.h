@@ -12,6 +12,7 @@
 
 #include <QFile>
 #include "common/globals.h"
+#include "common/assert.h"
 
 class csv_parse_c
 {

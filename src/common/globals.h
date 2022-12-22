@@ -7,15 +7,8 @@
 #ifndef VCS_COMMON_GLOBALS_H
 #define VCS_COMMON_GLOBALS_H
 
-#include "display/display.h"
 #include "common/types.h"
 #include "common/log/log.h"
-
-#ifdef NDEBUG
-    #error "NDEBUG disables assertions. Assertions are required by design."
-#endif
-#include <stdexcept>
-#include <cassert>
 
 const char PROGRAM_NAME[] = "VCS";
 const char PROGRAM_VERSION_STRING[] = "2.6.0";
@@ -38,21 +31,6 @@ const uint MAX_CAPTURE_BPP = 32;
 const u32 MAX_NUM_BYTES_IN_CAPTURED_FRAME = (MAX_CAPTURE_WIDTH * MAX_CAPTURE_HEIGHT * u64(MAX_CAPTURE_BPP / 8));
 
 #define NUM_ELEMENTS(array) int((sizeof(array) / sizeof((array)[0])))
-
-#define k_assert(condition, error_string) \
-    if (!(condition))\
-    {\
-        klog_log_assert("Assertion failure in %s:%d: \"%s\"", __FILE__, __LINE__, error_string);\
-        kd_show_headless_assert_error_message(error_string, __FILE__, __LINE__);\
-        throw std::runtime_error(error_string);\
-    }
-
-// Assertions in e.g. performance-critical code.
-#ifndef RELEASE_BUILD
-    #define k_assert_optional k_assert
-#else
-    #define k_assert_optional(...)
-#endif
 
 #define DEBUG(args) (klog_log_debug args)
 #define NBENE(args) (klog_log_error args)

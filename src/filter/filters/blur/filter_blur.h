@@ -20,7 +20,7 @@ public:
     enum { BLUR_BOX = 0,
            BLUR_GAUSSIAN = 1 };
     
-    filter_blur_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_blur_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_KERNEL_SIZE, 1},
                            {PARAM_TYPE, BLUR_GAUSSIAN}},
                           initialParamValues)

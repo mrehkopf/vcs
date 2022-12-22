@@ -6,6 +6,7 @@
  */
 
 #include "common/globals.h"
+#include "common/assert.h"
 #include "display/qt/dialogs/linux_device_selector_dialog.h"
 #include "ui_linux_device_selector_dialog.h"
 

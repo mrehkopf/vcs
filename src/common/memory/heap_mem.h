@@ -14,6 +14,7 @@
 #define VCS_COMMON_MEMORY_MEMORY_INTERFACE_H
 
 #include "common/globals.h"
+#include "common/assert.h"
 #include "common/memory/memory.h"
 #include "common/types.h"
 

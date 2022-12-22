@@ -35,7 +35,7 @@
 #include <QCursor>
 #include <QDebug>
 #include "QGraphicsScene_interactible_node_graph.h"
-#include "common/globals.h"
+#include "common/assert.h"
 
 InteractibleNodeGraph::InteractibleNodeGraph(QObject *parent) :
     QGraphicsScene(parent)

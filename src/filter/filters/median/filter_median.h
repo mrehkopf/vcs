@@ -16,7 +16,7 @@ class filter_median_c : public abstract_filter_c
 public:
     enum { PARAM_KERNEL_SIZE };
 
-    filter_median_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_median_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_KERNEL_SIZE, 3}}, initialParamValues)
     {
         this->guiDescription = new filtergui_median_c(this);

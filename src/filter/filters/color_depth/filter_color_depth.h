@@ -18,7 +18,7 @@ public:
            PARAM_BIT_COUNT_GREEN,
            PARAM_BIT_COUNT_BLUE };
     
-    filter_color_depth_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_color_depth_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_BIT_COUNT_RED, 8},
                            {PARAM_BIT_COUNT_GREEN, 8},
                            {PARAM_BIT_COUNT_BLUE, 8}},

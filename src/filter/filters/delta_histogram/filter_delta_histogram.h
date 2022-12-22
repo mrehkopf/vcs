@@ -14,7 +14,7 @@
 class filter_delta_histogram_c : public abstract_filter_c
 {
 public:
-    filter_delta_histogram_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_delta_histogram_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({}, initialParamValues)
     {
         this->guiDescription = new filtergui_delta_histogram_c(this);

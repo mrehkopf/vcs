@@ -6,6 +6,8 @@
  */
 
 #include "filter/filters/denoise_pixel_gate/filter_denoise_pixel_gate.h"
+#include "common/memory/heap_mem.h"
+#include "common/globals.h"
 
 // Reduces temporal image noise by requiring that pixels between frames vary by at
 // least a threshold value before being updated on screen.

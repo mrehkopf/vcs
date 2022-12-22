@@ -131,10 +131,12 @@
 #include <unordered_map>
 #include <functional>
 #include <cstring>
-#include "common/memory/heap_mem.h"
 #include "filter/filtergui.h"
-#include "display/display.h"
-#include "common/globals.h"
+
+class abstract_filter_c;
+struct resolution_s;
+
+typedef std::vector<std::pair<unsigned /*param idx*/, double /*param value*/>> filter_params_t;
 
 /*!
  * @brief
@@ -312,11 +314,11 @@ const std::vector<const abstract_filter_c*>& kf_available_filter_types(void);
  * kf_register_filter_chain(), kf_delete_filter_instance()
  */
 abstract_filter_c* kf_create_filter_instance(const std::string &filterTypeUuid,
-                                             const std::vector<std::pair<unsigned, double>> &initialParamValues = {});
+                                             const filter_params_t &initialParamValues = {});
 
 //!@cond
 template <class T>
-abstract_filter_c* kf_create_filter_instance(const std::vector<std::pair<unsigned, double>> &initialParamValues = {})
+abstract_filter_c* kf_create_filter_instance(const filter_params_t &initialParamValues = {})
 {
     return kf_create_filter_instance(T().uuid(), initialParamValues);
 }

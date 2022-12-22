@@ -8,6 +8,7 @@
 #include <cmath>
 #include "filter/filters/input_gate/filter_input_gate.h"
 #include "filter/filters/input_gate/gui/filtergui_input_gate.h"
+#include "common/globals.h"
 
 filtergui_input_gate_c::filtergui_input_gate_c(abstract_filter_c *const filter)
 {

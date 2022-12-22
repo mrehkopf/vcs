@@ -8,6 +8,7 @@
 #include <cmath>
 #include "filter/filters/render_text/filter_render_text.h"
 #include "filter/filters/render_text/gui/filtergui_render_text.h"
+#include "common/globals.h"
 
 filtergui_render_text_c::filtergui_render_text_c(abstract_filter_c *const filter)
 {

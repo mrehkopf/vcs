@@ -219,17 +219,25 @@ void kf_delete_filter_instance(const abstract_filter_c *const filter)
     return;
 }
 
-abstract_filter_c* kf_create_filter_instance(const std::string &filterTypeUuid,
-                                             const std::vector<std::pair<unsigned, double>> &initialParams)
-{
+abstract_filter_c* kf_create_filter_instance(
+    const std::string &filterTypeUuid,
+    const filter_params_t &initialParamValues
+){
     abstract_filter_c *filter = nullptr;
 
     for (auto &filterType: KNOWN_FILTER_TYPES)
     {
         if (filterType->uuid() == filterTypeUuid)
         {
-            filter = filterType->create_clone();
-            filter->set_parameters(initialParams);
+            filter_params_t paramValues = filterType->parameters();
+
+            for (unsigned i = 0; i < std::min(paramValues.size(), initialParamValues.size()); i++)
+            {
+                paramValues[i] = initialParamValues[i];
+            }
+
+            filter = filterType->create_clone(paramValues);
+
             break;
         }
     }

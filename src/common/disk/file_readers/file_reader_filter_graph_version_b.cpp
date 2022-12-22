@@ -75,7 +75,7 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
             for (unsigned paramIdx = 0; paramIdx < numParameters; paramIdx++)
             {
                 const double paramValue = rowData.at(row).at(2 + paramIdx).toDouble();
-                node.parameters.push_back({paramIdx, paramValue});
+                node.initialParameters.push_back({paramIdx, paramValue});
             }
 
             graphNodes->push_back(node);
@@ -100,8 +100,10 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
 
                     if (paramName == "scenePosition")
                     {
-                        graphNodes->at(i).position = {rowData.at(row).at(1).toDouble(),
-                                                      rowData.at(row).at(2).toDouble()};
+                        graphNodes->at(i).initialPosition = {
+                            rowData.at(row).at(1).toDouble(),
+                            rowData.at(row).at(2).toDouble()
+                        };
                     }
                     else if (paramName == "isEnabled")
                     {

@@ -17,7 +17,7 @@ public:
     enum { PARAM_ROT,
            PARAM_SCALE };
 
-    filter_rotate_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_rotate_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_SCALE, 1},
                            {PARAM_ROT, 0}},
                           initialParamValues)

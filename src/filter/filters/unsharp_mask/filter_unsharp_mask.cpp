@@ -6,6 +6,8 @@
  */
 
 #include "filter/filters/unsharp_mask/filter_unsharp_mask.h"
+#include "common/memory/heap_mem.h"
+#include "common/globals.h"
 #include <opencv2/imgproc/imgproc.hpp>
 
 void filter_unsharp_mask_c::apply(image_s *const image)

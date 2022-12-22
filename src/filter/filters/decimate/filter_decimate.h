@@ -20,7 +20,7 @@ public:
     enum { SAMPLE_NEAREST = 0,
            SAMPLE_AVERAGE = 1 };
 
-    filter_decimate_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_decimate_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_FACTOR, 1},
                            {PARAM_TYPE, SAMPLE_AVERAGE}},
                           initialParamValues)

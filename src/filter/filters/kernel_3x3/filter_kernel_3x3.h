@@ -24,7 +24,7 @@ public:
            PARAM_32,
            PARAM_33,};
 
-    filter_kernel_3x3_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_kernel_3x3_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({
             {PARAM_11, 0},
             {PARAM_12, 0},

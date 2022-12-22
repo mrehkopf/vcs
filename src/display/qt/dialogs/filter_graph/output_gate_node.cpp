@@ -8,7 +8,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <QPainter>
 #include <QStyle>
-#include "common/globals.h"
+#include "common/assert.h"
 #include "display/qt/dialogs/filter_graph/output_gate_node.h"
 
 node_edge_s* OutputGateNode::input_edge(void)

@@ -8,6 +8,8 @@
 #include <cmath>
 #include "filter/filters/output_scaler/filter_output_scaler.h"
 #include "filter/filters/delta_histogram/filter_delta_histogram.h"
+#include "common/memory/heap_mem.h"
+#include "common/globals.h"
 
 // Draws a histogram indicating the amount by which pixel values differ between two consecutive
 // frames. A single tall bar at the middle of the graph means that pixels don't differ at all,

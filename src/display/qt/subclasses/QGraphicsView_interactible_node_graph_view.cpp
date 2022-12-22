@@ -18,7 +18,7 @@
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/keyboard_shortcuts.h"
-#include "common/globals.h"
+#include "common/assert.h"
 #include "filter/filter.h"
 
 InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphicsView(parent)

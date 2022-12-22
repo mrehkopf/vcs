@@ -11,12 +11,15 @@
 #include <vector>
 #include <string>
 #include "filter/filter.h"
+#include "common/assert.h"
+
+struct image_s;
 
 #define CLONABLE_FILTER_TYPE(filter_child_class) \
-    abstract_filter_c* create_clone(void) const override\
+    abstract_filter_c* create_clone(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) const override\
     {\
         k_assert((typeid(filter_child_class) == typeid(*this)), "Type mismatch in duplicator.");\
-        return new filter_child_class(this->parameters());\
+        return new filter_child_class(initialParamValues);\
     }\
 
 /*!
@@ -29,8 +32,10 @@
 class abstract_filter_c
 {
 public:
-    abstract_filter_c(const std::vector<std::pair<unsigned /*parameter idx*/, double /*initial value*/>> &parameters = {},
-                      const std::vector<std::pair<unsigned /*parameter idx*/, double /*override value*/>> &overrideParameterValues = {});
+    abstract_filter_c(
+        const std::vector<std::pair<unsigned /*parameter idx*/, double /*initial value*/>> &parameters = {},
+        const std::vector<std::pair<unsigned /*parameter idx*/, double /*initial value*/>> &overrideParamValues = {}
+    );
 
     virtual ~abstract_filter_c(void);
 
@@ -48,11 +53,11 @@ public:
 
     void set_parameter(const unsigned offset, const double value);
 
-    void set_parameters(const std::vector<std::pair<unsigned, double>> &parameters);
+    void set_parameters(const filter_params_t &parameters);
 
     void set_parameter_string(const unsigned offset, const std::string &string, const std::size_t maxLength = ~0);
 
-    virtual abstract_filter_c* create_clone(void) const = 0;
+    virtual abstract_filter_c* create_clone(const std::vector<std::pair<unsigned, double>> &overrideParams) const = 0;
 
     virtual std::string name(void) const = 0;
 
@@ -83,17 +88,7 @@ protected:
      * Triggers an assertion failure if @p pixels or @p r are out of bounds for
      * a filter's apply() function.
      */
-    void assert_input_validity(image_s *const image)
-    {
-        k_assert(
-            ((image->resolution.bpp == 32) &&
-             (image->resolution.w <= MAX_CAPTURE_WIDTH) &&
-             (image->resolution.h <= MAX_CAPTURE_HEIGHT)),
-            "Unsupported frame format."
-        );
-
-        k_assert(image->pixels, "Null pixel data,");
-    }
+    void assert_input_validity(image_s *const image);
 
 private:
     std::vector<double> parameterValues;

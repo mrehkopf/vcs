@@ -16,7 +16,7 @@ class filter_flip_c : public abstract_filter_c
 public:
     enum { PARAM_AXIS };
 
-    filter_flip_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_flip_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_AXIS, 0}}, initialParamValues)
     {
         this->guiDescription = new filtergui_flip_c(this);

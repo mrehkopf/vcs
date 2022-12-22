@@ -34,8 +34,10 @@ public:
     bool load_graph_from_file(const QString &filename);
 
 private:
-    BaseFilterGraphNode* add_filter_graph_node(const std::string &filterTypeUuid,
-                                               const std::vector<std::pair<unsigned, double>> &initialParamValues = {});
+    BaseFilterGraphNode* add_filter_graph_node(
+        const std::string &filterTypeUuid,
+        const filter_params_t &initialParamValues = {}
+    );
 
     void reset_graph(const bool autoAccept = false);
 

@@ -17,7 +17,7 @@ public:
     enum { PARAM_STRENGTH,
            PARAM_RADIUS };
 
-    filter_unsharp_mask_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_unsharp_mask_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_STRENGTH, 5},
                            {PARAM_RADIUS, 1}},
                           initialParamValues)

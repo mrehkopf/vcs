@@ -32,7 +32,7 @@ public:
     enum { SCAN_ONE_TEAR = 0,
            SCAN_MULTIPLE_TEARS = 1 };
 
-    filter_anti_tear_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_anti_tear_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_SCAN_DIRECTION, SCAN_DOWN},
                            {PARAM_SCAN_HINT, SCAN_MULTIPLE_TEARS},
                            {PARAM_SCAN_START, 0},

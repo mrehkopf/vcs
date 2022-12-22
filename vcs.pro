@@ -163,6 +163,7 @@ SOURCES += \
     src/display/qt/dialogs/linux_device_selector_dialog.cpp
 
 HEADERS += \
+    src/common/assert.h \
     src/common/globals.h \
     src/common/types.h \
     src/display/qt/dialogs/filter_graph/base_filter_graph_node.h \

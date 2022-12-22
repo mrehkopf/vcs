@@ -12,7 +12,7 @@
 #include <QShortcut>
 #include <unordered_map>
 #include "display/qt/keyboard_shortcuts.h"
-#include "common/globals.h"
+#include "common/assert.h"
 
 static const std::unordered_map<std::string, QKeySequence> KEY_SEQUENCES = {
     {"output-window: exit-fullscreen-mode", QKeySequence("esc")},

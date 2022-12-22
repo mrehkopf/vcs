@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include "display/qt/subclasses/QMenu_dialog_file_menu.h"
 #include "common/globals.h"
+#include "common/assert.h"
 
 DialogFileMenu::DialogFileMenu(VCSBaseDialog *const parentDialog) :
     QMenu(parentDialog),

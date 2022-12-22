@@ -16,7 +16,7 @@ class filter_denoise_pixel_gate_c : public abstract_filter_c
 public:
     enum { PARAM_THRESHOLD };
                          
-    filter_denoise_pixel_gate_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_denoise_pixel_gate_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_THRESHOLD, 5}}, initialParamValues)
     {
         this->guiDescription = new filtergui_denoise_pixel_gate_c(this);

@@ -17,7 +17,7 @@ public:
     enum { PARAM_WIDTH,
            PARAM_HEIGHT };
 
-    filter_input_gate_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_input_gate_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_WIDTH, 640},
                            {PARAM_HEIGHT, 480}},
                           initialParamValues)

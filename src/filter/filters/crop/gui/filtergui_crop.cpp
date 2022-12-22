@@ -8,6 +8,7 @@
 #include <cmath>
 #include "filter/filters/crop/filter_crop.h"
 #include "filter/filters/crop/gui/filtergui_crop.h"
+#include "common/globals.h"
 
 filtergui_crop_c::filtergui_crop_c(abstract_filter_c *const filter)
 {

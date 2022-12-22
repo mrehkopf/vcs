@@ -6,6 +6,7 @@
  */
 
 #include "record/recording_buffer.h"
+#include "common/assert.h"
 
 void recording_buffer_s::initialize(const size_t frameCapacity)
 {

@@ -6,6 +6,8 @@
  */
 
 #include "filter/filters/rotate/filter_rotate.h"
+#include "common/memory/heap_mem.h"
+#include "common/globals.h"
 #include <opencv2/imgproc/imgproc.hpp>
 
 void filter_rotate_c::apply(image_s *const image)

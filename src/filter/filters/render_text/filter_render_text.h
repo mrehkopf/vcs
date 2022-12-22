@@ -71,7 +71,7 @@ public:
 
     static const std::size_t maxStringLength = 255;
 
-    filter_render_text_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_render_text_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({
             {PARAM_POS_X, 0},
             {PARAM_POS_Y, 0},

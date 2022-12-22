@@ -24,7 +24,7 @@ public:
            SCALE_NEAREST,
            SCALE_NONE };
 
-    filter_crop_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_crop_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_X, 0},
                            {PARAM_Y, 0},
                            {PARAM_WIDTH, 640},

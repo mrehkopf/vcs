@@ -14,7 +14,7 @@
 #include <QScrollBar>
 #include "display/qt/subclasses/QGroupBox_parameter_grid.h"
 #include "display/qt/utility.h"
-#include "common/globals.h"
+#include "common/assert.h"
 
 ParameterGrid::ParameterGrid(QWidget *parent) : QGroupBox(parent)
 {

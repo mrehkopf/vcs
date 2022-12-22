@@ -35,7 +35,7 @@ public:
         SCALER_LANCZOS,
     };
 
-    filter_output_scaler_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_output_scaler_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({
             {PARAM_WIDTH, 640},
             {PARAM_HEIGHT, 480},

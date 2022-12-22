@@ -337,10 +337,10 @@ bool FilterGraphDialog::load_graph_from_file(const QString &filename)
 
             for (const auto &abstractNode: loadedAbstractNodes)
             {
-                BaseFilterGraphNode *const node = this->add_filter_graph_node(abstractNode.typeUuid, abstractNode.parameters);
+                BaseFilterGraphNode *const node = this->add_filter_graph_node(abstractNode.typeUuid, abstractNode.initialParameters);
                 k_assert(node, "Failed to create a filter graph node.");
 
-                node->setPos(abstractNode.position.first, abstractNode.position.second);
+                node->setPos(abstractNode.initialPosition.first, abstractNode.initialPosition.second);
                 node->set_background_color(QString::fromStdString(abstractNode.backgroundColor));
                 node->set_enabled(abstractNode.isEnabled);
 
@@ -416,7 +416,7 @@ void FilterGraphDialog::save_graph_into_file(QString filename)
 // pointer to the new node.
 BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(
     const std::string &filterTypeUuid,
-    const std::vector<std::pair<unsigned, double>> &initialParamValues
+    const filter_params_t &initialParamValues
 ){
     abstract_filter_c *const filter = kf_create_filter_instance(filterTypeUuid, initialParamValues);
     k_assert(filter, "Failed to create a new filter node.");

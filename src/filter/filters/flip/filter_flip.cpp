@@ -6,6 +6,8 @@
  */
 
 #include "filter/filters/flip/filter_flip.h"
+#include "common/memory/heap_mem.h"
+#include "common/globals.h"
 #include <opencv2/imgproc/imgproc.hpp>
 
 // Flips the frame horizontally and/or vertically.
