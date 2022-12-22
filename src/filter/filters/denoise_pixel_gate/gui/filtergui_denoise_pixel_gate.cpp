@@ -15,7 +15,7 @@ filtergui_denoise_pixel_gate_c::filtergui_denoise_pixel_gate_c(abstract_filter_c
         auto *const threshold = new filtergui_spinbox_s;
 
         threshold->get_value = [=]{return filter->parameter(filter_denoise_pixel_gate_c::PARAM_THRESHOLD);};
-        threshold->set_value = [=](const double value){filter->set_parameter(filter_denoise_pixel_gate_c::PARAM_THRESHOLD, value);};
+        threshold->set_value = [=](const int value){filter->set_parameter(filter_denoise_pixel_gate_c::PARAM_THRESHOLD, value);};
         threshold->minValue = 0;
         threshold->maxValue = 255;
 

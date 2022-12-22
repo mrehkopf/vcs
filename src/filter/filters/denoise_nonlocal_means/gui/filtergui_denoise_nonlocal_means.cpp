@@ -15,7 +15,7 @@ filtergui_denoise_nonlocal_means_c::filtergui_denoise_nonlocal_means_c(abstract_
         auto *const luminance = new filtergui_spinbox_s;
 
         luminance->get_value = [=]{return filter->parameter(filter_denoise_nonlocal_means_c::PARAM_H);};
-        luminance->set_value = [=](const double value){filter->set_parameter(filter_denoise_nonlocal_means_c::PARAM_H, value);};
+        luminance->set_value = [=](const int value){filter->set_parameter(filter_denoise_nonlocal_means_c::PARAM_H, value);};
         luminance->minValue = 0;
         luminance->maxValue = 255;
 
@@ -26,7 +26,7 @@ filtergui_denoise_nonlocal_means_c::filtergui_denoise_nonlocal_means_c(abstract_
         auto *const color = new filtergui_spinbox_s;
 
         color->get_value = [=]{return filter->parameter(filter_denoise_nonlocal_means_c::PARAM_H_COLOR);};
-        color->set_value = [=](const double value){filter->set_parameter(filter_denoise_nonlocal_means_c::PARAM_H_COLOR, value);};
+        color->set_value = [=](const int value){filter->set_parameter(filter_denoise_nonlocal_means_c::PARAM_H_COLOR, value);};
         color->minValue = 0;
         color->maxValue = 255;
 
@@ -37,7 +37,7 @@ filtergui_denoise_nonlocal_means_c::filtergui_denoise_nonlocal_means_c(abstract_
         auto *const templateWindow = new filtergui_spinbox_s;
 
         templateWindow->get_value = [=]{return filter->parameter(filter_denoise_nonlocal_means_c::PARAM_TEMPLATE_WINDOW_SIZE);};
-        templateWindow->set_value = [=](const double value){filter->set_parameter(filter_denoise_nonlocal_means_c::PARAM_TEMPLATE_WINDOW_SIZE, value);};
+        templateWindow->set_value = [=](const int value){filter->set_parameter(filter_denoise_nonlocal_means_c::PARAM_TEMPLATE_WINDOW_SIZE, value);};
         templateWindow->minValue = 0;
         templateWindow->maxValue = 255;
 
@@ -48,7 +48,7 @@ filtergui_denoise_nonlocal_means_c::filtergui_denoise_nonlocal_means_c(abstract_
         auto *const searchWindow = new filtergui_spinbox_s;
 
         searchWindow->get_value = [=]{return filter->parameter(filter_denoise_nonlocal_means_c::PARAM_SEARCH_WINDOW_SIZE);};
-        searchWindow->set_value = [=](const double value){filter->set_parameter(filter_denoise_nonlocal_means_c::PARAM_SEARCH_WINDOW_SIZE, value);};
+        searchWindow->set_value = [=](const int value){filter->set_parameter(filter_denoise_nonlocal_means_c::PARAM_SEARCH_WINDOW_SIZE, value);};
         searchWindow->minValue = 0;
         searchWindow->maxValue = 255;
 

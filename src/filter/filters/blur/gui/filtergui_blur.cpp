@@ -15,7 +15,7 @@ filtergui_blur_c::filtergui_blur_c(abstract_filter_c *const filter)
         auto *const blurType = new filtergui_combobox_s;
 
         blurType->get_value = [=]{return filter->parameter(filter_blur_c::PARAM_TYPE);};
-        blurType->set_value = [=](const double value){filter->set_parameter(filter_blur_c::PARAM_TYPE, std::max(0.0, value));};
+        blurType->set_value = [=](const int value){filter->set_parameter(filter_blur_c::PARAM_TYPE, std::max(0, value));};
         blurType->items = {"Box", "Gaussian"};
 
         this->guiFields.push_back({"Type", {blurType}});

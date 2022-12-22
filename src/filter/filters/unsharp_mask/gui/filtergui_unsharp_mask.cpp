@@ -15,7 +15,7 @@ filtergui_unsharp_mask_c::filtergui_unsharp_mask_c(abstract_filter_c *const filt
         auto *const strength = new filtergui_spinbox_s;
 
         strength->get_value = [=]{return filter->parameter(filter_unsharp_mask_c::PARAM_STRENGTH);};
-        strength->set_value = [=](const double value){filter->set_parameter(filter_unsharp_mask_c::PARAM_STRENGTH, value);};
+        strength->set_value = [=](const int value){filter->set_parameter(filter_unsharp_mask_c::PARAM_STRENGTH, value);};
         strength->minValue = 0;
         strength->maxValue = 255;
 
@@ -26,7 +26,7 @@ filtergui_unsharp_mask_c::filtergui_unsharp_mask_c(abstract_filter_c *const filt
         auto *const radius = new filtergui_spinbox_s;
 
         radius->get_value = [=]{return filter->parameter(filter_unsharp_mask_c::PARAM_RADIUS);};
-        radius->set_value = [=](const double value){filter->set_parameter(filter_unsharp_mask_c::PARAM_RADIUS, value);};
+        radius->set_value = [=](const int value){filter->set_parameter(filter_unsharp_mask_c::PARAM_RADIUS, value);};
         radius->minValue = 1;
         radius->maxValue = 255;
 

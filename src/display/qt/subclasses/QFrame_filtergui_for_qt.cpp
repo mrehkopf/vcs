@@ -71,7 +71,7 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                         textEdit->setMinimumWidth(150);
                         textEdit->setMaximumHeight(70);
                         textEdit->setTabChangesFocus(true);
-                        textEdit->insertPlainText(QString::fromStdString(c->get_string()));
+                        textEdit->insertPlainText(QString::fromStdString(c->get_text()));
 
                         connect(textEdit, &QPlainTextEdit::textChanged, [=]
                         {
@@ -81,7 +81,7 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                             this->style()->polish(textEdit);
 
                             text.resize(std::min(std::size_t(text.length()), c->maxLength));
-                            c->set_string(text.toStdString());
+                            c->set_text(text.toStdString());
 
                             emit this->parameter_changed();
                         });

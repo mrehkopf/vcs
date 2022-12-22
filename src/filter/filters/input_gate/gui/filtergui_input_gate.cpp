@@ -15,7 +15,7 @@ filtergui_input_gate_c::filtergui_input_gate_c(abstract_filter_c *const filter)
     {
         auto *const width = new filtergui_spinbox_s;
         width->get_value = [=]{return filter->parameter(filter_input_gate_c::PARAM_WIDTH);};
-        width->set_value = [=](const double value){filter->set_parameter(filter_input_gate_c::PARAM_WIDTH, value);};
+        width->set_value = [=](const int value){filter->set_parameter(filter_input_gate_c::PARAM_WIDTH, value);};
         width->minValue = 0;
         width->maxValue = MAX_CAPTURE_WIDTH;
 
@@ -24,7 +24,7 @@ filtergui_input_gate_c::filtergui_input_gate_c(abstract_filter_c *const filter)
 
         auto *const height = new filtergui_spinbox_s;
         height->get_value = [=]{return filter->parameter(filter_input_gate_c::PARAM_HEIGHT);};
-        height->set_value = [=](const double value){filter->set_parameter(filter_input_gate_c::PARAM_HEIGHT, value);};
+        height->set_value = [=](const int value){filter->set_parameter(filter_input_gate_c::PARAM_HEIGHT, value);};
         height->minValue = 0;
         height->maxValue = MAX_CAPTURE_HEIGHT;
 

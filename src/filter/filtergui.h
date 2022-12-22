@@ -42,17 +42,14 @@ struct filtergui_component_s
 
     std::function<void(const bool)> set_enabled;
     bool isInitiallyEnabled = true;
-
-    std::function<void(const double)> set_value;
-    std::function<double(void)> get_value;
-
-    std::function<void(const std::string&)> set_string;
-    std::function<std::string(void)> get_string;
 };
 
 struct filtergui_label_s : public filtergui_component_s
 {
     filtergui_component_e type(void) const override { return filtergui_component_e::label; }
+
+    std::function<void(const std::string&)> set_text;
+    std::function<std::string(void)> get_text;
 
     std::string text;
 };
@@ -60,6 +57,9 @@ struct filtergui_label_s : public filtergui_component_s
 struct filtergui_textedit_s : public filtergui_component_s
 {
     filtergui_component_e type(void) const override { return filtergui_component_e::textedit; }
+
+    std::function<void(const std::string&)> set_text;
+    std::function<std::string(void)> get_text;
 
     std::string text;
     std::size_t maxLength = 255;
@@ -69,12 +69,18 @@ struct filtergui_checkbox_s : public filtergui_component_s
 {
     filtergui_component_e type(void) const override { return filtergui_component_e::checkbox; }
 
+    std::function<void(const bool)> set_value;
+    std::function<bool(void)> get_value;
+
     std::string label;
 };
 
 struct filtergui_spinbox_s : public filtergui_component_s
 {
     filtergui_component_e type(void) const override { return filtergui_component_e::spinbox; }
+
+    std::function<void(const int)> set_value;
+    std::function<int(void)> get_value;
 
     int maxValue = 0;
     int minValue = 0;
@@ -86,6 +92,9 @@ struct filtergui_spinbox_s : public filtergui_component_s
 struct filtergui_doublespinbox_s : public filtergui_component_s
 {
     filtergui_component_e type(void) const override { return filtergui_component_e::doublespinbox; }
+
+    std::function<void(const double)> set_value;
+    std::function<double(void)> get_value;
 
     double maxValue = 0;
     double minValue = 0;
@@ -99,6 +108,9 @@ struct filtergui_doublespinbox_s : public filtergui_component_s
 struct filtergui_combobox_s : public filtergui_component_s
 {
     filtergui_component_e type(void) const override { return filtergui_component_e::combobox; }
+
+    std::function<void(const int)> set_value;
+    std::function<int(void)> get_value;
 
     std::vector<std::string> items;
 };
