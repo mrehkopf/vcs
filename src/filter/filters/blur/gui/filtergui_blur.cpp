@@ -28,7 +28,7 @@ filtergui_blur_c::filtergui_blur_c(abstract_filter_c *const filter)
         blurRadius->set_value = [=](const double value){filter->set_parameter(filter_blur_c::PARAM_KERNEL_SIZE, value);};
         blurRadius->minValue = 0.1;
         blurRadius->maxValue = 99;
-        blurRadius->numDecimals = 1;
+        blurRadius->numDecimals = 2;
 
         this->guiFields.push_back({"Radius", {blurRadius}});
     }
