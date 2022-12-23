@@ -22,7 +22,7 @@ void filter_frame_rate_c::apply(image_s *const image)
     this->assert_input_validity(image);
 
     static heap_mem<uint8_t> prevPixels(MAX_NUM_BYTES_IN_CAPTURED_FRAME, "Frame rate filter buffer");
-    static auto timeElapsed = std::chrono::system_clock::now();
+    static auto timeOfLastUpdate = std::chrono::system_clock::now();
     static unsigned numUniqueFrames = 0;
     static unsigned estimatedFPS = 0;
 
@@ -36,6 +36,7 @@ void filter_frame_rate_c::apply(image_s *const image)
     {
         const unsigned imageBitsPerPixel = (image->resolution.bpp / 8);
         const unsigned imageByteSize = (image->resolution.w * image->resolution.h * imageBitsPerPixel);
+
         for (unsigned i = 0; i < imageByteSize; i += imageBitsPerPixel)
         {
             if (
@@ -48,18 +49,22 @@ void filter_frame_rate_c::apply(image_s *const image)
                 break;
             }
         }
+    }
 
+    // Update the FPS reading.
+    {
         const auto timeNow = std::chrono::system_clock::now();
-        const double secsElapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - timeElapsed).count() / 1000.0);
-        if (secsElapsed >= 0.25)
+        const double timeElapsed = (std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - timeOfLastUpdate).count() / 500.0);
+
+        if (timeElapsed >= 1)
         {
-            estimatedFPS = std::round(numUniqueFrames / secsElapsed);
+            estimatedFPS = (2 * (numUniqueFrames / timeElapsed));
             numUniqueFrames = 0;
-            timeElapsed = std::chrono::system_clock::now();
+            timeOfLastUpdate = timeNow;
         }
     }
 
-    // Draw the FPS counter into the current frame.
+    // Draw the FPS counter into the image.
     {
         const unsigned signalRefreshRate = kc_current_capture_state().input.refreshRate.value<unsigned>();
         const std::string outputString = (std::to_string(std::min(estimatedFPS, signalRefreshRate)) + ((estimatedFPS >= signalRefreshRate)? "+" : ""));

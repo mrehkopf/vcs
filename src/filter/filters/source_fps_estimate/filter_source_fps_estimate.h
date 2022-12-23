@@ -37,7 +37,7 @@ public:
         TEXT_WHITE
     };
 
-    filter_frame_rate_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_frame_rate_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({
             {PARAM_THRESHOLD, 20},
             {PARAM_CORNER, TOP_LEFT},
