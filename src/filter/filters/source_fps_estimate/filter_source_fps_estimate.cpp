@@ -58,7 +58,7 @@ void filter_frame_rate_c::apply(image_s *const image)
 
         if (timeElapsed >= 1)
         {
-            estimatedFPS = (2 * (numUniqueFrames / timeElapsed));
+            estimatedFPS = std::round(2 * (numUniqueFrames / timeElapsed));
             numUniqueFrames = 0;
             timeOfLastUpdate = timeNow;
         }
