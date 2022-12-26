@@ -82,7 +82,7 @@ void klog_log_info(const char *const msg, ...)
     va_list args;
 
     va_start(args, msg);
-        log("Info", msg, args);
+        log("Status", msg, args);
     va_end(args);
 
     return;
