@@ -30,14 +30,26 @@ void filter_frame_rate_c::apply(image_s *const image)
     const unsigned cornerId = this->parameter(PARAM_CORNER);
     const unsigned fgColorId = this->parameter(PARAM_TEXT_COLOR);
     const uint8_t bgAlpha = this->parameter(PARAM_BG_ALPHA);
+    const bool isSingleRow = this->parameter(PARAM_IS_SINGLE_ROW_ENABLED);
+    const unsigned rowNumber = this->parameter(PARAM_SINGLE_ROW_NUMBER);
 
     // Find out whether any pixel in the current frame differs from the previous frame
     // by more than the threshold.
     {
         const unsigned imageBitsPerPixel = (image->resolution.bpp / 8);
         const unsigned imageByteSize = (image->resolution.w * image->resolution.h * imageBitsPerPixel);
+        const unsigned start = (
+            isSingleRow
+            ? (rowNumber * image->resolution.w * imageBitsPerPixel)
+            : 0
+        );
+        const unsigned end = std::min(imageByteSize,
+            isSingleRow
+            ? unsigned(start + (image->resolution.w * imageBitsPerPixel))
+            : imageByteSize
+        );
 
-        for (unsigned i = 0; i < imageByteSize; i += imageBitsPerPixel)
+        for (unsigned i = start; i < end; i += imageBitsPerPixel)
         {
             if (
                 (std::abs(int(image->pixels[i + 0]) - int(prevPixels[i + 0])) >= threshold) ||

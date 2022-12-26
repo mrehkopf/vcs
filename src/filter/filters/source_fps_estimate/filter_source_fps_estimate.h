@@ -19,7 +19,9 @@ public:
         PARAM_THRESHOLD,
         PARAM_CORNER,
         PARAM_TEXT_COLOR,
-        PARAM_BG_ALPHA
+        PARAM_BG_ALPHA,
+        PARAM_IS_SINGLE_ROW_ENABLED,
+        PARAM_SINGLE_ROW_NUMBER
     };
 
     enum {
@@ -42,7 +44,9 @@ public:
             {PARAM_THRESHOLD, 20},
             {PARAM_CORNER, TOP_LEFT},
             {PARAM_TEXT_COLOR, TEXT_YELLOW},
-            {PARAM_BG_ALPHA, 255}
+            {PARAM_BG_ALPHA, 255},
+            {PARAM_IS_SINGLE_ROW_ENABLED, false},
+            {PARAM_SINGLE_ROW_NUMBER, 0}
         }, initialParamValues)
     {
         this->guiDescription = new filtergui_source_fps_estimate_c(this);
