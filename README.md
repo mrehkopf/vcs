@@ -1,26 +1,25 @@
 # VCS
 
-A third-party capture tool for Datapath's VisionRGB range of capture cards. Greatly improves the hardware's suitability for capturing dynamic VGA signals (e.g. of retro PCs) compared to Datapath's bundled capture software.
-
-VCS interfaces with compatible capture device to display the capture output in a window on your desktop. Additionally, you can apply filters, scalers, anti-tearing, and various other adjustments to the output before it's displayed.
+A well-featured control application for Datapath's VisionRGB capture cards, with a feature-set targeted especially at retro enthusiasts.
 
 ![VCS 2.4](./images/vcs-2.4-with-dialogs.png)\
 *A screenshot of VCS 2.4 showing the capture window (in the background) and some of the control dialogs.*
 
 ## Features
 
-- Capture functionality tailored for the Datapath VisionRGB series of capture cards, and especially for the VisionRGB-PRO
-- Run-time image filtering (blur, crop, decimate, denoise, etc.)
-- Frame scaling with nearest, linear, area, cubic, and Lanczos sampling
-- Host-side triple buffering to reconstruct torn frames
-- On-screen display customizable with HTML/CSS
-- Output in software and OpenGL (with variable refresh rate)
-- Support for Windows (XP and later) and Linux (experimental)
-- Virtual machine friendly: minimal reliance on GPU features
+- Various feature and usability improvements over Datapath's default capture application to maximize capture quality
+- Unlimited video presets with programmable activation
+- Several scaling modes and image filters
+- Variable refresh rate output to match the input
+- Works with modern and legacy VisionRGB hardware
+- Runs on Windows and Linux
+- Documentation for both end-users and developers
+- Free and open source
 
 ## Supported capture hardware
 
 VCS is compatible with at least the following Datapath capture cards:
+
 - VisionRGB-PRO1
 - VisionRGB-PRO2
 - VisionRGB-E1
@@ -28,8 +27,6 @@ VCS is compatible with at least the following Datapath capture cards:
 - VisionRGB-E1S
 - VisionRGB-E2S
 - VisionRGB-X2
-
-The VisionAV range of cards should also work, albeit without their audio capture functionality.
 
 ## Manuals
 
