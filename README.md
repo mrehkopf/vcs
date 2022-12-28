@@ -13,7 +13,6 @@ A well-featured control application for Datapath's VisionRGB capture cards, with
 - Variable refresh rate output to match the input
 - Works with modern and legacy VisionRGB hardware
 - Runs on Windows and Linux
-- Documentation for both end-users and developers
 - Free and open source
 
 ## Supported capture hardware
