@@ -88,9 +88,13 @@ SignalDialog::SignalDialog(QWidget *parent) :
                     }
                     else
                     {
-                        ui->tableWidget_propertyTable->modify_property("Uptime", QString("%1:%2:%3").arg(QString::number(hours).rightJustified(2, '0'))
-                                                                                                    .arg(QString::number(minutes % 60).rightJustified(2, '0'))
-                                                                                                    .arg(QString::number(seconds % 60).rightJustified(2, '0')));
+                        ui->tableWidget_propertyTable->modify_property(
+                            "Uptime",
+                            QString("%1:%2:%3")
+                                .arg(QString::number(hours).rightJustified(2, '0'))
+                                .arg(QString::number(minutes % 60).rightJustified(2, '0'))
+                                .arg(QString::number(seconds % 60).rightJustified(2, '0'))
+                        );
                     }
                 }
             });
@@ -123,11 +127,6 @@ SignalDialog::SignalDialog(QWidget *parent) :
             VIDEO_MODE_UPTIME.restart();
             update_information_table(kc_is_receiving_signal());
         };
-
-        kc_evInvalidSignal.listen([this]
-        {
-            this->set_controls_enabled(false);
-        });
 
         kc_evSignalLost.listen([this]
         {
