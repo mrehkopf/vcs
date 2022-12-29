@@ -23,8 +23,8 @@ static bool CAPTURE_EVENT_FLAGS[(int)capture_event_e::num_enumerators];
 
 static bool IS_VALID_SIGNAL = true;
 
-static const resolution_s MAX_RESOLUTION = resolution_s{MAX_CAPTURE_WIDTH, MAX_CAPTURE_HEIGHT, 32};
-static const resolution_s MIN_RESOLUTION = resolution_s{320, 200, 32};
+static const resolution_s MAX_RESOLUTION = {MAX_CAPTURE_WIDTH, MAX_CAPTURE_HEIGHT, 32};
+static const resolution_s MIN_RESOLUTION = {320, 200, 32};
 
 static const capture_pixel_format_e DEFAULT_PIXEL_FORMAT = capture_pixel_format_e::rgb_888;
 
@@ -34,17 +34,18 @@ static unsigned CUR_INPUT_CHANNEL_IDX = 0;
 
 static void refresh_test_pattern(void)
 {
+    static unsigned numTicks = 0;
+
+    numTicks++;
     NUM_FRAMES_PER_SECOND++;
 
     for (unsigned y = 0; y < FRAME_BUFFER.r.h; y++)
     {
         for (unsigned x = 0; x < FRAME_BUFFER.r.w; x++)
         {
-            const unsigned idx = ((x + y * FRAME_BUFFER.r.w) * (FRAME_BUFFER.r.bpp / 8));
-
             /// TODO: Remove the dependency on Qt for the RGB -> HSL -> RGB conversion.
             QColor rgbGradient;
-            const double widthRatio = (x / double(FRAME_BUFFER.r.w));
+            const double widthRatio = (((x + numTicks) % FRAME_BUFFER.r.w) / double(FRAME_BUFFER.r.w));
             const double heightRatio = (y / double(FRAME_BUFFER.r.h));
             rgbGradient.setHsl((widthRatio * 359), 255, (255 - (heightRatio * 255)));
             rgbGradient = rgbGradient.toRgb();
@@ -58,6 +59,8 @@ static void refresh_test_pattern(void)
             {
                 case capture_pixel_format_e::rgb_888:
                 {
+                    const unsigned idx = ((x + y * FRAME_BUFFER.r.w) * (FRAME_BUFFER.r.bpp / 8));
+
                     FRAME_BUFFER.pixels[idx + 0] = blue;
                     FRAME_BUFFER.pixels[idx + 1] = green;
                     FRAME_BUFFER.pixels[idx + 2] = red;
@@ -67,26 +70,29 @@ static void refresh_test_pattern(void)
                 }
                 case capture_pixel_format_e::rgb_565:
                 {
-                    const u16 pixel = (((red   / 8) << 11) |
-                                       ((green / 4) << 5)  |
-                                       ((blue  / 8) << 0));
+                    const unsigned idx = (x + y * FRAME_BUFFER.r.w);
 
-                    *((u16*)&FRAME_BUFFER.pixels[idx]) = pixel;
+                    ((uint16_t*)FRAME_BUFFER.pixels.data())[idx] = (
+                        ((red   & 0xf8) << 8) |
+                        ((green & 0xfc) << 3) |
+                        (blue           >> 3)
+                    );
 
                     break;
                 }
                 case capture_pixel_format_e::rgb_555:
                 {
-                    const u16 pixel = (((alpha / 256) << 11) |
-                                       ((red   / 8)   << 10) |
-                                       ((green / 8)   << 5)  |
-                                       ((blue  / 8)   << 0));
+                    const unsigned idx = (x + y * FRAME_BUFFER.r.w);
 
-                    *((u16*)&FRAME_BUFFER.pixels[idx]) = pixel;
+                    ((uint16_t*)FRAME_BUFFER.pixels.data())[idx] = (
+                        ((alpha & 0x80) << 8) |
+                        ((red   & 0xf8) << 7) |
+                        ((green & 0xf8) << 2) |
+                        (blue           >> 3)
+                    );
 
                     break;
                 }
-                default: break;
             }
         }
     }
@@ -177,7 +183,6 @@ bool kc_set_capture_pixel_format(const capture_pixel_format_e pf)
     }
 
     FRAME_BUFFER.pixelFormat = pf;
-
     push_capture_event(capture_event_e::new_video_mode);
 
     return true;
@@ -195,7 +200,6 @@ bool kc_set_capture_resolution(const resolution_s &r)
 
     FRAME_BUFFER.r.w = r.w;
     FRAME_BUFFER.r.h = r.h;
-
     push_capture_event(capture_event_e::new_video_mode);
 
     return true;
