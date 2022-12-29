@@ -53,7 +53,7 @@ static const u32 OUTPUT_BIT_DEPTH = 32;
 
 // Whether the current output scaling is done via an output scaling filter that
 // the user has specified in a filter chain.
-static bool IS_CUSTOM_SCALER_USED = false;
+static bool IS_CUSTOM_SCALER_ACTIVE = false;
 static resolution_s CUSTOM_SCALER_FILTER_RESOLUTION = {0, 0};
 
 // By default, the base resolution for scaling is the resolution of the input
@@ -84,7 +84,7 @@ resolution_s ks_output_resolution(void)
         return {r.w, r.h, OUTPUT_BIT_DEPTH};
     }
 
-    if (IS_CUSTOM_SCALER_USED)
+    if (IS_CUSTOM_SCALER_ACTIVE)
     {
         return CUSTOM_SCALER_FILTER_RESOLUTION;
     }
@@ -150,7 +150,7 @@ static int cv_error_handler(int status, const char* func_name, const char* err_m
 
 bool ks_is_custom_scaler_active(void)
 {
-    return IS_CUSTOM_SCALER_USED;
+    return IS_CUSTOM_SCALER_ACTIVE;
 }
 
 void ks_initialize_scaler(void)
@@ -205,13 +205,12 @@ void ks_release_scaler(void)
     return;
 }
 
-// Converts the given non-BGRA frame into the BGRA format.
-static void convert_frame_to_bgra(const captured_frame_s &frame)
+static image_s frame_as_bgra_image(const captured_frame_s &frame)
 {
     // RGB/888 frames are already in BGRA.
     if (frame.pixelFormat == capture_pixel_format_e::rgb_888)
     {
-        return;
+        return {frame.pixels.data(), frame.r};
     }
 
     k_assert_optional(
@@ -248,7 +247,7 @@ static void convert_frame_to_bgra(const captured_frame_s &frame)
     cv::cvtColor(src, scratchBuffer, conversionType);
     std::memcpy(frame.pixels.data(), scratchBuffer.data, frame.pixels.size_check(scratchBuffer.total() * scratchBuffer.elemSize()));
 
-    return;
+    return {frame.pixels.data(), {frame.r.w, frame.r.h, 32}};
 }
 
 // Takes the given image and scales it according to the scaler's current internal
@@ -256,15 +255,13 @@ static void convert_frame_to_bgra(const captured_frame_s &frame)
 //
 void ks_scale_frame(const captured_frame_s &frame)
 {
-    u8 *pixelData = frame.pixels.data();
-    resolution_s frameRes = frame.r; /// Temp hack. May want to modify the .bpp value.
     resolution_s outputRes = ks_output_resolution();
-
-    const resolution_s minres = kc_get_device_minimum_resolution();
-    const resolution_s maxres = kc_get_device_maximum_resolution();
 
     // Verify that we have a workable frame.
     {
+        const resolution_s minres = kc_get_device_minimum_resolution();
+        const resolution_s maxres = kc_get_device_maximum_resolution();
+
         if ((frame.r.bpp != 16) &&
             (frame.r.bpp != 24) &&
             (frame.r.bpp != 32))
@@ -280,7 +277,7 @@ void ks_scale_frame(const captured_frame_s &frame)
                     outputRes.w, outputRes.h, MAX_OUTPUT_WIDTH, MAX_OUTPUT_HEIGHT));
             return;
         }
-        else if (pixelData == nullptr)
+        else if (frame.pixels.data() == nullptr)
         {
             NBENE(("Was asked to scale a null frame. Ignoring it."));
             return;
@@ -316,20 +313,8 @@ void ks_scale_frame(const captured_frame_s &frame)
         }
     }
 
-    // If needed, convert the color data to BGRA, which is what the scaling filters
-    // expect to receive. Note that this will only happen if the frame's bit depth
-    // doesn't match with the expected value - a frame with the same bit depth but
-    // different arrangement of the color channels would not get converted to the
-    // proper order.
-    if (frame.r.bpp != OUTPUT_BIT_DEPTH)
-    {
-        convert_frame_to_bgra(frame);
-        frameRes.bpp = OUTPUT_BIT_DEPTH;
-    }
-
-    pixelData = kat_anti_tear(pixelData, frameRes);
-
-    abstract_filter_c *customScaler = kf_apply_matching_filter_chain(pixelData, frameRes);
+    image_s imageToBeScaled = kat_anti_tear(frame_as_bgra_image(frame));
+    abstract_filter_c *customScaler = kf_apply_matching_filter_chain(&imageToBeScaled);
 
     // If the active filter chain provided a custom output scaler, it'll override our
     // default scaler.
@@ -340,50 +325,43 @@ void ks_scale_frame(const captured_frame_s &frame)
             "Invalid filter category for custom output scaler."
         );
 
-        if (!IS_CUSTOM_SCALER_USED)
+        if (!IS_CUSTOM_SCALER_ACTIVE)
         {
             ks_evCustomScalerEnabled.fire();
+            IS_CUSTOM_SCALER_ACTIVE = true;
         }
 
-        IS_CUSTOM_SCALER_USED = true;
-
-        image_s dstImage = {pixelData, frameRes};
-        customScaler->apply(&dstImage);
+        customScaler->apply(&imageToBeScaled);
         outputRes = CUSTOM_SCALER_FILTER_RESOLUTION = dynamic_cast<filter_output_scaler_c*>(customScaler)->output_resolution();
     }
     else
     {
-        if (IS_CUSTOM_SCALER_USED)
+        if (IS_CUSTOM_SCALER_ACTIVE)
         {
             ks_evCustomScalerDisabled.fire();
+            IS_CUSTOM_SCALER_ACTIVE = false;
         }
 
-        IS_CUSTOM_SCALER_USED = false;
-
-        // If no need to scale, just copy the data over.
-        if (frameRes == outputRes)
+        if (imageToBeScaled.resolution == outputRes)
         {
-            std::memcpy(FRAME_BUFFER_PIXELS, pixelData, (frameRes.w * frameRes.h * (frameRes.bpp / 8)));
+            std::memcpy(FRAME_BUFFER_PIXELS, imageToBeScaled.pixels, imageToBeScaled.byte_size());
         }
         else
         {
             k_assert(DEFAULT_SCALER, "A default scaler has not been defined.");
 
-            const image_s srcImage = image_s(pixelData, frameRes);
             image_s dstImage = image_s(FRAME_BUFFER_PIXELS, outputRes);
-            DEFAULT_SCALER->apply(srcImage, &dstImage, {0, 0, 0, 0});
+            DEFAULT_SCALER->apply(imageToBeScaled, &dstImage, {0, 0, 0, 0});
         }
     }
 
-    const bool didResolutionChange = ((FRAME_BUFFER_RESOLUTION.w != outputRes.w) || (FRAME_BUFFER_RESOLUTION.h != outputRes.h));
-
-    if (didResolutionChange)
+    if (FRAME_BUFFER_RESOLUTION != outputRes)
     {
-        FRAME_BUFFER_RESOLUTION = outputRes;
         ks_evNewOutputResolution.fire(outputRes);
+        FRAME_BUFFER_RESOLUTION = outputRes;
     }
 
-    ks_evNewScaledImage.fire(ks_frame_buffer());
+    ks_evNewScaledImage.fire(ks_scaler_frame_buffer());
 
     return;
 }
@@ -448,7 +426,7 @@ void ks_indicate_invalid_signal(void)
     return;
 }
 
-image_s ks_frame_buffer(void)
+image_s ks_scaler_frame_buffer(void)
 {
     return {
         FRAME_BUFFER_PIXELS,

@@ -55,6 +55,7 @@
 #include "common/globals.h"
 
 struct resolution_s;
+struct image_s;
 
 //! @cond
 // Default starting parameter values for the anti-tear engine.
@@ -150,17 +151,13 @@ void kat_release_anti_tear(void);
 /*!
  * Submits an image into the anti-tearing process. The parts of the image that are
  * found by the anti-tearer to be new relative to the previous submitted image(s)
- * will be integrated into the anti-tearer's back buffer and eventually made
- * available in its output.
- * 
- * If anti-tearing is enabled in VCS, this function returns a pointer to a
- * subsystem-managed pixel buffer containing a copy of the most recent fully de-torn
- * image. The buffer's data will be re-written by each call to this function. The
- * caller is free to modify this buffer's data; doing so will have no effect on
- * the anti-tearing process.
- * 
- * If anti-tearing is disabled in VCS, this function acts as a passive passthrough
- * and just returns @p pixels.
+ * will be integrated into the anti-tearer's back buffer.
+ *
+ * If anti-tearing is enabled, this function returns an image whose pixel data points
+ * to a subsystem-managed pixel buffer containing a copy of the most recent fully de-
+ * torn image.
+ *
+ * If anti-tearing is disabled, this function does nothing.
  * 
  * The input data won't be modified. 
  * 
@@ -176,13 +173,13 @@ void kat_release_anti_tear(void);
  * with kat_initialize_anti_tear().
  * 
  * @warning
- * The pointer returned by this function should be considered invalid after
+ * The image returned by this function should be considered invalid after
  * kat_release_anti_tear() has been called.
  * 
  * @see
  * kat_set_anti_tear_enabled()
  */
-u8* kat_anti_tear(u8 *const pixels, const resolution_s &r);
+image_s kat_anti_tear(const image_s &image);
 
 /*!
  * Sets the current anti-tearing scan hint.

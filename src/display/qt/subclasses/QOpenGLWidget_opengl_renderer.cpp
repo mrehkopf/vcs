@@ -77,7 +77,7 @@ void OGLWidget::resizeGL(int w, int h)
 void OGLWidget::paintGL()
 {
     // Draw the output frame.
-    const image_s outputImage = ks_frame_buffer();
+    const image_s outputImage = ks_scaler_frame_buffer();
     if (outputImage.pixels)
     {
         this->glDisable(GL_BLEND);

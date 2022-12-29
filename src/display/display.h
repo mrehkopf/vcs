@@ -102,6 +102,11 @@ struct resolution_s
             (this->bpp == other.bpp)
         );
     }
+
+    bool operator!=(const resolution_s &other) const
+    {
+        return !(*this == other);
+    }
 };
 
 /*!

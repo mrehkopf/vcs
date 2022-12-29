@@ -97,7 +97,8 @@
  *      @code
  *      kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
  *      {
- *          kf_apply_matching_filter_chain(frame.pixels.data(), frame.r);
+ *          image_s image(frame.pixels.data, frame.r);
+ *          kf_apply_matching_filter_chain(&image);
  *      });
  *      @endcode
  * 
@@ -135,6 +136,7 @@
 
 class abstract_filter_c;
 struct resolution_s;
+struct image_s;
 
 typedef std::vector<std::pair<unsigned /*param idx*/, double /*param value*/>> filter_params_t;
 
@@ -269,7 +271,7 @@ void kf_unregister_all_filter_chains(void);
  * @see
  * kf_register_filter_chain(), ks_output_resolution(), kf_set_filtering_enabled()
  */
-abstract_filter_c *kf_apply_matching_filter_chain(u8 *const pixels, const resolution_s &r);
+abstract_filter_c* kf_apply_matching_filter_chain(image_s *const dstImage);
 
 /*!
  * Returns a list of the filter types that're available via this subsystem

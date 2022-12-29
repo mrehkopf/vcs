@@ -312,7 +312,7 @@ void ks_indicate_invalid_signal(void);
  * @see
  * ks_scale_frame(), ks_indicate_no_signal(), ks_indicate_invalid_signal()
  */
-image_s ks_frame_buffer(void);
+image_s ks_scaler_frame_buffer(void);
 
 /*!
  * Returns a list of the names of the image scalers available in this build of VCS.

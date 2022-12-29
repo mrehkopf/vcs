@@ -42,8 +42,7 @@ void kf_initialize_filters(void)
 {
     DEBUG(("Initializing the filter subsystem."));
 
-    KNOWN_FILTER_TYPES =
-    {
+    KNOWN_FILTER_TYPES = {
         new filter_blur_c(),
         new filter_delta_histogram_c(),
         new filter_frame_rate_c(),
@@ -77,27 +76,26 @@ void kf_initialize_filters(void)
     return;
 }
 
-abstract_filter_c* kf_apply_matching_filter_chain(u8 *const pixels, const resolution_s &r)
+abstract_filter_c* kf_apply_matching_filter_chain(image_s *const dstImage)
 {
     if (!FILTERING_ENABLED)
     {
         return nullptr;
     }
 
-    k_assert((r.bpp == 32), "Filters can only be applied to 32-bit pixel data.");
+    k_assert((dstImage->resolution.bpp == 32), "Filters can only be applied to 32-bit pixel data.");
 
-    image_s targetImage = {pixels, r};
     std::pair<const std::vector<abstract_filter_c*>*, unsigned> partialMatch = {nullptr, 0};
     std::pair<const std::vector<abstract_filter_c*>*, unsigned> openMatch = {nullptr, 0};
     const resolution_s outputRes = ks_output_resolution();
 
-    static const auto apply_chain = [&targetImage, &outputRes](const std::vector<abstract_filter_c*> &chain, const unsigned idx)->abstract_filter_c*
+    static const auto apply_chain = [dstImage, &outputRes](const std::vector<abstract_filter_c*> &chain, const unsigned idx)->abstract_filter_c*
     {
         // The gate filters are expected to be #first and #last, while the actual
         // applicable filters are the ones in-between.
         for (unsigned c = 1; c < (chain.size() - 1); c++)
         {
-            chain[c]->apply(&targetImage);
+            chain[c]->apply(dstImage);
         }
 
         MOST_RECENT_FILTER_CHAIN_IDX = idx;
@@ -126,13 +124,13 @@ abstract_filter_c* kf_apply_matching_filter_chain(u8 *const pixels, const resolu
             {
                 openMatch = {&filterChain, i};
             }
-            else if ((!inputGateWidth || inputGateWidth == r.w) &&
-                     (!inputGateHeight || inputGateHeight == r.h))
+            else if ((!inputGateWidth || inputGateWidth == dstImage->resolution.w) &&
+                     (!inputGateHeight || inputGateHeight == dstImage->resolution.h))
             {
                 partialMatch = {&filterChain, i};
             }
-            else if ((r.w == inputGateWidth) &&
-                     (r.h == inputGateHeight))
+            else if ((dstImage->resolution.w == inputGateWidth) &&
+                     (dstImage->resolution.h == inputGateHeight))
             {
                 return apply_chain(filterChain, i);
             }
@@ -151,15 +149,15 @@ abstract_filter_c* kf_apply_matching_filter_chain(u8 *const pixels, const resolu
             {
                 openMatch = {&filterChain, i};
             }
-            else if ((!inputGateWidth || inputGateWidth == r.w) &&
-                     (!inputGateHeight || inputGateHeight == r.h) &&
+            else if ((!inputGateWidth || inputGateWidth == dstImage->resolution.w) &&
+                     (!inputGateHeight || inputGateHeight == dstImage->resolution.h) &&
                      (!outputGateWidth || outputGateWidth == outputRes.w) &&
                      (!outputGateHeight || outputGateHeight == outputRes.h))
             {
                 partialMatch = {&filterChain, i};
             }
-            else if ((r.w == inputGateWidth) &&
-                     (r.h == inputGateHeight) &&
+            else if ((dstImage->resolution.w == inputGateWidth) &&
+                     (dstImage->resolution.h == inputGateHeight) &&
                      (outputRes.w == outputGateWidth) &&
                      (outputRes.h == outputGateHeight))
             {

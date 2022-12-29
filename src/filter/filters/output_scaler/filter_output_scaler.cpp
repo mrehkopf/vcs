@@ -36,7 +36,7 @@ void filter_output_scaler_c::apply(image_s *const image)
         }
     })();
 
-    image_s dstImage = image_s(ks_frame_buffer().pixels, {width, height, image->resolution.bpp});
+    image_s dstImage = image_s(ks_scaler_frame_buffer().pixels, {width, height, image->resolution.bpp});
     scaler_function(*image, &dstImage, {padTop, padRight, padBottom, padLeft});
 
     return;

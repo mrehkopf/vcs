@@ -24,14 +24,12 @@ static bool ANTI_TEARING_ENABLED = false;
 
 static anti_tearer_c ANTI_TEARER;
 
-u8* kat_anti_tear(u8 *const pixels, const resolution_s &r)
+image_s kat_anti_tear(const image_s &image)
 {
-    if (!ANTI_TEARING_ENABLED)
-    {
-        return pixels;
-    }
-
-    return ANTI_TEARER.process(pixels, r);
+    return {
+        (ANTI_TEARING_ENABLED? ANTI_TEARER.process(image.pixels, image.resolution) : image.pixels),
+        image.resolution
+    };
 }
 
 void kat_initialize_anti_tear(void)
