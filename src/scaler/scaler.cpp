@@ -246,7 +246,7 @@ static void convert_frame_to_bgra(const captured_frame_s &frame)
     })();
 
     cv::cvtColor(src, scratchBuffer, conversionType);
-    std::memcpy(frame.pixels.data(), scratchBuffer.data, frame.pixels.size_check(frame.r.w * frame.r.h * (frame.r.bpp / 8)));
+    std::memcpy(frame.pixels.data(), scratchBuffer.data, frame.pixels.size_check(scratchBuffer.total() * scratchBuffer.elemSize()));
 
     return;
 }
