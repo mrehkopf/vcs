@@ -52,7 +52,7 @@ void kd_recalculate_filter_graph_chains(void)
 
 void kd_acquire_output_window(void)
 {
-    DEBUG(("Acquiring a display."));
+    DEBUG(("Acquiring the display."));
 
     WINDOW = new MainWindow;
     WINDOW->show();
