@@ -1,6 +1,6 @@
-# Whether this build of VCS is intended for release (defined) or is developmental,
-# non-stable etc. (undefined/commented out).
-#DEFINES += RELEASE_BUILD
+# Whether this build of VCS is intended for release. Release builds may perform better
+# but have fewer run-time error checks and contain less debug information.
+#DEFINES += VCS_RELEASE_BUILD
 
 linux {
     DEFINES += CAPTURE_BACKEND_VISION_V4L
@@ -20,18 +20,6 @@ linux {
         -lopencv_photo
 }
 
-QT += core gui
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-TARGET = vcs
-TEMPLATE = app
-CONFIG += console c++11
-
-OBJECTS_DIR = generated_files
-RCC_DIR = generated_files
-MOC_DIR = generated_files
-UI_DIR = generated_files
-
 INCLUDEPATH += \
     $$PWD/src/ \
     $$PWD/src/display/qt/subclasses/
@@ -44,6 +32,8 @@ SOURCES += \
     src/display/qt/dialogs/filter_graph/output_scaler_node.cpp \
     src/display/qt/dialogs/video_presets_dialog.cpp \
     src/display/qt/keyboard_shortcuts.cpp \
+    src/filter/filters/eye_dropper/filter_eye_dropper.cpp \
+    src/filter/filters/eye_dropper/gui/filtergui_eye_dropper.cpp \
     src/filter/filters/output_scaler/filter_output_scaler.cpp \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.cpp \
     src/filter/filters/render_text/filter_render_text.cpp \
@@ -108,7 +98,6 @@ SOURCES += \
     src/capture/capture.cpp \
     src/anti_tear/anti_tear.cpp \
     src/display/qt/persistent_settings.cpp \
-    src/common/memory/memory.cpp \
     src/common/disk/disk.cpp \
     src/capture/alias.cpp \
     src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.cpp \
@@ -181,6 +170,8 @@ HEADERS += \
     src/filter/filters/filters.h \
     src/filter/filters/flip/filter_flip.h \
     src/filter/filters/flip/gui/filtergui_flip.h \
+    src/filter/filters/eye_dropper/filter_eye_dropper.h \
+    src/filter/filters/eye_dropper/gui/filtergui_eye_dropper.h \
     src/filter/filters/output_scaler/filter_output_scaler.h \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.h \
     src/filter/filters/render_text/font.h \
@@ -220,8 +211,6 @@ HEADERS += \
     src/display/qt/persistent_settings.h \
     src/display/qt/utility.h \
     src/common/disk/csv.h \
-    src/common/memory/memory.h \
-    src/common/memory/heap_mem.h \
     src/common/disk/disk.h \
     src/capture/alias.h \
     src/display/qt/subclasses/QOpenGLWidget_opengl_renderer.h \
@@ -288,12 +277,16 @@ contains(DEFINES, CAPTURE_BACKEND_VISION_V4L) {
         src/capture/vision_v4l/ic_v4l_video_parameters.h
 }
 
-# C++. For GCC/Clang/MinGW.
-QMAKE_CXXFLAGS += \
-    -g \
-    -O2 \
-    -Wall \
-    -pipe \
-    -pedantic \
-    -std=c++11 \
-    -Wno-missing-field-initializers
+QT += core gui widgets
+TARGET = vcs
+TEMPLATE = app
+CONFIG += console release
+QMAKE_CXXFLAGS += -pedantic -std=c++11 -Wno-missing-field-initializers
+OBJECTS_DIR = generated_files
+RCC_DIR = generated_files
+MOC_DIR = generated_files
+UI_DIR = generated_files
+
+!contains(DEFINES, VCS_RELEASE_BUILD) {
+    CONFIG = $$replace(CONFIG, "release", "debug")
+}
