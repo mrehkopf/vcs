@@ -178,14 +178,7 @@ void SignalDialog::update_information_table(const bool isReceivingSignal)
 {
     const auto inputChannelIdx = kc_get_device_input_channel_idx();
 
-    ui->tableWidget_propertyTable->modify_property(
-        "Device channel",
-    #if __linux__
-        QString("/dev/video%1").arg(inputChannelIdx)
-    #else
-        QString::number(inputChannelIdx + 1)
-    #endif
-    );
+    ui->tableWidget_propertyTable->modify_property("Device channel", QString("/dev/video%1").arg(inputChannelIdx));
 
     if (isReceivingSignal)
     {

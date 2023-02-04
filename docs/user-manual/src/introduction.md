@@ -1,8 +1,8 @@
 # Introduction to VCS
 
-VCS is a third-party control application by [Tarpeeksi Hyvae Soft](https://www.tarpeeksihyvaesoft.com) for Datapath's VisionRGB range of capture hardware; developed especially for capturing retro PCs and consoles, whose dynamic, non-standard video signals aren't well supported by Datapath's default capture software.
+VCS is a well-featured, open-source Linux control application by [Tarpeeksi Hyvae Soft](https://www.tarpeeksihyvaesoft.com) for Datapath's VisionRGB range of capture hardware, with a feature-set targeted especially at retro enthusiasts.
 
-VCS is [available on GitHub](https://github.com/leikareipa/vcs).
+You can [find VCS on GitHub](https://github.com/leikareipa/vcs).
 
 > A screenshot of VCS 2.4.0 showing the output window and some of the control dialogs\
 ![{image:1189x878}{headerless}](../img/vcs-2.4-with-dialogs.webp)
@@ -12,7 +12,6 @@ VCS is [available on GitHub](https://github.com/leikareipa/vcs).
 - Augments the capabilities of the VisionRGB hardware for capturing dynamic signals (e.g. retro PCs)
 - Various feature and usability improvements over Datapath's default capture application
 - Supports both modern and legacy VisionRGB hardware
-- Runs on Windows (XP and later) and Linux (experimental)
 - Unlimited video presets with automatic programmable activation
 - Several scaling modes and customizable image filters
 - Post-processing to reduce or eliminate tearing in captured frames
@@ -88,12 +87,8 @@ VCS is [available on GitHub](https://github.com/leikareipa/vcs).
                             <th>Required version</th>
                         </tr>
                         <tr>
-                            <td>Windows</td>
-                            <td>XP or later</td>
-                        </tr>
-                        <tr>
                             <td>Linux</td>
-                            <td>Kernel 5</td>
+                            <td>kernel 5</td>
                         </tr>
                     </table>
                 </dokki-table>
@@ -127,7 +122,7 @@ VCS is [available on GitHub](https://github.com/leikareipa/vcs).
         <tr>
             <th>GPU</th>
             <td>
-                For hardware rendering (optional), a graphics card supporting OpenGL 1.2
+                For hardware rendering (optional), a graphics card with support for OpenGL 1.2
             </td>
         </tr>
         <tr>

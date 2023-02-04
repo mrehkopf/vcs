@@ -49,13 +49,11 @@
  * The universal functions like kc_initialize_capture() are defined in the
  * base interface source file (@a capture.cpp), whereas the device-specific
  * functions like kc_initialize_device() are implemented in a separate,
- * device-specific source file. For instance, the device source file
- * @a capture_rgbeasy.cpp implements support for RGBEasy capture devices under
- * Windows, while @a capture_vision_v4l.cpp adds support for Vision Linux devices.
- * Both files simply implement the device-specific functions of the interface for
- * the corresponding device, and depending on which device is to be supported by
- * VCS, only one of the files gets included in the compiled executable (see @a vcs.pro
- * for the logic that decides which implementation is included in the build).
+ * device-specific source file. For instance, the file @a capture_vision_v4l.cpp
+ * implements support for Datapath's VisionRGB capture cards on Linux. Depending
+ * on which hardware is to be supported by VCS, one of these files gets included
+ * in the compiled executable. See @a vcs.pro for the logic that decides which
+ * implementation is included in the build
  * 
  * You can add support for a new capture device by creating implementations for
  * the device of all of the device-specific interface functions, namely those

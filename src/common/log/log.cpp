@@ -27,31 +27,26 @@ static void log(const std::string &type, const char *const msg, va_list args)
         return;
     }
 
-    #if __linux__
-        const std::string terminalColorResetCode = "\x1B[0m";
-        const std::string terminalColorCode = ([&type]()->std::string
+    const std::string terminalColorResetCode = "\x1B[0m";
+    const std::string terminalColorCode = ([&type]()->std::string
+    {
+        if (type == "Error")
         {
-            if (type == "Error")
-            {
-                return "\x1B[31m";
-            }
-            else if (type == "Debug")
-            {
-                return "\x1B[36m";
-            }
-            else if (type == "Assert")
-            {
-                return "\x1B[33m";
-            }
-            else
-            {
-                return "\x1B[0m";
-            }
-        }());
-    #else
-        const std::string terminalColorResetCode = "";
-        const std::string terminalColorCode = "";
-    #endif
+            return "\x1B[31m";
+        }
+        else if (type == "Debug")
+        {
+            return "\x1B[36m";
+        }
+        else if (type == "Assert")
+        {
+            return "\x1B[33m";
+        }
+        else
+        {
+            return "\x1B[0m";
+        }
+    }());
 
     static char buf[2048];
     vsnprintf(buf, NUM_ELEMENTS(buf), msg, args);

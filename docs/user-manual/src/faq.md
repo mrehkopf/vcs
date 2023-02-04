@@ -4,13 +4,11 @@ In this section, you'll find answers to some of the common questions and problem
 
 ## Where to download VCS?
 
-A download for the latest Windows version of VCS is [available on GitHub](https://github.com/leikareipa/vcs/releases).
-
-For Linux, you can grab the [VCS source code](https://github.com/leikareipa/vcs/) and compile it for your platform.
+VCS is distributed as open-source for Linux at [github.com/leikareipa/vcs/](https://github.com/leikareipa/vcs/). It currently has no pre-built binary distributable.
 
 ## Getting started
 
-Assuming you've installed the drivers for your capture device, simply run the VCS executable (e.g. **vcs.exe** on Windows) to get started.
+Assuming you've compiled VCS as per [instructions on GitHub](https://github.com/leikareipa/vcs#building), and have installed the drivers for your capture device, you can simply run the VCS executable to get started.
 
 When you start up VCS, two windows should open: a console window, in which notifications about VCS's status will appear during operation; and the [output window](#output-window), in which captured frames are displayed. Right-clicking inside the output window will open a context menu that gives you access to the various controls of VCS.
 

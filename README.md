@@ -1,6 +1,6 @@
 # VCS
 
-A well-featured control application for Datapath's VisionRGB capture cards, with a feature-set targeted especially at retro enthusiasts.
+A well-featured Linux control application for Datapath's VisionRGB capture cards, with a feature-set targeted especially at retro enthusiasts.
 
 ![VCS 2.4](./images/vcs-2.4-with-dialogs.png)\
 *A screenshot of VCS 2.4 showing the capture window (in the background) and some of the control dialogs.*
@@ -12,7 +12,6 @@ A well-featured control application for Datapath's VisionRGB capture cards, with
 - Several scaling modes and image filters
 - Variable refresh rate output to match the input
 - Works with modern and legacy VisionRGB hardware
-- Runs on Windows and Linux
 - Free and open source
 
 ## Supported capture hardware
@@ -55,7 +54,7 @@ The VCS codebase depends on the following third-party libraries and frameworks:
 
 1. Qt 5
 2. OpenCV 3.2.0*
-3. The Datapath capture API (RGBEasy on Windows, Vision/Video4Linux on Linux), as distributed with their capture drivers**
+3. The Datapath capture API, as distributed with their Linux capture drivers**
 
 \* Later versions of OpenCV may also work. See [this issue](https://github.com/leikareipa/vcs/issues/30) for details.\
 \** Only needed if compiling for Datapath hardware, which is the default option. See [The capture backend](#the-capture-backend) for details.
@@ -76,17 +75,16 @@ To confirm whether the program is running in release or debug mode, check the Ab
 
 ### The capture backend
 
-A capture backend in VCS is an implementation providing support for a particular capture device. For example, Datapath's VisionRGB capture cards are supported in VCS on Windows by the [RGBEasy capture backend](./src/capture/rgbeasy/), which uses the Datapath RGBEasy API.
+A capture backend in VCS is an implementation providing support for a particular capture device. For example, Datapath's VisionRGB capture cards are supported in VCS on Linux by the [Vision capture backend](./src/capture/vision_v4l/).
 
-One (and only one) capture backend must be active in any build of VCS. To select which one it is, set its identifier in the `DEFINES` variable in [vcs.pro](vcs.pro). By default, VCS uses Datapath's RGBEasy (CAPTURE_BACKEND_RGBEASY) on Windows and Vision (CAPTURE_BACKEND_VISION_V4L) on Linux, supporting the VisionRGB range of capture cards on those platforms.
+One (and only one) capture backend must be active in any build of VCS. To select which one it is, set its identifier in the `DEFINES` variable in [vcs.pro](vcs.pro).
 
 The following capture backends are available:
 
 | Identifier                  | Explanation |
 | --------------------------- | ----------- |
-| CAPTURE_BACKEND_RGBEASY     | Supports the Datapath VisionRGB range of capture cards on Windows; requires the Datapath VisionRGB driver to be installed. If used when building on Linux, will provide a debug implementation that announces in the terminal which RGBEasy API functions would be called if you were to run the program on Windows. |
-| CAPTURE_BACKEND_VISION_V4L  | Supports the Datapath VisionRGB range of capture cards on Linux; requires the Datapath Vision driver to be installed. |
-| CAPTURE_BACKEND_VIRTUAL     | Provides a device-independent capture source that generates a test image. Useful for debugging, and doesn't require capture drivers to be installed. |
+| CAPTURE_BACKEND_VISION_V4L  | Supports the Datapath VisionRGB range of capture cards on Linux. Requires [Datapath's Linux Vision driver](https://www.datapathsoftware.com/vision-capture-card-downloads/vision-drivers/vision-drivers-1) to be installed on the system (and re-installed whenever the kernel is updated). |
+| CAPTURE_BACKEND_VIRTUAL     | Provides a device-independent capture source that generates a test image. Useful for debugging, and doesn't require a capture device or its drivers to be installed. |
 | CAPTURE_BACKEND_DOSBOX_MMAP | Allows capturing DOSBox's frame buffer on Linux. Intended for debugging. See [this blog post](https://www.tarpeeksihyvaesoft.com/blog/capturing-dosboxs-frame-buffer-via-shared-memory/) for details.|
 
 ## Program flow

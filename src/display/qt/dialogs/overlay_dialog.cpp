@@ -206,13 +206,7 @@ QImage OverlayDialog::rendered(void)
         source.replace("$inWidth", QString::number(kc_current_capture_state().input.resolution.w));
         source.replace("$inHeight", QString::number(kc_current_capture_state().input.resolution.h));
         source.replace("$inRate", QString::number(kc_current_capture_state().input.refreshRate.value<double>(), 'f', 3));
-        source.replace("$inChannel",
-        #if __linux__
-            QString("/dev/video%1").arg(kc_current_capture_state().hardwareChannelIdx)
-        #else
-            QString::number(kc_current_capture_state().hardwareChannelIdx + 1)
-        #endif
-        );
+        source.replace("$inChannel", QString("/dev/video%1").arg(kc_current_capture_state().hardwareChannelIdx));
         source.replace("$outWidth", QString::number(kc_current_capture_state().output.resolution.w));
         source.replace("$outHeight", QString::number(kc_current_capture_state().output.resolution.h));
         source.replace("$outRate", QString::number(kc_current_capture_state().output.refreshRate.value<double>()));

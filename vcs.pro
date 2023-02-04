@@ -12,27 +12,12 @@ linux {
         # ".../visionrgb/include/rgb133control.h".
         $$(HOME)/sdk/
 
-        LIBS += \
-            -L/usr/local/lib/ \
-            -lopencv_imgproc \
-            -lopencv_highgui \
-            -lopencv_core \
-            -lopencv_photo
-}
-
-win32 {
-    DEFINES += CAPTURE_BACKEND_RGBEASY
-
-    INCLUDEPATH += \
-        "C:/VisionSDK/RGBEASY 1.0/INCLUDE" \
-        "C:/OpenCV/3.2.0/include"
-
     LIBS += \
-        "C:/VisionSDK/RGBEASY 1.0/LIB/Win32/Release/RGBEASY.lib" \
-        -L"C:/OpenCV/3.2.0/bin/mingw" \
-        -lopencv_world320
-
-    RC_ICONS = "src/display/qt/images/icons/appicon.ico"
+        -L/usr/local/lib/ \
+        -lopencv_imgproc \
+        -lopencv_highgui \
+        -lopencv_core \
+        -lopencv_photo
 }
 
 QT += core gui
@@ -301,14 +286,6 @@ contains(DEFINES, CAPTURE_BACKEND_VISION_V4L) {
     HEADERS += \
         src/capture/vision_v4l/input_channel_v4l.h \
         src/capture/vision_v4l/ic_v4l_video_parameters.h
-}
-
-contains(DEFINES, CAPTURE_BACKEND_RGBEASY) {
-    SOURCES += src/capture/rgbeasy/capture_rgbeasy.cpp
-
-    linux {
-        SOURCES += src/capture/rgbeasy/null_rgbeasy.h
-    }
 }
 
 # C++. For GCC/Clang/MinGW.

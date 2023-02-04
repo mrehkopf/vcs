@@ -45,16 +45,6 @@ AboutDialog::AboutDialog(QWidget *parent) :
         ui->tableWidget_captureDeviceFeatures->modify_property("Firmware", QString::fromStdString(kc_get_device_firmware_version()));
         ui->tableWidget_captureDeviceFeatures->modify_property("Driver", QString::fromStdString(kc_get_device_driver_version()));
         ui->tableWidget_captureDeviceFeatures->modify_property("Capture backend", QString::fromStdString(kc_get_device_api_name()));
-        #ifndef __linux__ // The Linux capture API doesn't support querying these parameters.
-            ui->tableWidget_captureDeviceFeatures->modify_property("DMA transfer",       (kc_device_supports_dma()?               "Supported" : "Not supported"));
-            ui->tableWidget_captureDeviceFeatures->modify_property("Deinterlacing",      (kc_device_supports_deinterlacing()?     "Supported" : "Not supported"));
-            ui->tableWidget_captureDeviceFeatures->modify_property("YUV encoding",       (kc_device_supports_yuv()?               "Supported" : "Not supported"));
-            ui->tableWidget_captureDeviceFeatures->modify_property("VGA capture",        (kc_device_supports_vga()?               "Supported" : "Not supported"));
-            ui->tableWidget_captureDeviceFeatures->modify_property("DVI capture",        (kc_device_supports_dvi()?               "Supported" : "Not supported"));
-            ui->tableWidget_captureDeviceFeatures->modify_property("Component capture",  (kc_device_supports_component_capture()? "Supported" : "Not supported"));
-            ui->tableWidget_captureDeviceFeatures->modify_property("Composite capture",  (kc_device_supports_composite_capture()? "Supported" : "Not supported"));
-            ui->tableWidget_captureDeviceFeatures->modify_property("S-Video capture",    (kc_device_supports_svideo()?            "Supported" : "Not supported"));
-        #endif
     }
 
     // Restore persistent settings.

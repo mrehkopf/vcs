@@ -119,38 +119,19 @@ MainWindow::MainWindow(QWidget *parent) :
         {
             QMenu *channel = new QMenu("Channel", this);
             {
-                #if __linux__
-                    QAction *select = new QAction("Select...", this);
-                    channel->addAction(select);
-                    connect(select, &QAction::triggered, this, [this]
+                QAction *select = new QAction("Select...", this);
+                channel->addAction(select);
+                connect(select, &QAction::triggered, this, [this]
+                {
+                    unsigned newIdx = kc_get_device_input_channel_idx();
+
+                    if (LinuxDeviceSelectorDialog(&newIdx).exec() != QDialog::Rejected)
                     {
-                        unsigned newIdx = kc_get_device_input_channel_idx();
-
-                        if (LinuxDeviceSelectorDialog(&newIdx).exec() != QDialog::Rejected)
-                        {
-                            kc_set_capture_input_channel(newIdx);
-                        }
-                    });
-
-                    channel->addSeparator();
-                #else
-                    QActionGroup *group = new QActionGroup(this);
-
-                    for (int i = 0; i < kc_get_device_maximum_input_count(); i++)
-                    {
-                        QAction *inputChannel = new QAction(QString::number(i+1), this);
-                        inputChannel->setActionGroup(group);
-                        inputChannel->setCheckable(true);
-                        channel->addAction(inputChannel);
-
-                        if (i == int(INPUT_CHANNEL_IDX))
-                        {
-                            inputChannel->setChecked(true);
-                        }
-
-                        connect(inputChannel, &QAction::triggered, this, [=]{kc_set_capture_input_channel(i);});
+                        kc_set_capture_input_channel(newIdx);
                     }
-                #endif
+                });
+
+                channel->addSeparator();
             }
 
             QMenu *colorDepth = new QMenu("Color depth", this);
@@ -674,13 +655,6 @@ MainWindow::MainWindow(QWidget *parent) :
         });
     }
 
-#ifdef _WIN32
-    /// Temp hack. On my system, need to toggle this or there'll be a 2-pixel
-    /// gap between the frame and the bottom corner of the window.
-    toggle_window_border();
-    toggle_window_border();
-#endif
-
     this->activateWindow();
     this->raise();
 
@@ -786,13 +760,11 @@ bool MainWindow::apply_global_stylesheet(const QString &qssFilename)
 
 bool MainWindow::set_global_font_size(const unsigned fontSize)
 {
-#if _WIN32
-    QFile fontStyleFile(":/res/stylesheets/font-windows.qss");
-#elif __linux__
-    QFile fontStyleFile(":/res/stylesheets/font-linux.qss");
-#else
-    #error "Unknown platform."
-#endif
+    #if __linux__
+        QFile fontStyleFile(":/res/stylesheets/font-linux.qss");
+    #else
+        #error "Unknown platform."
+    #endif
 
     if (fontStyleFile.open(QIODevice::ReadOnly))
     {
