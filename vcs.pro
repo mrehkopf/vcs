@@ -32,8 +32,6 @@ SOURCES += \
     src/display/qt/dialogs/filter_graph/output_scaler_node.cpp \
     src/display/qt/dialogs/video_presets_dialog.cpp \
     src/display/qt/keyboard_shortcuts.cpp \
-    src/filter/filters/eye_dropper/filter_eye_dropper.cpp \
-    src/filter/filters/eye_dropper/gui/filtergui_eye_dropper.cpp \
     src/filter/filters/output_scaler/filter_output_scaler.cpp \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.cpp \
     src/filter/filters/render_text/filter_render_text.cpp \
@@ -170,8 +168,6 @@ HEADERS += \
     src/filter/filters/filters.h \
     src/filter/filters/flip/filter_flip.h \
     src/filter/filters/flip/gui/filtergui_flip.h \
-    src/filter/filters/eye_dropper/filter_eye_dropper.h \
-    src/filter/filters/eye_dropper/gui/filtergui_eye_dropper.h \
     src/filter/filters/output_scaler/filter_output_scaler.h \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.h \
     src/filter/filters/render_text/font.h \
