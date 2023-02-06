@@ -117,11 +117,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
         QMenu *captureMenu = new QMenu("Input", this);
         {
-            QMenu *channel = new QMenu("Channel", this);
+            QAction *selectChannel = new QAction("Channel...", this);
             {
-                QAction *select = new QAction("Select...", this);
-                channel->addAction(select);
-                connect(select, &QAction::triggered, this, [this]
+                captureMenu->addAction(selectChannel);
+
+                connect(selectChannel, &QAction::triggered, this, [this]
                 {
                     unsigned newIdx = kc_get_device_input_channel_idx();
 
@@ -130,8 +130,6 @@ MainWindow::MainWindow(QWidget *parent) :
                         kc_set_capture_input_channel(newIdx);
                     }
                 });
-
-                channel->addSeparator();
             }
 
             QMenu *colorDepth = new QMenu("Color depth", this);
@@ -241,7 +239,8 @@ MainWindow::MainWindow(QWidget *parent) :
                 }
             }
 
-            captureMenu->addMenu(channel);
+            captureMenu->addAction(selectChannel);
+            captureMenu->addSeparator();
             captureMenu->addMenu(colorDepth);
             captureMenu->addMenu(deinterlacing);
             captureMenu->addSeparator();
