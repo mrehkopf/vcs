@@ -27,7 +27,7 @@ linux {
 
     contains(DEFINES, VCS_FOR_X11) {
         SOURCES += src/display/prevent_screensaver_x11.cpp
-        LIBS += -lX11
+        LIBS += -lX11 -lXext
     } else {
         SOURCES += src/display/prevent_screensaver_null.cpp
     }
