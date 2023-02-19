@@ -41,7 +41,6 @@
 #include "display/qt/dialogs/anti_tear_dialog.h"
 #include "display/qt/dialogs/overlay_dialog.h"
 #include "display/qt/windows/output_window.h"
-#include "display/qt/dialogs/alias_dialog.h"
 #include "display/qt/dialogs/about_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/keyboard_shortcuts.h"
@@ -49,7 +48,6 @@
 #include "common/propagate/vcs_event.h"
 #include "capture/video_presets.h"
 #include "capture/capture.h"
-#include "capture/alias.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
 #include "main.h"
@@ -95,7 +93,6 @@ MainWindow::MainWindow(QWidget *parent) :
         antitearDlg = new AntiTearDialog;
         overlayDlg = new OverlayDialog;
         signalDlg = new SignalDialog;
-        aliasDlg = new AliasDialog;
         aboutDlg = new AboutDialog;
 
         this->dialogs << outputResolutionDlg
@@ -105,7 +102,6 @@ MainWindow::MainWindow(QWidget *parent) :
                       << antitearDlg
                       << overlayDlg
                       << signalDlg
-                      << aliasDlg
                       << aboutDlg;
     }
 
@@ -243,9 +239,6 @@ MainWindow::MainWindow(QWidget *parent) :
             captureMenu->addMenu(deinterlacing);
             captureMenu->addSeparator();
 
-            QAction *aliases = new QAction("Aliases...", this);
-            captureMenu->addAction(aliases);
-
             QAction *resolution = new QAction("Resolution...", this);
             resolution->setShortcut(kd_get_key_sequence("output-window: open-input-resolution-dialog"));
             captureMenu->addAction(resolution);
@@ -258,15 +251,9 @@ MainWindow::MainWindow(QWidget *parent) :
             videoPresets->setShortcut(kd_get_key_sequence("output-window: open-video-presets-dialog"));
             captureMenu->addAction(videoPresets);
 
-            #if CAPTURE_BACKEND_VISION_V4L
-                aliases->setEnabled(false);
-                INFO(("Aliases are not supported with Video4Linux."));
-            #endif
-
             connect(signal, &QAction::triggered, this, [=]{this->signalDlg->open();});
             connect(videoPresets, &QAction::triggered, this, [=]{this->videoPresetsDlg->open();});
             connect(resolution, &QAction::triggered, this, [=]{this->inputResolutionDlg->open();});
-            connect(aliases, &QAction::triggered, this, [=]{this->aliasDlg->open();});
         }
 
         QMenu *outputMenu = new QMenu("Output", this);
