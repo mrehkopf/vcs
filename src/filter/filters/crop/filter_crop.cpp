@@ -47,7 +47,7 @@ void filter_crop_c::apply(image_s *const image)
 
         // If the user doesn't want scaling, just append some black borders around the
         // cropping. Otherwise, stretch the cropped region to fill the entire frame.
-        if (cvScaler < 0) cv::copyMakeBorder(cropped, output, y, (image->resolution.h - (h + y)), x, (image->resolution.w - (w + x)), cv::BORDER_CONSTANT, 0);
+        if (scalerType == SCALE_NONE) cv::copyMakeBorder(cropped, output, y, (image->resolution.h - (h + y)), x, (image->resolution.w - (w + x)), cv::BORDER_CONSTANT, 0);
         else cv::resize(cropped, output, output.size(), 0, 0, cvScaler);
     }
 
