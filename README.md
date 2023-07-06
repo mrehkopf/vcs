@@ -1,49 +1,31 @@
 # VCS
 
-A well-featured Linux control application for Datapath's VisionRGB capture cards, with a feature-set targeted especially at retro enthusiasts.
+A well-featured control application for Datapath's VisionRGB range of capture cards, with a feature-set targeted especially at retro enthusiasts.
 
 ![VCS 2.8](./images/vcs-2.8.png)\
 *A screenshot of VCS 2.8 showing the capture window (in the background) and some of the control options.*
 
-## Features
+## Key features
 
-- Various feature and usability improvements over Datapath's default capture application to maximize capture quality
+- Various usability improvements over Datapath's bundled capture application, enabling high-quality capture of dynamic signals
 - Unlimited video presets with programmable activation
 - Several scaling modes and image filters
-- Variable refresh rate output to match the input
-- Works with modern and legacy VisionRGB hardware
-- Free and open source
+- Variable refresh rate output
+- Free and open source, with a modular implementation easily extendable to non-Datapath capture devices
 
-## Supported capture hardware
+## Supported capture devices
 
-VCS is compatible with at least the following Datapath capture cards:
+- Datapath VisionRGB-PRO
+- Datapath VisionRGB-E
+- Datapath VisionRGB-X
+- Datapath VisionRGB-AV
 
-- VisionRGB-PRO1
-- VisionRGB-PRO2
-- VisionRGB-E1
-- VisionRGB-E2
-- VisionRGB-E1S
-- VisionRGB-E2S
-- VisionRGB-X2
+Note that audio must be captured separately.
 
 ## Manuals
 
-### User's manual
-
-The VCS user's manual ([source](./docs/user/)) is available online for the following versions of VCS:
-
-- [master branch](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/) (includes changes not yet released with a version tag; updated with a delay)
-- [2.7.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.7.0/)
-- [2.6.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.6.0/)
-- [2.5.2](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.5.2/)
-- [2.5.1](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.5.1/)
-- [2.5.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.5.0/)
-- [2.4.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.4.0/)
-
-### Developer's manual
-
-- [Source](./docs/developer/)
-- [Pre-compiled](https://www.tarpeeksihyvaesoft.com/vcs/docs/developer/) (updated with a delay)
+- [User's manual](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/) ([source](./docs/user/))
+- [Developer's manual](https://www.tarpeeksihyvaesoft.com/vcs/docs/developer/) ([source](./docs/developer/))
 
 ## Building
 
