@@ -30,20 +30,20 @@ VCS is compatible with at least the following Datapath capture cards:
 
 ### User's manual
 
-The VCS user's manual ([source](./docs/user-manual/)) is available online for the following versions of VCS:
+The VCS user's manual ([source](./docs/user/)) is available online for the following versions of VCS:
 
-- [master branch](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/) (includes changes not yet released with a version tag; updated with a delay)
-- [2.7.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.7.0/)
-- [2.6.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.6.0/)
-- [2.5.2](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.5.2/)
-- [2.5.1](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.5.1/)
-- [2.5.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.5.0/)
-- [2.4.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.4.0/)
+- [master branch](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/) (includes changes not yet released with a version tag; updated with a delay)
+- [2.7.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.7.0/)
+- [2.6.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.6.0/)
+- [2.5.2](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.5.2/)
+- [2.5.1](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.5.1/)
+- [2.5.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.5.0/)
+- [2.4.0](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.4.0/)
 
 ### Developer's manual
 
-- [Source](./docs/developer-manual/)
-- [Pre-compiled](https://www.tarpeeksihyvaesoft.com/vcs/docs/developer-manual/) (updated with a delay)
+- [Source](./docs/developer/)
+- [Pre-compiled](https://www.tarpeeksihyvaesoft.com/vcs/docs/developer/) (updated with a delay)
 
 ## Building
 

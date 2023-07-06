@@ -45,8 +45,8 @@ const manualVersionSelector = {
         on_select(event) {
             const newUrl = (
                 (event.target.value === "master")
-                ? "/vcs/docs/user-manual/"
-                : `/vcs/docs/user-manual/${event.target.value}/`
+                ? "/vcs/docs/user/"
+                : `/vcs/docs/user/${event.target.value}/`
             );
 
             window.history.replaceState(null, "", newUrl);

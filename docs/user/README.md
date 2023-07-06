@@ -2,7 +2,7 @@
 
 This directory contains the source for the VCS user's manual, in the [dokki](https://github.com/leikareipa/dokki/) format.
 
-A pre-built HTML version of the manual is hosted [here](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/).
+A pre-built HTML version of the manual is hosted [here](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/).
 
 **Note!** The dokki format is work in progress, so the processes described here for dealing with it are preliminary.
 

@@ -31,9 +31,11 @@ public:
 
     // The filter's user-customizable parameters. In this case, the RGB fill color.
     // The naming of the enumerators is up to you; no particular style is required.
-    enum { PARAM_RED,
-           PARAM_GREEN,
-           PARAM_BLUE };
+    enum {
+        PARAM_RED,
+        PARAM_GREEN,
+        PARAM_BLUE
+    };
 
     // The constructor that's called whenever a new instance of this filter is created.
     // Note: We set the default fill color to 150, 10, 200. Instances of the filter
@@ -84,13 +86,13 @@ void filter_filler_c::apply(image_s *const image)
 }
 ```
 
-When the filter is active in VCS's [filter graph dialog](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.5.0/#dialog-windows-filter-graph-dialog), this function will be called by VCS with the data of each frame as they're captured.
+When the filter is active in VCS's [filter graph dialog](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.5.0/#dialog-windows-filter-graph-dialog), this function will be called by VCS with the data of each frame as they're captured.
 
 *Note*: The `apply()` function is prohibited from modifying the input frame's resolution.
 
 ### Subclassing filtergui_c
 
-The `filtergui_c` class provides a template for a filter's GUI. The GUI &ndash; which will be available to the end-user via VCS's [filter graph dialog](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.5.0/#dialog-windows-filter-graph-dialog) &ndash; consists of UI widgets for adjusting the filter's parameters (e.g. the radius of a blurring filter) at run-time.
+The `filtergui_c` class provides a template for a filter's GUI. The GUI &ndash; which will be available to the end-user via VCS's [filter graph dialog](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.5.0/#dialog-windows-filter-graph-dialog) &ndash; consists of UI widgets for adjusting the filter's parameters (e.g. the radius of a blurring filter) at run-time.
 
 *Note*: The GUI template is defined using an API that's independent of VCS's display framework (e.g. Qt). VCS will automatically translate the template into the native format of the framework being used.
 
@@ -178,11 +180,11 @@ void kf_initialize_filters(void)
 }
 ```
 
-That's it. The filter will now appear as a selectable entry in the menus of VCS's [filter graph dialog](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.5.0/#dialog-windows-filter-graph-dialog).
+That's it. The filter will now appear as a selectable entry in the menus of VCS's [filter graph dialog](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.5.0/#dialog-windows-filter-graph-dialog).
 
 ## Programmatic usage
 
-Although frame filters will typically be controlled by the end-user via VCS's [filter graph dialog](https://www.tarpeeksihyvaesoft.com/vcs/docs/user-manual/2.5.0/#dialog-windows-filter-graph-dialog), they can also be created and invoked programmatically:
+Although frame filters will typically be controlled by the end-user via VCS's [filter graph dialog](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.5.0/#dialog-windows-filter-graph-dialog), they can also be created and invoked programmatically:
 
 ```cpp
 // Create an instance of the filter using the templated kf_create_filter_instance().
