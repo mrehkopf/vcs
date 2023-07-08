@@ -11,16 +11,16 @@
 #include "capture/capture.h"
 #include "common/timer/timer.h"
 
-vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
-vcs_event_c<const video_mode_s&> kc_evNewProposedVideoMode;
-vcs_event_c<const video_mode_s&> kc_evNewVideoMode;
-vcs_event_c<void> ks_evInputChannelChanged;
-vcs_event_c<void> kc_evInvalidDevice;
-vcs_event_c<void> kc_evSignalLost;
-vcs_event_c<void> kc_evSignalGained;
-vcs_event_c<void> kc_evInvalidSignal;
-vcs_event_c<void> kc_evUnrecoverableError;
-vcs_event_c<unsigned> kc_evMissedFramesCount;
+vcs_event_c<const captured_frame_s&> kc_ev_new_captured_frame;
+vcs_event_c<const video_mode_s&> kc_ev_new_proposed_video_mode;
+vcs_event_c<const video_mode_s&> kc_ev_new_video_mode;
+vcs_event_c<void> ks_ev_input_channel_changed;
+vcs_event_c<void> kc_ev_invalid_device;
+vcs_event_c<void> kc_ev_signal_lost;
+vcs_event_c<void> kc_ev_signal_gained;
+vcs_event_c<void> kc_ev_invalid_signal;
+vcs_event_c<void> kc_ev_unrecoverable_error;
+vcs_event_c<unsigned> kc_ev_missed_frames_count;
 
 // We'll keep a running count of the number of frames we've missed, in total,
 // during capturing.
@@ -53,37 +53,37 @@ subsystem_releaser_t kc_initialize_capture(void)
 
         LAST_KNOWN_MISSED_FRAMES_COUNT = numMissedCurrent;
 
-        kc_evMissedFramesCount.fire(numMissedFrames);
+        kc_ev_missed_frames_count.fire(numMissedFrames);
     });
 
-    kc_evSignalLost.listen([]
+    kc_ev_signal_lost.listen([]
     {
         CAPTURE_STATUS.input = {0};
         CAPTURE_STATUS.signalFormat = signal_format_e::none;
     });
 
-    kc_evNewVideoMode.listen([](const video_mode_s &videoMode)
+    kc_ev_new_video_mode.listen([](const video_mode_s &videoMode)
     {
         CAPTURE_STATUS.input = videoMode;
         CAPTURE_STATUS.signalFormat = (kc_has_digital_signal()? signal_format_e::digital : signal_format_e::analog);
     });
 
-    ks_evNewOutputResolution.listen([](const resolution_s &resolution)
+    ks_ev_new_output_resolution.listen([](const resolution_s &resolution)
     {
         CAPTURE_STATUS.output.resolution = resolution;
     });
 
-    ks_evFramesPerSecond.listen([](const unsigned fps)
+    ks_ev_frames_per_second.listen([](const unsigned fps)
     {
         CAPTURE_STATUS.output.refreshRate = fps;
     });
 
-    kc_evMissedFramesCount.listen([](const unsigned numMissed)
+    kc_ev_missed_frames_count.listen([](const unsigned numMissed)
     {
         CAPTURE_STATUS.areFramesBeingDropped = numMissed;
     });
 
-    ks_evInputChannelChanged.listen([]
+    ks_ev_input_channel_changed.listen([]
     {
         CAPTURE_STATUS.hardwareChannelIdx = kc_get_device_input_channel_idx();
     });
@@ -121,7 +121,7 @@ bool kc_force_capture_resolution(const resolution_s &r)
         return false;
     }
 
-    kc_evNewVideoMode.fire({
+    kc_ev_new_video_mode.fire({
         kc_get_capture_resolution(),
         kc_get_capture_refresh_rate(),
     });

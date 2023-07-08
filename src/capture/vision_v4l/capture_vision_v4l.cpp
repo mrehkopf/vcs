@@ -216,10 +216,10 @@ bool kc_initialize_device(void)
     DEBUG(("Initializing the Vision/V4L capture device."));
     k_assert(!FRAME_BUFFER.pixels, "Attempting to doubly initialize the capture device.");
 
-    kc_evSignalGained.listen([]
+    kc_ev_signal_gained.listen([]
     {
         CUR_INPUT_CHANNEL->captureStatus.videoParameters.update();
-        kc_evNewProposedVideoMode.fire({
+        kc_ev_new_proposed_video_mode.fire({
             kc_get_capture_resolution(),
             kc_get_capture_refresh_rate(),
         });
@@ -625,7 +625,7 @@ bool kc_set_capture_input_channel(const unsigned idx)
 
     CUR_INPUT_CHANNEL_IDX = idx;
 
-    ks_evInputChannelChanged.fire();
+    ks_ev_input_channel_changed.fire();
 
     return true;
 }

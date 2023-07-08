@@ -96,7 +96,7 @@
  * 
  *   5. Apply suitable filter chains to captured frames:
  *      @code
- *      kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
+ *      kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
  *      {
  *          image_s image(frame.pixels.data, frame.r);
  *          kf_apply_matching_filter_chain(&image);
@@ -123,7 +123,7 @@
  * type identifier when VCS's filter graphs are saved to -- and loaded from -- disk.
  * 
  * @see
- * [Guide: Implementing a frame filter](@ref md_docs_developer-manual_guides_implementing-a-frame-filter)
+ * [Guide: Implementing a frame filter](@ref md_docs_developer_guides_implementing-a-frame-filter)
  */
 
 #ifndef VCS_FILTER_FILTER_H

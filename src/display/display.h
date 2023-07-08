@@ -45,7 +45,7 @@ struct resolution_alias_s;
  * An event that can be fired by subsystems to indicate that the output window should
  * redraw its contents.
  */
-extern vcs_event_c<void> kd_evDirty;
+extern vcs_event_c<void> kd_ev_dirty;
 
 /*!
  * @brief

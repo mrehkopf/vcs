@@ -63,7 +63,7 @@ subsystem_releaser_t kvideopreset_initialize(void)
 
     // Listen for app events.
     {
-        kc_evNewVideoMode.listen(kvideopreset_apply_current_active_preset);
+        kc_ev_new_video_mode.listen(kvideopreset_apply_current_active_preset);
 
         kc_evVideoPresetParamsChanged.listen([](const video_preset_s *preset)
         {

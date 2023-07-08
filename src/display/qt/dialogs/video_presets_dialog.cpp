@@ -424,7 +424,7 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
 
     // Register app event listeners.
     {
-        kc_evNewVideoMode.listen([this](const video_mode_s&)
+        kc_ev_new_video_mode.listen([this](const video_mode_s&)
         {
             if (kc_is_receiving_signal())
             {
@@ -434,7 +434,7 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
             this->update_active_preset_indicator();
         });
 
-        kc_evSignalLost.listen([this]
+        kc_ev_signal_lost.listen([this]
         {
             this->update_active_preset_indicator();
         });

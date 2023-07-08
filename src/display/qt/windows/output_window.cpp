@@ -254,12 +254,12 @@ OutputWindow::OutputWindow(QWidget *parent) :
 
     // Listen for app events.
     {
-        kd_evDirty.listen([this]
+        kd_ev_dirty.listen([this]
         {
             this->redraw();
         });
 
-        ks_evNewScaledImage.listen([this]
+        ks_ev_new_scaled_image.listen([this]
         {
             this->redraw();
         });
@@ -274,39 +274,39 @@ OutputWindow::OutputWindow(QWidget *parent) :
             this->update_window_title();
         });
 
-        ks_evNewOutputResolution.listen([this]
+        ks_ev_new_output_resolution.listen([this]
         {
             this->update_window_title();
             this->update_window_size();
         });
 
-        kc_evSignalLost.listen([this]
-        {
-            this->update_window_title();
-            this->update_window_size();
-            this->redraw();
-        });
-
-        kc_evInvalidDevice.listen([this]
+        kc_ev_signal_lost.listen([this]
         {
             this->update_window_title();
             this->update_window_size();
             this->redraw();
         });
 
-        kc_evInvalidSignal.listen([this]
+        kc_ev_invalid_device.listen([this]
         {
             this->update_window_title();
             this->update_window_size();
             this->redraw();
         });
 
-        kc_evNewVideoMode.listen([this](video_mode_s)
+        kc_ev_invalid_signal.listen([this]
+        {
+            this->update_window_title();
+            this->update_window_size();
+            this->redraw();
+        });
+
+        kc_ev_new_video_mode.listen([this](video_mode_s)
         {
             this->update_window_title();
         });
 
-        kc_evMissedFramesCount.listen([this](const unsigned numMissed)
+        kc_ev_missed_frames_count.listen([this](const unsigned numMissed)
         {
             const bool areDropped = (numMissed > 0);
 

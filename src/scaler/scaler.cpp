@@ -22,11 +22,11 @@
 #include "scaler/scaler.h"
 #include "common/timer/timer.h"
 
-vcs_event_c<const resolution_s&> ks_evNewOutputResolution;
-vcs_event_c<const image_s&> ks_evNewScaledImage;
-vcs_event_c<unsigned> ks_evFramesPerSecond;
-vcs_event_c<void> ks_evCustomScalerEnabled;
-vcs_event_c<void> ks_evCustomScalerDisabled;
+vcs_event_c<const resolution_s&> ks_ev_new_output_resolution;
+vcs_event_c<const image_s&> ks_ev_new_scaled_image;
+vcs_event_c<unsigned> ks_ev_frames_per_second;
+vcs_event_c<void> ks_ev_custom_scaler_enabled;
+vcs_event_c<void> ks_ev_custom_scaler_disabled;
 
 // For keeping track of the number of frames scaled per second.
 static unsigned NUM_FRAMES_SCALED_PER_SECOND = 0;
@@ -155,31 +155,31 @@ subsystem_releaser_t ks_initialize_scaler(void)
 
     ks_set_default_scaler(KNOWN_SCALERS.at(0).name);
 
-    kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
+    kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
     {
         ks_scale_frame(frame);
     });
 
-    kc_evInvalidSignal.listen([]
+    kc_ev_invalid_signal.listen([]
     {
         ks_indicate_invalid_signal();
-        kd_evDirty.fire();
+        kd_ev_dirty.fire();
     });
 
-    kc_evSignalLost.listen([]
+    kc_ev_signal_lost.listen([]
     {
         ks_indicate_no_signal();
-        kd_evDirty.fire();
+        kd_ev_dirty.fire();
     });
 
-    ks_evNewScaledImage.listen([]
+    ks_ev_new_scaled_image.listen([]
     {
         NUM_FRAMES_SCALED_PER_SECOND++;
     });
 
     kt_timer(1000, [](const unsigned)
     {
-        ks_evFramesPerSecond.fire(NUM_FRAMES_SCALED_PER_SECOND);
+        ks_ev_frames_per_second.fire(NUM_FRAMES_SCALED_PER_SECOND);
 
         NUM_FRAMES_SCALED_PER_SECOND = 0;
     });
@@ -309,7 +309,7 @@ void ks_scale_frame(const captured_frame_s &frame)
 
         if (!IS_CUSTOM_SCALER_ACTIVE)
         {
-            ks_evCustomScalerEnabled.fire();
+            ks_ev_custom_scaler_enabled.fire();
             IS_CUSTOM_SCALER_ACTIVE = true;
         }
 
@@ -320,7 +320,7 @@ void ks_scale_frame(const captured_frame_s &frame)
     {
         if (IS_CUSTOM_SCALER_ACTIVE)
         {
-            ks_evCustomScalerDisabled.fire();
+            ks_ev_custom_scaler_disabled.fire();
             IS_CUSTOM_SCALER_ACTIVE = false;
         }
 
@@ -339,11 +339,11 @@ void ks_scale_frame(const captured_frame_s &frame)
 
     if (FRAME_BUFFER_RESOLUTION != outputRes)
     {
-        ks_evNewOutputResolution.fire(outputRes);
+        ks_ev_new_output_resolution.fire(outputRes);
         FRAME_BUFFER_RESOLUTION = outputRes;
     }
 
-    ks_evNewScaledImage.fire(ks_scaler_frame_buffer());
+    ks_ev_new_scaled_image.fire(ks_scaler_frame_buffer());
 
     return;
 }

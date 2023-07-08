@@ -123,7 +123,7 @@ WindowSize::WindowSize(QWidget *parent) :
 
     // Listen for app events.
     {
-        kc_evNewVideoMode.listen([this](const video_mode_s &videoMode)
+        kc_ev_new_video_mode.listen([this](const video_mode_s &videoMode)
         {
             if (!ui->checkBox_forceOutputRes->isChecked())
             {
@@ -132,14 +132,14 @@ WindowSize::WindowSize(QWidget *parent) :
             }
         });
 
-        ks_evCustomScalerEnabled.listen([this]
+        ks_ev_custom_scaler_enabled.listen([this]
         {
             // The output scaling filter handles output sizing, so we want to bar the
             // user from manipulating it via this dialog.
             this->disable_output_size_controls(true);
         });
 
-        ks_evCustomScalerDisabled.listen([this]
+        ks_ev_custom_scaler_disabled.listen([this]
         {
             this->disable_output_size_controls(false);
         });

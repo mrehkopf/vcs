@@ -41,13 +41,13 @@
  *   4. You can automate the scaling of captured frames using event listeners:
  *      @code
  *      // Executed each time the capture subsystem reports a new captured frame.
- *      kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
+ *      kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
  *      {
  *          ks_scale_frame(frame);
  *      });
  * 
  *      // Executed each time the scaler subsystem produces a new scaled image.
- *      ks_evNewScaledImage.listen([](const image_s &image)
+ *      ks_ev_new_scaled_image.listen([](const image_s &image)
  *      {
  *          printf("A frame was scaled to %lu x %lu.\n", image.resolution.w, image.resolution.h);
  *      });
@@ -102,13 +102,13 @@ struct image_scaler_s
  * ks_scale_frame(frame);
  * @endcode
  */
-extern vcs_event_c<const resolution_s&> ks_evNewOutputResolution;
+extern vcs_event_c<const resolution_s&> ks_ev_new_output_resolution;
 
 /*!
  * An event fired when the scaler subsystem has finished scaling a frame.
  * 
  * @code
- * ks_evNewScaledImage.listen([](const image_s &scaledImage)
+ * ks_ev_new_scaled_image.listen([](const image_s &scaledImage)
  * {
  *     printf("Scaled a frame to %lu x %lu.\n", scaledImage.resolution.w, scaledImage.resolution.h);
  * });
@@ -117,14 +117,14 @@ extern vcs_event_c<const resolution_s&> ks_evNewOutputResolution;
  * @see
  * ks_scale_frame()
  */
-extern vcs_event_c<const image_s&> ks_evNewScaledImage;
+extern vcs_event_c<const image_s&> ks_ev_new_scaled_image;
 
 /*!
  * An event fired once per second, giving the number of input frames the scaler
  * subsystem scaled during that time.
  * 
  * @code
- * ks_evFramesPerSecond.listen([](unsigned numFrames)
+ * ks_ev_frames_per_second.listen([](unsigned numFrames)
  * {
  *     printf("Scaled %u frames per second.\n", numFrames);
  * });
@@ -133,19 +133,19 @@ extern vcs_event_c<const image_s&> ks_evNewScaledImage;
  * @see
  * ks_scale_frame()
  */
-extern vcs_event_c<unsigned> ks_evFramesPerSecond;
+extern vcs_event_c<unsigned> ks_ev_frames_per_second;
 
 /*!
  * An event fired when an output scaling filter becomes active, i.e. when captured
  * frames begin being scaled using such a filter.
  */
-extern vcs_event_c<void> ks_evCustomScalerEnabled;
+extern vcs_event_c<void> ks_ev_custom_scaler_enabled;
 
 /*!
  * An event fired when there's no longer an output scaling filter being used to
  * scale captured frames.
  */
-extern vcs_event_c<void> ks_evCustomScalerDisabled;
+extern vcs_event_c<void> ks_ev_custom_scaler_disabled;
 
 /*!
  * Returns the resolution to which the scaler will scale input frames, prior to
@@ -196,20 +196,20 @@ subsystem_releaser_t ks_initialize_scaler(void);
  * 
  * @code
  * // Feed captured frames into the scaler using a VCS event listener.
- * kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
+ * kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
  * {
  *     ks_scale_frame(frame);
  * });
  * 
  * // Receive scaled frames from the scaler.
- * ks_evNewScaledImage.listen([](const image_s &image)
+ * ks_ev_new_scaled_image.listen([](const image_s &image)
  * {
  *     printf("A frame was scaled to %lu x %lu.\n", image.resolution.w, image.resolution.h);
  * });
  * @endcode
  * 
  * @see
- * ks_frame_buffer(), ks_evNewScaledImage
+ * ks_frame_buffer(), ks_ev_new_scaled_image
  */
 void ks_scale_frame(const captured_frame_s &frame);
 
@@ -263,7 +263,7 @@ void ks_set_base_resolution_enabled(const bool enabled);
  * 
  * @code
  * // Produce a "no signal" image when the capture device loses its signal.
- * kc_evSignalLost.listen(ks_indicate_no_signal);
+ * kc_ev_signal_lost.listen(ks_indicate_no_signal);
  * 
  * // Note: The kc_evSignalLost event fires when the capture device loses its
  * // signal, but not in the case where the device already has no signal when
@@ -271,7 +271,7 @@ void ks_set_base_resolution_enabled(const bool enabled);
  * @endcode
  * 
  * @see
- * kc_evSignalLost
+ * kc_ev_signal_lost
  */
 void ks_indicate_no_signal(void);
 
@@ -284,11 +284,11 @@ void ks_indicate_no_signal(void);
  * 
  * @code
  * // Produce an "invalid signal" image when the capture device loses its signal.
- * kc_evInvalidSignal.listen(ks_indicate_invalid_signal);
+ * kc_ev_invalid_signal.listen(ks_indicate_invalid_signal);
  * @endcode
  * 
  * @see
- * kc_evInvalidSignal
+ * kc_ev_invalid_signal
  */
 void ks_indicate_invalid_signal(void);
 

@@ -107,27 +107,27 @@ SignalStatus::SignalStatus(QWidget *parent) :
             update_information_table(kc_is_receiving_signal());
         };
 
-        kc_evSignalLost.listen([this]
+        kc_ev_signal_lost.listen([this]
         {
             this->set_controls_enabled(false);
         });
 
-        kc_evSignalGained.listen([this]
+        kc_ev_signal_gained.listen([this]
         {
             this->set_controls_enabled(true);
         });
 
-        ks_evFramesPerSecond.listen([this](const unsigned fps)
+        ks_ev_frames_per_second.listen([this](const unsigned fps)
         {
             ui->tableWidget_propertyTable->modify_property("Output rate", QString("%1 FPS").arg(fps));
         });
 
-        kc_evNewVideoMode.listen([update_info](const video_mode_s&)
+        kc_ev_new_video_mode.listen([update_info](const video_mode_s&)
         {
             update_info();
         });
 
-        ks_evInputChannelChanged.listen(update_info);
+        ks_ev_input_channel_changed.listen(update_info);
     }
 
     return;

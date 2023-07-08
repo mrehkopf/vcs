@@ -99,7 +99,7 @@ struct video_mode_s;
  * 
  * @code
  * // Register an event listener that gets run each time a new frame is captured.
- * kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
+ * kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
  * {
  *     // The frame's data is available to this listener until the function
  *     // returns. If we want to keep hold of the data for longer, we need to
@@ -109,14 +109,14 @@ struct video_mode_s;
  * 
  * @code
  * // Feed captured frames into the scaler subsystem.
- * kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
+ * kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
  * {
  *     printf("Captured in %lu x %lu.\n", frame.r.w, frame.r.h);
  *     ks_scale_frame(frame);
  * });
  * 
  * // Receive a notification whenever a frame has been scaled.
- * ks_evNewScaledImage.listen([](const image_s &image)
+ * ks_ev_new_scaled_image.listen([](const image_s &image)
  * {
  *     printf("Scaled to %lu x %lu.\n", image.resolution.w, image.resolution.h);
  * });
@@ -129,7 +129,7 @@ struct video_mode_s;
  * @see
  * kc_get_frame_buffer(), kc_capture_mutex()
  */
-extern vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
+extern vcs_event_c<const captured_frame_s&> kc_ev_new_captured_frame;
 
 /*!
  * An event fired when the capture subsystem reports its input signal to have
@@ -148,7 +148,7 @@ extern vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
  * @code
  * // A sample implementation that approves the proposed video mode if there's
  * // no alias for it, and otherwise forces the alias mode.
- * kc_evNewProposedVideoMode.listen([](const video_mode_s &videoMode)
+ * kc_ev_new_proposed_video_mode.listen([](const video_mode_s &videoMode)
  * {
  *     if (ka_has_alias(videoMode.resolution))
  *     {
@@ -162,9 +162,9 @@ extern vcs_event_c<const captured_frame_s&> kc_evNewCapturedFrame;
  * @endcode
  * 
  * @see
- * kc_evNewVideoMode, kc_force_capture_resolution()
+ * kc_ev_new_video_mode, kc_force_capture_resolution()
  */
-extern vcs_event_c<const video_mode_s&> kc_evNewProposedVideoMode;
+extern vcs_event_c<const video_mode_s&> kc_ev_new_proposed_video_mode;
 
 /*!
  * An event fired when the capture video mode has changed.
@@ -175,9 +175,9 @@ extern vcs_event_c<const video_mode_s&> kc_evNewProposedVideoMode;
  * mode.
  * 
  * @see
- * kc_evNewProposedVideoMode, kc_force_capture_resolution()
+ * kc_ev_new_proposed_video_mode, kc_force_capture_resolution()
  */
-extern vcs_event_c<const video_mode_s&> kc_evNewVideoMode;
+extern vcs_event_c<const video_mode_s&> kc_ev_new_video_mode;
 
 /*!
  * An event fired when the capture device's active input channel is changed.
@@ -185,7 +185,7 @@ extern vcs_event_c<const video_mode_s&> kc_evNewVideoMode;
  * This event is fired by VCS's event loop (which polls the capture subsystem)
  * rather than by the capture subsystem.
  */
-extern vcs_event_c<void> ks_evInputChannelChanged;
+extern vcs_event_c<void> ks_ev_input_channel_changed;
 
 /*!
  * An event fired when the capture subsystem reports its capture device to be
@@ -194,7 +194,7 @@ extern vcs_event_c<void> ks_evInputChannelChanged;
  * This event is fired by VCS's event loop (which polls the capture subsystem)
  * rather than by the capture subsystem.
  */
-extern vcs_event_c<void> kc_evInvalidDevice;
+extern vcs_event_c<void> kc_ev_invalid_device;
 
 /*!
  * An event fired when the capture device loses its input signal. This implies
@@ -208,16 +208,16 @@ extern vcs_event_c<void> kc_evInvalidDevice;
  * 
  * @code
  * // Print a message every time the capture signal is lost.
- * kc_evSignalLost.listen([]
+ * kc_ev_signal_lost.listen([]
  * {
  *     printf("The signal was lost.\n");
  * });
  * @endcode
  * 
  * @see
- * kc_evSignalGained
+ * kc_ev_signal_gained
  */
-extern vcs_event_c<void> kc_evSignalLost;
+extern vcs_event_c<void> kc_ev_signal_lost;
 
 /*!
  * An event fired when the capture device begins receiving an input signal.
@@ -229,7 +229,7 @@ extern vcs_event_c<void> kc_evSignalLost;
  * @see
  * kc_evSignalLost
  */
-extern vcs_event_c<void> kc_evSignalGained;
+extern vcs_event_c<void> kc_ev_signal_gained;
 
 /*!
  * An event fired when the capture device reports its input signal to be invalid;
@@ -238,7 +238,7 @@ extern vcs_event_c<void> kc_evSignalGained;
  * This event is fired by VCS's event loop (which polls the capture subsystem)
  * rather than by the capture subsystem.
  */
-extern vcs_event_c<void> kc_evInvalidSignal;
+extern vcs_event_c<void> kc_ev_invalid_signal;
 
 /*!
  * An event fired when an error occurs in the capture subsystem from which the
@@ -247,14 +247,14 @@ extern vcs_event_c<void> kc_evInvalidSignal;
  * This event is fired by VCS's event loop (which polls the capture subsystem)
  * rather than by the capture subsystem.
  */
-extern vcs_event_c<void> kc_evUnrecoverableError;
+extern vcs_event_c<void> kc_ev_unrecoverable_error;
 
 // The capture subsystem has had to ignore frames coming from the capture
 // device because VCS was busy with something else (e.g. with processing
 // a previous frame). Provides the count of missed frames (generally, the
 // capture subsystem might fire this event at regular intervals and pass
 // the count of missed frames during that interval).
-extern vcs_event_c<unsigned> kc_evMissedFramesCount;
+extern vcs_event_c<unsigned> kc_ev_missed_frames_count;
 
 /*!
  * Enumerates the de-interlacing modes recognized by the capture subsystem.
@@ -470,14 +470,14 @@ std::mutex& kc_capture_mutex(void);
  * kc_initialize_capture();
  * 
  * // This listener function gets called each time a frame is captured.
- * kc_evNewCapturedFrame.listen([](const captured_frame_s &frame)
+ * kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
  * {
  *     printf("Captured a frame (%lu x %lu)\n", frame.r.w, frame.r.h);
  * });
  * @endcode
  *
  * @see
- * kc_evNewCapturedFrame
+ * kc_ev_new_captured_frame
  */
 subsystem_releaser_t kc_initialize_capture(void);
 

@@ -87,12 +87,12 @@ static bool initialize_all(void)
             ECO_REFERENCE_TIME = std::chrono::system_clock::now();
         });
 
-        kc_evUnrecoverableError.listen([]
+        kc_ev_unrecoverable_error.listen([]
         {
             PROGRAM_EXIT_REQUESTED = true;
         });
 
-        kc_evNewVideoMode.listen([](const video_mode_s &videoMode)
+        kc_ev_new_video_mode.listen([](const video_mode_s &videoMode)
         {
             INFO((
                 "Video mode: %u x %u at %.3f Hz.",
@@ -105,9 +105,9 @@ static bool initialize_all(void)
         // The capture device has received a new video mode. We'll inspect the
         // mode to see if we think it's acceptable, then allow news of it to
         // propagate to the rest of VCS.
-        kc_evNewProposedVideoMode.listen([](const video_mode_s &videoMode)
+        kc_ev_new_proposed_video_mode.listen([](const video_mode_s &videoMode)
         {
-            kc_evNewVideoMode.fire(videoMode);
+            kc_ev_new_video_mode.fire(videoMode);
         });
     }
 
@@ -141,7 +141,7 @@ static capture_event_e process_next_capture_event(void)
         {
             NBENE(("The capture device has reported an unrecoverable error."));
 
-            kc_evUnrecoverableError.fire();
+            kc_ev_unrecoverable_error.fire();
 
             break;
         }
@@ -150,7 +150,7 @@ static capture_event_e process_next_capture_event(void)
             if (kc_has_valid_signal())
             {
                 const auto &frame = kc_get_frame_buffer();
-                kc_evNewCapturedFrame.fire(frame);
+                kc_ev_new_captured_frame.fire(frame);
             }
 
             kc_mark_frame_buffer_as_processed();
@@ -161,7 +161,7 @@ static capture_event_e process_next_capture_event(void)
         {
             if (kc_has_valid_signal())
             {
-                kc_evNewProposedVideoMode.fire({
+                kc_ev_new_proposed_video_mode.fire({
                     kc_get_capture_resolution(),
                     kc_get_capture_refresh_rate(),
                 });
@@ -171,22 +171,22 @@ static capture_event_e process_next_capture_event(void)
         }
         case capture_event_e::signal_lost:
         {
-            kc_evSignalLost.fire();
+            kc_ev_signal_lost.fire();
             break;
         }
         case capture_event_e::signal_gained:
         {
-            kc_evSignalGained.fire();
+            kc_ev_signal_gained.fire();
             break;
         }
         case capture_event_e::invalid_signal:
         {
-            kc_evInvalidSignal.fire();
+            kc_ev_invalid_signal.fire();
             break;
         }
         case capture_event_e::invalid_device:
         {
-            kc_evInvalidDevice.fire();
+            kc_ev_invalid_device.fire();
             break;
         }
         case capture_event_e::sleep:
