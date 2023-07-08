@@ -98,7 +98,7 @@ struct image_scaler_s
  * 
  * ks_set_scaling_multiplier(ks_scaling_multiplier() + 1);
  * 
- * // Fires ks_evNewOutputResolution.
+ * // Fires ks_ev_new_output_resolution.
  * ks_scale_frame(frame);
  * @endcode
  */
@@ -265,7 +265,7 @@ void ks_set_base_resolution_enabled(const bool enabled);
  * // Produce a "no signal" image when the capture device loses its signal.
  * kc_ev_signal_lost.listen(ks_indicate_no_signal);
  * 
- * // Note: The kc_evSignalLost event fires when the capture device loses its
+ * // Note: The kc_ev_signal_lost event fires when the capture device loses its
  * // signal, but not in the case where the device already has no signal when
  * // VCS is launched.
  * @endcode

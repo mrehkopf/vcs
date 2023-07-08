@@ -44,8 +44,8 @@
     }
 #endif
 
-vcs_event_c<void> k_evEcoModeEnabled;
-vcs_event_c<void> k_evEcoModeDisabled;
+vcs_event_c<void> k_ev_eco_mode_enabled;
+vcs_event_c<void> k_ev_eco_mode_disabled;
 
 static std::deque<subsystem_releaser_t> SUBSYSTEM_RELEASERS;
 
@@ -82,7 +82,7 @@ static bool initialize_all(void)
 {
     // Listen for app events.
     {
-        k_evEcoModeEnabled.listen([]
+        k_ev_eco_mode_enabled.listen([]
         {
             ECO_REFERENCE_TIME = std::chrono::system_clock::now();
         });
@@ -224,7 +224,7 @@ void k_set_eco_mode_enabled(const bool isEnabled)
     }
 
     IS_ECO_MODE_ENABLED = isEnabled;
-    isEnabled? k_evEcoModeEnabled.fire() : k_evEcoModeDisabled.fire();
+    isEnabled? k_ev_eco_mode_enabled.fire() : k_ev_eco_mode_disabled.fire();
 
     return;
 }

@@ -11,7 +11,7 @@
 #include "capture/video_presets.h"
 #include "capture/capture.h"
 
-vcs_event_c<const video_preset_s*> kc_evVideoPresetParamsChanged;
+vcs_event_c<const video_preset_s*> kc_ev_video_preset_params_changed;
 
 static std::vector<video_preset_s*> PRESETS;
 
@@ -65,7 +65,7 @@ subsystem_releaser_t kvideopreset_initialize(void)
     {
         kc_ev_new_video_mode.listen(kvideopreset_apply_current_active_preset);
 
-        kc_evVideoPresetParamsChanged.listen([](const video_preset_s *preset)
+        kc_ev_video_preset_params_changed.listen([](const video_preset_s *preset)
         {
             k_assert(preset, "Expected a non-null preset.");
 

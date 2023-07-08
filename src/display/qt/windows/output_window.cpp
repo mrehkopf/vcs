@@ -264,12 +264,12 @@ OutputWindow::OutputWindow(QWidget *parent) :
             this->redraw();
         });
 
-        k_evEcoModeEnabled.listen([this]
+        k_ev_eco_mode_enabled.listen([this]
         {
             this->update_window_title();
         });
 
-        k_evEcoModeDisabled.listen([this]
+        k_ev_eco_mode_disabled.listen([this]
         {
             this->update_window_title();
         });

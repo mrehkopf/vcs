@@ -14,8 +14,8 @@
 
 typedef std::function<void()> subsystem_releaser_t;
 
-extern vcs_event_c<void> k_evEcoModeEnabled;
-extern vcs_event_c<void> k_evEcoModeDisabled;
+extern vcs_event_c<void> k_ev_eco_mode_enabled;
+extern vcs_event_c<void> k_ev_eco_mode_disabled;
 
 void k_set_eco_mode_enabled(const bool isEnabled);
 

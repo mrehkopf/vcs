@@ -124,7 +124,7 @@ struct video_preset_s
 //
 // Warning: If you change the preset's activation conditions, you should call
 // kvideopreset_apply_current_active_preset() instead.
-extern vcs_event_c<const video_preset_s*> kc_evVideoPresetParamsChanged;
+extern vcs_event_c<const video_preset_s*> kc_ev_video_preset_params_changed;
 
 bool kvideopreset_is_preset_active(const video_preset_s *const preset);
 

@@ -571,7 +571,7 @@ void VideoPresetsDialog::broadcast_current_preset_parameters(void)
     preset->videoParameters.phase              = ui->parameterGrid_videoParams->value(PARAM_LABEL_PHASE);
     preset->videoParameters.verticalPosition   = ui->parameterGrid_videoParams->value(PARAM_LABEL_VERTICAL_POSITION);
 
-    kc_evVideoPresetParamsChanged.fire(preset);
+    kc_ev_video_preset_params_changed.fire(preset);
 
     return;
 }

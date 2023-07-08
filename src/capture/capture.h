@@ -139,7 +139,7 @@ extern vcs_event_c<const captured_frame_s&> kc_ev_new_captured_frame;
  * capture device thinks is correct but which VCS might disagree with, e.g. as
  * per an alias resolution.
  * 
- * You can accept the mode proposal by firing the kc_evNewVideoMode event, or
+ * You can accept the mode proposal by firing the @ref kc_ev_new_video_mode event, or
  * call kc_force_capture_resolution() to change it.
  * 
  * This event is fired by VCS's event loop (which polls the capture subsystem)
@@ -156,7 +156,7 @@ extern vcs_event_c<const captured_frame_s&> kc_ev_new_captured_frame;
  *     }
  *     else
  *     {
- *         kc_evNewVideoMode.fire(videoMode);
+ *         kc_ev_new_video_mode.fire(videoMode);
  *     }
  * });
  * @endcode
@@ -227,7 +227,7 @@ extern vcs_event_c<void> kc_ev_signal_lost;
  * rather than by the capture subsystem.
  * 
  * @see
- * kc_evSignalLost
+ * kc_ev_signal_lost
  */
 extern vcs_event_c<void> kc_ev_signal_gained;
 
@@ -513,7 +513,7 @@ bool kc_release_device(void);
  * Asks the capture device to set its input resolution to the one given,
  * overriding the current input resolution.
  * 
- * This function fires a @ref kc_evNewVideoMode event.
+ * This function fires a @ref kc_ev_new_video_mode event.
  *
  * @note
  * If the resolution of the captured signal doesn't match this resolution, the
@@ -531,7 +531,7 @@ bool kc_force_capture_resolution(const resolution_s &r);
  *
  * @note
  * To be notified of changes to the capture state as they occur, subscribe to
- * the relevant capture events (e.g. @ref kc_evNewVideoMode).
+ * the relevant capture events (e.g. @ref kc_ev_new_video_mode).
  */
 const capture_state_s& kc_current_capture_state(void);
 
@@ -689,7 +689,7 @@ video_signal_parameters_s kc_get_device_video_parameter_maximums(void);
  *
  * @see
  * kc_set_capture_resolution(), kc_get_device_minimum_resolution(),
- * kc_get_device_maximum_resolution(), kc_evNewVideoMode
+ * kc_get_device_maximum_resolution(), kc_ev_new_video_mode
  */
 resolution_s kc_get_capture_resolution(void);
 
@@ -755,7 +755,7 @@ unsigned kc_get_device_input_channel_idx(void);
  * Returns the refresh rate of the current capture signal.
  * 
  * @see
- * kc_evNewVideoMode
+ * kc_ev_new_video_mode
  */
 refresh_rate_s kc_get_capture_refresh_rate(void);
 
@@ -785,7 +785,7 @@ capture_pixel_format_e kc_get_capture_pixel_format(void);
  * Returns true if the current capture signal is valid; false otherwise.
  *
  * @see
- * kc_is_receiving_signal(), kc_evSignalGained, kc_evSignalLost
+ * kc_is_receiving_signal(), kc_ev_signal_gained, kc_ev_signal_lost
  */
 bool kc_has_valid_signal(void);
 
@@ -805,7 +805,7 @@ bool kc_has_digital_signal(void);
  *
  * @see
  * kc_get_device_input_channel_idx(), kc_set_capture_input_channel(),
- * kc_evSignalGained, kc_evSignalLost
+ * kc_ev_signal_gained, kc_ev_signal_lost
  */
 bool kc_is_receiving_signal(void);
 
@@ -825,7 +825,7 @@ bool kc_is_receiving_signal(void);
  * @endcode
  *
  * @see
- * kc_capture_mutex(), kc_evNewCapturedFrame
+ * kc_capture_mutex(), kc_ev_new_captured_frame
  */
 const captured_frame_s& kc_get_frame_buffer(void);
 
