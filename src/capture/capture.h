@@ -538,54 +538,6 @@ bool kc_force_capture_resolution(const resolution_s &r);
 const capture_state_s& kc_current_capture_state(void);
 
 /*!
- * Returns true if the capture device is capable of capturing from a
- * component video source; false otherwise.
- */
-bool kc_device_supports_component_capture(void);
-
-/*!
- * Returns true if the capture device is capable of capturing from a
- * composite video source; false otherwise.
- */
-bool kc_device_supports_composite_capture(void);
-
-/*!
- * Returns true if the capture device supports hardware de-interlacing;
- * false otherwise.
- */
-bool kc_device_supports_deinterlacing(void);
-
-/*!
- * Returns true if the capture device is capable of capturing from an
- * S-Video source; false otherwise.
- */
-bool kc_device_supports_svideo(void);
-
-/*!
- * Returns true if the capture device is capable of streaming frames via
- * direct memory access (DMA); false otherwise.
- */
-bool kc_device_supports_dma(void);
-
-/*!
- * Returns true if the capture device is capable of capturing from a
- * digital (DVI) source; false otherwise.
- */
-bool kc_device_supports_dvi(void);
-
-/*!
- * Returns true if the capture device is capable of capturing from an
- * analog (VGA) source; false otherwise.
- */
-bool kc_device_supports_vga(void);
-
-/*!
- * Returns true if the capture device is capable of capturing in YUV
- * color; false otherwise.
- */
-bool kc_device_supports_yuv(void);
-
-/*!
  * Returns the number of input channels on the capture device that are available
  * to the capture subsystem.
  *
@@ -750,12 +702,6 @@ unsigned kc_get_device_input_channel_idx(void);
  * kc_ev_new_video_mode
  */
 refresh_rate_s kc_get_capture_refresh_rate(void);
-
-/*!
- * Returns the color bit depth that the capture subsystem currently expects the
- * capture device to send captured frames in.
- */
-unsigned kc_get_capture_color_depth(void);
 
 /*!
  * Returns the pixel format that the capture device is currently storing

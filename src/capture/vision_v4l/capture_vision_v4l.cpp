@@ -602,12 +602,6 @@ bool kc_set_deinterlacing_mode(const capture_deinterlacing_mode_e mode)
     return false;
 }
 
-/// TODO: Implement.
-uint kc_get_capture_color_depth(void)
-{
-    return 32;
-}
-
 bool kc_set_capture_input_channel(const unsigned idx)
 {
     if (CUR_INPUT_CHANNEL)
@@ -665,52 +659,4 @@ bool kc_set_video_signal_parameters(const video_signal_parameters_s &p)
     kc_set_parameter(p.blueContrast,       ic_v4l_device_controls_c::control_type_e::blue_contrast);
 
     return true;
-}
-
-/// TODO: Can this capability be queried with Video4Linux?
-bool kc_device_supports_component_capture(void)
-{
-    return false;
-}
-
-/// TODO: Can this capability be queried with Video4Linux?
-bool kc_device_supports_composite_capture(void)
-{
-    return false;
-}
-
-/// TODO: Can this capability be queried with Video4Linux?
-bool kc_device_supports_deinterlacing(void)
-{
-    return false;
-}
-
-/// TODO: Can this capability be queried with Video4Linux?
-bool kc_device_supports_svideo(void)
-{
-    return false;
-}
-
-/// TODO: Can this capability be queried with Video4Linux?
-bool kc_device_supports_dma(void)
-{
-    return false;
-}
-
-/// TODO: Can this capability be queried with Video4Linux?
-bool kc_device_supports_dvi(void)
-{
-    return false;
-}
-
-/// TODO: Can this capability be queried with Video4Linux?
-bool kc_device_supports_vga(void)
-{
-    return false;
-}
-
-/// TODO: Can this capability be queried with Video4Linux?
-bool kc_device_supports_yuv(void)
-{
-    return false;
 }

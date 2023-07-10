@@ -243,46 +243,6 @@ capture_event_e kc_pop_capture_event_queue(void)
     return capture_event_e::none;
 }
 
-bool kc_device_supports_component_capture(void)
-{
-    return true;
-}
-
-bool kc_device_supports_composite_capture(void)
-{
-    return true;
-}
-
-bool kc_device_supports_deinterlacing(void)
-{
-    return true;
-}
-
-bool kc_device_supports_svideo(void)
-{
-    return true;
-}
-
-bool kc_device_supports_dma(void)
-{
-    return true;
-}
-
-bool kc_device_supports_dvi(void)
-{
-    return true;
-}
-
-bool kc_device_supports_vga(void)
-{
-    return true;
-}
-
-bool kc_device_supports_yuv(void)
-{
-    return true;
-}
-
 bool kc_has_digital_signal(void)
 {
     return true;
@@ -296,11 +256,6 @@ bool kc_has_valid_device(void)
 capture_pixel_format_e kc_get_capture_pixel_format(void)
 {
     return FRAME_BUFFER.pixelFormat;
-}
-
-uint kc_get_capture_color_depth(void)
-{
-    return (unsigned)FRAME_BUFFER.r.bpp;
 }
 
 uint kc_get_missed_frames_count(void)
