@@ -40,9 +40,8 @@
  *
  * ## Usage
  *
- *   1. Call kf_initialize_filters() to initialize the filter subsystem. This is
- *      VCS's default startup behavior. Note that this function should only be
- *      called once per program execution.
+ *   1. Call kf_initialize_filters() to initialize the filter subsystem. Note that
+ *      this function should only be called once per program execution.
  *
  *   2. Use kf_create_filter_instance() to create instances of filters:
  *      @code

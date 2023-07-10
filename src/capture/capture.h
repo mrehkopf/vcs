@@ -586,12 +586,8 @@ bool kc_device_supports_vga(void);
 bool kc_device_supports_yuv(void);
 
 /*!
- * Returns the number of input channels on the capture device that're
- * available to the interface.
- *
- * The value returned is an integer in the range [1,n] such that if the
- * capture device has, for instance, 16 input channels and the interface
- * can use two of them, 2 is returned.
+ * Returns the number of input channels on the capture device that are available
+ * to the capture subsystem.
  *
  * @see
  * kc_get_device_input_channel_idx()
@@ -599,10 +595,12 @@ bool kc_device_supports_yuv(void);
 int kc_get_device_maximum_input_count(void);
 
 /*!
- * Returns a string that identifies the capture device's firmware version;
- * e.g. "14.12.3".
- *
- * Will return "Unknown" if the firmware version is not known.
+ * Returns a user-facing string that identifies the firmware version of the capture
+ * device; for example, "14.12.3".
+ * 
+ * @note
+ * The contents of the returned string aren't guaranteed to express any specific
+ * versioning scheme, nor to be a number in general.
  *
  * @see
  * kc_get_device_driver_version()
@@ -610,10 +608,12 @@ int kc_get_device_maximum_input_count(void);
 std::string kc_get_device_firmware_version(void);
 
 /*!
- * Returns a string that identifies the capture device's driver version;
- * e.g. "14.12.3".
- *
- * Will return "Unknown" if the firmware version is not known.
+ * Returns a user-facing string that identifies the capture device's driver version;
+ * for example, "14.12.3".
+ * 
+ * @note
+ * The contents of the returned string aren't guaranteed to express any specific
+ * versioning scheme, nor to be a number in general.
  *
  * @see
  * kc_get_device_firmware_version()
@@ -621,10 +621,8 @@ std::string kc_get_device_firmware_version(void);
 std::string kc_get_device_driver_version(void);
 
 /*!
- * Returns a string that identifies the capture device; e.g. "Datapath
- * VisionRGB-PRO2".
- *
- * Will return "Unknown" if no name is available.
+ * Returns a user-facing string that identifies the capture device; for example,
+ * "Datapath VisionRGB-PRO2".
  */
 std::string kc_get_device_name(void);
 
@@ -722,18 +720,16 @@ resolution_s kc_get_device_minimum_resolution(void);
 resolution_s kc_get_device_maximum_resolution(void);
 
 /*!
- * Returns the number of frames the interface has received from the capture
- * device which VCS was too busy to process and display. These are, in
- * effect, dropped frames.
+ * Returns the count of frames the capture subsystem has received from the
+ * capture device that VCS was too busy to process and display. In other words,
+ * this is a count of dropped frames.
  *
- * If this value is above 0, it indicates that VCS is failing to process
- * and display captured frames as fast as the capture device is producing
- * them. This could be a symptom of e.g. an inadequately performant host
- * CPU.
- *
+ * If this value goes above 0, it indicates that VCS is failing to process and
+ * display captured frames as fast as the capture device is producing them.
+ * 
  * @note
- * This value must be cumulative over the lifetime of the program's
- * execution and must not decrease during that time.
+ * The value is monotonically cumulative over the lifetime of the program's
+ * execution, guaranteed not to decrease during that time.
  */
 unsigned kc_get_missed_frames_count(void);
 
@@ -741,12 +737,6 @@ unsigned kc_get_missed_frames_count(void);
  * Returns the index value of the capture device's input channel on which the
  * device is currently listening for signals. The value is in the range [0,n-1],
  * where n = kc_get_device_maximum_input_count().
- *
- * If the capture device has more input channels than are supported by the
- * interface, the interface is expected to map the index to a consecutive range.
- * For example, if channels #1, #5, and #6 on the capture device are available
- * to the interface, capturing on channel #5 would correspond to an index value
- * of 1, with index 0 being channel #1 and index 2 channel #6.
  *
  * @see
  * kc_get_device_maximum_input_count()
@@ -762,14 +752,8 @@ unsigned kc_get_device_input_channel_idx(void);
 refresh_rate_s kc_get_capture_refresh_rate(void);
 
 /*!
- * Returns the color depth, in bits, that the interface currently expects
- * the capture device to send captured frames in.
- *
- * For RGB888 frames the color depth would be 32; 16 for RGB565 frames; etc.
- *
- * The color depth of a given frame as returned from kc_get_frame_buffer() may
- * be different from this value e.g. if the capture color depth was changed
- * just after the frame was captured.
+ * Returns the color bit depth that the capture subsystem currently expects the
+ * capture device to send captured frames in.
  */
 unsigned kc_get_capture_color_depth(void);
 
