@@ -20,9 +20,8 @@
  * 
  * ## Usage
  * 
- *   1. Call ks_initialize_scaler() to initialize the subsystem. This is VCS's
- *      default startup behavior. Note that this function should be called only
- *      once per program execution.
+ *   1. Call ks_initialize_scaler() to initialize the subsystem. Note that this
+ *      function should be called only once per program execution.
  * 
  *   2. Use setter functions to customize scaler options:
  *      @code
@@ -90,7 +89,7 @@ struct image_scaler_s
 };
 
 /*!
- * An event fired when the scaler subsystem scales a frame into a resolution
+ * Fired when the scaler subsystem scales a frame into a resolution
  * different from the previous frame's.
  * 
  * @code
@@ -105,7 +104,7 @@ struct image_scaler_s
 extern vcs_event_c<const resolution_s&> ks_ev_new_output_resolution;
 
 /*!
- * An event fired when the scaler subsystem has finished scaling a frame.
+ * Fired when the scaler subsystem has finished scaling a frame.
  * 
  * @code
  * ks_ev_new_scaled_image.listen([](const image_s &scaledImage)
@@ -120,7 +119,7 @@ extern vcs_event_c<const resolution_s&> ks_ev_new_output_resolution;
 extern vcs_event_c<const image_s&> ks_ev_new_scaled_image;
 
 /*!
- * An event fired once per second, giving the number of input frames the scaler
+ * Fired once per second, giving the number of input frames the scaler
  * subsystem scaled during that time.
  * 
  * @code
@@ -136,13 +135,13 @@ extern vcs_event_c<const image_s&> ks_ev_new_scaled_image;
 extern vcs_event_c<unsigned> ks_ev_frames_per_second;
 
 /*!
- * An event fired when an output scaling filter becomes active, i.e. when captured
+ * Fired when an output scaling filter becomes active, i.e. when captured
  * frames begin being scaled using such a filter.
  */
 extern vcs_event_c<void> ks_ev_custom_scaler_enabled;
 
 /*!
- * An event fired when there's no longer an output scaling filter being used to
+ * Fired when there's no longer an output scaling filter being used to
  * scale captured frames.
  */
 extern vcs_event_c<void> ks_ev_custom_scaler_disabled;

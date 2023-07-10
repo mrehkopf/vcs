@@ -29,9 +29,8 @@
  *
  * ## Usage
  *
- *   1. Call kc_initialize_capture() to initialize the subsystem. This is VCS's
- *      default startup behavior. Note that the function should be called only
- *      once per program execution.
+ *   1. Call kc_initialize_capture() to initialize the subsystem. Note that the
+ *      function should be called only once per program execution.
  *
  *   2. Use the interface functions to interact with the subsystem. For instance,
  *      kc_get_frame_buffer() returns the most recent captured frame's data.
@@ -83,27 +82,24 @@
 struct video_mode_s;
 
 /*!
- * An event fired when the capture subsystem makes a new captured frame available.
+ * Fired when the capture subsystem makes a new captured frame available. A
+ * reference to the frame's data is provided as an argument to listeners; a
+ * listener can assume that the data will remain valid until the listener returns.
+ *
+ * The event is fired by VCS's event loop rather than directly by the capture
+ * subsystem. As such, the event isn't guaranteed to be fired at the exact
+ * time of capture, but rather once VCS has polled the capture subsystem (via
+ * kc_pop_capture_event_queue()) to find that there is a new frame.
  * 
- * The event won't be fired at the exact time of capture but rather once VCS has
- * polled the capture subsystem and found that a new frame is available. In other
- * words, the event is fired by VCS's event loop rather than by the capture
- * subsystem.
  * 
- * Frames that don't register on calls to kc_pop_capture_event_queue() won't
- * generate this event.
- * 
- * A reference to the frame's data is provided as an argument to event listeners.
- * The data will remain valid for each listener until the listener function
- * returns.
  * 
  * @code
  * // Register an event listener that gets run each time a new frame is captured.
  * kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
  * {
  *     // The frame's data is available to this listener until the function
- *     // returns. If we want to keep hold of the data for longer, we need to
- *     // copy it into a local buffer.
+ *     // returns. If we wanted to keep hold of the data for longer, we'd need
+ *     // to make a copy of it.
  * });
  * @endcode
  * 
@@ -132,18 +128,18 @@ struct video_mode_s;
 extern vcs_event_c<const captured_frame_s&> kc_ev_new_captured_frame;
 
 /*!
- * An event fired when the capture subsystem reports its input signal to have
- * changed in video mode (e.g. resolution or refresh rate).
+ * Fired when the capture device reports that the video mode of the currently-captured
+ signal has changed.
  * 
- * This event is to be treated as a proposal in that the video mode is what the
- * capture device thinks is correct but which VCS might disagree with, e.g. as
- * per an alias resolution.
+ * This event is to be treated as a proposal from the capture device that the given
+ * video mode now best fits the captured signal. You can accept the proposal by firing
+ * the @ref kc_ev_new_video_mode event, call kc_force_capture_resolution() to force the
+ * capture device to use a different mode, or do nothing to retain the existing mode.
  * 
- * You can accept the mode proposal by firing the @ref kc_ev_new_video_mode event, or
- * call kc_force_capture_resolution() to change it.
- * 
- * This event is fired by VCS's event loop (which polls the capture subsystem)
- * rather than by the capture subsystem.
+ * The event is fired by VCS's event loop rather than directly by the capture
+ * subsystem. As such, the event isn't guaranteed to be fired at the exact time
+ * the video mode changes, but rather once VCS has polled the capture subsystem
+ * (via kc_pop_capture_event_queue()) to find that the mode has changed.
  * 
  * @code
  * // A sample implementation that approves the proposed video mode if there's
@@ -167,12 +163,10 @@ extern vcs_event_c<const captured_frame_s&> kc_ev_new_captured_frame;
 extern vcs_event_c<const video_mode_s&> kc_ev_new_proposed_video_mode;
 
 /*!
- * An event fired when the capture video mode has changed.
+ * Fired when the capture subsystem has begun capturing in a new video mode.
  * 
  * It's not guaranteed that the new video mode is different from the previous
- * one, although usually it will be. The mode should be treated as new regardless
- * -- or, if you will, as a resetting of the mode if it's the same as the previous
- * mode.
+ * one, although usually it will be.
  * 
  * @see
  * kc_ev_new_proposed_video_mode, kc_force_capture_resolution()
@@ -180,31 +174,32 @@ extern vcs_event_c<const video_mode_s&> kc_ev_new_proposed_video_mode;
 extern vcs_event_c<const video_mode_s&> kc_ev_new_video_mode;
 
 /*!
- * An event fired when the capture device's active input channel is changed.
- * 
- * This event is fired by VCS's event loop (which polls the capture subsystem)
- * rather than by the capture subsystem.
+ * Fired when the capture device is switched to a different input channel.
+ *
+ * @see
+ * kc_get_device_input_channel_idx()
  */
 extern vcs_event_c<void> ks_ev_input_channel_changed;
 
 /*!
- * An event fired when the capture subsystem reports its capture device to be
- * invalid. An invalid capture device can't be used.
+ * Fired when the capture subsystem reports its capture device to be invalid in a
+ * way that renders the device unusable to the subsystem.
  * 
- * This event is fired by VCS's event loop (which polls the capture subsystem)
- * rather than by the capture subsystem.
+ * The event is fired by VCS's event loop rather than directly by the capture
+ * subsystem. As such, the event isn't guaranteed to be fired at the exact time
+ * the device is detected to be invalid, but rather once VCS has polled the capture
+ * subsystem (via kc_pop_capture_event_queue()) to find that such is the case.
  */
 extern vcs_event_c<void> kc_ev_invalid_device;
 
 /*!
- * An event fired when the capture device loses its input signal. This implies
- * that the capture device was receiving a signal previously.
+ * Fired when the capture device loses its input signal. This event implies that
+ * the device was previously receiving a signal.
  * 
- * The event is fired only when the signal is lost, not continuously while there's
- * no signal.
- * 
- * This event is fired by VCS's event loop (which polls the capture subsystem)
- * rather than by the capture subsystem.
+ * The event is fired by VCS's event loop rather than directly by the capture
+ * subsystem. As such, the event isn't guaranteed to be fired at the exact time
+ * the signal is lost, but rather once VCS has polled the capture subsystem (via
+ * kc_pop_capture_event_queue()) to find that such is the case.
  * 
  * @code
  * // Print a message every time the capture signal is lost.
@@ -220,11 +215,13 @@ extern vcs_event_c<void> kc_ev_invalid_device;
 extern vcs_event_c<void> kc_ev_signal_lost;
 
 /*!
- * An event fired when the capture device begins receiving an input signal.
- * This implies that the device was in a state of "no signal" previously.
- * 
- * This event is fired by VCS's event loop (which polls the capture subsystem)
- * rather than by the capture subsystem.
+ * Fired when the capture device begins receiving an input signal. This event
+ * implies that the device was previously not receiving a signal.
+ *
+ * The event is fired by VCS's event loop rather than directly by the capture
+ * subsystem. As such, the event isn't guaranteed to be fired at the exact time
+ * the signal is gained, but rather once VCS has polled the capture subsystem (via
+ * kc_pop_capture_event_queue()) to find that such is the case.
  * 
  * @see
  * kc_ev_signal_lost
@@ -232,20 +229,25 @@ extern vcs_event_c<void> kc_ev_signal_lost;
 extern vcs_event_c<void> kc_ev_signal_gained;
 
 /*!
- * An event fired when the capture device reports its input signal to be invalid;
- * e.g. of an unsupported resolution.
- * 
- * This event is fired by VCS's event loop (which polls the capture subsystem)
- * rather than by the capture subsystem.
+ * Fired when the capture device reports its input signal to be invalid (e.g.
+ * out of range).
+ *
+ * The event is fired by VCS's event loop rather than directly by the capture
+ * subsystem. As such, the event isn't guaranteed to be fired at the exact
+ * time the invalid signal began to be received, but rather once VCS has polled
+ * the capture subsystem (via kc_pop_capture_event_queue()) to find that such a
+ * condition exists.
  */
 extern vcs_event_c<void> kc_ev_invalid_signal;
 
 /*!
- * An event fired when an error occurs in the capture subsystem from which the
+ * Fired when an error occurs in the capture subsystem from which the
  * subsystem can't recover.
- * 
- * This event is fired by VCS's event loop (which polls the capture subsystem)
- * rather than by the capture subsystem.
+ *
+ * The event is fired by VCS's event loop rather than directly by the capture
+ * subsystem. As such, the event isn't guaranteed to be fired at the exact
+ * time the error occurs, but rather once VCS has polled the capture subsystem
+ * (via kc_pop_capture_event_queue()) to find that there has been such an error.
  */
 extern vcs_event_c<void> kc_ev_unrecoverable_error;
 
@@ -813,15 +815,18 @@ bool kc_is_receiving_signal(void);
  * Returns a reference to the most recent captured frame.
  * 
  * To ensure that the frame buffer's data isn't modified by another thread while
- * you're accessing it, acquire the capture mutex before calling this function.
+ * you're accessing it, lock the capture mutex before calling this function and
+ * release it when you're done.
  *
  * @code
- * // The capture mutex should be locked first, to ensure that the frame buffer
- * // isn't modified by another thread while we're accessing its data.
- * std::lock_guard<std::mutex> lock(kc_capture_mutex());
+ * {
+ *     // The capture mutex should be locked first, to ensure the frame buffer
+ *     // isn't modified by another thread while we're accessing its data.
+ *     std::lock_guard<std::mutex> lock(kc_capture_mutex());
  *
- * const auto &frameBuffer = kc_get_frame_buffer();
- * // Access the frame buffer's data...
+ *     const auto &frameBuffer = kc_get_frame_buffer();
+ *    // Access the frame buffer's data...
+ * }
  * @endcode
  *
  * @see
@@ -839,9 +844,8 @@ const captured_frame_s& kc_get_frame_buffer(void);
 bool kc_mark_frame_buffer_as_processed(void);
 
 /*!
- * Returns the latest capture event and removes it from the interface's
- * event queue. The caller can then respond to the event; e.g. by calling
- * kc_get_frame_buffer() if the event is a new frame.
+ * Returns the latest capture event and removes it from the capture subsystem's
+ * event queue.
  */
 capture_event_e kc_pop_capture_event_queue(void);
 

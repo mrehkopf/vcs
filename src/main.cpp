@@ -38,7 +38,7 @@
 
             // File located in relation to the program executable that optionally
             // suppresses leak reports for certain sources. For more info, see
-            // https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer#suppression.
+            // https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer#suppressions.
             "suppressions=asan-suppress.txt:"
         );
     }
