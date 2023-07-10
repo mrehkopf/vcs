@@ -18,8 +18,6 @@ DeviceInfo::DeviceInfo(QWidget *parent) :
         ui->tableWidget_captureDeviceFeatures->modify_property("Name", QString::fromStdString(kc_get_device_name()));
         ui->tableWidget_captureDeviceFeatures->modify_property("Input range", QString("%1 \u00d7 %2 / %3 \u00d7 %4").arg(minres.w).arg(minres.h).arg(maxres.w).arg(maxres.h));
         ui->tableWidget_captureDeviceFeatures->modify_property("Input channels", QString::number(kc_get_device_maximum_input_count()));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Firmware", QString::fromStdString(kc_get_device_firmware_version()));
-        ui->tableWidget_captureDeviceFeatures->modify_property("Driver", QString::fromStdString(kc_get_device_driver_version()));
     }
 }
 
@@ -27,4 +25,3 @@ DeviceInfo::~DeviceInfo()
 {
     delete ui;
 }
-

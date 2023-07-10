@@ -34,7 +34,6 @@ AboutDialog::AboutDialog(QWidget *parent) :
             #endif
         );
         ui->tableWidget->modify_property("Build date", __DATE__);
-        ui->tableWidget->modify_property("Capture API", QString::fromStdString(kc_get_device_api_name()));
     }
 
     return;

@@ -541,42 +541,10 @@ const capture_state_s& kc_current_capture_state(void);
 int kc_get_device_maximum_input_count(void);
 
 /*!
- * Returns a user-facing string that identifies the firmware version of the capture
- * device; for example, "14.12.3".
- * 
- * @note
- * The contents of the returned string aren't guaranteed to express any specific
- * versioning scheme, nor to be a number in general.
- *
- * @see
- * kc_get_device_driver_version()
- */
-std::string kc_get_device_firmware_version(void);
-
-/*!
- * Returns a user-facing string that identifies the capture device's driver version;
- * for example, "14.12.3".
- * 
- * @note
- * The contents of the returned string aren't guaranteed to express any specific
- * versioning scheme, nor to be a number in general.
- *
- * @see
- * kc_get_device_firmware_version()
- */
-std::string kc_get_device_driver_version(void);
-
-/*!
  * Returns a user-facing string that identifies the capture device; for example,
  * "Datapath VisionRGB-PRO2".
  */
 std::string kc_get_device_name(void);
-
-/*!
- * Returns a string that identifies the capture device interface; e.g. "RGBEasy"
- * (for @a capture_rgbeasy.cpp) or "Vision/Video4Linux" (@a capture_vision_v4l.cpp).
- */
-std::string kc_get_device_api_name(void);
 
 /*!
  * Returns the capture device's current video signal parameters.

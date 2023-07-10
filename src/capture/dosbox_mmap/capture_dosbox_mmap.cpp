@@ -334,21 +334,6 @@ std::string kc_get_device_name(void)
     return "MMAP";
 }
 
-std::string kc_get_device_api_name(void)
-{
-    return "DOSBox MMAP";
-}
-
-std::string kc_get_device_driver_version(void)
-{
-    return "Unknown";
-}
-
-std::string kc_get_device_firmware_version(void)
-{
-    return "Unknown";
-}
-
 int kc_get_device_maximum_input_count(void)
 {
     return 1;

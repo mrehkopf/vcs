@@ -266,32 +266,6 @@ std::string kc_get_device_name(void)
     return (char*)caps.card;
 }
 
-std::string kc_get_device_driver_version(void)
-{
-    k_assert(CUR_INPUT_CHANNEL,
-             "Attempting to query input channel parameters on a null channel.");
-
-    v4l2_capability caps = {};
-
-    if (!CUR_INPUT_CHANNEL->device_ioctl(VIDIOC_QUERYCAP, &caps))
-    {
-        NBENE(("Failed to query capture device capabilities."));
-
-        return "Unknown";
-    }
-
-    return (std::string((char*)caps.driver)             + " " +
-            std::to_string((caps.version >> 16) & 0xff) + "." +
-            std::to_string((caps.version >> 8) & 0xff)  + "." +
-            std::to_string((caps.version >> 0) & 0xff));
-}
-
-std::string kc_get_device_firmware_version(void)
-{
-    return "Unknown";
-}
-
-
 int kc_get_device_maximum_input_count(void)
 {
     const char baseDevicePath[] = "/dev/video";
@@ -527,11 +501,6 @@ video_signal_parameters_s kc_get_device_video_parameter_maximums(void)
 const captured_frame_s& kc_get_frame_buffer(void)
 {
     return FRAME_BUFFER;
-}
-
-std::string kc_get_device_api_name(void)
-{
-    return "Vision/Video4Linux";
 }
 
 bool kc_set_capture_resolution(const resolution_s &r)
