@@ -383,13 +383,6 @@ bool kc_set_deinterlacing_mode(const capture_deinterlacing_mode_e mode)
     return false;
 }
 
-bool kc_mark_frame_buffer_as_processed(void)
-{
-    // Not supported.
-    
-    return false;
-}
-
 bool kc_has_digital_signal(void)
 {
     return true;

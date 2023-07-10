@@ -46,6 +46,7 @@
 
 vcs_event_c<void> k_ev_eco_mode_enabled;
 vcs_event_c<void> k_ev_eco_mode_disabled;
+vcs_event_c<const captured_frame_s&> k_ev_frame_processing_finished;
 
 static std::deque<subsystem_releaser_t> SUBSYSTEM_RELEASERS;
 
@@ -147,13 +148,14 @@ static capture_event_e process_next_capture_event(void)
         }
         case capture_event_e::new_frame:
         {
+            const auto &frame = kc_get_frame_buffer();
+
             if (kc_has_valid_signal())
             {
-                const auto &frame = kc_get_frame_buffer();
                 kc_ev_new_captured_frame.fire(frame);
             }
 
-            kc_mark_frame_buffer_as_processed();
+            k_ev_frame_processing_finished.fire(frame);
 
             break;
         }

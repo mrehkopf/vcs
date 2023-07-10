@@ -28,6 +28,7 @@
 #include "capture/video_presets.h"
 #include "capture/vision_v4l/ic_v4l_video_parameters.h"
 #include "common/propagate/vcs_event.h"
+#include "main.h"
 
 #define INCLUDE_VISION
 #include <visionrgb/include/rgb133control.h>
@@ -223,6 +224,12 @@ bool kc_initialize_device(void)
             kc_get_capture_resolution(),
             kc_get_capture_refresh_rate(),
         });
+    });
+
+    k_ev_frame_processing_finished.listen([]
+    {
+        k_assert(CUR_INPUT_CHANNEL, "Attempting to set input channel parameters on a null channel.");
+        CUR_INPUT_CHANNEL->captureStatus.numFramesProcessed++;
     });
 
     FRAME_BUFFER.r = {640, 480, 32};
@@ -520,18 +527,6 @@ video_signal_parameters_s kc_get_device_video_parameter_maximums(void)
 const captured_frame_s& kc_get_frame_buffer(void)
 {
     return FRAME_BUFFER;
-}
-
-bool kc_mark_frame_buffer_as_processed(void)
-{
-    k_assert(CUR_INPUT_CHANNEL,
-             "Attempting to set input channel parameters on a null channel.");
-
-    CUR_INPUT_CHANNEL->captureStatus.numFramesProcessed++;
-
-    FRAME_BUFFER.processed = true;
-
-    return true;
 }
 
 std::string kc_get_device_api_name(void)

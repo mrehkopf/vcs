@@ -394,14 +394,8 @@ struct capture_state_s
 struct captured_frame_s
 {
     resolution_s r;
-
     capture_pixel_format_e pixelFormat;
-
     uint8_t *pixels;
-
-    // Will be set to true after the frame's data has been processed for
-    // display and is no longer needed.
-    bool processed = false;
 };
 
 struct video_signal_parameters_s
@@ -763,15 +757,6 @@ bool kc_is_receiving_signal(void);
  * kc_capture_mutex(), kc_ev_new_captured_frame
  */
 const captured_frame_s& kc_get_frame_buffer(void);
-
-/*!
- * Called by VCS to notify the interface that VCS has finished processing the
- * latest frame obtained via kc_get_frame_buffer(). The inteface is then free
- * to e.g. overwrite the frame's data.
- *
- * Returns true on success; false otherwise.
- */
-bool kc_mark_frame_buffer_as_processed(void);
 
 /*!
  * Returns the latest capture event and removes it from the capture subsystem's
