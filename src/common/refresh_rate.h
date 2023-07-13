@@ -35,10 +35,12 @@ struct refresh_rate_s
     template<typename T>
     T value(void) const
     {
-        static_assert((std::is_same<T, double>::value ||
-                       std::is_same<T, unsigned>::value ||
-                       std::is_same<T, int>::value),
-                      "Invalid type.");
+        static_assert(
+            (std::is_same<T, double>::value ||
+             std::is_same<T, unsigned>::value ||
+             std::is_same<T, int>::value),
+            "Invalid type."
+        );
 
         if (std::is_same<T, unsigned>::value ||
             std::is_same<T, int>::value)
@@ -51,40 +53,15 @@ struct refresh_rate_s
         }
     }
 
-    unsigned internal_value(void) const
-    {
-        return this->internalValue;
-    }
-
-    void operator=(const double hz)
-    {
-        this->internalValue = unsigned(round(hz * pow(10, numDecimalsPrecision)));
-    }
-
-    void operator=(const unsigned hz)
-    {
-        *this = double(hz);
-    }
-
-    bool operator==(const refresh_rate_s &other) const
-    {
-        return (this->internal_value() == other.internal_value());
-    }
-
-    bool operator==(const double hz) const
-    {
-        return (this->internal_value() == refresh_rate_s(hz).internal_value());
-    }
-
-    bool operator!=(const refresh_rate_s &other) const
-    {
-        return !(*this == other);
-    }
-
-    bool operator!=(const double hz) const
-    {
-        return !(*this == hz);
-    }
+    static refresh_rate_s from_capture_device(void);
+    static refresh_rate_s to_capture_device(const refresh_rate_s &rate);
+    unsigned internal_value(void) const;
+    void operator=(const double hz);
+    void operator=(const unsigned hz);
+    bool operator==(const refresh_rate_s &other) const;
+    bool operator==(const double hz) const;
+    bool operator!=(const refresh_rate_s &other) const;
+    bool operator!=(const double hz) const;
 
 private:
     // The refresh rate multiplied by 10^num_decimals.

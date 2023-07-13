@@ -79,7 +79,7 @@ resolution_s ks_output_resolution(void)
         return CUSTOM_SCALER_FILTER_RESOLUTION;
     }
 
-    resolution_s inRes = kc_get_capture_resolution();
+    const auto inRes = resolution_s::from_capture_device();
     resolution_s outRes = inRes;
 
     // Base resolution.
@@ -187,51 +187,6 @@ subsystem_releaser_t ks_initialize_scaler(void)
     return []{};
 }
 
-static image_s frame_as_bgra_image(const captured_frame_s &frame)
-{
-    // RGB/888 frames are already in BGRA.
-    if (frame.pixelFormat == capture_pixel_format_e::rgb_888)
-    {
-        return {frame.pixels, frame.r};
-    }
-
-    k_assert_optional(
-        FRAME_BUFFER_PIXELS,
-        "Was asked to convert a frame's color depth, but the scratch buffer was uninitialized."
-    );
-
-    cv::Mat src = cv::Mat(frame.r.h, frame.r.w, CV_MAKETYPE(CV_8U,(frame.r.bpp / 8)), frame.pixels);
-    cv::Mat scratchBuffer = cv::Mat(frame.r.h, frame.r.w, CV_8UC4, FRAME_BUFFER_PIXELS);
-    const unsigned conversionType = ([&frame]
-    {
-        switch (frame.pixelFormat)
-        {
-            case capture_pixel_format_e::rgb_565: return cv::COLOR_BGR5652BGRA;
-            case capture_pixel_format_e::rgb_555: return cv::COLOR_BGR5552BGRA;
-            default:
-            {
-                NBENE((
-                    "Detected an unknown output pixel format (depth: %u) while converting "
-                    "a frame to BGRA. Will attempt to guess its type.",
-                    frame.r.bpp
-                ));
-
-                switch (frame.r.bpp)
-                {
-                    case 32: return cv::COLOR_RGBA2BGRA;
-                    case 24: return cv::COLOR_BGR2BGRA;
-                    default: return cv::COLOR_BGR5652BGRA;
-                }
-            }
-        }
-    })();
-
-    cv::cvtColor(src, scratchBuffer, conversionType);
-    std::memcpy(frame.pixels, scratchBuffer.data, (scratchBuffer.total() * scratchBuffer.elemSize()));
-
-    return {frame.pixels, {frame.r.w, frame.r.h, 32}};
-}
-
 // Takes the given image and scales it according to the scaler's current internal
 // resolution settings. The scaled image is placed in the scaler's internal buffer.
 //
@@ -241,8 +196,8 @@ void ks_scale_frame(const captured_frame_s &frame)
 
     // Verify that we have a workable frame.
     {
-        const resolution_s minres = kc_get_device_minimum_resolution();
-        const resolution_s maxres = kc_get_device_maximum_resolution();
+        const auto minres = resolution_s::from_capture_device(": minimum");
+        const auto maxres = resolution_s::from_capture_device(": maximum");
 
         if ((frame.r.bpp != 16) &&
             (frame.r.bpp != 24) &&
@@ -262,11 +217,6 @@ void ks_scale_frame(const captured_frame_s &frame)
         else if (!frame.pixels)
         {
             NBENE(("Was asked to scale a null frame. Ignoring it."));
-            return;
-        }
-        else if (frame.pixelFormat != kc_get_capture_pixel_format())
-        {
-            NBENE(("Was asked to scale a frame whose pixel format differed from the expected. Ignoring it."));
             return;
         }
         else if (frame.r.bpp > MAX_OUTPUT_BPP)
@@ -295,7 +245,7 @@ void ks_scale_frame(const captured_frame_s &frame)
         }
     }
 
-    image_s imageToBeScaled = kat_anti_tear(frame_as_bgra_image(frame));
+    image_s imageToBeScaled = kat_anti_tear({frame.pixels, frame.r});
     abstract_filter_c *customScaler = kf_apply_matching_filter_chain(&imageToBeScaled);
 
     // If the active filter chain provided a custom output scaler, it'll override our

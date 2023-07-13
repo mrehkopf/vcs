@@ -101,7 +101,6 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
                 variablesMenu->addSeparator();
                 add_variable_action("Output width", "$outWidth");
                 add_variable_action("Output height", "$outHeight");
-                add_variable_action("Output refresh rate", "$outRate");
                 add_variable_action("Frame drop indicator", "$frameDropIndicator");
                 variablesMenu->addSeparator();
                 add_variable_action("Current time", "$time");
@@ -203,18 +202,21 @@ void OverlayDialog::set_overlay_max_width(const uint width)
 // Renders the overlay into a QImage, and returns the image.
 QImage OverlayDialog::rendered(void)
 {
-    const QString overlaySource = ([this]()->QString
+    const auto outRes = ks_output_resolution();
+
+    const QString overlaySource = ([this, &outRes]()->QString
     {
+        const auto inRes = resolution_s::from_capture_device();
+        const auto inHz = refresh_rate_s::from_capture_device();
+
         QString source = this->ui->plainTextEdit->toPlainText();
 
-        source.replace("$inWidth", QString::number(kc_current_capture_state().input.resolution.w));
-        source.replace("$inHeight", QString::number(kc_current_capture_state().input.resolution.h));
-        source.replace("$inRate", QString::number(kc_current_capture_state().input.refreshRate.value<double>(), 'f', 3));
-        source.replace("$inChannel", QString("/dev/video%1").arg(kc_current_capture_state().hardwareChannelIdx));
-        source.replace("$outWidth", QString::number(kc_current_capture_state().output.resolution.w));
-        source.replace("$outHeight", QString::number(kc_current_capture_state().output.resolution.h));
-        source.replace("$outRate", QString::number(kc_current_capture_state().output.refreshRate.value<double>()));
-        source.replace("$frameDropIndicator", (kc_current_capture_state().areFramesBeingDropped? "Dropping frames" : ""));
+        source.replace("$inWidth", QString::number(inRes.w));
+        source.replace("$inHeight", QString::number(inRes.h));
+        source.replace("$inRate", QString::number(inHz.value<double>(), 'f', 3));
+        source.replace("$inChannel", QString("/dev/video%1").arg(kc_device_property("input channel index")));
+        source.replace("$outWidth", QString::number(outRes.w));
+        source.replace("$outHeight", QString::number(outRes.h));
         source.replace("$time", QDateTime::currentDateTime().time().toString());
         source.replace("$date", QDateTime::currentDateTime().date().toString());
 
@@ -225,7 +227,7 @@ QImage OverlayDialog::rendered(void)
         );
     })();
 
-    QImage image = QImage(kc_current_capture_state().output.resolution.w, kc_current_capture_state().output.resolution.h, QImage::Format_ARGB32_Premultiplied);
+    QImage image = QImage(outRes.w, outRes.h, QImage::Format_ARGB32_Premultiplied);
     image.fill("transparent");
 
     QPainter painter(&image);

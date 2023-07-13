@@ -27,9 +27,11 @@ class input_channel_v4l_c
 public:
     // Open the input channel (/dev/videoX device) and start capturing from
     // it.
-    input_channel_v4l_c(const std::string v4lDeviceFileName,
-                        const unsigned numBackBuffers,
-                        captured_frame_s *const dstFrameBuffer);
+    input_channel_v4l_c(
+        const std::string v4lDeviceFileName,
+        const unsigned numBackBuffers,
+        captured_frame_s *const dstFrameBuffer
+    );
 
     ~input_channel_v4l_c();
 
@@ -64,7 +66,7 @@ public:
 
         refresh_rate_s refreshRate = refresh_rate_s(0);
 
-        ic_v4l_device_controls_c videoParameters;
+        ic_v4l_controls_c videoParameters;
 
         // Count of the frames we've captured that VCS has finished processed.
         std::atomic<unsigned int> numFramesProcessed = {0};
@@ -74,8 +76,6 @@ public:
         // Count of frames we've captured which VCS wasn't able to process,
         // e.g. due to being busy processing a previous frame.
         std::atomic<unsigned int> numNewFrameEventsSkipped = {0};
-
-        capture_pixel_format_e pixelFormat = capture_pixel_format_e::rgb_888;
     } captureStatus;
 
 private:
@@ -140,10 +140,6 @@ private:
 
     // Returns the resolution of the current signal on this input channel.
     resolution_s source_resolution(void);
-
-    // Converts VCS's pixel format enumerator into Video4Linux's pixel format
-    // identifier.
-    u32 vcs_pixel_format_to_v4l_pixel_format(capture_pixel_format_e fmt) const;
 
     // Flags that the capture channel will set to convey to the VCS thread the
     // various capture events it detects during capture.

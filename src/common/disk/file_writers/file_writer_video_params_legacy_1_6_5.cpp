@@ -24,13 +24,13 @@ bool file_writer::video_params::legacy_1_6_5::write(const std::string &filename,
         // Video params.
         outFile << "vPos,"   << p.verticalPosition << "\n"
                 << "hPos,"   << p.horizontalPosition << "\n"
-                << "hScale," << p.horizontalScale << "\n"
+                << "hScale," << p.horizontalSize << "\n"
                 << "phase,"  << p.phase << "\n"
                 << "bLevel," << p.blackLevel << "\n";
 
         // Color params.
-        outFile << "bright,"  << p.overallBrightness << "\n"
-                << "contr,"   << p.overallContrast << "\n"
+        outFile << "bright,"  << p.brightness << "\n"
+                << "contr,"   << p.contrast << "\n"
                 << "redBr,"   << p.redBrightness << "\n"
                 << "redCn,"   << p.redContrast << "\n"
                 << "greenBr," << p.greenBrightness << "\n"

@@ -187,8 +187,7 @@ void WindowSize::notify_of_new_capture_signal(void)
 {
     if (!ui->checkBox_forceOutputRes->isChecked())
     {
-        const resolution_s r = kc_get_capture_resolution();
-
+        const resolution_s r = ks_output_resolution();
         ui->spinBox_outputResX->setValue(r.w);
         ui->spinBox_outputResY->setValue(r.h);
     }

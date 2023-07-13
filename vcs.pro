@@ -41,8 +41,7 @@ RESOURCES += \
     src/display/qt/res.qrc
 
 SOURCES += \
-    src/display/qt/dialogs/components/capture_dialog/deinterlacing_mode.cpp \
-    src/display/qt/dialogs/components/capture_dialog/device_info.cpp \
+    src/common/refresh_rate.cpp \
     src/display/qt/dialogs/components/capture_dialog/input_channel.cpp \
     src/display/qt/dialogs/components/capture_dialog/input_resolution.cpp \
     src/display/qt/dialogs/components/capture_dialog/signal_status.cpp \
@@ -147,8 +146,6 @@ HEADERS += \
     src/common/assert.h \
     src/common/globals.h \
     src/common/types.h \
-    src/display/qt/dialogs/components/capture_dialog/deinterlacing_mode.h \
-    src/display/qt/dialogs/components/capture_dialog/device_info.h \
     src/display/qt/dialogs/components/capture_dialog/input_channel.h \
     src/display/qt/dialogs/components/capture_dialog/input_resolution.h \
     src/display/qt/dialogs/components/capture_dialog/signal_status.h \
@@ -257,8 +254,6 @@ HEADERS += \
     src/common/timer/timer.h
 
 FORMS += \
-    src/display/qt/dialogs/components/capture_dialog/ui/deinterlacing_mode.ui \
-    src/display/qt/dialogs/components/capture_dialog/ui/device_info.ui \
     src/display/qt/dialogs/components/capture_dialog/ui/input_channel.ui \
     src/display/qt/dialogs/components/capture_dialog/ui/input_resolution.ui \
     src/display/qt/dialogs/components/capture_dialog/ui/signal_status.ui \
@@ -299,7 +294,7 @@ QT += core gui widgets
 TARGET = vcs
 TEMPLATE = app
 CONFIG += console release
-QMAKE_CXXFLAGS += -pedantic -std=c++11 -Wno-missing-field-initializers
+QMAKE_CXXFLAGS += -pedantic -std=c++2a -Wno-missing-field-initializers
 OBJECTS_DIR = generated_files
 RCC_DIR = generated_files
 MOC_DIR = generated_files

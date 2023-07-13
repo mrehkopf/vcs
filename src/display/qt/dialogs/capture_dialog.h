@@ -10,8 +10,6 @@ class CaptureDialog;
 class InputChannel;
 class SignalStatus;
 class InputResolution;
-class DeviceInfo;
-class DeinterlacingMode;
 
 class CaptureDialog : public VCSBaseDialog
 {
@@ -21,11 +19,9 @@ public:
     explicit CaptureDialog(QWidget *parent = nullptr);
     ~CaptureDialog();
 
-    InputChannel* input_channel(void)           const { return this->inputChannel; }
-    SignalStatus* signal_status(void)           const { return this->signalStatus; }
-    InputResolution* input_resolution(void)     const { return this->inputResolution; }
-    DeviceInfo*  device_info(void)              const { return this->deviceInfo; }
-    DeinterlacingMode* deinterlacing_mode(void) const { return this->deinterlacingMode; }
+    InputChannel* input_channel(void)       const { return this->inputChannel; }
+    SignalStatus* signal_status(void)       const { return this->signalStatus; }
+    InputResolution* input_resolution(void) const { return this->inputResolution; }
 
 private:
     Ui::CaptureDialog *ui;
@@ -33,8 +29,6 @@ private:
     InputChannel *inputChannel = nullptr;
     SignalStatus *signalStatus = nullptr;
     InputResolution *inputResolution = nullptr;
-    DeviceInfo *deviceInfo = nullptr;
-    DeinterlacingMode *deinterlacingMode = nullptr;
 };
 
 #endif

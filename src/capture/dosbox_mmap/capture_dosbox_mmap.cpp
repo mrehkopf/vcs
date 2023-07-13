@@ -41,6 +41,19 @@ static uint8_t *MMAP_SCREEN_BUF = nullptr;
 static std::atomic<bool> RUN_CAPTURE_THREAD = {false};
 static std::future<int> CAPTURE_THREAD_FUTURE;
 
+static std::unordered_map<std::string, double> DEVICE_PROPERTIES = {
+    {"width", 640},
+    {"height", 480},
+
+    {"width: minimum", MIN_CAPTURE_WIDTH},
+    {"height: minimum", MIN_CAPTURE_HEIGHT},
+
+    {"width: maximum", MAX_CAPTURE_WIDTH},
+    {"height: maximum", MAX_CAPTURE_HEIGHT},
+
+    {"has signal", true},
+};
+
 enum class screen_buffer_value_e : unsigned
 {
     // Horizontal resolution of the frame whose data is currently in the buffer.
@@ -146,7 +159,7 @@ static int capture_thread(void)
     {
         if (get_status_buffer_value(status_buffer_value_e::is_new_frame_available))
         {
-            std::lock_guard<std::mutex> lock(kc_capture_mutex());
+            std::lock_guard<std::mutex> lock(kc_mutex());
 
             IS_VALID_SIGNAL = true;
             
@@ -166,7 +179,7 @@ static int capture_thread(void)
             if ((frameWidth != FRAME_BUFFER.r.w) ||
                 (frameHeight != FRAME_BUFFER.r.h))
             {
-                FRAME_BUFFER.r = {frameWidth, frameHeight, FRAME_BUFFER.r.bpp};
+                resolution_s::to_capture_device({frameWidth, frameHeight});
                 push_capture_event(capture_event_e::new_video_mode);
             }
 
@@ -185,14 +198,57 @@ static int capture_thread(void)
     return 1;
 }
 
-bool kc_initialize_device(void)
+double kc_device_property(const std::string key)
+{
+    return (DEVICE_PROPERTIES.contains(key)? DEVICE_PROPERTIES.at(key) : 0);
+}
+
+bool kc_set_device_property(const std::string key, double value)
+{
+    if (key == "width")
+    {
+        if (
+            (value > MAX_CAPTURE_WIDTH) ||
+            (value < MIN_CAPTURE_WIDTH)
+        ){
+            return false;
+        }
+
+        FRAME_BUFFER.r.w = value;
+    }
+    else if (key == "height")
+    {
+        if (
+            (value > MAX_CAPTURE_HEIGHT) ||
+            (value < MIN_CAPTURE_HEIGHT)
+        ){
+            return false;
+        }
+
+        FRAME_BUFFER.r.h = value;
+    }
+
+    DEVICE_PROPERTIES[key] = value;
+
+    return true;
+}
+
+void kc_initialize_device(void)
 {
     DEBUG(("Initializing the virtual capture device."));
     k_assert(!FRAME_BUFFER.pixels, "Attempting to doubly initialize the capture device.");
 
     FRAME_BUFFER.r = {640, 480, 32};
-    FRAME_BUFFER.pixelFormat = capture_pixel_format_e::rgb_888;
     FRAME_BUFFER.pixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
+
+    kc_set_device_property("width", FRAME_BUFFER.r.w);
+    kc_set_device_property("height", FRAME_BUFFER.r.h);
+
+    kc_ev_new_video_mode.listen([](const video_mode_s &mode)
+    {
+        resolution_s::to_capture_device(mode.resolution);
+        refresh_rate_s::to_capture_device(mode.refreshRate);
+    });
 
     // Initialize the shared memory interface.
     {
@@ -215,16 +271,10 @@ bool kc_initialize_device(void)
     {
         RUN_CAPTURE_THREAD = true;
         CAPTURE_THREAD_FUTURE = std::async(std::launch::async, capture_thread);
-        if (!CAPTURE_THREAD_FUTURE.valid())
-        {
-            goto fail;
-        }
+        k_assert(CAPTURE_THREAD_FUTURE.valid(), "Failed to start the capture thread.");
     }
 
-    return true;
-
-    fail:
-    return false;
+    return;
 }
 
 bool kc_release_device(void)
@@ -237,157 +287,37 @@ bool kc_release_device(void)
     return true;
 }
 
-bool kc_set_capture_pixel_format(const capture_pixel_format_e pf)
-{
-    // Not supported.
-
-    (void)pf;
-
-    return false;
-}
-
-bool kc_set_capture_resolution(const resolution_s &r)
-{
-    // Not supported.
-
-    (void)r;
-
-    return false;
-}
-
-refresh_rate_s kc_get_capture_refresh_rate(void)
-{
-    return refresh_rate_s(CURRENT_REFRESH_RATE);
-}
-
-bool kc_set_capture_input_channel(const unsigned idx)
-{
-    // Not supported.
-
-    (void)idx;
-
-    return false;
-}
-
-const captured_frame_s& kc_get_frame_buffer(void)
+const captured_frame_s& kc_frame_buffer(void)
 {
     return FRAME_BUFFER;
 }
 
-capture_event_e kc_pop_capture_event_queue(void)
+capture_event_e kc_pop_event_queue(void)
 {
     if (pop_capture_event(capture_event_e::invalid_signal))
     {
+        kc_ev_invalid_signal.fire();
         return capture_event_e::invalid_signal;
     }
     else if (pop_capture_event(capture_event_e::new_video_mode))
     {
+        kc_ev_new_proposed_video_mode.fire(video_mode_s{
+            .resolution = FRAME_BUFFER.r
+        });
         return capture_event_e::new_video_mode;
     }
     else if (pop_capture_event(capture_event_e::new_frame))
     {
+        kc_ev_new_captured_frame.fire(FRAME_BUFFER);
         return capture_event_e::new_frame;
     }
 
     return capture_event_e::none;
 }
 
-bool kc_has_valid_device(void)
-{
-    return (MMAP_STATUS_BUF && MMAP_SCREEN_BUF);
-}
-
-capture_pixel_format_e kc_get_capture_pixel_format(void)
-{
-    return FRAME_BUFFER.pixelFormat;
-}
-
-uint kc_get_missed_frames_count(void)
+uint kc_dropped_frames_count(void)
 {
     // Not supported.
 
     return 0;
-}
-
-uint kc_get_device_input_channel_idx(void)
-{
-    return 0;
-}
-
-resolution_s kc_get_capture_resolution(void)
-{
-    return FRAME_BUFFER.r;
-}
-
-resolution_s kc_get_device_minimum_resolution(void)
-{
-    return {MIN_CAPTURE_WIDTH, MIN_CAPTURE_HEIGHT, MAX_CAPTURE_BPP};
-}
-
-resolution_s kc_get_device_maximum_resolution(void)
-{
-    return {MAX_CAPTURE_WIDTH, MAX_CAPTURE_HEIGHT, MAX_CAPTURE_BPP};
-}
-
-std::string kc_get_device_name(void)
-{
-    return "MMAP";
-}
-
-int kc_get_device_maximum_input_count(void)
-{
-    return 1;
-}
-
-video_signal_parameters_s kc_get_device_video_parameters(void)
-{
-    return video_signal_parameters_s{};
-}
-
-video_signal_parameters_s kc_get_device_video_parameter_defaults(void)
-{
-    return video_signal_parameters_s{};
-}
-
-video_signal_parameters_s kc_get_device_video_parameter_minimums(void)
-{
-    return video_signal_parameters_s{};
-}
-
-video_signal_parameters_s kc_get_device_video_parameter_maximums(void)
-{
-    return video_signal_parameters_s{};
-}
-
-bool kc_set_deinterlacing_mode(const capture_deinterlacing_mode_e mode)
-{
-    // Not supported.
-
-    (void)mode;
-
-    return false;
-}
-
-bool kc_has_digital_signal(void)
-{
-    return true;
-}
-
-bool kc_has_valid_signal(void)
-{
-    return IS_VALID_SIGNAL;
-}
-
-bool kc_is_receiving_signal(void)
-{
-    return true;
-}
-
-bool kc_set_video_signal_parameters(const video_signal_parameters_s &p)
-{
-    // Not supported.
-    
-    (void)p;
-
-    return false;
 }

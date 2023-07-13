@@ -86,28 +86,22 @@ struct abstract_filter_graph_node_s
  */
 struct resolution_s
 {
-    /*! Width (in pixels).*/
-    unsigned long w;
+    /*! Width in pixels.*/
+    unsigned w;
 
-    /*! Height (in pixels).*/
-    unsigned long h;
+    /*! Height in pixels.*/
+    unsigned h;
 
-    /*! Number of bits per pixel.*/
-    unsigned long bpp;
+    /*! Bits per pixel.*/
+    unsigned bpp;
 
-    bool operator==(const resolution_s &other) const
-    {
-        return (
-            (this->w == other.w) &&
-            (this->h == other.h) &&
-            (this->bpp == other.bpp)
-        );
-    }
+    static resolution_s from_capture_device(const std::string &nameSpace = "");
 
-    bool operator!=(const resolution_s &other) const
-    {
-        return !(*this == other);
-    }
+    static void to_capture_device(const resolution_s &resolution);
+
+    bool operator==(const resolution_s &other) const;
+
+    bool operator!=(const resolution_s &other) const;
 };
 
 /*!

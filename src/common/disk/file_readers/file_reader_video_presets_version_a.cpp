@@ -144,7 +144,7 @@ bool file_reader::video_presets::version_a::read(const std::string &filename,
                 }
                 else if (paramName == "horizontalScale")
                 {
-                    preset->videoParameters.horizontalScale = rowData.at(row).at(1).toInt();
+                    preset->videoParameters.horizontalSize = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "phase")
                 {
@@ -156,11 +156,11 @@ bool file_reader::video_presets::version_a::read(const std::string &filename,
                 }
                 else if (paramName == "brightness")
                 {
-                    preset->videoParameters.overallBrightness = rowData.at(row).at(1).toInt();
+                    preset->videoParameters.brightness = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "contrast")
                 {
-                    preset->videoParameters.overallContrast = rowData.at(row).at(1).toInt();
+                    preset->videoParameters.contrast = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "redBrightness")
                 {

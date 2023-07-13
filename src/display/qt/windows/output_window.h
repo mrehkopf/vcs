@@ -113,11 +113,6 @@ private:
 
     unsigned appwideFontSize = 15;
 
-    // Set to true if the capture subsystem is currently reporting that captured frames
-    // are being dropped; false otherwise. The value gets updated at some interval,
-    // e.g. 1 second.
-    bool areFramesBeingDropped = false;
-
     const Qt::WindowFlags defaultWindowFlags = (Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 };
 

@@ -19,13 +19,13 @@
 #include <visionrgb/include/rgb133control.h>
 #include <visionrgb/include/rgb133v4l2.h>
 
-ic_v4l_device_controls_c::ic_v4l_device_controls_c(const int v4lDeviceFileHandle) :
+ic_v4l_controls_c::ic_v4l_controls_c(const int v4lDeviceFileHandle) :
     v4lDeviceFileHandle(v4lDeviceFileHandle)
 {
     return;
 }
 
-bool ic_v4l_device_controls_c::set_value(const int newValue, const ic_v4l_device_controls_c::control_type_e control)
+bool ic_v4l_controls_c::set_value(const int newValue, const ic_v4l_controls_c::type_e control)
 {
     if (this->v4l_id(control) < 0)
     {
@@ -39,7 +39,7 @@ bool ic_v4l_device_controls_c::set_value(const int newValue, const ic_v4l_device
 
     if (ioctl(this->v4lDeviceFileHandle, VIDIOC_S_CTRL, &v4lc) != 0)
     {
-        if (kc_is_receiving_signal())
+        if (kc_has_signal())
         {
             DEBUG(("V4L control: Unsupported value %d for \"%s\".", newValue, this->name(control).c_str()));
         }
@@ -50,7 +50,7 @@ bool ic_v4l_device_controls_c::set_value(const int newValue, const ic_v4l_device
     return true;
 }
 
-int ic_v4l_device_controls_c::value(const ic_v4l_device_controls_c::control_type_e control) const
+int ic_v4l_controls_c::value(const ic_v4l_controls_c::type_e control) const
 {
     try
     {
@@ -62,7 +62,7 @@ int ic_v4l_device_controls_c::value(const ic_v4l_device_controls_c::control_type
     }
 }
 
-int ic_v4l_device_controls_c::default_value(const ic_v4l_device_controls_c::control_type_e control) const
+int ic_v4l_controls_c::default_value(const ic_v4l_controls_c::type_e control) const
 {
     try
     {
@@ -74,7 +74,7 @@ int ic_v4l_device_controls_c::default_value(const ic_v4l_device_controls_c::cont
     }
 }
 
-int ic_v4l_device_controls_c::minimum_value(const ic_v4l_device_controls_c::control_type_e control) const
+int ic_v4l_controls_c::minimum_value(const ic_v4l_controls_c::type_e control) const
 {
     try
     {
@@ -86,7 +86,7 @@ int ic_v4l_device_controls_c::minimum_value(const ic_v4l_device_controls_c::cont
     }
 }
 
-int ic_v4l_device_controls_c::maximum_value(const ic_v4l_device_controls_c::control_type_e control) const
+int ic_v4l_controls_c::maximum_value(const ic_v4l_controls_c::type_e control) const
 {
     try
     {
@@ -98,7 +98,7 @@ int ic_v4l_device_controls_c::maximum_value(const ic_v4l_device_controls_c::cont
     }
 }
 
-int ic_v4l_device_controls_c::v4l_id(const ic_v4l_device_controls_c::control_type_e control) const
+int ic_v4l_controls_c::v4l_id(const ic_v4l_controls_c::type_e control) const
 {
     try
     {
@@ -110,7 +110,7 @@ int ic_v4l_device_controls_c::v4l_id(const ic_v4l_device_controls_c::control_typ
     }
 }
 
-std::string ic_v4l_device_controls_c::name(const ic_v4l_device_controls_c::control_type_e control) const
+std::string ic_v4l_controls_c::name(const ic_v4l_controls_c::type_e control) const
 {
     try
     {
@@ -122,7 +122,7 @@ std::string ic_v4l_device_controls_c::name(const ic_v4l_device_controls_c::contr
     }
 }
 
-void ic_v4l_device_controls_c::update()
+void ic_v4l_controls_c::update()
 {
     this->controls.clear();
 
@@ -183,22 +183,22 @@ void ic_v4l_device_controls_c::update()
     return;
 }
 
-ic_v4l_device_controls_c::control_type_e ic_v4l_device_controls_c::type_for_name(const std::string &name)
+ic_v4l_controls_c::type_e ic_v4l_controls_c::type_for_name(const std::string &name)
 {
-    if (name == "signal_type")         return control_type_e::signal_type;
-    if (name == "horizontal_size")     return control_type_e::horizontal_size;
-    if (name == "horizontal_position") return control_type_e::horizontal_position;
-    if (name == "vertical_position")   return control_type_e::vertical_position;
-    if (name == "phase")               return control_type_e::phase;
-    if (name == "black_level")         return control_type_e::black_level;
-    if (name == "brightness")          return control_type_e::brightness;
-    if (name == "contrast")            return control_type_e::contrast;
-    if (name == "red_brightness")      return control_type_e::red_brightness;
-    if (name == "red_contrast")        return control_type_e::red_contrast;
-    if (name == "green_brightness")    return control_type_e::green_brightness;
-    if (name == "green_contrast")      return control_type_e::green_contrast;
-    if (name == "blue_brightness")     return control_type_e::blue_brightness;
-    if (name == "blue_contrast")       return control_type_e::blue_contrast;
+    if (name == "signal_type")         return ic_v4l_controls_c::type_e::signal_type;
+    if (name == "horizontal_size")     return ic_v4l_controls_c::type_e::horizontal_size;
+    if (name == "horizontal_position") return ic_v4l_controls_c::type_e::horizontal_position;
+    if (name == "vertical_position")   return ic_v4l_controls_c::type_e::vertical_position;
+    if (name == "phase")               return ic_v4l_controls_c::type_e::phase;
+    if (name == "black_level")         return ic_v4l_controls_c::type_e::black_level;
+    if (name == "brightness")          return ic_v4l_controls_c::type_e::brightness;
+    if (name == "contrast")            return ic_v4l_controls_c::type_e::contrast;
+    if (name == "red_brightness")      return ic_v4l_controls_c::type_e::red_brightness;
+    if (name == "red_contrast")        return ic_v4l_controls_c::type_e::red_contrast;
+    if (name == "green_brightness")    return ic_v4l_controls_c::type_e::green_brightness;
+    if (name == "green_contrast")      return ic_v4l_controls_c::type_e::green_contrast;
+    if (name == "blue_brightness")     return ic_v4l_controls_c::type_e::blue_brightness;
+    if (name == "blue_contrast")       return ic_v4l_controls_c::type_e::blue_contrast;
 
-    return control_type_e::unknown;
+    return type_e::unknown;
 }

@@ -22,12 +22,14 @@
 // We'll persist the resolution and refresh rate, so that when a new video mode
 // is encountered, the code will first save the new mode values and then close
 // the old input channel, with the new input channel adopting the persisted values.
-static resolution_s LATEST_RESOLUTION = {1024, 768, 32};
+static resolution_s LATEST_RESOLUTION = {640, 480, 32};
 static refresh_rate_s LATEST_REFRESH_RATE = 0;
 
-input_channel_v4l_c::input_channel_v4l_c(const std::string v4lDeviceFileName,
-                                         const unsigned numBackBuffers,
-                                         captured_frame_s *const dstFrameBuffer) :
+input_channel_v4l_c::input_channel_v4l_c(
+    const std::string v4lDeviceFileName,
+    const unsigned numBackBuffers,
+    captured_frame_s *const dstFrameBuffer
+) :
     v4lDeviceFileName(v4lDeviceFileName),
     dstFrameBuffer(dstFrameBuffer),
     requestedNumBackBuffers(numBackBuffers)
@@ -130,7 +132,7 @@ bool input_channel_v4l_c::capture_thread__has_signal(void)
 
         if (hasStatusChanged)
         {
-            std::lock_guard<std::mutex> lock(kc_capture_mutex());
+            std::lock_guard<std::mutex> lock(kc_mutex());
             this->push_capture_event(hasNoSignal? capture_event_e::signal_lost : capture_event_e::signal_gained);
         }
     }
@@ -147,7 +149,7 @@ bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
     {
         if (!input_channel_v4l_c::is_format_of_valid_signal(&format))
         {
-            std::lock_guard<std::mutex> lock(kc_capture_mutex());
+            std::lock_guard<std::mutex> lock(kc_mutex());
 
             this->captureStatus.invalidSignal = true;
             this->push_capture_event(capture_event_e::invalid_signal);
@@ -176,9 +178,10 @@ bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
     // Failed to query the video format.
     else
     {
-        std::lock_guard<std::mutex> lock(kc_capture_mutex());
+        std::lock_guard<std::mutex> lock(kc_mutex());
 
         this->captureStatus.invalidSignal = true;
+        this->push_capture_event(capture_event_e::invalid_signal);
         this->push_capture_event(capture_event_e::unrecoverable_error);
 
         return true;
@@ -221,7 +224,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
                 }
                 default:
                 {
-                    std::lock_guard<std::mutex> lock(kc_capture_mutex());
+                    std::lock_guard<std::mutex> lock(kc_mutex());
 
                     this->push_capture_event(capture_event_e::unrecoverable_error);
 
@@ -238,13 +241,12 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
         }
         else
         {
-            std::lock_guard<std::mutex> lock(kc_capture_mutex());
+            std::lock_guard<std::mutex> lock(kc_mutex());
 
             const input_channel_v4l_c::mmap_metadata &srcBuffer = this->mmapBackBuffers.at(buf.index);
 
             this->dstFrameBuffer->r = LATEST_RESOLUTION;
-            this->dstFrameBuffer->r.bpp = ((this->captureStatus.pixelFormat == capture_pixel_format_e::rgb_888)? 32 : 16);
-            this->dstFrameBuffer->pixelFormat = this->captureStatus.pixelFormat;
+            this->dstFrameBuffer->r.bpp = 32;
 
             // Copy the frame's data into our local buffer so we can work on it.
             memcpy(this->dstFrameBuffer->pixels, srcBuffer.ptr, srcBuffer.length);
@@ -256,7 +258,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
         // Tell the capture device that we've finished accessing the buffer.
         if (!this->device_ioctl(VIDIOC_QBUF, &buf))
         {
-            std::lock_guard<std::mutex> lock(kc_capture_mutex());
+            std::lock_guard<std::mutex> lock(kc_mutex());
 
             this->push_capture_event(capture_event_e::unrecoverable_error);
 
@@ -266,7 +268,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
     // A capture error.
     else
     {
-        std::lock_guard<std::mutex> lock(kc_capture_mutex());
+        std::lock_guard<std::mutex> lock(kc_mutex());
 
         this->push_capture_event(capture_event_e::unrecoverable_error);
         
@@ -307,7 +309,7 @@ bool input_channel_v4l_c::open_device(const std::string &deviceFileName)
         return false;
     }
 
-    this->captureStatus.videoParameters = ic_v4l_device_controls_c(this->v4lDeviceFileHandle);
+    this->captureStatus.videoParameters = ic_v4l_controls_c(this->v4lDeviceFileHandle);
 
     return true;
 }
@@ -345,19 +347,19 @@ int input_channel_v4l_c::capture_thread(void)
 
         if (capture_thread__has_source_mode_changed())
         {
-            if (!this->captureStatus.invalidSignal)
+            if (this->captureStatus.invalidSignal)
             {
-                std::lock_guard<std::mutex> lock(kc_capture_mutex());
+                continue;
+            }
+            else
+            {
+                std::lock_guard<std::mutex> lock(kc_mutex());
 
                 this->push_capture_event(capture_event_e::new_video_mode);
 
                 // The parent is expected to re-spawn this input channel, so we can exit the
                 // capture thread.
                 return 1;
-            }
-            else
-            {
-                continue;
             }
         }
 
@@ -368,17 +370,6 @@ int input_channel_v4l_c::capture_thread(void)
     }
 
     return 1;
-}
-
-u32 input_channel_v4l_c::vcs_pixel_format_to_v4l_pixel_format(capture_pixel_format_e fmt) const
-{
-    switch (fmt)
-    {
-        case capture_pixel_format_e::rgb_555: return V4L2_PIX_FMT_RGB555;
-        case capture_pixel_format_e::rgb_565: return V4L2_PIX_FMT_RGB565;
-        case capture_pixel_format_e::rgb_888: return V4L2_PIX_FMT_RGB32;
-        default: k_assert(0, "Unknown pixel format."); return V4L2_PIX_FMT_RGB32;
-    }
 }
 
 bool input_channel_v4l_c::set_v4l_buffer_resolution(const resolution_s &resolution)
@@ -395,7 +386,7 @@ bool input_channel_v4l_c::set_v4l_buffer_resolution(const resolution_s &resoluti
 
     format.fmt.pix.width = resolution.w;
     format.fmt.pix.height = resolution.h;
-    format.fmt.pix.pixelformat = this->vcs_pixel_format_to_v4l_pixel_format(this->captureStatus.pixelFormat);
+    format.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB32;
     format.fmt.pix.field = V4L2_FIELD_NONE;
 
     if (!this->device_ioctl(VIDIOC_S_FMT, &format) ||
@@ -407,7 +398,7 @@ bool input_channel_v4l_c::set_v4l_buffer_resolution(const resolution_s &resoluti
 
     if ((format.fmt.pix.width != resolution.w) ||
         (format.fmt.pix.height != resolution.h) ||
-        (format.fmt.pix.pixelformat != this->vcs_pixel_format_to_v4l_pixel_format(this->captureStatus.pixelFormat)))
+        (format.fmt.pix.pixelformat != V4L2_PIX_FMT_RGB32))
     {
         NBENE(("Failed to set the capture resolution (error %d).", errno));
         goto fail;
@@ -560,9 +551,7 @@ bool input_channel_v4l_c::start_capturing()
 {
     if (!this->open_device(this->v4lDeviceFileName))
     {
-        NBENE(("Failed to open the capture device \"%s\".",
-               this->v4lDeviceFileName.c_str()));
-
+        NBENE(("Failed to open %s.", this->v4lDeviceFileName.c_str()));
         goto fail;
     }
 
@@ -572,18 +561,14 @@ bool input_channel_v4l_c::start_capturing()
 
         if (!this->device_ioctl(VIDIOC_QUERYCAP, &caps))
         {
-            NBENE(("Failed to query the capabilities of capture device \"%s\".",
-                   this->v4lDeviceFileName.c_str()));
-
+            NBENE(("Failed to query device capabilities on %s.", this->v4lDeviceFileName.c_str()));
             goto fail;
         }
 
         if (!(caps.capabilities & V4L2_CAP_READWRITE) ||
             !(caps.capabilities & V4L2_CAP_STREAMING))
         {
-            NBENE(("The capture device \"%s\" doesn't support the required features.",
-                   this->v4lDeviceFileName.c_str()));
-
+            NBENE(("One or more required features for capture are not supported on %s.", this->v4lDeviceFileName.c_str()));
             goto fail;
         }
     }
@@ -601,9 +586,11 @@ bool input_channel_v4l_c::start_capturing()
     // Start the capture thread.
     {
         this->run = true;
-        this->captureThreadFuture = std::async(std::launch::async,
-                                               &input_channel_v4l_c::capture_thread,
-                                               this);
+        this->captureThreadFuture = std::async(
+            std::launch::async,
+            &input_channel_v4l_c::capture_thread,
+            this
+        );
 
         if (!this->captureThreadFuture.valid())
         {

@@ -230,8 +230,13 @@ OutputWindow::OutputWindow(QWidget *parent) :
             });
         }
 
-        connect(makeAppwideShortcut("output-window: set-input-channel-1"), &QShortcut::activated, []{kc_set_capture_input_channel(0);});
-        connect(makeAppwideShortcut("output-window: set-input-channel-2"), &QShortcut::activated, []{kc_set_capture_input_channel(1);});
+        connect(makeAppwideShortcut("output-window: set-input-channel-1"), &QShortcut::activated, []{
+            kc_set_device_property("input channel index", 0);
+        });
+
+        connect(makeAppwideShortcut("output-window: set-input-channel-2"), &QShortcut::activated, []{
+            kc_set_device_property("input channel index", 1);
+        });
 
         connect(kd_make_key_shortcut("output-window: exit-fullscreen-mode", this), &QShortcut::activated, this, [this]
         {
@@ -304,17 +309,6 @@ OutputWindow::OutputWindow(QWidget *parent) :
         kc_ev_new_video_mode.listen([this](video_mode_s)
         {
             this->update_window_title();
-        });
-
-        kc_ev_missed_frames_count.listen([this](const unsigned numMissed)
-        {
-            const bool areDropped = (numMissed > 0);
-
-            if (this->areFramesBeingDropped != areDropped)
-            {
-                this->areFramesBeingDropped = areDropped;
-                this->update_window_title();
-            }
         });
     }
 
@@ -555,7 +549,7 @@ void OutputWindow::wheelEvent(QWheelEvent *event)
 
 QImage OutputWindow::overlay_image(void)
 {
-    if (kc_is_receiving_signal() && this->control_panel()->overlay()->is_enabled())
+    if (kc_has_signal() && this->control_panel()->overlay()->is_enabled())
     {
         return this->control_panel()->overlay()->rendered();
     }
@@ -603,7 +597,7 @@ void OutputWindow::paintEvent(QPaintEvent *)
     }
 
     // Show a magnifying glass effect which blows up part of the captured image.
-    if (kc_is_receiving_signal() &&
+    if (kc_has_signal() &&
         this->isActiveWindow() &&
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
         (QGuiApplication::mouseButtons() & Qt::MidButton))
@@ -627,35 +621,23 @@ void OutputWindow::update_window_title(void)
     {
         title = QString("%1 - Closing...").arg(programName);
     }
-    else if (!kc_has_valid_device())
-    {
-        title = QString("%1 - Invalid capture channel").arg(this->windowTitleOverride.isEmpty()? programName : this->windowTitleOverride);
-    }
-    else if (!kc_has_valid_signal())
-    {
-        title = QString("%1 - Signal out of range").arg(this->windowTitleOverride.isEmpty()? programName : this->windowTitleOverride);
-    }
-    else if (!kc_is_receiving_signal())
+    else if (!kc_has_signal())
     {
         title = QString("%1 - No signal").arg(this->windowTitleOverride.isEmpty()? programName : this->windowTitleOverride);
     }
     else
     {
-        // A symbol shown in the title if VCS is currently dropping frames.
-        const QString missedFramesMarker = (this->areFramesBeingDropped? "{!} " : "");
-
-        const resolution_s inRes = kc_current_capture_state().input.resolution;
+        const auto inRes = resolution_s::from_capture_device();
         const resolution_s outRes = ks_output_resolution();
-        const refresh_rate_s refreshRate = kc_current_capture_state().input.refreshRate;
+        const auto refreshRate = refresh_rate_s::from_capture_device();
 
         if (!this->windowTitleOverride.isEmpty())
         {
-            title = QString("%1%2").arg(missedFramesMarker).arg(this->windowTitleOverride);
+            title = this->windowTitleOverride;
         }
         else
         {
-            title = QString("%1%2 - %4 \u00d7 %5 (%6 Hz) shown in %7 \u00d7 %8")
-                .arg(missedFramesMarker)
+            title = QString("%1 - %2 \u00d7 %3 (%4 Hz) shown in %5 \u00d7 %6")
                 .arg(programName)
                 .arg(inRes.w)
                 .arg(inRes.h)

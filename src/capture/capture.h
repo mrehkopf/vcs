@@ -25,7 +25,7 @@
  * 
  * Because of the out-of-thread nature of this subsystem, it's important that
  * accesses to its memory buffers are synchronized using the capture mutex (see
- * kc_capture_mutex()).
+ * kc_mutex()).
  *
  * ## Usage
  *
@@ -33,44 +33,22 @@
  *      function should be called only once per program execution.
  *
  *   2. Use the interface functions to interact with the subsystem. For instance,
- *      kc_get_frame_buffer() returns the most recent captured frame's data.
+ *      kc_frame_buffer() returns the most recent captured frame's data.
  *
  *   3. VCS will automatically release the subsystem on program termination.
  * 
  * ## Implementing support for new capture devices
  * 
- * The capture subsystem interface provides a declaration of the functions used
- * by VCS to interact with the capture subsystem. Some of the functions -- e.g.
- * kc_initialize_capture() -- are agnostic to the capture device being used, while
- * others -- e.g. kc_initialize_device() -- are specific to a particular type of
- * capture device.
- * 
- * The universal functions like kc_initialize_capture() are defined in the
- * base interface source file (@a capture.cpp), whereas the device-specific
- * functions like kc_initialize_device() are implemented in a separate,
- * device-specific source file. For instance, the file @a capture_vision_v4l.cpp
- * implements support for Datapath's VisionRGB capture cards on Linux. Depending
- * on which hardware is to be supported by VCS, one of these files gets included
- * in the compiled executable. See @a vcs.pro for the logic that decides which
- * implementation is included in the build
- * 
- * You can add support for a new capture device by creating implementations for
- * the device of all of the device-specific interface functions, namely those
- * declared in capture.h prefixed with @a kc_ but which aren't already defined in
- * @a capture.cpp. You can look at the existing device source files for hands-on
- * examples.
- * 
- * As you'll see from @a capture_virtual.cpp, the capture device doesn't need
- * to be an actual device. It can be any source of image data -- something
- * that reads images from @a stdin, for example. It only needs to implement the
- * interface functions and to output its data in the form dictated by the interface.
+ * (This section is pending a rewrite.)
  */
 
 #ifndef VCS_CAPTURE_CAPTURE_H
 #define VCS_CAPTURE_CAPTURE_H
 
+#include <unordered_map>
 #include <vector>
 #include <mutex>
+#include <any>
 #include "display/display.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
@@ -89,7 +67,7 @@ struct video_mode_s;
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact
  * time of capture, but rather once VCS has polled the capture subsystem (via
- * kc_pop_capture_event_queue()) to find that there is a new frame.
+ * kc_pop_event_queue()) to find that there is a new frame.
  * 
  * 
  * 
@@ -120,10 +98,10 @@ struct video_mode_s;
  * 
  * @note
  * The capture mutex must be locked before firing this event, including before
- * acquiring the frame reference from kc_get_frame_buffer().
+ * acquiring the frame reference from kc_frame_buffer().
  * 
  * @see
- * kc_get_frame_buffer(), kc_capture_mutex()
+ * kc_frame_buffer(), kc_mutex()
  */
 extern vcs_event_c<const captured_frame_s&> kc_ev_new_captured_frame;
 
@@ -133,13 +111,13 @@ extern vcs_event_c<const captured_frame_s&> kc_ev_new_captured_frame;
  * 
  * This event is to be treated as a proposal from the capture device that the given
  * video mode now best fits the captured signal. You can accept the proposal by firing
- * the @ref kc_ev_new_video_mode event, call kc_force_capture_resolution() to force the
+ * the @ref kc_ev_new_video_mode event, call kc_set_resolution() to force the
  * capture device to use a different mode, or do nothing to retain the existing mode.
  * 
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact time
  * the video mode changes, but rather once VCS has polled the capture subsystem
- * (via kc_pop_capture_event_queue()) to find that the mode has changed.
+ * (via kc_pop_event_queue()) to find that the mode has changed.
  * 
  * @code
  * // A sample implementation that approves the proposed video mode if there's
@@ -148,7 +126,7 @@ extern vcs_event_c<const captured_frame_s&> kc_ev_new_captured_frame;
  * {
  *     if (ka_has_alias(videoMode.resolution))
  *     {
- *         kc_force_capture_resolution(ka_aliased(videoMode.resolution));
+ *         kc_set_resolution(ka_aliased(videoMode.resolution));
  *     }
  *     else
  *     {
@@ -158,7 +136,7 @@ extern vcs_event_c<const captured_frame_s&> kc_ev_new_captured_frame;
  * @endcode
  * 
  * @see
- * kc_ev_new_video_mode, kc_force_capture_resolution()
+ * kc_ev_new_video_mode, kc_set_resolution()
  */
 extern vcs_event_c<const video_mode_s&> kc_ev_new_proposed_video_mode;
 
@@ -169,17 +147,14 @@ extern vcs_event_c<const video_mode_s&> kc_ev_new_proposed_video_mode;
  * one, although usually it will be.
  * 
  * @see
- * kc_ev_new_proposed_video_mode, kc_force_capture_resolution()
+ * kc_ev_new_proposed_video_mode, kc_set_resolution()
  */
 extern vcs_event_c<const video_mode_s&> kc_ev_new_video_mode;
 
 /*!
  * Fired when the capture device is switched to a different input channel.
- *
- * @see
- * kc_get_device_input_channel_idx()
  */
-extern vcs_event_c<void> ks_ev_input_channel_changed;
+extern vcs_event_c<unsigned> kc_ev_input_channel_changed;
 
 /*!
  * Fired when the capture subsystem reports its capture device to be invalid in a
@@ -188,7 +163,7 @@ extern vcs_event_c<void> ks_ev_input_channel_changed;
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact time
  * the device is detected to be invalid, but rather once VCS has polled the capture
- * subsystem (via kc_pop_capture_event_queue()) to find that such is the case.
+ * subsystem (via kc_pop_event_queue()) to find that such is the case.
  */
 extern vcs_event_c<void> kc_ev_invalid_device;
 
@@ -199,7 +174,7 @@ extern vcs_event_c<void> kc_ev_invalid_device;
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact time
  * the signal is lost, but rather once VCS has polled the capture subsystem (via
- * kc_pop_capture_event_queue()) to find that such is the case.
+ * kc_pop_event_queue()) to find that such is the case.
  * 
  * @code
  * // Print a message every time the capture signal is lost.
@@ -221,7 +196,7 @@ extern vcs_event_c<void> kc_ev_signal_lost;
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact time
  * the signal is gained, but rather once VCS has polled the capture subsystem (via
- * kc_pop_capture_event_queue()) to find that such is the case.
+ * kc_pop_event_queue()) to find that such is the case.
  * 
  * @see
  * kc_ev_signal_lost
@@ -235,7 +210,7 @@ extern vcs_event_c<void> kc_ev_signal_gained;
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact
  * time the invalid signal began to be received, but rather once VCS has polled
- * the capture subsystem (via kc_pop_capture_event_queue()) to find that such a
+ * the capture subsystem (via kc_pop_event_queue()) to find that such a
  * condition exists.
  */
 extern vcs_event_c<void> kc_ev_invalid_signal;
@@ -247,64 +222,9 @@ extern vcs_event_c<void> kc_ev_invalid_signal;
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact
  * time the error occurs, but rather once VCS has polled the capture subsystem
- * (via kc_pop_capture_event_queue()) to find that there has been such an error.
+ * (via kc_pop_event_queue()) to find that there has been such an error.
  */
 extern vcs_event_c<void> kc_ev_unrecoverable_error;
-
-// The capture subsystem has had to ignore frames coming from the capture
-// device because VCS was busy with something else (e.g. with processing
-// a previous frame). Provides the count of missed frames (generally, the
-// capture subsystem might fire this event at regular intervals and pass
-// the count of missed frames during that interval).
-extern vcs_event_c<unsigned> kc_ev_missed_frames_count;
-
-/*!
- * Enumerates the de-interlacing modes recognized by the capture subsystem.
- *
- * @note
- * The capture subsystem itself doesn't apply de-interlacing, it just asks the
- * capture device to do so. The capture device in turn may support only some or
- * none of these modes, and/or might apply them only when receiving an
- * interlaced signal.
- * 
- * @see
- * kc_set_deinterlacing_mode()
- */
-enum class capture_deinterlacing_mode_e
-{
-    weave,
-    bob,
-    field_0,
-    field_1,
-};
-
-/*!
- * Enumerates the pixel color formats recognized by the capture subsystem for
- * captured frames.
- *
- * @see
- * captured_frame_s
- */
-enum class capture_pixel_format_e
-{
-    /*!
-     * 16 bits per pixel: 5 bits for red, 5 bits for green, 5 bits for blue, and
-     * 1 bit of padding. No alpha.
-     */
-    rgb_555,
-
-    /*!
-     * 16 bits per pixel: 5 bits for red, 6 bits for green, and 5 bits for blue.
-     * No alpha.
-     */
-    rgb_565,
-
-    /*!
-     * 32 bits per pixel: 8 bits for red, 8 bits for green, 8 bits for blue, and
-     * 8 bits of padding. No alpha.
-     */
-    rgb_888,
-};
 
 /*!
  * VCS will periodically query the capture subsystem for the latest capture events.
@@ -312,7 +232,7 @@ enum class capture_pixel_format_e
  * back.
  * 
  * @see
- * kc_pop_capture_event_queue()
+ * kc_pop_event_queue()
  */
 enum class capture_event_e
 {
@@ -376,25 +296,11 @@ enum class signal_format_e
 
 /*!
  * @brief
- * Contains information about the current state of capture.
- */
-struct capture_state_s
-{
-    video_mode_s input;
-    video_mode_s output;
-    signal_format_e signalFormat = signal_format_e::none;
-    unsigned hardwareChannelIdx = 0;
-    bool areFramesBeingDropped = false;
-};
-
-/*!
- * @brief
  * Stores the data of an image received from a capture device.
  */
 struct captured_frame_s
 {
     resolution_s r;
-    capture_pixel_format_e pixelFormat;
     uint8_t *pixels;
 };
 
@@ -402,23 +308,22 @@ struct video_signal_parameters_s
 {
     resolution_s r; // For legacy (VCS <= 1.6.5) support.
 
-    long overallBrightness;
-    long overallContrast;
-
+    long brightness;
+    long contrast;
     long redBrightness;
     long redContrast;
-
     long greenBrightness;
     long greenContrast;
-
     long blueBrightness;
     long blueContrast;
-
-    unsigned long horizontalScale;
+    unsigned long horizontalSize;
     long horizontalPosition;
     long verticalPosition;
     long phase;
     long blackLevel;
+
+    static video_signal_parameters_s from_capture_device(const std::string &nameSpace = "");
+    static void to_capture_device(const video_signal_parameters_s &params, const std::string &nameSpace = "");
 };
 
 /*!
@@ -435,11 +340,11 @@ struct video_signal_parameters_s
  * // Code running in the main VCS thread.
  * 
  * // Blocks execution until the capture mutex allows us to access the capture data.
- * std::lock_guard<std::mutex> lock(kc_capture_mutex());
+ * std::lock_guard<std::mutex> lock(kc_mutex());
  *
  * // Handle the most recent capture event (having locked the mutex prevents
  * // the capture subsystem from pushing new events while we're doing this).
- * switch (kc_pop_capture_event_queue())
+ * switch (kc_pop_event_queue())
  * {
  *     // ...
  * }
@@ -450,7 +355,7 @@ struct video_signal_parameters_s
  * sends in a new frame, the frame will be discarded rather than waiting for the
  * lock to be released.
  */
-std::mutex& kc_capture_mutex(void);
+std::mutex& kc_mutex(void);
 
 /*!
  * Initializes the capture subsystem.
@@ -480,7 +385,7 @@ subsystem_releaser_t kc_initialize_capture(void);
 /*!
  * Initializes the capture device.
  *
- * Returns true on success; false otherwise.
+ * Throws on failure.
  *
  * @warning
  * Don't call this function directly. Instead, call kc_initialize_capture(),
@@ -489,7 +394,7 @@ subsystem_releaser_t kc_initialize_capture(void);
  * @see
  * kc_initialize_capture(), kc_release_device()
  */
-bool kc_initialize_device(void);
+void kc_initialize_device(void);
 
 /*!
  * Releases the capture device.
@@ -506,137 +411,9 @@ bool kc_initialize_device(void);
 bool kc_release_device(void);
 
 /*!
- * Asks the capture device to set its input resolution to the one given,
- * overriding the current input resolution.
- * 
- * This function fires a @ref kc_ev_new_video_mode event.
- *
- * @note
- * If the resolution of the captured signal doesn't match this resolution, the
- * captured image may display incorrectly.
- */
-bool kc_force_capture_resolution(const resolution_s &r);
-
-/*!
- * Returns cached information about the current state of capture; e.g. the
- * current input resolution.
- *
- * The struct reference returned is valid for the duration of the program's
- * execution, and the information it points to is automatically updated as the
- * capture state changes.
- *
- * @note
- * To be notified of changes to the capture state as they occur, subscribe to
- * the relevant capture events (e.g. @ref kc_ev_new_video_mode).
- */
-const capture_state_s& kc_current_capture_state(void);
-
-/*!
- * Returns the number of input channels on the capture device that are available
- * to the capture subsystem.
- *
- * @see
- * kc_get_device_input_channel_idx()
- */
-int kc_get_device_maximum_input_count(void);
-
-/*!
- * Returns a user-facing string that identifies the capture device; for example,
- * "Datapath VisionRGB-PRO2".
- */
-std::string kc_get_device_name(void);
-
-/*!
- * Returns the capture device's current video signal parameters.
- *
- * @see
- * kc_set_video_signal_parameters(), kc_get_device_video_parameter_minimums(),
- * kc_get_device_video_parameter_maximums(),
- * kc_get_device_video_parameter_defaults()
- */
-video_signal_parameters_s kc_get_device_video_parameters(void);
-
-/*!
- * Returns the capture device's default video signal parameters.
- *
- * @see
- * kc_get_device_video_parameters(), kc_get_device_video_parameters(),
- * kc_get_device_video_parameter_minimums(),
- * kc_get_device_video_parameter_maximums()
- */
-video_signal_parameters_s kc_get_device_video_parameter_defaults(void);
-
-/*!
- * Returns the minimum value supported by the capture device for each video
- * signal parameter.
- *
- * @see
- * kc_set_video_signal_parameters(), kc_get_device_video_parameters(),
- * kc_get_device_video_parameter_maximums(),
- * kc_get_device_video_parameter_defaults()
- */
-video_signal_parameters_s kc_get_device_video_parameter_minimums(void);
-
-/*!
- * Returns the maximum value supported by the capture device for each video
- * signal parameter.
- *
- * @see
- * kc_set_video_signal_parameters(), kc_get_device_video_parameters(),
- * kc_get_device_video_parameter_minimums(),
- * kc_get_device_video_parameter_defaults()
- */
-video_signal_parameters_s kc_get_device_video_parameter_maximums(void);
-
-/*!
- * Returns the capture device's current input/output resolution.
- *
- * @note
- * The capture device's input and output resolutions are expected to always
- * be equal; any scaling of captured frames is expected to be done by VCS and
- * not the capture device.
- *
- * @warning
- * Don't take this to be the resolution of the latest captured frame
- * (returned from kc_get_frame_buffer()), as the capture device's resolution
- * may have changed since that frame was captured.
- *
- * @see
- * kc_set_capture_resolution(), kc_get_device_minimum_resolution(),
- * kc_get_device_maximum_resolution(), kc_ev_new_video_mode
- */
-resolution_s kc_get_capture_resolution(void);
-
-/*!
- * Returns the minimum capture resolution supported by the capture device.
- *
- * @note
- * This resolution may be larger - but not smaller - than the minimum
- * capture resolution supported by the capture device.
- *
- * @see
- * kc_get_device_maximum_resolution(), kc_get_capture_resolution(),
- * kc_set_capture_resolution()
- */
-resolution_s kc_get_device_minimum_resolution(void);
-
-/*!
- * Returns the maximum capture resolution supported by the capture device.
- *
- * @note
- * This resolution may be smaller - but not larger - than the maximum
- * capture resolution supported by the capture device.
- *
- * @see
- * kc_get_device_minimum_resolution(), kc_get_capture_resolution(),
- * kc_set_capture_resolution()
- */
-resolution_s kc_get_device_maximum_resolution(void);
-
-/*!
  * Returns the count of frames the capture subsystem has received from the
- * capture device that VCS was too busy to process and display. In other words,
- * this is a count of dropped frames.
+ * capture device that VCS was too busy to process and display; In other words,
+ * a count of dropped frames.
  *
  * If this value goes above 0, it indicates that VCS is failing to process and
  * display captured frames as fast as the capture device is producing them.
@@ -645,63 +422,20 @@ resolution_s kc_get_device_maximum_resolution(void);
  * The value is monotonically cumulative over the lifetime of the program's
  * execution, guaranteed not to decrease during that time.
  */
-unsigned kc_get_missed_frames_count(void);
-
-/*!
- * Returns the index value of the capture device's input channel on which the
- * device is currently listening for signals. The value is in the range [0,n-1],
- * where n = kc_get_device_maximum_input_count().
- *
- * @see
- * kc_get_device_maximum_input_count()
- */
-unsigned kc_get_device_input_channel_idx(void);
-
-/*!
- * Returns the refresh rate of the current capture signal.
- * 
- * @see
- * kc_ev_new_video_mode
- */
-refresh_rate_s kc_get_capture_refresh_rate(void);
-
-/*!
- * Returns the pixel format that the capture device is currently storing
- * its captured frames in.
- *
- * The pixel format of a given frame as returned from kc_get_frame_buffer() may
- * be different from this value e.g. if the capture pixel format was changed
- * just after the frame was captured.
- */
-capture_pixel_format_e kc_get_capture_pixel_format(void);
-
-/*!
- * Returns true if the current capture signal is valid; false otherwise.
- *
- * @see
- * kc_is_receiving_signal(), kc_ev_signal_gained, kc_ev_signal_lost
- */
-bool kc_has_valid_signal(void);
-
-/*!
- * Returns true if the current capture device is valid; false otherwise.
- */
-bool kc_has_valid_device(void);
-
-/*!
- * Returns true if the current input signal is digital; false otherwise.
- */
-bool kc_has_digital_signal(void);
+unsigned kc_dropped_frames_count(void);
 
 /*!
  * Returns true if the capture device's active input channel is currently
  * receiving a signal; false otherwise.
  *
+ * @note
+ * Will return false also when the capture device is receiving a signal that is
+ * out of range.
+ *
  * @see
- * kc_get_device_input_channel_idx(), kc_set_capture_input_channel(),
  * kc_ev_signal_gained, kc_ev_signal_lost
  */
-bool kc_is_receiving_signal(void);
+bool kc_has_signal(void);
 
 /*!
  * Returns a reference to the most recent captured frame.
@@ -714,89 +448,76 @@ bool kc_is_receiving_signal(void);
  * {
  *     // The capture mutex should be locked first, to ensure the frame buffer
  *     // isn't modified by another thread while we're accessing its data.
- *     std::lock_guard<std::mutex> lock(kc_capture_mutex());
+ *     std::lock_guard<std::mutex> lock(kc_mutex());
  *
- *     const auto &frameBuffer = kc_get_frame_buffer();
+ *     const auto &frameBuffer = kc_frame_buffer();
  *    // Access the frame buffer's data...
  * }
  * @endcode
  *
  * @see
- * kc_capture_mutex(), kc_ev_new_captured_frame
+ * kc_mutex(), kc_ev_new_captured_frame
  */
-const captured_frame_s& kc_get_frame_buffer(void);
+const captured_frame_s& kc_frame_buffer(void);
 
 /*!
- * Returns the latest capture event and removes it from the capture subsystem's
- * event queue.
+ * Processes the most recent or most important capture event and removes it from
+ * the capture subsystem's event queue.
  */
-capture_event_e kc_pop_capture_event_queue(void);
+capture_event_e kc_pop_event_queue(void);
 
 /*!
- * Assigns to the capture device the given video signal parameters.
+ * Returns the value of the capture device property identified by @p key.
  *
- * Returns true on success; false otherwise.
+ * @code
+ * const auto inputResolution = resolution_s{
+ *     .w = unsigned(kc_device_property("width")),
+ *     .h = unsigned(kc_device_property("height"))
+ * };
+ * @endcode
+ *
+ * Capture device properties are key--value pairs that provide metadata about the
+ * capture device; for example, its current capture resolution. They also act as
+ * a control surface, as they're capable of mutating the capture state (see
+ * kc_set_device_property()).
+ *
+ * The specific meaning of a key--value pair depends ultimately on the
+ * implementation of the device's interface in VCS, although there are certain
+ * standard keys that all implementations are expected to support. (A full list
+ * of standard keys will be added to this documentation.)
+ *
+ * @code
+ * // The static resolution_s::from_capture_device() function calls
+ * // kc_device_property("width") and kc_device_property("height")
+ * // to return the current capture resolution.
+ * const auto inputResolution = resolution_s::from_capture_device();
+ * @endcode
  *
  * @see
- * kc_get_device_video_parameters(), kc_get_device_video_parameter_minimums(),
- * kc_get_device_video_parameter_maximums(), kc_get_device_video_parameter_defaults()
+ * kc_set_device_property()
  */
-bool kc_set_video_signal_parameters(const video_signal_parameters_s &p);
+double kc_device_property(const std::string key);
 
 /*!
- * Sets the capture device's de-interlacing mode.
- * 
- * @note
- * Some capture devices might apply de-interlacing only when capturing an
- * interlaced signal.
+ * Assigns @p value to the capture device property identified by @p key.
  *
- * Returns true on success; false otherwise.
- */
-bool kc_set_deinterlacing_mode(const capture_deinterlacing_mode_e mode);
-
-/*!
- * Tells the capture device to start listening for signals on the given
- * input channel.
+ * Returns true if the value was assigned successfully; false otherwise.
  *
- * Returns true on success; false otherwise.
+ * @code
+ * if (kc_set_device_property("width: minimum", MIN_CAPTURE_WIDTH))
+ * {
+ *     // kc_device_property("width: minimum") == MIN_CAPTURE_WIDTH
+ * }
+ * @endcode
+ *
+ * Depending on the implementation of the capture device in VCS, modifying a
+ * property may mutate the device state. For example, changing an
+ * "input channel index" property may cause the capture device to switch to a
+ * different input channel.
  *
  * @see
- * kc_get_device_input_channel_idx(), kc_get_device_maximum_input_count()
+ * kc_device_property()
  */
-bool kc_set_capture_input_channel(const unsigned idx);
-
-/*!
- * Tells the capture device to store its captured frames using the given
- * pixel format.
- *
- * Returns true on success; false otherwise.
- *
- * @see
- * kc_get_capture_pixel_format()
- */
-bool kc_set_capture_pixel_format(const capture_pixel_format_e pf);
-
-/*!
- * Tells the capture device to adopt the given resolution as its input and
- * output resolution.
- *
- * Returns true on success; false otherwise.
- * 
- * @note
- * The capture device must adopt this as both its input and output
- * resolution. For example, if this resolution is 800 x 600, the capture
- * device should interpret the video signal as if it were 800 x 600, rather
- * than scaling the frame to 800 x 600 after capturing.
- *
- * @warning
- * Since this will be set as the capture device's input resolution,
- * captured frames may exhibit artefacting if the resolution doesn't match
- * the video signal's true resolution.
- * 
- * @see
- * kc_get_capture_resolution(), kc_get_device_minimum_resolution(),
- * kc_get_device_maximum_resolution()
- */
-bool kc_set_capture_resolution(const resolution_s &r);
+bool kc_set_device_property(const std::string key, double value);
 
 #endif

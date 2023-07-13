@@ -1,6 +1,6 @@
 /*
  * 2020 Tarpeeksi Hyvae Soft
- * 
+ *
  * Software: VCS
  *
  */
@@ -20,13 +20,13 @@ static unsigned RUNNING_PRESET_ID = 0;
 
 static video_preset_s* strongest_activating_preset(void)
 {
-    if (!kc_is_receiving_signal())
+    if (!kc_has_signal())
     {
         return nullptr;
     }
 
-    const resolution_s resolution = kc_current_capture_state().input.resolution;
-    const refresh_rate_s refreshRate = kc_current_capture_state().input.refreshRate;
+    const auto resolution = resolution_s::from_capture_device();
+    const auto refreshRate = refresh_rate_s::from_capture_device();
 
     std::vector<std::pair<unsigned/*preset id*/,
                           int/*preset activation level*/>> activationLevels;
@@ -71,7 +71,7 @@ subsystem_releaser_t kvideopreset_initialize(void)
 
             if (preset == strongest_activating_preset())
             {
-                kc_set_video_signal_parameters(preset->videoParameters);
+                video_signal_parameters_s::to_capture_device(preset->videoParameters);
             }
         });
     }
@@ -123,11 +123,8 @@ void kvideopreset_remove_all_presets(void)
 
 void kvideopreset_apply_current_active_preset(void)
 {
-    if (
-        !kc_is_receiving_signal() ||
-        !kc_has_valid_signal() ||
-        (kc_current_capture_state().signalFormat != signal_format_e::analog)
-    ){
+    if (!kc_has_signal())
+    {
         return;
     }
 
@@ -135,11 +132,11 @@ void kvideopreset_apply_current_active_preset(void)
 
     if (activePreset)
     {
-        kc_set_video_signal_parameters(activePreset->videoParameters);
+        video_signal_parameters_s::to_capture_device(activePreset->videoParameters);
     }
     else
     {
-        kc_set_video_signal_parameters(kc_get_device_video_parameter_defaults());
+        video_signal_parameters_s::to_capture_device(video_signal_parameters_s::from_capture_device(": default"));
     }
 
     return;
@@ -165,7 +162,7 @@ video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId)
 
 void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
 {
-    if (!kc_is_receiving_signal())
+    if (!kc_has_signal())
     {
         return;
     }
@@ -174,7 +171,7 @@ void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
     {
         if (preset->activates_with_shortcut(shortcutString))
         {
-            kc_set_video_signal_parameters(preset->videoParameters);
+            video_signal_parameters_s::to_capture_device(preset->videoParameters);
             return;
         }
     }
@@ -206,7 +203,7 @@ video_preset_s* kvideopreset_create_new_preset(const video_preset_s *const dupli
     {
         preset->activatesWithResolution = false;
         preset->activationResolution = {640, 480, 32};
-        preset->videoParameters = kc_get_device_video_parameter_defaults();
+        preset->videoParameters = video_signal_parameters_s::from_capture_device(": default");
     }
 
     preset->id = RUNNING_PRESET_ID++;

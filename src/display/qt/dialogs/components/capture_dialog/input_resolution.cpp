@@ -52,10 +52,8 @@ InputResolution::InputResolution(QWidget *parent) :
                 const QSize buttonResolution = button->property("resolution").toSize();
                 k_assert(buttonResolution.isValid(), "Detected a malformed input resolution button.");
 
-                kc_force_capture_resolution({
-                    unsigned(buttonResolution.width()),
-                    unsigned(buttonResolution.height())
-                });
+                kc_set_device_property("width", buttonResolution.width());
+                kc_set_device_property("height", buttonResolution.height());
             });
         }
 
@@ -65,10 +63,14 @@ InputResolution::InputResolution(QWidget *parent) :
 
             if (ResolutionDialog("Force an input resolution", &customResolution, parentWidget()).exec() == QDialog::Accepted)
             {
-                kc_force_capture_resolution(customResolution);
+                kc_set_device_property("width", customResolution.w);
+                kc_set_device_property("height", customResolution.h);
             }
         });
     }
+
+    kc_ev_signal_gained.listen([this]{this->ui->frame_inputForceButtons->setEnabled(true);});
+    kc_ev_signal_lost.listen([this]{this->ui->frame_inputForceButtons->setEnabled(false);});
 
     return;
 }

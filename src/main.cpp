@@ -103,6 +103,11 @@ static bool initialize_all(void)
             ));
         });
 
+        kc_ev_signal_lost.listen([]
+        {
+            INFO(("No signal."));
+        });
+
         // The capture device has received a new video mode. We'll inspect the
         // mode to see if we think it's acceptable, then allow news of it to
         // propagate to the rest of VCS.
@@ -133,62 +138,25 @@ static bool initialize_all(void)
 
 static capture_event_e process_next_capture_event(void)
 {
-    std::lock_guard<std::mutex> lock(kc_capture_mutex());
-    const capture_event_e e = kc_pop_capture_event_queue();
+    std::lock_guard<std::mutex> lock(kc_mutex());
+    const capture_event_e e = kc_pop_event_queue();
 
     switch (e)
     {
-        case capture_event_e::unrecoverable_error:
-        {
-            NBENE(("The capture device has reported an unrecoverable error."));
-
-            kc_ev_unrecoverable_error.fire();
-
-            break;
-        }
         case capture_event_e::new_frame:
         {
-            const auto &frame = kc_get_frame_buffer();
-
-            if (kc_has_valid_signal())
-            {
-                kc_ev_new_captured_frame.fire(frame);
-            }
-
+            const auto &frame = kc_frame_buffer();
             k_ev_frame_processing_finished.fire(frame);
-
-            break;
-        }
-        case capture_event_e::new_video_mode:
-        {
-            if (kc_has_valid_signal())
-            {
-                kc_ev_new_proposed_video_mode.fire({
-                    kc_get_capture_resolution(),
-                    kc_get_capture_refresh_rate(),
-                });
-            }
-
-            break;
-        }
-        case capture_event_e::signal_lost:
-        {
-            kc_ev_signal_lost.fire();
-            break;
-        }
-        case capture_event_e::signal_gained:
-        {
-            kc_ev_signal_gained.fire();
             break;
         }
         case capture_event_e::invalid_signal:
         {
-            kc_ev_invalid_signal.fire();
+            NBENE(("The input signal is out of range."));
             break;
         }
         case capture_event_e::invalid_device:
         {
-            kc_ev_invalid_device.fire();
+            NBENE(("Invalid capture device."));
             break;
         }
         case capture_event_e::sleep:
@@ -196,13 +164,9 @@ static capture_event_e process_next_capture_event(void)
             std::this_thread::sleep_for(std::chrono::milliseconds(4)); /// TODO. Is 4 the best wait-time?
             break;
         }
-        case capture_event_e::none:
-        {
-            break;
-        }
         default:
         {
-            k_assert(0, "Unhandled capture event.");
+            break;
         }
     }
 
@@ -259,7 +223,7 @@ static void eco_sleep(const capture_event_e event)
 
     const unsigned maxTimeToSleepMs = 10;
 
-    if (!kc_is_receiving_signal())
+    if (!kc_has_signal())
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(maxTimeToSleepMs));
         return;
@@ -271,10 +235,10 @@ static void eco_sleep(const capture_event_e event)
     else
     {
         static double timeToSleepMs = 0;
-        static unsigned numDroppedFrames = kc_get_missed_frames_count();
+        static unsigned numDroppedFrames = kc_dropped_frames_count();
         const double msSinceLastEvent = (0.85 * std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - ECO_REFERENCE_TIME).count());
 
-        const unsigned numNewDroppedFrames = (kc_get_missed_frames_count() - numDroppedFrames);
+        const unsigned numNewDroppedFrames = (kc_dropped_frames_count() - numDroppedFrames);
         numDroppedFrames += numNewDroppedFrames;
 
         // If we drop frames, we shorten the sleep duration, and otherwise we creep toward
@@ -340,9 +304,9 @@ int main(int argc, char *argv[])
         load_user_data();
     }
 
-    if (!kc_is_receiving_signal())
+    if (!kc_has_signal())
     {
-        INFO(("No signal."));
+        kc_ev_signal_lost.fire();
     }
 
     DEBUG(("Entering the main loop."));

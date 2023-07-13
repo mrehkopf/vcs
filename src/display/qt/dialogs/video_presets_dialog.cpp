@@ -26,19 +26,19 @@
 // Set this variable to false to disable real-time updates.
 static bool CONTROLS_LIVE_UPDATE = true;
 
-#define PARAM_LABEL_HORIZONTAL_SIZE "Hor. size"
-#define PARAM_LABEL_HORIZONTAL_POSITION "Hor. position"
-#define PARAM_LABEL_VERTICAL_POSITION "Ver. position"
+#define PARAM_LABEL_HORIZONTAL_SIZE "Horizontal size"
+#define PARAM_LABEL_HORIZONTAL_POSITION "Horizontal position"
+#define PARAM_LABEL_VERTICAL_POSITION "Vertical position"
 #define PARAM_LABEL_BLACK_LEVEL "Black level"
 #define PARAM_LABEL_PHASE "Phase"
 #define PARAM_LABEL_BRIGHTNESS "Brightness"
-#define PARAM_LABEL_RED_BRIGHTNESS "Brightness: R"
-#define PARAM_LABEL_GREEN_BRIGHTNESS "Brightness: G"
-#define PARAM_LABEL_BLUE_BRIGHTNESS "Brightness: B"
+#define PARAM_LABEL_RED_BRIGHTNESS "Brightness: Red"
+#define PARAM_LABEL_GREEN_BRIGHTNESS "Brightness: Green"
+#define PARAM_LABEL_BLUE_BRIGHTNESS "Brightness: Blue"
 #define PARAM_LABEL_CONTRAST "Contrast"
-#define PARAM_LABEL_RED_CONTRAST "Contrast: R"
-#define PARAM_LABEL_GREEN_CONTRAST "Contrast: G"
-#define PARAM_LABEL_BLUE_CONTRAST "Contrast: B"
+#define PARAM_LABEL_RED_CONTRAST "Contrast: Red"
+#define PARAM_LABEL_GREEN_CONTRAST "Contrast: Green"
+#define PARAM_LABEL_BLUE_CONTRAST "Contrast: Blue"
 
 VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
     VCSBaseDialog(parent),
@@ -57,8 +57,6 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
         {
             connect(this, &VCSBaseDialog::data_filename_changed, this, [=](const QString &newFilename)
             {
-
-                qDebug() << QFileInfo(newFilename).fileName();
                 filenameIndicator->setText(QFileInfo(newFilename).fileName());
             });
 
@@ -146,8 +144,8 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
         ui->groupBox_videoPresetName->setEnabled(false);
         ui->parameterGrid_videoParams->setEnabled(false);
 
-        const auto minres = kc_get_device_minimum_resolution();
-        const auto maxres = kc_get_device_maximum_resolution();
+        const auto minres = resolution_s::from_capture_device(": minimum");
+        const auto maxres = resolution_s::from_capture_device(": maximum");
 
         ui->spinBox_resolutionX->setMinimum(int(minres.w));
         ui->spinBox_resolutionX->setMaximum(int(maxres.w));
@@ -359,15 +357,14 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
 
         connect(ui->pushButton_resolutionSeparator, &QPushButton::clicked, this, [this](void)
         {
-            const auto currentResolution = kc_get_capture_resolution();
-
+            const resolution_s &currentResolution = ks_output_resolution();
             ui->spinBox_resolutionX->setValue(int(currentResolution.w));
             ui->spinBox_resolutionY->setValue(int(currentResolution.h));
         });
 
         connect(ui->pushButton_refreshRateSeparator, &QPushButton::clicked, this, [this](void)
         {
-            ui->doubleSpinBox_refreshRateValue->setValue(kc_current_capture_state().input.refreshRate.value<double>());
+            ui->doubleSpinBox_refreshRateValue->setValue(refresh_rate_s::from_capture_device().value<double>());
         });
 
         connect(ui->comboBox_shortcutSecondKey, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](const int idx)
@@ -426,7 +423,7 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
     {
         kc_ev_new_video_mode.listen([this](const video_mode_s&)
         {
-            if (kc_is_receiving_signal())
+            if (kc_has_signal())
             {
                 this->update_preset_control_ranges();
             }
@@ -557,8 +554,8 @@ void VideoPresetsDialog::broadcast_current_preset_parameters(void)
         return;
     }
 
-    preset->videoParameters.overallBrightness  = ui->parameterGrid_videoParams->value(PARAM_LABEL_BRIGHTNESS);
-    preset->videoParameters.overallContrast    = ui->parameterGrid_videoParams->value(PARAM_LABEL_CONTRAST);
+    preset->videoParameters.brightness  = ui->parameterGrid_videoParams->value(PARAM_LABEL_BRIGHTNESS);
+    preset->videoParameters.contrast    = ui->parameterGrid_videoParams->value(PARAM_LABEL_CONTRAST);
     preset->videoParameters.redBrightness      = ui->parameterGrid_videoParams->value(PARAM_LABEL_RED_BRIGHTNESS);
     preset->videoParameters.redContrast        = ui->parameterGrid_videoParams->value(PARAM_LABEL_RED_CONTRAST);
     preset->videoParameters.greenBrightness    = ui->parameterGrid_videoParams->value(PARAM_LABEL_GREEN_BRIGHTNESS);
@@ -567,7 +564,7 @@ void VideoPresetsDialog::broadcast_current_preset_parameters(void)
     preset->videoParameters.blueContrast       = ui->parameterGrid_videoParams->value(PARAM_LABEL_BLUE_CONTRAST);
     preset->videoParameters.blackLevel         = ui->parameterGrid_videoParams->value(PARAM_LABEL_BLACK_LEVEL);
     preset->videoParameters.horizontalPosition = ui->parameterGrid_videoParams->value(PARAM_LABEL_HORIZONTAL_POSITION);
-    preset->videoParameters.horizontalScale    = ui->parameterGrid_videoParams->value(PARAM_LABEL_HORIZONTAL_SIZE);
+    preset->videoParameters.horizontalSize    = ui->parameterGrid_videoParams->value(PARAM_LABEL_HORIZONTAL_SIZE);
     preset->videoParameters.phase              = ui->parameterGrid_videoParams->value(PARAM_LABEL_PHASE);
     preset->videoParameters.verticalPosition   = ui->parameterGrid_videoParams->value(PARAM_LABEL_VERTICAL_POSITION);
 
@@ -589,48 +586,48 @@ void VideoPresetsDialog::update_preset_control_ranges(void)
     // doesn't clip preset data that falls outside of the capture card's
     // min/max range.
     {
-        const video_signal_parameters_s min = kc_get_device_video_parameter_minimums();
-        const video_signal_parameters_s max = kc_get_device_video_parameter_maximums();
-        const video_signal_parameters_s def = kc_get_device_video_parameter_defaults();
+        const auto min = video_signal_parameters_s::from_capture_device(": minimum");
+        const auto max = video_signal_parameters_s::from_capture_device(": maximum");
+        const auto def = video_signal_parameters_s::from_capture_device(": default");
 
-        ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_HORIZONTAL_SIZE, std::max(currentParams.horizontalScale, max.horizontalScale));
+        ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_HORIZONTAL_SIZE, std::max(currentParams.horizontalSize, max.horizontalSize));
         ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_HORIZONTAL_POSITION, std::max(currentParams.horizontalPosition, max.horizontalPosition));
         ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_VERTICAL_POSITION, std::max(currentParams.verticalPosition, max.verticalPosition));
         ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_BLACK_LEVEL, std::max(currentParams.blackLevel, max.blackLevel));
         ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_PHASE, std::max(currentParams.phase, max.phase));
-        ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_BRIGHTNESS, std::max(currentParams.overallBrightness, max.overallBrightness));
+        ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_BRIGHTNESS, std::max(currentParams.brightness, max.brightness));
         ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_RED_BRIGHTNESS, std::max(currentParams.redBrightness, max.redBrightness));
         ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_GREEN_BRIGHTNESS, std::max(currentParams.greenBrightness, max.greenBrightness));
         ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_BLUE_BRIGHTNESS, std::max(currentParams.blueBrightness, max.blueBrightness));
-        ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_CONTRAST, std::max(currentParams.overallContrast, max.overallContrast));
+        ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_CONTRAST, std::max(currentParams.contrast, max.contrast));
         ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_RED_CONTRAST, std::max(currentParams.redContrast, max.redContrast));
         ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_GREEN_CONTRAST, std::max(currentParams.greenContrast, max.greenContrast));
         ui->parameterGrid_videoParams->set_maximum_value(PARAM_LABEL_BLUE_CONTRAST, std::max(currentParams.blueContrast, max.blueContrast));
 
-        ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_HORIZONTAL_SIZE, std::min(currentParams.horizontalScale, min.horizontalScale));
+        ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_HORIZONTAL_SIZE, std::min(currentParams.horizontalSize, min.horizontalSize));
         ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_HORIZONTAL_POSITION, std::min(currentParams.horizontalPosition, min.horizontalPosition));
         ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_VERTICAL_POSITION, std::min(currentParams.verticalPosition, min.verticalPosition));
         ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_BLACK_LEVEL, std::min(currentParams.blackLevel, min.blackLevel));
         ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_PHASE, std::min(currentParams.phase, min.phase));
-        ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_BRIGHTNESS, std::min(currentParams.overallBrightness, min.overallBrightness));
+        ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_BRIGHTNESS, std::min(currentParams.brightness, min.brightness));
         ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_RED_BRIGHTNESS, std::min(currentParams.redBrightness, min.redBrightness));
         ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_GREEN_BRIGHTNESS, std::min(currentParams.greenBrightness, min.greenBrightness));
         ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_BLUE_BRIGHTNESS, std::min(currentParams.blueBrightness, min.blueBrightness));
-        ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_CONTRAST, std::min(currentParams.overallContrast, min.overallContrast));
+        ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_CONTRAST, std::min(currentParams.contrast, min.contrast));
         ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_RED_CONTRAST, std::min(currentParams.redContrast, min.redContrast));
         ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_GREEN_CONTRAST,std::min(currentParams.greenContrast,  min.greenContrast));
         ui->parameterGrid_videoParams->set_minimum_value(PARAM_LABEL_BLUE_CONTRAST, std::min(currentParams.blueContrast, min.blueContrast));
 
-        ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_HORIZONTAL_SIZE, def.horizontalScale);
+        ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_HORIZONTAL_SIZE, def.horizontalSize);
         ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_HORIZONTAL_POSITION, def.horizontalPosition);
         ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_VERTICAL_POSITION, def.verticalPosition);
         ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_BLACK_LEVEL, def.blackLevel);
         ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_PHASE, def.phase);
-        ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_BRIGHTNESS, def.overallBrightness);
+        ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_BRIGHTNESS, def.brightness);
         ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_RED_BRIGHTNESS, def.redBrightness);
         ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_GREEN_BRIGHTNESS, def.greenBrightness);
         ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_BLUE_BRIGHTNESS, def.blueBrightness);
-        ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_CONTRAST, def.overallContrast);
+        ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_CONTRAST, def.contrast);
         ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_RED_CONTRAST, def.redContrast);
         ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_GREEN_CONTRAST, def.greenContrast);
         ui->parameterGrid_videoParams->set_default_value(PARAM_LABEL_BLUE_CONTRAST, def.blueContrast);
@@ -701,16 +698,16 @@ void VideoPresetsDialog::update_preset_controls_with_current_preset_data(void)
         {
             const auto &currentParams = preset->videoParameters;
 
-            ui->parameterGrid_videoParams->set_value(PARAM_LABEL_HORIZONTAL_SIZE, currentParams.horizontalScale);
+            ui->parameterGrid_videoParams->set_value(PARAM_LABEL_HORIZONTAL_SIZE, currentParams.horizontalSize);
             ui->parameterGrid_videoParams->set_value(PARAM_LABEL_HORIZONTAL_POSITION, currentParams.horizontalPosition);
             ui->parameterGrid_videoParams->set_value(PARAM_LABEL_VERTICAL_POSITION, currentParams.verticalPosition);
             ui->parameterGrid_videoParams->set_value(PARAM_LABEL_BLACK_LEVEL, currentParams.blackLevel);
             ui->parameterGrid_videoParams->set_value(PARAM_LABEL_PHASE, currentParams.phase);
-            ui->parameterGrid_videoParams->set_value(PARAM_LABEL_BRIGHTNESS, currentParams.overallBrightness);
+            ui->parameterGrid_videoParams->set_value(PARAM_LABEL_BRIGHTNESS, currentParams.brightness);
             ui->parameterGrid_videoParams->set_value(PARAM_LABEL_RED_BRIGHTNESS, currentParams.redBrightness);
             ui->parameterGrid_videoParams->set_value(PARAM_LABEL_GREEN_BRIGHTNESS, currentParams.greenBrightness);
             ui->parameterGrid_videoParams->set_value(PARAM_LABEL_BLUE_BRIGHTNESS, currentParams.blueBrightness);
-            ui->parameterGrid_videoParams->set_value(PARAM_LABEL_CONTRAST, currentParams.overallContrast);
+            ui->parameterGrid_videoParams->set_value(PARAM_LABEL_CONTRAST, currentParams.contrast);
             ui->parameterGrid_videoParams->set_value(PARAM_LABEL_RED_CONTRAST, currentParams.redContrast);
             ui->parameterGrid_videoParams->set_value(PARAM_LABEL_GREEN_CONTRAST, currentParams.greenContrast);
             ui->parameterGrid_videoParams->set_value(PARAM_LABEL_BLUE_CONTRAST, currentParams.blueContrast);

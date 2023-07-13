@@ -24,16 +24,7 @@
 #include "ui_signal_status.h"
 
 // Used to keep track of how long we've had a particular video mode set.
-static QElapsedTimer VIDEO_MODE_UPTIME;
 static QTimer INFO_UPDATE_TIMER;
-
-// How many captured frames we've had to drop. This count is shown to the user
-// in the signal dialog.
-static unsigned NUM_DROPPED_FRAMES = 0;
-
-// How many captured frames the capture subsystem has had to drop, in total. We'll
-// use this value to derive NUM_DROPPED_FRAMES.
-static unsigned GLOBAL_NUM_DROPPED_FRAMES = 0;
 
 SignalStatus::SignalStatus(QWidget *parent) :
     VCSBaseDialog(parent),
@@ -47,64 +38,23 @@ SignalStatus::SignalStatus(QWidget *parent) :
     {
         // Initialize the table of information. Note that this also sets
         // the vertical order in which the table's parameters are shown.
+        ui->tableWidget_propertyTable->modify_property("Resolution", "-");
+        ui->tableWidget_propertyTable->modify_property("Input rate", "-");
+        ui->tableWidget_propertyTable->modify_property("Output rate", "-");
+        ui->tableWidget_propertyTable->modify_property("Frames dropped", "-");
+
+        INFO_UPDATE_TIMER.start(1000);
+        connect(&INFO_UPDATE_TIMER, &QTimer::timeout, [this]
         {
-            ui->tableWidget_propertyTable->modify_property("Analog", "-");
-            ui->tableWidget_propertyTable->modify_property("Resolution", "-");
-            ui->tableWidget_propertyTable->modify_property("Input rate", "-");
-            ui->tableWidget_propertyTable->modify_property("Output rate", "-");
-            ui->tableWidget_propertyTable->modify_property("Mode uptime", "-");
-            ui->tableWidget_propertyTable->modify_property("Frames dropped", "-");
-        }
-
-        // Start timers to keep track of the video mode's uptime and dropped
-        // frames count.
-        {
-            VIDEO_MODE_UPTIME.start();
-            INFO_UPDATE_TIMER.start(1000);
-
-            GLOBAL_NUM_DROPPED_FRAMES = kc_get_missed_frames_count();
-
-            connect(&INFO_UPDATE_TIMER, &QTimer::timeout, [this]
-            {
-                // Update missed frames count.
-                {
-                    NUM_DROPPED_FRAMES += (kc_get_missed_frames_count() - GLOBAL_NUM_DROPPED_FRAMES);
-                    GLOBAL_NUM_DROPPED_FRAMES = kc_get_missed_frames_count();
-
-                    ui->tableWidget_propertyTable->modify_property("Frames dropped", QString::number(NUM_DROPPED_FRAMES));
-                }
-
-                // Update uptime.
-                {
-                    const unsigned seconds = unsigned(VIDEO_MODE_UPTIME.elapsed() / 1000);
-                    const unsigned minutes = (seconds / 60);
-                    const unsigned hours   = (minutes / 60);
-
-                    if (!kc_is_receiving_signal())
-                    {
-                        ui->tableWidget_propertyTable->modify_property("Mode uptime", "-");
-                    }
-                    else
-                    {
-                        ui->tableWidget_propertyTable->modify_property(
-                            "Mode uptime",
-                            QString("%1:%2:%3")
-                                .arg(QString::number(hours).rightJustified(2, '0'))
-                                .arg(QString::number(minutes % 60).rightJustified(2, '0'))
-                                .arg(QString::number(seconds % 60).rightJustified(2, '0'))
-                        );
-                    }
-                }
-            });
-        }
+            ui->tableWidget_propertyTable->modify_property("Frames dropped", QString::number(kc_dropped_frames_count()));
+        });
     }
 
     // Listen for app events.
     {
         const auto update_info = [this]
         {
-            VIDEO_MODE_UPTIME.restart();
-            update_information_table(kc_is_receiving_signal());
+            update_information_table(kc_has_signal());
         };
 
         kc_ev_signal_lost.listen([this]
@@ -127,7 +77,7 @@ SignalStatus::SignalStatus(QWidget *parent) :
             update_info();
         });
 
-        ks_ev_input_channel_changed.listen(update_info);
+        kc_ev_input_channel_changed.listen(update_info);
     }
 
     return;
@@ -150,22 +100,18 @@ void SignalStatus::set_controls_enabled(const bool state)
 
 void SignalStatus::update_information_table(const bool isReceivingSignal)
 {
-    const auto inputChannelIdx = kc_get_device_input_channel_idx();
-
     if (isReceivingSignal)
     {
-        const resolution_s resolution = kc_current_capture_state().input.resolution;
-        const auto refreshRate = kc_current_capture_state().input.refreshRate.value<double>();
+        const auto resolution = resolution_s::from_capture_device();
+        const auto refreshRate = refresh_rate_s::from_capture_device().value<double>();
 
         ui->tableWidget_propertyTable->modify_property("Input rate", QString("%1 Hz").arg(QString::number(refreshRate, 'f', 3)));
         ui->tableWidget_propertyTable->modify_property("Resolution", QString("%1 \u00d7 %2").arg(resolution.w).arg(resolution.h));
-        ui->tableWidget_propertyTable->modify_property("Analog", (kc_current_capture_state().signalFormat == signal_format_e::digital)? "No" : "Yes");
     }
     else
     {
         ui->tableWidget_propertyTable->modify_property("Resolution", "-");
         ui->tableWidget_propertyTable->modify_property("Input rate", "-");
-        ui->tableWidget_propertyTable->modify_property("Analog", "-");
     }
 
     return;

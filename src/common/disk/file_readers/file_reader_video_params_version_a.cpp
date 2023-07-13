@@ -80,7 +80,7 @@ bool file_reader::video_params::version_a::read(const std::string &filename,
                 }
                 else if (paramName == "horizontalScale")
                 {
-                    params.horizontalScale = rowData.at(row).at(1).toInt();
+                    params.horizontalSize = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "phase")
                 {
@@ -92,11 +92,11 @@ bool file_reader::video_params::version_a::read(const std::string &filename,
                 }
                 else if (paramName == "brightness")
                 {
-                    params.overallBrightness = rowData.at(row).at(1).toInt();
+                    params.brightness = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "contrast")
                 {
-                    params.overallContrast = rowData.at(row).at(1).toInt();
+                    params.contrast = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "redBrightness")
                 {

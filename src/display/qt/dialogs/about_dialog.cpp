@@ -26,7 +26,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     // the vertical order in which the table's parameters are shown.
     {
         ui->tableWidget->modify_property("Version", PROGRAM_VERSION_STRING);
-        ui->tableWidget->modify_property("Release build",
+        ui->tableWidget->modify_property("Is release build",
             #ifdef VCS_RELEASE_BUILD
                 "Yes"
             #else

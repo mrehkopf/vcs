@@ -60,11 +60,11 @@ bool file_reader::video_params::legacy_1_6_5::read(const std::string &filename,
             // order in which they were saved.
             p.verticalPosition   = get_param("vPos").toInt();
             p.horizontalPosition = get_param("hPos").toInt();
-            p.horizontalScale    = get_param("hScale").toUInt();
+            p.horizontalSize     = get_param("hScale").toUInt();
             p.phase              = get_param("phase").toInt();
             p.blackLevel         = get_param("bLevel").toInt();
-            p.overallBrightness  = get_param("bright").toInt();
-            p.overallContrast    = get_param("contr").toInt();
+            p.brightness         = get_param("bright").toInt();
+            p.contrast           = get_param("contr").toInt();
             p.redBrightness      = get_param("redBr").toInt();
             p.redContrast        = get_param("redCn").toInt();
             p.greenBrightness    = get_param("greenBr").toInt();

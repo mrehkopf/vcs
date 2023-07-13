@@ -212,10 +212,6 @@ The following variables will expand to dynamic values in the overlay:
             <td>The height of the current output resolution.</td>
         </tr>
         <tr>
-            <td><em>$outRate</em></td>
-            <td>The current output frame rate.</td>
-        </tr>
-        <tr>
             <td><em>$frameDropIndicator</em></td>
             <td>Shows a warning label if frames are currently being dropped, or nothing if they aren't.</td>
         </tr>

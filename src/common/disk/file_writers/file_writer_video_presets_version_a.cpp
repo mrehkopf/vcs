@@ -53,13 +53,13 @@ bool file_writer::video_presets::version_a::write(const std::string &filename,
             // Video params.
             outFile << "verticalPosition,"   << p->videoParameters.verticalPosition   << "\n"
                     << "horizontalPosition," << p->videoParameters.horizontalPosition << "\n"
-                    << "horizontalScale,"    << p->videoParameters.horizontalScale    << "\n"
+                    << "horizontalScale,"    << p->videoParameters.horizontalSize    << "\n"
                     << "phase,"              << p->videoParameters.phase              << "\n"
                     << "blackLevel,"         << p->videoParameters.blackLevel         << "\n";
 
             // Color params.
-            outFile << "brightness,"      << p->videoParameters.overallBrightness << "\n"
-                    << "contrast,"        << p->videoParameters.overallContrast   << "\n"
+            outFile << "brightness,"      << p->videoParameters.brightness << "\n"
+                    << "contrast,"        << p->videoParameters.contrast   << "\n"
                     << "redBrightness,"   << p->videoParameters.redBrightness     << "\n"
                     << "redContrast,"     << p->videoParameters.redContrast       << "\n"
                     << "greenBrightness," << p->videoParameters.greenBrightness   << "\n"
