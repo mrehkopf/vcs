@@ -60,7 +60,7 @@
 #define VCS_SCALER_SCALER_H
 
 #include "common/globals.h"
-#include "common/propagate/vcs_event.h"
+#include "common/vcs_event/vcs_event.h"
 #include "filter/filters/render_text/font_5x3.h"
 #include "main.h"
 

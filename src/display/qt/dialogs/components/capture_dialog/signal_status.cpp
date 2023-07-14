@@ -15,7 +15,7 @@
 #include <QTimer>
 #include <QTime>
 #include "display/qt/subclasses/QTableWidget_property_table.h"
-#include "common/propagate/vcs_event.h"
+#include "common/vcs_event/vcs_event.h"
 #include "display/qt/utility.h"
 #include "display/display.h"
 #include "capture/capture.h"

@@ -7,7 +7,7 @@
 #include "display/qt/dialogs/resolution_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
-#include "common/propagate/vcs_event.h"
+#include "common/vcs_event/vcs_event.h"
 #include "capture/capture.h"
 #include "input_resolution.h"
 #include "ui_input_resolution.h"

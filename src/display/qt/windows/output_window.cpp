@@ -42,7 +42,7 @@
 #include "display/qt/persistent_settings.h"
 #include "display/qt/keyboard_shortcuts.h"
 #include "anti_tear/anti_tear.h"
-#include "common/propagate/vcs_event.h"
+#include "common/vcs_event/vcs_event.h"
 #include "capture/video_presets.h"
 #include "capture/capture.h"
 #include "common/globals.h"

@@ -1,5 +1,5 @@
 #include "display/qt/persistent_settings.h"
-#include "common/propagate/vcs_event.h"
+#include "common/vcs_event/vcs_event.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"

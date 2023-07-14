@@ -7,7 +7,7 @@
  *
  */
 
-#include "common/propagate/vcs_event.h"
+#include "common/vcs_event/vcs_event.h"
 #include "capture/capture.h"
 #include "common/timer/timer.h"
 

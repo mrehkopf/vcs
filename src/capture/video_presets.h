@@ -12,7 +12,7 @@
 #include "common/globals.h"
 #include "common/refresh_rate.h"
 #include "capture/capture.h"
-#include "common/propagate/vcs_event.h"
+#include "common/vcs_event/vcs_event.h"
 #include "main.h"
 
 struct video_preset_s

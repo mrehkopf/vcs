@@ -20,7 +20,7 @@
 #include "common/disk/file_writers/file_writer_video_params.h"
 #include "common/disk/file_readers/file_reader_filter_graph.h"
 #include "common/disk/file_writers/file_writer_filter_graph.h"
-#include "common/propagate/vcs_event.h"
+#include "common/vcs_event/vcs_event.h"
 #include "capture/capture.h"
 #include "capture/video_presets.h"
 #include "filter/filter.h"

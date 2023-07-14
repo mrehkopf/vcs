@@ -12,7 +12,6 @@
 #include <cmath>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "anti_tear/anti_tear.h"
-#include "common/propagate/vcs_event.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"

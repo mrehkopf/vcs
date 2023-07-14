@@ -10,7 +10,7 @@
 
 #include <vector>
 #include <functional>
-#include "common/propagate/vcs_event.h"
+#include "common/vcs_event/vcs_event.h"
 
 struct captured_frame_s;
 

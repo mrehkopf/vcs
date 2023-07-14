@@ -22,7 +22,7 @@
 
 #include <vector>
 #include <string>
-#include "common/propagate/vcs_event.h"
+#include "common/vcs_event/vcs_event.h"
 #include "display/display.h"
 
 class BaseFilterGraphNode;

@@ -250,7 +250,7 @@ HEADERS += \
     src/capture/video_presets.h \
     src/common/disk/file_writers/file_writer_video_presets.h \
     src/common/disk/file_readers/file_reader_video_presets.h \
-    src/common/propagate/vcs_event.h \
+    src/common/vcs_event/vcs_event.h \
     src/common/timer/timer.h
 
 FORMS += \
