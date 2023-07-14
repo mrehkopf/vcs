@@ -92,9 +92,6 @@ struct resolution_s
     /*! Height in pixels.*/
     unsigned h;
 
-    /*! Bits per pixel.*/
-    unsigned bpp;
-
     static resolution_s from_capture_device(const std::string &nameSpace = "");
 
     static void to_capture_device(const resolution_s &resolution);
@@ -112,12 +109,13 @@ struct image_s
 {
     uint8_t *const pixels;
     const resolution_s resolution;
+    const unsigned bitsPerPixel = 32;
 
     image_s(uint8_t *const pixels, const resolution_s &resolution) : pixels(pixels), resolution(resolution) {}
 
     std::size_t byte_size(void) const
     {
-        return (this->resolution.w * this->resolution.h * (this->resolution.bpp / 8));
+        return (this->resolution.w * this->resolution.h * (bitsPerPixel / 8));
     }
 
     void operator=(const image_s &other)

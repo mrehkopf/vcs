@@ -86,7 +86,7 @@ abstract_filter_c* kf_apply_matching_filter_chain(image_s *const dstImage)
         return nullptr;
     }
 
-    k_assert((dstImage->resolution.bpp == 32), "Filters can only be applied to 32-bit pixel data.");
+    k_assert((dstImage->bitsPerPixel == 32), "Filters can only be applied to 32-bit pixel data.");
 
     std::pair<const std::vector<abstract_filter_c*>*, unsigned> partialMatch = {nullptr, 0};
     std::pair<const std::vector<abstract_filter_c*>*, unsigned> openMatch = {nullptr, 0};

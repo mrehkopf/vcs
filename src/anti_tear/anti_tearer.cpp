@@ -23,7 +23,7 @@ void anti_tearer_c::release(void)
 
 void anti_tearer_c::initialize(const resolution_s &maxResolution)
 {
-    const unsigned requiredBufferSize = (maxResolution.w * maxResolution.h * (maxResolution.bpp / 8));
+    const unsigned requiredBufferSize = (maxResolution.w * maxResolution.h * (this->presentBuffer.bitsPerPixel / 8));
 
     this->maximumResolution = maxResolution;
 
@@ -33,7 +33,7 @@ void anti_tearer_c::initialize(const resolution_s &maxResolution)
 
     this->backBuffer = this->buffers[0];
     this->frontBuffer = this->buffers[1];
-    this->presentBuffer.resolution = {0, 0, 32};
+    this->presentBuffer.resolution = {.w = 0, .h = 0};
 
     this->onePerFrame.initialize(this);
     this->multiplePerFrame.initialize(this);
@@ -41,14 +41,10 @@ void anti_tearer_c::initialize(const resolution_s &maxResolution)
     return;
 }
 
-u8* anti_tearer_c::process(u8 *const pixels,
-                           const resolution_s &resolution)
+u8* anti_tearer_c::process(u8 *const pixels, const resolution_s &resolution)
 {
     k_assert((pixels != nullptr),
              "The anti-tear engine expected a pixel buffer, but received null.");
-
-    k_assert((resolution.bpp == this->presentBuffer.resolution.bpp),
-             "The anti-tear engine expected a certain bit depth, but the input frame did not comply.");
 
     k_assert((resolution.w <= this->maximumResolution.w) &&
              (resolution.h <= this->maximumResolution.h),
@@ -82,7 +78,7 @@ u8* anti_tearer_c::present_front_buffer(const resolution_s &resolution)
     std::memcpy(
         this->presentBuffer.pixels,
         this->frontBuffer,
-        (resolution.w * resolution.h * (resolution.bpp / 8))
+        (resolution.w * resolution.h * (this->presentBuffer.bitsPerPixel / 8))
     );
 
     if (this->visualizeScanRange)
@@ -109,7 +105,7 @@ void anti_tearer_c::visualize_tears(const anti_tear_frame_s &frame)
 {
     for (const auto &tornRow:this->tornRowIndices)
     {
-        const unsigned bpp = (frame.resolution.bpp / 8);
+        const unsigned bpp = (frame.bitsPerPixel / 8);
         const unsigned idx = (tornRow * frame.resolution.w * bpp);
         std::memset((frame.pixels + idx), 255, (frame.resolution.w * bpp));
     }
@@ -119,7 +115,7 @@ void anti_tearer_c::visualize_tears(const anti_tear_frame_s &frame)
 
 void anti_tearer_c::visualize_scan_range(const anti_tear_frame_s &frame)
 {
-    const unsigned numBytesPerPixel = (frame.resolution.bpp / 8);
+    const unsigned numBytesPerPixel = (frame.bitsPerPixel / 8);
     const unsigned patternDensity = 9;
 
     // Shade the area under the scan range.
@@ -181,7 +177,7 @@ void anti_tearer_c::copy_frame_pixel_rows(const anti_tear_frame_s *const srcFram
         return;
     }
 
-    const unsigned bpp = (srcFrame->resolution.bpp / 8);
+    const unsigned bpp = (srcFrame->bitsPerPixel / 8);
     const unsigned idx = ((fromRow * srcFrame->resolution.w) * bpp);
     const unsigned numBytes = (((toRow - fromRow) * srcFrame->resolution.w) * bpp);
     std::memcpy((dstBuffer + idx), (srcFrame->pixels + idx), numBytes);
@@ -206,10 +202,12 @@ int anti_tearer_c::find_first_new_row_idx(const anti_tear_frame_s *const frame,
     return -1;
 }
 
-bool anti_tearer_c::has_pixel_row_changed(const unsigned rowIdx,
-                                          const u8 *const newPixels,
-                                          const u8 *const prevPixels,
-                                          const resolution_s &resolution)
+bool anti_tearer_c::has_pixel_row_changed(
+    const unsigned rowIdx,
+    const u8 *const newPixels,
+    const u8 *const prevPixels,
+    const resolution_s &resolution
+)
 {
     k_assert((newPixels && prevPixels), "Expected non-null pixel data.");
 
@@ -229,7 +227,7 @@ bool anti_tearer_c::has_pixel_row_changed(const unsigned rowIdx,
         // within this sampling window.
         for (size_t w = 0; w < this->windowLength; w++)
         {
-            const unsigned bpp = (resolution.bpp / 8);
+            const unsigned bpp = (this->presentBuffer.bitsPerPixel / 8);
             const unsigned idx = (((x + w) + rowIdx * resolution.w) * bpp);
 
             oldB += prevPixels[idx + 0];

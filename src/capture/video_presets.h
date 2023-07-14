@@ -36,7 +36,7 @@ struct video_preset_s
     std::string name = "";
 
     bool activatesWithResolution = false;
-    resolution_s activationResolution = {0, 0, 32};
+    resolution_s activationResolution = {.w = 0, .h = 0};
 
     bool activatesWithRefreshRate = false;
     refresh_rate_s activationRefreshRate = 0;

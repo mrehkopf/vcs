@@ -17,7 +17,7 @@ void filter_anti_tear_c::apply(image_s *const image)
 
     if (!isInitialized)
     {
-        antiTearer.initialize({MAX_CAPTURE_WIDTH, MAX_CAPTURE_HEIGHT, MAX_CAPTURE_BPP});
+        antiTearer.initialize(resolution_s{.w = MAX_CAPTURE_WIDTH, .h = MAX_CAPTURE_HEIGHT});
         isInitialized = true;
     }
 
@@ -37,7 +37,7 @@ void filter_anti_tear_c::apply(image_s *const image)
                            : anti_tear_scan_hint_e::look_for_multiple_tears);
 
     const uint8_t *const processedPixels = antiTearer.process(image->pixels, image->resolution);
-    memcpy(image->pixels, processedPixels, (image->resolution.w * image->resolution.h * (image->resolution.bpp / 8)));
+    memcpy(image->pixels, processedPixels, (image->resolution.w * image->resolution.h * (image->bitsPerPixel / 8)));
 
     return;
 }

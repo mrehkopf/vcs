@@ -176,8 +176,8 @@ static int capture_thread(void)
                 continue;
             }
 
-            if ((frameWidth != FRAME_BUFFER.r.w) ||
-                (frameHeight != FRAME_BUFFER.r.h))
+            if ((frameWidth != FRAME_BUFFER.resolution.w) ||
+                (frameHeight != FRAME_BUFFER.resolution.h))
             {
                 resolution_s::to_capture_device({frameWidth, frameHeight});
                 push_capture_event(capture_event_e::new_video_mode);
@@ -214,7 +214,7 @@ bool kc_set_device_property(const std::string key, double value)
             return false;
         }
 
-        FRAME_BUFFER.r.w = value;
+        FRAME_BUFFER.resolution.w = value;
     }
     else if (key == "height")
     {
@@ -225,7 +225,7 @@ bool kc_set_device_property(const std::string key, double value)
             return false;
         }
 
-        FRAME_BUFFER.r.h = value;
+        FRAME_BUFFER.resolution.h = value;
     }
 
     DEVICE_PROPERTIES[key] = value;
@@ -238,11 +238,11 @@ void kc_initialize_device(void)
     DEBUG(("Initializing the virtual capture device."));
     k_assert(!FRAME_BUFFER.pixels, "Attempting to doubly initialize the capture device.");
 
-    FRAME_BUFFER.r = {640, 480, 32};
+    FRAME_BUFFER.resolution = {.w = 640, .h = 480};
     FRAME_BUFFER.pixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
 
-    kc_set_device_property("width", FRAME_BUFFER.r.w);
-    kc_set_device_property("height", FRAME_BUFFER.r.h);
+    kc_set_device_property("width", FRAME_BUFFER.resolution.w);
+    kc_set_device_property("height", FRAME_BUFFER.resolution.h);
 
     kc_ev_new_video_mode.listen([](const video_mode_s &mode)
     {
@@ -302,7 +302,7 @@ capture_event_e kc_pop_event_queue(void)
     else if (pop_capture_event(capture_event_e::new_video_mode))
     {
         kc_ev_new_proposed_video_mode.fire(video_mode_s{
-            .resolution = FRAME_BUFFER.r
+            .resolution = FRAME_BUFFER.resolution
         });
         return capture_event_e::new_video_mode;
     }

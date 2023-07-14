@@ -19,7 +19,7 @@ void filter_denoise_pixel_gate_c::apply(image_s *const image)
 
     for (unsigned i = 0; i < (image->resolution.h * image->resolution.w); i++)
     {
-        const unsigned idx = (i * (image->resolution.bpp / 8));
+        const unsigned idx = (i * (image->bitsPerPixel / 8));
 
         if (
             (std::abs(image->pixels[idx + 0] - prevPixels[idx + 0]) > threshold) ||

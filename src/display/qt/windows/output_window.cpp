@@ -568,7 +568,7 @@ void OutputWindow::paintEvent(QPaintEvent *)
     const QImage frameImage = ([]
     {
        const image_s image = ks_scaler_frame_buffer();
-       k_assert((image.resolution.bpp == 32), "Expected output image data to be 32-bit.");
+       k_assert((image.bitsPerPixel == 32), "Expected output image data to be 32-bit.");
 
        if (!image.pixels)
        {

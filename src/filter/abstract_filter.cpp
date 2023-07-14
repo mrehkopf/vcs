@@ -79,7 +79,7 @@ void abstract_filter_c::set_parameter_string(const unsigned offset, const std::s
 void abstract_filter_c::assert_input_validity(image_s *const image)
 {
     k_assert(
-        ((image->resolution.bpp == 32) &&
+        ((image->bitsPerPixel == 32) &&
          (image->resolution.w <= MAX_CAPTURE_WIDTH) &&
          (image->resolution.h <= MAX_CAPTURE_HEIGHT)),
         "Unsupported frame format."

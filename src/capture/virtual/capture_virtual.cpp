@@ -43,14 +43,14 @@ static void redraw_test_pattern(void)
     numTicks++;
     NUM_FRAMES_PER_SECOND++;
 
-    for (unsigned y = 0; y < FRAME_BUFFER.r.h; y++)
+    for (unsigned y = 0; y < FRAME_BUFFER.resolution.h; y++)
     {
-        for (unsigned x = 0; x < FRAME_BUFFER.r.w; x++)
+        for (unsigned x = 0; x < FRAME_BUFFER.resolution.w; x++)
         {
             /// TODO: Remove the dependency on Qt for the RGB -> HSL -> RGB conversion.
             QColor rgbGradient;
-            const double widthRatio = (((x + numTicks) % FRAME_BUFFER.r.w) / double(FRAME_BUFFER.r.w));
-            const double heightRatio = (y / double(FRAME_BUFFER.r.h));
+            const double widthRatio = (((x + numTicks) % FRAME_BUFFER.resolution.w) / double(FRAME_BUFFER.resolution.w));
+            const double heightRatio = (y / double(FRAME_BUFFER.resolution.h));
             rgbGradient.setHsl((widthRatio * 359), 255, (255 - (heightRatio * 255)));
             rgbGradient = rgbGradient.toRgb();
 
@@ -59,7 +59,7 @@ static void redraw_test_pattern(void)
             const u8 blue = rgbGradient.blue();
             const u8 alpha = 255;
 
-            const unsigned idx = ((x + y * FRAME_BUFFER.r.w) * (FRAME_BUFFER.r.bpp / 8));
+            const unsigned idx = ((x + y * FRAME_BUFFER.resolution.w) * 4);
             FRAME_BUFFER.pixels[idx + 0] = blue;
             FRAME_BUFFER.pixels[idx + 1] = green;
             FRAME_BUFFER.pixels[idx + 2] = red;
@@ -82,12 +82,12 @@ void kc_initialize_device(void)
     DEBUG(("Initializing the virtual capture device."));
 
     k_assert(!FRAME_BUFFER.pixels, "Attempting to doubly initialize the capture device.");
-    FRAME_BUFFER.r = {640, 480, 32};
+    FRAME_BUFFER.resolution = {.w = 640, .h = 480};
     FRAME_BUFFER.pixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
 
     kc_set_device_property("input channel index", INPUT_CHANNEL_IDX);
-    kc_set_device_property("width", FRAME_BUFFER.r.w);
-    kc_set_device_property("height", FRAME_BUFFER.r.h);
+    kc_set_device_property("width", FRAME_BUFFER.resolution.w);
+    kc_set_device_property("height", FRAME_BUFFER.resolution.h);
 
     // Simulate the capturing of a new frame.
     kt_timer(std::round(1000 / TARGET_REFRESH_RATE), [](const unsigned)
@@ -138,7 +138,7 @@ bool kc_set_device_property(const std::string key, double value)
             return false;
         }
 
-        FRAME_BUFFER.r.w = value;
+        FRAME_BUFFER.resolution.w = value;
         push_capture_event(capture_event_e::new_video_mode);
     }
     else if (key == "height")
@@ -150,7 +150,7 @@ bool kc_set_device_property(const std::string key, double value)
             return false;
         }
 
-        FRAME_BUFFER.r.h = value;
+        FRAME_BUFFER.resolution.h = value;
         push_capture_event(capture_event_e::new_video_mode);
     }
     else if (key == "input channel index")

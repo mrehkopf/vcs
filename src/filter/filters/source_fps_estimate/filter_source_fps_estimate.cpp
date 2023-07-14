@@ -36,7 +36,7 @@ void filter_frame_rate_c::apply(image_s *const image)
     // Find out whether any pixel in the current frame differs from the previous frame
     // by more than the threshold.
     {
-        const unsigned imageBitsPerPixel = (image->resolution.bpp / 8);
+        const unsigned imageBitsPerPixel = (image->bitsPerPixel / 8);
         const unsigned imageByteSize = (image->resolution.w * image->resolution.h * imageBitsPerPixel);
         const unsigned start = (
             isSingleRow

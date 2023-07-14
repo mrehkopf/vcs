@@ -46,9 +46,6 @@ static const image_scaler_s *DEFAULT_SCALER = nullptr;
 static uint8_t *FRAME_BUFFER_PIXELS = nullptr;
 static resolution_s FRAME_BUFFER_RESOLUTION = {0};
 
- // The frame buffer's target bit depth.
-static const u32 OUTPUT_BIT_DEPTH = 32;
-
 // Whether the current output scaling is done via an output scaling filter that
 // the user has specified in a filter chain.
 static bool IS_CUSTOM_SCALER_ACTIVE = false;
@@ -116,8 +113,6 @@ resolution_s ks_output_resolution(void)
         }
     }
 
-    outRes.bpp = OUTPUT_BIT_DEPTH;
-
     return outRes;
 }
 
@@ -151,7 +146,7 @@ subsystem_releaser_t ks_initialize_scaler(void)
     cv::redirectError(cv_error_handler);
 
     FRAME_BUFFER_PIXELS = new uint8_t[MAX_NUM_BYTES_IN_OUTPUT_FRAME]();
-    FRAME_BUFFER_RESOLUTION = {0, 0, OUTPUT_BIT_DEPTH};
+    FRAME_BUFFER_RESOLUTION = {.w = 0, .h = 0};
 
     ks_set_default_scaler(KNOWN_SCALERS.at(0).name);
 
@@ -199,15 +194,7 @@ void ks_scale_frame(const captured_frame_s &frame)
         const auto minres = resolution_s::from_capture_device(": minimum");
         const auto maxres = resolution_s::from_capture_device(": maximum");
 
-        if ((frame.r.bpp != 16) &&
-            (frame.r.bpp != 24) &&
-            (frame.r.bpp != 32))
-        {
-            NBENE(("Was asked to scale a frame with an incompatible bit depth (%u). Ignoring it.",
-                    frame.r.bpp));
-            return;
-        }
-        else if (outputRes.w > MAX_OUTPUT_WIDTH ||
+        if (outputRes.w > MAX_OUTPUT_WIDTH ||
                  outputRes.h > MAX_OUTPUT_HEIGHT)
         {
             NBENE(("Was asked to scale a frame with an output size (%u x %u) larger than the maximum allowed (%u x %u). Ignoring it.",
@@ -219,24 +206,18 @@ void ks_scale_frame(const captured_frame_s &frame)
             NBENE(("Was asked to scale a null frame. Ignoring it."));
             return;
         }
-        else if (frame.r.bpp > MAX_OUTPUT_BPP)
-        {
-            NBENE(("Was asked to scale a frame with a color depth (%u bits) higher than that allowed (%u bits). Ignoring it.",
-                   frame.r.bpp, MAX_OUTPUT_BPP));
-            return;
-        }
-        else if (frame.r.w < minres.w ||
-                 frame.r.h < minres.h)
+        else if (frame.resolution.w < minres.w ||
+                 frame.resolution.h < minres.h)
         {
             NBENE(("Was asked to scale a frame with an input size (%u x %u) smaller than the minimum allowed (%u x %u). Ignoring it.",
-                   frame.r.w, frame.r.h, minres.w, minres.h));
+                   frame.resolution.w, frame.resolution.h, minres.w, minres.h));
             return;
         }
-        else if (frame.r.w > maxres.w ||
-                 frame.r.h > maxres.h)
+        else if (frame.resolution.w > maxres.w ||
+                 frame.resolution.h > maxres.h)
         {
             NBENE(("Was asked to scale a frame with an input size (%u x %u) larger than the maximum allowed (%u x %u). Ignoring it.",
-                   frame.r.w, frame.r.h, maxres.w, maxres.h));
+                   frame.resolution.w, frame.resolution.h, maxres.w, maxres.h));
             return;
         }
         else if (!FRAME_BUFFER_PIXELS)
@@ -245,7 +226,7 @@ void ks_scale_frame(const captured_frame_s &frame)
         }
     }
 
-    image_s imageToBeScaled = kat_anti_tear({frame.pixels, frame.r});
+    image_s imageToBeScaled = kat_anti_tear({frame.pixels, frame.resolution});
     abstract_filter_c *customScaler = kf_apply_matching_filter_chain(&imageToBeScaled);
 
     // If the active filter chain provided a custom output scaler, it'll override our

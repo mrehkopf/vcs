@@ -16,8 +16,9 @@ struct anti_tear_frame_s
 {
     resolution_s resolution;
     uint8_t *pixels;
+    const unsigned bitsPerPixel = 32;
 
-    anti_tear_frame_s(const resolution_s resolution = {0, 0, 0}, u8 *const pixels = nullptr)
+    anti_tear_frame_s(const resolution_s resolution = {.w = 0, .h = 0}, u8 *const pixels = nullptr)
     {
         this->resolution = resolution;
         this->pixels = pixels;
@@ -28,8 +29,7 @@ struct anti_tear_frame_s
         return (
             this->pixels &&
             (this->resolution.w <= MAX_OUTPUT_WIDTH) &&
-            (this->resolution.h <= MAX_OUTPUT_HEIGHT) &&
-            (this->resolution.bpp <= MAX_OUTPUT_BPP)
+            (this->resolution.h <= MAX_OUTPUT_HEIGHT)
         );
     }
 
@@ -41,7 +41,7 @@ struct anti_tear_frame_s
 
         for (unsigned y = 0; y < (this->resolution.h / 2); y++)
         {
-            const unsigned numBytesPerPixel = (this->resolution.bpp / 8);
+            const unsigned numBytesPerPixel = (this->bitsPerPixel / 8);
             const unsigned numBytesPerRow = (this->resolution.w * numBytesPerPixel);
             const unsigned idx1 = (y * this->resolution.w * numBytesPerPixel);
             const unsigned idx2 = ((this->resolution.h - 1 - y) * this->resolution.w * numBytesPerPixel);

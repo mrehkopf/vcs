@@ -13,7 +13,7 @@ void filter_decimate_c::apply(image_s *const image)
 
     const int factor = this->parameter(PARAM_FACTOR);
     const unsigned type = this->parameter(PARAM_TYPE);
-    const unsigned numColorChannels = (image->resolution.bpp / 8);
+    const unsigned numColorChannels = (image->bitsPerPixel / 8);
 
     for (unsigned y = 0; y < image->resolution.h; y += factor)
     {

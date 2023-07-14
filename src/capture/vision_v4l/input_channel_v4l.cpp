@@ -22,7 +22,7 @@
 // We'll persist the resolution and refresh rate, so that when a new video mode
 // is encountered, the code will first save the new mode values and then close
 // the old input channel, with the new input channel adopting the persisted values.
-static resolution_s LATEST_RESOLUTION = {640, 480, 32};
+static resolution_s LATEST_RESOLUTION = {.w = 640, .h = 480};
 static refresh_rate_s LATEST_REFRESH_RATE = 0;
 
 input_channel_v4l_c::input_channel_v4l_c(
@@ -91,9 +91,10 @@ resolution_s input_channel_v4l_c::maximum_resolution(void) const
 {
     /// TODO: Query actual hardware parameters for this.
     
-    return resolution_s{std::min(2048u, MAX_CAPTURE_WIDTH),
-                        std::min(1536u, MAX_CAPTURE_HEIGHT),
-                        std::min(32u, MAX_CAPTURE_BPP)};
+    return resolution_s{
+        .w = std::min(2048u, MAX_CAPTURE_WIDTH),
+        .h = std::min(1536u, MAX_CAPTURE_HEIGHT)
+    };
 }
 
 resolution_s input_channel_v4l_c::source_resolution(void)
@@ -107,9 +108,10 @@ resolution_s input_channel_v4l_c::source_resolution(void)
         k_assert(0, "The capture hardware failed to report its input resolution.");
     }
 
-    return {format.fmt.pix.width,
-            format.fmt.pix.height,
-            32}; /// TODO: Don't assume the bit depth.
+    return resolution_s{
+        .w = format.fmt.pix.width,
+        .h = format.fmt.pix.height
+    };
 }
 
 bool input_channel_v4l_c::capture_thread__has_signal(void)
@@ -170,7 +172,7 @@ bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
                 (format.fmt.pix.height != LATEST_RESOLUTION.h))
             {
                 this->captureStatus.refreshRate = LATEST_REFRESH_RATE = currentRefreshRate;
-                this->captureStatus.resolution = LATEST_RESOLUTION = {format.fmt.pix.width, format.fmt.pix.height, 32};
+                this->captureStatus.resolution = LATEST_RESOLUTION = {.w = format.fmt.pix.width, .h = format.fmt.pix.height};
                 return true;
             }
         }
@@ -245,8 +247,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
 
             const input_channel_v4l_c::mmap_metadata &srcBuffer = this->mmapBackBuffers.at(buf.index);
 
-            this->dstFrameBuffer->r = LATEST_RESOLUTION;
-            this->dstFrameBuffer->r.bpp = 32;
+            this->dstFrameBuffer->resolution = LATEST_RESOLUTION;
 
             // Copy the frame's data into our local buffer so we can work on it.
             memcpy(this->dstFrameBuffer->pixels, srcBuffer.ptr, srcBuffer.length);

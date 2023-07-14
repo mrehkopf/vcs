@@ -202,7 +202,7 @@ video_preset_s* kvideopreset_create_new_preset(const video_preset_s *const dupli
     else
     {
         preset->activatesWithResolution = false;
-        preset->activationResolution = {640, 480, 32};
+        preset->activationResolution = {.w = 640, .h = 480};
         preset->videoParameters = video_signal_parameters_s::from_capture_device(": default");
     }
 

@@ -62,7 +62,7 @@ public:
         bool invalidDevice = false;
 
         // The current capture resolution.
-        resolution_s resolution = {1024, 768, 32};
+        resolution_s resolution = {.w = 1024, .h = 768};
 
         refresh_rate_s refreshRate = refresh_rate_s(0);
 

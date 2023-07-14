@@ -157,7 +157,7 @@ bool kc_set_device_property(const std::string key, double value)
         }
         else
         {
-            FRAME_BUFFER.r.w = value;
+            FRAME_BUFFER.resolution.w = value;
         }
     }
     else if (key == "height")
@@ -175,7 +175,7 @@ bool kc_set_device_property(const std::string key, double value)
         }
         else
         {
-            FRAME_BUFFER.r.h = value;
+            FRAME_BUFFER.resolution.h = value;
         }
     }
     else if (key == "input channel index")
@@ -407,7 +407,7 @@ void kc_initialize_device(void)
     FRAME_BUFFER.pixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
 
     kc_set_device_property("input channel index", INPUT_CHANNEL_IDX);
-    resolution_s::to_capture_device({640, 480, 32});
+    resolution_s::to_capture_device({.w = 640, .h = 480});
     update_device_video_parameters();
 
     // Listen for relevant events.

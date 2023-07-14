@@ -37,7 +37,7 @@ struct font_glyph_s
         const std::vector<uint8_t> color = {0, 0, 0}
     ) const
     {
-        k_assert_optional((color.size() <= (dstImage->resolution.bpp / 8)), "Malformed color for glyph rendering.");
+        k_assert_optional((color.size() <= (dstImage->bitsPerPixel / 8)), "Malformed color for glyph rendering.");
 
         for (unsigned glyphY = 0; glyphY < this->height(); glyphY++)
         {
@@ -69,9 +69,9 @@ struct font_glyph_s
                             continue;
                         }
 
-                        const unsigned idx = ((scaledPixelX + scaledPixelY * dstImage->resolution.w) * (dstImage->resolution.bpp / 8));
+                        const unsigned idx = ((scaledPixelX + scaledPixelY * dstImage->resolution.w) * (dstImage->bitsPerPixel / 8));
                         k_assert_optional(
-                            (idx < (color.size() + (dstImage->resolution.w * dstImage->resolution.h * (dstImage->resolution.bpp / 8)))),
+                            (idx < (color.size() + (dstImage->resolution.w * dstImage->resolution.h * (dstImage->bitsPerPixel / 8)))),
                             "Image buffer overflow in string rendering."
                         );
 
@@ -179,8 +179,8 @@ public:
         const unsigned alignment = filter_render_text_c::ALIGN_LEFT
     ) const
     {
-        k_assert_optional((color.size() <= (dstImage->resolution.bpp / 8)), "Malformed color for string rendering.");
-        k_assert_optional((bgColor.size() <= (dstImage->resolution.bpp / 8)), "Malformed background color for string rendering.");
+        k_assert_optional((color.size() <= (dstImage->bitsPerPixel / 8)), "Malformed color for string rendering.");
+        k_assert_optional((bgColor.size() <= (dstImage->bitsPerPixel / 8)), "Malformed background color for string rendering.");
 
         if (string.empty())
         {
@@ -215,9 +215,9 @@ public:
                         continue;
                     }
 
-                    const unsigned idx = ((x_ + y_ * dstImage->resolution.w) * (dstImage->resolution.bpp / 8));
+                    const unsigned idx = ((x_ + y_ * dstImage->resolution.w) * (dstImage->bitsPerPixel / 8));
                     k_assert_optional(
-                        (idx < (bgColor.size() + (dstImage->resolution.w * dstImage->resolution.h * (dstImage->resolution.bpp / 8)))),
+                        (idx < (bgColor.size() + (dstImage->resolution.w * dstImage->resolution.h * (dstImage->bitsPerPixel / 8)))),
                         "Image buffer overflow in string rendering."
                     );
 

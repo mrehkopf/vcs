@@ -300,7 +300,7 @@ enum class signal_format_e
  */
 struct captured_frame_s
 {
-    resolution_s r;
+    resolution_s resolution;
     uint8_t *pixels;
 };
 

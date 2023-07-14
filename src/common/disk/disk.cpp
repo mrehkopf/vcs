@@ -75,7 +75,7 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filenam
             video_preset_s *const preset = new video_preset_s;
 
             preset->activatesWithResolution = true;
-            preset->activationResolution = {params.r.w, params.r.h, 0};
+            preset->activationResolution = params.r;
             preset->videoParameters = params;
             preset->id = ++id;
 
@@ -99,7 +99,7 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filenam
             video_preset_s *const preset = new video_preset_s;
 
             preset->activatesWithResolution = true;
-            preset->activationResolution = {params.r.w, params.r.h, 0};
+            preset->activationResolution = params.r;
             preset->videoParameters = params;
             preset->id = ++id;
 

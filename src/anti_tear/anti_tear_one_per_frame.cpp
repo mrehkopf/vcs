@@ -106,7 +106,7 @@ void anti_tear_one_per_frame_c::visualize_current_tear(void)
 
     if (this->latestTearRow >= 0)
     {
-        const unsigned bpp = (frame.resolution.bpp / 8);
+        const unsigned bpp = (frame.bitsPerPixel / 8);
         const unsigned idx = (this->latestTearRow * frame.resolution.w * bpp);
         std::memset((this->base->presentBuffer.pixels + idx), 255, (frame.resolution.w * bpp));
     }

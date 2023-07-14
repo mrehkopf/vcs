@@ -28,7 +28,7 @@ void filter_delta_histogram_c::apply(image_s *const image)
     static unsigned greenBin[numBins];
     static unsigned blueBin[numBins];
 
-    const unsigned numColorChannels = (image->resolution.bpp / 8);
+    const unsigned numColorChannels = (image->bitsPerPixel / 8);
 
     // For each RGB channel in a given pixel coordinate, count how many times a particular
     // delta value occurred.
@@ -84,7 +84,7 @@ void filter_delta_histogram_c::apply(image_s *const image)
 
     // Copy the histogram graph into the output image.
     {
-        const image_s graphImage = image_s(graph, {numBins, graphHeight, 32});
+        const image_s graphImage = image_s(graph, resolution_s{.w = numBins, .h = graphHeight});
         image_s scaledGraphImage = image_s(scaledGraph, image->resolution);
 
         filter_output_scaler_c::nearest(graphImage, &scaledGraphImage);

@@ -35,7 +35,7 @@ void filter_output_scaler_c::apply(image_s *const image)
         }
     })();
 
-    image_s dstImage = image_s(ks_scaler_frame_buffer().pixels, {width, height, image->resolution.bpp});
+    image_s dstImage = image_s(ks_scaler_frame_buffer().pixels, resolution_s{.w = width, .h = height});
     scaler_function(*image, &dstImage, {padTop, padRight, padBottom, padLeft});
 
     return;
@@ -50,10 +50,9 @@ resolution_s filter_output_scaler_c::output_resolution() const
     const unsigned padBottom = this->parameter(filter_output_scaler_c::PARAM_PADDING_BOTTOM);
     const unsigned padLeft = this->parameter(filter_output_scaler_c::PARAM_PADDING_LEFT);
 
-    return {
-        (width + padLeft + padRight),
-        (height + padTop + padBottom),
-        32
+    return resolution_s{
+        .w = (width + padLeft + padRight),
+        .h = (height + padTop + padBottom)
     };
 }
 
@@ -93,7 +92,7 @@ static void scale_using_opencv(
 static void assert_scaler_input_validity(const image_s &srcImage, image_s *const dstImage)
 {
     k_assert(
-        (srcImage.resolution.bpp == 32) && (dstImage->resolution.bpp == 32),
+        (srcImage.bitsPerPixel == 32) && (dstImage->bitsPerPixel == 32),
         "This scaler can only operate on 32-bit images."
     );
 }
