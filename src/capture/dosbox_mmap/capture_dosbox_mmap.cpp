@@ -198,12 +198,12 @@ static int capture_thread(void)
     return 1;
 }
 
-double kc_device_property(const std::string key)
+double kc_device_property(const std::string &key)
 {
     return (DEVICE_PROPERTIES.contains(key)? DEVICE_PROPERTIES.at(key) : 0);
 }
 
-bool kc_set_device_property(const std::string key, double value)
+bool kc_set_device_property(const std::string &key, double value)
 {
     if (key == "width")
     {

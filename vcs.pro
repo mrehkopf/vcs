@@ -42,6 +42,7 @@ RESOURCES += \
 
 SOURCES += \
     src/common/refresh_rate.cpp \
+    src/common/vcs_event/vcs_event.cpp \
     src/display/qt/dialogs/components/capture_dialog/input_channel.cpp \
     src/display/qt/dialogs/components/capture_dialog/input_resolution.cpp \
     src/display/qt/dialogs/components/capture_dialog/signal_status.cpp \

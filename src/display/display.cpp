@@ -8,8 +8,6 @@
 #include "display/display.h"
 #include "capture/capture.h"
 
-vcs_event_c<void> kd_ev_dirty;
-
 resolution_s resolution_s::from_capture_device(const std::string &nameSpace)
 {
     return resolution_s{

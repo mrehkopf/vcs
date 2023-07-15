@@ -25,7 +25,7 @@
 #include "capture/video_presets.h"
 #include "capture/capture.h"
 #include "capture/vision_v4l/ic_v4l_video_parameters.h"
-#include "common/propagate/vcs_event.h"
+#include "common/vcs_event/vcs_event.h"
 #include "main.h"
 
 #define INCLUDE_VISION
@@ -91,7 +91,7 @@ static bool force_capture_resolution(const resolution_s r)
 
     // Set the resolution.
     {
-        struct v4l2_control control = {0};
+        v4l2_control control = {0};
 
         control.id = RGB133_V4L2_CID_HOR_TIME;
         control.value = r.w;
@@ -135,12 +135,12 @@ static void set_input_channel(const unsigned channelIdx)
     return;
 }
 
-double kc_device_property(const std::string key)
+double kc_device_property(const std::string &key)
 {
     return (DEVICE_PROPERTIES.contains(key)? DEVICE_PROPERTIES.at(key) : 0);
 }
 
-bool kc_set_device_property(const std::string key, double value)
+bool kc_set_device_property(const std::string &key, double value)
 {
     if (key == "width")
     {

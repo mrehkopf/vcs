@@ -89,64 +89,6 @@ struct image_scaler_s
 };
 
 /*!
- * Fired when the scaler subsystem scales a frame into a resolution
- * different from the previous frame's.
- * 
- * @code
- * ks_scale_frame(frame);
- * 
- * ks_set_scaling_multiplier(ks_scaling_multiplier() + 1);
- * 
- * // Fires ks_ev_new_output_resolution.
- * ks_scale_frame(frame);
- * @endcode
- */
-extern vcs_event_c<const resolution_s&> ks_ev_new_output_resolution;
-
-/*!
- * Fired when the scaler subsystem has finished scaling a frame.
- * 
- * @code
- * ks_ev_new_scaled_image.listen([](const image_s &scaledImage)
- * {
- *     printf("Scaled a frame to %lu x %lu.\n", scaledImage.resolution.w, scaledImage.resolution.h);
- * });
- * @endcode
- * 
- * @see
- * ks_scale_frame()
- */
-extern vcs_event_c<const image_s&> ks_ev_new_scaled_image;
-
-/*!
- * Fired once per second, giving the number of input frames the scaler
- * subsystem scaled during that time.
- * 
- * @code
- * ks_ev_frames_per_second.listen([](unsigned numFrames)
- * {
- *     printf("Scaled %u frames per second.\n", numFrames);
- * });
- * @endcode
- * 
- * @see
- * ks_scale_frame()
- */
-extern vcs_event_c<unsigned> ks_ev_frames_per_second;
-
-/*!
- * Fired when an output scaling filter becomes active, i.e. when captured
- * frames begin being scaled using such a filter.
- */
-extern vcs_event_c<void> ks_ev_custom_scaler_enabled;
-
-/*!
- * Fired when there's no longer an output scaling filter being used to
- * scale captured frames.
- */
-extern vcs_event_c<void> ks_ev_custom_scaler_disabled;
-
-/*!
  * Returns the resolution to which the scaler will scale input frames, prior to
  * the application of resolution-influencing modifiers like a scaling multiplier.
  * 

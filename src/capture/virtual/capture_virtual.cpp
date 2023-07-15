@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <chrono>
 #include "common/globals.h"
-#include "common/propagate/vcs_event.h"
+#include "common/vcs_event/vcs_event.h"
 #include "common/timer/timer.h"
 #include "capture/capture.h"
 
@@ -122,12 +122,12 @@ void kc_initialize_device(void)
     return;
 }
 
-double kc_device_property(const std::string key)
+double kc_device_property(const std::string &key)
 {
     return (DEVICE_PROPERTIES.contains(key)? DEVICE_PROPERTIES.at(key) : 0);
 }
 
-bool kc_set_device_property(const std::string key, double value)
+bool kc_set_device_property(const std::string &key, double value)
 {
     if (key == "width")
     {

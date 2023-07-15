@@ -21,12 +21,6 @@
 #include "scaler/scaler.h"
 #include "common/timer/timer.h"
 
-vcs_event_c<const resolution_s&> ks_ev_new_output_resolution;
-vcs_event_c<const image_s&> ks_ev_new_scaled_image;
-vcs_event_c<unsigned> ks_ev_frames_per_second;
-vcs_event_c<void> ks_ev_custom_scaler_enabled;
-vcs_event_c<void> ks_ev_custom_scaler_disabled;
-
 // For keeping track of the number of frames scaled per second.
 static unsigned NUM_FRAMES_SCALED_PER_SECOND = 0;
 
