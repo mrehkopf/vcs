@@ -69,8 +69,8 @@ InputResolution::InputResolution(QWidget *parent) :
         });
     }
 
-    kc_ev_signal_gained.listen([this]{this->ui->frame_inputForceButtons->setEnabled(true);});
-    kc_ev_signal_lost.listen([this]{this->ui->frame_inputForceButtons->setEnabled(false);});
+    ev_capture_signal_gained.listen([this]{this->ui->frame_inputForceButtons->setEnabled(true);});
+    ev_capture_signal_lost.listen([this]{this->ui->frame_inputForceButtons->setEnabled(false);});
 
     return;
 }

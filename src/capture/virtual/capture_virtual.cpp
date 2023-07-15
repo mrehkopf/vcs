@@ -155,7 +155,7 @@ bool kc_set_device_property(const std::string &key, double value)
     }
     else if (key == "input channel index")
     {
-        kc_ev_input_channel_changed.fire(value);
+        ev_new_input_channel.fire(value);
     }
 
     DEVICE_PROPERTIES[key] = value;
@@ -174,19 +174,19 @@ capture_event_e kc_pop_event_queue(void)
 
     if (pop_capture_event(capture_event_e::invalid_signal))
     {
-        kc_ev_invalid_signal.fire();
+        ev_invalid_capture_signal.fire();
         return capture_event_e::invalid_signal;
     }
 
     if (pop_capture_event(capture_event_e::new_video_mode))
     {
-        kc_ev_new_proposed_video_mode.fire({resolution_s::from_capture_device()});
+        ev_new_proposed_video_mode.fire({resolution_s::from_capture_device()});
         return capture_event_e::new_video_mode;
     }
 
     if (pop_capture_event(capture_event_e::new_frame))
     {
-        kc_ev_new_captured_frame.fire(FRAME_BUFFER);
+        ev_new_captured_frame.fire(FRAME_BUFFER);
         return capture_event_e::new_frame;
     }
 

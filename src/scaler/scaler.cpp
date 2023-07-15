@@ -143,31 +143,31 @@ subsystem_releaser_t ks_initialize_scaler(void)
 
     ks_set_default_scaler(KNOWN_SCALERS.at(0).name);
 
-    kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
+    ev_new_captured_frame.listen([](const captured_frame_s &frame)
     {
         ks_scale_frame(frame);
     });
 
-    kc_ev_invalid_signal.listen([]
+    ev_invalid_capture_signal.listen([]
     {
         ks_indicate_invalid_signal();
-        kd_ev_dirty.fire();
+        ev_dirty_output_window.fire();
     });
 
-    kc_ev_signal_lost.listen([]
+    ev_capture_signal_lost.listen([]
     {
         ks_indicate_no_signal();
-        kd_ev_dirty.fire();
+        ev_dirty_output_window.fire();
     });
 
-    ks_ev_new_scaled_image.listen([]
+    ev_new_output_image.listen([]
     {
         NUM_FRAMES_SCALED_PER_SECOND++;
     });
 
     kt_timer(1000, [](const unsigned)
     {
-        ks_ev_frames_per_second.fire(NUM_FRAMES_SCALED_PER_SECOND);
+        ev_frames_per_second.fire(NUM_FRAMES_SCALED_PER_SECOND);
 
         NUM_FRAMES_SCALED_PER_SECOND = 0;
     });
@@ -233,7 +233,7 @@ void ks_scale_frame(const captured_frame_s &frame)
 
         if (!IS_CUSTOM_SCALER_ACTIVE)
         {
-            ks_ev_custom_scaler_enabled.fire();
+            ev_custom_output_scaler_enabled.fire();
             IS_CUSTOM_SCALER_ACTIVE = true;
         }
 
@@ -244,7 +244,7 @@ void ks_scale_frame(const captured_frame_s &frame)
     {
         if (IS_CUSTOM_SCALER_ACTIVE)
         {
-            ks_ev_custom_scaler_disabled.fire();
+            ev_custom_output_scaler_disabled.fire();
             IS_CUSTOM_SCALER_ACTIVE = false;
         }
 
@@ -263,11 +263,11 @@ void ks_scale_frame(const captured_frame_s &frame)
 
     if (FRAME_BUFFER_RESOLUTION != outputRes)
     {
-        ks_ev_new_output_resolution.fire(outputRes);
+        ev_new_output_resolution.fire(outputRes);
         FRAME_BUFFER_RESOLUTION = outputRes;
     }
 
-    ks_ev_new_scaled_image.fire(ks_scaler_frame_buffer());
+    ev_new_output_image.fire(ks_scaler_frame_buffer());
 
     return;
 }

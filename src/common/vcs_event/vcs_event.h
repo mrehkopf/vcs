@@ -1,11 +1,37 @@
 /*
- * 2020-2021 Tarpeeksi Hyvae Soft
+ * 2020-2023 Tarpeeksi Hyvae Soft
  *
  * Software: VCS
  *
- * The VCS event system allows the various subsystems of VCS to receive notification
- * when certain runtime events occur.
+ */
+
+/*! @file
  *
+ * @brief
+ * Application-wide event system.
+ *
+ * VCS's application-wide event system provides a framework for the various subsystems
+ * of the application to receive notification of program events.
+ *
+ * ## Usage
+ *
+ * Simply subscribe a listener function to the event you're interested in being
+ * notified of:
+ *
+ * @code
+ * ev_frames_per_second.listen([](unsigned fps)
+ * {
+ *     printf("Capturing at %u FPS\n", fps);
+ * });
+ *
+ * // The listener will execute whenever ev_frames_per_second.fire() is invoked.
+ * @endcode
+ *
+ * If there are multiple listeners to an event, they'll be called synchronously in the
+ * order they were subscribed.
+ *
+ * @note
+ * Listener functions can't be unsubscribed.
  */
 
 #ifndef VCS_COMMON_VCS_EVENT_VCS_EVENT_H
@@ -127,7 +153,7 @@ private:
  * @see
  * kc_frame_buffer(), kc_mutex()
  */
-extern vcs_event_c<const captured_frame_s&> kc_ev_new_captured_frame;
+extern vcs_event_c<const captured_frame_s&> ev_new_captured_frame;
 
 /*!
  * Fired when the capture device reports that the video mode of the currently-captured
@@ -162,7 +188,7 @@ extern vcs_event_c<const captured_frame_s&> kc_ev_new_captured_frame;
  * @see
  * kc_ev_new_video_mode, kc_set_resolution()
  */
-extern vcs_event_c<const video_mode_s&> kc_ev_new_proposed_video_mode;
+extern vcs_event_c<const video_mode_s&> ev_new_proposed_video_mode;
 
 /*!
  * Fired when the capture subsystem has begun capturing in a new video mode.
@@ -173,12 +199,12 @@ extern vcs_event_c<const video_mode_s&> kc_ev_new_proposed_video_mode;
  * @see
  * kc_ev_new_proposed_video_mode, kc_set_resolution()
  */
-extern vcs_event_c<const video_mode_s&> kc_ev_new_video_mode;
+extern vcs_event_c<const video_mode_s&> ev_new_video_mode;
 
 /*!
  * Fired when the capture device is switched to a different input channel.
  */
-extern vcs_event_c<unsigned> kc_ev_input_channel_changed;
+extern vcs_event_c<unsigned> ev_new_input_channel;
 
 /*!
  * Fired when the capture subsystem reports its capture device to be invalid in a
@@ -189,7 +215,7 @@ extern vcs_event_c<unsigned> kc_ev_input_channel_changed;
  * the device is detected to be invalid, but rather once VCS has polled the capture
  * subsystem (via kc_pop_event_queue()) to find that such is the case.
  */
-extern vcs_event_c<void> kc_ev_invalid_device;
+extern vcs_event_c<void> ev_invalid_capture_device;
 
 /*!
  * Fired when the capture device loses its input signal. This event implies that
@@ -212,7 +238,7 @@ extern vcs_event_c<void> kc_ev_invalid_device;
  * kc_ev_signal_gained
  */
 
-extern vcs_event_c<void> kc_ev_signal_lost;
+extern vcs_event_c<void> ev_capture_signal_lost;
 
 /*!
  * Fired when the capture device begins receiving an input signal. This event
@@ -226,7 +252,7 @@ extern vcs_event_c<void> kc_ev_signal_lost;
  * @see
  * kc_ev_signal_lost
  */
-extern vcs_event_c<void> kc_ev_signal_gained;
+extern vcs_event_c<void> ev_capture_signal_gained;
 
 /*!
  * Fired when the capture device reports its input signal to be invalid (e.g.
@@ -238,7 +264,7 @@ extern vcs_event_c<void> kc_ev_signal_gained;
  * the capture subsystem (via kc_pop_event_queue()) to find that such a
  * condition exists.
  */
-extern vcs_event_c<void> kc_ev_invalid_signal;
+extern vcs_event_c<void> ev_invalid_capture_signal;
 
 /*!
  * Fired when an error occurs in the capture subsystem from which the
@@ -249,14 +275,14 @@ extern vcs_event_c<void> kc_ev_invalid_signal;
  * time the error occurs, but rather once VCS has polled the capture subsystem
  * (via kc_pop_event_queue()) to find that there has been such an error.
  */
-extern vcs_event_c<void> kc_ev_unrecoverable_error;
+extern vcs_event_c<void> ev_unrecoverable_capture_error;
 
 
 /*!
  * An event that can be fired by subsystems to indicate that the output window should
  * redraw its contents.
  */
-extern vcs_event_c<void> kd_ev_dirty;
+extern vcs_event_c<void> ev_dirty_output_window;
 
 /*!
  * Fired when the scaler subsystem scales a frame into a resolution
@@ -271,7 +297,7 @@ extern vcs_event_c<void> kd_ev_dirty;
  * ks_scale_frame(frame);
  * @endcode
  */
-extern vcs_event_c<const resolution_s&> ks_ev_new_output_resolution;
+extern vcs_event_c<const resolution_s&> ev_new_output_resolution;
 
 /*!
  * Fired when the scaler subsystem has finished scaling a frame.
@@ -286,7 +312,7 @@ extern vcs_event_c<const resolution_s&> ks_ev_new_output_resolution;
  * @see
  * ks_scale_frame()
  */
-extern vcs_event_c<const image_s&> ks_ev_new_scaled_image;
+extern vcs_event_c<const image_s&> ev_new_output_image;
 
 /*!
  * Fired once per second, giving the number of input frames the scaler
@@ -302,18 +328,22 @@ extern vcs_event_c<const image_s&> ks_ev_new_scaled_image;
  * @see
  * ks_scale_frame()
  */
-extern vcs_event_c<unsigned> ks_ev_frames_per_second;
+extern vcs_event_c<unsigned> ev_frames_per_second;
 
 /*!
  * Fired when an output scaling filter becomes active, i.e. when captured
  * frames begin being scaled using such a filter.
  */
-extern vcs_event_c<void> ks_ev_custom_scaler_enabled;
+extern vcs_event_c<void> ev_custom_output_scaler_enabled;
 
 /*!
  * Fired when there's no longer an output scaling filter being used to
  * scale captured frames.
  */
-extern vcs_event_c<void> ks_ev_custom_scaler_disabled;
+extern vcs_event_c<void> ev_custom_output_scaler_disabled;
+
+extern vcs_event_c<void> ev_eco_mode_enabled;
+extern vcs_event_c<void> ev_eco_mode_disabled;
+extern vcs_event_c<const captured_frame_s&> ev_frame_processing_finished;
 
 #endif

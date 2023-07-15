@@ -259,54 +259,54 @@ OutputWindow::OutputWindow(QWidget *parent) :
 
     // Listen for app events.
     {
-        kd_ev_dirty.listen([this]
+        ev_dirty_output_window.listen([this]
         {
             this->redraw();
         });
 
-        ks_ev_new_scaled_image.listen([this]
+        ev_new_output_image.listen([this]
         {
             this->redraw();
         });
 
-        k_ev_eco_mode_enabled.listen([this]
+        ev_eco_mode_enabled.listen([this]
         {
             this->update_window_title();
         });
 
-        k_ev_eco_mode_disabled.listen([this]
+        ev_eco_mode_disabled.listen([this]
         {
             this->update_window_title();
         });
 
-        ks_ev_new_output_resolution.listen([this]
+        ev_new_output_resolution.listen([this]
         {
             this->update_window_title();
             this->update_window_size();
         });
 
-        kc_ev_signal_lost.listen([this]
-        {
-            this->update_window_title();
-            this->update_window_size();
-            this->redraw();
-        });
-
-        kc_ev_invalid_device.listen([this]
+        ev_capture_signal_lost.listen([this]
         {
             this->update_window_title();
             this->update_window_size();
             this->redraw();
         });
 
-        kc_ev_invalid_signal.listen([this]
+        ev_invalid_capture_device.listen([this]
         {
             this->update_window_title();
             this->update_window_size();
             this->redraw();
         });
 
-        kc_ev_new_video_mode.listen([this](video_mode_s)
+        ev_invalid_capture_signal.listen([this]
+        {
+            this->update_window_title();
+            this->update_window_size();
+            this->redraw();
+        });
+
+        ev_new_video_mode.listen([this](video_mode_s)
         {
             this->update_window_title();
         });

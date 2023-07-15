@@ -244,7 +244,7 @@ void kc_initialize_device(void)
     kc_set_device_property("width", FRAME_BUFFER.resolution.w);
     kc_set_device_property("height", FRAME_BUFFER.resolution.h);
 
-    kc_ev_new_video_mode.listen([](const video_mode_s &mode)
+    ev_new_video_mode.listen([](const video_mode_s &mode)
     {
         resolution_s::to_capture_device(mode.resolution);
         refresh_rate_s::to_capture_device(mode.refreshRate);
@@ -296,19 +296,19 @@ capture_event_e kc_pop_event_queue(void)
 {
     if (pop_capture_event(capture_event_e::invalid_signal))
     {
-        kc_ev_invalid_signal.fire();
+        ev_invalid_capture_signal.fire();
         return capture_event_e::invalid_signal;
     }
     else if (pop_capture_event(capture_event_e::new_video_mode))
     {
-        kc_ev_new_proposed_video_mode.fire(video_mode_s{
+        ev_new_proposed_video_mode.fire(video_mode_s{
             .resolution = FRAME_BUFFER.resolution
         });
         return capture_event_e::new_video_mode;
     }
     else if (pop_capture_event(capture_event_e::new_frame))
     {
-        kc_ev_new_captured_frame.fire(FRAME_BUFFER);
+        ev_new_captured_frame.fire(FRAME_BUFFER);
         return capture_event_e::new_frame;
     }
 

@@ -44,10 +44,6 @@
     }
 #endif
 
-vcs_event_c<void> k_ev_eco_mode_enabled;
-vcs_event_c<void> k_ev_eco_mode_disabled;
-vcs_event_c<const captured_frame_s&> k_ev_frame_processing_finished;
-
 static std::deque<subsystem_releaser_t> SUBSYSTEM_RELEASERS;
 
 // Set to true when we want to break out of the program's main loop and terminate.
@@ -83,17 +79,17 @@ static bool initialize_all(void)
 {
     // Listen for app events.
     {
-        k_ev_eco_mode_enabled.listen([]
+        ev_eco_mode_enabled.listen([]
         {
             ECO_REFERENCE_TIME = std::chrono::system_clock::now();
         });
 
-        kc_ev_unrecoverable_error.listen([]
+        ev_unrecoverable_capture_error.listen([]
         {
             PROGRAM_EXIT_REQUESTED = true;
         });
 
-        kc_ev_new_video_mode.listen([](const video_mode_s &videoMode)
+        ev_new_video_mode.listen([](const video_mode_s &videoMode)
         {
             INFO((
                 "Video mode: %u x %u at %.3f Hz.",
@@ -103,7 +99,7 @@ static bool initialize_all(void)
             ));
         });
 
-        kc_ev_signal_lost.listen([]
+        ev_capture_signal_lost.listen([]
         {
             INFO(("No signal."));
         });
@@ -111,9 +107,9 @@ static bool initialize_all(void)
         // The capture device has received a new video mode. We'll inspect the
         // mode to see if we think it's acceptable, then allow news of it to
         // propagate to the rest of VCS.
-        kc_ev_new_proposed_video_mode.listen([](const video_mode_s &videoMode)
+        ev_new_proposed_video_mode.listen([](const video_mode_s &videoMode)
         {
-            kc_ev_new_video_mode.fire(videoMode);
+            ev_new_video_mode.fire(videoMode);
         });
     }
 
@@ -146,7 +142,7 @@ static capture_event_e process_next_capture_event(void)
         case capture_event_e::new_frame:
         {
             const auto &frame = kc_frame_buffer();
-            k_ev_frame_processing_finished.fire(frame);
+            ev_frame_processing_finished.fire(frame);
             break;
         }
         case capture_event_e::invalid_signal:
@@ -190,7 +186,7 @@ void k_set_eco_mode_enabled(const bool isEnabled)
     }
 
     IS_ECO_MODE_ENABLED = isEnabled;
-    isEnabled? k_ev_eco_mode_enabled.fire() : k_ev_eco_mode_disabled.fire();
+    isEnabled? ev_eco_mode_enabled.fire() : ev_eco_mode_disabled.fire();
 
     return;
 }
@@ -306,7 +302,7 @@ int main(int argc, char *argv[])
 
     if (!kc_has_signal())
     {
-        kc_ev_signal_lost.fire();
+        ev_capture_signal_lost.fire();
     }
 
     DEBUG(("Entering the main loop."));

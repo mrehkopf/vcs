@@ -130,7 +130,7 @@ static void set_input_channel(const unsigned channelIdx)
         &FRAME_BUFFER
     );
 
-    kc_ev_input_channel_changed.fire(channelIdx);
+    ev_new_input_channel.fire(channelIdx);
 
     return;
 }
@@ -230,13 +230,13 @@ capture_event_e kc_pop_event_queue(void)
 {
     if (!INPUT_CHANNEL)
     {
-        kc_ev_unrecoverable_error.fire();
+        ev_unrecoverable_capture_error.fire();
         return capture_event_e::unrecoverable_error;
     }
     else if (INPUT_CHANNEL->pop_capture_event(capture_event_e::unrecoverable_error))
     {
         INPUT_CHANNEL->captureStatus.invalidDevice = true;
-        kc_ev_unrecoverable_error.fire();
+        ev_unrecoverable_capture_error.fire();
         return capture_event_e::unrecoverable_error;
     }
     else if (FORCE_CUSTOM_RESOLUTION)
@@ -261,29 +261,29 @@ capture_event_e kc_pop_event_queue(void)
     else if (INPUT_CHANNEL->pop_capture_event(capture_event_e::signal_lost))
     {
         kc_set_device_property("has signal", false);
-        kc_ev_signal_lost.fire();
+        ev_capture_signal_lost.fire();
         return capture_event_e::signal_lost;
     }
     else if (INPUT_CHANNEL->pop_capture_event(capture_event_e::signal_gained))
     {
         kc_set_device_property("has signal", true);
-        kc_ev_signal_gained.fire();
+        ev_capture_signal_gained.fire();
         return capture_event_e::signal_gained;
     }
     else if (INPUT_CHANNEL->pop_capture_event(capture_event_e::invalid_signal))
     {
         kc_set_device_property("has signal", false);
-        kc_ev_invalid_signal.fire();
+        ev_invalid_capture_signal.fire();
         return capture_event_e::invalid_signal;
     }
     else if (INPUT_CHANNEL->pop_capture_event(capture_event_e::invalid_device))
     {
-        kc_ev_invalid_device.fire();
+        ev_invalid_capture_device.fire();
         return capture_event_e::invalid_device;
     }
     else if (INPUT_CHANNEL->pop_capture_event(capture_event_e::new_frame))
     {
-        kc_ev_new_captured_frame.fire(FRAME_BUFFER);
+        ev_new_captured_frame.fire(FRAME_BUFFER);
         return capture_event_e::new_frame;
     }
     else if (INPUT_CHANNEL->pop_capture_event(capture_event_e::sleep))
@@ -412,20 +412,20 @@ void kc_initialize_device(void)
 
     // Listen for relevant events.
     {
-        kc_ev_signal_gained.listen([]
+        ev_capture_signal_gained.listen([]
         {
             k_assert(INPUT_CHANNEL, "Attempting to set input channel parameters on a null channel.");
 
             INPUT_CHANNEL->captureStatus.videoParameters.update();
             update_device_video_parameters();
 
-            kc_ev_new_proposed_video_mode.fire({
+            ev_new_proposed_video_mode.fire({
                 INPUT_CHANNEL->captureStatus.resolution,
                 INPUT_CHANNEL->captureStatus.refreshRate,
             });
         });
 
-        k_ev_frame_processing_finished.listen([]
+        ev_frame_processing_finished.listen([]
         {
             k_assert(INPUT_CHANNEL, "Attempting to set input channel parameters on a null channel.");
             INPUT_CHANNEL->captureStatus.numFramesProcessed++;
