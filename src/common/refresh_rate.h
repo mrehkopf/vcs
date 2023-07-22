@@ -54,7 +54,7 @@ struct refresh_rate_s
     }
 
     static refresh_rate_s from_capture_device(void);
-    static refresh_rate_s to_capture_device(const refresh_rate_s &rate);
+    static void to_capture_device(const refresh_rate_s &rate);
     unsigned internal_value(void) const;
     void operator=(const double hz);
     void operator=(const unsigned hz);

@@ -13,7 +13,7 @@ refresh_rate_s refresh_rate_s::from_capture_device()
     return refresh_rate_s(kc_device_property("refresh rate"));
 }
 
-refresh_rate_s refresh_rate_s::to_capture_device(const refresh_rate_s &rate)
+void refresh_rate_s::to_capture_device(const refresh_rate_s &rate)
 {
     kc_set_device_property("refresh rate", rate.value<double>());
 }

@@ -25,9 +25,9 @@ InputChannel::InputChannel(QWidget *parent) :
 
     // Connect GUI controls to consequences for operating them.
     {
-        connect(ui->spinBox_deviceIdx, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=]
+        connect(ui->spinBox_deviceIdx, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this]
         {
-            kc_set_device_property("input channel index", ui->spinBox_deviceIdx->value());
+            kc_set_device_property("input channel index", this->ui->spinBox_deviceIdx->value());
         });
     }
 

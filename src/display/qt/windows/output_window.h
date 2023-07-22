@@ -16,8 +16,6 @@ class VCSBaseDialog;
 class QAction;
 class MagnifyingGlass;
 
-struct resolution_alias_s;
-
 namespace Ui {
 class OutputWindow;
 }

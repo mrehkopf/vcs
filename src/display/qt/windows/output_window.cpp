@@ -91,7 +91,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
         QAction *controlPanel = new QAction("Control panel...", this);
         {
             controlPanel->setShortcut(kd_get_key_sequence("output-window: open-control-panel-dialog"));
-            connect(controlPanel, &QAction::triggered, this, [=]{this->controlPanelDialog->open();});
+            connect(controlPanel, &QAction::triggered, this, [this]{this->controlPanelDialog->open();});
             this->addAction(controlPanel);
         }
 
@@ -102,22 +102,22 @@ OutputWindow::OutputWindow(QWidget *parent) :
             showBorder->setChecked(this->window_has_border());
             showBorder->setShortcut(kd_get_key_sequence("output-window: toggle-window-border"));
 
-            connect(this, &OutputWindow::border_hidden, this, [=]
+            connect(this, &OutputWindow::border_hidden, this, [showBorder]
             {
                 showBorder->setChecked(false);
             });
 
-            connect(this, &OutputWindow::border_shown, this, [=]
+            connect(this, &OutputWindow::border_shown, this, [showBorder]
             {
                 showBorder->setChecked(true);
             });
 
-            connect(this, &OutputWindow::fullscreen_mode_enabled, this, [=]
+            connect(this, &OutputWindow::fullscreen_mode_enabled, this, [showBorder]
             {
                 showBorder->setEnabled(false);
             });
 
-            connect(this, &OutputWindow::fullscreen_mode_disabled, this, [=]
+            connect(this, &OutputWindow::fullscreen_mode_disabled, this, [showBorder]
             {
                 showBorder->setEnabled(true);
             });
@@ -170,7 +170,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
             });
         }
 
-        connect(this->contextMenu->addAction("Screenshot"), &QAction::triggered, this, [=]{this->save_screenshot();});
+        connect(this->contextMenu->addAction("Screenshot"), &QAction::triggered, this, [this]{this->save_screenshot();});
         this->contextMenu->addSeparator();
         this->contextMenu->addAction(controlPanel);
         this->contextMenu->addSeparator();
@@ -203,18 +203,18 @@ OutputWindow::OutputWindow(QWidget *parent) :
         {
             const std::string shortcutString = ("input-resolution-dialog: resolution-activator-" + std::to_string(i));
 
-            connect(makeAppwideShortcut(shortcutString), &QShortcut::activated, [=]
+            connect(makeAppwideShortcut(shortcutString), &QShortcut::activated, [i, this]
             {
                 this->control_panel()->capture()->input_resolution()->activate_resolution_button(i);
             });
         }
 
-        connect(makeAppwideShortcut("filter-graph-dialog: toggle-enabled"), &QShortcut::activated, [=]
+        connect(makeAppwideShortcut("filter-graph-dialog: toggle-enabled"), &QShortcut::activated, [this]
         {
             this->control_panel()->filter_graph()->set_enabled(!this->control_panel()->filter_graph()->is_enabled());
         });
 
-        connect(makeAppwideShortcut("overlay-dialog: toggle-enabled"), &QShortcut::activated, [=]
+        connect(makeAppwideShortcut("overlay-dialog: toggle-enabled"), &QShortcut::activated, [this]
         {
             this->control_panel()->overlay()->set_enabled(!this->control_panel()->overlay()->is_enabled());
         });

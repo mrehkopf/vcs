@@ -73,7 +73,7 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                         textEdit->setTabChangesFocus(true);
                         textEdit->insertPlainText(QString::fromStdString(c->get_text()));
 
-                        connect(textEdit, &QPlainTextEdit::textChanged, [=]
+                        connect(textEdit, &QPlainTextEdit::textChanged, [=, this]
                         {
                             QString text = textEdit->toPlainText();
 
@@ -97,7 +97,7 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                         checkbox->setText(QString::fromStdString(c->label));
                         checkbox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
-                        connect(checkbox, &QCheckBox::toggled, [=](const bool isChecked)
+                        connect(checkbox, &QCheckBox::toggled, [c, this](const bool isChecked)
                         {
                             c->set_value(isChecked);
                             emit this->parameter_changed();
@@ -117,7 +117,7 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
 
                         combobox->setCurrentIndex(c->get_value());
 
-                        connect(combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](const int currentIdx)
+                        connect(combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), [c, this](const int currentIdx)
                         {
                             c->set_value(currentIdx);
                             emit this->parameter_changed();
@@ -148,7 +148,7 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                             default: k_assert(0, "Unrecognized filter GUI alignment enumerator."); break;
                         }
 
-                        connect(spinbox, QOverload<int>::of(&QSpinBox::valueChanged), [=](const double newValue)
+                        connect(spinbox, QOverload<int>::of(&QSpinBox::valueChanged), [c, this](const double newValue)
                         {
                             c->set_value(newValue);
                             emit this->parameter_changed();
@@ -181,7 +181,7 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
                             default: k_assert(0, "Unrecognized filter GUI alignment enumerator."); break;
                         }
 
-                        connect(doublespinbox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [=](const double newValue)
+                        connect(doublespinbox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [c, this](const double newValue)
                         {
                             c->set_value(newValue);
                             emit this->parameter_changed();

@@ -100,7 +100,7 @@ void ParameterGrid::add_combobox(const QString name,
                 resetButton->setEnabled(false);
             });
 
-            connect(comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [=](const int newIndex)
+            connect(comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [newParam, resetButton, this](const int newIndex)
             {
                 newParam->currentValue = newIndex;
                 resetButton->setEnabled((newIndex != newParam->defaultValue));
@@ -109,7 +109,7 @@ void ParameterGrid::add_combobox(const QString name,
                 emit this->parameter_value_changed_by_user(newParam->name, newIndex);
             });
 
-            connect(this, &ParameterGrid::parameter_value_changed_programmatically, this, [=](const QString &parameterName, const int newValue)
+            connect(this, &ParameterGrid::parameter_value_changed_programmatically, this, [newParam, comboBox, resetButton, this](const QString &parameterName, const int newValue)
             {
                 if (parameterName == newParam->name)
                 {
@@ -204,7 +204,7 @@ void ParameterGrid::add_scroller(const QString name,
                 spinBox->setValue(newValue);
             });
 
-            connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [=](const int newValue)
+            connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [newParam, scrollBar, resetButton, this](const int newValue)
             {
                 newParam->currentValue = newValue;
                 scrollBar->setValue(newValue);
@@ -214,7 +214,7 @@ void ParameterGrid::add_scroller(const QString name,
                 emit this->parameter_value_changed_by_user(newParam->name, newValue);
             });
 
-            connect(this, &ParameterGrid::parameter_value_changed_programmatically, this, [=](const QString &parameterName, const int newValue)
+            connect(this, &ParameterGrid::parameter_value_changed_programmatically, this, [=, this](const QString &parameterName, const int newValue)
             {
                 if (parameterName == newParam->name)
                 {

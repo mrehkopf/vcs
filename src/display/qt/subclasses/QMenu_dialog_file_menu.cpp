@@ -42,22 +42,22 @@ DialogFileMenu::DialogFileMenu(VCSBaseDialog *const parentDialog) :
     this->addSeparator();
     this->addAction(close);
 
-    connect(saveAs, &QAction::triggered, this, [=]
+    connect(saveAs, &QAction::triggered, this, [save, this]
     {
         emit this->save_as(save->data().toString());
     });
 
-    connect(save, &QAction::triggered, this, [=]
+    connect(save, &QAction::triggered, this, [save, this]
     {
         emit this->save(save->data().toString());
     });
 
-    connect(open, &QAction::triggered, this, [=]
+    connect(open, &QAction::triggered, this, [save, this]
     {
         emit this->open();
     });
 
-    connect(close, &QAction::triggered, this, [=]
+    connect(close, &QAction::triggered, this, [parentDialog, close, this]
     {
         if (parentDialog->has_unsaved_changes() &&
             (QMessageBox::question(parentDialog,

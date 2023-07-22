@@ -40,7 +40,7 @@ WindowSize::WindowSize(QWidget *parent) :
             return ((qcheckboxCheckedState == Qt::Checked)? true : false);
         };
 
-        connect(ui->checkBox_forceOutputScale, &QCheckBox::stateChanged, this, [=](int state)
+        connect(ui->checkBox_forceOutputScale, &QCheckBox::stateChanged, this, [is_checked, this](int state)
         {
             if (is_checked(state))
             {
@@ -48,7 +48,7 @@ WindowSize::WindowSize(QWidget *parent) :
             }
             else
             {
-                ui->spinBox_outputScale->setValue(100);
+                this->ui->spinBox_outputScale->setValue(100);
             }
 
             ui->spinBox_outputScale->setEnabled(is_checked(state));
@@ -57,10 +57,10 @@ WindowSize::WindowSize(QWidget *parent) :
             ks_set_scaling_multiplier_enabled(is_checked(state));
         });
 
-        connect(ui->checkBox_forceOutputRes, &QCheckBox::stateChanged, this, [=](int state)
+        connect(ui->checkBox_forceOutputRes, &QCheckBox::stateChanged, this, [is_checked, this](int state)
         {
-            ui->spinBox_outputResX->setEnabled(is_checked(state));
-            ui->spinBox_outputResY->setEnabled(is_checked(state));
+            this->ui->spinBox_outputResX->setEnabled(is_checked(state));
+            this->ui->spinBox_outputResY->setEnabled(is_checked(state));
             kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "ForceWindowSize", bool(state));
 
             ks_set_base_resolution_enabled(is_checked(state));
@@ -68,14 +68,14 @@ WindowSize::WindowSize(QWidget *parent) :
             if (is_checked(state))
             {
                 ks_set_base_resolution({
-                    (unsigned)ui->spinBox_outputResX->value(),
-                    (unsigned)ui->spinBox_outputResY->value()
+                    .w = unsigned(this->ui->spinBox_outputResX->value()),
+                    .h = unsigned(this->ui->spinBox_outputResY->value())
                 });
             }
             else
             {
-                ui->spinBox_outputResX->setValue(ks_base_resolution().w);
-                ui->spinBox_outputResY->setValue(ks_base_resolution().h);
+                this->ui->spinBox_outputResX->setValue(ks_base_resolution().w);
+                this->ui->spinBox_outputResY->setValue(ks_base_resolution().h);
             }
         });
 

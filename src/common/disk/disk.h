@@ -30,7 +30,6 @@ class BaseFilterGraphNode;
 struct filter_graph_option_s;
 struct video_signal_parameters_s;
 struct video_preset_s;
-struct resolution_alias_s;
 
 /*!
  * Saves the given video presets into a file named @p filename.

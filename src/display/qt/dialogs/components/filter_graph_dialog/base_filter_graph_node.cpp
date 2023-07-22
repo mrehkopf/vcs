@@ -179,7 +179,7 @@ void BaseFilterGraphNode::generate_right_click_menu(void)
             enabled->setChecked(isEnabled);
         });
 
-        connect(enabled, &QAction::triggered, this, [=]
+        connect(enabled, &QAction::triggered, this, [this]
         {
             this->set_enabled(!this->isEnabled);
             kd_recalculate_filter_graph_chains();
@@ -198,7 +198,7 @@ void BaseFilterGraphNode::generate_right_click_menu(void)
             QAction *colorAction = new QAction(color, colorMenu);
             colorMenu->addAction(colorAction);
 
-            connect(colorAction, &QAction::triggered, this, [=]
+            connect(colorAction, &QAction::triggered, this, [color, this]
             {
                 this->set_background_color(color);
             });
@@ -211,7 +211,7 @@ void BaseFilterGraphNode::generate_right_click_menu(void)
     {
         this->rightClickMenu->addSeparator();
 
-        connect(this->rightClickMenu->addAction("Delete"), &QAction::triggered, this, [=]
+        connect(this->rightClickMenu->addAction("Delete"), &QAction::triggered, this, [this]
         {
             dynamic_cast<InteractibleNodeGraph*>(this->scene())->remove_node(this);
         });

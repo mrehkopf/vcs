@@ -59,7 +59,7 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
                 filenameIndicator->setText(QFileInfo(newFilename).fileName());
             });
 
-            connect(this, &VCSBaseDialog::unsaved_changes_flag_changed, this, [=](const bool is)
+            connect(this, &VCSBaseDialog::unsaved_changes_flag_changed, this, [filenameIndicator, this](const bool is)
             {
                 QString baseName = (this->data_filename().isEmpty()? "[Unsaved]" : filenameIndicator->text());
 
@@ -89,12 +89,12 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
 
             this->menuBar->addMenu(file);
 
-            connect(file, &DialogFileMenu::save, this, [=](const QString &filename)
+            connect(file, &DialogFileMenu::save, this, [this](const QString &filename)
             {
                 this->save_video_presets_to_file(filename);
             });
 
-            connect(file, &DialogFileMenu::open, this, [=]
+            connect(file, &DialogFileMenu::open, this, [this]
             {
                 QString filename = QFileDialog::getOpenFileName(
                     this,
@@ -106,7 +106,7 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
                 this->load_presets_from_file(filename);
             });
 
-            connect(file, &DialogFileMenu::save_as, this, [=](const QString &originalFilename)
+            connect(file, &DialogFileMenu::save_as, this, [this](const QString &originalFilename)
             {
                 QString filename = QFileDialog::getSaveFileName(
                     this,
@@ -118,9 +118,9 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
                 this->save_video_presets_to_file(filename);
             });
 
-            connect(file, &DialogFileMenu::close, this, [=]
+            connect(file, &DialogFileMenu::close, this, [this]
             {
-                ui->comboBox_presetList->remove_all_presets();
+                this->ui->comboBox_presetList->remove_all_presets();
                 this->set_data_filename("");
                 kvideopreset_remove_all_presets();
             });

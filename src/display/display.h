@@ -38,9 +38,6 @@
 #include "filter/filter.h"
 #include "main.h"
 
-struct log_entry_s;
-struct resolution_alias_s;
-
 /*!
  * @brief
  * A GUI-agnostic representation of a filter graph node.

@@ -46,7 +46,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                 viewScale->setText(QString("%1\u00d7").arg(QString::number(newScale, 'f', 1)));
             });
 
-            connect(ui->graphicsView, &InteractibleNodeGraphView::right_clicked_on_background, this, [=](const QPoint &globalPos)
+            connect(ui->graphicsView, &InteractibleNodeGraphView::right_clicked_on_background, this, [this](const QPoint &globalPos)
             {
                 this->filtersMenu->popup(globalPos);
             });
@@ -59,7 +59,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                 filenameIndicator->setText(QFileInfo(newFilename).fileName());
             });
 
-            connect(this, &VCSBaseDialog::unsaved_changes_flag_changed, this, [=](const bool is)
+            connect(this, &VCSBaseDialog::unsaved_changes_flag_changed, this, [filenameIndicator, this](const bool is)
             {
                 QString baseName = (this->data_filename().isEmpty()? "[Unsaved]" : filenameIndicator->text());
 
@@ -80,12 +80,12 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
         {
             enable->setChecked(this->is_enabled());
 
-            connect(this, &VCSBaseDialog::enabled_state_set, this, [=](const bool isEnabled)
+            connect(this, &VCSBaseDialog::enabled_state_set, this, [enable](const bool isEnabled)
             {
                 enable->setChecked(isEnabled);
             });
 
-            connect(enable, &QCheckBox::clicked, this, [=](const bool isEnabled)
+            connect(enable, &QCheckBox::clicked, this, [this](const bool isEnabled)
             {
                 this->set_enabled(isEnabled);
             });
@@ -107,12 +107,12 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
 
             this->menuBar->addMenu(file);
 
-            connect(file, &DialogFileMenu::save, this, [=](const QString &filename)
+            connect(file, &DialogFileMenu::save, this, [this](const QString &filename)
             {
                 this->save_graph_into_file(filename);
             });
 
-            connect(file, &DialogFileMenu::open, this, [=]
+            connect(file, &DialogFileMenu::open, this, [this]
             {
                 QString filename = QFileDialog::getOpenFileName(
                     this,
@@ -124,7 +124,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                 this->load_graph_from_file(filename);
             });
 
-            connect(file, &DialogFileMenu::save_as, this, [=](const QString &originalFilename)
+            connect(file, &DialogFileMenu::save_as, this, [this](const QString &originalFilename)
             {
                 QString filename = QFileDialog::getSaveFileName(
                     this,
@@ -137,7 +137,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                 this->save_graph_into_file(filename);
             });
 
-            connect(file, &DialogFileMenu::close, this, [=]
+            connect(file, &DialogFileMenu::close, this, [this]
             {
                 this->reset_graph(true);
                 this->set_data_filename("");
@@ -171,7 +171,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                         continue;
                     }
 
-                    connect(filtersMenu->addAction(QString::fromStdString(filter->name())), &QAction::triggered, this, [=]
+                    connect(filtersMenu->addAction(QString::fromStdString(filter->name())), &QAction::triggered, this, [filter, this]
                     {
                         this->add_filter_graph_node(filter->uuid());
                     });
@@ -187,7 +187,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                         continue;
                     }
 
-                    connect(filtersMenu->addAction(QString::fromStdString(filter->name())), &QAction::triggered, this, [=]
+                    connect(filtersMenu->addAction(QString::fromStdString(filter->name())), &QAction::triggered, this, [filter, this]
                     {
                         this->add_filter_graph_node(filter->uuid());
                     });
@@ -222,7 +222,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
                             default: k_assert(0, "Unknown filter category."); break;
                         }
 
-                        connect(action, &QAction::triggered, this, [=]
+                        connect(action, &QAction::triggered, this, [filter, this]
                         {
                             this->add_filter_graph_node(filter->uuid());
                         });
@@ -245,7 +245,7 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
             kpers_set_value(INI_GROUP_FILTER_GRAPH, "Enabled", isEnabled);
         });
 
-        connect(this, &VCSBaseDialog::data_filename_changed, this, [=](const QString &newFilename)
+        connect(this, &VCSBaseDialog::data_filename_changed, this, [this](const QString &newFilename)
         {
             // Kludge fix for the filter graph not repainting itself properly when new nodes
             // are loaded in. Let's just force it to do so.

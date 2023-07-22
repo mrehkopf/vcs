@@ -333,7 +333,7 @@ static void update_device_video_parameters(void)
                 .greenContrast      = videoParams.default_value(ic_v4l_controls_c::type_e::green_contrast),
                 .blueBrightness     = videoParams.default_value(ic_v4l_controls_c::type_e::blue_brightness),
                 .blueContrast       = videoParams.default_value(ic_v4l_controls_c::type_e::blue_contrast),
-                .horizontalSize     = videoParams.default_value(ic_v4l_controls_c::type_e::horizontal_size),
+                .horizontalSize     = unsigned(videoParams.default_value(ic_v4l_controls_c::type_e::horizontal_size)),
                 .horizontalPosition = videoParams.default_value(ic_v4l_controls_c::type_e::horizontal_position),
                 .verticalPosition   = videoParams.default_value(ic_v4l_controls_c::type_e::vertical_position),
                 .phase              = videoParams.default_value(ic_v4l_controls_c::type_e::phase),

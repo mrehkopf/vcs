@@ -57,12 +57,12 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
         {
             enable->setChecked(this->is_enabled());
 
-            connect(this, &VCSBaseDialog::enabled_state_set, this, [=](const bool isEnabled)
+            connect(this, &VCSBaseDialog::enabled_state_set, this, [enable](const bool isEnabled)
             {
                 enable->setChecked(isEnabled);
             });
 
-            connect(enable, &QCheckBox::clicked, this, [=](const bool isEnabled)
+            connect(enable, &QCheckBox::clicked, this, [this](const bool isEnabled)
             {
                 this->set_enabled(isEnabled);
             });
@@ -113,7 +113,7 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
             {
                 QMenu *htmlMenu = new QMenu("HTML", this->menuBar);
 
-                connect(htmlMenu->addAction("Image..."), &QAction::triggered, this, [=]
+                connect(htmlMenu->addAction("Image..."), &QAction::triggered, this, [insert_text, this]
                 {
                     const QString filename = QFileDialog::getOpenFileName(
                         this,
