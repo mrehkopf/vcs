@@ -58,32 +58,8 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filenam
     const std::string fileVersion = file_reader::file_version(filename);
     const std::string fileType = file_reader::file_type(filename);
 
-    // Legacy parameter file format (VCS <= 1.6.5).
-    if (fileVersion.empty())
-    {
-        std::vector<video_signal_parameters_s> videoModeParams;
-
-        if (!file_reader::video_params::legacy_1_6_5::read(filename, &videoModeParams))
-        {
-            goto fail;
-        }
-
-        // Convert the legacy format into the current format.
-        unsigned id = 0;
-        for (const auto &params: videoModeParams)
-        {
-            video_preset_s *const preset = new video_preset_s;
-
-            preset->activatesWithResolution = true;
-            preset->activationResolution = params.r;
-            preset->videoParameters = params;
-            preset->id = ++id;
-
-            presets.push_back(preset);
-        }
-    }
     // Legacy parameter file format (VCS ~1.7-dev).
-    else if (fileType == "VCS video parameters")
+    if (fileType == "VCS video parameters")
     {
         std::vector<video_signal_parameters_s> videoModeParams;
 

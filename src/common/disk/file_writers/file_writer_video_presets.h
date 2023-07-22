@@ -10,23 +10,12 @@
 
 #include "capture/video_presets.h"
 
-namespace file_writer
+namespace file_writer::video_presets
 {
-namespace video_presets
-{
-    // Legacy for VCS <= 1.6.5.
-    namespace legacy_1_6_5
-    {
-        bool write(const std::string &filename,
-                   const std::vector<video_signal_parameters_s> &videoParams);
-    }
-
     namespace version_a
     {
-        bool write(const std::string &filename,
-                   const std::vector<video_preset_s*> &presets);
+        bool write(const std::string &filename, const std::vector<video_preset_s*> &presets);
     }
-}
 }
 
 #endif

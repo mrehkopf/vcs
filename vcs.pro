@@ -130,8 +130,6 @@ SOURCES += \
     src/common/disk/file_reader.cpp \
     src/common/disk/file_readers/file_reader_filter_graph_version_b.cpp \
     src/common/disk/file_readers/file_reader_filter_graph_version_a.cpp \
-    src/common/disk/file_readers/file_reader_video_params_legacy_1_6_5.cpp \
-    src/common/disk/file_writers/file_writer_video_params_legacy_1_6_5.cpp \
     src/common/disk/file_writer.cpp \
     src/common/disk/file_writers/file_writer_video_params_version_a.cpp \
     src/common/disk/file_readers/file_reader_video_params_version_a.cpp \

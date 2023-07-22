@@ -10,23 +10,12 @@
 
 #include "capture/capture.h"
 
-namespace file_reader
+namespace file_reader::video_params
 {
-namespace video_params
-{
-    // Legacy for VCS <= 1.6.5.
-    namespace legacy_1_6_5
-    {
-        bool read(const std::string &filename,
-                  std::vector<video_signal_parameters_s> *const videoParams);
-    }
-
     namespace version_a
     {
-        bool read(const std::string &filename,
-                  std::vector<video_signal_parameters_s> *const videoParams);
+        bool read(const std::string &filename, std::vector<video_signal_parameters_s> *const videoParams);
     }
-}
 }
 
 #endif

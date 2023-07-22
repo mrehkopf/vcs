@@ -10,23 +10,12 @@
 
 #include "capture/capture.h"
 
-namespace file_writer
+namespace file_writer::video_params
 {
-namespace video_params
-{
-    // Legacy for VCS <= 1.6.5.
-    namespace legacy_1_6_5
-    {
-        bool write(const std::string &filename,
-                   const std::vector<video_signal_parameters_s> &videoParams);
-    }
-
     namespace version_a
     {
-        bool write(const std::string &filename,
-                   const std::vector<video_signal_parameters_s> &videoParams);
+        bool write(const std::string &filename, const std::vector<video_signal_parameters_s> &videoParams);
     }
-}
 }
 
 #endif
