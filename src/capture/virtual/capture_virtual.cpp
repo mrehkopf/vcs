@@ -23,6 +23,14 @@ static bool CAPTURE_EVENT_FLAGS[(int)capture_event_e::num_enumerators];
 
 static captured_frame_s FRAME_BUFFER;
 
+static struct
+{
+    double brightness = 1;
+    double redBrightness = 1;
+    double greenBrightness = 1;
+    double blueBrightness = 1;
+} VIDEO_PARAMS;
+
 static std::unordered_map<std::string, double> DEVICE_PROPERTIES = {
     {"width: minimum", MIN_CAPTURE_WIDTH},
     {"height: minimum", MIN_CAPTURE_HEIGHT},
@@ -47,23 +55,17 @@ static void redraw_test_pattern(void)
     {
         for (unsigned x = 0; x < FRAME_BUFFER.resolution.w; x++)
         {
-            /// TODO: Remove the dependency on Qt for the RGB -> HSL -> RGB conversion.
             QColor rgbGradient;
             const double widthRatio = (((x + numTicks) % FRAME_BUFFER.resolution.w) / double(FRAME_BUFFER.resolution.w));
             const double heightRatio = (y / double(FRAME_BUFFER.resolution.h));
             rgbGradient.setHsl((widthRatio * 359), 255, (255 - (heightRatio * 255)));
-            rgbGradient = rgbGradient.toRgb();
-
-            const u8 red = rgbGradient.red();
-            const u8 green = rgbGradient.green();
-            const u8 blue = rgbGradient.blue();
-            const u8 alpha = 255;
+            rgbGradient = rgbGradient.toRgb().lighter(VIDEO_PARAMS.brightness * 100);
 
             const unsigned idx = ((x + y * FRAME_BUFFER.resolution.w) * 4);
-            FRAME_BUFFER.pixels[idx + 0] = blue;
-            FRAME_BUFFER.pixels[idx + 1] = green;
-            FRAME_BUFFER.pixels[idx + 2] = red;
-            FRAME_BUFFER.pixels[idx + 3] = alpha;
+            FRAME_BUFFER.pixels[idx + 0] = (rgbGradient.blue() * VIDEO_PARAMS.blueBrightness);
+            FRAME_BUFFER.pixels[idx + 1] = (rgbGradient.green() * VIDEO_PARAMS.greenBrightness);
+            FRAME_BUFFER.pixels[idx + 2] = (rgbGradient.red() * VIDEO_PARAMS.redBrightness);
+            FRAME_BUFFER.pixels[idx + 3] = rgbGradient.alpha();
         }
     }
 
@@ -119,6 +121,54 @@ void kc_initialize_device(void)
         }
     });
 
+    video_signal_parameters_s::to_capture_device({
+        .brightness         = 1,
+        .contrast           = 1,
+        .redBrightness      = 1,
+        .redContrast        = 1,
+        .greenBrightness    = 1,
+        .greenContrast      = 1,
+        .blueBrightness     = 1,
+        .blueContrast       = 1,
+        .horizontalSize     = 1,
+        .horizontalPosition = 1,
+        .verticalPosition   = 1,
+        .phase              = 1,
+        .blackLevel         = 1
+    }, ": minimum");
+
+    video_signal_parameters_s::to_capture_device({
+        .brightness         = 200,
+        .contrast           = 200,
+        .redBrightness      = 200,
+        .redContrast        = 200,
+        .greenBrightness    = 200,
+        .greenContrast      = 200,
+        .blueBrightness     = 200,
+        .blueContrast       = 200,
+        .horizontalSize     = 200,
+        .horizontalPosition = 200,
+        .verticalPosition   = 200,
+        .phase              = 200,
+        .blackLevel         = 200
+    }, ": maximum");
+
+    video_signal_parameters_s::to_capture_device({
+        .brightness         = 100,
+        .contrast           = 100,
+        .redBrightness      = 100,
+        .redContrast        = 100,
+        .greenBrightness    = 100,
+        .greenContrast      = 100,
+        .blueBrightness     = 100,
+        .blueContrast       = 100,
+        .horizontalSize     = 100,
+        .horizontalPosition = 100,
+        .verticalPosition   = 100,
+        .phase              = 100,
+        .blackLevel         = 100
+    }, ": default");
+
     return;
 }
 
@@ -157,6 +207,22 @@ bool kc_set_device_property(const std::string &key, double value)
     {
         ev_new_input_channel.fire(value);
     }
+    else if (key == "brightness")
+    {
+        VIDEO_PARAMS.brightness = (value / 100);
+    }
+    else if (key == "red brightness")
+    {
+        VIDEO_PARAMS.redBrightness = (value / 100);
+    }
+    else if (key == "green brightness")
+    {
+        VIDEO_PARAMS.greenBrightness = (value / 100);
+    }
+    else if (key == "blue brightness")
+    {
+        VIDEO_PARAMS.blueBrightness = (value / 100);
+    }
 
     DEVICE_PROPERTIES[key] = value;
 
@@ -180,7 +246,10 @@ capture_event_e kc_pop_event_queue(void)
 
     if (pop_capture_event(capture_event_e::new_video_mode))
     {
-        ev_new_proposed_video_mode.fire({resolution_s::from_capture_device()});
+        ev_new_proposed_video_mode.fire(video_mode_s{
+            .resolution = resolution_s::from_capture_device(),
+            .refreshRate = refresh_rate_s::from_capture_device()
+        });
         return capture_event_e::new_video_mode;
     }
 
