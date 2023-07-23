@@ -182,9 +182,10 @@ bool kc_set_device_property(const std::string &key, double value)
     {
         set_input_channel(value);
     }
+    // Video parameters.
     else
     {
-        static const auto set_param = [](const int value, const ic_v4l_controls_c::type_e parameterType)->bool
+        static const auto set_video_param = [](const int value, const ic_v4l_controls_c::type_e parameterType)->bool
         {
             if (!kc_has_signal())
             {
@@ -215,7 +216,7 @@ bool kc_set_device_property(const std::string &key, double value)
         {
             if (key == videoParam.first)
             {
-                set_param(value, videoParam.second);
+                set_video_param(value, videoParam.second);
                 break;
             }
         }
@@ -324,7 +325,7 @@ static void update_device_video_parameters(void)
         }
         else
         {
-            video_signal_parameters_s::to_capture_device(video_signal_parameters_s{
+            video_signal_parameters_s::to_capture_device({
                 .brightness         = videoParams.default_value(ic_v4l_controls_c::type_e::brightness),
                 .contrast           = videoParams.default_value(ic_v4l_controls_c::type_e::contrast),
                 .redBrightness      = videoParams.default_value(ic_v4l_controls_c::type_e::red_brightness),
@@ -349,7 +350,7 @@ static void update_device_video_parameters(void)
     // hard-coded values. These values have been selected with the VisionRGB-E1S
     // in mind; they may or may not be suitable for other models.
     {
-        video_signal_parameters_s::to_capture_device(video_signal_parameters_s{
+        video_signal_parameters_s::to_capture_device({
             .brightness         = 0,
             .contrast           = 0,
             .redBrightness      = 0,
@@ -373,7 +374,7 @@ static void update_device_video_parameters(void)
     // hard-coded values. These values have been selected with the VisionRGB-E1S
     // in mind; they may or may not be suitable for other models.
     {
-        video_signal_parameters_s::to_capture_device(video_signal_parameters_s{
+        video_signal_parameters_s::to_capture_device({
             .brightness         = 64,
             .contrast           = 255,
             .redBrightness      = 255,
