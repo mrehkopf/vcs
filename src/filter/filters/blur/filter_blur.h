@@ -25,7 +25,7 @@ public:
                            {PARAM_TYPE, BLUR_GAUSSIAN}},
                           initialParamValues)
     {
-        this->guiDescription = new filtergui_blur_c(this);
+        this->gui = new filtergui_blur_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_blur_c)

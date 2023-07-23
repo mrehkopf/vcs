@@ -12,25 +12,25 @@
 filtergui_unsharp_mask_c::filtergui_unsharp_mask_c(abstract_filter_c *const filter)
 {
     {
-        auto *const strength = new filtergui_spinbox_s;
+        auto *const strength = new abstract_gui::spinner;
 
         strength->get_value = [=]{return filter->parameter(filter_unsharp_mask_c::PARAM_STRENGTH);};
         strength->set_value = [=](const int value){filter->set_parameter(filter_unsharp_mask_c::PARAM_STRENGTH, value);};
         strength->minValue = 0;
         strength->maxValue = 255;
 
-        this->guiFields.push_back({"Strength", {strength}});
+        this->fields.push_back({"Strength", {strength}});
     }
 
     {
-        auto *const radius = new filtergui_spinbox_s;
+        auto *const radius = new abstract_gui::spinner;
 
         radius->get_value = [=]{return filter->parameter(filter_unsharp_mask_c::PARAM_RADIUS);};
         radius->set_value = [=](const int value){filter->set_parameter(filter_unsharp_mask_c::PARAM_RADIUS, value);};
         radius->minValue = 1;
         radius->maxValue = 255;
 
-        this->guiFields.push_back({"Radius", {radius}});
+        this->fields.push_back({"Radius", {radius}});
     }
 
     return;

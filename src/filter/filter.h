@@ -131,7 +131,7 @@
 #include <unordered_map>
 #include <functional>
 #include <cstring>
-#include "filter/filtergui.h"
+#include "common/abstract_gui.h"
 #include "main.h"
 
 class abstract_filter_c;

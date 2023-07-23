@@ -46,7 +46,7 @@ public:
             {PARAM_PADDING_RIGHT, 0},
         },initialParamValues)
     {
-        this->guiDescription = new filtergui_output_scaler_c(this);
+        this->gui = new filtergui_output_scaler_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_output_scaler_c)

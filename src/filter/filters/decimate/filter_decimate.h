@@ -25,7 +25,7 @@ public:
                            {PARAM_TYPE, SAMPLE_AVERAGE}},
                           initialParamValues)
     {
-        this->guiDescription = new filtergui_decimate_c(this);
+        this->gui = new filtergui_decimate_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_decimate_c)

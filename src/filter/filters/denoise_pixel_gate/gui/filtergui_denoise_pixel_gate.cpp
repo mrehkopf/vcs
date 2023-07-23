@@ -12,14 +12,14 @@
 filtergui_denoise_pixel_gate_c::filtergui_denoise_pixel_gate_c(abstract_filter_c *const filter)
 {
     {
-        auto *const threshold = new filtergui_spinbox_s;
+        auto *const threshold = new abstract_gui::spinner;
 
         threshold->get_value = [=]{return filter->parameter(filter_denoise_pixel_gate_c::PARAM_THRESHOLD);};
         threshold->set_value = [=](const int value){filter->set_parameter(filter_denoise_pixel_gate_c::PARAM_THRESHOLD, value);};
         threshold->minValue = 0;
         threshold->maxValue = 255;
 
-        this->guiFields.push_back({"Threshold", {threshold}});
+        this->fields.push_back({"Threshold", {threshold}});
     }
 
     return;

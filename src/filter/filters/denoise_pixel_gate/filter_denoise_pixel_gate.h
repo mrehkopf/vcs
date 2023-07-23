@@ -19,7 +19,7 @@ public:
     filter_denoise_pixel_gate_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_THRESHOLD, 5}}, initialParamValues)
     {
-        this->guiDescription = new filtergui_denoise_pixel_gate_c(this);
+        this->gui = new filtergui_denoise_pixel_gate_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_denoise_pixel_gate_c)

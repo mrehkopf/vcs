@@ -8,9 +8,9 @@
 #ifndef VCS_FILTER_FILTERS_FLIP_GUI_FILTERGUI_FLIP_H
 #define VCS_FILTER_FILTERS_FLIP_GUI_FILTERGUI_FLIP_H
 
-#include "filter/filtergui.h"
+#include "common/abstract_gui.h"
 
-class filtergui_flip_c : public filtergui_c
+class filtergui_flip_c : public abstract_gui_s
 {
 public:
     filtergui_flip_c(abstract_filter_c *const filter);

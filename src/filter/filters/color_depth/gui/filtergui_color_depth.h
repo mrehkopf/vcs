@@ -8,9 +8,9 @@
 #ifndef VCS_FILTER_FILTERS_COLOR_DEPTH_GUI_FILTERGUI_COLOR_DEPTH_H
 #define VCS_FILTER_FILTERS_COLOR_DEPTH_GUI_FILTERGUI_COLOR_DEPTH_H
 
-#include "filter/filtergui.h"
+#include "common/abstract_gui.h"
 
-class filtergui_color_depth_c : public filtergui_c
+class filtergui_color_depth_c : public abstract_gui_s
 {
 public:
     filtergui_color_depth_c(abstract_filter_c *const filter);

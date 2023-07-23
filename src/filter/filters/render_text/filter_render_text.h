@@ -104,7 +104,7 @@ public:
         params.resize(PARAM_STRING + filter_render_text_c::maxStringLength + 1); // +1 for null terminator.
         this->set_parameters(params);
 
-        this->guiDescription = new filtergui_render_text_c(this);
+        this->gui = new filtergui_render_text_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_render_text_c)

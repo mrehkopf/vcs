@@ -22,7 +22,7 @@ public:
                            {PARAM_HEIGHT, 480}},
                           initialParamValues)
     {
-        this->guiDescription = new filtergui_input_gate_c(this);
+        this->gui = new filtergui_input_gate_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_input_gate_c)

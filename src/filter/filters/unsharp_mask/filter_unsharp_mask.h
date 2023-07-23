@@ -22,7 +22,7 @@ public:
                            {PARAM_RADIUS, 1}},
                           initialParamValues)
     {
-        this->guiDescription = new filtergui_unsharp_mask_c(this);
+        this->gui = new filtergui_unsharp_mask_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_unsharp_mask_c)

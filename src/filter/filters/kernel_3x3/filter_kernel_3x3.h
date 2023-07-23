@@ -37,7 +37,7 @@ public:
             {PARAM_33, 0}
         }, initialParamValues)
     {
-        this->guiDescription = new filtergui_kernel_3x3_c(this);
+        this->gui = new filtergui_kernel_3x3_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_kernel_3x3_c)

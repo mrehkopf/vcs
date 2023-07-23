@@ -18,16 +18,15 @@
 #include "filter/filter.h"
 #include "filter/abstract_filter.h"
 
-FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *parent) :
+FilterGUIForQt::FilterGUIForQt(const abstract_gui_s &gui, QWidget *parent) :
     QFrame(parent)
 {
-    const auto &guiDescription = filter->gui_description();
     auto *const widgetLayout = new QFormLayout(this);
 
     widgetLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
     widgetLayout->setRowWrapPolicy(QFormLayout::DontWrapRows);
 
-    if (guiDescription.empty())
+    if (gui.fields.empty())
     {
         auto *const emptyLabel = new QLabel("No parameters", this);
 
@@ -38,7 +37,7 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
     }
     else
     {
-        for (const auto &field: guiDescription)
+        for (const auto &field: gui.fields)
         {
             auto *const rowContainer = new QFrame(this);
             auto *const containerLayout = new QHBoxLayout(rowContainer);
@@ -50,146 +49,134 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
             {
                 QWidget *widget = nullptr;
 
-                switch (component->type())
+                if (dynamic_cast<abstract_gui::label*>(component))
                 {
-                    case filtergui_component_e::label:
+                    auto *const c = ((abstract_gui::label*)component);
+                    auto *const label = qobject_cast<QLabel*>(widget = new QLabel(QString::fromStdString(c->text), this));
+
+                    label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+                    label->setAlignment(Qt::AlignCenter);
+                    label->setStyleSheet("margin-bottom: .25em;");
+                }
+                else if (dynamic_cast<abstract_gui::text_edit*>(component))
+                {
+                    auto *const c = ((abstract_gui::text_edit*)component);
+                    auto *const textEdit = qobject_cast<QPlainTextEdit*>(widget = new QPlainTextEdit(QString::fromStdString(c->text), this));
+
+                    textEdit->setMinimumWidth(150);
+                    textEdit->setMaximumHeight(70);
+                    textEdit->setTabChangesFocus(true);
+                    textEdit->insertPlainText(QString::fromStdString(c->get_text()));
+
+                    connect(textEdit, &QPlainTextEdit::textChanged, [=, this]
                     {
-                        auto *const c = ((filtergui_label_s*)component);
-                        auto *const label = qobject_cast<QLabel*>(widget = new QLabel(QString::fromStdString(c->text), this));
+                        QString text = textEdit->toPlainText();
 
-                        label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-                        label->setAlignment(Qt::AlignCenter);
-                        label->setStyleSheet("margin-bottom: .25em;");
+                        textEdit->setProperty("overLengthLimit", (std::size_t(text.length()) > c->maxLength)? "true" : "false");
+                        this->style()->polish(textEdit);
 
-                        break;
-                    }
-                    case filtergui_component_e::textedit:
+                        text.resize(std::min(std::size_t(text.length()), c->maxLength));
+                        c->set_text(text.toStdString());
+
+                        emit this->parameter_changed();
+                    });
+                }
+                else if (dynamic_cast<abstract_gui::checkbox*>(component))
+                {
+                    auto *const c = ((abstract_gui::checkbox*)component);
+                    auto *const checkbox = qobject_cast<QCheckBox*>(widget = new QCheckBox(this));
+
+                    checkbox->setChecked(c->get_value());
+                    checkbox->setText(QString::fromStdString(c->label));
+                    checkbox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+
+                    connect(checkbox, &QCheckBox::toggled, [c, this](const bool isChecked)
                     {
-                        auto *const c = ((filtergui_textedit_s*)component);
-                        auto *const textEdit = qobject_cast<QPlainTextEdit*>(widget = new QPlainTextEdit(QString::fromStdString(c->text), this));
+                        c->set_value(isChecked);
+                        emit this->parameter_changed();
+                    });
+                }
+                else if (dynamic_cast<abstract_gui::combo_box*>(component))
+                {
+                    auto *const c = ((abstract_gui::combo_box*)component);
+                    auto *const combobox = qobject_cast<QComboBox*>(widget = new QComboBox(this));
 
-                        textEdit->setMinimumWidth(150);
-                        textEdit->setMaximumHeight(70);
-                        textEdit->setTabChangesFocus(true);
-                        textEdit->insertPlainText(QString::fromStdString(c->get_text()));
-
-                        connect(textEdit, &QPlainTextEdit::textChanged, [=, this]
-                        {
-                            QString text = textEdit->toPlainText();
-
-                            textEdit->setProperty("overLengthLimit", (std::size_t(text.length()) > c->maxLength)? "true" : "false");
-                            this->style()->polish(textEdit);
-
-                            text.resize(std::min(std::size_t(text.length()), c->maxLength));
-                            c->set_text(text.toStdString());
-
-                            emit this->parameter_changed();
-                        });
-
-                        break;
-                    }
-                    case filtergui_component_e::checkbox:
+                    for (const auto &item: c->items)
                     {
-                        auto *const c = ((filtergui_checkbox_s*)component);
-                        auto *const checkbox = qobject_cast<QCheckBox*>(widget = new QCheckBox(this));
-
-                        checkbox->setChecked(c->get_value());
-                        checkbox->setText(QString::fromStdString(c->label));
-                        checkbox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-
-                        connect(checkbox, &QCheckBox::toggled, [c, this](const bool isChecked)
-                        {
-                            c->set_value(isChecked);
-                            emit this->parameter_changed();
-                        });
-
-                        break;
+                        combobox->addItem(QString::fromStdString(item));
                     }
-                    case filtergui_component_e::combobox:
+
+                    combobox->setCurrentIndex(c->get_value());
+
+                    connect(combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), [c, this](const int currentIdx)
                     {
-                        auto *const c = ((filtergui_combobox_s*)component);
-                        auto *const combobox = qobject_cast<QComboBox*>(widget = new QComboBox(this));
+                        c->set_value(currentIdx);
+                        emit this->parameter_changed();
+                    });
+                }
+                else if (dynamic_cast<abstract_gui::spinner*>(component))
+                {
+                    auto *const c = ((abstract_gui::spinner*)component);
+                    auto *const spinbox = qobject_cast<QSpinBox*>(widget = new QSpinBox(this));
 
-                        for (const auto &item: c->items)
-                        {
-                            combobox->addItem(QString::fromStdString(item));
-                        }
+                    spinbox->setRange(c->minValue, c->maxValue);
+                    spinbox->setValue(c->get_value());
+                    spinbox->setPrefix(QString::fromStdString(c->prefix));
+                    spinbox->setSuffix(QString::fromStdString(c->suffix));
+                    spinbox->setButtonSymbols(
+                        (c->alignment == abstract_gui::horizontal_align::left)
+                        ? QAbstractSpinBox::UpDownArrows
+                        : QAbstractSpinBox::NoButtons
+                    );
 
-                        combobox->setCurrentIndex(c->get_value());
-
-                        connect(combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), [c, this](const int currentIdx)
-                        {
-                            c->set_value(currentIdx);
-                            emit this->parameter_changed();
-                        });
-
-                        break;
-                    }
-                    case filtergui_component_e::spinbox:
+                    switch (c->alignment)
                     {
-                        auto *const c = ((filtergui_spinbox_s*)component);
-                        auto *const spinbox = qobject_cast<QSpinBox*>(widget = new QSpinBox(this));
-
-                        spinbox->setRange(c->minValue, c->maxValue);
-                        spinbox->setValue(c->get_value());
-                        spinbox->setPrefix(QString::fromStdString(c->prefix));
-                        spinbox->setSuffix(QString::fromStdString(c->suffix));
-                        spinbox->setButtonSymbols(
-                            (c->alignment == filtergui_alignment_e::left)
-                            ? QAbstractSpinBox::UpDownArrows
-                            : QAbstractSpinBox::NoButtons
-                        );
-
-                        switch (c->alignment)
-                        {
-                            case filtergui_alignment_e::left: spinbox->setAlignment(Qt::AlignLeft); break;
-                            case filtergui_alignment_e::right: spinbox->setAlignment(Qt::AlignRight); break;
-                            case filtergui_alignment_e::center: spinbox->setAlignment(Qt::AlignHCenter); break;
-                            default: k_assert(0, "Unrecognized filter GUI alignment enumerator."); break;
-                        }
-
-                        connect(spinbox, QOverload<int>::of(&QSpinBox::valueChanged), [c, this](const double newValue)
-                        {
-                            c->set_value(newValue);
-                            emit this->parameter_changed();
-                        });
-
-                        break;
+                        case abstract_gui::horizontal_align::left: spinbox->setAlignment(Qt::AlignLeft); break;
+                        case abstract_gui::horizontal_align::right: spinbox->setAlignment(Qt::AlignRight); break;
+                        case abstract_gui::horizontal_align::center: spinbox->setAlignment(Qt::AlignHCenter); break;
+                        default: k_assert(0, "Unrecognized filter GUI alignment enumerator."); break;
                     }
-                    case filtergui_component_e::doublespinbox:
+
+                    connect(spinbox, QOverload<int>::of(&QSpinBox::valueChanged), [c, this](const double newValue)
                     {
-                        auto *const c = ((filtergui_doublespinbox_s*)component);
-                        auto *const doublespinbox = qobject_cast<QDoubleSpinBox*>(widget = new QDoubleSpinBox(this));
+                        c->set_value(newValue);
+                        emit this->parameter_changed();
+                    });
+                }
+                else if (dynamic_cast<abstract_gui::double_spinner*>(component))
+                {
+                    auto *const c = ((abstract_gui::double_spinner*)component);
+                    auto *const doublespinbox = qobject_cast<QDoubleSpinBox*>(widget = new QDoubleSpinBox(this));
 
-                        doublespinbox->setRange(c->minValue, c->maxValue);
-                        doublespinbox->setDecimals(c->numDecimals);
-                        doublespinbox->setValue(c->get_value());
-                        doublespinbox->setSingleStep(c->stepSize);
-                        doublespinbox->setPrefix(QString::fromStdString(c->prefix));
-                        doublespinbox->setSuffix(QString::fromStdString(c->suffix));
-                        doublespinbox->setButtonSymbols(
-                            (c->alignment == filtergui_alignment_e::left)
-                            ? QAbstractSpinBox::UpDownArrows
-                            : QAbstractSpinBox::NoButtons
-                        );
+                    doublespinbox->setRange(c->minValue, c->maxValue);
+                    doublespinbox->setDecimals(c->numDecimals);
+                    doublespinbox->setValue(c->get_value());
+                    doublespinbox->setSingleStep(c->stepSize);
+                    doublespinbox->setPrefix(QString::fromStdString(c->prefix));
+                    doublespinbox->setSuffix(QString::fromStdString(c->suffix));
+                    doublespinbox->setButtonSymbols(
+                        (c->alignment == abstract_gui::horizontal_align::left)
+                        ? QAbstractSpinBox::UpDownArrows
+                        : QAbstractSpinBox::NoButtons
+                    );
 
-                        switch (c->alignment)
-                        {
-                            case filtergui_alignment_e::left: doublespinbox->setAlignment(Qt::AlignLeft); break;
-                            case filtergui_alignment_e::right: doublespinbox->setAlignment(Qt::AlignRight); break;
-                            case filtergui_alignment_e::center: doublespinbox->setAlignment(Qt::AlignHCenter); break;
-                            default: k_assert(0, "Unrecognized filter GUI alignment enumerator."); break;
-                        }
-
-                        connect(doublespinbox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [c, this](const double newValue)
-                        {
-                            c->set_value(newValue);
-                            emit this->parameter_changed();
-                        });
-
-                        break;
+                    switch (c->alignment)
+                    {
+                        case abstract_gui::horizontal_align::left: doublespinbox->setAlignment(Qt::AlignLeft); break;
+                        case abstract_gui::horizontal_align::right: doublespinbox->setAlignment(Qt::AlignRight); break;
+                        case abstract_gui::horizontal_align::center: doublespinbox->setAlignment(Qt::AlignHCenter); break;
+                        default: k_assert(0, "Unrecognized filter GUI alignment enumerator."); break;
                     }
-                    default: k_assert(0, "Unrecognized filter GUI component."); break;
+
+                    connect(doublespinbox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [c, this](const double newValue)
+                    {
+                        c->set_value(newValue);
+                        emit this->parameter_changed();
+                    });
+                }
+                else
+                {
+                    k_assert(0, "Unrecognized filter GUI component.");
                 }
 
                 k_assert(widget, "Expected the filter GUI widget to have been initialized.");
@@ -204,12 +191,6 @@ FilterGUIForQt::FilterGUIForQt(const abstract_filter_c *const filter, QWidget *p
             widgetLayout->addRow(label, rowContainer);
         }
     }
-
-    this->setMinimumWidth(((filter->category() == filter_category_e::input_condition) ||
-                           (filter->category() == filter_category_e::output_condition))
-                          ? 200
-                          : 220);
-    this->adjustSize();
 
     return;
 }

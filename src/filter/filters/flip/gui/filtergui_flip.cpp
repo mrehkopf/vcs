@@ -12,13 +12,13 @@
 filtergui_flip_c::filtergui_flip_c(abstract_filter_c *const filter)
 {
     {
-        auto *const axis = new filtergui_combobox_s;
+        auto *const axis = new abstract_gui::combo_box;
 
         axis->get_value = [=]{return filter->parameter(filter_flip_c::PARAM_AXIS);};
         axis->set_value = [=](const int value){filter->set_parameter(filter_flip_c::PARAM_AXIS, value);};
         axis->items = {"Vertical", "Horizontal", "Both"};
 
-        this->guiFields.push_back({"Axis", {axis}});
+        this->fields.push_back({"Axis", {axis}});
     }
 
     return;

@@ -32,7 +32,7 @@ public:
                            {PARAM_SCALER, SCALE_NONE}},
                           initialParamValues)
     {
-        this->guiDescription = new filtergui_crop_c(this);
+        this->gui = new filtergui_crop_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_crop_c)

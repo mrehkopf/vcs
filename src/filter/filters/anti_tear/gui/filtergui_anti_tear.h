@@ -8,9 +8,9 @@
 #ifndef VCS_FILTER_FILTERS_ANTI_TEAR_GUI_FILTERGUI_ANTI_TEAR_H
 #define VCS_FILTER_FILTERS_ANTI_TEAR_GUI_FILTERGUI_ANTI_TEAR_H
 
-#include "filter/filtergui.h"
+#include "common/abstract_gui.h"
 
-class filtergui_anti_tear_c : public filtergui_c
+class filtergui_anti_tear_c : public abstract_gui_s
 {
 public:
     filtergui_anti_tear_c(abstract_filter_c *const filter);

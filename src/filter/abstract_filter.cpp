@@ -31,14 +31,9 @@ abstract_filter_c::abstract_filter_c(
 
 abstract_filter_c::~abstract_filter_c(void)
 {
-    delete this->guiDescription;
+    delete this->gui;
 
     return;
-}
-
-const std::vector<filtergui_field_s>& abstract_filter_c::gui_description(void) const
-{
-    return this->guiDescription->guiFields;
 }
 
 unsigned abstract_filter_c::num_parameters(void) const

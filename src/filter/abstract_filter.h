@@ -39,8 +39,6 @@ public:
 
     virtual ~abstract_filter_c(void);
 
-    const std::vector<filtergui_field_s>& gui_description(void) const;
-
     unsigned num_parameters(void) const;
 
     double parameter(const unsigned offset) const;
@@ -76,12 +74,8 @@ public:
     /*!
      * The filter's GUI widget, which provides the end-user with controls for
      * adjusting the filter's parameters.
-     *
-     * The widget is provided as a framework-independent description of the
-     * components that the widget should have. It's then up to VCS's chosen GUI
-     * framework to interpret the instructions to create the actual widget.
      */
-    filtergui_c *guiDescription = nullptr;
+    abstract_gui_s *gui = nullptr;
 
 protected:
     /*!

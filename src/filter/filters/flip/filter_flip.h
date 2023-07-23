@@ -19,7 +19,7 @@ public:
     filter_flip_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_AXIS, 0}}, initialParamValues)
     {
-        this->guiDescription = new filtergui_flip_c(this);
+        this->gui = new filtergui_flip_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_flip_c)

@@ -26,7 +26,7 @@ public:
                            {PARAM_SEARCH_WINDOW_SIZE, 21}},
                           initialParamValues)
     {
-        this->guiDescription = new filtergui_denoise_nonlocal_means_c(this);
+        this->gui = new filtergui_denoise_nonlocal_means_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_denoise_nonlocal_means_c)

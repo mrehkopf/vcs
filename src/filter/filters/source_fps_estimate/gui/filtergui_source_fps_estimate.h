@@ -8,9 +8,9 @@
 #ifndef VCS_FILTER_FILTERS_FRAME_RATE_GUI_FILTERGUI_FRAME_RATE_H
 #define VCS_FILTER_FILTERS_FRAME_RATE_GUI_FILTERGUI_FRAME_RATE_H
 
-#include "filter/filtergui.h"
+#include "common/abstract_gui.h"
 
-class filtergui_source_fps_estimate_c : public filtergui_c
+class filtergui_source_fps_estimate_c : public abstract_gui_s
 {
 public:
     filtergui_source_fps_estimate_c(abstract_filter_c *const filter);

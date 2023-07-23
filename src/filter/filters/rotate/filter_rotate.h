@@ -22,7 +22,7 @@ public:
                            {PARAM_ROT, 0}},
                           initialParamValues)
     {
-        this->guiDescription = new filtergui_rotate_c(this);
+        this->gui = new filtergui_rotate_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_rotate_c)

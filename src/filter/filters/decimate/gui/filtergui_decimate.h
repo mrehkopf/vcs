@@ -8,9 +8,9 @@
 #ifndef VCS_FILTER_FILTERS_DECIMATE_GUI_FILTERGUI_DECIMATE_H
 #define VCS_FILTER_FILTERS_DECIMATE_GUI_FILTERGUI_DECIMATE_H
 
-#include "filter/filtergui.h"
+#include "common/abstract_gui.h"
 
-class filtergui_decimate_c : public filtergui_c
+class filtergui_decimate_c : public abstract_gui_s
 {
 public:
     filtergui_decimate_c(abstract_filter_c *const filter);

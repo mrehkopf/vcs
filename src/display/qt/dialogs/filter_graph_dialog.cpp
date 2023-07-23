@@ -18,7 +18,7 @@
 #include "display/qt/subclasses/QFrame_filtergui_for_qt.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/persistent_settings.h"
-#include "filter/filtergui.h"
+#include "common/abstract_gui.h"
 #include "filter/abstract_filter.h"
 #include "common/command_line/command_line.h"
 #include "common/disk/disk.h"
@@ -440,7 +440,13 @@ BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(
     abstract_filter_c *const filter = kf_create_filter_instance(filterTypeUuid, initialParamValues);
     k_assert(filter, "Failed to create a new filter node.");
 
-    FilterGUIForQt *const guiWidget = new FilterGUIForQt(filter);
+    FilterGUIForQt *const guiWidget = new FilterGUIForQt(*filter->gui);
+    guiWidget->setMinimumWidth(
+        ((filter->category() == filter_category_e::input_condition) || (filter->category() == filter_category_e::output_condition))
+       ? 200
+       : 220
+    );
+    guiWidget->adjustSize();
 
     const unsigned titleWidth = (10 + QFontMetrics(guiWidget->font()).width(QString("999: %1").arg(QString::fromStdString(filter->name()))));
     guiWidget->resize(std::max(titleWidth, unsigned(guiWidget->width())), guiWidget->height());

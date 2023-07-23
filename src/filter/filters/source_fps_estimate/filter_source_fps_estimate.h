@@ -49,7 +49,7 @@ public:
             {PARAM_SINGLE_ROW_NUMBER, 0}
         }, initialParamValues)
     {
-        this->guiDescription = new filtergui_source_fps_estimate_c(this);
+        this->gui = new filtergui_source_fps_estimate_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_frame_rate_c)

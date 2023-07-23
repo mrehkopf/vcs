@@ -17,7 +17,7 @@ public:
     filter_delta_histogram_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({}, initialParamValues)
     {
-        this->guiDescription = new filtergui_delta_histogram_c(this);
+        this->gui = new filtergui_delta_histogram_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_delta_histogram_c)

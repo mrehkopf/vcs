@@ -17,7 +17,7 @@ public:
     filter_sharpen_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({}, initialParamValues)
     {
-        this->guiDescription = new filtergui_sharpen_c(this);
+        this->gui = new filtergui_sharpen_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_sharpen_c)

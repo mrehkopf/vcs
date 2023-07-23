@@ -13,14 +13,14 @@ filtergui_kernel_3x3_c::filtergui_kernel_3x3_c(abstract_filter_c *const filter)
 {
     for (unsigned row = 0; row < 3; row++)
     {
-        filtergui_doublespinbox_s *cols[3];
+        abstract_gui::double_spinner *cols[3];
 
         for (unsigned col = 0; col < 3; col++)
         {
             const unsigned paramId = ((row * 3) + col);
 
-            auto *const spinbox = cols[col] = new filtergui_doublespinbox_s;
-            spinbox->alignment = filtergui_alignment_e::center;
+            auto *const spinbox = cols[col] = new abstract_gui::double_spinner;
+            spinbox->alignment = abstract_gui::horizontal_align::center;
             spinbox->get_value = [=]{return filter->parameter(paramId);};
             spinbox->set_value = [=](const double value){filter->set_parameter(paramId, value);};
             spinbox->maxValue = 99;
@@ -28,7 +28,7 @@ filtergui_kernel_3x3_c::filtergui_kernel_3x3_c(abstract_filter_c *const filter)
             spinbox->numDecimals = 3;
         }
 
-        this->guiFields.push_back({"", {cols[0], cols[1], cols[2]}});
+        this->fields.push_back({"", {cols[0], cols[1], cols[2]}});
     }
 
     return;

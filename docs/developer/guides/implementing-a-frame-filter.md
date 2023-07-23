@@ -11,7 +11,7 @@ In this guide, you'll learn how to implement new frame filters for VCS. The guid
 There are three steps to implementing a frame filter:
 
 1. Subclass `abstract_filter_c`.
-2. Subclass `filtergui_c`.
+2. Subclass `abstract_gui_s`.
 3. Declare the filter's existence to VCS.
 
 The sub-sections below explain each step in detail, in the process creating a sample frame filter that fills each input frame's pixels with a solid, user-customizable color.
@@ -50,7 +50,7 @@ public:
         // Note: We'll create the filter's GUI (filtergui_filler_c) later in this guide.
         // In any case, here we attach an instance of the GUI to this new instance of
         // the filter.
-        this->guiDescription = new filtergui_filler_c(this);
+        this->gui = new filtergui_filler_c(this);
     }
 
     // Applies the filter's processing onto the pixels of an input frame.
@@ -90,9 +90,9 @@ When the filter is active in VCS's [filter graph dialog](https://www.tarpeeksihy
 
 *Note*: The `apply()` function is prohibited from modifying the input frame's resolution.
 
-### Subclassing filtergui_c
+### Subclassing abstract_gui_s
 
-The `filtergui_c` class provides a template for a filter's GUI. The GUI &ndash; which will be available to the end-user via VCS's [filter graph dialog](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.5.0/#dialog-windows-filter-graph-dialog) &ndash; consists of UI widgets for adjusting the filter's parameters (e.g. the radius of a blurring filter) at run-time.
+The `abstract_gui_s` structure provides a template for a filter's GUI. The GUI &ndash; which will be available to the end-user via VCS's [filter graph dialog](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/2.5.0/#dialog-windows-filter-graph-dialog) &ndash; consists of UI widgets for adjusting the filter's parameters (e.g. the radius of a blurring filter) at run-time.
 
 *Note*: The GUI template is defined using an API that's independent of VCS's display framework (e.g. Qt). VCS will automatically translate the template into the native format of the framework being used.
 
@@ -101,14 +101,14 @@ To contain the sample filter's GUI template, we'll create two new files, *filter
 In *filtergui_filter_filler.h*:
 
 ```cpp
-class filtergui_filler_c : public filtergui_c
+class filtergui_filler_c : public abstract_gui_s
 {
 public:
     filtergui_filler_c(abstract_filter_c *const filter);
 };
 ```
 
-The header file simply needs to set up a subclass of `filtergui_c` and declare its constructor.
+The header file simply needs to set up a subclass of `abstract_gui_s` and declare its constructor.
 
 In *filtergui_filter_filler.cpp*:
 
@@ -118,21 +118,21 @@ filtergui_filler_c::filtergui_filler_c(abstract_filter_c *const filter)
     // A GUI widget that lets the user control a value from 0 to 255 for the
     // color fill's red component. The set_value() function gets called when
     // the user changes the value.
-    auto *const red = new filtergui_spinbox_s;
+    auto *const red = new abstract_gui::spinner;
     red->get_value = [=]{return filter->parameter(filter_filler_c::PARAM_RED);};
     red->set_value = [=](const double value){filter->set_parameter(filter_filler_c::PARAM_RED, value);};
     red->minValue = 0;
     red->maxValue = 255;
     
     // Same as above but for the fill's green component.
-    auto *const green = new filtergui_spinbox_s;
+    auto *const green = new abstract_gui::spinner;
     green->get_value = [=]{return filter->parameter(filter_filler_c::PARAM_BIT_COUNT_GREEN);};
     green->set_value = [=](const double value){filter->set_parameter(filter_filler_c::PARAM_GREEN, value);};
     green->minValue = 0;
     green->maxValue = 255;
     
     // For the blue component.
-    auto *const blue = new filtergui_spinbox_s;
+    auto *const blue = new abstract_gui::spinner;
     blue->get_value = [=]{return filter->parameter(filter_filler_c::PARAM_BLUE);};
     blue->set_value = [=](const double value){filter->set_parameter(filter_filler_c::PARAM_BLUE, value);};
     blue->minValue = 0;

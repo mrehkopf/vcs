@@ -8,9 +8,9 @@
 #ifndef VCS_FILTER_FILTERS_CROP_GUI_FILTERGUI_CROP_H
 #define VCS_FILTER_FILTERS_CROP_GUI_FILTERGUI_CROP_H
 
-#include "filter/filtergui.h"
+#include "common/abstract_gui.h"
 
-class filtergui_crop_c : public filtergui_c
+class filtergui_crop_c : public abstract_gui_s
 {
 public:
     filtergui_crop_c(abstract_filter_c *const filter);

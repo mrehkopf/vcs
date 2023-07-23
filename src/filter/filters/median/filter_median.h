@@ -19,7 +19,7 @@ public:
     filter_median_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({{PARAM_KERNEL_SIZE, 3}}, initialParamValues)
     {
-        this->guiDescription = new filtergui_median_c(this);
+        this->gui = new filtergui_median_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_median_c)

@@ -94,7 +94,6 @@ SOURCES += \
     src/filter/filters/denoise_nonlocal_means/gui/filtergui_denoise_nonlocal_means.cpp \
     src/filter/filters/denoise_pixel_gate/filter_denoise_pixel_gate.cpp \
     src/filter/filters/denoise_pixel_gate/gui/filtergui_denoise_pixel_gate.cpp \
-    src/filter/filtergui.cpp \
     src/filter/filters/flip/filter_flip.cpp \
     src/filter/filters/flip/gui/filtergui_flip.cpp \
     src/filter/filters/input_gate/filter_input_gate.cpp \
@@ -185,7 +184,6 @@ HEADERS += \
     src/filter/filters/denoise_nonlocal_means/gui/filtergui_denoise_nonlocal_means.h \
     src/filter/filters/denoise_pixel_gate/filter_denoise_pixel_gate.h \
     src/filter/filters/denoise_pixel_gate/gui/filtergui_denoise_pixel_gate.h \
-    src/filter/filtergui.h \
     src/filter/filters/filters.h \
     src/filter/filters/flip/filter_flip.h \
     src/filter/filters/flip/gui/filtergui_flip.h \
@@ -219,6 +217,7 @@ HEADERS += \
     src/capture/capture.h \
     src/display/display.h \
     src/common/log/log.h \
+    src/common/abstract_gui.h \
     src/display/qt/dialogs/overlay_dialog.h \
     src/anti_tear/anti_tear.h \
     src/filter/filter.h \

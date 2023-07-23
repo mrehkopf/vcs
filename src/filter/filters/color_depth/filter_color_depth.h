@@ -24,7 +24,7 @@ public:
                            {PARAM_BIT_COUNT_BLUE, 8}},
                           initialParamValues)
     {
-        this->guiDescription = new filtergui_color_depth_c(this);
+        this->gui = new filtergui_color_depth_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_color_depth_c)

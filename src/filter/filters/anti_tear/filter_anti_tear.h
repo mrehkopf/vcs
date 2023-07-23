@@ -45,7 +45,7 @@ public:
                            {PARAM_VISUALIZE_RANGE, 0}},
                           initialParamValues)
     {
-        this->guiDescription = new filtergui_anti_tear_c(this);
+        this->gui = new filtergui_anti_tear_c(this);
     }
 
     CLONABLE_FILTER_TYPE(filter_anti_tear_c)
