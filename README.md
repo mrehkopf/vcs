@@ -1,6 +1,6 @@
 # VCS
 
-A well-featured control application for Datapath's VisionRGB range of capture cards, with a feature-set targeted especially at retro enthusiasts.
+A well-featured Linux video capture application for Datapath capture cards, with a feature-set targeted especially at retro enthusiasts.
 
 ![VCS 2.8](./images/vcs-2.8.png)\
 *A screenshot of VCS 2.8 showing the capture window (in the background) and some of the control options.*
@@ -13,14 +13,9 @@ A well-featured control application for Datapath's VisionRGB range of capture ca
 - Variable refresh rate output
 - Free and open source, with a modular implementation easily extendable to non-Datapath capture devices
 
-## Supported capture devices
+## Supported capture hardware
 
-- Datapath VisionRGB-PRO
-- Datapath VisionRGB-E
-- Datapath VisionRGB-X
-- Datapath VisionRGB-AV
-
-Note that audio must be captured separately.
+Any model of Datapath capture card supported by the Datapath Vision driver for Linux should be compatible with VCS; although the card's full set of capabilities may not be exposed.
 
 ## Manuals
 
