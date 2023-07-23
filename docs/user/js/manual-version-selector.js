@@ -73,6 +73,7 @@ const manualVersionSelector = {
         class="manual-version-selector"
         title="Select a different version of VCS"
     >
+        Version:
         <select @change="on_select">
             <option
                 v-for="version in supported_manual_versions"

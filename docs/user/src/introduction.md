@@ -1,77 +1,21 @@
 # Introduction to VCS
 
-VCS is a well-featured, open-source Linux control application by [Tarpeeksi Hyvae Soft](https://www.tarpeeksihyvaesoft.com) for Datapath's VisionRGB range of capture hardware, with a feature-set targeted especially at retro enthusiasts.
+VCS is an [open-source](https://github.com/leikareipa/vcs) Linux video capture application for Datapath capture cards, with a feature-set targeted especially at retro enthusiasts.
 
-You can [find VCS on GitHub](https://github.com/leikareipa/vcs).
+> A screenshot of VCS 2.8 showing the capture window (in the background) and some of the control options.
+![{image}{headerless}{no-border-rounding}](../img/vcs-2.8.png)
 
-> A screenshot of VCS 2.4.0 showing the output window and some of the control dialogs\
-![{image:1189x878}{headerless}](../img/vcs-2.4-with-dialogs.webp)
+## Key program features
 
-## Program features
-
-- Augments the capabilities of the VisionRGB hardware for capturing dynamic signals (e.g. retro PCs)
-- Various feature and usability improvements over Datapath's default capture application
-- Supports both modern and legacy VisionRGB hardware
-- Unlimited video presets with automatic programmable activation
-- Several scaling modes and customizable image filters
-- Post-processing to reduce or eliminate tearing in captured frames
-- On-screen display with HTML/CSS formatting
-- Variable refresh rate output to match the input signal's frequency
-- Low reliance on GPU features, easy to run in virtual machines
-- Custom dark GUI theme
-- Good documentation for both end-users and developers
-- Modular code extendable to support capture hardware from other vendors
-- Free and open source
+- Various usability improvements over Datapath's bundled capture application, enabling high-quality capture of dynamic signals
+- Unlimited video presets with programmable activation
+- Several scaling modes and image filters
+- Variable refresh rate output
+- Free and open source, with a modular implementation easily extendable to non-Datapath capture devices
 
 ## Supported capture hardware
 
-<dokki-table headerless>
-    <table>
-        <tr>
-            <th>Vendor</th>
-            <th>Model</th>
-        </tr>
-        <tr>
-            <td>Datapath</td>
-            <td>VisionRGB-PRO1</td>
-        </tr>
-        <tr>
-            <td>Datapath</td>
-            <td>VisionRGB-PRO2</td>
-        </tr>
-        <tr>
-            <td>Datapath</td>
-            <td>VisionRGB-E1</td>
-        </tr>
-        <tr>
-            <td>Datapath</td>
-            <td>VisionRGB-E2</td>
-        </tr>
-        <tr>
-            <td>Datapath</td>
-            <td>VisionRGB-E1S</td>
-        </tr>
-        <tr>
-            <td>Datapath</td>
-            <td>VisionRGB-E2S</td>
-        </tr>
-        <tr>
-            <td>Datapath</td>
-            <td>VisionRGB-X2</td>
-        </tr>
-        <tr>
-            <td>Datapath</td>
-            <td>VisionAV series<sup>*</sup></td>
-        </tr>
-        <tfoot>
-            <tr>
-                <td colspan="2">
-                    <sup>*</sup>Can't be guaranteed, but user reports suggest compatibility.
-                </td>
-            </tr>
-        </tfoot>
-    </table>
-</dokki-table>
+Any model of Datapath capture card supported by the Datapath Vision driver for Linux should be compatible with VCS; although the card's full set of capabilities may not be exposed.
 
 ## System requirements
 
@@ -79,20 +23,7 @@ You can [find VCS on GitHub](https://github.com/leikareipa/vcs).
     <table>
         <tr>
             <th>OS</th>
-            <td>
-                <dokki-table headerless>
-                    <table>
-                        <tr>
-                            <th>Platform</th>
-                            <th>Required version</th>
-                        </tr>
-                        <tr>
-                            <td>Linux</td>
-                            <td>kernel 5</td>
-                        </tr>
-                    </table>
-                </dokki-table>
-            </td>
+            <td>Linux</td>
         </tr>
         <tr>
             <th>CPU</th>
@@ -122,7 +53,7 @@ You can [find VCS on GitHub](https://github.com/leikareipa/vcs).
         <tr>
             <th>GPU</th>
             <td>
-                For hardware rendering (optional), a graphics card with support for OpenGL 1.2
+                For hardware rendering (optional), an OpenGL 1.2 compatible graphics card
             </td>
         </tr>
         <tr>
