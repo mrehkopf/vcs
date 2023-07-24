@@ -2,8 +2,8 @@
 
 VCS is an [open-source](https://github.com/leikareipa/vcs) Linux video capture application for Datapath capture cards, with a feature-set targeted especially at retro enthusiasts.
 
-> A screenshot of VCS 2.8 showing the capture window (in the background) and some of the control options.
-![{image}{headerless}{no-border-rounding}](../img/vcs-2.8.png)
+> A screenshot of VCS 3.0 showing the capture window (in the background) and some of the control options.
+![{image}{headerless}{no-border-rounding}](../img/vcs-3.0.png)
 
 ## Key program features
 
