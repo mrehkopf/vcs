@@ -14,12 +14,11 @@
 #include <QWidget>
 #include <QFrame>
 #include <QLabel>
-#include "display/qt/subclasses/QFrame_filtergui_for_qt.h"
+#include "display/qt/subclasses/QFrame_qt_abstract_gui.h"
 #include "filter/filter.h"
 #include "filter/abstract_filter.h"
 
-FilterGUIForQt::FilterGUIForQt(const abstract_gui_s &gui, QWidget *parent) :
-    QFrame(parent)
+QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
 {
     auto *const widgetLayout = new QFormLayout(this);
 
@@ -78,7 +77,7 @@ FilterGUIForQt::FilterGUIForQt(const abstract_gui_s &gui, QWidget *parent) :
                         text.resize(std::min(std::size_t(text.length()), c->maxLength));
                         c->set_text(text.toStdString());
 
-                        emit this->parameter_changed();
+                        emit this->mutated(textEdit);
                     });
                 }
                 else if (dynamic_cast<abstract_gui::checkbox*>(component))
@@ -90,10 +89,10 @@ FilterGUIForQt::FilterGUIForQt(const abstract_gui_s &gui, QWidget *parent) :
                     checkbox->setText(QString::fromStdString(c->label));
                     checkbox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
-                    connect(checkbox, &QCheckBox::toggled, [c, this](const bool isChecked)
+                    connect(checkbox, &QCheckBox::toggled, [=, this](const bool isChecked)
                     {
                         c->set_value(isChecked);
-                        emit this->parameter_changed();
+                        emit this->mutated(checkbox);
                     });
                 }
                 else if (dynamic_cast<abstract_gui::combo_box*>(component))
@@ -108,10 +107,10 @@ FilterGUIForQt::FilterGUIForQt(const abstract_gui_s &gui, QWidget *parent) :
 
                     combobox->setCurrentIndex(c->get_value());
 
-                    connect(combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), [c, this](const int currentIdx)
+                    connect(combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=, this](const int currentIdx)
                     {
                         c->set_value(currentIdx);
-                        emit this->parameter_changed();
+                        emit this->mutated(combobox);
                     });
                 }
                 else if (dynamic_cast<abstract_gui::spinner*>(component))
@@ -137,10 +136,10 @@ FilterGUIForQt::FilterGUIForQt(const abstract_gui_s &gui, QWidget *parent) :
                         default: k_assert(0, "Unrecognized filter GUI alignment enumerator."); break;
                     }
 
-                    connect(spinbox, QOverload<int>::of(&QSpinBox::valueChanged), [c, this](const double newValue)
+                    connect(spinbox, QOverload<int>::of(&QSpinBox::valueChanged), [=, this](const double newValue)
                     {
                         c->set_value(newValue);
-                        emit this->parameter_changed();
+                        emit this->mutated(spinbox);
                     });
                 }
                 else if (dynamic_cast<abstract_gui::double_spinner*>(component))
@@ -168,10 +167,10 @@ FilterGUIForQt::FilterGUIForQt(const abstract_gui_s &gui, QWidget *parent) :
                         default: k_assert(0, "Unrecognized filter GUI alignment enumerator."); break;
                     }
 
-                    connect(doublespinbox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [c, this](const double newValue)
+                    connect(doublespinbox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [=, this](const double newValue)
                     {
                         c->set_value(newValue);
-                        emit this->parameter_changed();
+                        emit this->mutated(doublespinbox);
                     });
                 }
                 else

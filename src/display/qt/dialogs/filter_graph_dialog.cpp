@@ -15,7 +15,7 @@
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/subclasses/QMenu_dialog_file_menu.h"
-#include "display/qt/subclasses/QFrame_filtergui_for_qt.h"
+#include "display/qt/subclasses/QFrame_qt_abstract_gui.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
 #include "display/qt/persistent_settings.h"
 #include "common/abstract_gui.h"
@@ -440,13 +440,13 @@ BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(
     abstract_filter_c *const filter = kf_create_filter_instance(filterTypeUuid, initialParamValues);
     k_assert(filter, "Failed to create a new filter node.");
 
-    FilterGUIForQt *const guiWidget = new FilterGUIForQt(*filter->gui);
+    QtAbstractGUI *const guiWidget = new QtAbstractGUI(*filter->gui);
+    guiWidget->adjustSize();
     guiWidget->setMinimumWidth(
         ((filter->category() == filter_category_e::input_condition) || (filter->category() == filter_category_e::output_condition))
-       ? 200
-       : 220
+        ? 200
+        : 220
     );
-    guiWidget->adjustSize();
 
     const unsigned titleWidth = (10 + QFontMetrics(guiWidget->font()).width(QString("999: %1").arg(QString::fromStdString(filter->name()))));
     guiWidget->resize(std::max(titleWidth, unsigned(guiWidget->width())), guiWidget->height());
@@ -512,7 +512,7 @@ BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(
         ui->graphicsView->centerOn(newNode);
     }
 
-    connect(guiWidget, &FilterGUIForQt::parameter_changed, this, [this]
+    connect(guiWidget, &QtAbstractGUI::mutated, this, [this]
     {
         this->data_changed();
     });
