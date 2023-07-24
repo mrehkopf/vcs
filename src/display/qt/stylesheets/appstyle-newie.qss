@@ -116,24 +116,22 @@ QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurren
 {
     margin: 0;
     padding: 0;
+    min-width: 1em;
 }
 
 QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
 {
-    color: #4e4e4e;
-    image: url(:/res/images/icons/newie/preset_disabled.png);
+    image: url(:/res/images/icons/newie/preset_disabled.svg);
 }
 
 QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="active"]
 {
-    color: greenyellow;
-    image: url(:/res/images/icons/newie/preset_active.png);
+    image: url(:/res/images/icons/newie/preset_active.svg);
 }
 
 QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="inactive"]
 {
-    color: gray;
-    image: url(:/res/images/icons/newie/preset_inactive.png);
+    image: url(:/res/images/icons/newie/preset_inactive.svg);
 }
 
 QScrollArea > QWidget > QWidget
