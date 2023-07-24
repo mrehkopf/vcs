@@ -169,14 +169,14 @@ void ParameterGrid::add_scroller(const QString name,
         resetButtonIcon.addPixmap(QPixmap(":/res/images/icons/newie/reset_disabled.png"), QIcon::Disabled);
 
         auto *const resetButton = new QPushButton();
+        resetButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         resetButton->setIcon(resetButtonIcon);
-        resetButton->setFixedWidth(24);
         resetButton->setEnabled(false);
         resetButton->setToolTip("Reset to default");
 
         auto *const scrollBar = new QScrollBar();
         scrollBar->setOrientation(Qt::Orientation::Horizontal);
-        scrollBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        scrollBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         scrollBar->setMaximum(newParam->maximumValue);
         scrollBar->setMinimum(newParam->minimumValue);
         scrollBar->setValue(newParam->currentValue);
@@ -204,7 +204,7 @@ void ParameterGrid::add_scroller(const QString name,
                 spinBox->setValue(newValue);
             });
 
-            connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [newParam, scrollBar, resetButton, this](const int newValue)
+            connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [=, this](const int newValue)
             {
                 newParam->currentValue = newValue;
                 scrollBar->setValue(newValue);

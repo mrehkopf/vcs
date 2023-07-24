@@ -424,8 +424,6 @@ QScrollBar::handle:horizontal
 
 QScrollBar::add-line:horizontal
 {
-    width: 22px;
-    height: 21px;
     subcontrol-position: right;
     subcontrol-origin: margin;
     image: url(:/res/images/icons/newie/arrow_right.png);
@@ -441,8 +439,6 @@ QScrollBar::add-line:horizontal:disabled
 
 QScrollBar::sub-line:horizontal
 {
-    width: 22px;
-    height: 21px;
     subcontrol-position: left;
     subcontrol-origin: margin;
     image: url(:/res/images/icons/newie/arrow_left.png);
@@ -479,21 +475,21 @@ QScrollBar::handle:disabled:vertical
    so we need to style them to be consistent with line edit fields.*/
 QGroupBox QScrollBar:horizontal
 {
-    height: 22px;
-    min-height: 22px;
     border: none;
     background-color: #d9d9d9;
-    margin: 0px 23px 0 23px;
+    margin: 0px 1.35em 0px 1.35em;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
 }
 QGroupBox QScrollBar::handle:horizontal
 {
-    min-width: 24px;
+    min-width: 1.35em;
     border-radius: 0px;
-    background-color: #808080;
+    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #686868, stop: 1 #474747);
     border-top: none;
     border-bottom: none;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
 
     background-image: url(:/res/images/icons/newie/handle_grip.png);
     background-position: center;
@@ -501,8 +497,7 @@ QGroupBox QScrollBar::handle:horizontal
 }
 QGroupBox QScrollBar::add-line:horizontal
 {
-    width: 22px;
-    height: 26px;
+    width: 1.35em;
     subcontrol-position: right;
     subcontrol-origin: margin;
     image: url(:/res/images/icons/newie/arrow_right.png);
@@ -510,12 +505,11 @@ QGroupBox QScrollBar::add-line:horizontal
     border-left: none;
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
-    margin-bottom: 1px;
+    margin: 0px;
 }
 QGroupBox QScrollBar::sub-line:horizontal
 {
-    width: 22px;
-    height: 26px;
+    width: 1.35em;
     subcontrol-position: left;
     subcontrol-origin: margin;
     image: url(:/res/images/icons/newie/arrow_left.png);
@@ -523,7 +517,7 @@ QGroupBox QScrollBar::sub-line:horizontal
     border-right: none;
     border-top-left-radius: 2px;
     border-bottom-left-radius: 2px;
-    margin-bottom: 1px;
+    margin: 0px;
 }
 QGroupBox QScrollBar:disabled:horizontal
 {
@@ -718,8 +712,8 @@ QScrollBar::add-line:vertical:disabled,
 QScrollBar:disabled
 {
     background-color: transparent;
-    border-color: #353535;
-    color: gray;
+    border-color: #202020;
+    color: #909090;
 }
 
 QSpinBox:disabled,
@@ -732,7 +726,9 @@ QPlainTextEdit:disabled,
 QCheckBox::indicator:disabled,
 QGroupBox::indicator:disabled
 {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: transparent;
+    border-color: #202020;
+    color: #909090;
 }
 
 QGroupBox:disabled
@@ -748,7 +744,7 @@ QGroupBox::title:disabled
 QPushButton,
 QPushButton:flat
 {
-    min-height: 20px;
+    min-height: 1em;
     padding: 3px;
     border-radius: 2px;
     border: 1px solid black;
