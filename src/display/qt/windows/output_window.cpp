@@ -33,7 +33,7 @@
 #include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 #include "display/qt/dialogs/components/window_options_dialog/window_size.h"
 #include "display/qt/dialogs/components/capture_dialog/input_resolution.h"
-#include "display/qt/dialogs/control_panel_dialog.h"
+#include "display/qt/windows/control_panel_window.h"
 #include "display/qt/dialogs/window_options_dialog.h"
 #include "display/qt/dialogs/capture_dialog.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
@@ -71,7 +71,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
     mainLayout->setSpacing(0);
 
     this->magnifyingGlass = new MagnifyingGlass(this);
-    this->controlPanelDialog = new ControlPanelDialog(this);
+    this->controlPanelWindow = new ControlPanelWindow(this);
 
     // Restore persistent settings.
     {
@@ -85,7 +85,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
         QAction *controlPanel = new QAction("Control panel...", this);
         {
             controlPanel->setShortcut(kd_get_key_sequence("output-window: open-control-panel-dialog"));
-            connect(controlPanel, &QAction::triggered, this, [this]{this->controlPanelDialog->open();});
+            connect(controlPanel, &QAction::triggered, this, [this]{this->controlPanelWindow->show();});
             this->addAction(controlPanel);
         }
 

@@ -14,7 +14,7 @@
 #include "display/qt/windows/output_window.h"
 #include "display/qt/dialogs/video_presets_dialog.h"
 #include "display/qt/dialogs/filter_graph_dialog.h"
-#include "display/qt/dialogs/control_panel_dialog.h"
+#include "display/qt/windows/control_panel_window.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "filter/filter.h"

@@ -48,7 +48,6 @@ SOURCES += \
     src/display/qt/dialogs/components/capture_dialog/signal_status.cpp \
     src/display/qt/dialogs/components/filter_graph_dialog/base_filter_graph_node.cpp \
     src/display/qt/dialogs/components/filter_graph_dialog/output_scaler_node.cpp \
-    src/display/qt/dialogs/control_panel_dialog.cpp \
     src/display/qt/dialogs/video_presets_dialog.cpp \
     src/display/qt/dialogs/components/window_options_dialog/window_renderer.cpp \
     src/display/qt/dialogs/components/window_options_dialog/window_scaler.cpp \
@@ -57,6 +56,7 @@ SOURCES += \
     src/display/qt/keyboard_shortcuts.cpp \
     src/display/qt/dialogs/capture_dialog.cpp \
     src/display/qt/subclasses/QFrame_qt_abstract_gui.cpp \
+    src/display/qt/windows/control_panel_window.cpp \
     src/filter/filters/output_scaler/filter_output_scaler.cpp \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.cpp \
     src/filter/filters/render_text/filter_render_text.cpp \
@@ -149,7 +149,6 @@ HEADERS += \
     src/display/qt/dialogs/components/capture_dialog/signal_status.h \
     src/display/qt/dialogs/components/filter_graph_dialog/base_filter_graph_node.h \
     src/display/qt/dialogs/components/filter_graph_dialog/output_scaler_node.h \
-    src/display/qt/dialogs/control_panel_dialog.h \
     src/display/qt/dialogs/video_presets_dialog.h \
     src/display/qt/dialogs/components/window_options_dialog/window_renderer.h \
     src/display/qt/dialogs/components/window_options_dialog/window_scaler.h \
@@ -163,6 +162,7 @@ HEADERS += \
     src/display/qt/subclasses/QGroupBox_parameter_grid.h \
     src/display/qt/subclasses/QLabel_magnifying_glass.h \
     src/display/qt/subclasses/QMenu_dialog_file_menu.h \
+    src/display/qt/windows/control_panel_window.h \
     src/display/qt/windows/output_window.h \
     src/display/qt/dialogs/resolution_dialog.h \
     src/anti_tear/anti_tear_multiple_per_frame.h \
@@ -255,13 +255,13 @@ FORMS += \
     src/display/qt/dialogs/components/capture_dialog/ui/input_channel.ui \
     src/display/qt/dialogs/components/capture_dialog/ui/input_resolution.ui \
     src/display/qt/dialogs/components/capture_dialog/ui/signal_status.ui \
-    src/display/qt/dialogs/ui/control_panel_dialog.ui \
     src/display/qt/dialogs/ui/video_presets_dialog.ui \
     src/display/qt/dialogs/ui/window_options_dialog.ui \
     src/display/qt/dialogs/components/window_options_dialog/ui/window_renderer.ui \
     src/display/qt/dialogs/components/window_options_dialog/ui/window_scaler.ui \
     src/display/qt/dialogs/components/window_options_dialog/ui/window_size.ui \
     src/display/qt/dialogs/ui/capture_dialog.ui \
+    src/display/qt/windows/ui/control_panel_window.ui \
     src/display/qt/windows/ui/output_window.ui \
     src/display/qt/dialogs/ui/overlay_dialog.ui \
     src/display/qt/dialogs/ui/resolution_dialog.ui \

@@ -8,16 +8,16 @@
 #include "display/qt/dialogs/about_dialog.h"
 #include "display/qt/dialogs/overlay_dialog.h"
 #include "display/qt/windows/output_window.h"
-#include "control_panel_dialog.h"
-#include "ui_control_panel_dialog.h"
+#include "control_panel_window.h"
+#include "ui_control_panel_window.h"
 
-ControlPanelDialog::ControlPanelDialog(OutputWindow *parent) :
-    VCSBaseDialog(parent),
-    ui(new Ui::ControlPanelDialog)
+ControlPanelWindow::ControlPanelWindow(OutputWindow *parent) :
+    QWidget(parent),
+    ui(new Ui::ControlPanelWindow)
 {
     ui->setupUi(this);
 
-    this->set_name("Control panel");
+    this->setWindowTitle("Control panel - VCS");
     this->setWindowFlags(Qt::Window);
 
     this->captureDialog = new CaptureDialog(parent);
@@ -68,7 +68,7 @@ ControlPanelDialog::ControlPanelDialog(OutputWindow *parent) :
     }
 }
 
-ControlPanelDialog::~ControlPanelDialog()
+ControlPanelWindow::~ControlPanelWindow()
 {
     delete ui;
 }

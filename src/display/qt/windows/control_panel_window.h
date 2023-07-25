@@ -1,7 +1,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_CONTROL_PANEL_DIALOG_H
 #define VCS_DISPLAY_QT_DIALOGS_CONTROL_PANEL_DIALOG_H
 
-#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
+#include <QWidget>
 
 class OutputWindow;
 class CaptureDialog;
@@ -12,16 +12,16 @@ class OverlayDialog;
 class AboutDialog;
 
 namespace Ui {
-class ControlPanelDialog;
+class ControlPanelWindow;
 }
 
-class ControlPanelDialog : public VCSBaseDialog
+class ControlPanelWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit ControlPanelDialog(OutputWindow *parent = nullptr);
-    ~ControlPanelDialog();
+    explicit ControlPanelWindow(OutputWindow *parent = nullptr);
+    ~ControlPanelWindow();
 
     CaptureDialog* capture(void)              const { return this->captureDialog; }
     FilterGraphDialog* filter_graph(void)     const { return this->filterGraphDialog; }
@@ -30,7 +30,7 @@ public:
     OverlayDialog* overlay(void)              const { return this->overlayDialog; }
 
 private:
-    Ui::ControlPanelDialog *ui;
+    Ui::ControlPanelWindow *ui;
 
     CaptureDialog *captureDialog = nullptr;
     WindowOptionsDialog *windowOptionsDialog = nullptr;

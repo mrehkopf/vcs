@@ -11,7 +11,7 @@
 #include "display/display.h"
 #include "common/globals.h"
 
-class ControlPanelDialog;
+class ControlPanelWindow;
 class MagnifyingGlass;
 
 namespace Ui {
@@ -54,7 +54,7 @@ public:
 
     void override_window_title(const std::string &newTitle);
 
-    ControlPanelDialog* control_panel(void) const { return this->controlPanelDialog; }
+    ControlPanelWindow* control_panel(void) const { return this->controlPanelWindow; }
 
 signals:
     void fullscreen_mode_enabled(void);
@@ -86,7 +86,7 @@ private:
     std::vector<QMenu*> contextMenuSubmenus;
     QMenu *contextMenu;
 
-    ControlPanelDialog *controlPanelDialog = nullptr;
+    ControlPanelWindow *controlPanelWindow = nullptr;
 
     MagnifyingGlass *magnifyingGlass = nullptr;
 
