@@ -356,7 +356,7 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
 
         connect(ui->pushButton_resolutionSeparator, &QPushButton::clicked, this, [this](void)
         {
-            const resolution_s &currentResolution = ks_output_resolution();
+            const auto currentResolution = resolution_s::from_capture_device();
             ui->spinBox_resolutionX->setValue(int(currentResolution.w));
             ui->spinBox_resolutionY->setValue(int(currentResolution.h));
         });
