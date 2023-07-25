@@ -571,7 +571,7 @@
         </widget>
        </item>
        <item>
-        <widget class="ParameterGrid" name="parameterGrid_videoParams">
+        <widget class="ParameterGrid" name="parameterGrid_geometry">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -579,7 +579,21 @@
           </sizepolicy>
          </property>
          <property name="title">
-          <string>Parameters</string>
+          <string>Geometry</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="ParameterGrid" name="parameterGrid_brightness">
+         <property name="title">
+          <string>Brightness</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="ParameterGrid" name="parameterGrid_contrast">
+         <property name="title">
+          <string>Contrast</string>
          </property>
         </widget>
        </item>
