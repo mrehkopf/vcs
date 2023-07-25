@@ -195,20 +195,15 @@ QComboBox::down-arrow:disabled
 
 QComboBox QAbstractItemView
 {
-    margin: 0;
-    padding: 0;
-    background-color: white;
-    border-radius: 0;
-    color: #101010;
-    border: 1px solid black;
+    background-color: #101010;
+    color: whitesmoke;
 }
 
 QComboBox::drop-down
 {
-    width: 15px;
+    width: 1em;
     border: none;
     border-radius: 0;
-    padding: 3px;
     border: none;
     background-color: transparent;
 }
@@ -309,9 +304,8 @@ VCSBaseDialog QGroupBox
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 1.65em;
-    background-color: #454545;
-    color: #e0e0e0;
-    border-bottom: 1px solid black;
+    background-color: #404040;
+    border: 1px solid #151515;
 }
 
 QGroupBox::title
@@ -598,7 +592,7 @@ QTextEdit:read-only:focus
 {
     min-height: 1.5em;
     color: black;
-    background-color: #e9e9e9;
+    background-color: #d9d9d9;
     border-radius: 2px;
     border: 1px solid black;
     padding: 0;
@@ -851,12 +845,37 @@ QDialog[objectName="InputResolution"] QPushButton
     min-height: 2.7em;
 }
 
-QDialog[objectName="VideoPresetsDialog"] QPushButton
+QDialog[objectName="VideoPresetsDialog"] QPushButton:!flat
 {
     min-width: 1.5em;
 }
 
+QDialog[objectName="VideoPresetsDialog"] QPushButton:flat
+{
+    width: 0.5em;
+    min-width: 0.5em;
+    max-width: 0.5em;
+}
+
 QDialog[objectName="VideoPresetsDialog"] ParameterGrid QSpinBox
 {
-    min-width: 2.25em;
+    min-width: 3em;
+}
+
+QDialog[objectName="VideoPresetsDialog"] ParameterGrid QPushButton
+{
+    min-width: 2em;
+}
+
+QDialog[objectName="VideoPresetsDialog"] QGroupBox[objectName="groupBox_activation"] QPushButton
+{
+    min-width: 1em;
+    max-width: 1em;
+}
+
+QDialog[objectName="VideoPresetsDialog"] QPushButton:flat
+{
+    width: 0.5em;
+    min-width: 0.5em;
+    max-width: 0.5em;
 }
