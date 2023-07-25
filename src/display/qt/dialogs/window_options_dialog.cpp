@@ -15,8 +15,8 @@ WindowOptionsDialog::WindowOptionsDialog(OutputWindow *parent) :
     this->set_name("Window settings");
 
     auto *const layout = new QVBoxLayout(this);
-    layout->setSpacing(6);
-    layout->setMargin(6);
+    layout->setSpacing(9);
+    layout->setMargin(9);
 
     this->windowSize = new WindowSize(parent);
     this->windowScaler = new WindowScaler(parent);

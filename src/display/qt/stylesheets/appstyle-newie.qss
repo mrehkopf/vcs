@@ -295,7 +295,7 @@ QGroupBox
 {
     margin: 0px;
     background-color: #303030;
-    border-radius: 2px;
+    border-radius: 0;
     padding-bottom: 6px;
     padding-left: 6px;
     padding-right: 6px;
@@ -311,7 +311,7 @@ VCSBaseDialog QGroupBox
     padding-top: 1.65em;
     background-color: #454545;
     color: #e0e0e0;
-    border: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 QGroupBox::title
@@ -324,7 +324,7 @@ QGroupBox::title
 QScrollBar:vertical,
 QScrollBar:horizontal
 {
-    background-color: #303030;
+    background-color: #202020;
 }
 
 QScrollBar::handle:vertical,
@@ -476,14 +476,14 @@ QScrollBar::handle:disabled:vertical
 QGroupBox QScrollBar:horizontal
 {
     border: none;
-    background-color: #d9d9d9;
+    background-color: #303030;
     margin: 0px 1.35em 0px 1.35em;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
 }
 QGroupBox QScrollBar::handle:horizontal
 {
-    min-width: 1.35em;
+    min-width: 1.75em;
     border-radius: 0px;
     background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #686868, stop: 1 #474747);
     border-top: none;
@@ -544,8 +544,6 @@ QRadioButton::indicator::!checked
 
 QRadioButton::indicator::checked
 {
-    width: 13px;
-    height: 13px;
     background: #757575;
     border: none;
 }
@@ -559,8 +557,8 @@ QCheckBox::indicator,
 QGroupBox::indicator,
 QTreeWidget::indicator
 {
-    width: 13px;
-    height: 13px;
+    width: 0.65em;
+    height: 0.65em;
     margin-top: 1px;
     border-radius: 2px;
     background-color: #d9d9d9;
@@ -598,12 +596,13 @@ QLineEdit:read-only:focus,
 QPlainTextEdit:read-only:focus,
 QTextEdit:read-only:focus
 {
-    min-height: 22px;
+    min-height: 1.5em;
     color: black;
-    background-color: #d9d9d9;
+    background-color: #e9e9e9;
     border-radius: 2px;
     border: 1px solid black;
-    padding: 2px;
+    padding: 0;
+    padding-left: 0.25em;
     margin: 0;
 }
 
@@ -744,8 +743,8 @@ QGroupBox::title:disabled
 QPushButton,
 QPushButton:flat
 {
-    min-height: 1em;
-    padding: 3px;
+    min-height: 1.5em;
+    padding: 0;
     border-radius: 2px;
     border: 1px solid black;
     background-color: transparent;
@@ -850,4 +849,14 @@ QDialog[objectName="ControlPanelDialog"] QFrame[objectName="buttonsContainer"] Q
 QDialog[objectName="InputResolution"] QPushButton
 {
     min-height: 2.7em;
+}
+
+QDialog[objectName="VideoPresetsDialog"] QPushButton
+{
+    min-width: 1.5em;
+}
+
+QDialog[objectName="VideoPresetsDialog"] ParameterGrid QSpinBox
+{
+    min-width: 2.25em;
 }

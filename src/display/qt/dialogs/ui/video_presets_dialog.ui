@@ -50,17 +50,20 @@
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>9</number>
+       </property>
        <property name="leftMargin">
-        <number>6</number>
+        <number>9</number>
        </property>
        <property name="topMargin">
-        <number>6</number>
+        <number>9</number>
        </property>
        <property name="rightMargin">
-        <number>6</number>
+        <number>9</number>
        </property>
        <property name="bottomMargin">
-        <number>6</number>
+        <number>9</number>
        </property>
        <item>
         <widget class="QGroupBox" name="groupBox_presetList">
@@ -295,9 +298,6 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
-            </property>
             <property name="minimum">
              <number>1</number>
             </property>
@@ -478,9 +478,6 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
-            </property>
             <property name="suffix">
              <string> Hz</string>
             </property>
@@ -524,9 +521,6 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
-            </property>
-            <property name="buttonSymbols">
-             <enum>QAbstractSpinBox::NoButtons</enum>
             </property>
             <property name="minimum">
              <number>1</number>

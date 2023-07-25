@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>362</width>
-    <height>129</height>
+    <height>131</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -57,9 +57,6 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="buttonSymbols">
-           <enum>QAbstractSpinBox::NoButtons</enum>
-          </property>
          </widget>
         </item>
         <item>
@@ -85,9 +82,6 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
-          </property>
-          <property name="buttonSymbols">
-           <enum>QAbstractSpinBox::NoButtons</enum>
           </property>
          </widget>
         </item>

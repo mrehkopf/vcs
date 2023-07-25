@@ -13,8 +13,8 @@ CaptureDialog::CaptureDialog(QWidget *parent) :
     ui->setupUi(this);
 
     auto *const layout = new QVBoxLayout(this);
-    layout->setSpacing(6);
-    layout->setMargin(6);
+    layout->setSpacing(9);
+    layout->setMargin(9);
 
     this->inputChannel = new InputChannel(parent);
     this->signalStatus = new SignalStatus(parent);

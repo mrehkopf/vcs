@@ -78,9 +78,6 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
         <property name="suffix">
          <string>%</string>
         </property>
@@ -113,9 +110,6 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
-          </property>
-          <property name="buttonSymbols">
-           <enum>QAbstractSpinBox::NoButtons</enum>
           </property>
           <property name="minimum">
            <number>1</number>
@@ -157,9 +151,6 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
-          </property>
-          <property name="buttonSymbols">
-           <enum>QAbstractSpinBox::NoButtons</enum>
           </property>
           <property name="minimum">
            <number>1</number>
