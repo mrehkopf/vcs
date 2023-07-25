@@ -12,8 +12,6 @@
 #include "common/globals.h"
 
 class ControlPanelDialog;
-class VCSBaseDialog;
-class QAction;
 class MagnifyingGlass;
 
 namespace Ui {
@@ -89,10 +87,6 @@ private:
     QMenu *contextMenu;
 
     ControlPanelDialog *controlPanelDialog = nullptr;
-
-    // A master list of all the dialogs that this window spawns. Will be filled in
-    // when we create the dialog instances.
-    QVector<VCSBaseDialog*> dialogs;
 
     MagnifyingGlass *magnifyingGlass = nullptr;
 

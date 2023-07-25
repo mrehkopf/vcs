@@ -71,17 +71,11 @@ OutputWindow::OutputWindow(QWidget *parent) :
     mainLayout->setSpacing(0);
 
     this->magnifyingGlass = new MagnifyingGlass(this);
+    this->controlPanelDialog = new ControlPanelDialog(this);
 
     // Restore persistent settings.
     {
         k_set_eco_mode_enabled(kpers_value_of(INI_GROUP_APP, "EcoMode", k_is_eco_mode_enabled()).toBool());
-    }
-
-    // Set up the child dialogs.
-    {
-        controlPanelDialog = new ControlPanelDialog(this);
-
-        this->dialogs << controlPanelDialog;
     }
 
     // Create the window's context menu.
@@ -365,12 +359,6 @@ OutputWindow::~OutputWindow()
     delete ui;
     ui = nullptr;
 
-    for (auto dialog: this->dialogs)
-    {
-        delete dialog;
-        dialog = nullptr;
-    }
-
     return;
 }
 
@@ -430,9 +418,12 @@ void OutputWindow::set_opengl_enabled(const bool enabled)
 
 void OutputWindow::closeEvent(QCloseEvent *event)
 {
-    // The main loop will close the window if it detects PROGRAM_EXIT_REQUESTED.
+    // The main VCS loop will close the window if it finds PROGRAM_EXIT_REQUESTED true.
     event->ignore();
 
+    /// TODO: Since previously standalone dialogs were infused into a single control
+    /// panel, we now need to reorganize this unsaved changes detector as well.
+#if 0
     // If there are unsaved changes, ask the user to confirm to exit.
     {
         QStringList dialogsWithUnsavedChanges;
@@ -455,6 +446,9 @@ void OutputWindow::closeEvent(QCloseEvent *event)
             return;
         }
     }
+#else
+    DEBUG(("Unimplemented OutputWindow::closeEvent() functionality."));
+#endif
 
     PROGRAM_EXIT_REQUESTED = 1;
 
