@@ -37,7 +37,7 @@ public:
 
     void set_unsaved_changes_flag(const bool areUnsavedChanges);
 
-    void lock_unsaved_changes_flag(const bool isBlocked);
+    void lock_unsaved_changes_flag(const bool isLocked);
 
     const QString& data_filename(void) const;
 
@@ -64,6 +64,8 @@ protected:
     QMenuBar *menuBar = nullptr;
 
 private:
+    void keyPressEvent(QKeyEvent *event);
+
     // Whether the dialog's functionality is enabled in VCS.
     bool _isEnabled = false;
 

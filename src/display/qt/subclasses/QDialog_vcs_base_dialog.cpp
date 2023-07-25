@@ -6,6 +6,7 @@
  */
 
 #include <QFileInfo>
+#include <QKeyEvent>
 #include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 #include "common/globals.h"
 
@@ -96,9 +97,9 @@ void VCSBaseDialog::set_unsaved_changes_flag(const bool areUnsavedChanges)
     return;
 }
 
-void VCSBaseDialog::lock_unsaved_changes_flag(const bool isBlocked)
+void VCSBaseDialog::lock_unsaved_changes_flag(const bool isLocked)
 {
-    this->_isUnsavedChangesFlagLocked = isBlocked;
+    this->_isUnsavedChangesFlagLocked = isLocked;
 
     return;
 }
@@ -126,4 +127,15 @@ void VCSBaseDialog::update_window_title(void)
     this->setWindowTitle(unsavedChangesMarker + title);
 
     return;
+}
+
+void VCSBaseDialog::keyPressEvent(QKeyEvent *event)
+{
+    // Consume (ignore) the Esc key to prevent it from closing the dialog. This
+    // is done since the dialog may be embedded as part of another dialog and we
+    // don't want it closing in that context. It's a kludge solution for now.
+    if (event->key() == Qt::Key_Escape)
+    {
+        event->accept();
+    }
 }

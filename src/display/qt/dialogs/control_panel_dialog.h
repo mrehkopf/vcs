@@ -3,10 +3,6 @@
 
 #include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
 
-namespace Ui {
-class ControlPanelDialog;
-}
-
 class OutputWindow;
 class CaptureDialog;
 class WindowOptionsDialog;
@@ -14,6 +10,10 @@ class FilterGraphDialog;
 class VideoPresetsDialog;
 class OverlayDialog;
 class AboutDialog;
+
+namespace Ui {
+class ControlPanelDialog;
+}
 
 class ControlPanelDialog : public VCSBaseDialog
 {
