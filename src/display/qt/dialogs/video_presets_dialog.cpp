@@ -153,9 +153,9 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
         ui->spinBox_resolutionY->setMinimum(int(minres.w));
         ui->spinBox_resolutionY->setMaximum(int(maxres.w));
 
-        ui->parameterGrid_geometry->add_scroller(PARAM_LABEL_HORIZONTAL_SIZE);
         ui->parameterGrid_geometry->add_scroller(PARAM_LABEL_HORIZONTAL_POSITION);
         ui->parameterGrid_geometry->add_scroller(PARAM_LABEL_VERTICAL_POSITION);
+        ui->parameterGrid_geometry->add_scroller(PARAM_LABEL_HORIZONTAL_SIZE);
         ui->parameterGrid_geometry->add_scroller(PARAM_LABEL_PHASE);
 
         ui->parameterGrid_brightness->add_scroller(PARAM_LABEL_BRIGHTNESS);
