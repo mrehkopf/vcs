@@ -4,7 +4,7 @@
 #include "ui_window_scaler.h"
 
 WindowScaler::WindowScaler(QWidget *parent) :
-    VCSBaseDialog(parent),
+    VCSDialogFragment(parent),
     ui(new Ui::WindowScaler)
 {
     ui->setupUi(this);

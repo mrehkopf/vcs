@@ -10,6 +10,7 @@
 }
 
 QDialog,
+VCSDialogFragment,
 ControlPanelWindow
 {
     background-color: #303030;
@@ -51,7 +52,7 @@ QGraphicsView
     border-radius: 0;
 }
 
-VCSBaseDialog QStatusBar::item
+VCSDialogFragment QStatusBar::item
 {
     border: 0px;
 }
@@ -327,7 +328,7 @@ QGroupBox
 }
 
 QGroupBox > QGroupBox,
-VCSBaseDialog QGroupBox
+VCSDialogFragment QGroupBox
 {
     margin: 0;
     padding-left: 8px;
@@ -502,7 +503,7 @@ QGroupBox QScrollBar:horizontal
     margin: 0px 1.35em 0px 1.35em;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
-    background: qlineargradient(x1: 1 y1:0, x2:0 y2:0, stop: 0 #152515, stop: 1 #151525);
+    background: qlineargradient(x1: 1 y1:0, x2:0 y2:0, stop: 0 #302020, stop: 1 #202030);
 }
 QGroupBox QScrollBar::handle:horizontal
 {

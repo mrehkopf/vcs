@@ -7,7 +7,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_COMPONENTS_CAPTURE_DIALOG_SIGNAL_STATUS_H
 #define VCS_DISPLAY_QT_DIALOGS_COMPONENTS_CAPTURE_DIALOG_SIGNAL_STATUS_H
 
-#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
+#include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
 
 class QMenuBar;
 
@@ -19,7 +19,7 @@ struct capture_video_settings_s;
 struct capture_color_settings_s;
 struct resolution_s;
 
-class SignalStatus : public VCSBaseDialog
+class SignalStatus : public VCSDialogFragment
 {
     Q_OBJECT
 

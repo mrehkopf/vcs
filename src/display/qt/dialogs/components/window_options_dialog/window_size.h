@@ -1,13 +1,13 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_COMPONENTS_WINDOW_OPTIONS_DIALOG_WINDOW_SIZE_H
 #define VCS_DISPLAY_QT_DIALOGS_COMPONENTS_WINDOW_OPTIONS_DIALOG_WINDOW_SIZE_H
 
-#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
+#include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
 
 namespace Ui {
 class WindowSize;
 }
 
-class WindowSize : public VCSBaseDialog
+class WindowSize : public VCSDialogFragment
 {
     Q_OBJECT
 

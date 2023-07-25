@@ -9,7 +9,7 @@
 
 #include <QTextDocument>
 #include "capture/capture.h"
-#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
+#include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
 
 class QMenu;
 class QMenuBar;
@@ -18,7 +18,7 @@ namespace Ui {
 class OverlayDialog;
 }
 
-class OverlayDialog : public VCSBaseDialog
+class OverlayDialog : public VCSDialogFragment
 {
     Q_OBJECT
 

@@ -1,7 +1,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_CAPTURE_DIALOG_H
 #define VCS_DISPLAY_QT_DIALOGS_CAPTURE_DIALOG_H
 
-#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
+#include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
 
 namespace Ui {
 class CaptureDialog;
@@ -11,7 +11,7 @@ class InputChannel;
 class SignalStatus;
 class InputResolution;
 
-class CaptureDialog : public VCSBaseDialog
+class CaptureDialog : public VCSDialogFragment
 {
     Q_OBJECT
 

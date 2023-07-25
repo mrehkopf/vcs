@@ -13,7 +13,7 @@
 #include "ui_resolution_dialog.h"
 
 ResolutionDialog::ResolutionDialog(const QString title, resolution_s *const r, QWidget *parent) :
-    VCSBaseDialog(parent),
+    QDialog(parent),
     ui(new Ui::ResolutionDialog),
     resolution(r)
 {
@@ -21,8 +21,7 @@ ResolutionDialog::ResolutionDialog(const QString title, resolution_s *const r, Q
              "Expected a valid resolution pointer as an argument to the resolution dialog, but got null.");
 
     ui->setupUi(this);
-
-    this->set_name(title);
+    this->setWindowTitle(title);
 
     ui->groupBox->setTitle(title);
 

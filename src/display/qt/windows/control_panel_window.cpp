@@ -20,18 +20,18 @@ ControlPanelWindow::ControlPanelWindow(OutputWindow *parent) :
     this->setWindowTitle("Control panel - VCS");
     this->setWindowFlags(Qt::Window);
 
-    this->captureDialog = new CaptureDialog(parent);
-    this->windowOptionsDialog = new WindowOptionsDialog(parent);
-    this->filterGraphDialog = new FilterGraphDialog(parent);
-    this->videoPresetsDialog = new VideoPresetsDialog(parent);
-    this->overlayDialog = new OverlayDialog(parent);
-    this->aboutDialog = new AboutDialog(parent);
+    this->captureDialog = new CaptureDialog(this);
+    this->windowOptionsDialog = new WindowOptionsDialog(this);
+    this->filterGraphDialog = new FilterGraphDialog(this);
+    this->videoPresetsDialog = new VideoPresetsDialog(this);
+    this->overlayDialog = new OverlayDialog(this);
+    this->aboutDialog = new AboutDialog(this);
 
     // Populate the side navi.
     {
         QVBoxLayout *const layout = dynamic_cast<QVBoxLayout*>(ui->buttonsContainer->layout());
 
-        const auto add_navi_button = [this, layout](const QString &label, VCSBaseDialog *const dialog)->QPushButton*
+        const auto add_navi_button = [this, layout](const QString &label, VCSDialogFragment *const dialog)->QPushButton*
         {
             auto *const naviButton = new QPushButton(label);
             naviButton->setFlat(true);

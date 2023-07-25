@@ -1,18 +1,21 @@
+#include <QWindow>
 #include "display/display.h"
 #include "display/qt/windows/output_window.h"
 #include "display/qt/persistent_settings.h"
 #include "window_renderer.h"
 #include "ui_window_renderer.h"
 
-WindowRenderer::WindowRenderer(OutputWindow *parent) :
-    VCSBaseDialog(parent),
+WindowRenderer::WindowRenderer(QWidget *parent) :
+    VCSDialogFragment(parent),
     ui(new Ui::WindowRenderer)
 {
     ui->setupUi(this);
 
     connect(ui->comboBox_renderer, &QComboBox::currentTextChanged, this, [parent](const QString &rendererName)
     {
-        parent->set_opengl_enabled(rendererName == "OpenGL");
+        NBENE(("WindowRenderer: Unimplemented functionality."));
+        // kd_set_renderer(rendererName.toStdString());)
+
         kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "Renderer", rendererName);
     });
 

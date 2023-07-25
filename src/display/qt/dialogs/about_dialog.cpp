@@ -12,15 +12,12 @@
 #include "ui_about_dialog.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
-    VCSBaseDialog(parent),
+    VCSDialogFragment(parent),
     ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
 
     this->set_name("About VCS");
-
-    // Don't show the context help '?' button in the window bar.
-    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     // Initialize the table of information. Note that this also sets
     // the vertical order in which the table's parameters are shown.

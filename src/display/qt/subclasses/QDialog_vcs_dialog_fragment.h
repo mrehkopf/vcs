@@ -5,23 +5,23 @@
  *
  */
 
-#ifndef VCS_DISPLAY_QT_SUBCLASSES_QDIALOG_VCS_BASE_DIALOG_H
-#define VCS_DISPLAY_QT_SUBCLASSES_QDIALOG_VCS_BASE_DIALOG_H
+#ifndef VCS_DISPLAY_QT_SUBCLASSES_QDIALOG_VCS_DIALOG_FRAGMENT_H
+#define VCS_DISPLAY_QT_SUBCLASSES_QDIALOG_VCS_DIALOG_FRAGMENT_H
 
-#include <QDialog>
+#include <QWidget>
 
 class QMenuBar;
 
-class VCSBaseDialog : public QDialog
+// A dialog-like widget that isn't a full standalone dialog but is used to build
+// a subset of a dialogue.
+class VCSDialogFragment : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit VCSBaseDialog(QWidget *parent = 0);
+    explicit VCSDialogFragment(QWidget *parent = 0);
 
-    virtual ~VCSBaseDialog(void);
-
-    void open(void) override;
+    virtual ~VCSDialogFragment(void);
 
     bool is_enabled(void) const;
 

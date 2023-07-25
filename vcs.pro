@@ -55,6 +55,7 @@ SOURCES += \
     src/display/qt/dialogs/window_options_dialog.cpp \
     src/display/qt/keyboard_shortcuts.cpp \
     src/display/qt/dialogs/capture_dialog.cpp \
+    src/display/qt/subclasses/QDialog_vcs_dialog_fragment.cpp \
     src/display/qt/subclasses/QFrame_qt_abstract_gui.cpp \
     src/display/qt/windows/control_panel_window.cpp \
     src/filter/filters/output_scaler/filter_output_scaler.cpp \
@@ -67,7 +68,6 @@ SOURCES += \
     src/display/display.cpp \
     src/display/qt/subclasses/QLabel_magnifying_glass.cpp \
     src/display/qt/subclasses/QComboBox_video_preset_list.cpp \
-    src/display/qt/subclasses/QDialog_vcs_base_dialog.cpp \
     src/display/qt/subclasses/QGroupBox_parameter_grid.cpp \
     src/display/qt/subclasses/QMenu_dialog_file_menu.cpp \
     src/display/qt/windows/output_window.cpp \
@@ -157,7 +157,7 @@ HEADERS += \
     src/display/qt/keyboard_shortcuts.h \
     src/display/qt/dialogs/capture_dialog.h \
     src/display/qt/subclasses/QComboBox_video_preset_list.h \
-    src/display/qt/subclasses/QDialog_vcs_base_dialog.h \
+    src/display/qt/subclasses/QDialog_vcs_dialog_fragment.h \
     src/display/qt/subclasses/QFrame_qt_abstract_gui.h \
     src/display/qt/subclasses/QGroupBox_parameter_grid.h \
     src/display/qt/subclasses/QLabel_magnifying_glass.h \

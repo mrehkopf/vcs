@@ -3,7 +3,7 @@
 
 #include <deque>
 #include "filter/filter.h"
-#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
+#include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
 
 struct video_preset_s;
 
@@ -11,7 +11,7 @@ namespace Ui {
 class VideoPresetsDialog;
 }
 
-class VideoPresetsDialog : public VCSBaseDialog
+class VideoPresetsDialog : public VCSDialogFragment
 {
     Q_OBJECT
 

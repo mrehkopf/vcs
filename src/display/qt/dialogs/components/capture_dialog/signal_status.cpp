@@ -27,7 +27,7 @@
 static QTimer INFO_UPDATE_TIMER;
 
 SignalStatus::SignalStatus(QWidget *parent) :
-    VCSBaseDialog(parent),
+    VCSDialogFragment(parent),
     ui(new Ui::SignalStatus)
 {
     ui->setupUi(this);

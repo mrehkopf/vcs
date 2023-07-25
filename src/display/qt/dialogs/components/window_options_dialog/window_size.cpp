@@ -7,7 +7,7 @@
 #include "ui_window_size.h"
 
 WindowSize::WindowSize(QWidget *parent) :
-    VCSBaseDialog(parent),
+    VCSDialogFragment(parent),
     ui(new Ui::WindowSize)
 {
     ui->setupUi(this);

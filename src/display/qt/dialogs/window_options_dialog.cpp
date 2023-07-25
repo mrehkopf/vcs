@@ -6,8 +6,8 @@
 #include "window_options_dialog.h"
 #include "ui_window_options_dialog.h"
 
-WindowOptionsDialog::WindowOptionsDialog(OutputWindow *parent) :
-    VCSBaseDialog(parent),
+WindowOptionsDialog::WindowOptionsDialog(QWidget *parent) :
+    VCSDialogFragment(parent),
     ui(new Ui::WindowOptionsDialog)
 {
     ui->setupUi(this);

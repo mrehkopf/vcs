@@ -13,7 +13,7 @@
 #include "ui_input_resolution.h"
 
 InputResolution::InputResolution(QWidget *parent) :
-    VCSBaseDialog(parent),
+    VCSDialogFragment(parent),
     ui(new Ui::InputResolution)
 {
     ui->setupUi(this);

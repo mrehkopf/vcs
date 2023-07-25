@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>WindowSize</class>
- <widget class="QDialog" name="WindowSize">
+ <widget class="QWidget" name="WindowSize">
   <property name="geometry">
    <rect>
     <x>0</x>

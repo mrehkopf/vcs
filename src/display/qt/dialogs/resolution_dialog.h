@@ -7,7 +7,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_RESOLUTION_DIALOG_H
 #define VCS_DISPLAY_QT_DIALOGS_RESOLUTION_DIALOG_H
 
-#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
+#include <QDialog>
 
 namespace Ui {
 class ResolutionDialog;
@@ -15,7 +15,7 @@ class ResolutionDialog;
 
 struct resolution_s;
 
-class ResolutionDialog : public VCSBaseDialog
+class ResolutionDialog : public QDialog
 {
     Q_OBJECT
 

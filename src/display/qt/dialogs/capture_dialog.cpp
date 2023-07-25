@@ -7,7 +7,7 @@
 #include "ui_capture_dialog.h"
 
 CaptureDialog::CaptureDialog(QWidget *parent) :
-    VCSBaseDialog(parent),
+    VCSDialogFragment(parent),
     ui(new Ui::CaptureDialog)
 {
     ui->setupUi(this);

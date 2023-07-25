@@ -30,7 +30,7 @@
 #include <cmath>
 #include "display/qt/subclasses/QLabel_magnifying_glass.h"
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
-#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
+#include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
 #include "display/qt/dialogs/components/window_options_dialog/window_size.h"
 #include "display/qt/dialogs/components/capture_dialog/input_resolution.h"
 #include "display/qt/windows/control_panel_window.h"

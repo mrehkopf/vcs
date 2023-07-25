@@ -1,13 +1,15 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_COMPONENTS_CAPTURE_DIALOG_INPUT_RESOLUTION_H
 #define VCS_DISPLAY_QT_DIALOGS_COMPONENTS_CAPTURE_DIALOG_INPUT_RESOLUTION_H
 
-#include "display/qt/subclasses/QDialog_vcs_base_dialog.h"
+#include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
+
+class QPushButton;
 
 namespace Ui {
 class InputResolution;
 }
 
-class InputResolution : public VCSBaseDialog
+class InputResolution : public VCSDialogFragment
 {
     Q_OBJECT
 
