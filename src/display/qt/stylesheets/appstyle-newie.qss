@@ -117,6 +117,7 @@ QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurren
     margin: 0;
     padding: 0;
     min-width: 1em;
+    margin-left: 0.25em;
 }
 
 QDialog[objectName="VideoPresetsDialog"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
@@ -180,6 +181,33 @@ QPushButton:flat:hover:pressed
 QAbstractScrollArea::corner
 {
     background-color: #454545;
+}
+
+QSpinBox,
+QDoubleSpinBox,
+QComboBox,
+QLineEdit,
+QPlainTextEdit,
+QTextEdit,
+QSpinBox:read-only:focus,
+QDoubleSpinBox:read-only:focus,
+QLineEdit:read-only:focus,
+QPlainTextEdit:read-only:focus,
+QTextEdit:read-only:focus
+{
+    min-height: 1.5em;
+    color: black;
+    background-color: #d9d9d9;
+    border-radius: 2px;
+    border: 1px solid black;
+    padding: 0;
+    padding-left: 0.25em;
+    margin: 0;
+}
+
+QComboBox
+{
+    padding-left: 0.35em;
 }
 
 QComboBox::down-arrow,
@@ -305,7 +333,7 @@ VCSBaseDialog QGroupBox
     padding-right: 8px;
     padding-top: 1.65em;
     background-color: #404040;
-    border: 1px solid #151515;
+    border-bottom: 1px solid #101010;
 }
 
 QGroupBox::title
@@ -318,7 +346,7 @@ QGroupBox::title
 QScrollBar:vertical,
 QScrollBar:horizontal
 {
-    background-color: #202020;
+    background-color: #303030;
 }
 
 QScrollBar::handle:vertical,
@@ -470,7 +498,7 @@ QScrollBar::handle:disabled:vertical
 QGroupBox QScrollBar:horizontal
 {
     border: none;
-    background-color: #303030;
+    background-color: #202020;
     margin: 0px 1.35em 0px 1.35em;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
@@ -578,28 +606,6 @@ QTreeWidget::indicator::checked:disabled
     image: url(:/res/images/icons/checkbox_check_disabled.png);
 }
 
-QSpinBox,
-QDoubleSpinBox,
-QComboBox,
-QLineEdit,
-QPlainTextEdit,
-QTextEdit,
-QSpinBox:read-only:focus,
-QDoubleSpinBox:read-only:focus,
-QLineEdit:read-only:focus,
-QPlainTextEdit:read-only:focus,
-QTextEdit:read-only:focus
-{
-    min-height: 1.5em;
-    color: black;
-    background-color: #d9d9d9;
-    border-radius: 2px;
-    border: 1px solid black;
-    padding: 0;
-    padding-left: 0.25em;
-    margin: 0;
-}
-
 QPlainTextEdit[overLengthLimit="true"]
 {
     color: crimson;
@@ -608,11 +614,6 @@ QPlainTextEdit[overLengthLimit="true"]
 QGroupBox[objectName="groupBox_presetList"] QComboBox
 {
     margin-left: 0;
-}
-
-QComboBox
-{
-    padding-left: 4px;
 }
 
 QSpinBox:focus,
