@@ -135,14 +135,13 @@ static bool initialize_all(void)
 static capture_event_e process_next_capture_event(void)
 {
     std::lock_guard<std::mutex> lock(kc_mutex());
-    const capture_event_e e = kc_pop_event_queue();
+    const capture_event_e e = kc_process_next_capture_event();
 
     switch (e)
     {
         case capture_event_e::new_frame:
         {
-            const auto &frame = kc_frame_buffer();
-            ev_frame_processing_finished.fire(frame);
+            ev_frame_processing_finished.fire(kc_frame_buffer());
             break;
         }
         case capture_event_e::invalid_signal:
@@ -256,10 +255,9 @@ static void eco_sleep(const capture_event_e event)
 int main(int argc, char *argv[])
 {
     printf("VCS %s\n", PROGRAM_VERSION_STRING);
-
-    #ifndef VCS_RELEASE_BUILD
-        printf("NON-RELEASE BUILD\n");
-    #endif
+#ifndef VCS_RELEASE_BUILD
+    printf("NON-RELEASE BUILD\n");
+#endif
 
     // We want to be sure that the capture hardware is released in a controlled
     // manner, if possible, in the event of a runtime failure. (Not releasing the
@@ -276,8 +274,7 @@ int main(int argc, char *argv[])
     if (!kcom_parse_command_line(argc, argv))
     {
         NBENE(("Malformed command line argument(s). Exiting."));
-        prepare_for_exit();
-        return EXIT_FAILURE;
+        goto fail;
     }
 
     INFO(("Initializing VCS."));
@@ -285,25 +282,20 @@ int main(int argc, char *argv[])
     {
         kd_show_headless_error_message(
             "",
-           "VCS has to exit because it encountered one or more "
-           "unrecoverable errors while initializing itself. "
-           "More information will have been printed into "
-           "the console. If a console window was not already "
-           "open, run VCS again from the command line."
+           "VCS has to exit because it encountered one or more unrecoverable errors "
+           "while initializing itself. More information will have been printed into "
+           "the console. If a console window was not already open, run VCS again "
+           "from the command line."
         );
-
-        prepare_for_exit();
-        return EXIT_FAILURE;
-    }
-    else
-    {
-        load_user_data();
+        goto fail;
     }
 
     if (!kc_has_signal())
     {
         ev_capture_signal_lost.fire();
     }
+
+    load_user_data();
 
     DEBUG(("Entering the main loop."));
     while (!PROGRAM_EXIT_REQUESTED)
@@ -316,4 +308,8 @@ int main(int argc, char *argv[])
 
     prepare_for_exit();
     return EXIT_SUCCESS;
+
+    fail:
+    prepare_for_exit();
+    return EXIT_FAILURE;
 }

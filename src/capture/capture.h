@@ -29,11 +29,11 @@
  *
  * ## Usage
  *
- *   1. Call kc_initialize_capture() to initialize the subsystem. Note that the
- *      function should be called only once per program execution.
+ *   1. Call kc_initialize_capture() to initialize the capture subsystem.
  *
- *   2. Use the interface functions to interact with the subsystem. For instance,
- *      kc_frame_buffer() returns the most recent captured frame's data.
+ *   2. Use the interface functions to interact with the subsystem, making sure
+ *      to observe the capture mutex (kc_mutex()). For example, kc_frame_buffer()
+ *      returns the most recent captured frame's data.
  *
  *   3. VCS will automatically release the subsystem on program termination.
  * 
@@ -65,7 +65,7 @@ struct video_mode_s;
  * back.
  * 
  * @see
- * kc_pop_event_queue()
+ * kc_process_next_capture_event()
  */
 enum class capture_event_e
 {
@@ -160,33 +160,51 @@ struct video_signal_parameters_s
 };
 
 /*!
- * Returns a reference to a mutex that should be locked by the capture subsystem
- * while it's accessing data shared with the rest of VCS (e.g. capture event flags
- * or the capture frame buffer), and which the rest of VCS should lock while
- * accessing that data.
- *
- * Failure to observe this mutex when accessing capture subsystem data may result
- * in a race condition, as the capture subsystem is allowed to run outside of the
- * main VCS thread.
+ * Returns a reference to a mutex which a thread should acquire before invoking the
+ * functions of the capture subsystem interface, and which the capture subsystem
+ * should acquire before mutating data to which the interface provides access.
  *
  * @code
  * // Code running in the main VCS thread.
  * 
- * // Blocks execution until the capture mutex allows us to access the capture data.
- * std::lock_guard<std::mutex> lock(kc_mutex());
- *
- * // Handle the most recent capture event (having locked the mutex prevents
- * // the capture subsystem from pushing new events while we're doing this).
- * switch (kc_pop_event_queue())
+ * // We haven't acquired the capture mutex, so the pixel data in the subsystem's
+ * // frame buffer is liable to be overwritten at any time by a capture thread.
+ * const auto &frameBuffer = kc_frame_buffer();
+ * 
  * {
- *     // ...
+ *     // Blocks execution until the capture subsystem is ready to share data.
+ *     std::lock_guard<std::mutex> lock(kc_mutex());
+ * 
+ *     // We can now access the pixel data without fear of it being overwritten.
+ *     unsigned red = frameBuffer.pixels[0];
+ * 
+ *     // The listeners of this event are also in the scope of the mutex when the
+ *     // event is fired here.
+ *     ev_new_captured_frame.fire(frameBuffer);
+ * }
+ * 
+ * // The mutex is now unlocked by going out of scope, so the data in the frame
+ * // buffer is again liable to be overwritten at any time.
+ * @endcode
+ * 
+ * In effect, it can be assumed that the caller of the interface is the main VCS
+ * thread, which also runs the capture subsystem, so the subsystem generally only
+ * needs to acquire the mutex when mutating shared data in a thread it has spawned
+ * for itself.
+ * 
+ * @code
+ * // Code running in a capture thread spawned by the capture subsystem.
+ * 
+ * if (deviceHasCapturedNewFrame)
+ * {
+ *     // Wait until VCS is no longer accessing the subsystem's frame buffer.
+ *     std::lock_guard<std::mutex> lock(kc_mutex());
+ * 
+ *     // Copy the frame's data from device memory into the subsystem's frame buffer.
+ *     memcpy(frameBuffer.pixels, ...);
  * }
  * @endcode
  *
- * @note
- * If the capture subsystem finds the capture mutex locked when the capture device
- * sends in a new frame, the frame will be discarded rather than waiting for the
- * lock to be released.
  */
 std::mutex& kc_mutex(void);
 
@@ -200,29 +218,29 @@ std::mutex& kc_mutex(void);
  * @note
  * Will trigger an assertion failure if the initialization fails.
  * 
+ * @warning
+ * This function should be called only once per program execution.
+ * 
  * @code
  * kc_initialize_capture();
  * 
  * // This listener function gets called each time a frame is captured.
- * kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
+ * ev_new_captured_frame.listen([](const captured_frame_s &frame)
  * {
  *     printf("Captured a frame (%lu x %lu)\n", frame.r.w, frame.r.h);
  * });
  * @endcode
- *
- * @see
- * kc_ev_new_captured_frame
  */
 subsystem_releaser_t kc_initialize_capture(void);
 
 /*!
- * Initializes the capture device.
+ * Prepares the capture device for use, including starting the capture stream.
  *
  * Throws on failure.
  *
  * @warning
- * Don't call this function directly. Instead, call kc_initialize_capture(),
- * which will initialize both the capture device and the capture subsystem.
+ * You don't ever need to call this function manually; VCS will call it automatically
+ * when appropriate.
  *
  * @see
  * kc_initialize_capture(), kc_release_device()
@@ -230,16 +248,14 @@ subsystem_releaser_t kc_initialize_capture(void);
 void kc_initialize_device(void);
 
 /*!
- * Releases the capture device.
+ * Releases the capture device, including stopping the capture stream and freeing
+ * any on-device buffers that were in use for the capture subsystem.
  *
  * Returns true on success; false otherwise.
  *
  * @warning
- * Don't call this function directly. The capture subsystem will call it as
- * necessary.
- *
- * @see
- * kc_initialize_capture(), kc_initialize_device()
+ * You don't ever need to call this function manually; VCS will call it
+ * automatically when appropriate.
  */
 bool kc_release_device(void);
 
@@ -254,6 +270,9 @@ bool kc_release_device(void);
  * @note
  * The value is monotonically cumulative over the lifetime of the program's
  * execution, guaranteed not to decrease during that time.
+ * 
+ * @see
+ * kc_mutex()
  */
 unsigned kc_dropped_frames_count(void);
 
@@ -266,7 +285,7 @@ unsigned kc_dropped_frames_count(void);
  * out of range.
  *
  * @see
- * kc_ev_signal_gained, kc_ev_signal_lost
+ * kc_mutex(), ev_capture_signal_gained, ev_capture_signal_lost
  */
 bool kc_has_signal(void);
 
@@ -289,15 +308,24 @@ bool kc_has_signal(void);
  * @endcode
  *
  * @see
- * kc_mutex(), kc_ev_new_captured_frame
+ * kc_mutex(), ev_new_captured_frame
  */
 const captured_frame_s& kc_frame_buffer(void);
 
 /*!
- * Processes the most recent or most important capture event and removes it from
- * the capture subsystem's event queue.
+ * Asks the capture subsystem to process the most recent or most important capture
+ * event in its queue of events received from the capture device; removing the event
+ * from the queue before returning.
+ * 
+ * In processing the event, the function may call other subsystems of VCS (directly
+ * or by firing [events](@ref src/common/vcs_event/vcs_event.h)) to process
+ * relevant data; e.g. the scaler and display subsystems if the event is a new
+ * captured frame.
+ * 
+ * @see
+ * kc_mutex()
  */
-capture_event_e kc_pop_event_queue(void);
+capture_event_e kc_process_next_capture_event(void);
 
 /*!
  * Returns the value of the capture device property identified by @p key.
@@ -325,6 +353,12 @@ capture_event_e kc_pop_event_queue(void);
  * // to return the current capture resolution.
  * const auto inputResolution = resolution_s::from_capture_device();
  * @endcode
+ * 
+ * @warning
+ * The device property framework is intended for use within the main VCS thread
+ * only; as such, this function should only be called from the main VCS thread.
+ * The capture mutex (kc_mutex()) doesn't need to be acquired prior to calling
+ * the function.
  *
  * @see
  * kc_set_device_property()
@@ -343,10 +377,16 @@ double kc_device_property(const std::string &key);
  * }
  * @endcode
  *
- * Depending on the implementation of the capture device in VCS, modifying a
- * property may mutate the device state. For example, changing an
+ * Depending on the implementation of the capture subsystem, modifying a property
+ * may lead to a corresponding mutation in device state. For example, changing an
  * "input channel index" property may cause the capture device to switch to a
  * different input channel.
+ * 
+ * @warning
+ * The device property framework is intended for use within the main VCS thread
+ * only; as such, this function should only be called from the main VCS thread.
+ * The capture mutex (kc_mutex()) doesn't need to be acquired prior to calling
+ * the function.
  *
  * @see
  * kc_device_property()

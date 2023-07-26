@@ -119,11 +119,11 @@ private:
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact
  * time of capture, but rather once VCS has polled the capture subsystem (via
- * kc_pop_event_queue()) to find that there is a new frame.
+ * kc_process_next_capture_event()) to find that there is a new frame.
  *
  * @code
  * // Register an event listener that gets run each time a new frame is captured.
- * kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
+ * ev_new_captured_frame.listen([](const captured_frame_s &frame)
  * {
  *     // The frame's data is available to this listener until the function
  *     // returns. If we wanted to keep hold of the data for longer, we'd need
@@ -133,14 +133,14 @@ private:
  *
  * @code
  * // Feed captured frames into the scaler subsystem.
- * kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
+ * ev_new_captured_frame.listen([](const captured_frame_s &frame)
  * {
  *     printf("Captured in %lu x %lu.\n", frame.r.w, frame.r.h);
  *     ks_scale_frame(frame);
  * });
  *
  * // Receive a notification whenever a frame has been scaled.
- * ks_ev_new_scaled_image.listen([](const image_s &image)
+ * ev_new_output_image.listen([](const image_s &image)
  * {
  *     printf("Scaled to %lu x %lu.\n", image.resolution.w, image.resolution.h);
  * });
@@ -161,18 +161,18 @@ extern vcs_event_c<const captured_frame_s&> ev_new_captured_frame;
  *
  * This event is to be treated as a proposal from the capture device that the given
  * video mode now best fits the captured signal. You can accept the proposal by firing
- * the @ref kc_ev_new_video_mode event, call kc_set_resolution() to force the
+ * the @ref ev_new_video_mode event, call kc_set_resolution() to force the
  * capture device to use a different mode, or do nothing to retain the existing mode.
  *
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact time
  * the video mode changes, but rather once VCS has polled the capture subsystem
- * (via kc_pop_event_queue()) to find that the mode has changed.
+ * (via kc_process_next_capture_event()) to find that the mode has changed.
  *
  * @code
  * // A sample implementation that approves the proposed video mode if there's
  * // no alias for it, and otherwise forces the alias mode.
- * kc_ev_new_proposed_video_mode.listen([](const video_mode_s &videoMode)
+ * ev_new_proposed_video_mode.listen([](const video_mode_s &videoMode)
  * {
  *     if (ka_has_alias(videoMode.resolution))
  *     {
@@ -180,13 +180,13 @@ extern vcs_event_c<const captured_frame_s&> ev_new_captured_frame;
  *     }
  *     else
  *     {
- *         kc_ev_new_video_mode.fire(videoMode);
+ *         ev_new_video_mode.fire(videoMode);
  *     }
  * });
  * @endcode
  *
  * @see
- * kc_ev_new_video_mode, kc_set_resolution()
+ * ev_new_video_mode, kc_set_resolution()
  */
 extern vcs_event_c<const video_mode_s&> ev_new_proposed_video_mode;
 
@@ -197,7 +197,7 @@ extern vcs_event_c<const video_mode_s&> ev_new_proposed_video_mode;
  * one, although usually it will be.
  *
  * @see
- * kc_ev_new_proposed_video_mode, kc_set_resolution()
+ * ev_new_proposed_video_mode, kc_set_resolution()
  */
 extern vcs_event_c<const video_mode_s&> ev_new_video_mode;
 
@@ -213,7 +213,7 @@ extern vcs_event_c<unsigned> ev_new_input_channel;
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact time
  * the device is detected to be invalid, but rather once VCS has polled the capture
- * subsystem (via kc_pop_event_queue()) to find that such is the case.
+ * subsystem (via kc_process_next_capture_event()) to find that such is the case.
  */
 extern vcs_event_c<void> ev_invalid_capture_device;
 
@@ -224,18 +224,18 @@ extern vcs_event_c<void> ev_invalid_capture_device;
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact time
  * the signal is lost, but rather once VCS has polled the capture subsystem (via
- * kc_pop_event_queue()) to find that such is the case.
+ * kc_process_next_capture_event()) to find that such is the case.
  *
  * @code
  * // Print a message every time the capture signal is lost.
- * kc_ev_signal_lost.listen([]
+ * ev_capture_signal_lost.listen([]
  * {
  *     printf("The signal was lost.\n");
  * });
  * @endcode
  *
  * @see
- * kc_ev_signal_gained
+ * ev_capture_signal_gained
  */
 
 extern vcs_event_c<void> ev_capture_signal_lost;
@@ -247,10 +247,10 @@ extern vcs_event_c<void> ev_capture_signal_lost;
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact time
  * the signal is gained, but rather once VCS has polled the capture subsystem (via
- * kc_pop_event_queue()) to find that such is the case.
+ * kc_process_next_capture_event()) to find that such is the case.
  *
  * @see
- * kc_ev_signal_lost
+ * ev_capture_signal_lost
  */
 extern vcs_event_c<void> ev_capture_signal_gained;
 
@@ -261,7 +261,7 @@ extern vcs_event_c<void> ev_capture_signal_gained;
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact
  * time the invalid signal began to be received, but rather once VCS has polled
- * the capture subsystem (via kc_pop_event_queue()) to find that such a
+ * the capture subsystem (via kc_process_next_capture_event()) to find that such a
  * condition exists.
  */
 extern vcs_event_c<void> ev_invalid_capture_signal;
@@ -273,7 +273,7 @@ extern vcs_event_c<void> ev_invalid_capture_signal;
  * The event is fired by VCS's event loop rather than directly by the capture
  * subsystem. As such, the event isn't guaranteed to be fired at the exact
  * time the error occurs, but rather once VCS has polled the capture subsystem
- * (via kc_pop_event_queue()) to find that there has been such an error.
+ * (via kc_process_next_capture_event()) to find that there has been such an error.
  */
 extern vcs_event_c<void> ev_unrecoverable_capture_error;
 
@@ -303,7 +303,7 @@ extern vcs_event_c<const resolution_s&> ev_new_output_resolution;
  * Fired when the scaler subsystem has finished scaling a frame.
  *
  * @code
- * ks_ev_new_scaled_image.listen([](const image_s &scaledImage)
+ * ev_new_output_image.listen([](const image_s &scaledImage)
  * {
  *     printf("Scaled a frame to %lu x %lu.\n", scaledImage.resolution.w, scaledImage.resolution.h);
  * });
@@ -319,7 +319,7 @@ extern vcs_event_c<const image_s&> ev_new_output_image;
  * subsystem scaled during that time.
  *
  * @code
- * ks_ev_frames_per_second.listen([](unsigned numFrames)
+ * ev_frames_per_second.listen([](unsigned numFrames)
  * {
  *     printf("Scaled %u frames per second.\n", numFrames);
  * });

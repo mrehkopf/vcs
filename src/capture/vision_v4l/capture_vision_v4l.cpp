@@ -227,7 +227,7 @@ bool kc_set_device_property(const std::string &key, double value)
     return true;
 }
 
-capture_event_e kc_pop_event_queue(void)
+capture_event_e kc_process_next_capture_event(void)
 {
     if (!INPUT_CHANNEL)
     {
