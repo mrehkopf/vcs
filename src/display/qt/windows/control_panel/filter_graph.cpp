@@ -7,22 +7,22 @@
 #include <QTimer>
 #include <QLabel>
 #include <functional>
-#include "display/qt/dialogs/components/filter_graph_dialog/base_filter_graph_node.h"
-#include "display/qt/dialogs/components/filter_graph_dialog/filter_node.h"
-#include "display/qt/dialogs/components/filter_graph_dialog/input_gate_node.h"
-#include "display/qt/dialogs/components/filter_graph_dialog/output_gate_node.h"
-#include "display/qt/dialogs/components/filter_graph_dialog/output_scaler_node.h"
+#include "display/qt/windows/control_panel/filter_graph/base_filter_graph_node.h"
+#include "display/qt/windows/control_panel/filter_graph/filter_node.h"
+#include "display/qt/windows/control_panel/filter_graph/input_gate_node.h"
+#include "display/qt/windows/control_panel/filter_graph/output_gate_node.h"
+#include "display/qt/windows/control_panel/filter_graph/output_scaler_node.h"
 #include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
 #include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
 #include "display/qt/subclasses/QMenu_dialog_file_menu.h"
 #include "display/qt/subclasses/QFrame_qt_abstract_gui.h"
-#include "display/qt/dialogs/filter_graph_dialog.h"
+#include "display/qt/windows/control_panel/filter_graph.h"
 #include "display/qt/persistent_settings.h"
 #include "common/abstract_gui.h"
 #include "filter/abstract_filter.h"
 #include "common/command_line/command_line.h"
 #include "common/disk/disk.h"
-#include "ui_filter_graph_dialog.h"
+#include "ui_filter_graph.h"
 
 FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
     VCSDialogFragment(parent),

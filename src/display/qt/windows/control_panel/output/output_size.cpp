@@ -3,8 +3,8 @@
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
-#include "window_size.h"
-#include "ui_window_size.h"
+#include "output_size.h"
+#include "ui_output_size.h"
 
 WindowSize::WindowSize(QWidget *parent) :
     VCSDialogFragment(parent),

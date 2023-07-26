@@ -2,8 +2,8 @@
 #include "display/display.h"
 #include "display/qt/windows/output_window.h"
 #include "display/qt/persistent_settings.h"
-#include "window_renderer.h"
-#include "ui_window_renderer.h"
+#include "output_renderer.h"
+#include "ui_output_renderer.h"
 
 WindowRenderer::WindowRenderer(QWidget *parent) :
     VCSDialogFragment(parent),

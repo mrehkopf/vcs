@@ -4,7 +4,7 @@
  *
  */
 
-#include "display/qt/dialogs/resolution_dialog.h"
+#include "display/qt/dialogs/resolution_query.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "common/vcs_event/vcs_event.h"

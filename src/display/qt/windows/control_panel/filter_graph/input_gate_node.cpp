@@ -9,7 +9,7 @@
 #include <QPainter>
 #include <QStyle>
 #include "common/assert.h"
-#include "display/qt/dialogs/components/filter_graph_dialog/input_gate_node.h"
+#include "display/qt/windows/control_panel/filter_graph/input_gate_node.h"
 
 node_edge_s* InputGateNode::output_edge(void)
 {

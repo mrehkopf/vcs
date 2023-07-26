@@ -16,11 +16,11 @@
 #include <QMenuBar>
 #include <QDebug>
 #include <QMenu>
-#include "display/qt/dialogs/overlay_dialog.h"
+#include "display/qt/windows/control_panel/overlay.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "display/display.h"
-#include "ui_overlay_dialog.h"
+#include "ui_overlay.h"
 
 OverlayDialog::OverlayDialog(QWidget *parent) :
     VCSDialogFragment(parent),

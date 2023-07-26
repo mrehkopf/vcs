@@ -6,11 +6,11 @@
  *
  */
 
-#include "display/qt/dialogs/resolution_dialog.h"
+#include "display/qt/dialogs/resolution_query.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
-#include "ui_resolution_dialog.h"
+#include "ui_resolution_query.h"
 
 ResolutionDialog::ResolutionDialog(const QString title, resolution_s *const r, QWidget *parent) :
     QDialog(parent),

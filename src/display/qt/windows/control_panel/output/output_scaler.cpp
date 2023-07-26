@@ -1,7 +1,7 @@
 #include "scaler/scaler.h"
 #include "display/qt/persistent_settings.h"
-#include "window_scaler.h"
-#include "ui_window_scaler.h"
+#include "output_scaler.h"
+#include "ui_output_scaler.h"
 
 WindowScaler::WindowScaler(QWidget *parent) :
     VCSDialogFragment(parent),

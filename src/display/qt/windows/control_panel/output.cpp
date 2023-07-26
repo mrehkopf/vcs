@@ -1,10 +1,10 @@
 #include <QVBoxLayout>
-#include "display/qt/dialogs/components/window_options_dialog/window_renderer.h"
-#include "display/qt/dialogs/components/window_options_dialog/window_scaler.h"
-#include "display/qt/dialogs/components/window_options_dialog/window_size.h"
+#include "display/qt/windows/control_panel/output/output_renderer.h"
+#include "display/qt/windows/control_panel/output/output_scaler.h"
+#include "display/qt/windows/control_panel/output/output_size.h"
 #include "display/qt/windows/output_window.h"
-#include "window_options_dialog.h"
-#include "ui_window_options_dialog.h"
+#include "output.h"
+#include "ui_output.h"
 
 WindowOptionsDialog::WindowOptionsDialog(QWidget *parent) :
     VCSDialogFragment(parent),

@@ -9,7 +9,7 @@
 #include "display/qt/subclasses/QComboBox_video_preset_list.h"
 #include "display/qt/subclasses/QGroupBox_parameter_grid.h"
 #include "display/qt/subclasses/QMenu_dialog_file_menu.h"
-#include "display/qt/dialogs/video_presets_dialog.h"
+#include "display/qt/windows/control_panel/video_presets.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "common/command_line/command_line.h"
@@ -18,7 +18,7 @@
 #include "common/disk/disk.h"
 #include "capture/capture.h"
 #include "capture/video_presets.h"
-#include "ui_video_presets_dialog.h"
+#include "ui_video_presets.h"
 
 // By default, values from the GUI's controls (sliders and spinboxes) will be
 // sent to the capture card in real-time, i.e. as the controls are operated.

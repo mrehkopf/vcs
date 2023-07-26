@@ -4,12 +4,12 @@
  *
  */
 
-#include "display/qt/dialogs/about_dialog.h"
+#include "display/qt/windows/control_panel/about_vcs.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "capture/capture.h"
 #include "common/globals.h"
-#include "ui_about_dialog.h"
+#include "ui_about_vcs.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
     VCSDialogFragment(parent),
