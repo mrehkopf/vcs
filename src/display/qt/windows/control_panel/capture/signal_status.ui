@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SignalStatus</class>
- <widget class="QWidget" name="SignalStatus">
+ <class>control_panel::capture::SignalStatus</class>
+ <widget class="QWidget" name="ControlPanel_Capture_SignalStatus">
   <property name="geometry">
    <rect>
     <x>0</x>

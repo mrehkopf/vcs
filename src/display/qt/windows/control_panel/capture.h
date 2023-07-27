@@ -3,32 +3,36 @@
 
 #include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
 
-namespace Ui {
-class CaptureDialog;
+namespace control_panel::capture
+{
+    class InputChannel;
+    class SignalStatus;
+    class InputResolution;
 }
 
-class InputChannel;
-class SignalStatus;
-class InputResolution;
-
-class CaptureDialog : public VCSDialogFragment
+namespace control_panel
 {
-    Q_OBJECT
+    namespace Ui { class Capture; }
 
-public:
-    explicit CaptureDialog(QWidget *parent = nullptr);
-    ~CaptureDialog();
+    class Capture : public VCSDialogFragment
+    {
+        Q_OBJECT
 
-    InputChannel* input_channel(void)       const { return this->inputChannel; }
-    SignalStatus* signal_status(void)       const { return this->signalStatus; }
-    InputResolution* input_resolution(void) const { return this->inputResolution; }
+    public:
+        explicit Capture(QWidget *parent = nullptr);
+        ~Capture();
 
-private:
-    Ui::CaptureDialog *ui;
+        control_panel::capture::InputChannel* input_channel(void) const { return this->inputChannel; }
+        control_panel::capture::SignalStatus* signal_status(void)       const { return this->signalStatus; }
+        control_panel::capture::InputResolution* input_resolution(void) const { return this->inputResolution; }
 
-    InputChannel *inputChannel = nullptr;
-    SignalStatus *signalStatus = nullptr;
-    InputResolution *inputResolution = nullptr;
-};
+    private:
+        Ui::Capture *ui;
 
-#endif
+        control_panel::capture::InputChannel *inputChannel = nullptr;
+        control_panel::capture::SignalStatus *signalStatus = nullptr;
+        control_panel::capture::InputResolution *inputResolution = nullptr;
+    };
+
+    #endif
+}

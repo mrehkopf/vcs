@@ -11,30 +11,31 @@
 
 class QMenuBar;
 
-namespace Ui {
-class SignalStatus;
-}
-
 struct capture_video_settings_s;
 struct capture_color_settings_s;
 struct resolution_s;
 
-class SignalStatus : public VCSDialogFragment
+namespace control_panel::capture
 {
-    Q_OBJECT
+    namespace Ui { class SignalStatus; }
 
-public:
-    explicit SignalStatus(QWidget *parent = 0);
-    ~SignalStatus(void);
+    class SignalStatus : public VCSDialogFragment
+    {
+        Q_OBJECT
 
-    void set_controls_enabled(const bool state);
+    public:
+        explicit SignalStatus(QWidget *parent = 0);
+        ~SignalStatus(void);
 
-    void update_controls(void);
+        void set_controls_enabled(const bool state);
 
-private:
-    void update_information_table(const bool isReceivingSignal);
+        void update_controls(void);
 
-    Ui::SignalStatus *ui;
-};
+    private:
+        void update_information_table(const bool isReceivingSignal);
+
+        Ui::SignalStatus *ui;
+    };
+}
 
 #endif

@@ -5,25 +5,26 @@
 
 class QPushButton;
 
-namespace Ui {
-class InputResolution;
-}
-
-class InputResolution : public VCSDialogFragment
+namespace control_panel::capture
 {
-    Q_OBJECT
+    namespace Ui { class InputResolution; }
 
-public:
-    explicit InputResolution(QWidget *parent = 0);
+    class InputResolution : public VCSDialogFragment
+    {
+        Q_OBJECT
 
-    ~InputResolution(void);
+    public:
+        explicit InputResolution(QWidget *parent = 0);
 
-    void activate_resolution_button(const uint buttonIdx);
+        ~InputResolution(void);
 
-private:
-    void update_button_text(QPushButton *const button);
+        void activate_resolution_button(const uint buttonIdx);
 
-    Ui::InputResolution *ui;
-};
+    private:
+        void update_button_text(QPushButton *const button);
+
+        Ui::InputResolution *ui;
+    };
+}
 
 #endif

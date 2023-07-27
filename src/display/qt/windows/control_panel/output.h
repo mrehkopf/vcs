@@ -3,31 +3,34 @@
 
 #include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
 
-namespace Ui {
-class WindowOptionsDialog;
+namespace control_panel::output
+{
+    class Size;
+    class Scaler;
+    class Renderer;
 }
 
-class OutputWindow;
-class WindowSize;
-class WindowScaler;
-class WindowRenderer;
-
-class WindowOptionsDialog : public VCSDialogFragment
+namespace control_panel
 {
-    Q_OBJECT
+    namespace Ui { class Output; }
 
-public:
-    explicit WindowOptionsDialog(QWidget *parent = nullptr);
-    ~WindowOptionsDialog();
+    class Output : public VCSDialogFragment
+    {
+        Q_OBJECT
 
-    WindowSize* window_size(void) const { return this->windowSize; }
+    public:
+        explicit Output(QWidget *parent = nullptr);
+        ~Output();
 
-private:
-    Ui::WindowOptionsDialog *ui;
+        control_panel::output::Size* size(void) const { return this->sizeDialog; }
 
-    WindowSize *windowSize = nullptr;
-    WindowScaler *windowScaler = nullptr;
-    WindowRenderer *windowRenderer = nullptr;
-};
+    private:
+        Ui::Output *ui;
+
+        control_panel::output::Size *sizeDialog = nullptr;
+        control_panel::output::Scaler *scalerDialog = nullptr;
+        control_panel::output::Renderer *rendererDialog = nullptr;
+    };
+}
 
 #endif

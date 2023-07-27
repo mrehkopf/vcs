@@ -12,7 +12,7 @@
 
 #include <QTableWidget>
 
-class OverlayDialog;
+class Overlay;
 
 class PropertyTable : public QTableWidget
 {

@@ -11,9 +11,9 @@
 #include "common/globals.h"
 #include "ui_about_vcs.h"
 
-AboutDialog::AboutDialog(QWidget *parent) :
+control_panel::AboutVCS::AboutVCS(QWidget *parent) :
     VCSDialogFragment(parent),
-    ui(new Ui::AboutDialog)
+    ui(new Ui::AboutVCS)
 {
     ui->setupUi(this);
 
@@ -36,7 +36,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     return;
 }
 
-AboutDialog::~AboutDialog()
+control_panel::AboutVCS::~AboutVCS()
 {
     delete ui;
 

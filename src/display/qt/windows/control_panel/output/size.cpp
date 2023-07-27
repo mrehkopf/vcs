@@ -3,12 +3,12 @@
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
-#include "output_size.h"
-#include "ui_output_size.h"
+#include "size.h"
+#include "ui_size.h"
 
-WindowSize::WindowSize(QWidget *parent) :
+control_panel::output::Size::Size(QWidget *parent) :
     VCSDialogFragment(parent),
-    ui(new Ui::WindowSize)
+    ui(new Ui::Size)
 {
     ui->setupUi(this);
 
@@ -148,7 +148,7 @@ WindowSize::WindowSize(QWidget *parent) :
     return;
 }
 
-WindowSize::~WindowSize()
+control_panel::output::Size::~Size()
 {
     delete ui;
 
@@ -158,7 +158,7 @@ WindowSize::~WindowSize()
 // Adjusts the output scale value in the GUI by a pre-set step size in the given
 // direction. Note that this will automatically trigger a change in the actual
 // scaler output size as well.
-void WindowSize::adjust_output_scaling(const int dir)
+void control_panel::output::Size::adjust_output_scaling(const int dir)
 {
     const int curValue = ui->spinBox_outputScale->value();
     const int stepSize = ui->spinBox_outputScale->singleStep();
@@ -176,14 +176,14 @@ void WindowSize::adjust_output_scaling(const int dir)
     return;
 }
 
-void WindowSize::disable_output_size_controls(const bool areDisabled)
+void control_panel::output::Size::disable_output_size_controls(const bool areDisabled)
 {
     ui->groupBox->setDisabled(areDisabled);
 
     return;
 }
 
-void WindowSize::notify_of_new_capture_signal(void)
+void control_panel::output::Size::notify_of_new_capture_signal(void)
 {
     if (!ui->checkBox_forceOutputRes->isChecked())
     {

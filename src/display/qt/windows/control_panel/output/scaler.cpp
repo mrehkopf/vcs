@@ -1,11 +1,11 @@
 #include "scaler/scaler.h"
 #include "display/qt/persistent_settings.h"
-#include "output_scaler.h"
-#include "ui_output_scaler.h"
+#include "scaler.h"
+#include "ui_scaler.h"
 
-WindowScaler::WindowScaler(QWidget *parent) :
+control_panel::output::Scaler::Scaler(QWidget *parent) :
     VCSDialogFragment(parent),
-    ui(new Ui::WindowScaler)
+    ui(new Ui::Scaler)
 {
     ui->setupUi(this);
 
@@ -19,7 +19,7 @@ WindowScaler::WindowScaler(QWidget *parent) :
     ui->comboBox_scalerSelect->setCurrentText(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "DefaultScaler", ui->comboBox_scalerSelect->itemText(0)).toString());
 }
 
-WindowScaler::~WindowScaler()
+control_panel::output::Scaler::~Scaler()
 {
     delete ui;
 }

@@ -1,6 +1,6 @@
 <ui version="4.0">
- <class>CaptureDialog</class>
- <widget name="CaptureDialog" class="QWidget">
+ <class>control_panel::Capture</class>
+ <widget name="ControlPanel_Capture" class="QWidget">
   <property name="geometry">
    <rect>
     <x>0</x>

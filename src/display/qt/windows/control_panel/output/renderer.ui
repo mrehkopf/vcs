@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>WindowScaler</class>
- <widget class="QWidget" name="WindowScaler">
+ <class>control_panel::output::Renderer</class>
+ <widget class="QWidget" name="ControlPanel_Output_Renderer">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -29,34 +29,19 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Scaler</string>
+      <string>Renderer</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_7">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <widget class="QComboBox" name="comboBox_scalerSelect">
+       <widget class="QComboBox" name="comboBox_renderer">
         <item>
          <property name="text">
-          <string>Nearest</string>
+          <string>Software</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Linear</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Area</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Cubic</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Lanczos</string>
+          <string>OpenGL</string>
          </property>
         </item>
        </widget>

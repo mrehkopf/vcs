@@ -11,7 +11,7 @@
 #include "input_channel.h"
 #include "ui_input_channel.h"
 
-InputChannel::InputChannel(QWidget *parent) :
+control_panel::capture::InputChannel::InputChannel(QWidget *parent) :
     VCSDialogFragment(parent),
     ui(new Ui::InputChannel)
 {
@@ -34,7 +34,7 @@ InputChannel::InputChannel(QWidget *parent) :
     return;
 }
 
-InputChannel::~InputChannel()
+control_panel::capture::InputChannel::~InputChannel()
 {
     delete ui;
 

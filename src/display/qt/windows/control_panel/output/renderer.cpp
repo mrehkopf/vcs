@@ -2,12 +2,12 @@
 #include "display/display.h"
 #include "display/qt/windows/output_window.h"
 #include "display/qt/persistent_settings.h"
-#include "output_renderer.h"
-#include "ui_output_renderer.h"
+#include "renderer.h"
+#include "ui_renderer.h"
 
-WindowRenderer::WindowRenderer(QWidget *parent) :
+control_panel::output::Renderer::Renderer(QWidget *parent) :
     VCSDialogFragment(parent),
-    ui(new Ui::WindowRenderer)
+    ui(new Ui::Renderer)
 {
     ui->setupUi(this);
 
@@ -23,7 +23,7 @@ WindowRenderer::WindowRenderer(QWidget *parent) :
     ui->comboBox_renderer->setCurrentText(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "Renderer", ui->comboBox_renderer->itemText(0)).toString());
 }
 
-WindowRenderer::~WindowRenderer()
+control_panel::output::Renderer::~Renderer()
 {
     delete ui;
 }

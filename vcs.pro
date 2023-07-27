@@ -53,9 +53,9 @@ SOURCES += \
     src/display/qt/windows/control_panel/filter_graph/base_filter_graph_node.cpp \
     src/display/qt/windows/control_panel/filter_graph/output_scaler_node.cpp \
     src/display/qt/windows/control_panel/output.cpp \
-    src/display/qt/windows/control_panel/output/output_renderer.cpp \
-    src/display/qt/windows/control_panel/output/output_scaler.cpp \
-    src/display/qt/windows/control_panel/output/output_size.cpp \
+    src/display/qt/windows/control_panel/output/renderer.cpp \
+    src/display/qt/windows/control_panel/output/scaler.cpp \
+    src/display/qt/windows/control_panel/output/size.cpp \
     src/display/qt/windows/control_panel/overlay.cpp \
     src/display/qt/windows/control_panel/video_presets.cpp \
     src/display/qt/dialogs/resolution_query.cpp \
@@ -154,9 +154,9 @@ HEADERS += \
     src/display/qt/windows/control_panel/filter_graph/base_filter_graph_node.h \
     src/display/qt/windows/control_panel/filter_graph/output_scaler_node.h \
     src/display/qt/windows/control_panel/output.h \
-    src/display/qt/windows/control_panel/output/output_renderer.h \
-    src/display/qt/windows/control_panel/output/output_scaler.h \
-    src/display/qt/windows/control_panel/output/output_size.h \
+    src/display/qt/windows/control_panel/output/renderer.h \
+    src/display/qt/windows/control_panel/output/scaler.h \
+    src/display/qt/windows/control_panel/output/size.h \
     src/display/qt/windows/control_panel/overlay.h \
     src/display/qt/windows/control_panel/video_presets.h \
     src/display/qt/dialogs/resolution_query.h \
@@ -260,9 +260,9 @@ FORMS += \
     src/display/qt/windows/control_panel/capture/signal_status.ui \
     src/display/qt/windows/control_panel/filter_graph.ui \
     src/display/qt/windows/control_panel/output.ui \
-    src/display/qt/windows/control_panel/output/output_renderer.ui \
-    src/display/qt/windows/control_panel/output/output_scaler.ui \
-    src/display/qt/windows/control_panel/output/output_size.ui \
+    src/display/qt/windows/control_panel/output/renderer.ui \
+    src/display/qt/windows/control_panel/output/scaler.ui \
+    src/display/qt/windows/control_panel/output/size.ui \
     src/display/qt/windows/control_panel/overlay.ui \
     src/display/qt/windows/control_panel/video_presets.ui \
     src/display/qt/dialogs/resolution_query.ui \

@@ -3,20 +3,21 @@
 
 #include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
 
-namespace Ui {
-class AboutDialog;
-}
-
-class AboutDialog : public VCSDialogFragment
+namespace control_panel
 {
-    Q_OBJECT
+    namespace Ui { class AboutVCS; }
 
-public:
-    explicit AboutDialog(QWidget *parent = 0);
-    ~AboutDialog();
+    class AboutVCS : public VCSDialogFragment
+    {
+        Q_OBJECT
 
-private:
-    Ui::AboutDialog *ui;
-};
+    public:
+        explicit AboutVCS(QWidget *parent = 0);
+        ~AboutVCS();
+
+    private:
+        Ui::AboutVCS *ui;
+    };
+}
 
 #endif

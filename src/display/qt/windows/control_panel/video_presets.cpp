@@ -39,9 +39,9 @@ static bool CONTROLS_LIVE_UPDATE = true;
 #define PARAM_LABEL_GREEN_CONTRAST "Green contrast"
 #define PARAM_LABEL_BLUE_CONTRAST "Blue contrast"
 
-VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
+control_panel::VideoPresets::VideoPresets(QWidget *parent) :
     VCSDialogFragment(parent),
-    ui(new Ui::VideoPresetsDialog)
+    ui(new Ui::VideoPresets)
 {
     ui->setupUi(this);
 
@@ -174,7 +174,7 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
 
     // Connect the GUI controls to consequences for changing their values.
     {
-        connect(this, &VideoPresetsDialog::preset_activation_rules_changed, this, [this]
+        connect(this, &VideoPresets::preset_activation_rules_changed, this, [this]
         {
             this->update_active_preset_indicator();
         });
@@ -465,14 +465,14 @@ VideoPresetsDialog::VideoPresetsDialog(QWidget *parent) :
     return;
 }
 
-VideoPresetsDialog::~VideoPresetsDialog()
+control_panel::VideoPresets::~VideoPresets()
 {
     delete ui;
 
     return;
 }
 
-bool VideoPresetsDialog::save_video_presets_to_file(QString filename)
+bool control_panel::VideoPresets::save_video_presets_to_file(QString filename)
 {
     if (filename.isEmpty())
     {
@@ -494,7 +494,7 @@ bool VideoPresetsDialog::save_video_presets_to_file(QString filename)
     return false;
 }
 
-bool VideoPresetsDialog::load_presets_from_file(const QString &filename)
+bool control_panel::VideoPresets::load_presets_from_file(const QString &filename)
 {
     if (filename.isEmpty())
     {
@@ -515,7 +515,7 @@ bool VideoPresetsDialog::load_presets_from_file(const QString &filename)
     return true;
 }
 
-void VideoPresetsDialog::update_active_preset_indicator(void)
+void control_panel::VideoPresets::update_active_preset_indicator(void)
 {
     const auto *selectedPreset = ui->comboBox_presetList->current_preset();
 
@@ -540,7 +540,7 @@ void VideoPresetsDialog::update_active_preset_indicator(void)
     return;
 }
 
-void VideoPresetsDialog::assign_presets(const std::vector<video_preset_s*> &presets)
+void control_panel::VideoPresets::assign_presets(const std::vector<video_preset_s*> &presets)
 {
     ui->comboBox_presetList->clear();
 
@@ -558,7 +558,7 @@ void VideoPresetsDialog::assign_presets(const std::vector<video_preset_s*> &pres
     return;
 }
 
-void VideoPresetsDialog::broadcast_current_preset_parameters(void)
+void control_panel::VideoPresets::broadcast_current_preset_parameters(void)
 {
     auto *const preset = ui->comboBox_presetList->current_preset();
 
@@ -586,7 +586,7 @@ void VideoPresetsDialog::broadcast_current_preset_parameters(void)
     return;
 }
 
-void VideoPresetsDialog::update_preset_control_ranges(void)
+void control_panel::VideoPresets::update_preset_control_ranges(void)
 {
     video_signal_parameters_s currentParams = {};
 
@@ -649,7 +649,7 @@ void VideoPresetsDialog::update_preset_control_ranges(void)
     return;
 }
 
-void VideoPresetsDialog::update_preset_controls_with_current_preset_data(void)
+void control_panel::VideoPresets::update_preset_controls_with_current_preset_data(void)
 {
     auto *const preset = ui->comboBox_presetList->current_preset();
 

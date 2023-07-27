@@ -24,9 +24,9 @@
 #include "common/disk/disk.h"
 #include "ui_filter_graph.h"
 
-FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
+control_panel::FilterGraph::FilterGraph(QWidget *parent) :
     VCSDialogFragment(parent),
-    ui(new Ui::FilterGraphDialog)
+    ui(new Ui::FilterGraph)
 {
     ui->setupUi(this);
 
@@ -317,14 +317,14 @@ FilterGraphDialog::FilterGraphDialog(QWidget *parent) :
     return;
 }
 
-FilterGraphDialog::~FilterGraphDialog()
+control_panel::FilterGraph::~FilterGraph()
 {
     delete ui;
 
     return;
 }
 
-void FilterGraphDialog::reset_graph(const bool autoAccept)
+void control_panel::FilterGraph::reset_graph(const bool autoAccept)
 {
     if (autoAccept ||
         QMessageBox::question(this,
@@ -337,7 +337,7 @@ void FilterGraphDialog::reset_graph(const bool autoAccept)
     return;
 }
 
-bool FilterGraphDialog::load_graph_from_file(const QString &filename)
+bool control_panel::FilterGraph::load_graph_from_file(const QString &filename)
 {
     if (filename.isEmpty())
     {
@@ -398,7 +398,7 @@ bool FilterGraphDialog::load_graph_from_file(const QString &filename)
     }
 }
 
-void FilterGraphDialog::save_graph_into_file(QString filename)
+void control_panel::FilterGraph::save_graph_into_file(QString filename)
 {
     if (filename.isEmpty())
     {
@@ -433,10 +433,11 @@ void FilterGraphDialog::save_graph_into_file(QString filename)
 
 // Adds a new instance of the given filter type into the node graph. Returns a
 // pointer to the new node.
-BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(
+BaseFilterGraphNode* control_panel::FilterGraph::add_filter_graph_node(
     const std::string &filterTypeUuid,
     const filter_params_t &initialParamValues
-){
+)
+{
     abstract_filter_c *const filter = kf_create_filter_instance(filterTypeUuid, initialParamValues);
     k_assert(filter, "Failed to create a new filter node.");
 
@@ -537,7 +538,7 @@ BaseFilterGraphNode* FilterGraphDialog::add_filter_graph_node(
 // filters that run from an input gate through one or more filters into an output
 // gate. The chains will then be submitted to the filter handler for use in applying
 // the filters to captured frames.
-void FilterGraphDialog::recalculate_filter_chains(void)
+void control_panel::FilterGraph::recalculate_filter_chains(void)
 {
     kf_unregister_all_filter_chains();
 
@@ -588,7 +589,7 @@ void FilterGraphDialog::recalculate_filter_chains(void)
     return;
 }
 
-void FilterGraphDialog::clear_filter_graph(void)
+void control_panel::FilterGraph::clear_filter_graph(void)
 {
     kf_unregister_all_filter_chains();
     this->graphicsScene->reset_scene();
@@ -598,7 +599,7 @@ void FilterGraphDialog::clear_filter_graph(void)
     return;
 }
 
-void FilterGraphDialog::refresh_filter_graph(void)
+void control_panel::FilterGraph::refresh_filter_graph(void)
 {
     this->graphicsScene->update_scene_connections();
 

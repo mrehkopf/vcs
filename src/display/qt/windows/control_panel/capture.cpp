@@ -6,9 +6,9 @@
 #include "capture.h"
 #include "ui_capture.h"
 
-CaptureDialog::CaptureDialog(QWidget *parent) :
+control_panel::Capture::Capture(QWidget *parent) :
     VCSDialogFragment(parent),
-    ui(new Ui::CaptureDialog)
+    ui(new Ui::Capture)
 {
     ui->setupUi(this);
 
@@ -16,9 +16,9 @@ CaptureDialog::CaptureDialog(QWidget *parent) :
     layout->setSpacing(9);
     layout->setMargin(9);
 
-    this->inputChannel = new InputChannel(parent);
-    this->signalStatus = new SignalStatus(parent);
-    this->inputResolution = new InputResolution(parent);
+    this->inputChannel = new control_panel::capture::InputChannel(parent);
+    this->signalStatus = new control_panel::capture::SignalStatus(parent);
+    this->inputResolution = new control_panel::capture::InputResolution(parent);
 
     // Compose the dialog's layout.
     {
@@ -47,7 +47,7 @@ CaptureDialog::CaptureDialog(QWidget *parent) :
     layout->addItem(new QSpacerItem(0, 9999999, QSizePolicy::Fixed, QSizePolicy::Expanding));
 }
 
-CaptureDialog::~CaptureDialog()
+control_panel::Capture::~Capture()
 {
     delete ui;
 }

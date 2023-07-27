@@ -11,30 +11,28 @@
 #include "capture/capture.h"
 #include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
 
-class QMenu;
-class QMenuBar;
-
-namespace Ui {
-class OverlayDialog;
-}
-
-class OverlayDialog : public VCSDialogFragment
+namespace control_panel
 {
-    Q_OBJECT
+    namespace Ui { class Overlay; }
 
-public:
-    explicit OverlayDialog(QWidget *parent = 0);
-    ~OverlayDialog();
+    class Overlay : public VCSDialogFragment
+    {
+        Q_OBJECT
 
-    QImage rendered(void);
+    public:
+        explicit Overlay(QWidget *parent = 0);
+        ~Overlay();
 
-    void set_overlay_max_width(const uint width);
+        QImage rendered(void);
 
-private:
-    Ui::OverlayDialog *ui;
+        void set_overlay_max_width(const uint width);
 
-    // Used to render the overlay's HTML into an image.
-    QTextDocument overlayDocument;
-};
+    private:
+        Ui::Overlay *ui;
+
+        // Used to render the overlay's HTML into an image.
+        QTextDocument overlayDocument;
+    };
+}
 
 #endif

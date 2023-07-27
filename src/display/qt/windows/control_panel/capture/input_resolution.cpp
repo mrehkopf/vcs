@@ -12,7 +12,7 @@
 #include "input_resolution.h"
 #include "ui_input_resolution.h"
 
-InputResolution::InputResolution(QWidget *parent) :
+control_panel::capture::InputResolution::InputResolution(QWidget *parent) :
     VCSDialogFragment(parent),
     ui(new Ui::InputResolution)
 {
@@ -75,14 +75,14 @@ InputResolution::InputResolution(QWidget *parent) :
     return;
 }
 
-InputResolution::~InputResolution(void)
+control_panel::capture::InputResolution::~InputResolution(void)
 {
     delete ui;
 
     return;
 }
 
-void InputResolution::update_button_text(QPushButton *const button)
+void control_panel::capture::InputResolution::update_button_text(QPushButton *const button)
 {
     const QSize buttonResolution = button->property("resolution").toSize();
 
@@ -94,7 +94,7 @@ void InputResolution::update_button_text(QPushButton *const button)
     return;
 }
 
-void InputResolution::activate_resolution_button(const uint buttonIdx)
+void control_panel::capture::InputResolution::activate_resolution_button(const uint buttonIdx)
 {
     for (int i = 0; i < ui->frame_inputForceButtons->layout()->count(); i++)
     {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>WindowOptionsDialog</class>
- <widget class="QWidget" name="WindowOptionsDialog">
+ <class>control_panel::Output</class>
+ <widget class="QWidget" name="ControlPanel_Output">
   <property name="geometry">
    <rect>
     <x>0</x>

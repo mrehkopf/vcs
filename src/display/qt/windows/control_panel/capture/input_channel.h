@@ -10,20 +10,21 @@
 
 #include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
 
-namespace Ui {
-class InputChannel;
-}
-
-class InputChannel : public VCSDialogFragment
+namespace control_panel::capture
 {
-    Q_OBJECT
+    namespace Ui { class InputChannel; }
 
-public:
-    explicit InputChannel(QWidget *parent = nullptr);
-    ~InputChannel();
+    class InputChannel : public VCSDialogFragment
+    {
+        Q_OBJECT
 
-private:
-    Ui::InputChannel *ui;
-};
+    public:
+        explicit InputChannel(QWidget *parent = nullptr);
+        ~InputChannel();
+
+    private:
+        Ui::InputChannel *ui;
+    };
+}
 
 #endif

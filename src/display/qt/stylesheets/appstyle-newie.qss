@@ -11,7 +11,7 @@
 
 QDialog,
 VCSDialogFragment,
-ControlPanelWindow
+ControlPanel
 {
     background-color: #303030;
     border: none;
@@ -97,8 +97,8 @@ QGroupBox > PropertyTable
     padding: 0;
 }
 
-OverlayDialog QPlainTextEdit,
-OverlayDialog QGroupBox
+VCSDialogFragment[objectName="ControlPanel_Overlay"] QPlainTextEdit,
+VCSDialogFragment[objectName="ControlPanel_Overlay"] QGroupBox
 {
     margin: 0;
     padding: 0;
@@ -106,7 +106,7 @@ OverlayDialog QGroupBox
     border-radius: 0;
 }
 
-OverlayDialog QPlainTextEdit
+VCSDialogFragment[objectName="ControlPanel_Overlay"] QPlainTextEdit
 {
     background-color: #303030;
     color: #d9d9d9;
@@ -114,7 +114,7 @@ OverlayDialog QPlainTextEdit
     selection-background-color: #808080;
 }
 
-VideoPresetsDialog QLabel[objectName="label_isPresetCurrentlyActive"]
+VCSDialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"]
 {
     margin: 0;
     padding: 0;
@@ -122,17 +122,17 @@ VideoPresetsDialog QLabel[objectName="label_isPresetCurrentlyActive"]
     margin-left: 0.25em;
 }
 
-VideoPresetsDialog QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
+VCSDialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
 {
     image: url(:/res/images/icons/newie/preset_disabled.svg);
 }
 
-VideoPresetsDialog QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="active"]
+VCSDialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="active"]
 {
     image: url(:/res/images/icons/newie/preset_active.svg);
 }
 
-VideoPresetsDialog QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="inactive"]
+VCSDialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="inactive"]
 {
     image: url(:/res/images/icons/newie/preset_inactive.svg);
 }
@@ -270,12 +270,6 @@ QTreeWidget QAbstractItemView
     background-color: transparent;
     margin: 0;
     padding: 0;
-}
-
-AliasDialog QGroupBox > QFrame
-{
-    padding: 0;
-    border-radius: 2px;
 }
 
 QTreeWidget QHeaderView
@@ -811,17 +805,17 @@ QPushButton:flat
     border: none;
 }
 
-ControlPanelWindow QFrame[objectName="contentContainer"]
+ControlPanel QFrame[objectName="contentContainer"]
 {
     background-color: #303030;
 }
 
-ControlPanelWindow QFrame[objectName="buttonsContainer"]
+ControlPanel QFrame[objectName="buttonsContainer"]
 {
     background-color: #202020;
 }
 
-ControlPanelWindow QFrame[objectName="buttonsContainer"] QPushButton
+ControlPanel QFrame[objectName="buttonsContainer"] QPushButton
 {
     min-height: 45px;
     border-radius: 0;
@@ -831,52 +825,52 @@ ControlPanelWindow QFrame[objectName="buttonsContainer"] QPushButton
     color: #808080;
 }
 
-ControlPanelWindow QFrame[objectName="buttonsContainer"] QPushButton:hover
+ControlPanel QFrame[objectName="buttonsContainer"] QPushButton:hover
 {
     color: #d5d5d5;
     background-color: transparent;
 }
 
-ControlPanelWindow QFrame[objectName="buttonsContainer"] QPushButton[isSelected="true"]
+ControlPanel QFrame[objectName="buttonsContainer"] QPushButton[isSelected="true"]
 {
     background-color: #303030;
     color: #f5f5f5;
 }
 
-InputResolution QPushButton
+VCSDialogFragment[objectName="ControlPanel_Capture_InputResolution"] QPushButton
 {
     min-height: 2.7em;
 }
 
-VideoPresetsDialog QPushButton:!flat
+VCSDialogFragment[objectName="ControlPanel_VideoPresets"] QPushButton:!flat
 {
     min-width: 1.5em;
 }
 
-VideoPresetsDialog QPushButton:flat
+VCSDialogFragment[objectName="ControlPanel_VideoPresets"] QPushButton:flat
 {
     width: 0.5em;
     min-width: 0.5em;
     max-width: 0.5em;
 }
 
-VideoPresetsDialog ParameterGrid QSpinBox
+VCSDialogFragment[objectName="ControlPanel_VideoPresets"] ParameterGrid QSpinBox
 {
     min-width: 3em;
 }
 
-VideoPresetsDialog ParameterGrid QPushButton
+VCSDialogFragment[objectName="ControlPanel_VideoPresets"] ParameterGrid QPushButton
 {
     min-width: 2em;
 }
 
-VideoPresetsDialog QGroupBox[objectName="groupBox_activation"] QPushButton
+VCSDialogFragment[objectName="ControlPanel_VideoPresets"] QGroupBox[objectName="groupBox_activation"] QPushButton
 {
     min-width: 1em;
     max-width: 1em;
 }
 
-VideoPresetsDialog QPushButton:flat
+VCSDialogFragment[objectName="ControlPanel_VideoPresets"] QPushButton:flat
 {
     width: 0.5em;
     min-width: 0.5em;

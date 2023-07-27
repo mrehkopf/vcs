@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>InputResolution</class>
- <widget class="QWidget" name="InputResolution">
+ <class>control_panel::capture::InputResolution</class>
+ <widget class="QWidget" name="ControlPanel_Capture_InputResolution">
   <property name="geometry">
    <rect>
     <x>0</x>

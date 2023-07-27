@@ -26,7 +26,7 @@
 // Used to keep track of how long we've had a particular video mode set.
 static QTimer INFO_UPDATE_TIMER;
 
-SignalStatus::SignalStatus(QWidget *parent) :
+control_panel::capture::SignalStatus::SignalStatus(QWidget *parent) :
     VCSDialogFragment(parent),
     ui(new Ui::SignalStatus)
 {
@@ -83,7 +83,7 @@ SignalStatus::SignalStatus(QWidget *parent) :
     return;
 }
 
-SignalStatus::~SignalStatus(void)
+control_panel::capture::SignalStatus::~SignalStatus(void)
 {
     delete ui;
     ui = nullptr;
@@ -91,14 +91,14 @@ SignalStatus::~SignalStatus(void)
     return;
 }
 
-void SignalStatus::set_controls_enabled(const bool state)
+void control_panel::capture::SignalStatus::set_controls_enabled(const bool state)
 {
     update_information_table(state);
 
     return;
 }
 
-void SignalStatus::update_information_table(const bool isReceivingSignal)
+void control_panel::capture::SignalStatus::update_information_table(const bool isReceivingSignal)
 {
     if (isReceivingSignal)
     {

@@ -1,14 +1,14 @@
 #include <QVBoxLayout>
-#include "display/qt/windows/control_panel/output/output_renderer.h"
-#include "display/qt/windows/control_panel/output/output_scaler.h"
-#include "display/qt/windows/control_panel/output/output_size.h"
+#include "display/qt/windows/control_panel/output/renderer.h"
+#include "display/qt/windows/control_panel/output/scaler.h"
+#include "display/qt/windows/control_panel/output/size.h"
 #include "display/qt/windows/output_window.h"
 #include "output.h"
 #include "ui_output.h"
 
-WindowOptionsDialog::WindowOptionsDialog(QWidget *parent) :
+control_panel::Output::Output(QWidget *parent) :
     VCSDialogFragment(parent),
-    ui(new Ui::WindowOptionsDialog)
+    ui(new Ui::Output)
 {
     ui->setupUi(this);
 
@@ -18,19 +18,19 @@ WindowOptionsDialog::WindowOptionsDialog(QWidget *parent) :
     layout->setSpacing(9);
     layout->setMargin(9);
 
-    this->windowSize = new WindowSize(parent);
-    this->windowScaler = new WindowScaler(parent);
-    this->windowRenderer = new WindowRenderer(parent);
+    this->sizeDialog = new control_panel::output::Size(parent);
+    this->scalerDialog = new control_panel::output::Scaler(parent);
+    this->rendererDialog = new control_panel::output::Renderer(parent);
 
-    layout->addWidget(this->windowSize);
-    layout->addWidget(this->windowScaler);
-    layout->addWidget(this->windowRenderer);
+    layout->addWidget(this->sizeDialog);
+    layout->addWidget(this->scalerDialog);
+    layout->addWidget(this->rendererDialog);
 
     // Push out empty space from the dialogs.
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Fixed, QSizePolicy::Expanding));
 }
 
-WindowOptionsDialog::~WindowOptionsDialog()
+control_panel::Output::~Output()
 {
     delete ui;
 }

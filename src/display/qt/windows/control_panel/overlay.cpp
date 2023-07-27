@@ -22,9 +22,9 @@
 #include "display/display.h"
 #include "ui_overlay.h"
 
-OverlayDialog::OverlayDialog(QWidget *parent) :
+control_panel::Overlay::Overlay(QWidget *parent) :
     VCSDialogFragment(parent),
-    ui(new Ui::OverlayDialog)
+    ui(new Ui::Overlay)
 {
     overlayDocument.setDefaultFont(QGuiApplication::font());
     overlayDocument.setDocumentMargin(0);
@@ -184,7 +184,7 @@ OverlayDialog::OverlayDialog(QWidget *parent) :
     return;
 }
 
-OverlayDialog::~OverlayDialog()
+control_panel::Overlay::~Overlay()
 {
     delete ui;
     ui = nullptr;
@@ -192,7 +192,7 @@ OverlayDialog::~OverlayDialog()
     return;
 }
 
-void OverlayDialog::set_overlay_max_width(const uint width)
+void control_panel::Overlay::set_overlay_max_width(const uint width)
 {
     overlayDocument.setTextWidth(width);
 
@@ -200,7 +200,7 @@ void OverlayDialog::set_overlay_max_width(const uint width)
 }
 
 // Renders the overlay into a QImage, and returns the image.
-QImage OverlayDialog::rendered(void)
+QImage control_panel::Overlay::rendered(void)
 {
     const auto outRes = ks_output_resolution();
 

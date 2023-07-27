@@ -13,7 +13,7 @@
 #include <functional>
 #include "common/types.h"
 
-class OverlayDialog;
+class Overlay;
 
 class OGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_1_2
 {

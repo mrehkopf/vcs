@@ -7,58 +7,59 @@
 
 struct video_preset_s;
 
-namespace Ui {
-class VideoPresetsDialog;
-}
-
-class VideoPresetsDialog : public VCSDialogFragment
+namespace control_panel
 {
-    Q_OBJECT
+    namespace Ui { class VideoPresets; }
 
-public:
-    explicit VideoPresetsDialog(QWidget *parent = 0);
-    ~VideoPresetsDialog();
+    class VideoPresets : public VCSDialogFragment
+    {
+        Q_OBJECT
 
-    // Called to inform the dialog of a new source file for video presets.
-    void assign_presets(const std::vector<video_preset_s*> &presets);
+    public:
+        explicit VideoPresets(QWidget *parent = 0);
+        ~VideoPresets();
 
-    // Attempts to load the presets stored in the given file. Returns true on
-    // success; false otherwise.
-    bool load_presets_from_file(const QString &filename);
+        // Called to inform the dialog of a new source file for video presets.
+        void assign_presets(const std::vector<video_preset_s*> &presets);
 
-    bool save_video_presets_to_file(QString filename);
+        // Attempts to load the presets stored in the given file. Returns true on
+        // success; false otherwise.
+        bool load_presets_from_file(const QString &filename);
 
-signals:
-    // Emitted when the last item in the preset list is removed.
-    void preset_list_became_empty(void);
+        bool save_video_presets_to_file(QString filename);
 
-    // Emitted when the user makes changest
-    void preset_activation_rules_changed(const video_preset_s *const preset);
+    signals:
+        // Emitted when the last item in the preset list is removed.
+        void preset_list_became_empty(void);
 
-    // Emitted when an item is added to an empty preset list.
-    void preset_list_no_longer_empty(void);
+        // Emitted when the user makes changest
+        void preset_activation_rules_changed(const video_preset_s *const preset);
 
-    // Emitted when the user has requested that a different preset be shown in
-    // the GUI.
-    void preset_change_requested(const unsigned newPresetId);
+        // Emitted when an item is added to an empty preset list.
+        void preset_list_no_longer_empty(void);
 
-    // Emitted when presets are loaded from or saved to a file.
-    void new_presets_source_file(const QString &filename);
+        // Emitted when the user has requested that a different preset be shown in
+        // the GUI.
+        void preset_change_requested(const unsigned newPresetId);
 
-private:
-    void update_preset_control_ranges(void);
+        // Emitted when presets are loaded from or saved to a file.
+        void new_presets_source_file(const QString &filename);
 
-    void update_preset_controls_with_current_preset_data(void);
+    private:
+        void update_preset_control_ranges(void);
 
-    QString make_preset_list_text(const video_preset_s *const preset);
+        void update_preset_controls_with_current_preset_data(void);
 
-    void broadcast_current_preset_parameters(void);
+        QString make_preset_list_text(const video_preset_s *const preset);
 
-    void resort_preset_list(void);
+        void broadcast_current_preset_parameters(void);
 
-    void update_active_preset_indicator(void);
+        void resort_preset_list(void);
 
-    Ui::VideoPresetsDialog *ui;
-};
+        void update_active_preset_indicator(void);
+
+        Ui::VideoPresets *ui;
+    };
+}
 
 #endif

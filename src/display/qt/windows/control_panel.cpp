@@ -11,21 +11,21 @@
 #include "control_panel.h"
 #include "ui_control_panel.h"
 
-ControlPanelWindow::ControlPanelWindow(OutputWindow *parent) :
+ControlPanel::ControlPanel(OutputWindow *parent) :
     QWidget(parent),
-    ui(new Ui::ControlPanelWindow)
+    ui(new Ui::ControlPanel)
 {
     ui->setupUi(this);
 
     this->setWindowTitle("Control panel - VCS");
     this->setWindowFlags(Qt::Window);
 
-    this->captureDialog = new CaptureDialog(this);
-    this->windowOptionsDialog = new WindowOptionsDialog(this);
-    this->filterGraphDialog = new FilterGraphDialog(this);
-    this->videoPresetsDialog = new VideoPresetsDialog(this);
-    this->overlayDialog = new OverlayDialog(this);
-    this->aboutDialog = new AboutDialog(this);
+    this->captureDialog = new control_panel::Capture(this);
+    this->outputDialog = new control_panel::Output(this);
+    this->filterGraphDialog = new control_panel::FilterGraph(this);
+    this->videoPresetsDialog = new control_panel::VideoPresets(this);
+    this->overlayDialog = new control_panel::Overlay(this);
+    this->aboutDialog = new control_panel::AboutVCS(this);
 
     // Populate the side navi.
     {
@@ -55,7 +55,7 @@ ControlPanelWindow::ControlPanelWindow(OutputWindow *parent) :
         };
 
         auto *const defaultButton = add_navi_button("Capture", this->captureDialog);
-        add_navi_button("Output", this->windowOptionsDialog);
+        add_navi_button("Output", this->outputDialog);
         add_navi_button("Filter graph", this->filterGraphDialog);
         add_navi_button("Video presets", this->videoPresetsDialog);
         add_navi_button("Overlay", this->overlayDialog);
@@ -68,7 +68,7 @@ ControlPanelWindow::ControlPanelWindow(OutputWindow *parent) :
     }
 }
 
-ControlPanelWindow::~ControlPanelWindow()
+ControlPanel::~ControlPanel()
 {
     delete ui;
 }

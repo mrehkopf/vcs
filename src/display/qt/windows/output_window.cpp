@@ -31,7 +31,7 @@
 #include "display/qt/subclasses/QLabel_magnifying_glass.h"
 #include "display/qt/subclasses/QOpenGLWidget_opengl_renderer.h"
 #include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
-#include "display/qt/windows/control_panel/output/output_size.h"
+#include "display/qt/windows/control_panel/output/size.h"
 #include "display/qt/windows/control_panel/capture/input_resolution.h"
 #include "display/qt/windows/control_panel.h"
 #include "display/qt/windows/control_panel/output.h"
@@ -71,7 +71,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
     mainLayout->setSpacing(0);
 
     this->magnifyingGlass = new MagnifyingGlass(this);
-    this->controlPanelWindow = new ControlPanelWindow(this);
+    this->controlPanelWindow = new ControlPanel(this);
 
     // Restore persistent settings.
     {
@@ -536,7 +536,7 @@ void OutputWindow::wheelEvent(QWheelEvent *event)
 {
     // Adjust the size of the capture window with the mouse scroll wheel.
     const int dir = (event->angleDelta().y() < 0)? 1 : -1;
-    this->control_panel()->window_options()->window_size()->adjust_output_scaling(dir);
+    this->control_panel()->output()->size()->adjust_output_scaling(dir);
 
     return;
 }

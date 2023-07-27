@@ -9,52 +9,53 @@ class BaseFilterGraphNode;
 class QMenuBar;
 class QMenu;
 
-namespace Ui {
-class FilterGraphDialog;
-}
-
-class FilterGraphDialog : public VCSDialogFragment
+namespace control_panel
 {
-    Q_OBJECT
+    namespace Ui { class FilterGraph; }
 
-public:
-    explicit FilterGraphDialog(QWidget *parent = 0);
-    ~FilterGraphDialog();
+    class FilterGraph : public VCSDialogFragment
+    {
+        Q_OBJECT
 
-    void recalculate_filter_chains(void);
+    public:
+        explicit FilterGraph(QWidget *parent = 0);
+        ~FilterGraph();
 
-    void clear_filter_graph(void);
+        void recalculate_filter_chains(void);
 
-    void refresh_filter_graph(void);
+        void clear_filter_graph(void);
 
-    // Loads the filter graph from the most recent used graph file. Returns true
-    // if the graph was loaded; false otherwise.
-    bool restore_persistent_graph(void);
+        void refresh_filter_graph(void);
 
-    bool load_graph_from_file(const QString &filename);
+        // Loads the filter graph from the most recent used graph file. Returns true
+        // if the graph was loaded; false otherwise.
+        bool restore_persistent_graph(void);
 
-private:
-    BaseFilterGraphNode* add_filter_graph_node(
-        const std::string &filterTypeUuid,
-        const filter_params_t &initialParamValues = {}
-    );
+        bool load_graph_from_file(const QString &filename);
 
-    void reset_graph(const bool autoAccept = false);
+    private:
+        BaseFilterGraphNode* add_filter_graph_node(
+            const std::string &filterTypeUuid,
+            const filter_params_t &initialParamValues = {}
+        );
 
-    void save_graph_into_file(QString filename);
+        void reset_graph(const bool autoAccept = false);
 
-    Ui::FilterGraphDialog *ui;
+        void save_graph_into_file(QString filename);
 
-    InteractibleNodeGraph *graphicsScene = nullptr;
+        Ui::FilterGraph *ui;
 
-    // Contains actions corresponding to all the filters that can be added to the
-    // filter graph.
-    QMenu *filtersMenu = nullptr;
+        InteractibleNodeGraph *graphicsScene = nullptr;
 
-    // All the nodes that are currently in the graph.
-    std::vector<BaseFilterGraphNode*> inputGateNodes;
+        // Contains actions corresponding to all the filters that can be added to the
+        // filter graph.
+        QMenu *filtersMenu = nullptr;
 
-    unsigned numNodesAdded = 0;
-};
+        // All the nodes that are currently in the graph.
+        std::vector<BaseFilterGraphNode*> inputGateNodes;
+
+        unsigned numNodesAdded = 0;
+    };
+}
 
 #endif

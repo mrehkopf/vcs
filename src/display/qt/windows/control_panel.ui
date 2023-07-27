@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ControlPanelWindow</class>
- <widget class="QWidget" name="ControlPanelWindow">
+ <class>ControlPanel</class>
+ <widget class="QWidget" name="ControlPanel">
   <property name="geometry">
    <rect>
     <x>0</x>
