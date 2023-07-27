@@ -7,7 +7,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_COMPONENTS_CAPTURE_DIALOG_SIGNAL_STATUS_H
 #define VCS_DISPLAY_QT_DIALOGS_COMPONENTS_CAPTURE_DIALOG_SIGNAL_STATUS_H
 
-#include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
+#include "display/qt/widgets/QDialog_vcs_dialog_fragment.h"
 
 class QMenuBar;
 

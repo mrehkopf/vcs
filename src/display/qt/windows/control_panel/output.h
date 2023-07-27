@@ -1,7 +1,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_WINDOW_OPTIONS_DIALOGH
 #define VCS_DISPLAY_QT_DIALOGS_WINDOW_OPTIONS_DIALOGH
 
-#include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
+#include "display/qt/widgets/QDialog_vcs_dialog_fragment.h"
 
 namespace control_panel::output
 {

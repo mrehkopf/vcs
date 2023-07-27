@@ -6,9 +6,9 @@
 #include <QDebug>
 #include <functional>
 #include <cstring>
-#include "display/qt/subclasses/QComboBox_video_preset_list.h"
-#include "display/qt/subclasses/QGroupBox_parameter_grid.h"
-#include "display/qt/subclasses/QMenu_dialog_file_menu.h"
+#include "display/qt/widgets/QComboBox_video_preset_list.h"
+#include "display/qt/widgets/QGroupBox_parameter_grid.h"
+#include "display/qt/widgets/QMenu_dialog_file_menu.h"
 #include "display/qt/windows/control_panel/video_presets.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"

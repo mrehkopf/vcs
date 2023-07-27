@@ -3,7 +3,7 @@
 
 #include <deque>
 #include "filter/filter.h"
-#include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
+#include "display/qt/widgets/QDialog_vcs_dialog_fragment.h"
 
 struct video_preset_s;
 

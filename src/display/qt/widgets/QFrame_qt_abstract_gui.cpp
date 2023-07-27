@@ -14,7 +14,7 @@
 #include <QWidget>
 #include <QFrame>
 #include <QLabel>
-#include "display/qt/subclasses/QFrame_qt_abstract_gui.h"
+#include "display/qt/widgets/QFrame_qt_abstract_gui.h"
 #include "filter/filter.h"
 #include "filter/abstract_filter.h"
 

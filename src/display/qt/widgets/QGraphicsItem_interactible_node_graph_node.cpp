@@ -13,8 +13,8 @@
 
 #include <QApplication>
 #include <cmath>
-#include "display/qt/subclasses/QGraphicsItem_interactible_node_graph_node.h"
-#include "display/qt/subclasses/QGraphicsScene_interactible_node_graph.h"
+#include "display/qt/widgets/QGraphicsItem_interactible_node_graph_node.h"
+#include "display/qt/widgets/QGraphicsScene_interactible_node_graph.h"
 
 // Returns a pointer to the first edge on this node that is intersected by the given
 // point; or nullptr if such an edge cannot be found.

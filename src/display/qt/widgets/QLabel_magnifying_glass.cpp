@@ -7,7 +7,7 @@
 
 #include <QImage>
 #include <QPoint>
-#include "display/qt/subclasses/QLabel_magnifying_glass.h"
+#include "display/qt/widgets/QLabel_magnifying_glass.h"
 
 MagnifyingGlass::MagnifyingGlass(QWidget *parent) :
     QLabel(parent)

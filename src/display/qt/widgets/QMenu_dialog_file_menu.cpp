@@ -9,7 +9,7 @@
 #include <QStyle>
 #include <QFileInfo>
 #include <QMessageBox>
-#include "display/qt/subclasses/QMenu_dialog_file_menu.h"
+#include "display/qt/widgets/QMenu_dialog_file_menu.h"
 #include "common/globals.h"
 #include "common/assert.h"
 

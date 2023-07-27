@@ -1,7 +1,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_COMPONENTS_WINDOW_OPTIONS_DIALOG_WINDOW_SIZE_H
 #define VCS_DISPLAY_QT_DIALOGS_COMPONENTS_WINDOW_OPTIONS_DIALOG_WINDOW_SIZE_H
 
-#include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
+#include "display/qt/widgets/QDialog_vcs_dialog_fragment.h"
 
 namespace control_panel::output
 {

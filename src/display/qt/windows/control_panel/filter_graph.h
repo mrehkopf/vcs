@@ -1,7 +1,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_FILTER_GRAPH_DIALOG_H
 #define VCS_DISPLAY_QT_DIALOGS_FILTER_GRAPH_DIALOG_H
 
-#include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
+#include "display/qt/widgets/QDialog_vcs_dialog_fragment.h"
 #include "filter/filter.h"
 
 class InteractibleNodeGraph;
