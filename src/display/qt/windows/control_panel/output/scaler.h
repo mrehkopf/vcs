@@ -7,7 +7,7 @@ namespace control_panel::output
 {
     namespace Ui { class Scaler; }
 
-    class Scaler : public VCSDialogFragment
+    class Scaler : public DialogFragment
     {
         Q_OBJECT
 

@@ -6,7 +6,7 @@
 #include "ui_renderer.h"
 
 control_panel::output::Renderer::Renderer(QWidget *parent) :
-    VCSDialogFragment(parent),
+    DialogFragment(parent),
     ui(new Ui::Renderer)
 {
     ui->setupUi(this);

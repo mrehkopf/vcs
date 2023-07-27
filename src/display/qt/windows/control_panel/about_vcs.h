@@ -7,7 +7,7 @@ namespace control_panel
 {
     namespace Ui { class AboutVCS; }
 
-    class AboutVCS : public VCSDialogFragment
+    class AboutVCS : public DialogFragment
     {
         Q_OBJECT
 

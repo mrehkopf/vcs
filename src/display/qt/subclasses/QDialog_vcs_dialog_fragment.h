@@ -14,14 +14,14 @@ class QMenuBar;
 
 // A dialog-like widget that isn't a full standalone dialog but is used to build
 // a subset of a dialogue.
-class VCSDialogFragment : public QWidget
+class DialogFragment : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit VCSDialogFragment(QWidget *parent = 0);
+    explicit DialogFragment(QWidget *parent = 0);
 
-    virtual ~VCSDialogFragment(void);
+    virtual ~DialogFragment(void);
 
     bool is_enabled(void) const;
 

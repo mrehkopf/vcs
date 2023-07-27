@@ -31,7 +31,7 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
     {
         QVBoxLayout *const layout = dynamic_cast<QVBoxLayout*>(ui->buttonsContainer->layout());
 
-        const auto add_navi_button = [this, layout](const QString &label, VCSDialogFragment *const dialog)->QPushButton*
+        const auto add_navi_button = [this, layout](const QString &label, DialogFragment *const dialog)->QPushButton*
         {
             auto *const naviButton = new QPushButton(label);
             naviButton->setFlat(true);

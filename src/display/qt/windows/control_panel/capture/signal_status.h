@@ -19,7 +19,7 @@ namespace control_panel::capture
 {
     namespace Ui { class SignalStatus; }
 
-    class SignalStatus : public VCSDialogFragment
+    class SignalStatus : public DialogFragment
     {
         Q_OBJECT
 

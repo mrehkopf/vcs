@@ -7,7 +7,7 @@
 #include "ui_size.h"
 
 control_panel::output::Size::Size(QWidget *parent) :
-    VCSDialogFragment(parent),
+    DialogFragment(parent),
     ui(new Ui::Size)
 {
     ui->setupUi(this);

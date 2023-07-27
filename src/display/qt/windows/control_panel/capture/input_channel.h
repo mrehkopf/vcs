@@ -14,7 +14,7 @@ namespace control_panel::capture
 {
     namespace Ui { class InputChannel; }
 
-    class InputChannel : public VCSDialogFragment
+    class InputChannel : public DialogFragment
     {
         Q_OBJECT
 

@@ -23,7 +23,7 @@
 #include "ui_overlay.h"
 
 control_panel::Overlay::Overlay(QWidget *parent) :
-    VCSDialogFragment(parent),
+    DialogFragment(parent),
     ui(new Ui::Overlay)
 {
     overlayDocument.setDefaultFont(QGuiApplication::font());
@@ -42,7 +42,7 @@ control_panel::Overlay::Overlay(QWidget *parent) :
             kpers_set_value(INI_GROUP_OVERLAY, "Content", this->ui->plainTextEdit->toPlainText());
         });
 
-        connect(this, &VCSDialogFragment::enabled_state_set, this, [](const bool isEnabled)
+        connect(this, &DialogFragment::enabled_state_set, this, [](const bool isEnabled)
         {
             kpers_set_value(INI_GROUP_OVERLAY, "Enabled", isEnabled);
         });
@@ -57,7 +57,7 @@ control_panel::Overlay::Overlay(QWidget *parent) :
         {
             enable->setChecked(this->is_enabled());
 
-            connect(this, &VCSDialogFragment::enabled_state_set, this, [enable](const bool isEnabled)
+            connect(this, &DialogFragment::enabled_state_set, this, [enable](const bool isEnabled)
             {
                 enable->setChecked(isEnabled);
             });

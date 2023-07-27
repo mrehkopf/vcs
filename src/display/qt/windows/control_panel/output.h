@@ -14,7 +14,7 @@ namespace control_panel
 {
     namespace Ui { class Output; }
 
-    class Output : public VCSDialogFragment
+    class Output : public DialogFragment
     {
         Q_OBJECT
 

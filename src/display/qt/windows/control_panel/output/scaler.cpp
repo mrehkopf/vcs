@@ -4,7 +4,7 @@
 #include "ui_scaler.h"
 
 control_panel::output::Scaler::Scaler(QWidget *parent) :
-    VCSDialogFragment(parent),
+    DialogFragment(parent),
     ui(new Ui::Scaler)
 {
     ui->setupUi(this);

@@ -13,7 +13,7 @@
 #include "common/globals.h"
 #include "common/assert.h"
 
-DialogFileMenu::DialogFileMenu(VCSDialogFragment *const parentDialog) :
+DialogFileMenu::DialogFileMenu(DialogFragment *const parentDialog) :
     QMenu(parentDialog),
     parentDialog(parentDialog)
 {
@@ -71,7 +71,7 @@ DialogFileMenu::DialogFileMenu(VCSDialogFragment *const parentDialog) :
         emit this->close(close->data().toString());
     });
 
-    connect(this->parentDialog, &VCSDialogFragment::data_filename_changed, this, [=](const QString &filename)
+    connect(this->parentDialog, &DialogFragment::data_filename_changed, this, [=](const QString &filename)
     {
         const QString shortFilename = QFileInfo(filename).fileName();
 

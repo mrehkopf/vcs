@@ -7,7 +7,7 @@
 #include "ui_output.h"
 
 control_panel::Output::Output(QWidget *parent) :
-    VCSDialogFragment(parent),
+    DialogFragment(parent),
     ui(new Ui::Output)
 {
     ui->setupUi(this);

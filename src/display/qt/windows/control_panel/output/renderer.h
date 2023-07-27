@@ -7,7 +7,7 @@ namespace control_panel::output
 {
     namespace Ui { class Renderer; }
 
-    class Renderer : public VCSDialogFragment
+    class Renderer : public DialogFragment
     {
         Q_OBJECT
 

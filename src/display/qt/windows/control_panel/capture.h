@@ -14,7 +14,7 @@ namespace control_panel
 {
     namespace Ui { class Capture; }
 
-    class Capture : public VCSDialogFragment
+    class Capture : public DialogFragment
     {
         Q_OBJECT
 

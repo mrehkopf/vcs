@@ -7,7 +7,7 @@ namespace control_panel::output
 {
     namespace Ui { class Size; }
 
-    class Size : public VCSDialogFragment
+    class Size : public DialogFragment
     {
         Q_OBJECT
 

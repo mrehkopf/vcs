@@ -15,7 +15,7 @@ namespace control_panel
 {
     namespace Ui { class Overlay; }
 
-    class Overlay : public VCSDialogFragment
+    class Overlay : public DialogFragment
     {
         Q_OBJECT
 

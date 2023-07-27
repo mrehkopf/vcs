@@ -25,7 +25,7 @@
 #include "ui_filter_graph.h"
 
 control_panel::FilterGraph::FilterGraph(QWidget *parent) :
-    VCSDialogFragment(parent),
+    DialogFragment(parent),
     ui(new Ui::FilterGraph)
 {
     ui->setupUi(this);
@@ -54,12 +54,12 @@ control_panel::FilterGraph::FilterGraph(QWidget *parent) :
 
         auto *const filenameIndicator = new QLabel("");
         {
-            connect(this, &VCSDialogFragment::data_filename_changed, this, [=](const QString &newFilename)
+            connect(this, &DialogFragment::data_filename_changed, this, [=](const QString &newFilename)
             {
                 filenameIndicator->setText(QFileInfo(newFilename).fileName());
             });
 
-            connect(this, &VCSDialogFragment::unsaved_changes_flag_changed, this, [filenameIndicator, this](const bool is)
+            connect(this, &DialogFragment::unsaved_changes_flag_changed, this, [filenameIndicator, this](const bool is)
             {
                 QString baseName = (this->data_filename().isEmpty()? "[Unsaved]" : filenameIndicator->text());
 
@@ -80,7 +80,7 @@ control_panel::FilterGraph::FilterGraph(QWidget *parent) :
         {
             enable->setChecked(this->is_enabled());
 
-            connect(this, &VCSDialogFragment::enabled_state_set, this, [enable](const bool isEnabled)
+            connect(this, &DialogFragment::enabled_state_set, this, [enable](const bool isEnabled)
             {
                 enable->setChecked(isEnabled);
             });
@@ -238,14 +238,14 @@ control_panel::FilterGraph::FilterGraph(QWidget *parent) :
 
     // Connect the GUI components to consequences for changing their values.
     {
-        connect(this, &VCSDialogFragment::enabled_state_set, this, [=](const bool isEnabled)
+        connect(this, &DialogFragment::enabled_state_set, this, [=](const bool isEnabled)
         {
             kf_set_filtering_enabled(isEnabled);
             kd_update_output_window_title();
             kpers_set_value(INI_GROUP_FILTER_GRAPH, "Enabled", isEnabled);
         });
 
-        connect(this, &VCSDialogFragment::data_filename_changed, this, [this](const QString &newFilename)
+        connect(this, &DialogFragment::data_filename_changed, this, [this](const QString &newFilename)
         {
             // Kludge fix for the filter graph not repainting itself properly when new nodes
             // are loaded in. Let's just force it to do so.

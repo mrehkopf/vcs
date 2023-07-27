@@ -16,7 +16,7 @@ class DialogFileMenu : public QMenu
     Q_OBJECT
 
 public:
-    explicit DialogFileMenu(VCSDialogFragment *const parentDialog);
+    explicit DialogFileMenu(DialogFragment *const parentDialog);
     
     ~DialogFileMenu(void);
 
@@ -28,7 +28,7 @@ signals:
     void close(const QString &filename);
 
 private:
-    VCSDialogFragment *const parentDialog;
+    DialogFragment *const parentDialog;
 };
 
 #endif

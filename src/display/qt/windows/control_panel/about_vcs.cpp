@@ -12,7 +12,7 @@
 #include "ui_about_vcs.h"
 
 control_panel::AboutVCS::AboutVCS(QWidget *parent) :
-    VCSDialogFragment(parent),
+    DialogFragment(parent),
     ui(new Ui::AboutVCS)
 {
     ui->setupUi(this);

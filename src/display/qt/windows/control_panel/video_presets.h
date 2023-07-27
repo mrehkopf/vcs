@@ -11,7 +11,7 @@ namespace control_panel
 {
     namespace Ui { class VideoPresets; }
 
-    class VideoPresets : public VCSDialogFragment
+    class VideoPresets : public DialogFragment
     {
         Q_OBJECT
 

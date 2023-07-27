@@ -9,7 +9,7 @@ namespace control_panel::capture
 {
     namespace Ui { class InputResolution; }
 
-    class InputResolution : public VCSDialogFragment
+    class InputResolution : public DialogFragment
     {
         Q_OBJECT
 

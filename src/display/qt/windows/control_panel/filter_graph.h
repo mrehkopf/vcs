@@ -13,7 +13,7 @@ namespace control_panel
 {
     namespace Ui { class FilterGraph; }
 
-    class FilterGraph : public VCSDialogFragment
+    class FilterGraph : public DialogFragment
     {
         Q_OBJECT
 

@@ -40,7 +40,7 @@ static bool CONTROLS_LIVE_UPDATE = true;
 #define PARAM_LABEL_BLUE_CONTRAST "Blue contrast"
 
 control_panel::VideoPresets::VideoPresets(QWidget *parent) :
-    VCSDialogFragment(parent),
+    DialogFragment(parent),
     ui(new Ui::VideoPresets)
 {
     ui->setupUi(this);
@@ -54,12 +54,12 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
         auto *const filenameIndicator = new QLabel("");
         {
-            connect(this, &VCSDialogFragment::data_filename_changed, this, [=](const QString &newFilename)
+            connect(this, &DialogFragment::data_filename_changed, this, [=](const QString &newFilename)
             {
                 filenameIndicator->setText(QFileInfo(newFilename).fileName());
             });
 
-            connect(this, &VCSDialogFragment::unsaved_changes_flag_changed, this, [filenameIndicator, this](const bool is)
+            connect(this, &DialogFragment::unsaved_changes_flag_changed, this, [filenameIndicator, this](const bool is)
             {
                 QString baseName = (this->data_filename().isEmpty()? "[Unsaved]" : filenameIndicator->text());
 
@@ -179,7 +179,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             this->update_active_preset_indicator();
         });
 
-        connect(this, &VCSDialogFragment::data_filename_changed, this, [this](const QString &newFilename)
+        connect(this, &DialogFragment::data_filename_changed, this, [this](const QString &newFilename)
         {
             kpers_set_value(INI_GROUP_VIDEO_PRESETS, "SourceFile", newFilename);
         });

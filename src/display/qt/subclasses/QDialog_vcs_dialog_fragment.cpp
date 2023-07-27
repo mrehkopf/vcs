@@ -10,21 +10,21 @@
 #include "display/qt/subclasses/QDialog_vcs_dialog_fragment.h"
 #include "common/globals.h"
 
-VCSDialogFragment::VCSDialogFragment(QWidget *parent) : QWidget(parent)
+DialogFragment::DialogFragment(QWidget *parent) : QWidget(parent)
 {
     this->setWindowFlags(Qt::Window);
 
-    connect(this, &VCSDialogFragment::unsaved_changes_flag_changed, this, [this]
+    connect(this, &DialogFragment::unsaved_changes_flag_changed, this, [this]
     {
         this->update_window_title();
     });
 
-    connect(this, &VCSDialogFragment::data_changed, this, [this]
+    connect(this, &DialogFragment::data_changed, this, [this]
     {
         this->set_unsaved_changes_flag(true);
     });
 
-    connect(this, &VCSDialogFragment::data_filename_changed, this, [this]
+    connect(this, &DialogFragment::data_filename_changed, this, [this]
     {
         this->set_unsaved_changes_flag(false);
     });
@@ -32,27 +32,27 @@ VCSDialogFragment::VCSDialogFragment(QWidget *parent) : QWidget(parent)
     return;
 }
 
-VCSDialogFragment::~VCSDialogFragment(void)
+DialogFragment::~DialogFragment(void)
 {
     return;
 }
 
-const QString& VCSDialogFragment::name(void) const
+const QString& DialogFragment::name(void) const
 {
     return this->_name;
 }
 
-bool VCSDialogFragment::has_unsaved_changes(void) const
+bool DialogFragment::has_unsaved_changes(void) const
 {
     return this->_areUnsavedChanges;
 }
 
-bool VCSDialogFragment::is_enabled(void) const
+bool DialogFragment::is_enabled(void) const
 {
     return this->_isEnabled;
 }
 
-void VCSDialogFragment::set_enabled(const bool isEnabled)
+void DialogFragment::set_enabled(const bool isEnabled)
 {
     this->_isEnabled = isEnabled;
     emit this->enabled_state_set(isEnabled);
@@ -60,7 +60,7 @@ void VCSDialogFragment::set_enabled(const bool isEnabled)
     return;
 }
 
-void VCSDialogFragment::set_name(const QString &newName)
+void DialogFragment::set_name(const QString &newName)
 {
     this->_name = newName;
     this->update_window_title();
@@ -68,7 +68,7 @@ void VCSDialogFragment::set_name(const QString &newName)
     return;
 }
 
-void VCSDialogFragment::set_data_filename(const QString &filename)
+void DialogFragment::set_data_filename(const QString &filename)
 {
     this->_dataFilename = filename;
     this->update_window_title();
@@ -77,7 +77,7 @@ void VCSDialogFragment::set_data_filename(const QString &filename)
     return;
 }
 
-void VCSDialogFragment::set_unsaved_changes_flag(const bool areUnsavedChanges)
+void DialogFragment::set_unsaved_changes_flag(const bool areUnsavedChanges)
 {
     if (this->_isUnsavedChangesFlagLocked)
     {
@@ -90,19 +90,19 @@ void VCSDialogFragment::set_unsaved_changes_flag(const bool areUnsavedChanges)
     return;
 }
 
-void VCSDialogFragment::lock_unsaved_changes_flag(const bool isLocked)
+void DialogFragment::lock_unsaved_changes_flag(const bool isLocked)
 {
     this->_isUnsavedChangesFlagLocked = isLocked;
 
     return;
 }
 
-const QString& VCSDialogFragment::data_filename(void) const
+const QString& DialogFragment::data_filename(void) const
 {
     return this->_dataFilename;
 }
 
-void VCSDialogFragment::update_window_title(void)
+void DialogFragment::update_window_title(void)
 {
     QString title = "";
     const QString unsavedChangesMarker = (this->_areUnsavedChanges? "*" : "");
@@ -122,7 +122,7 @@ void VCSDialogFragment::update_window_title(void)
     return;
 }
 
-void VCSDialogFragment::keyPressEvent(QKeyEvent *event)
+void DialogFragment::keyPressEvent(QKeyEvent *event)
 {
     // Consume (ignore) the Esc key to prevent it from closing the dialog. This
     // is done since the dialog may be embedded as part of another dialog and we

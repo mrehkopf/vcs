@@ -12,7 +12,7 @@
 #include "ui_input_channel.h"
 
 control_panel::capture::InputChannel::InputChannel(QWidget *parent) :
-    VCSDialogFragment(parent),
+    DialogFragment(parent),
     ui(new Ui::InputChannel)
 {
     ui->setupUi(this);
