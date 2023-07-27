@@ -1,45 +1,45 @@
 <RCC>
     <qresource prefix="/res">
         <file>fonts/Ubuntu-R.ttf</file>
-        <file>images/icons/arrow_down_disabled.png</file>
-        <file>images/icons/arrow_down.png</file>
+        <file>icons/arrow_down_disabled.png</file>
+        <file>icons/arrow_down.png</file>
         <file>stylesheets/font-linux.qss</file>
-        <file>images/icons/arrow_up_disabled.png</file>
-        <file>images/icons/arrow_up.png</file>
-        <file>images/icons/appicon.ico</file>
+        <file>icons/arrow_up_disabled.png</file>
+        <file>icons/arrow_up.png</file>
+        <file>icons/appicon.ico</file>
         <file>fonts/UbuntuMono-R.ttf</file>
         <file>stylesheets/appstyle-oldie.qss</file>
-        <file>images/icons/checkbox_check_disabled.png</file>
-        <file>images/icons/checkbox_check.png</file>
-        <file>images/icons/grid_pattern.png</file>
-        <file>images/icons/arrow_left.png</file>
-        <file>images/icons/arrow_left_disabled.png</file>
-        <file>images/icons/arrow_right_disabled.png</file>
-        <file>images/icons/arrow_right.png</file>
-        <file>images/icons/reset.png</file>
-        <file>images/icons/reset_disabled.png</file>
+        <file>icons/checkbox_check_disabled.png</file>
+        <file>icons/checkbox_check.png</file>
+        <file>icons/grid_pattern.png</file>
+        <file>icons/arrow_left.png</file>
+        <file>icons/arrow_left_disabled.png</file>
+        <file>icons/arrow_right_disabled.png</file>
+        <file>icons/arrow_right.png</file>
+        <file>icons/reset.png</file>
+        <file>icons/reset_disabled.png</file>
         <file>stylesheets/appstyle-newie.qss</file>
-        <file>images/icons/newie/reset.png</file>
-        <file>images/icons/newie/reset_disabled.png</file>
-        <file>images/icons/newie/arrow_left.png</file>
-        <file>images/icons/newie/arrow_right.png</file>
-        <file>images/icons/newie/arrow_left_disabled.png</file>
-        <file>images/icons/newie/arrow_right_disabled.png</file>
-        <file>images/icons/newie/arrow_up_disabled.png</file>
-        <file>images/icons/newie/arrow_down_disabled.png</file>
-        <file>images/icons/newie/arrow_up.png</file>
-        <file>images/icons/newie/arrow_down.png</file>
-        <file>images/icons/newie/delete.png</file>
-        <file>images/icons/newie/delete_disabled.png</file>
-        <file>images/icons/newie/plus.png</file>
-        <file>images/icons/newie/plus_disabled.png</file>
-        <file>images/icons/newie/minus_disabled.png</file>
-        <file>images/icons/newie/minus.png</file>
-        <file>images/icons/newie/handle_grip.png</file>
-        <file>images/icons/newie/eyedropper.png</file>
-        <file>images/icons/newie/preset_disabled.svg</file>
-        <file>images/icons/newie/preset_inactive.svg</file>
-        <file>images/icons/newie/preset_active.svg</file>
+        <file>icons/newie/reset.png</file>
+        <file>icons/newie/reset_disabled.png</file>
+        <file>icons/newie/arrow_left.png</file>
+        <file>icons/newie/arrow_right.png</file>
+        <file>icons/newie/arrow_left_disabled.png</file>
+        <file>icons/newie/arrow_right_disabled.png</file>
+        <file>icons/newie/arrow_up_disabled.png</file>
+        <file>icons/newie/arrow_down_disabled.png</file>
+        <file>icons/newie/arrow_up.png</file>
+        <file>icons/newie/arrow_down.png</file>
+        <file>icons/newie/delete.png</file>
+        <file>icons/newie/delete_disabled.png</file>
+        <file>icons/newie/plus.png</file>
+        <file>icons/newie/plus_disabled.png</file>
+        <file>icons/newie/minus_disabled.png</file>
+        <file>icons/newie/minus.png</file>
+        <file>icons/newie/handle_grip.png</file>
+        <file>icons/newie/eyedropper.png</file>
+        <file>icons/newie/preset_disabled.svg</file>
+        <file>icons/newie/preset_inactive.svg</file>
+        <file>icons/newie/preset_active.svg</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

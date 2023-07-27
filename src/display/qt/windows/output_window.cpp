@@ -246,7 +246,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
 
     // Apply any custom app-wide styling styling.
     {
-        qApp->setWindowIcon(QIcon(":/res/images/icons/appicon.ico"));
+        qApp->setWindowIcon(QIcon(":/res/icons/appicon.ico"));
         this->apply_global_stylesheet(":/res/stylesheets/appstyle-newie.qss");
         this->set_global_font_size(this->appwideFontSize);
     }

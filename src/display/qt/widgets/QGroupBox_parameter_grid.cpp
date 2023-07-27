@@ -73,8 +73,8 @@ void ParameterGrid::add_combobox(const QString name,
             comboBox->addItem(item);
         }
 
-        auto resetButtonIcon = QIcon(":/res/images/icons/newie/reset.png");
-        resetButtonIcon.addPixmap(QPixmap(":/res/images/icons/newie/reset_disabled.png"), QIcon::Disabled);
+        auto resetButtonIcon = QIcon(":/res/icons/newie/reset.png");
+        resetButtonIcon.addPixmap(QPixmap(":/res/icons/newie/reset_disabled.png"), QIcon::Disabled);
 
         auto *const resetButton = new QPushButton();
         resetButton->setIcon(resetButtonIcon);
@@ -164,8 +164,8 @@ void ParameterGrid::add_scroller(const QString name,
         spinBox->setMinimum(newParam->minimumValue);
         spinBox->setValue(newParam->currentValue);
 
-        auto resetButtonIcon = QIcon(":/res/images/icons/newie/reset.png");
-        resetButtonIcon.addPixmap(QPixmap(":/res/images/icons/newie/reset_disabled.png"), QIcon::Disabled);
+        auto resetButtonIcon = QIcon(":/res/icons/newie/reset.png");
+        resetButtonIcon.addPixmap(QPixmap(":/res/icons/newie/reset_disabled.png"), QIcon::Disabled);
 
         auto *const resetButton = new QPushButton();
         resetButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);

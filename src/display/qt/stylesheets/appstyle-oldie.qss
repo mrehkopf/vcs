@@ -242,12 +242,12 @@ QComboBox
 QComboBox::down-arrow,
 QAbstractButton::menu-indicator
 {
-    image: url(:/res/images/icons/arrow_down.png);
+    image: url(:/res/icons/arrow_down.png);
 }
 
 QComboBox::down-arrow:disabled
 {
-    image: url(:/res/images/icons/arrow_down_disabled.png);
+    image: url(:/res/icons/arrow_down_disabled.png);
 }
 
 QComboBox QAbstractItemView
@@ -371,7 +371,7 @@ QScrollBar::sub-page:horizontal,
 QScrollBar::add-page:vertical,
 QScrollBar::sub-page:vertical
 {
-    background-image: url(:/res/images/icons/grid_pattern.png);
+    background-image: url(:/res/icons/grid_pattern.png);
     background-position: top-left;
     background-repeat: repeat-xy;
 }
@@ -405,12 +405,12 @@ QScrollBar::add-line:vertical
     border-bottom: 2px solid #808075;
     border-left: 2px solid #f5f5f0;
     border-top: 2px solid #f5f5f0;
-    image: url(:/res/images/icons/arrow_down.png);
+    image: url(:/res/icons/arrow_down.png);
 }
 
 QScrollBar::add-line:vertical:disabled
 {
-    image: url(:/res/images/icons/arrow_down_disabled.png);
+    image: url(:/res/icons/arrow_down_disabled.png);
 }
 
 QScrollBar::sub-line:vertical
@@ -423,12 +423,12 @@ QScrollBar::sub-line:vertical
     border-bottom: 2px solid #808075;
     border-left: 2px solid #f5f5f0;
     border-top: 2px solid #f5f5f0;
-    image: url(:/res/images/icons/arrow_up.png);
+    image: url(:/res/icons/arrow_up.png);
 }
 
 QScrollBar::sub-line:vertical:disabled
 {
-    image: url(:/res/images/icons/arrow_up_disabled.png);
+    image: url(:/res/icons/arrow_up_disabled.png);
 }
 
 QScrollBar:horizontal
@@ -460,12 +460,12 @@ QScrollBar::add-line:horizontal
     border-bottom: 2px solid #808075;
     border-left: 2px solid #f5f5f0;
     border-top: 2px solid #f5f5f0;
-    image: url(:/res/images/icons/arrow_right.png);
+    image: url(:/res/icons/arrow_right.png);
 }
 
 QScrollBar::add-line:horizontal:disabled
 {
-    image: url(:/res/images/icons/arrow_right_disabled.png);
+    image: url(:/res/icons/arrow_right_disabled.png);
 }
 
 QScrollBar::sub-line:horizontal
@@ -478,12 +478,12 @@ QScrollBar::sub-line:horizontal
     border-bottom: 2px solid #808075;
     border-left: 2px solid #f5f5f0;
     border-top: 2px solid #f5f5f0;
-    image: url(:/res/images/icons/arrow_left.png);
+    image: url(:/res/icons/arrow_left.png);
 }
 
 QScrollBar::sub-line:horizontal:disabled
 {
-    image: url(:/res/images/icons/arrow_left_disabled.png);
+    image: url(:/res/icons/arrow_left_disabled.png);
 }
 
 QRadioButton::indicator
@@ -552,14 +552,14 @@ QCheckBox::indicator::checked,
 QGroupBox::indicator::checked,
 QTreeWidget::indicator::checked
 {
-    image: url(:/res/images/icons/checkbox_check.png);
+    image: url(:/res/icons/checkbox_check.png);
 }
 
 QCheckBox::indicator::checked:disabled,
 QGroupBox::indicator::checked:disabled,
 QTreeWidget::indicator::checked:disabled
 {
-    image: url(:/res/images/icons/checkbox_check_disabled.png);
+    image: url(:/res/icons/checkbox_check_disabled.png);
 }
 
 QSpinBox,
@@ -601,28 +601,28 @@ QDoubleSpinBox::down-button
 QSpinBox::up-arrow,
 QDoubleSpinBox::up-arrow
 {
-    image: url(:/res/images/icons/arrow_up.png);
+    image: url(:/res/icons/arrow_up.png);
     border: none;
 }
 
 QSpinBox::up-arrow:disabled,
 QDoubleSpinBox::up-arrow:off
 {
-    image: url(:/res/images/icons/arrow_up_disabled.png);
+    image: url(:/res/icons/arrow_up_disabled.png);
     border: none;
 }
 
 QSpinBox::down-arrow,
 QDoubleSpinBox::down-arrow
 {
-    image: url(:/res/images/icons/arrow_down.png);
+    image: url(:/res/icons/arrow_down.png);
     border: none;
 }
 
 QSpinBox::down-arrow:disabled,
 QDoubleSpinBox::down-arrow:off
 {
-    image: url(:/res/images/icons/arrow_down_disabled.png);
+    image: url(:/res/icons/arrow_down_disabled.png);
     border: none;
 }
 

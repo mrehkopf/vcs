@@ -124,17 +124,17 @@ DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_
 
 DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
 {
-    image: url(:/res/images/icons/newie/preset_disabled.svg);
+    image: url(:/res/icons/newie/preset_disabled.svg);
 }
 
 DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="active"]
 {
-    image: url(:/res/images/icons/newie/preset_active.svg);
+    image: url(:/res/icons/newie/preset_active.svg);
 }
 
 DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="inactive"]
 {
-    image: url(:/res/images/icons/newie/preset_inactive.svg);
+    image: url(:/res/icons/newie/preset_inactive.svg);
 }
 
 QScrollArea > QWidget > QWidget
@@ -215,12 +215,12 @@ QComboBox
 QComboBox::down-arrow,
 QAbstractButton::menu-indicator
 {
-    image: url(:/res/images/icons/newie/arrow_down.png);
+    image: url(:/res/icons/newie/arrow_down.png);
 }
 
 QComboBox::down-arrow:disabled
 {
-    image: url(:/res/images/icons/newie/arrow_down_disabled.png);
+    image: url(:/res/icons/newie/arrow_down_disabled.png);
 }
 
 QComboBox QAbstractItemView
@@ -399,7 +399,7 @@ QScrollBar::add-line:vertical
     width: 21px;
     subcontrol-position: bottom;
     subcontrol-origin: margin;
-    image: url(:/res/images/icons/newie/arrow_down.png);
+    image: url(:/res/icons/newie/arrow_down.png);
     border-bottom-right-radius: 2px;
     border-bottom-left-radius: 2px;
     margin-left: 1px;
@@ -407,7 +407,7 @@ QScrollBar::add-line:vertical
 
 QScrollBar::add-line:vertical:disabled
 {
-    image: url(:/res/images/icons/newie/arrow_down_disabled.png);
+    image: url(:/res/icons/newie/arrow_down_disabled.png);
 }
 
 QScrollBar::sub-line:vertical
@@ -416,7 +416,7 @@ QScrollBar::sub-line:vertical
     width: 21px;
     subcontrol-position: top;
     subcontrol-origin: margin;
-    image: url(:/res/images/icons/newie/arrow_up.png);
+    image: url(:/res/icons/newie/arrow_up.png);
     border-top-right-radius: 2px;
     border-top-left-radius: 2px;
     margin-left: 1px;
@@ -424,7 +424,7 @@ QScrollBar::sub-line:vertical
 
 QScrollBar::sub-line:vertical:disabled
 {
-    image: url(:/res/images/icons/newie/newie/arrow_up_disabled.png);
+    image: url(:/res/icons/newie/newie/arrow_up_disabled.png);
 }
 
 QScrollBar:horizontal
@@ -444,7 +444,7 @@ QScrollBar::add-line:horizontal
 {
     subcontrol-position: right;
     subcontrol-origin: margin;
-    image: url(:/res/images/icons/newie/arrow_right.png);
+    image: url(:/res/icons/newie/arrow_right.png);
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
     margin-top: 1px;
@@ -452,14 +452,14 @@ QScrollBar::add-line:horizontal
 
 QScrollBar::add-line:horizontal:disabled
 {
-    image: url(:/res/images/icons/newie/arrow_right_disabled.png);
+    image: url(:/res/icons/newie/arrow_right_disabled.png);
 }
 
 QScrollBar::sub-line:horizontal
 {
     subcontrol-position: left;
     subcontrol-origin: margin;
-    image: url(:/res/images/icons/newie/arrow_left.png);
+    image: url(:/res/icons/newie/arrow_left.png);
     border-top-left-radius: 2px;
     border-bottom-left-radius: 2px;
     margin-top: 1px;
@@ -472,7 +472,7 @@ QScrollBar:disabled
 
 QScrollBar::sub-line:horizontal:disabled
 {
-    image: url(:/res/images/icons/newie/arrow_left_disabled.png);
+    image: url(:/res/icons/newie/arrow_left_disabled.png);
 }
 
 QScrollBar::add-page:disabled,
@@ -509,7 +509,7 @@ QGroupBox QScrollBar::handle:horizontal
     border-left: 1px solid black;
     border-right: 1px solid black;
 
-    background-image: url(:/res/images/icons/newie/handle_grip.png);
+    background-image: url(:/res/icons/newie/handle_grip.png);
     background-position: center;
     background-repeat: none;
 }
@@ -518,7 +518,7 @@ QGroupBox QScrollBar::add-line:horizontal
     width: 1.35em;
     subcontrol-position: right;
     subcontrol-origin: margin;
-    image: url(:/res/images/icons/newie/arrow_right.png);
+    image: url(:/res/icons/newie/arrow_right.png);
     border: 1px solid black;
     border-left: none;
     border-top-right-radius: 2px;
@@ -530,7 +530,7 @@ QGroupBox QScrollBar::sub-line:horizontal
     width: 1.35em;
     subcontrol-position: left;
     subcontrol-origin: margin;
-    image: url(:/res/images/icons/newie/arrow_left.png);
+    image: url(:/res/icons/newie/arrow_left.png);
     border: 1px solid black;
     border-right: none;
     border-top-left-radius: 2px;
@@ -592,14 +592,14 @@ QCheckBox::indicator::checked,
 QGroupBox::indicator::checked,
 QTreeWidget::indicator::checked
 {
-    image: url(:/res/images/icons/checkbox_check.png);
+    image: url(:/res/icons/checkbox_check.png);
 }
 
 QCheckBox::indicator::checked:disabled,
 QGroupBox::indicator::checked:disabled,
 QTreeWidget::indicator::checked:disabled
 {
-    image: url(:/res/images/icons/checkbox_check_disabled.png);
+    image: url(:/res/icons/checkbox_check_disabled.png);
 }
 
 QPlainTextEdit[overLengthLimit="true"]
@@ -633,28 +633,28 @@ QDoubleSpinBox::down-button
 QSpinBox::up-arrow,
 QDoubleSpinBox::up-arrow
 {
-    image: url(:/res/images/icons/arrow_up.png);
+    image: url(:/res/icons/arrow_up.png);
     border: none;
 }
 
 QSpinBox::up-arrow:disabled,
 QDoubleSpinBox::up-arrow:off
 {
-    image: url(:/res/images/icons/newie/arrow_up_disabled.png);
+    image: url(:/res/icons/newie/arrow_up_disabled.png);
     border: none;
 }
 
 QSpinBox::down-arrow,
 QDoubleSpinBox::down-arrow
 {
-    image: url(:/res/images/icons/arrow_down.png);
+    image: url(:/res/icons/arrow_down.png);
     border: none;
 }
 
 QSpinBox::down-arrow:disabled,
 QDoubleSpinBox::down-arrow:off
 {
-    image: url(:/res/images/icons/newie/arrow_down_disabled.png);
+    image: url(:/res/icons/newie/arrow_down_disabled.png);
     border: none;
 }
 
