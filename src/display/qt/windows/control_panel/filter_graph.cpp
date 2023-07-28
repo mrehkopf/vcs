@@ -445,7 +445,7 @@ BaseFilterGraphNode* control_panel::FilterGraph::add_filter_graph_node(
     guiWidget->adjustSize();
     guiWidget->setMinimumWidth(
         ((filter->category() == filter_category_e::input_condition) || (filter->category() == filter_category_e::output_condition))
-        ? 200
+        ? 170
         : 220
     );
 

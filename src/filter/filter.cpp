@@ -118,8 +118,14 @@ abstract_filter_c* kf_apply_matching_filter_chain(image_s *const dstImage)
     {
         const auto &filterChain = FILTER_CHAINS[i];
 
-        const unsigned inputGateWidth = filterChain.front()->parameter(filter_input_gate_c::PARAM_WIDTH);
-        const unsigned inputGateHeight = filterChain.front()->parameter(filter_input_gate_c::PARAM_HEIGHT);
+        const unsigned inputGateWidth = (
+            filterChain.front()->parameter(filter_input_gate_c::PARAM_IS_WIDTH_ENABLED)
+                ? filterChain.front()->parameter(filter_input_gate_c::PARAM_WIDTH) : 0
+        );
+        const unsigned inputGateHeight = (
+            filterChain.front()->parameter(filter_input_gate_c::PARAM_IS_HEIGHT_ENABLED)
+                ? filterChain.front()->parameter(filter_input_gate_c::PARAM_HEIGHT) : 0
+        );
 
         if (filterChain.back()->category() == filter_category_e::output_scaler)
         {
@@ -127,58 +133,66 @@ abstract_filter_c* kf_apply_matching_filter_chain(image_s *const dstImage)
             {
                 openMatch = {&filterChain, i};
             }
-            else if ((!inputGateWidth || inputGateWidth == dstImage->resolution.w) &&
-                     (!inputGateHeight || inputGateHeight == dstImage->resolution.h))
-            {
+            else if (
+                (!inputGateWidth || inputGateWidth == dstImage->resolution.w) &&
+                (!inputGateHeight || inputGateHeight == dstImage->resolution.h)
+            ){
                 partialMatch = {&filterChain, i};
             }
-            else if ((dstImage->resolution.w == inputGateWidth) &&
-                     (dstImage->resolution.h == inputGateHeight))
-            {
+            else if (
+                (dstImage->resolution.w == inputGateWidth) &&
+                (dstImage->resolution.h == inputGateHeight)
+            ){
                 return apply_chain(filterChain, i);
             }
         }
         else
         {
-            const unsigned outputGateWidth = filterChain.back()->parameter(filter_output_gate_c::PARAM_WIDTH);
-            const unsigned outputGateHeight = filterChain.back()->parameter(filter_output_gate_c::PARAM_HEIGHT);
+            const unsigned outputGateWidth = (
+                filterChain.back()->parameter(filter_output_gate_c::PARAM_IS_WIDTH_ENABLED)
+                    ? filterChain.back()->parameter(filter_output_gate_c::PARAM_WIDTH) : 0
+            );
+            const unsigned outputGateHeight = (
+                filterChain.back()->parameter(filter_output_gate_c::PARAM_IS_HEIGHT_ENABLED)
+                    ? filterChain.back()->parameter(filter_output_gate_c::PARAM_HEIGHT) : 0
+            );
 
             // A gate size of 0 in either dimension means pass all values. Otherwise, the
             // value must match the corresponding size of the frame or output.
-            if (!inputGateWidth &&
+            if (
+                !inputGateWidth &&
                 !inputGateHeight &&
                 !outputGateWidth &&
-                !outputGateHeight)
-            {
+                !outputGateHeight
+            ){
                 openMatch = {&filterChain, i};
             }
-            else if ((!inputGateWidth || inputGateWidth == dstImage->resolution.w) &&
-                     (!inputGateHeight || inputGateHeight == dstImage->resolution.h) &&
-                     (!outputGateWidth || outputGateWidth == outputRes.w) &&
-                     (!outputGateHeight || outputGateHeight == outputRes.h))
-            {
+            else if (
+                (!inputGateWidth || inputGateWidth == dstImage->resolution.w) &&
+                (!inputGateHeight || inputGateHeight == dstImage->resolution.h) &&
+                (!outputGateWidth || outputGateWidth == outputRes.w) &&
+                (!outputGateHeight || outputGateHeight == outputRes.h)
+            ){
                 partialMatch = {&filterChain, i};
             }
-            else if ((dstImage->resolution.w == inputGateWidth) &&
-                     (dstImage->resolution.h == inputGateHeight) &&
-                     (outputRes.w == outputGateWidth) &&
-                     (outputRes.h == outputGateHeight))
-            {
+            else if (
+                (dstImage->resolution.w == inputGateWidth) &&
+                (dstImage->resolution.h == inputGateHeight) &&
+                (outputRes.w == outputGateWidth) &&
+                (outputRes.h == outputGateHeight)
+            ){
                 return apply_chain(filterChain, i);
             }
         }
     }
 
-    if (partialMatch.first)
-    {
-        return apply_chain(*partialMatch.first, partialMatch.second);
-    }
-    else if (openMatch.first)
-    {
-        return apply_chain(*openMatch.first, openMatch.second);
-    }
-
-    return nullptr;
+    return (
+        partialMatch.first?
+            apply_chain(*partialMatch.first, partialMatch.second)
+                : openMatch.first?
+                    apply_chain(*openMatch.first, openMatch.second)
+                    : nullptr
+    );
 }
 
 const std::vector<const abstract_filter_c*>& kf_available_filter_types(void)

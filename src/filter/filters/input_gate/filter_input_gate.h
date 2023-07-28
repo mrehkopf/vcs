@@ -14,13 +14,20 @@
 class filter_input_gate_c : public abstract_filter_c
 {
 public:
-    enum { PARAM_WIDTH,
-           PARAM_HEIGHT };
+    enum {
+        PARAM_WIDTH,
+        PARAM_HEIGHT,
+        PARAM_IS_WIDTH_ENABLED,
+        PARAM_IS_HEIGHT_ENABLED
+    };
 
     filter_input_gate_c(const filter_params_t &initialParamValues = {}) :
-        abstract_filter_c({{PARAM_WIDTH, 640},
-                           {PARAM_HEIGHT, 480}},
-                          initialParamValues)
+        abstract_filter_c({
+            {PARAM_WIDTH, 640},
+            {PARAM_HEIGHT, 480},
+            {PARAM_IS_WIDTH_ENABLED, true},
+            {PARAM_IS_HEIGHT_ENABLED, true}
+        }, initialParamValues)
     {
         this->gui = new filtergui_input_gate_c(this);
     }
