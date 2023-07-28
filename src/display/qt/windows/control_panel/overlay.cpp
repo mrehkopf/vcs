@@ -214,7 +214,7 @@ QImage control_panel::Overlay::rendered(void)
         source.replace("$inWidth", QString::number(inRes.w));
         source.replace("$inHeight", QString::number(inRes.h));
         source.replace("$inRate", QString::number(inHz.value<double>(), 'f', 3));
-        source.replace("$inChannel", QString("/dev/video%1").arg(kc_device_property("input channel index")));
+        source.replace("$inChannel", QString("/dev/video%1").arg(kc_device_property("channel")));
         source.replace("$outWidth", QString::number(outRes.w));
         source.replace("$outHeight", QString::number(outRes.h));
         source.replace("$time", QDateTime::currentDateTime().time().toString());

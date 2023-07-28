@@ -178,7 +178,7 @@ bool kc_set_device_property(const std::string &key, double value)
             FRAME_BUFFER.resolution.h = value;
         }
     }
-    else if (key == "input channel index")
+    else if (key == "channel")
     {
         set_input_channel(value);
     }
@@ -255,7 +255,7 @@ capture_event_e kc_process_next_capture_event(void)
         kc_set_device_property("refresh rate", INPUT_CHANNEL->captureStatus.refreshRate.value<double>());
 
         // Re-create the input channel for the new video mode.
-        kc_set_device_property("input channel index", kc_device_property("input channel index"));
+        kc_set_device_property("channel", kc_device_property("channel"));
 
         return capture_event_e::new_video_mode;
     }
@@ -407,7 +407,7 @@ void kc_initialize_device(void)
     k_assert(!FRAME_BUFFER.pixels, "Attempting to doubly initialize the capture device.");
     FRAME_BUFFER.pixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
 
-    kc_set_device_property("input channel index", INPUT_CHANNEL_IDX);
+    kc_set_device_property("channel", INPUT_CHANNEL_IDX);
     resolution_s::to_capture_device({.w = 640, .h = 480});
     update_device_video_parameters();
 
@@ -434,7 +434,7 @@ void kc_initialize_device(void)
     }
 
     // Start capturing.
-    kc_set_device_property("input channel index", INPUT_CHANNEL_IDX);
+    kc_set_device_property("channel", INPUT_CHANNEL_IDX);
     k_assert(INPUT_CHANNEL, "Failed to initialize the input channel.");
 
     return;

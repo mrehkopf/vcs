@@ -378,9 +378,9 @@ double kc_device_property(const std::string &key);
  * @endcode
  *
  * Depending on the implementation of the capture subsystem, modifying a property
- * may lead to a corresponding mutation in device state. For example, changing an
- * "input channel index" property may cause the capture device to switch to a
- * different input channel.
+ * may lead to a corresponding mutation in device state. For example, changing aa
+ * "channel" property may cause the capture device to switch to a different input
+ * channel.
  * 
  * @warning
  * The device property framework is intended for use within the main VCS thread

@@ -27,7 +27,7 @@ control_panel::capture::InputChannel::InputChannel(QWidget *parent) :
     {
         connect(ui->spinBox_deviceIdx, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this]
         {
-            kc_set_device_property("input channel index", this->ui->spinBox_deviceIdx->value());
+            kc_set_device_property("channel", this->ui->spinBox_deviceIdx->value());
         });
     }
 

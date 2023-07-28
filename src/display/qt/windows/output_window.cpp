@@ -225,11 +225,11 @@ OutputWindow::OutputWindow(QWidget *parent) :
         }
 
         connect(makeAppwideShortcut("output-window: set-input-channel-1"), &QShortcut::activated, []{
-            kc_set_device_property("input channel index", 0);
+            kc_set_device_property("channel", 0);
         });
 
         connect(makeAppwideShortcut("output-window: set-input-channel-2"), &QShortcut::activated, []{
-            kc_set_device_property("input channel index", 1);
+            kc_set_device_property("channel", 1);
         });
 
         connect(kd_make_key_shortcut("output-window: exit-fullscreen-mode", this), &QShortcut::activated, this, [this]
