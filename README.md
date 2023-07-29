@@ -2,7 +2,7 @@
 
 A well-featured Linux video capture application for Datapath capture cards, with a feature-set targeted especially at retro enthusiasts.
 
-![VCS 3.0](./images/vcs-3.0.png)\
+![VCS 3.0](./screenshot.png)\
 *A screenshot of VCS 3.0 showing the capture window (in the background) and some of the control options.*
 
 ## Key features
