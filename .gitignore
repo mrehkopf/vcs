@@ -1,6 +1,6 @@
-bin/
-.vscode/
-misc/
-docs/developer/xml/
-generated_files/
-*.pro.user
+/bin
+/docs/developer/xml
+/*.pro.user
+
+/.*
+!/.gitignore
