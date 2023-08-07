@@ -40,6 +40,9 @@
         <file>icons/newie/preset_disabled.svg</file>
         <file>icons/newie/preset_inactive.svg</file>
         <file>icons/newie/preset_active.svg</file>
+        <file>icons/newie/grid_pattern.png</file>
+        <file>icons/newie/line_pattern.png</file>
+        <file>icons/newie/handle_grip_disabled.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

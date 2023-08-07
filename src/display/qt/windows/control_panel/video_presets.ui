@@ -45,25 +45,25 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>405</width>
-        <height>479</height>
+        <width>391</width>
+        <height>507</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
-        <number>9</number>
+        <number>16</number>
        </property>
        <property name="leftMargin">
-        <number>9</number>
+        <number>16</number>
        </property>
        <property name="topMargin">
-        <number>9</number>
+        <number>16</number>
        </property>
        <property name="rightMargin">
-        <number>9</number>
+        <number>16</number>
        </property>
        <property name="bottomMargin">
-        <number>9</number>
+        <number>16</number>
        </property>
        <item>
         <widget class="QGroupBox" name="groupBox_presetList">
@@ -215,7 +215,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <property name="bottomMargin">
-           <number>3</number>
+           <number>9</number>
           </property>
           <item>
            <widget class="QLineEdit" name="lineEdit_presetName">
@@ -251,61 +251,9 @@
           <property name="topMargin">
            <number>11</number>
           </property>
-          <property name="horizontalSpacing">
-           <number>2</number>
+          <property name="spacing">
+           <number>9</number>
           </property>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="comboBox_refreshRateComparison">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <item>
-             <property name="text">
-              <string>Exact</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Rounded</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Floored</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Ceiled</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QSpinBox" name="spinBox_resolutionY">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>480</number>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="1">
            <widget class="QComboBox" name="comboBox_shortcutFirstKey">
             <property name="enabled">
@@ -324,114 +272,26 @@
             </item>
            </widget>
           </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="label_shortcutSeparator">
+          <item row="0" column="2">
+           <widget class="QSpinBox" name="spinBox_resolutionY">
             <property name="enabled">
              <bool>true</bool>
             </property>
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+             <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="text">
-             <string>+</string>
+            <property name="minimum">
+             <number>1</number>
             </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
+            <property name="maximum">
+             <number>480</number>
             </property>
            </widget>
           </item>
           <item row="1" column="2">
-           <widget class="QPushButton" name="pushButton_refreshRateSeparator">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
-            </property>
-            <property name="toolTip">
-             <string>Copy current refresh rate</string>
-            </property>
-            <property name="text">
-             <string>=</string>
-            </property>
-            <property name="autoDefault">
-             <bool>false</bool>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="checkBox_activatorRefreshRate">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Refresh rate</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="checkBox_activatorResolution">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Resolution</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QPushButton" name="pushButton_resolutionSeparator">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
-            </property>
-            <property name="toolTip">
-             <string>Copy current resolution</string>
-            </property>
-            <property name="text">
-             <string>x</string>
-            </property>
-            <property name="autoDefault">
-             <bool>false</bool>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="3">
            <widget class="QDoubleSpinBox" name="doubleSpinBox_refreshRateValue">
             <property name="enabled">
              <bool>true</bool>
@@ -475,6 +335,58 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="comboBox_refreshRateComparison">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>Exactly</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Rounded</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Floored</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Ceiled</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="checkBox_activatorRefreshRate">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Refresh rate</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="1">
            <widget class="QSpinBox" name="spinBox_resolutionX">
             <property name="enabled">
@@ -494,7 +406,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="3">
+          <item row="2" column="2">
            <widget class="QComboBox" name="comboBox_shortcutSecondKey">
             <property name="enabled">
              <bool>true</bool>
@@ -567,6 +479,25 @@
             </item>
            </widget>
           </item>
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="checkBox_activatorResolution">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Resolution</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -636,11 +567,9 @@
   <tabstop>lineEdit_presetName</tabstop>
   <tabstop>checkBox_activatorResolution</tabstop>
   <tabstop>spinBox_resolutionX</tabstop>
-  <tabstop>pushButton_resolutionSeparator</tabstop>
   <tabstop>spinBox_resolutionY</tabstop>
   <tabstop>checkBox_activatorRefreshRate</tabstop>
   <tabstop>comboBox_refreshRateComparison</tabstop>
-  <tabstop>pushButton_refreshRateSeparator</tabstop>
   <tabstop>doubleSpinBox_refreshRateValue</tabstop>
   <tabstop>checkBox_activatorShortcut</tabstop>
   <tabstop>comboBox_shortcutFirstKey</tabstop>

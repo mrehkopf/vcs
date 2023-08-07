@@ -190,21 +190,27 @@ QDoubleSpinBox,
 QComboBox,
 QLineEdit,
 QPlainTextEdit,
-QTextEdit,
-QSpinBox:read-only:focus,
-QDoubleSpinBox:read-only:focus,
-QLineEdit:read-only:focus,
-QPlainTextEdit:read-only:focus,
-QTextEdit:read-only:focus
+QTextEdit
 {
     min-height: 1.5em;
-    color: black;
-    background-color: #d9d9d9;
-    border-radius: 2px;
-    border: 1px solid black;
+    color: #cccccc;
+    background-color: #353535;
+    border-radius: 0;
+    border-bottom: 1px solid black;
     padding: 0;
     padding-left: 0.25em;
     margin: 0;
+}
+
+QLineEdit:read-only
+{
+    border-color: #353535;
+}
+
+QSpinBox
+{
+    border: none;
+    border-bottom: 1px solid #101010;
 }
 
 QComboBox
@@ -349,7 +355,7 @@ QScrollBar::handle:vertical,
 QScrollBar::handle:horizontal
 {
     border-radius: 0;
-    background-color: #666666;
+    background-color: #525252;
     border: 1px solid black;
 }
 
@@ -400,8 +406,6 @@ QScrollBar::add-line:vertical
     subcontrol-position: bottom;
     subcontrol-origin: margin;
     image: url(:/res/icons/newie/arrow_down.png);
-    border-bottom-right-radius: 2px;
-    border-bottom-left-radius: 2px;
     margin-left: 1px;
 }
 
@@ -417,8 +421,6 @@ QScrollBar::sub-line:vertical
     subcontrol-position: top;
     subcontrol-origin: margin;
     image: url(:/res/icons/newie/arrow_up.png);
-    border-top-right-radius: 2px;
-    border-top-left-radius: 2px;
     margin-left: 1px;
 }
 
@@ -445,8 +447,6 @@ QScrollBar::add-line:horizontal
     subcontrol-position: right;
     subcontrol-origin: margin;
     image: url(:/res/icons/newie/arrow_right.png);
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
     margin-top: 1px;
 }
 
@@ -460,8 +460,6 @@ QScrollBar::sub-line:horizontal
     subcontrol-position: left;
     subcontrol-origin: margin;
     image: url(:/res/icons/newie/arrow_left.png);
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
     margin-top: 1px;
 }
 
@@ -495,23 +493,22 @@ QGroupBox QScrollBar:horizontal
 {
     border: none;
     margin: 0px 1.35em 0px 1.35em;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
-    background: qlineargradient(x1: 1 y1:0, x2:0 y2:0, stop: 0 #302020, stop: 1 #202030);
+    border-bottom: none;
 }
 QGroupBox QScrollBar::handle:horizontal
 {
-    min-width: 1.75em;
+    min-width: 1.7em;
     border-radius: 0px;
-    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #686868, stop: 1 #474747);
-    border-top: none;
-    border-bottom: none;
-    border-left: 1px solid black;
-    border-right: 1px solid black;
+    background: #525252;
+    border: none;
+    border-bottom: 1px solid black;
 
-    background-image: url(:/res/icons/newie/handle_grip.png);
-    background-position: center;
-    background-repeat: none;
+    image: url(:/res/icons/newie/handle_grip.png);
+}
+QGroupBox QScrollBar::handle:horizontal:disabled,
+QGroupBox QScrollBar::handle:horizontal:disabled
+{
+    image: url(:/res/icons/newie/handle_grip_disabled.png);
 }
 QGroupBox QScrollBar::add-line:horizontal
 {
@@ -519,10 +516,9 @@ QGroupBox QScrollBar::add-line:horizontal
     subcontrol-position: right;
     subcontrol-origin: margin;
     image: url(:/res/icons/newie/arrow_right.png);
-    border: 1px solid black;
-    border-left: none;
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid black;
     margin: 0px;
 }
 QGroupBox QScrollBar::sub-line:horizontal
@@ -531,10 +527,9 @@ QGroupBox QScrollBar::sub-line:horizontal
     subcontrol-position: left;
     subcontrol-origin: margin;
     image: url(:/res/icons/newie/arrow_left.png);
-    border: 1px solid black;
-    border-right: none;
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid black;
     margin: 0px;
 }
 QGroupBox QScrollBar:disabled:horizontal
@@ -612,16 +607,6 @@ QGroupBox[objectName="groupBox_presetList"] QComboBox
     margin-left: 0;
 }
 
-QSpinBox:focus,
-QSpinBox:focus,
-QDoubleSpinBox:focus,
-QLineEdit:focus,
-QPlainTextEdit:focus,
-QTextEdit:focus
-{
-    background-color: white;
-}
-
 QSpinBox::up-button,
 QDoubleSpinBox::up-button,
 QSpinBox::down-button,
@@ -633,12 +618,12 @@ QDoubleSpinBox::down-button
 QSpinBox::up-arrow,
 QDoubleSpinBox::up-arrow
 {
-    image: url(:/res/icons/arrow_up.png);
+    image: url(:/res/icons/newie/arrow_up_disabled.png);
     border: none;
 }
 
 QSpinBox::up-arrow:disabled,
-QDoubleSpinBox::up-arrow:off
+QDoubleSpinBox::up-arrow:disabled
 {
     image: url(:/res/icons/newie/arrow_up_disabled.png);
     border: none;
@@ -647,12 +632,12 @@ QDoubleSpinBox::up-arrow:off
 QSpinBox::down-arrow,
 QDoubleSpinBox::down-arrow
 {
-    image: url(:/res/icons/arrow_down.png);
+    image: url(:/res/icons/newie/arrow_down_disabled.png);
     border: none;
 }
 
 QSpinBox::down-arrow:disabled,
-QDoubleSpinBox::down-arrow:off
+QDoubleSpinBox::down-arrow:disabled
 {
     image: url(:/res/icons/newie/arrow_down_disabled.png);
     border: none;
@@ -702,23 +687,32 @@ QScrollBar::add-line:vertical:disabled,
 QScrollBar:disabled
 {
     background-color: transparent;
-    border-color: #202020;
+    border-color: #151515;
     color: #909090;
 }
 
+QScrollBar:disabled,
+QCheckBox::indicator:disabled,
+QGroupBox::indicator:disabled
+{
+    border-color: #202020;
+}
+
+QPushButton:disabled,
+QComboBox:disabled,
 QSpinBox:disabled,
 QDoubleSpinBox:disabled,
 QLineEdit:disabled,
 QPlainTextEdit:disabled,
-QComboBox:disabled,
-QScrollBar:disabled,
-QPlainTextEdit:disabled,
-QCheckBox::indicator:disabled,
-QGroupBox::indicator:disabled
+QGroupBox QScrollBar::handle:vertical:disabled,
+QGroupBox QScrollBar::handle:horizontal:disabled,
+QGroupBox QScrollBar::add-line:disabled,
+QGroupBox QScrollBar::sub-line:disabled
 {
+    border: none;
     background-color: transparent;
-    border-color: #202020;
-    color: #909090;
+    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-repeat: repeat-xy;
 }
 
 QGroupBox:disabled
@@ -736,8 +730,8 @@ QPushButton:flat
 {
     min-height: 1.5em;
     padding: 0;
-    border-radius: 2px;
-    border: 1px solid black;
+    border-radius: 0;
+    border-bottom: 1px solid black;
     background-color: transparent;
     color: #e0e0e0;
 }
@@ -751,7 +745,7 @@ QScrollBar::sub-line:horizontal,
 QScrollBar::add-line:vertical,
 QScrollBar::sub-line:vertical
 {
-    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #686868, stop: 1 #474747);
+    background-color: #525252;
     color: #e0e0e0;
 }
 
@@ -771,22 +765,8 @@ QScrollBar::sub-line:vertical:hover,
 QScrollBar::add-line:horizontal:hover,
 QScrollBar::sub-line:horizontal:hover
 {
-    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #6c6c6c, stop: 1 #505050);
-}
-
-QPushButton:focus,
-QComboBox:focus,
-QScrollBar::add-line:vertical:focus,
-QScrollBar::sub-line:vertical:focus,
-QScrollBar::add-line:horizontal:focus,
-QScrollBar::sub-line:horizontal:focus,
-QCheckBox::indicator:focus,
-QSpinBox:focus,
-QDoubleSpinBox:focus,
-QLineEdit:focus,
-QPlainTextEdit:focus
-{
-    border-color: #ffc04d;
+    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #606060
+    , stop: 1 #505050);
 }
 
 QPushButton:pressed,
@@ -875,4 +855,10 @@ DialogFragment[objectName="ControlPanel_VideoPresets"] QPushButton:flat
     width: 0.5em;
     min-width: 0.5em;
     max-width: 0.5em;
+}
+
+QComboBox
+{
+    border: none;
+    border-bottom: 1px solid black;
 }

@@ -13,7 +13,7 @@ control_panel::output::Renderer::Renderer(QWidget *parent) :
 
     connect(ui->comboBox_renderer, &QComboBox::currentTextChanged, this, [parent](const QString &rendererName)
     {
-        NBENE(("WindowRenderer: Unimplemented functionality."));
+        NBENE(("control_panel::output::Renderer: Unimplemented functionality."));
         // kd_set_renderer(rendererName.toStdString());)
 
         kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "Renderer", rendererName);

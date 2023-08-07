@@ -49,8 +49,7 @@ void ParameterGrid::add_separator(void)
     return;
 }
 
-void ParameterGrid::add_combobox(const QString name,
-                                 const std::list<QString> items)
+void ParameterGrid::add_combobox(const QString name, const std::list<QString> items)
 {
     auto *const newParam = new ParameterGrid::parameter_meta_s;
     newParam->name = name;
@@ -185,13 +184,14 @@ void ParameterGrid::add_scroller(const QString name,
             auto *layout = qobject_cast<QGridLayout*>(this->layout());
             const auto rowIdx = layout->rowCount();
 
+            layout->setSpacing(9);
             layout->addWidget(label, rowIdx, 0);
             layout->addWidget(spinBox, rowIdx, 1);
             layout->addWidget(scrollBar, rowIdx, 2);
             layout->addWidget(resetButton, rowIdx, 3);
         }
 
-        // Create component reactivity.
+        // Create component reactivity.www
         {
             connect(resetButton, &QPushButton::clicked, this, [=]
             {

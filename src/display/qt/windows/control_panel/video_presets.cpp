@@ -135,8 +135,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         // these characters shouldn't occur in preset names.
         ui->lineEdit_presetName->setValidator(new QRegExpValidator(QRegExp("[^{}]*"), this));
 
-        ui->pushButton_resolutionSeparator->setText("\u00d7");
-
         ui->groupBox_activation->setEnabled(false);
         ui->comboBox_presetList->setEnabled(false);
         ui->pushButton_deletePreset->setEnabled(false);
@@ -319,7 +317,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         {
             ui->doubleSpinBox_refreshRateValue->setEnabled(checked);
             ui->comboBox_refreshRateComparison->setEnabled(checked);
-            ui->pushButton_refreshRateSeparator->setEnabled(checked);
 
             auto *selectedPreset = ui->comboBox_presetList->current_preset();
 
@@ -338,7 +335,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         {
             ui->spinBox_resolutionX->setEnabled(checked);
             ui->spinBox_resolutionY->setEnabled(checked);
-            ui->pushButton_resolutionSeparator->setEnabled(checked);
 
             auto *selectedPreset = ui->comboBox_presetList->current_preset();
 
@@ -357,7 +353,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         {
             ui->comboBox_shortcutFirstKey->setEnabled(checked);
             ui->comboBox_shortcutSecondKey->setEnabled(checked);
-            ui->label_shortcutSeparator->setEnabled(checked);
 
             auto *selectedPreset = ui->comboBox_presetList->current_preset();
 
@@ -367,18 +362,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
                 emit this->data_changed();
             }
-        });
-
-        connect(ui->pushButton_resolutionSeparator, &QPushButton::clicked, this, [this](void)
-        {
-            const auto currentResolution = resolution_s::from_capture_device();
-            ui->spinBox_resolutionX->setValue(int(currentResolution.w));
-            ui->spinBox_resolutionY->setValue(int(currentResolution.h));
-        });
-
-        connect(ui->pushButton_refreshRateSeparator, &QPushButton::clicked, this, [this](void)
-        {
-            ui->doubleSpinBox_refreshRateValue->setValue(refresh_rate_s::from_capture_device().value<double>());
         });
 
         connect(ui->comboBox_shortcutSecondKey, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](const int idx)
@@ -399,7 +382,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         {
             const QString text = ui->comboBox_refreshRateComparison->itemText(idx);
 
-            if (text == "Exact")
+            if (text == "Exactly")
             {
                 ui->doubleSpinBox_refreshRateValue->setDecimals(refresh_rate_s::numDecimalsPrecision);
             }
@@ -412,7 +395,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
             if (selectedPreset)
             {
-                if (text == "Exact")        selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
+                if (text == "Exactly")        selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
                 else if (text == "Rounded") selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::rounded;
                 else if (text == "Floored") selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::floored;
                 else if (text == "Ceiled")  selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::ceiled;
