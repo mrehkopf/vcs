@@ -13,7 +13,7 @@
 #include "filter/abstract_filter.h"
 #include "common/globals.h"
 #include "display/qt/windows/control_panel/filter_graph/base_filter_graph_node.h"
-#include "display/qt/widgets/QGraphicsScene_interactible_node_graph.h"
+#include "display/qt/widgets/InteractibleNodeGraph.h"
 
 BaseFilterGraphNode::BaseFilterGraphNode(const filter_node_type_e type,
                                  const QString title,

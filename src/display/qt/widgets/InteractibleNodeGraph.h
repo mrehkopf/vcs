@@ -10,7 +10,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
 #include <QDebug>
-#include "QGraphicsItem_interactible_node_graph_node.h"
+#include "InteractibleNodeGraphNode.h"
 
 class InteractibleNodeGraph : public QGraphicsScene
 {

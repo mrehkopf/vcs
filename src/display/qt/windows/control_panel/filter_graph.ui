@@ -45,7 +45,7 @@
   <customwidget>
    <class>InteractibleNodeGraphView</class>
    <extends>QGraphicsView</extends>
-   <header>QGraphicsView_interactible_node_graph_view.h</header>
+   <header>InteractibleNodeGraphView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

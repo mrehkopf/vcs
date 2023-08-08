@@ -9,7 +9,7 @@
 #define VCS_DISPLAY_QT_SUBCLASSES_QMENU_DIALOG_FILE_MENU_H
 
 #include <QMenu>
-#include "display/qt/widgets/QDialog_vcs_dialog_fragment.h"
+#include "display/qt/widgets/DialogFragment.h"
 
 class DialogFileMenu : public QMenu
 {

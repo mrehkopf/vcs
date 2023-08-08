@@ -7,7 +7,7 @@
 
 #include <QFileInfo>
 #include <QKeyEvent>
-#include "display/qt/widgets/QDialog_vcs_dialog_fragment.h"
+#include "display/qt/widgets/DialogFragment.h"
 #include "common/globals.h"
 
 DialogFragment::DialogFragment(QWidget *parent) : QWidget(parent)

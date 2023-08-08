@@ -8,7 +8,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_COMPONENTS_FILTER_GRAPH_DIALOG_FILTER_GRAPH_NODE_H
 #define VCS_DISPLAY_QT_DIALOGS_COMPONENTS_FILTER_GRAPH_DIALOG_FILTER_GRAPH_NODE_H
 
-#include "display/qt/widgets/QGraphicsItem_interactible_node_graph_node.h"
+#include "display/qt/widgets/InteractibleNodeGraphNode.h"
 
 class abstract_filter_c;
 

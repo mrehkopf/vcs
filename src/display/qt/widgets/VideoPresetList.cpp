@@ -5,7 +5,7 @@
  *
  */
 
-#include "display/qt/widgets/QComboBox_video_preset_list.h"
+#include "display/qt/widgets/VideoPresetList.h"
 #include "capture/video_presets.h"
 #include "common/globals.h"
 

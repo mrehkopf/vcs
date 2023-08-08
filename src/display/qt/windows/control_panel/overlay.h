@@ -9,7 +9,7 @@
 
 #include <QTextDocument>
 #include "capture/capture.h"
-#include "display/qt/widgets/QDialog_vcs_dialog_fragment.h"
+#include "display/qt/widgets/DialogFragment.h"
 
 namespace control_panel
 {

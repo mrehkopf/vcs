@@ -14,9 +14,9 @@
 #include <QShortcut>
 #include <QDebug>
 #include <QMenu>
-#include "display/qt/widgets/QGraphicsView_interactible_node_graph_view.h"
-#include "display/qt/widgets/QGraphicsItem_interactible_node_graph_node.h"
-#include "display/qt/widgets/QGraphicsScene_interactible_node_graph.h"
+#include "display/qt/widgets/InteractibleNodeGraphView.h"
+#include "display/qt/widgets/InteractibleNodeGraphNode.h"
+#include "display/qt/widgets/InteractibleNodeGraph.h"
 #include "display/qt/keyboard_shortcuts.h"
 #include "common/assert.h"
 #include "filter/filter.h"

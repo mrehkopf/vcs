@@ -81,7 +81,7 @@
   <customwidget>
    <class>PropertyTable</class>
    <extends>QTableWidget</extends>
-   <header>QTableWidget_property_table.h</header>
+   <header>PropertyTable.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

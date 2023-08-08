@@ -34,7 +34,7 @@
 #include <QWidget>
 #include <QCursor>
 #include <QDebug>
-#include "QGraphicsScene_interactible_node_graph.h"
+#include "InteractibleNodeGraph.h"
 #include "common/assert.h"
 
 InteractibleNodeGraph::InteractibleNodeGraph(QObject *parent) :

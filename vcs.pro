@@ -43,6 +43,17 @@ RESOURCES += \
 SOURCES += \
     src/common/refresh_rate.cpp \
     src/common/vcs_event/vcs_event.cpp \
+    src/display/qt/widgets/DialogFileMenu.cpp \
+    src/display/qt/widgets/DialogFragment.cpp \
+    src/display/qt/widgets/InteractibleNodeGraph.cpp \
+    src/display/qt/widgets/InteractibleNodeGraphNode.cpp \
+    src/display/qt/widgets/InteractibleNodeGraphView.cpp \
+    src/display/qt/widgets/MagnifyingGlass.cpp \
+    src/display/qt/widgets/OGLWidget.cpp \
+    src/display/qt/widgets/ParameterGrid.cpp \
+    src/display/qt/widgets/PropertyTable.cpp \
+    src/display/qt/widgets/QtAbstractGUI.cpp \
+    src/display/qt/widgets/VideoPresetList.cpp \
     src/display/qt/windows/control_panel.cpp \
     src/display/qt/windows/control_panel/about_vcs.cpp \
     src/display/qt/windows/control_panel/capture.cpp \
@@ -60,8 +71,6 @@ SOURCES += \
     src/display/qt/windows/control_panel/video_presets.cpp \
     src/display/qt/dialogs/resolution_query.cpp \
     src/display/qt/keyboard_shortcuts.cpp \
-    src/display/qt/widgets/QDialog_vcs_dialog_fragment.cpp \
-    src/display/qt/widgets/QFrame_qt_abstract_gui.cpp \
     src/display/qt/windows/output_window.cpp \
     src/filter/filters/output_scaler/filter_output_scaler.cpp \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.cpp \
@@ -71,10 +80,6 @@ SOURCES += \
     src/filter/filters/source_fps_estimate/gui/filtergui_source_fps_estimate.cpp \
     src/main.cpp \
     src/display/display.cpp \
-    src/display/qt/widgets/QLabel_magnifying_glass.cpp \
-    src/display/qt/widgets/QComboBox_video_preset_list.cpp \
-    src/display/qt/widgets/QGroupBox_parameter_grid.cpp \
-    src/display/qt/widgets/QMenu_dialog_file_menu.cpp \
     src/display/qt/d_main.cpp \
     src/anti_tear/anti_tear_multiple_per_frame.cpp \
     src/anti_tear/anti_tear_one_per_frame.cpp \
@@ -120,11 +125,6 @@ SOURCES += \
     src/anti_tear/anti_tear.cpp \
     src/display/qt/persistent_settings.cpp \
     src/common/disk/disk.cpp \
-    src/display/qt/widgets/QOpenGLWidget_opengl_renderer.cpp \
-    src/display/qt/widgets/QGraphicsItem_interactible_node_graph_node.cpp \
-    src/display/qt/widgets/QGraphicsScene_interactible_node_graph.cpp \
-    src/display/qt/widgets/QGraphicsView_interactible_node_graph_view.cpp \
-    src/display/qt/widgets/QTableWidget_property_table.cpp \
     src/common/disk/file_writers/file_writer_filter_graph_version_b.cpp \
     src/common/disk/file_reader.cpp \
     src/common/disk/file_readers/file_reader_filter_graph_version_b.cpp \
@@ -144,6 +144,17 @@ HEADERS += \
     src/common/assert.h \
     src/common/globals.h \
     src/common/types.h \
+    src/display/qt/widgets/DialogFileMenu.h \
+    src/display/qt/widgets/DialogFragment.h \
+    src/display/qt/widgets/InteractibleNodeGraph.h \
+    src/display/qt/widgets/InteractibleNodeGraphNode.h \
+    src/display/qt/widgets/InteractibleNodeGraphView.h \
+    src/display/qt/widgets/MagnifyingGlass.h \
+    src/display/qt/widgets/OGLWidget.h \
+    src/display/qt/widgets/ParameterGrid.h \
+    src/display/qt/widgets/PropertyTable.h \
+    src/display/qt/widgets/QtAbstractGUI.h \
+    src/display/qt/widgets/VideoPresetList.h \
     src/display/qt/windows/control_panel.h \
     src/display/qt/windows/control_panel/about_vcs.h \
     src/display/qt/windows/control_panel/capture.h \
@@ -161,12 +172,6 @@ HEADERS += \
     src/display/qt/windows/control_panel/video_presets.h \
     src/display/qt/dialogs/resolution_query.h \
     src/display/qt/keyboard_shortcuts.h \
-    src/display/qt/widgets/QComboBox_video_preset_list.h \
-    src/display/qt/widgets/QDialog_vcs_dialog_fragment.h \
-    src/display/qt/widgets/QFrame_qt_abstract_gui.h \
-    src/display/qt/widgets/QGroupBox_parameter_grid.h \
-    src/display/qt/widgets/QLabel_magnifying_glass.h \
-    src/display/qt/widgets/QMenu_dialog_file_menu.h \
     src/anti_tear/anti_tear_multiple_per_frame.h \
     src/anti_tear/anti_tear_one_per_frame.h \
     src/anti_tear/anti_tearer.h \
@@ -228,12 +233,7 @@ HEADERS += \
     src/display/qt/utility.h \
     src/common/disk/csv.h \
     src/common/disk/disk.h \
-    src/display/qt/widgets/QOpenGLWidget_opengl_renderer.h \
-    src/display/qt/widgets/QGraphicsItem_interactible_node_graph_node.h \
-    src/display/qt/widgets/QGraphicsScene_interactible_node_graph.h \
-    src/display/qt/widgets/QGraphicsView_interactible_node_graph_view.h \
     src/display/display.h \
-    src/display/qt/widgets/QTableWidget_property_table.h \
     src/common/disk/file_writers/file_writer_filter_graph.h \
     src/common/disk/file_readers/file_reader_filter_graph.h \
     src/common/disk/file_reader.h \

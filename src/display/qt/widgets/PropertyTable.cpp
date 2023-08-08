@@ -6,7 +6,7 @@
  */
 
 #include <QHeaderView>
-#include "display/qt/widgets/QTableWidget_property_table.h"
+#include "display/qt/widgets/PropertyTable.h"
 
 PropertyTable::PropertyTable(QWidget *parent) : QTableWidget(parent)
 {

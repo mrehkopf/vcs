@@ -8,7 +8,7 @@
 #ifndef VCS_DISPLAY_QT_DIALOGS_COMPONENTS_CAPTURE_DIALOG_INPUT_CHANNEL_H
 #define VCS_DISPLAY_QT_DIALOGS_COMPONENTS_CAPTURE_DIALOG_INPUT_CHANNEL_H
 
-#include "display/qt/widgets/QDialog_vcs_dialog_fragment.h"
+#include "display/qt/widgets/DialogFragment.h"
 
 namespace control_panel::capture
 {

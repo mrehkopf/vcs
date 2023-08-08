@@ -554,13 +554,13 @@
   <customwidget>
    <class>ParameterGrid</class>
    <extends>QGroupBox</extends>
-   <header>QGroupBox_parameter_grid.h</header>
+   <header>ParameterGrid.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>VideoPresetList</class>
    <extends>QComboBox</extends>
-   <header>QComboBox_video_preset_list.h</header>
+   <header>VideoPresetList.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

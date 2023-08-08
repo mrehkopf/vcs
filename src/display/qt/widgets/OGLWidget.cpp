@@ -10,7 +10,7 @@
 #include <QCoreApplication>
 #include <QOpenGLWidget>
 #include <QMatrix4x4>
-#include "display/qt/widgets/QOpenGLWidget_opengl_renderer.h"
+#include "display/qt/widgets/OGLWidget.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"

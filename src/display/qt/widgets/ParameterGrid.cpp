@@ -12,7 +12,7 @@
 #include <QLabel>
 #include <QSpinBox>
 #include <QScrollBar>
-#include "display/qt/widgets/QGroupBox_parameter_grid.h"
+#include "display/qt/widgets/ParameterGrid.h"
 #include "display/qt/utility.h"
 #include "common/assert.h"
 

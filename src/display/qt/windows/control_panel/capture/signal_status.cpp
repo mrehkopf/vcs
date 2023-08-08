@@ -14,7 +14,7 @@
 #include <QDebug>
 #include <QTimer>
 #include <QTime>
-#include "display/qt/widgets/QTableWidget_property_table.h"
+#include "display/qt/widgets/PropertyTable.h"
 #include "common/vcs_event/vcs_event.h"
 #include "display/qt/utility.h"
 #include "display/display.h"
