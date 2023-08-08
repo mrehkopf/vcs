@@ -119,7 +119,7 @@ DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_
     margin: 0;
     padding: 0;
     min-width: 1em;
-    margin-left: 0.25em;
+    margin-right: 0.25em;
 }
 
 DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
@@ -196,7 +196,8 @@ QTextEdit
     color: #cccccc;
     background-color: #353535;
     border-radius: 0;
-    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
     padding: 0;
     padding-left: 0.25em;
     margin: 0;
@@ -204,13 +205,16 @@ QTextEdit
 
 QLineEdit:read-only
 {
-    border-color: #353535;
+    background-color: transparent;
+    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-repeat: repeat-xy;
 }
 
 QSpinBox
 {
     border: none;
-    border-bottom: 1px solid #101010;
+    border-left: 1px solid #101010;
+    border-top: 1px solid #101010;
 }
 
 QComboBox
@@ -348,7 +352,7 @@ QGroupBox::title
 QScrollBar:vertical,
 QScrollBar:horizontal
 {
-    background-color: #303030;
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 QScrollBar::handle:vertical,
@@ -710,7 +714,6 @@ QGroupBox QScrollBar::add-line:disabled,
 QGroupBox QScrollBar::sub-line:disabled
 {
     border: none;
-    background-color: transparent;
     background-image: url(:/res/icons/newie/line_pattern.png);
     background-repeat: repeat-xy;
 }
@@ -765,8 +768,7 @@ QScrollBar::sub-line:vertical:hover,
 QScrollBar::add-line:horizontal:hover,
 QScrollBar::sub-line:horizontal:hover
 {
-    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #606060
-    , stop: 1 #505050);
+    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #606060, stop: 1 #505050);
 }
 
 QPushButton:pressed,
@@ -815,11 +817,6 @@ ControlPanel QFrame[objectName="buttonsContainer"] QPushButton[isSelected="true"
 {
     background-color: #303030;
     color: #f5f5f5;
-}
-
-DialogFragment[objectName="ControlPanel_Capture_InputResolution"] QPushButton
-{
-    min-height: 2.7em;
 }
 
 DialogFragment[objectName="ControlPanel_VideoPresets"] QPushButton:!flat

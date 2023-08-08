@@ -184,7 +184,7 @@ void ParameterGrid::add_scroller(const QString name,
             auto *layout = qobject_cast<QGridLayout*>(this->layout());
             const auto rowIdx = layout->rowCount();
 
-            layout->setSpacing(9);
+            layout->setSpacing(6);
             layout->addWidget(label, rowIdx, 0);
             layout->addWidget(spinBox, rowIdx, 1);
             layout->addWidget(scrollBar, rowIdx, 2);
