@@ -7,22 +7,22 @@
 #include <QTimer>
 #include <QLabel>
 #include <functional>
-#include "display/qt/windows/control_panel/filter_graph/base_filter_graph_node.h"
-#include "display/qt/windows/control_panel/filter_graph/filter_node.h"
-#include "display/qt/windows/control_panel/filter_graph/input_gate_node.h"
-#include "display/qt/windows/control_panel/filter_graph/output_gate_node.h"
-#include "display/qt/windows/control_panel/filter_graph/output_scaler_node.h"
+#include "display/qt/windows/ControlPanel/FilterGraph/BaseFilterGraphNode.h"
+#include "display/qt/windows/ControlPanel/FilterGraph/FilterNode.h"
+#include "display/qt/windows/ControlPanel/FilterGraph/InputGateNode.h"
+#include "display/qt/windows/ControlPanel/FilterGraph/OutputGateNode.h"
+#include "display/qt/windows/ControlPanel/FilterGraph/OutputScalerNode.h"
 #include "display/qt/widgets/InteractibleNodeGraphNode.h"
 #include "display/qt/widgets/InteractibleNodeGraph.h"
 #include "display/qt/widgets/DialogFileMenu.h"
 #include "display/qt/widgets/QtAbstractGUI.h"
-#include "display/qt/windows/control_panel/filter_graph.h"
+#include "display/qt/windows/ControlPanel/FilterGraph.h"
 #include "display/qt/persistent_settings.h"
 #include "common/abstract_gui.h"
 #include "filter/abstract_filter.h"
 #include "common/command_line/command_line.h"
 #include "common/disk/disk.h"
-#include "ui_filter_graph.h"
+#include "ui_FilterGraph.h"
 
 control_panel::FilterGraph::FilterGraph(QWidget *parent) :
     DialogFragment(parent),

@@ -54,21 +54,25 @@ SOURCES += \
     src/display/qt/widgets/PropertyTable.cpp \
     src/display/qt/widgets/QtAbstractGUI.cpp \
     src/display/qt/widgets/VideoPresetList.cpp \
-    src/display/qt/windows/control_panel.cpp \
-    src/display/qt/windows/control_panel/about_vcs.cpp \
-    src/display/qt/windows/control_panel/capture.cpp \
-    src/display/qt/windows/control_panel/capture/input_channel.cpp \
-    src/display/qt/windows/control_panel/capture/input_resolution.cpp \
-    src/display/qt/windows/control_panel/capture/signal_status.cpp \
-    src/display/qt/windows/control_panel/filter_graph.cpp \
-    src/display/qt/windows/control_panel/filter_graph/base_filter_graph_node.cpp \
-    src/display/qt/windows/control_panel/filter_graph/output_scaler_node.cpp \
-    src/display/qt/windows/control_panel/output.cpp \
-    src/display/qt/windows/control_panel/output/renderer.cpp \
-    src/display/qt/windows/control_panel/output/scaler.cpp \
-    src/display/qt/windows/control_panel/output/size.cpp \
-    src/display/qt/windows/control_panel/overlay.cpp \
-    src/display/qt/windows/control_panel/video_presets.cpp \
+    src/display/qt/windows/ControlPanel.cpp \
+    src/display/qt/windows/ControlPanel/Capture/InputChannel.cpp \
+    src/display/qt/windows/ControlPanel/Capture/InputResolution.cpp \
+    src/display/qt/windows/ControlPanel/Capture/SignalStatus.cpp \
+    src/display/qt/windows/ControlPanel/FilterGraph/BaseFilterGraphNode.cpp \
+    src/display/qt/windows/ControlPanel/FilterGraph/FilterNode.cpp \
+    src/display/qt/windows/ControlPanel/FilterGraph/InputGateNode.cpp \
+    src/display/qt/windows/ControlPanel/FilterGraph/OutputGateNode.cpp \
+    src/display/qt/windows/ControlPanel/FilterGraph/OutputScalerNode.cpp \
+    src/display/qt/windows/ControlPanel/Overlay.cpp \
+    src/display/qt/windows/ControlPanel/Output/Renderer.cpp \
+    src/display/qt/windows/ControlPanel/Output/Scaler.cpp \
+    src/display/qt/windows/ControlPanel/Output/Size.cpp \
+    src/display/qt/windows/OutputWindow.cpp \
+    src/display/qt/windows/ControlPanel/AboutVCS.cpp \
+    src/display/qt/windows/ControlPanel/Capture.cpp \
+    src/display/qt/windows/ControlPanel/FilterGraph.cpp \
+    src/display/qt/windows/ControlPanel/Output.cpp \
+    src/display/qt/windows/ControlPanel/VideoPresets.cpp \
     src/display/qt/dialogs/resolution_query.cpp \
     src/display/qt/keyboard_shortcuts.cpp \
     src/display/qt/windows/output_window.cpp \
@@ -132,9 +136,6 @@ SOURCES += \
     src/common/disk/file_writer.cpp \
     src/common/disk/file_writers/file_writer_video_params_version_a.cpp \
     src/common/disk/file_readers/file_reader_video_params_version_a.cpp \
-    src/display/qt/windows/control_panel/filter_graph/output_gate_node.cpp \
-    src/display/qt/windows/control_panel/filter_graph/input_gate_node.cpp \
-    src/display/qt/windows/control_panel/filter_graph/filter_node.cpp \
     src/capture/video_presets.cpp \
     src/common/disk/file_writers/file_writer_video_presets_version_a.cpp \
     src/common/disk/file_readers/file_reader_video_presets_version_a.cpp \
@@ -155,27 +156,30 @@ HEADERS += \
     src/display/qt/widgets/PropertyTable.h \
     src/display/qt/widgets/QtAbstractGUI.h \
     src/display/qt/widgets/VideoPresetList.h \
-    src/display/qt/windows/control_panel.h \
-    src/display/qt/windows/control_panel/about_vcs.h \
-    src/display/qt/windows/control_panel/capture.h \
-    src/display/qt/windows/control_panel/capture/input_channel.h \
-    src/display/qt/windows/control_panel/capture/input_resolution.h \
-    src/display/qt/windows/control_panel/capture/signal_status.h \
-    src/display/qt/windows/control_panel/filter_graph.h \
-    src/display/qt/windows/control_panel/filter_graph/base_filter_graph_node.h \
-    src/display/qt/windows/control_panel/filter_graph/output_scaler_node.h \
-    src/display/qt/windows/control_panel/output.h \
-    src/display/qt/windows/control_panel/output/renderer.h \
-    src/display/qt/windows/control_panel/output/scaler.h \
-    src/display/qt/windows/control_panel/output/size.h \
-    src/display/qt/windows/control_panel/overlay.h \
-    src/display/qt/windows/control_panel/video_presets.h \
+    src/display/qt/windows/ControlPanel.h \
+    src/display/qt/windows/ControlPanel/Capture/InputChannel.h \
+    src/display/qt/windows/ControlPanel/Capture/InputResolution.h \
+    src/display/qt/windows/ControlPanel/Capture/SignalStatus.h \
+    src/display/qt/windows/ControlPanel/FilterGraph/BaseFilterGraphNode.h \
+    src/display/qt/windows/ControlPanel/FilterGraph/FilterNode.h \
+    src/display/qt/windows/ControlPanel/FilterGraph/InputGateNode.h \
+    src/display/qt/windows/ControlPanel/FilterGraph/OutputGateNode.h \
+    src/display/qt/windows/ControlPanel/FilterGraph/OutputScalerNode.h \
+    src/display/qt/windows/ControlPanel/Overlay.h \
+    src/display/qt/windows/ControlPanel/Output/Renderer.h \
+    src/display/qt/windows/ControlPanel/Output/Scaler.h \
+    src/display/qt/windows/ControlPanel/Output/Size.h \
+    src/display/qt/windows/OutputWindow.h \
+    src/display/qt/windows/ControlPanel/AboutVCS.h \
+    src/display/qt/windows/ControlPanel/Capture.h \
+    src/display/qt/windows/ControlPanel/FilterGraph.h \
+    src/display/qt/windows/ControlPanel/Output.h \
+    src/display/qt/windows/ControlPanel/VideoPresets.h \
     src/display/qt/dialogs/resolution_query.h \
     src/display/qt/keyboard_shortcuts.h \
     src/anti_tear/anti_tear_multiple_per_frame.h \
     src/anti_tear/anti_tear_one_per_frame.h \
     src/anti_tear/anti_tearer.h \
-    src/display/qt/windows/output_window.h \
     src/filter/filters/anti_tear/filter_anti_tear.h \
     src/filter/filters/anti_tear/gui/filtergui_anti_tear.h \
     src/filter/filters/blur/filter_blur.h \
@@ -241,9 +245,6 @@ HEADERS += \
     src/common/disk/file_readers/file_reader_video_params.h \
     src/common/disk/file_writers/file_writer_video_params.h \
     src/common/disk/file_writer.h \
-    src/display/qt/windows/control_panel/filter_graph/output_gate_node.h \
-    src/display/qt/windows/control_panel/filter_graph/input_gate_node.h \
-    src/display/qt/windows/control_panel/filter_graph/filter_node.h \
     src/common/refresh_rate.h \
     src/capture/video_presets.h \
     src/common/disk/file_writers/file_writer_video_presets.h \
@@ -252,21 +253,21 @@ HEADERS += \
     src/common/timer/timer.h
 
 FORMS += \
-    src/display/qt/windows/control_panel.ui \
-    src/display/qt/windows/control_panel/about_vcs.ui \
-    src/display/qt/windows/control_panel/capture.ui \
-    src/display/qt/windows/control_panel/capture/input_channel.ui \
-    src/display/qt/windows/control_panel/capture/input_resolution.ui \
-    src/display/qt/windows/control_panel/capture/signal_status.ui \
-    src/display/qt/windows/control_panel/filter_graph.ui \
-    src/display/qt/windows/control_panel/output.ui \
-    src/display/qt/windows/control_panel/output/renderer.ui \
-    src/display/qt/windows/control_panel/output/scaler.ui \
-    src/display/qt/windows/control_panel/output/size.ui \
-    src/display/qt/windows/control_panel/overlay.ui \
-    src/display/qt/windows/control_panel/video_presets.ui \
-    src/display/qt/dialogs/resolution_query.ui \
-    src/display/qt/windows/output_window.ui
+    src/display/qt/windows/ControlPanel.ui \
+    src/display/qt/windows/ControlPanel/Capture/InputChannel.ui \
+    src/display/qt/windows/ControlPanel/Capture/InputResolution.ui \
+    src/display/qt/windows/ControlPanel/Capture/SignalStatus.ui \
+    src/display/qt/windows/ControlPanel/Overlay.ui \
+    src/display/qt/windows/ControlPanel/Output/Renderer.ui \
+    src/display/qt/windows/ControlPanel/Output/Scaler.ui \
+    src/display/qt/windows/ControlPanel/Output/Size.ui \
+    src/display/qt/windows/OutputWindow.ui \
+    src/display/qt/windows/ControlPanel/AboutVCS.ui \
+    src/display/qt/windows/ControlPanel/Capture.ui \
+    src/display/qt/windows/ControlPanel/FilterGraph.ui \
+    src/display/qt/windows/ControlPanel/Output.ui \
+    src/display/qt/windows/ControlPanel/VideoPresets.ui \
+    src/display/qt/dialogs/resolution_query.ui
 
 contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
     SOURCES += src/capture/virtual/capture_virtual.cpp

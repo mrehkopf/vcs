@@ -9,9 +9,9 @@
 #include <QPainter>
 #include <QStyle>
 #include "common/assert.h"
-#include "display/qt/windows/control_panel/filter_graph/output_gate_node.h"
+#include "display/qt/windows/ControlPanel/FilterGraph/OutputScalerNode.h"
 
-node_edge_s* OutputGateNode::input_edge(void)
+node_edge_s* OutputScalerNode::input_edge(void)
 {
     node_edge_s &inputEdge = this->edges[0];
 

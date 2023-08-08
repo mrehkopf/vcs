@@ -3,8 +3,8 @@
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "scaler/scaler.h"
-#include "size.h"
-#include "ui_size.h"
+#include "Size.h"
+#include "ui_Size.h"
 
 control_panel::output::Size::Size(QWidget *parent) :
     DialogFragment(parent),

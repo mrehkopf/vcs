@@ -11,10 +11,10 @@
 #include <QMessageBox>
 #include <cassert>
 #include <thread>
-#include "display/qt/windows/output_window.h"
-#include "display/qt/windows/control_panel/video_presets.h"
-#include "display/qt/windows/control_panel/filter_graph.h"
-#include "display/qt/windows/control_panel.h"
+#include "display/qt/windows/OutputWindow.h"
+#include "display/qt/windows/ControlPanel/VideoPresets.h"
+#include "display/qt/windows/ControlPanel/FilterGraph.h"
+#include "display/qt/windows/ControlPanel.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "filter/filter.h"

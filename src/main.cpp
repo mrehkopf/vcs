@@ -15,7 +15,7 @@
 #include <thread>
 #include <mutex>
 #include <deque>
-#include "display/qt/windows/output_window.h"
+#include "display/qt/windows/OutputWindow.h"
 #include "common/command_line/command_line.h"
 #include "anti_tear/anti_tear.h"
 #include "capture/capture.h"

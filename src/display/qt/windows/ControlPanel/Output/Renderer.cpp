@@ -1,9 +1,9 @@
 #include <QWindow>
 #include "display/display.h"
-#include "display/qt/windows/output_window.h"
+#include "display/qt/windows/OutputWindow.h"
 #include "display/qt/persistent_settings.h"
-#include "renderer.h"
-#include "ui_renderer.h"
+#include "Renderer.h"
+#include "ui_Renderer.h"
 
 control_panel::output::Renderer::Renderer(QWidget *parent) :
     DialogFragment(parent),

@@ -9,8 +9,8 @@
 #include "display/qt/utility.h"
 #include "common/vcs_event/vcs_event.h"
 #include "capture/capture.h"
-#include "input_resolution.h"
-#include "ui_input_resolution.h"
+#include "InputResolution.h"
+#include "ui_InputResolution.h"
 
 control_panel::capture::InputResolution::InputResolution(QWidget *parent) :
     DialogFragment(parent),

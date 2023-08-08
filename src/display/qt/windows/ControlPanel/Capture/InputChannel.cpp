@@ -8,8 +8,8 @@
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "common/assert.h"
-#include "input_channel.h"
-#include "ui_input_channel.h"
+#include "InputChannel.h"
+#include "ui_InputChannel.h"
 
 control_panel::capture::InputChannel::InputChannel(QWidget *parent) :
     DialogFragment(parent),

@@ -1,7 +1,7 @@
 #include "scaler/scaler.h"
 #include "display/qt/persistent_settings.h"
-#include "scaler.h"
-#include "ui_scaler.h"
+#include "Scaler.h"
+#include "ui_Scaler.h"
 
 control_panel::output::Scaler::Scaler(QWidget *parent) :
     DialogFragment(parent),

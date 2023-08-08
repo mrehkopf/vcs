@@ -5,7 +5,7 @@
  *
  */
 
-#include "display/qt/windows/control_panel/filter_graph/base_filter_graph_node.h"
+#include "display/qt/windows/ControlPanel/FilterGraph/BaseFilterGraphNode.h"
 #include "common/disk/file_writers/file_writer_filter_graph.h"
 #include "common/disk/file_streamer.h"
 #include "common/globals.h"

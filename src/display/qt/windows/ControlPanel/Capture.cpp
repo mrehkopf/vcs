@@ -1,10 +1,10 @@
 #include <QVBoxLayout>
-#include "display/qt/windows/control_panel/capture/input_resolution.h"
-#include "display/qt/windows/control_panel/capture/input_channel.h"
-#include "display/qt/windows/control_panel/capture/signal_status.h"
+#include "display/qt/windows/ControlPanel/Capture/InputResolution.h"
+#include "display/qt/windows/ControlPanel/Capture/InputChannel.h"
+#include "display/qt/windows/ControlPanel/Capture/SignalStatus.h"
 #include "capture/capture.h"
-#include "capture.h"
-#include "ui_capture.h"
+#include "Capture.h"
+#include "ui_Capture.h"
 
 control_panel::Capture::Capture(QWidget *parent) :
     DialogFragment(parent),

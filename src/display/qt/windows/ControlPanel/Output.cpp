@@ -1,10 +1,10 @@
 #include <QVBoxLayout>
-#include "display/qt/windows/control_panel/output/renderer.h"
-#include "display/qt/windows/control_panel/output/scaler.h"
-#include "display/qt/windows/control_panel/output/size.h"
-#include "display/qt/windows/output_window.h"
-#include "output.h"
-#include "ui_output.h"
+#include "display/qt/windows/ControlPanel/Output/Renderer.h"
+#include "display/qt/windows/ControlPanel/Output/Scaler.h"
+#include "display/qt/windows/ControlPanel/Output/Size.h"
+#include "display/qt/windows/OutputWindow.h"
+#include "Output.h"
+#include "ui_Output.h"
 
 control_panel::Output::Output(QWidget *parent) :
     DialogFragment(parent),

@@ -1,15 +1,15 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QStyle>
-#include "display/qt/windows/control_panel/capture.h"
-#include "display/qt/windows/control_panel/output.h"
-#include "display/qt/windows/control_panel/video_presets.h"
-#include "display/qt/windows/control_panel/filter_graph.h"
-#include "display/qt/windows/control_panel/about_vcs.h"
-#include "display/qt/windows/control_panel/overlay.h"
-#include "display/qt/windows/output_window.h"
-#include "control_panel.h"
-#include "ui_control_panel.h"
+#include "display/qt/windows/ControlPanel/Capture.h"
+#include "display/qt/windows/ControlPanel/Output.h"
+#include "display/qt/windows/ControlPanel/VideoPresets.h"
+#include "display/qt/windows/ControlPanel/FilterGraph.h"
+#include "display/qt/windows/ControlPanel/AboutVCS.h"
+#include "display/qt/windows/ControlPanel/Overlay.h"
+#include "display/qt/windows/OutputWindow.h"
+#include "ControlPanel.h"
+#include "ui_ControlPanel.h"
 
 ControlPanel::ControlPanel(OutputWindow *parent) :
     QWidget(parent),

@@ -16,11 +16,11 @@
 #include <QMenuBar>
 #include <QDebug>
 #include <QMenu>
-#include "display/qt/windows/control_panel/overlay.h"
+#include "display/qt/windows/ControlPanel/Overlay.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "display/display.h"
-#include "ui_overlay.h"
+#include "ui_Overlay.h"
 
 control_panel::Overlay::Overlay(QWidget *parent) :
     DialogFragment(parent),

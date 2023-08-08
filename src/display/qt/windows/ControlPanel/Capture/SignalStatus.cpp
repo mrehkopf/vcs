@@ -20,8 +20,8 @@
 #include "display/display.h"
 #include "capture/capture.h"
 #include "common/disk/disk.h"
-#include "signal_status.h"
-#include "ui_signal_status.h"
+#include "SignalStatus.h"
+#include "ui_SignalStatus.h"
 
 // Used to keep track of how long we've had a particular video mode set.
 static QTimer INFO_UPDATE_TIMER;

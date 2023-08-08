@@ -9,7 +9,7 @@
 #define VCS_DISPLAY_QT_DIALOGS_COMPONENTS_FILTER_GRAPH_DIALOG_FILTER_NODE_H
 
 #include "filter/filter.h"
-#include "display/qt/windows/control_panel/filter_graph/base_filter_graph_node.h"
+#include "display/qt/windows/ControlPanel/FilterGraph/BaseFilterGraphNode.h"
 
 class FilterNode : public BaseFilterGraphNode
 {
