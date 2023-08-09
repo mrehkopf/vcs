@@ -337,7 +337,7 @@ bool OutputWindow::apply_global_stylesheet(void)
 bool OutputWindow::set_global_font_size(const unsigned fontSize)
 {
     #if __linux__
-        QFile fontStyleFile(":/res/stylesheets/font-linux.qss");
+        QFile fontStyleFile(":/res/stylesheets/font.qss");
     #else
         #error "Unknown platform."
     #endif

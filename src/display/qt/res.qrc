@@ -3,12 +3,11 @@
         <file>fonts/Ubuntu-R.ttf</file>
         <file>icons/arrow_down_disabled.png</file>
         <file>icons/arrow_down.png</file>
-        <file>stylesheets/font-linux.qss</file>
+        <file>stylesheets/font.qss</file>
         <file>icons/arrow_up_disabled.png</file>
         <file>icons/arrow_up.png</file>
         <file>icons/appicon.ico</file>
         <file>fonts/UbuntuMono-R.ttf</file>
-        <file>stylesheets/appstyle-oldie.qss</file>
         <file>icons/checkbox_check_disabled.png</file>
         <file>icons/checkbox_check.png</file>
         <file>icons/grid_pattern.png</file>
