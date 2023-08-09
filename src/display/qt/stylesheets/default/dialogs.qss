@@ -1,0 +1,53 @@
+QDialog,
+DialogFragment,
+ControlPanel,
+QGraphicsView
+{
+    background-color: #303030;
+    border: none;
+    color: black;
+}
+
+QMessageBox,
+QInputDialog
+{
+    background-color: #454545;
+    padding: 40px;
+    margin: 0;
+}
+
+DialogFragment QStatusBar::item
+{
+    border: 0px;
+}
+
+DialogFragment[objectName="ControlPanel_Overlay"] QGroupBox
+{
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+}
+
+DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"]
+{
+    margin: 0;
+    padding: 0;
+    min-width: 1em;
+    margin-right: 0.25em;
+}
+
+DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
+{
+    image: url(:/res/icons/newie/preset_disabled.svg);
+}
+
+DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="active"]
+{
+    image: url(:/res/icons/newie/preset_active.svg);
+}
+
+DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="inactive"]
+{
+    image: url(:/res/icons/newie/preset_inactive.svg);
+}

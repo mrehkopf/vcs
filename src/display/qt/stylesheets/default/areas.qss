@@ -1,0 +1,97 @@
+QFrame
+{
+    background-color: transparent;
+    border: none;
+}
+
+/* Horizontal line.*/
+QFrame[frameShape="4"],
+QFrame[frameShape="4"]:disabled
+{
+    margin: 0;
+    margin-left: 9px;
+    border: none;
+    border-top: 2px solid #3d3d3d;
+    border-bottom: 1px solid #505050;
+}
+
+QFrame:disabled
+{
+    background-color: transparent;
+    border-color: #151515;
+    color: #909090;
+}
+
+QScrollArea
+{
+    background-color: transparent;
+    margin-top: 0;
+}
+
+QScrollArea > QWidget > QWidget
+{
+    background-color: transparent;
+}
+
+QAbstractScrollArea::corner
+{
+    background-color: #454545;
+}
+
+QGroupBox
+{
+    font-weight: bold;
+    margin: 0px;
+    background-color: #303030;
+    border-radius: 0;
+    padding-bottom: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
+    border: none;
+}
+
+QGroupBox::title
+{
+    padding: 2px 0;
+    left: 9px;
+    top: 9px;
+    color: #e0e0e0;
+}
+
+QGroupBox:disabled
+{
+    color: gray;
+}
+
+QGroupBox::title:disabled
+{
+    color: gray;
+}
+
+QGroupBox QScrollBar::handle:vertical:disabled,
+QGroupBox QScrollBar::handle:horizontal:disabled,
+QGroupBox QScrollBar::add-line:disabled,
+QGroupBox QScrollBar::sub-line:disabled
+{
+    border: none;
+    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-repeat: repeat-xy;
+}
+
+QGroupBox > QFrame,
+QGroupBox > QLabel
+{
+    margin-top: 0;
+    margin-left: 2px;
+    margin-right: 3px;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+QGroupBox > PropertyTable
+{
+    margin: 0;
+    margin-left: 6px;
+    margin-right: 6px;
+    padding: 0;
+}

@@ -1,0 +1,154 @@
+QPushButton,
+QComboBox
+{
+    min-height: 1.5em;
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid black;
+    background: #525252;
+    color: #e0e0e0;
+}
+
+QGroupBox QScrollBar::handle:horizontal,
+QGroupBox QScrollBar::add-line:horizontal,
+QGroupBox QScrollBar::sub-line:horizontal
+{
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid black;
+    background: #525252;
+}
+
+QPushButton:hover,
+QComboBox:hover,
+QGroupBox QScrollBar::add-line:horizontal:hover,
+QGroupBox QScrollBar::sub-line:horizontal:hover
+{
+    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #606060, stop: 1 #505050);
+}
+
+QPushButton:pressed,
+QComboBox:pressed,
+QGroupBox QScrollBar::add-line:horizontal:pressed,
+QGroupBox QScrollBar::sub-line:horizontal:pressed
+{
+    background: #474747;
+}
+
+QPushButton:disabled,
+QComboBox:disabled,
+QGroupBox QScrollBar::handle:horizontal:disabled,
+QGroupBox QScrollBar::add-line:horizontal:disabled,
+QGroupBox QScrollBar::sub-line:horizontal:disabled
+{
+    background-color: transparent;
+    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-repeat: repeat-xy;
+    color: #909090;
+    border: none;
+}
+
+ControlPanel QFrame[objectName="buttonsContainer"] QPushButton
+{
+    border: none;
+    min-height: 45px;
+    text-align: right;
+    padding-left: 1.4em;
+    padding-right: 0.9em;
+    color: #808080;
+    background: transparent;
+}
+
+QMessageBox QPushButton,
+QInputDialog QPushButton
+{
+    padding: 4px 14px;
+}
+
+ControlPanel QFrame[objectName="buttonsContainer"] QPushButton:hover
+{
+    color: #d5d5d5;
+}
+
+ControlPanel QFrame[objectName="buttonsContainer"] QPushButton[isSelected="true"]
+{
+    background: #303030;
+    color: #f5f5f5;
+}
+
+DialogFragment[objectName="ControlPanel_VideoPresets"] QPushButton
+{
+    min-width: 1.5em;
+}
+
+DialogFragment[objectName="ControlPanel_VideoPresets"] ParameterGrid QPushButton
+{
+    min-width: 2em;
+}
+
+QComboBox
+{
+    padding-left: 0.35em;
+}
+
+QComboBox::down-arrow,
+QAbstractButton::menu-indicator
+{
+    image: url(:/res/icons/newie/arrow_down.png);
+}
+
+QComboBox::down-arrow:disabled
+{
+    image: url(:/res/icons/newie/arrow_down_disabled.png);
+}
+
+QComboBox QAbstractItemView
+{
+    background-color: #101010;
+    color: whitesmoke;
+}
+
+QComboBox::drop-down
+{
+    width: 1em;
+    border: none;
+    border-radius: 0;
+    border: none;
+    background-color: transparent;
+}
+
+QGroupBox QScrollBar:horizontal
+{
+    border: none;
+    margin: 0px 1.35em 0px 1.35em;
+}
+
+QGroupBox QScrollBar::handle:horizontal
+{
+    min-width: 1.7em;
+    image: url(:/res/icons/newie/handle_grip.png);
+}
+
+QGroupBox QScrollBar::handle:horizontal:disabled
+{
+    image: url(:/res/icons/newie/handle_grip_disabled.png);
+}
+
+QGroupBox QScrollBar::add-line:horizontal
+{
+    width: 1.35em;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+    image: url(:/res/icons/newie/arrow_right.png);
+}
+
+QGroupBox QScrollBar::sub-line:horizontal
+{
+    width: 1.35em;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+    image: url(:/res/icons/newie/arrow_left.png);
+}

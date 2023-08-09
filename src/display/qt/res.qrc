@@ -18,7 +18,6 @@
         <file>icons/arrow_right.png</file>
         <file>icons/reset.png</file>
         <file>icons/reset_disabled.png</file>
-        <file>stylesheets/appstyle-newie.qss</file>
         <file>icons/newie/reset.png</file>
         <file>icons/newie/reset_disabled.png</file>
         <file>icons/newie/arrow_left.png</file>
@@ -43,6 +42,11 @@
         <file>icons/newie/grid_pattern.png</file>
         <file>icons/newie/line_pattern.png</file>
         <file>icons/newie/handle_grip_disabled.png</file>
+        <file>stylesheets/default/misc.qss</file>
+        <file>stylesheets/default/fields.qss</file>
+        <file>stylesheets/default/dialogs.qss</file>
+        <file>stylesheets/default/buttons.qss</file>
+        <file>stylesheets/default/areas.qss</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

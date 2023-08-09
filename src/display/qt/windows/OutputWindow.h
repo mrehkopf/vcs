@@ -48,7 +48,7 @@ public:
     // should not be shown at this time.
     QImage overlay_image(void);
 
-    bool apply_global_stylesheet(const QString &qssFilename);
+    bool apply_global_stylesheet(void);
 
     bool set_global_font_size(const unsigned fontSize);
 

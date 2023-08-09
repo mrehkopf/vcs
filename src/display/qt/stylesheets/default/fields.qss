@@ -1,0 +1,125 @@
+QSpinBox,
+QDoubleSpinBox,
+QLineEdit,
+QPlainTextEdit,
+QTextEdit
+{
+    min-height: 1.5em;
+    color: #cccccc;
+    background-color: #353535;
+    border-radius: 0;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    padding: 0;
+    padding-left: 0.25em;
+    margin: 0;
+}
+
+QSpinBox:read-only,
+QDoubleSpinBox:read-only,
+QLineEdit:read-only,
+QPlainTextEdit:read-only,
+QTextEdit:read-only
+{
+    background-color: transparent;
+    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-repeat: repeat-xy;
+}
+
+QSpinBox:disabled,
+QDoubleSpinBox:disabled,
+QLineEdit:disabled,
+QPlainTextEdit:disabled,
+QTextEdit:disabled
+{
+    border: none;
+    background-color: transparent;
+    color: #909090;
+    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-repeat: repeat-xy;
+}
+
+QSpinBox::up-button,
+QDoubleSpinBox::up-button,
+QSpinBox::down-button,
+QDoubleSpinBox::down-button
+{
+    border: none;
+}
+
+QSpinBox::up-arrow,
+QSpinBox::up-arrow:disabled,
+QDoubleSpinBox::up-arrow,
+QDoubleSpinBox::up-arrow:disabled
+{
+    image: url(:/res/icons/newie/arrow_up_disabled.png);
+    border: none;
+}
+
+QSpinBox::down-arrow,
+QSpinBox::down-arrow:disabled,
+QDoubleSpinBox::down-arrow,
+QDoubleSpinBox::down-arrow:disabled
+{
+    image: url(:/res/icons/newie/arrow_down_disabled.png);
+    border: none;
+}
+
+QPlainTextEdit[overLengthLimit="true"]
+{
+    color: crimson;
+}
+
+QCheckBox
+{
+    color: #e0e0e0;
+    margin-right: 2px;
+}
+
+QCheckBox::indicator
+{
+    width: 13px;
+    height: 13px;
+    margin-top: 1px;
+    background-color: #d9d9d9;
+    border-radius: 2px;
+    border: none;
+    border: 1px solid black;
+}
+
+QCheckBox::indicator:disabled
+{
+    background-color: transparent;
+    border-color: #151515;
+    color: #909090;
+}
+
+QCheckBox::indicator::checked
+{
+    image: url(:/res/icons/checkbox_check.png);
+}
+
+QCheckBox::indicator::checked:disabled
+{
+    image: url(:/res/icons/checkbox_check_disabled.png);
+}
+
+DialogFragment[objectName="ControlPanel_VideoPresets"] ParameterGrid QSpinBox
+{
+    min-width: 3em;
+}
+
+DialogFragment[objectName="ControlPanel_Overlay"] QPlainTextEdit
+{
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+DialogFragment[objectName="ControlPanel_Overlay"] QPlainTextEdit
+{
+    background-color: #303030;
+    color: #d9d9d9;
+    selection-color: white;
+    selection-background-color: #808080;
+}

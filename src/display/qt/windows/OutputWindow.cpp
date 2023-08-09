@@ -24,8 +24,8 @@
 #include <QRegExp>
 #include <QScreen>
 #include <QImage>
-#include <QMenu>
 #include <QLabel>
+#include <QMenu>
 #include <QDir>
 #include <cmath>
 #include "display/qt/widgets/MagnifyingGlass.h"
@@ -247,7 +247,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
     // Apply any custom app-wide styling styling.
     {
         qApp->setWindowIcon(QIcon(":/res/icons/appicon.ico"));
-        this->apply_global_stylesheet(":/res/stylesheets/appstyle-newie.qss");
+        this->apply_global_stylesheet();
         this->set_global_font_size(this->appwideFontSize);
     }
 
@@ -309,19 +309,29 @@ OutputWindow::OutputWindow(QWidget *parent) :
     return;
 }
 
-bool OutputWindow::apply_global_stylesheet(const QString &qssFilename)
+bool OutputWindow::apply_global_stylesheet(void)
 {
-    QFile styleFile(qssFilename);
+    QString styleSheet = "";
 
-    if (styleFile.open(QIODevice::ReadOnly))
+    for (const auto &filename: {
+         ":/res/stylesheets/default/misc.qss",
+         ":/res/stylesheets/default/dialogs.qss",
+         ":/res/stylesheets/default/areas.qss",
+         ":/res/stylesheets/default/buttons.qss",
+         ":/res/stylesheets/default/fields.qss",
+    })
     {
-        const QString styleSheet = styleFile.readAll();
-        this->appwideStyleSheet = styleSheet;
-        qApp->setStyleSheet(styleSheet);
-        return true;
+        QFile file(filename);
+        if (file.open(QIODevice::ReadOnly))
+        {
+            styleSheet += file.readAll();
+        }
     }
 
-    return false;
+    this->appwideStyleSheet = styleSheet;
+    qApp->setStyleSheet(styleSheet);
+
+    return !styleSheet.isEmpty();
 }
 
 bool OutputWindow::set_global_font_size(const unsigned fontSize)
