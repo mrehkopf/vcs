@@ -1,6 +1,7 @@
 /bin
 /docs/developer/xml
 /*.pro.user
+*.autosave
 
 /.*
 !/.gitignore
