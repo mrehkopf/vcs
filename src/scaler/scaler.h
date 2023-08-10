@@ -40,13 +40,13 @@
  *   4. You can automate the scaling of captured frames using event listeners:
  *      @code
  *      // Executed each time the capture subsystem reports a new captured frame.
- *      kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
+ *      ev_new_captured_frame.listen([](const captured_frame_s &frame)
  *      {
  *          ks_scale_frame(frame);
  *      });
  * 
  *      // Executed each time the scaler subsystem produces a new scaled image.
- *      ks_ev_new_scaled_image.listen([](const image_s &image)
+ *      ev_new_output_image.listen([](const image_s &image)
  *      {
  *          printf("A frame was scaled to %lu x %lu.\n", image.resolution.w, image.resolution.h);
  *      });
@@ -137,20 +137,20 @@ subsystem_releaser_t ks_initialize_scaler(void);
  * 
  * @code
  * // Feed captured frames into the scaler using a VCS event listener.
- * kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
+ * ev_new_captured_frame.listen([](const captured_frame_s &frame)
  * {
  *     ks_scale_frame(frame);
  * });
  * 
  * // Receive scaled frames from the scaler.
- * ks_ev_new_scaled_image.listen([](const image_s &image)
+ * ev_new_output_image.listen([](const image_s &image)
  * {
  *     printf("A frame was scaled to %lu x %lu.\n", image.resolution.w, image.resolution.h);
  * });
  * @endcode
  * 
  * @see
- * ks_frame_buffer(), ks_ev_new_scaled_image
+ * ks_frame_buffer(), ev_new_output_image
  */
 void ks_scale_frame(const captured_frame_s &frame);
 
@@ -204,15 +204,15 @@ void ks_set_base_resolution_enabled(const bool enabled);
  * 
  * @code
  * // Produce a "no signal" image when the capture device loses its signal.
- * kc_ev_signal_lost.listen(ks_indicate_no_signal);
+ * ev_capture_signal_lost.listen(ks_indicate_no_signal);
  * 
- * // Note: The kc_ev_signal_lost event fires when the capture device loses its
+ * // Note: The ev_capture_signal_lost event fires when the capture device loses its
  * // signal, but not in the case where the device already has no signal when
  * // VCS is launched.
  * @endcode
  * 
  * @see
- * kc_ev_signal_lost
+ * ev_capture_signal_lost
  */
 void ks_indicate_no_signal(void);
 

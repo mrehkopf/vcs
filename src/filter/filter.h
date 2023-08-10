@@ -95,7 +95,7 @@
  * 
  *   5. Apply suitable filter chains to captured frames:
  *      @code
- *      kc_ev_new_captured_frame.listen([](const captured_frame_s &frame)
+ *      ev_new_captured_frame.listen([](const captured_frame_s &frame)
  *      {
  *          image_s image(frame.pixels.data, frame.r);
  *          kf_apply_matching_filter_chain(&image);
