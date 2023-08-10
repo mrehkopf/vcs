@@ -154,7 +154,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
             });
         }
 
-        QAction *ecoMode = new QAction("Eco mode", this);
+        QAction *ecoMode = new QAction("Eco", this);
         {
             ecoMode->setCheckable(true);
             ecoMode->setChecked(k_is_eco_mode_enabled());
