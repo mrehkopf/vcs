@@ -75,7 +75,6 @@ SOURCES += \
     src/display/qt/windows/ControlPanel/VideoPresets.cpp \
     src/display/qt/dialogs/resolution_query.cpp \
     src/display/qt/keyboard_shortcuts.cpp \
-    src/display/qt/windows/output_window.cpp \
     src/filter/filters/output_scaler/filter_output_scaler.cpp \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.cpp \
     src/filter/filters/render_text/filter_render_text.cpp \

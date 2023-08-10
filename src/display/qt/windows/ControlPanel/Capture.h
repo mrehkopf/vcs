@@ -23,7 +23,7 @@ namespace control_panel
         ~Capture();
 
         control_panel::capture::InputChannel* input_channel(void) const { return this->inputChannel; }
-        control_panel::capture::SignalStatus* signal_status(void)       const { return this->signalStatus; }
+        control_panel::capture::SignalStatus* signal_status(void) const { return this->signalStatus; }
         control_panel::capture::InputResolution* input_resolution(void) const { return this->inputResolution; }
 
     private:

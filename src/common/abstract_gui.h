@@ -121,6 +121,12 @@ struct abstract_gui_s
     }
 
     std::vector<abstract_gui_field_s> fields;
+
+    enum class layout_e
+    {
+        form,
+        vertical_box,
+    } layout = layout_e::form;
 };
 
 #endif

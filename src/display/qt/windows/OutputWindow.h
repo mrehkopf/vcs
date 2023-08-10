@@ -56,6 +56,8 @@ public:
 
     ControlPanel* control_panel(void) const { return this->controlPanelWindow; }
 
+    void add_control_panel_widget(const std::string &tabName, const std::string &widgetTitle, const abstract_gui_s &widget);
+
 signals:
     void fullscreen_mode_enabled(void);
     void fullscreen_mode_disabled(void);

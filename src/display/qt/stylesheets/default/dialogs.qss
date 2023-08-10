@@ -51,3 +51,9 @@ DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_
 {
     image: url(:/res/icons/newie/preset_inactive.svg);
 }
+
+QFrame[objectName="QtAbstractGUI"]
+{
+    margin: 0;
+    padding: 0;
+}

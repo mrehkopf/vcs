@@ -18,6 +18,7 @@
 #include <QTreeWidget>
 #include <QMessageBox>
 #include <QMouseEvent>
+#include <QGroupBox>
 #include <QDateTime>
 #include <QShortcut>
 #include <QPainter>
@@ -39,6 +40,7 @@
 #include "display/qt/windows/ControlPanel/FilterGraph.h"
 #include "display/qt/windows/ControlPanel/Overlay.h"
 #include "display/qt/windows/OutputWindow.h"
+#include "display/qt/widgets/QtAbstractGUI.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/keyboard_shortcuts.h"
 #include "anti_tear/anti_tear.h"
@@ -772,6 +774,41 @@ void OutputWindow::add_gui_log_entry(const log_entry_s e)
     /// GUI logging is currently not implemented.
 
     (void)e;
+
+    return;
+}
+
+void OutputWindow::add_control_panel_widget(const std::string &tabName, const std::string &widgetTitle, const abstract_gui_s &widget)
+{
+    const auto container = new QGroupBox(this);
+    container->setTitle(QString::fromStdString(widgetTitle));
+    container->setLayout(new QVBoxLayout);
+
+    container->layout()->addWidget(new QtAbstractGUI(widget));
+    container->layout()->setSpacing(0);
+    container->layout()->setMargin(0);
+
+    // Insert the widget into the control panel.
+    {
+        QBoxLayout *target = nullptr;
+
+        if (tabName == "Capture")
+        {
+            target = dynamic_cast<QBoxLayout*>(this->controlPanelWindow->capture()->layout());
+        }
+        else
+        {
+            NBENE(("Unrecognized tab name \"%s\" for inserting a control panel widget.", tabName.c_str()));
+        }
+
+        if (target)
+        {
+            // We do count()-1 with the assumption that the last widget in the
+            // layout is a vertical spacer pushing the other widgets to the top
+            // of the layout.
+            target->insertWidget((target->count() - 1), container);
+        }
+    }
 
     return;
 }

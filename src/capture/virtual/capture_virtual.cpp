@@ -10,6 +10,8 @@
 #include <chrono>
 #include "common/globals.h"
 #include "common/vcs_event/vcs_event.h"
+#include "display/qt/persistent_settings.h"
+#include "common/abstract_gui.h"
 #include "common/timer/timer.h"
 #include "capture/capture.h"
 
@@ -22,6 +24,16 @@ static unsigned NUM_FRAMES_PER_SECOND = 0;
 static bool CAPTURE_EVENT_FLAGS[(int)capture_event_e::num_enumerators];
 
 static captured_frame_s FRAME_BUFFER;
+
+enum class output_pattern_type : int
+{
+    animated = 0,
+    non_animated = 1,
+} PATTERN_TYPE = output_pattern_type::animated;
+
+static struct {
+    abstract_gui_s patternGeneration;
+} GUI;
 
 static struct
 {
@@ -44,12 +56,16 @@ static std::unordered_map<std::string, double> DEVICE_PROPERTIES = {
     {"supports resolution switching: ui", true},
 };
 
-static void redraw_test_pattern(void)
+static void refresh_test_pattern(void)
 {
     static unsigned numTicks = 0;
 
+    if (numTicks && (PATTERN_TYPE == output_pattern_type::non_animated))
+    {
+        return;
+    }
+
     numTicks++;
-    NUM_FRAMES_PER_SECOND++;
 
     for (unsigned y = 0; y < FRAME_BUFFER.resolution.h; y++)
     {
@@ -91,6 +107,8 @@ void kc_initialize_device(void)
     kc_set_device_property("width", FRAME_BUFFER.resolution.w);
     kc_set_device_property("height", FRAME_BUFFER.resolution.h);
 
+    PATTERN_TYPE = output_pattern_type(kpers_value_of(INI_GROUP_CAPTURE, "VirtualPattern", 0).toInt());
+
     // Simulate the capturing of a new frame.
     kt_timer(std::round(1000 / TARGET_REFRESH_RATE), [](const unsigned)
     {
@@ -103,8 +121,9 @@ void kc_initialize_device(void)
         else
         {
             kc_set_device_property("has signal", true);
-            redraw_test_pattern();
             push_capture_event(capture_event_e::new_frame);
+            NUM_FRAMES_PER_SECOND++;
+            refresh_test_pattern();
         }
     });
 
@@ -168,6 +187,25 @@ void kc_initialize_device(void)
         .phase              = 100,
         .blackLevel         = 100
     }, ": default");
+
+    // Create custom GUI entries.
+    {
+        // "Pattern generation".
+        {
+            auto *const patternType = new abstract_gui::combo_box;
+            patternType->items = {"Animated", "Static"};
+            patternType->set_value = [patternType](const int itemsIdx){
+                PATTERN_TYPE = output_pattern_type(itemsIdx);
+                kpers_set_value(INI_GROUP_CAPTURE, "VirtualPattern", itemsIdx);
+            };
+            patternType->get_value = []{return int(PATTERN_TYPE);};
+
+            GUI.patternGeneration.layout = abstract_gui_s::layout_e::vertical_box;
+            GUI.patternGeneration.fields.push_back({"", {patternType}});
+
+            kd_add_control_panel_widget("Capture", "Pattern generation", &GUI.patternGeneration);
+        }
+    }
 
     return;
 }

@@ -134,6 +134,8 @@ struct filter_graph_option_s
     }
 };
 
+void kd_add_control_panel_widget(const std::string &tabName, const std::string &widgetTitle, abstract_gui_s *widget);
+
 /*!
  * Asks the GUI to create and open the output window. The output window is a
  * surface on which VCS's output frames are to be displayed by the GUI.

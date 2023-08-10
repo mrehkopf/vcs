@@ -20,18 +20,36 @@
 
 QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
 {
-    auto *const widgetLayout = new QFormLayout(this);
+    // For referring to this type of widget in QSS.
+    this->setObjectName("QtAbstractGUI");
 
-    widgetLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
-    widgetLayout->setRowWrapPolicy(QFormLayout::DontWrapRows);
+    QLayout *widgetLayout;
 
+    switch (gui.layout)
+    {
+        default:
+        case abstract_gui_s::layout_e::form:
+        {
+            widgetLayout = new QFormLayout(this);
+            static_cast<QFormLayout*>(widgetLayout)->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+            static_cast<QFormLayout*>(widgetLayout)->setRowWrapPolicy(QFormLayout::DontWrapRows);
+            break;
+        }
+        case abstract_gui_s::layout_e::vertical_box:
+        {
+            widgetLayout = new QVBoxLayout(this);
+            break;
+        }
+    }
+
+    /// TODO: This is leftover code from when QtAbstractGUI only handled filter graph
+    /// GUIs. Ideally, instead of creating this "No parameters" message here, each
+    /// filter inserts the message as needed on their end.
     if (gui.fields.empty())
     {
         auto *const emptyLabel = new QLabel("No parameters", this);
-
         emptyLabel->setStyleSheet("font-style: italic;");
         emptyLabel->setAlignment(Qt::AlignCenter);
-
         widgetLayout->addWidget(emptyLabel);
     }
     else
@@ -185,9 +203,21 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                 containerLayout->addWidget(widget);
             }
 
-            auto *const label = (field.label.empty()? nullptr : new QLabel(QString::fromStdString(field.label), this));
-
-            widgetLayout->addRow(label, rowContainer);
+            switch (gui.layout)
+            {
+                default:
+                case abstract_gui_s::layout_e::form:
+                {
+                    auto *const label = (field.label.empty()? nullptr : new QLabel(QString::fromStdString(field.label), this));
+                    dynamic_cast<QFormLayout*>(widgetLayout)->addRow(label, rowContainer);
+                    break;
+                }
+                case abstract_gui_s::layout_e::vertical_box:
+                {
+                    widgetLayout->addWidget(rowContainer);
+                    break;
+                }
+            }
         }
     }
 

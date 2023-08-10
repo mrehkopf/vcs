@@ -302,8 +302,9 @@ control_panel::FilterGraph::FilterGraph(QWidget *parent) :
         });
     }
 
-    // Restore persistent settings.
     this->reset_graph(true);
+
+    // Restore persistent settings.
     {
         this->set_enabled(kpers_value_of(INI_GROUP_FILTER_GRAPH, "Enabled", kf_is_filtering_enabled()).toBool());
 

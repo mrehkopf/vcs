@@ -45,14 +45,12 @@ QGroupBox
     background-color: #303030;
     border-radius: 0;
     padding-bottom: 6px;
-    padding-left: 6px;
-    padding-right: 6px;
     border: none;
 }
 
 QGroupBox::title
 {
-    padding: 2px 0;
+    padding: 0;
     left: 9px;
     top: 9px;
     color: #e0e0e0;

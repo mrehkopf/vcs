@@ -25,6 +25,15 @@
 // against this id to detect out-of-GUI-thread access.
 static const std::thread::id NATIVE_THREAD_ID = std::this_thread::get_id();
 
+struct custom_widget_queue_item_s
+{
+    std::string tabName;
+    std::string widgetTitle;
+    abstract_gui_s *widget;
+};
+
+static std::vector<custom_widget_queue_item_s> CUSTOM_WIDGET_QUEUE;
+
 // Qt wants a QApplication object around for the GUI to function.
 namespace app_n
 {
@@ -52,6 +61,12 @@ subsystem_releaser_t kd_acquire_output_window(void)
     DEBUG(("Acquiring the display."));
 
     WINDOW = new OutputWindow;
+
+    for (const auto t: CUSTOM_WIDGET_QUEUE)
+    {
+        WINDOW->add_control_panel_widget(t.tabName, t.widgetTitle, *t.widget);
+    }
+
     WINDOW->show();
 
     return []{
@@ -109,8 +124,7 @@ bool kd_is_fullscreen(void)
     return WINDOW->isFullScreen();
 }
 
-void kd_show_headless_info_message(const char *const title,
-                                   const char *const msg)
+void kd_show_headless_info_message(const char *const title, const char *const msg)
 {
     if (std::this_thread::get_id() == NATIVE_THREAD_ID)
     {
@@ -133,8 +147,7 @@ void kd_show_headless_info_message(const char *const title,
 // of the program. Useful for giving out e.g. startup error messages for things that
 // occur before the GUI has been initialized.
 //
-void kd_show_headless_error_message(const char *const title,
-                                    const char *const msg)
+void kd_show_headless_error_message(const char *const title, const char *const msg)
 {
     if (std::this_thread::get_id() == NATIVE_THREAD_ID)
     {
@@ -152,9 +165,7 @@ void kd_show_headless_error_message(const char *const title,
 
     return;
 }
-void kd_show_headless_assert_error_message(const char *const msg,
-                                           const char *const filename,
-                                           const uint lineNum)
+void kd_show_headless_assert_error_message(const char *const msg, const char *const filename, const uint lineNum)
 {
     if (std::this_thread::get_id() == NATIVE_THREAD_ID)
     {
@@ -173,6 +184,20 @@ void kd_show_headless_assert_error_message(const char *const msg,
 
         mb.exec();
     }
+
+    return;
+}
+
+void kd_add_control_panel_widget(const std::string &tabName, const std::string &widgetTitle, abstract_gui_s *widget)
+{
+    // We'll queue the widget for adding when the display has been acquired,
+    // to allow subsystem initializers that run before the display initializer
+    // to add custom widgets.
+    CUSTOM_WIDGET_QUEUE.push_back({
+        .tabName = tabName,
+        .widgetTitle = widgetTitle,
+        .widget = widget,
+    });
 
     return;
 }
