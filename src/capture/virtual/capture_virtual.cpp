@@ -59,12 +59,6 @@ static std::unordered_map<std::string, double> DEVICE_PROPERTIES = {
 static void refresh_test_pattern(void)
 {
     static unsigned numTicks = 0;
-
-    if (numTicks && (PATTERN_TYPE == output_pattern_type::non_animated))
-    {
-        return;
-    }
-
     numTicks++;
 
     for (unsigned y = 0; y < FRAME_BUFFER.resolution.h; y++)
@@ -123,7 +117,11 @@ void kc_initialize_device(void)
             kc_set_device_property("has signal", true);
             push_capture_event(capture_event_e::new_frame);
             NUM_FRAMES_PER_SECOND++;
-            refresh_test_pattern();
+
+            if (PATTERN_TYPE == output_pattern_type::animated)
+            {
+                refresh_test_pattern();
+            }
         }
     });
 
@@ -139,6 +137,8 @@ void kc_initialize_device(void)
             push_capture_event(capture_event_e::new_video_mode);
         }
     });
+
+    ev_new_video_mode.listen(refresh_test_pattern);
 
     video_signal_parameters_s::to_capture_device({
         .brightness         = 1,
