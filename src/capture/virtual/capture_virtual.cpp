@@ -1,11 +1,10 @@
 ﻿/*
- * 2020 Tarpeeksi Hyvae Soft
+ * 2020-2023 Tarpeeksi Hyvae Soft
  *
  * Software: VCS
  *
  */
 
-#include <QColor>
 #include <unordered_map>
 #include <chrono>
 #include "common/globals.h"
@@ -59,23 +58,21 @@ static std::unordered_map<std::string, double> DEVICE_PROPERTIES = {
 static void refresh_test_pattern(void)
 {
     static unsigned numTicks = 0;
-    numTicks++;
+
+    if (PATTERN_TYPE == output_pattern_type::animated)
+    {
+        numTicks++;
+    }
 
     for (unsigned y = 0; y < FRAME_BUFFER.resolution.h; y++)
     {
         for (unsigned x = 0; x < FRAME_BUFFER.resolution.w; x++)
         {
-            QColor rgbGradient;
-            const double widthRatio = (((x + numTicks) % FRAME_BUFFER.resolution.w) / double(FRAME_BUFFER.resolution.w));
-            const double heightRatio = (y / double(FRAME_BUFFER.resolution.h));
-            rgbGradient.setHsl((widthRatio * 359), 255, (255 - (heightRatio * 255)));
-            rgbGradient = rgbGradient.toRgb().lighter(VIDEO_PARAMS.brightness * 100);
-
             const unsigned idx = ((x + y * FRAME_BUFFER.resolution.w) * 4);
-            FRAME_BUFFER.pixels[idx + 0] = (rgbGradient.blue() * VIDEO_PARAMS.blueBrightness);
-            FRAME_BUFFER.pixels[idx + 1] = (rgbGradient.green() * VIDEO_PARAMS.greenBrightness);
-            FRAME_BUFFER.pixels[idx + 2] = (rgbGradient.red() * VIDEO_PARAMS.redBrightness);
-            FRAME_BUFFER.pixels[idx + 3] = rgbGradient.alpha();
+            FRAME_BUFFER.pixels[idx + 0] = 150;
+            FRAME_BUFFER.pixels[idx + 1] = ((numTicks + y) % 256);
+            FRAME_BUFFER.pixels[idx + 2] = ((numTicks + x) % 256);
+            FRAME_BUFFER.pixels[idx + 3] = 255;
         }
     }
 
@@ -117,11 +114,7 @@ void kc_initialize_device(void)
             kc_set_device_property("has signal", true);
             push_capture_event(capture_event_e::new_frame);
             NUM_FRAMES_PER_SECOND++;
-
-            if (PATTERN_TYPE == output_pattern_type::animated)
-            {
-                refresh_test_pattern();
-            }
+            refresh_test_pattern();
         }
     });
 
@@ -137,8 +130,6 @@ void kc_initialize_device(void)
             push_capture_event(capture_event_e::new_video_mode);
         }
     });
-
-    ev_new_video_mode.listen(refresh_test_pattern);
 
     video_signal_parameters_s::to_capture_device({
         .brightness         = 1,
