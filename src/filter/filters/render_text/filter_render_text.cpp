@@ -12,6 +12,12 @@
 #include "filter/filters/render_text/font_10x6_sans_serif.h"
 #include "display/display.h"
 
+static const std::unordered_map<int, font_c*> FONTS = {
+    {filter_render_text_c::FONT_MINIMALIST, new font_5x3_c},
+    {filter_render_text_c::FONT_RETRO_SERIF, new font_10x6_serif_c},
+    {filter_render_text_c::FONT_RETRO_SANS_SERIF, new font_10x6_sans_serif_c},
+};
+
 void filter_render_text_c::apply(image_s *const image)
 {
     this->assert_input_validity(image);
@@ -25,24 +31,13 @@ void filter_render_text_c::apply(image_s *const image)
     const uint8_t bgColorGreen = this->parameter(filter_render_text_c::PARAM_BG_COLOR_GREEN);
     const uint8_t bgColorBlue = this->parameter(filter_render_text_c::PARAM_BG_COLOR_BLUE);
     const uint8_t bgColorAlpha = this->parameter(filter_render_text_c::PARAM_BG_COLOR_ALPHA);
-    const int fontId = this->parameter(filter_render_text_c::PARAM_FONT);
+    const unsigned fontId = this->parameter(filter_render_text_c::PARAM_FONT);
     const unsigned scale = this->parameter(filter_render_text_c::PARAM_SCALE);
     const unsigned alignment = this->parameter(filter_render_text_c::PARAM_ALIGN);
     const unsigned x = this->parameter(filter_render_text_c::PARAM_POS_X);
     const unsigned y = this->parameter(filter_render_text_c::PARAM_POS_Y);
 
-    const font_c *const font = ([fontId]()->font_c*
-    {
-        switch (fontId)
-        {
-            case FONT_MINIMALIST: return new font_5x3_c;
-            case FONT_RETRO_SERIF: return new font_10x6_serif_c;
-            case FONT_RETRO_SANS_SERIF: return new font_10x6_sans_serif_c;
-            default: return new font_5x3_c;
-        }
-    })();
-
-    font->render(
+    FONTS.at(fontId)->render(
         text,
         image,
         x, y, scale,
