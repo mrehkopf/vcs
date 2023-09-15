@@ -78,13 +78,14 @@ QCheckBox
 
 QCheckBox::indicator
 {
-    width: 11px;
-    height: 11px;
+    width: 13px;
+    height: 13px;
     margin-top: 1px;
     background-color: #353535;
     border-radius: 0;
     border: none;
-    border: 1px solid #808080;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
 }
 
 QCheckBox::indicator:disabled
@@ -96,7 +97,7 @@ QCheckBox::indicator:disabled
 
 QCheckBox::indicator::checked
 {
-    image: url(:/res/icons/checkbox_check.png);
+    image: url(:/res/icons/checkbox_check_disabled.png);
 }
 
 QCheckBox::indicator::checked:disabled
