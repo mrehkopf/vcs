@@ -7,7 +7,6 @@ A capture application for Datapath Vision series capture cards on Linux.
 
 ## Key features
 
-- Various usability improvements over Datapath's bundled capture application
 - Unlimited video presets for analog capture
 - Several scaling modes and image filters
 - Variable refresh rate output
