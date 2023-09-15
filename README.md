@@ -1,21 +1,21 @@
 # VCS
 
-A well-featured Linux video capture application for Datapath capture cards, with a feature-set targeted especially at retro enthusiasts.
+A capture application for Datapath Vision series capture cards on Linux.
 
 ![VCS 3.0](./screenshot.png)\
-*A screenshot of VCS 3.0 showing the capture window (in the background) and some of the control options.*
+*VCS 3.0, showing the capture window (in the background) and some of the control options.*
 
 ## Key features
 
-- Various usability improvements over Datapath's bundled capture application, enabling high-quality capture of dynamic signals
-- Unlimited video presets with programmable activation
+- Various usability improvements over Datapath's bundled capture application
+- Unlimited video presets for analog capture
 - Several scaling modes and image filters
 - Variable refresh rate output
-- Free and open source, with a modular implementation easily extendable to non-Datapath capture devices
+- Free and open source
 
 ## Supported capture hardware
 
-Any model of Datapath capture card supported by the Datapath Vision driver for Linux should be compatible with VCS; although the card's full set of capabilities may not be exposed.
+Any model of Datapath capture card supported by the Datapath Vision driver for Linux should be compatible, although the card's full set of capabilities may not be exposed.
 
 ## Manuals
 
@@ -30,7 +30,7 @@ Open [vcs.pro](vcs.pro) in Qt Creator, or run `$ qmake && make -j` in the repo's
 
 The VCS codebase depends on the following libraries and frameworks:
 
-1. Qt 5
+1. Qt
 2. OpenCV*
 3. If compiling for X11, libx11-dev
 4. The Datapath capture API, as distributed with their Linux capture drivers**
