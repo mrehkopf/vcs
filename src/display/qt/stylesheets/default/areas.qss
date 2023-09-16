@@ -38,6 +38,11 @@ QAbstractScrollArea::corner
     background-color: #454545;
 }
 
+QStatusBar
+{
+    background-color: #454545;
+}
+
 QGroupBox
 {
     font-weight: bold;
