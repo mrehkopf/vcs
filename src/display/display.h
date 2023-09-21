@@ -104,6 +104,11 @@ struct image_s
 
     image_s(uint8_t *const pixels, const resolution_s &resolution) : pixels(pixels), resolution(resolution) {}
 
+    unsigned bytes_per_pixel(void) const
+    {
+        return (this->bitsPerPixel / 8);
+    }
+
     std::size_t byte_size(void) const
     {
         return (this->resolution.w * this->resolution.h * (bitsPerPixel / 8));

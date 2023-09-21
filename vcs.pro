@@ -43,6 +43,7 @@ RESOURCES += \
 SOURCES += \
     src/common/refresh_rate.cpp \
     src/common/vcs_event/vcs_event.cpp \
+    src/display/qt/widgets/ColorHistogram.cpp \
     src/display/qt/widgets/DialogFileMenu.cpp \
     src/display/qt/widgets/DialogFragment.cpp \
     src/display/qt/widgets/InteractibleNodeGraph.cpp \
@@ -63,6 +64,7 @@ SOURCES += \
     src/display/qt/windows/ControlPanel/FilterGraph/InputGateNode.cpp \
     src/display/qt/windows/ControlPanel/FilterGraph/OutputGateNode.cpp \
     src/display/qt/windows/ControlPanel/FilterGraph/OutputScalerNode.cpp \
+    src/display/qt/windows/ControlPanel/Output/Histogram.cpp \
     src/display/qt/windows/ControlPanel/Overlay.cpp \
     src/display/qt/windows/ControlPanel/Output/Renderer.cpp \
     src/display/qt/windows/ControlPanel/Output/Scaler.cpp \
@@ -144,6 +146,7 @@ HEADERS += \
     src/common/assert.h \
     src/common/globals.h \
     src/common/types.h \
+    src/display/qt/widgets/ColorHistogram.h \
     src/display/qt/widgets/DialogFileMenu.h \
     src/display/qt/widgets/DialogFragment.h \
     src/display/qt/widgets/InteractibleNodeGraph.h \
@@ -164,6 +167,7 @@ HEADERS += \
     src/display/qt/windows/ControlPanel/FilterGraph/InputGateNode.h \
     src/display/qt/windows/ControlPanel/FilterGraph/OutputGateNode.h \
     src/display/qt/windows/ControlPanel/FilterGraph/OutputScalerNode.h \
+    src/display/qt/windows/ControlPanel/Output/Histogram.h \
     src/display/qt/windows/ControlPanel/Overlay.h \
     src/display/qt/windows/ControlPanel/Output/Renderer.h \
     src/display/qt/windows/ControlPanel/Output/Scaler.h \
@@ -256,6 +260,7 @@ FORMS += \
     src/display/qt/windows/ControlPanel/Capture/InputChannel.ui \
     src/display/qt/windows/ControlPanel/Capture/InputResolution.ui \
     src/display/qt/windows/ControlPanel/Capture/SignalStatus.ui \
+    src/display/qt/windows/ControlPanel/Output/Histogram.ui \
     src/display/qt/windows/ControlPanel/Overlay.ui \
     src/display/qt/windows/ControlPanel/Output/Renderer.ui \
     src/display/qt/windows/ControlPanel/Output/Scaler.ui \

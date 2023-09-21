@@ -8,6 +8,7 @@ namespace control_panel::output
     class Size;
     class Scaler;
     class Renderer;
+    class Histogram;
 }
 
 namespace control_panel
@@ -30,6 +31,7 @@ namespace control_panel
         control_panel::output::Size *sizeDialog = nullptr;
         control_panel::output::Scaler *scalerDialog = nullptr;
         control_panel::output::Renderer *rendererDialog = nullptr;
+        control_panel::output::Histogram *histogramDialog = nullptr;
     };
 }
 
