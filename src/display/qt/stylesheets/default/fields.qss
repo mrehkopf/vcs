@@ -73,7 +73,6 @@ QPlainTextEdit[overLengthLimit="true"]
 QCheckBox
 {
     color: #e0e0e0;
-    margin-right: 2px;
 }
 
 QCheckBox::indicator
@@ -81,6 +80,7 @@ QCheckBox::indicator
     width: 13px;
     height: 13px;
     margin-top: 1px;
+    margin-right: 0.05em;
     background-color: #353535;
     border-radius: 0;
     border: none;

@@ -27,7 +27,7 @@ QComboBox:hover,
 QGroupBox QScrollBar::add-line:horizontal:hover,
 QGroupBox QScrollBar::sub-line:horizontal:hover
 {
-    background: qlineargradient(x1: 0 y1:0, x2:0 y2:1, stop: 0 #606060, stop: 1 #505050);
+    background-color: #5e5e5e;
 }
 
 QPushButton:pressed,
@@ -86,7 +86,7 @@ DialogFragment[objectName="ControlPanel_VideoPresets"] QPushButton
 
 DialogFragment[objectName="ControlPanel_VideoPresets"] ParameterGrid QPushButton
 {
-    min-width: 2em;
+    min-width: 1.75em;
 }
 
 QComboBox

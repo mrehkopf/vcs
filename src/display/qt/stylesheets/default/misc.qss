@@ -18,7 +18,7 @@ DialogFragment QGroupBox
     padding-right: 8px;
     padding-top: 1.65em;
     background-color: #404040;
-    border-bottom: 1px solid #101010;
+    border-bottom: 1px solid black;
 }
 
 QScrollBar:vertical,
