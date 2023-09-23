@@ -170,14 +170,16 @@ void kd_show_headless_assert_error_message(const char *const msg, const char *co
     if (std::this_thread::get_id() == NATIVE_THREAD_ID)
     {
         QMessageBox mb;
-        mb.setWindowTitle("VCS Assertion Error");
-        mb.setText("<html>"
-                "VCS has come across an unexpected condition in its code. As a precaution, "
-                "the program will shut itself down now.<br><br>"
-                "<b>Error:</b> " + QString(msg) + "<br>"
-                "<b>In file:</b> " + QString(filename) + "<br>"
-                "<b>On line:</b> " + QString::number(lineNum) +
-                "</html>");
+        mb.setWindowTitle("Assertion failure");
+        mb.setText(
+            "<html>"
+            "VCS has come across an unexpected condition in its code. As a precaution, "
+            "the program will shut itself down.<br><br>"
+            "<b>Error:</b> " + QString(msg) + "<br>"
+            "<b>In file:</b> " + QString(filename) + "<br>"
+            "<b>On line:</b> " + QString::number(lineNum) +
+            "</html>"
+        );
         mb.setStandardButtons(QMessageBox::Ok);
         mb.setIcon(QMessageBox::Critical);
         mb.setDefaultButton(QMessageBox::Ok);
