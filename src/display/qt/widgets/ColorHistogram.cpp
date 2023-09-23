@@ -21,7 +21,7 @@ ColorHistogram::ColorHistogram(QWidget *parent) : QWidget(parent)
 
 void ColorHistogram::refresh(const image_s &image, const ColorHistogram::channels channels)
 {
-    k_assert_optional(image.bytes_per_pixel() == 4);
+    k_assert_optional((image.bytes_per_pixel() == 4), "Unsupported color depth.");
 
     this->redBins.fill(0);
     this->greenBins.fill(0);
