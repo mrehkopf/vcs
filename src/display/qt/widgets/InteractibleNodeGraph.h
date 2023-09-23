@@ -26,6 +26,7 @@ public:
     void remove_selected_nodes(void);
     void reset_scene(void);
     int grid_size(void) const;
+    bool has_exclusive_mouse_click_focus(void) const;
 
 signals:
     // Emitted when the given two edges are connected in the scene.
@@ -55,6 +56,7 @@ private:
     std::vector<node_edge_connection_s> edgeConnections;
 
     int gridSize = 15;
+    bool hasExclusiveMouseClickFocus = false;
 };
 
 #endif

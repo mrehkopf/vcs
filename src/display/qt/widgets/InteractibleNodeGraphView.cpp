@@ -40,6 +40,11 @@ InteractibleNodeGraphView::InteractibleNodeGraphView(QWidget *parent) : QGraphic
 
 void InteractibleNodeGraphView::mousePressEvent(QMouseEvent *event)
 {
+    if (dynamic_cast<InteractibleNodeGraph*>(this->scene())->has_exclusive_mouse_click_focus())
+    {
+        return;
+    }
+
     // Dragging with the middle button translates the view.
     if (event->button() == Qt::MiddleButton)
     {
@@ -52,9 +57,8 @@ void InteractibleNodeGraphView::mousePressEvent(QMouseEvent *event)
     else if (event->button() == Qt::RightButton)
     {
         const QPointF scenePos = this->mapToScene(event->pos());
-
-        // If this press was over a node edge, start an edge connection event.
         const auto itemsUnderCursor = this->scene()->items(scenePos, Qt::IntersectsItemBoundingRect);
+
         for (const auto item: itemsUnderCursor)
         {
             const auto nodeUnderCursor = dynamic_cast<InteractibleNodeGraphNode*>(item);

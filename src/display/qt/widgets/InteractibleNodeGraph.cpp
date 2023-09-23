@@ -55,8 +55,6 @@ void InteractibleNodeGraph::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
             if (node)
             {
-                const auto edge = node->intersected_edge(event->scenePos());
-
                 // Make the clicked node the top-most in the graph.
                 real maxZ = 0;
                 const auto sceneItems = this->items();
@@ -69,8 +67,11 @@ void InteractibleNodeGraph::mousePressEvent(QGraphicsSceneMouseEvent *event)
                 }
                 node->setZValue(maxZ+1);
 
+                const auto edge = node->intersected_edge(event->scenePos());
+
                 if (edge)
                 {
+                    this->hasExclusiveMouseClickFocus = true;
                     this->start_connection_event(edge, event->scenePos());
                     return;
                 }
@@ -117,6 +118,11 @@ void InteractibleNodeGraph::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
     QGraphicsScene::mouseReleaseEvent(event);
 
+    if (!this->connectionEvent.sourceEdge)
+    {
+        this->hasExclusiveMouseClickFocus = false;
+    }
+
     return;
 }
 
@@ -128,10 +134,16 @@ void InteractibleNodeGraph::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     // the cursor, they're dragging one of the items in the scene.
     if (QApplication::mouseButtons() == Qt::LeftButton)
     {
+        // Dragging a node.
         if (this->selectedItems().count())
         {
             this->update_scene_connections();
             emit this->nodeMoved();
+        }
+        // Dragging a connection from an edge.
+        else if (this->connectionEvent.sourceEdge)
+        {
+            this->update_scene_connections();
         }
 
         this->connectionEvent.mousePos = event->scenePos();
@@ -257,9 +269,11 @@ void InteractibleNodeGraph::remove_node(InteractibleNodeGraphNode *const node, c
     return;
 }
 
-void InteractibleNodeGraph::disconnect_scene_edges(const node_edge_s *const sourceEdge,
-                                                   const node_edge_s *const targetEdge,
-                                                   const bool noEmit)
+void InteractibleNodeGraph::disconnect_scene_edges(
+    const node_edge_s *const sourceEdge,
+    const node_edge_s *const targetEdge,
+    const bool noEmit
+)
 {
     const auto existingConnection = std::find_if(this->edgeConnections.begin(), this->edgeConnections.end(), [=](const node_edge_connection_s &connection)
     {
@@ -282,8 +296,10 @@ void InteractibleNodeGraph::disconnect_scene_edges(const node_edge_s *const sour
 }
 
 // Connect the two edges to each other in the scene using a line.
-void InteractibleNodeGraph::connect_scene_edges(const node_edge_s *const sourceEdge,
-                                                const node_edge_s *const targetEdge)
+void InteractibleNodeGraph::connect_scene_edges(
+    const node_edge_s *const sourceEdge,
+    const node_edge_s *const targetEdge
+)
 {
     const QPoint p1 = QPoint(sourceEdge->parentNode->mapToScene(sourceEdge->rect.center()).x(),
                              sourceEdge->parentNode->mapToScene(sourceEdge->rect.center()).y());
@@ -314,8 +330,10 @@ void InteractibleNodeGraph::connect_scene_edges(const node_edge_s *const sourceE
     return;
 }
 
-void InteractibleNodeGraph::start_connection_event(node_edge_s *const sourceEdge,
-                                                   const QPointF mousePos)
+void InteractibleNodeGraph::start_connection_event(
+    node_edge_s *const sourceEdge,
+    const QPointF mousePos
+)
 {
     if (this->connectionEvent.sourceEdge)
     {
@@ -338,7 +356,6 @@ void InteractibleNodeGraph::complete_connection_event(node_edge_s *const finalEd
     }
 
     this->connectionEvent.sourceEdge->connect_to(finalEdge);
-
     this->reset_current_connection_event();
 
     return;
@@ -367,7 +384,12 @@ void InteractibleNodeGraph::reset_scene(void)
     return;
 }
 
-int InteractibleNodeGraph::grid_size() const
+int InteractibleNodeGraph::grid_size(void) const
 {
     return this->gridSize;
+}
+
+bool InteractibleNodeGraph::has_exclusive_mouse_click_focus(void) const
+{
+    return this->hasExclusiveMouseClickFocus;
 }
