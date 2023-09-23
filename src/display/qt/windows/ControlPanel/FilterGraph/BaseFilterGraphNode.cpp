@@ -79,7 +79,7 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
         // Connection points.
         for (const auto &edge: this->edges)
         {
-            painter->setPen(QPen(QColor("#ffc04d"), 1.5, Qt::SolidLine));
+            painter->setPen(QPen(QColor("#157efd"), 1.5, Qt::SolidLine));
             painter->setBrush(QBrush(QColor("#151515")));
             painter->drawEllipse(edge.rect.center(), 7, 7);
         }
