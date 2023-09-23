@@ -62,17 +62,14 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
         {
             const bool isSelected = (option->state & QStyle::State_Selected);
 
-            QColor NodeBgColor = this->current_background_color();
-            NodeBgColor.setAlpha(215);
-
             // Node's background.
-            painter->setPen(QPen(QColor(isSelected? "#a0a0a0" : "black"), 2, Qt::SolidLine));
-            painter->setBrush(QBrush(NodeBgColor));
+            painter->setPen(QPen((isSelected? "#e0e0e0" : this->current_background_color()), 2, Qt::SolidLine));
+            painter->setBrush(QBrush(QColor(72, 72, 72, 215)));
             painter->drawRoundedRect(QRect(0, 0, this->width, this->height), borderRadius, borderRadius);
 
             // Title bar's background.
             painter->setPen(QPen(QColor("transparent"), 1, Qt::SolidLine));
-            painter->setBrush(QBrush("black", (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
+            painter->setBrush(QBrush(this->current_background_color(), (this->is_enabled()? Qt::SolidPattern : Qt::BDiagPattern)));
             painter->drawRoundedRect(titleBarRect, borderRadius, borderRadius);
         }
 
@@ -88,7 +85,7 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
     // Draw the node's title.
     {
         const QString elidedTitle = QFontMetrics(painter->font()).elidedText(this->title, Qt::ElideRight, titleBarTextRect.width());
-        painter->setPen(this->is_enabled()? "white" : "lightgray");
+        painter->setPen(((this->backgroundColor == "Yellow") && this->is_enabled())? "black" : this->is_enabled()? "white" : "lightgray");
         painter->drawText(titleBarTextRect, (Qt::AlignLeft | Qt::AlignVCenter), elidedTitle);
     }
 
@@ -124,13 +121,13 @@ const QColor BaseFilterGraphNode::current_background_color(void)
 {
     const QString currentColor = this->backgroundColor.toLower();
 
-    if (currentColor == "blue") return "#21119c";
-    else if (currentColor == "black") return "#484848";
-    else if (currentColor == "cyan") return "#075162";
-    else if (currentColor == "green") return "#294c00";
-    else if (currentColor == "magenta") return "#62005c";
-    else if (currentColor == "red") return "#620000";
-    else if (currentColor == "yellow") return "#6d5e00";
+    if (currentColor == "blue") return "#157efd";
+    else if (currentColor == "black") return "black";
+    else if (currentColor == "cyan") return "#1d918f";
+    else if (currentColor == "green") return "#31b12c";
+    else if (currentColor == "magenta") return "#d248ca";
+    else if (currentColor == "red") return "#d52f3e";
+    else if (currentColor == "yellow") return "#ffdc00";
 
     return this->backgroundColor;
 }
