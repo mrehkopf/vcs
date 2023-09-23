@@ -11,7 +11,7 @@
 #include "capture/capture.h"
 #include "display/qt/widgets/DialogFragment.h"
 
-namespace control_panel
+namespace control_panel::output
 {
     namespace Ui { class Overlay; }
 

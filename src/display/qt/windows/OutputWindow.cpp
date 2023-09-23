@@ -38,7 +38,7 @@
 #include "display/qt/windows/ControlPanel/Output.h"
 #include "display/qt/windows/ControlPanel/Capture.h"
 #include "display/qt/windows/ControlPanel/FilterGraph.h"
-#include "display/qt/windows/ControlPanel/Overlay.h"
+#include "display/qt/windows/ControlPanel/Output/Overlay.h"
 #include "display/qt/windows/OutputWindow.h"
 #include "display/qt/widgets/QtAbstractGUI.h"
 #include "display/qt/persistent_settings.h"
@@ -212,7 +212,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
 
         connect(makeAppwideShortcut("overlay-dialog: toggle-enabled"), &QShortcut::activated, [this]
         {
-            this->control_panel()->overlay()->set_enabled(!this->control_panel()->overlay()->is_enabled());
+            this->control_panel()->output()->overlay()->set_enabled(!this->control_panel()->output()->overlay()->is_enabled());
         });
 
         // F1 through F12.
@@ -555,9 +555,9 @@ void OutputWindow::wheelEvent(QWheelEvent *event)
 
 QImage OutputWindow::overlay_image(void)
 {
-    if (kc_has_signal() && this->control_panel()->overlay()->is_enabled())
+    if (kc_has_signal() && this->control_panel()->output()->overlay()->is_enabled())
     {
-        return this->control_panel()->overlay()->rendered();
+        return this->control_panel()->output()->overlay()->rendered();
     }
     else
     {
@@ -672,7 +672,7 @@ void OutputWindow::update_window_size(void)
     const resolution_s r = ks_output_resolution();
 
     this->setFixedSize(r.w, r.h);
-    this->control_panel()->overlay()->set_overlay_max_width(r.w);
+    this->control_panel()->output()->overlay()->set_overlay_max_width(r.w);
 
     update_window_title();
 

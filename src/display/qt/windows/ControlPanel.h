@@ -25,21 +25,19 @@ public:
     explicit ControlPanel(OutputWindow *parent = nullptr);
     ~ControlPanel();
 
-    control_panel::Capture* capture(void) const { return this->captureDialog; }
-    control_panel::FilterGraph* filter_graph(void)     const { return this->filterGraphDialog; }
-    control_panel::VideoPresets* video_presets(void)   const { return this->videoPresetsDialog; }
-    control_panel::Output* output(void) const { return this->outputDialog; }
-    control_panel::Overlay* overlay(void)              const { return this->overlayDialog; }
+    control_panel::Output* output(void) const               { return this->outputDialog; }
+    control_panel::Capture* capture(void) const             { return this->captureDialog; }
+    control_panel::FilterGraph* filter_graph(void) const    { return this->filterGraphDialog; }
+    control_panel::VideoPresets* video_presets(void) const  { return this->videoPresetsDialog; }
 
 private:
     Ui::ControlPanel *ui;
 
-    control_panel::Capture *captureDialog = nullptr;
     control_panel::Output *outputDialog = nullptr;
+    control_panel::Capture *captureDialog = nullptr;
+    control_panel::AboutVCS *aboutDialog = nullptr;
     control_panel::FilterGraph *filterGraphDialog = nullptr;
     control_panel::VideoPresets *videoPresetsDialog = nullptr;
-    control_panel::Overlay *overlayDialog = nullptr;
-    control_panel::AboutVCS *aboutDialog = nullptr;
 };
 
 #endif

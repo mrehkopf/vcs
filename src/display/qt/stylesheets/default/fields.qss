@@ -75,7 +75,9 @@ QCheckBox
     color: #e0e0e0;
 }
 
-QCheckBox::indicator
+
+QCheckBox::indicator,
+QGroupBox::indicator
 {
     width: 13px;
     height: 13px;
@@ -88,19 +90,22 @@ QCheckBox::indicator
     border-left: 1px solid black;
 }
 
-QCheckBox::indicator:disabled
+QCheckBox::indicator:disabled,
+QGroupBox::indicator:disabled
 {
     background-color: transparent;
     border-color: #151515;
     color: #909090;
 }
 
-QCheckBox::indicator::checked
+QCheckBox::indicator::checked,
+QGroupBox::indicator::checked
 {
     image: url(:/res/icons/checkbox_check_disabled.png);
 }
 
-QCheckBox::indicator::checked:disabled
+QCheckBox::indicator::checked:disabled,
+QGroupBox::indicator::checked:disabled
 {
     image: url(:/res/icons/checkbox_check_disabled.png);
 }

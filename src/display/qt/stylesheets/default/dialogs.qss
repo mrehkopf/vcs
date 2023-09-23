@@ -29,6 +29,11 @@ DialogFragment[objectName="ControlPanel_Overlay"] QGroupBox
     border-radius: 0;
 }
 
+DialogFragment[objectName="ControlPanel_Output"] QComboBox[objectName="channels"]
+{
+    margin-bottom: 0.25em;
+}
+
 DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"]
 {
     margin: 0;

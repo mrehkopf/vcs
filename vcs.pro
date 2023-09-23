@@ -65,7 +65,7 @@ SOURCES += \
     src/display/qt/windows/ControlPanel/FilterGraph/OutputGateNode.cpp \
     src/display/qt/windows/ControlPanel/FilterGraph/OutputScalerNode.cpp \
     src/display/qt/windows/ControlPanel/Output/Histogram.cpp \
-    src/display/qt/windows/ControlPanel/Overlay.cpp \
+    src/display/qt/windows/ControlPanel/Output/Overlay.cpp \
     src/display/qt/windows/ControlPanel/Output/Renderer.cpp \
     src/display/qt/windows/ControlPanel/Output/Scaler.cpp \
     src/display/qt/windows/ControlPanel/Output/Size.cpp \
@@ -168,7 +168,7 @@ HEADERS += \
     src/display/qt/windows/ControlPanel/FilterGraph/OutputGateNode.h \
     src/display/qt/windows/ControlPanel/FilterGraph/OutputScalerNode.h \
     src/display/qt/windows/ControlPanel/Output/Histogram.h \
-    src/display/qt/windows/ControlPanel/Overlay.h \
+    src/display/qt/windows/ControlPanel/Output/Overlay.h \
     src/display/qt/windows/ControlPanel/Output/Renderer.h \
     src/display/qt/windows/ControlPanel/Output/Scaler.h \
     src/display/qt/windows/ControlPanel/Output/Size.h \
@@ -261,7 +261,7 @@ FORMS += \
     src/display/qt/windows/ControlPanel/Capture/InputResolution.ui \
     src/display/qt/windows/ControlPanel/Capture/SignalStatus.ui \
     src/display/qt/windows/ControlPanel/Output/Histogram.ui \
-    src/display/qt/windows/ControlPanel/Overlay.ui \
+    src/display/qt/windows/ControlPanel/Output/Overlay.ui \
     src/display/qt/windows/ControlPanel/Output/Renderer.ui \
     src/display/qt/windows/ControlPanel/Output/Scaler.ui \
     src/display/qt/windows/ControlPanel/Output/Size.ui \

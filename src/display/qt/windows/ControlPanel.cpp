@@ -6,7 +6,6 @@
 #include "display/qt/windows/ControlPanel/VideoPresets.h"
 #include "display/qt/windows/ControlPanel/FilterGraph.h"
 #include "display/qt/windows/ControlPanel/AboutVCS.h"
-#include "display/qt/windows/ControlPanel/Overlay.h"
 #include "display/qt/windows/OutputWindow.h"
 #include "ControlPanel.h"
 #include "ui_ControlPanel.h"
@@ -24,7 +23,6 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
     this->outputDialog = new control_panel::Output(this);
     this->filterGraphDialog = new control_panel::FilterGraph(this);
     this->videoPresetsDialog = new control_panel::VideoPresets(this);
-    this->overlayDialog = new control_panel::Overlay(this);
     this->aboutDialog = new control_panel::AboutVCS(this);
 
     // Populate the side navi.
@@ -58,7 +56,6 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
         add_navi_button("Output", this->outputDialog);
         add_navi_button("Filter graph", this->filterGraphDialog);
         add_navi_button("Video presets", this->videoPresetsDialog);
-        add_navi_button("Overlay", this->overlayDialog);
         add_navi_button("About VCS", this->aboutDialog);
 
         // Push the buttons against the top edge of the container.
