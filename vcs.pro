@@ -9,7 +9,11 @@ linux {
         VCS_FOR_X11
         #VCS_FOR_WAYLAND
 
-    DEFINES += CAPTURE_BACKEND_VISION_V4L
+    # Select one, depending on which capture backend you want the build to support.
+    DEFINES += \
+        #CAPTURE_BACKEND_VIRTUAL
+        #CAPTURE_BACKEND_DOSBOX_MMAP
+        CAPTURE_BACKEND_VISION_V4L
 
     INCLUDEPATH += \
         # The base path for Datapath's Linux Vision driver header files. These are
