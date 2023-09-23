@@ -1,0 +1,77 @@
+ParameterGrid QScrollBar::handle:horizontal,
+ParameterGrid QScrollBar::add-line:horizontal,
+ParameterGrid QScrollBar::sub-line:horizontal
+{
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid black;
+    background: #525252;
+}
+
+ParameterGrid QScrollBar::add-line:horizontal:hover,
+ParameterGrid QScrollBar::sub-line:horizontal:hover
+{
+    background-color: #5e5e5e;
+}
+
+ParameterGrid QScrollBar::add-line:horizontal:pressed,
+ParameterGrid QScrollBar::sub-line:horizontal:pressed
+{
+    background: #474747;
+}
+
+ParameterGrid QScrollBar::handle:horizontal:disabled,
+ParameterGrid QScrollBar::add-line:horizontal:disabled,
+ParameterGrid QScrollBar::sub-line:horizontal:disabled
+{
+    background-color: transparent;
+    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-repeat: repeat-xy;
+    color: #909090;
+    border: none;
+}
+
+ParameterGrid QScrollBar:horizontal
+{
+    border: none;
+    margin: 0px 1.35em 0px 1.35em;
+}
+
+ParameterGrid QScrollBar::handle:horizontal
+{
+    min-width: 1.7em;
+    image: url(:/res/icons/newie/handle_grip.png);
+}
+
+ParameterGrid QScrollBar::handle:horizontal:disabled
+{
+    image: url(:/res/icons/newie/handle_grip_disabled.png);
+}
+
+ParameterGrid QScrollBar::add-line:horizontal
+{
+    width: 1.35em;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+    image: url(:/res/icons/newie/arrow_right.png);
+}
+
+ParameterGrid QScrollBar::sub-line:horizontal
+{
+    width: 1.35em;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+    image: url(:/res/icons/newie/arrow_left.png);
+}
+
+ParameterGrid QPushButton
+{
+    min-width: 1.75em;
+}
+
+ParameterGrid QSpinBox
+{
+    min-width: 3em;
+}

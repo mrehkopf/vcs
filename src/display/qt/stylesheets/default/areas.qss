@@ -90,11 +90,3 @@ QGroupBox > QLabel
     padding-left: 3px;
     padding-right: 3px;
 }
-
-QGroupBox > PropertyTable
-{
-    margin: 0;
-    margin-left: 6px;
-    margin-right: 6px;
-    padding: 0;
-}

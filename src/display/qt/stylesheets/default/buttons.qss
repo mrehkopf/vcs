@@ -10,39 +10,20 @@ QComboBox
     color: #e0e0e0;
 }
 
-QGroupBox QScrollBar::handle:horizontal,
-QGroupBox QScrollBar::add-line:horizontal,
-QGroupBox QScrollBar::sub-line:horizontal
-{
-    margin: 0;
-    padding: 0;
-    border-radius: 0;
-    border: none;
-    border-bottom: 1px solid black;
-    background: #525252;
-}
-
 QPushButton:hover,
-QComboBox:hover,
-QGroupBox QScrollBar::add-line:horizontal:hover,
-QGroupBox QScrollBar::sub-line:horizontal:hover
+QComboBox:hover
 {
     background-color: #5e5e5e;
 }
 
 QPushButton:pressed,
-QComboBox:pressed,
-QGroupBox QScrollBar::add-line:horizontal:pressed,
-QGroupBox QScrollBar::sub-line:horizontal:pressed
+QComboBox:pressed
 {
     background: #474747;
 }
 
 QPushButton:disabled,
-QComboBox:disabled,
-QGroupBox QScrollBar::handle:horizontal:disabled,
-QGroupBox QScrollBar::add-line:horizontal:disabled,
-QGroupBox QScrollBar::sub-line:horizontal:disabled
+QComboBox:disabled
 {
     background-color: transparent;
     background-image: url(:/res/icons/newie/line_pattern.png);
@@ -84,11 +65,6 @@ DialogFragment[objectName="ControlPanel_VideoPresets"] QPushButton
     min-width: 1.5em;
 }
 
-DialogFragment[objectName="ControlPanel_VideoPresets"] ParameterGrid QPushButton
-{
-    min-width: 1.75em;
-}
-
 QComboBox
 {
     padding-left: 0.35em;
@@ -118,37 +94,4 @@ QComboBox::drop-down
     border-radius: 0;
     border: none;
     background-color: transparent;
-}
-
-QGroupBox QScrollBar:horizontal
-{
-    border: none;
-    margin: 0px 1.35em 0px 1.35em;
-}
-
-QGroupBox QScrollBar::handle:horizontal
-{
-    min-width: 1.7em;
-    image: url(:/res/icons/newie/handle_grip.png);
-}
-
-QGroupBox QScrollBar::handle:horizontal:disabled
-{
-    image: url(:/res/icons/newie/handle_grip_disabled.png);
-}
-
-QGroupBox QScrollBar::add-line:horizontal
-{
-    width: 1.35em;
-    subcontrol-position: right;
-    subcontrol-origin: margin;
-    image: url(:/res/icons/newie/arrow_right.png);
-}
-
-QGroupBox QScrollBar::sub-line:horizontal
-{
-    width: 1.35em;
-    subcontrol-position: left;
-    subcontrol-origin: margin;
-    image: url(:/res/icons/newie/arrow_left.png);
 }

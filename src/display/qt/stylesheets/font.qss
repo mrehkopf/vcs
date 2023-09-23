@@ -1,12 +1,11 @@
-/* VCS's default program-wide font style; intended for Linux targets.*/
-
 /* We want to allow certain elements of the program to retain the original
    system font - things like the menu bar. Ideally, we'd make all (*)
    elements use the custom font and then set the particular other elements
    to "font-style: initial", but that syntax doesn't appear supported in
    QSS at the time of writing. So let's just laboriously define all the
    specific elements that should have the custom font, leaving out the
-   ones that should use the default font. This isn't ideal, but hey.*/
+   ones that should use the default font. This isn't ideal, but hey.
+*/
 QPushButton,
 QAbstractButton,
 QSpinBox,
@@ -32,4 +31,9 @@ QTreeWidget QHeaderView::section
 
     /* This value will be set programmatically.*/
     font-size: %FONT_SIZE%;
+}
+
+DialogFragment[objectName="ControlPanel_Output_Overlay"] QPlainTextEdit
+{
+    font-family: "monospace";
 }

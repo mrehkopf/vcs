@@ -21,14 +21,6 @@ DialogFragment QStatusBar::item
     border: 0px;
 }
 
-DialogFragment[objectName="ControlPanel_Overlay"] QGroupBox
-{
-    margin: 0;
-    padding: 0;
-    border: none;
-    border-radius: 0;
-}
-
 DialogFragment[objectName="ControlPanel_Output"] QComboBox[objectName="channels"]
 {
     margin-bottom: 0.25em;

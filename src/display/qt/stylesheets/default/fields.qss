@@ -7,6 +7,8 @@ QTextEdit
     min-height: 1.5em;
     color: #cccccc;
     background-color: #353535;
+    selection-color: black;
+    selection-background-color: #aaaaaa;
     border-radius: 0;
     border-top: 1px solid black;
     border-left: 1px solid black;
@@ -108,24 +110,4 @@ QCheckBox::indicator::checked:disabled,
 QGroupBox::indicator::checked:disabled
 {
     image: url(:/res/icons/checkbox_check_disabled.png);
-}
-
-DialogFragment[objectName="ControlPanel_VideoPresets"] ParameterGrid QSpinBox
-{
-    min-width: 3em;
-}
-
-DialogFragment[objectName="ControlPanel_Overlay"] QPlainTextEdit
-{
-    margin: 0;
-    padding: 0;
-    border: none;
-}
-
-DialogFragment[objectName="ControlPanel_Overlay"] QPlainTextEdit
-{
-    background-color: #303030;
-    color: #d9d9d9;
-    selection-color: white;
-    selection-background-color: #808080;
 }

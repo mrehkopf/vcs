@@ -317,17 +317,23 @@ bool OutputWindow::apply_global_stylesheet(void)
 
     for (const auto &filename: {
          ":/res/stylesheets/default/misc.qss",
+         ":/res/stylesheets/default/scrollbars.qss",
          ":/res/stylesheets/default/dialogs.qss",
          ":/res/stylesheets/default/areas.qss",
          ":/res/stylesheets/default/buttons.qss",
          ":/res/stylesheets/default/fields.qss",
+         ":/res/stylesheets/default/ParameterGrid.qss",
+         ":/res/stylesheets/default/PropertyTable.qss",
     })
     {
         QFile file(filename);
+
         if (file.open(QIODevice::ReadOnly))
         {
             styleSheet += file.readAll();
         }
+
+        k_assert_optional(file.isOpen(), "Failed to open a stylesheet file.");
     }
 
     this->appwideStyleSheet = styleSheet;

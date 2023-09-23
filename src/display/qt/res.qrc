@@ -46,6 +46,9 @@
         <file>stylesheets/default/dialogs.qss</file>
         <file>stylesheets/default/buttons.qss</file>
         <file>stylesheets/default/areas.qss</file>
+        <file>stylesheets/default/scrollbars.qss</file>
+        <file>stylesheets/default/ParameterGrid.qss</file>
+        <file>stylesheets/default/PropertyTable.qss</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>
