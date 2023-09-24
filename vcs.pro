@@ -79,7 +79,6 @@ SOURCES += \
     src/display/qt/windows/ControlPanel/FilterGraph.cpp \
     src/display/qt/windows/ControlPanel/Output.cpp \
     src/display/qt/windows/ControlPanel/VideoPresets.cpp \
-    src/display/qt/dialogs/resolution_query.cpp \
     src/display/qt/keyboard_shortcuts.cpp \
     src/filter/filters/output_scaler/filter_output_scaler.cpp \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.cpp \
@@ -182,7 +181,6 @@ HEADERS += \
     src/display/qt/windows/ControlPanel/FilterGraph.h \
     src/display/qt/windows/ControlPanel/Output.h \
     src/display/qt/windows/ControlPanel/VideoPresets.h \
-    src/display/qt/dialogs/resolution_query.h \
     src/display/qt/keyboard_shortcuts.h \
     src/anti_tear/anti_tear_multiple_per_frame.h \
     src/anti_tear/anti_tear_one_per_frame.h \
@@ -274,8 +272,7 @@ FORMS += \
     src/display/qt/windows/ControlPanel/Capture.ui \
     src/display/qt/windows/ControlPanel/FilterGraph.ui \
     src/display/qt/windows/ControlPanel/Output.ui \
-    src/display/qt/windows/ControlPanel/VideoPresets.ui \
-    src/display/qt/dialogs/resolution_query.ui
+    src/display/qt/windows/ControlPanel/VideoPresets.ui
 
 contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
     SOURCES += src/capture/virtual/capture_virtual.cpp

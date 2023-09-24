@@ -38,21 +38,6 @@
       <string>Input resolution</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="spacing">
-       <number>9</number>
-      </property>
-      <property name="leftMargin">
-       <number>4</number>
-      </property>
-      <property name="topMargin">
-       <number>10</number>
-      </property>
-      <property name="rightMargin">
-       <number>4</number>
-      </property>
-      <property name="bottomMargin">
-       <number>9</number>
-      </property>
       <item>
        <widget class="QFrame" name="frame_inputForceButtons">
         <property name="sizePolicy">
@@ -260,7 +245,7 @@
           </widget>
          </item>
          <item row="2" column="2">
-          <widget class="QPushButton" name="pushButton_setCustomResolution">
+          <widget class="QPushButton" name="pushButton_inputForce_3">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -268,7 +253,13 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Other...</string>
+            <string>[&quot;resolution&quot;]</string>
+           </property>
+           <property name="resolution" stdset="0">
+            <size>
+             <width>1280</width>
+             <height>1024</height>
+            </size>
            </property>
            <property name="button_idx" stdset="0">
             <number>3</number>
@@ -277,6 +268,50 @@
          </item>
         </layout>
        </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QSpinBox" name="spinBox_customWidth">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>700</number>
+          </property>
+          <property name="value">
+           <number>640</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinBox_customHeight">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>700</number>
+          </property>
+          <property name="value">
+           <number>480</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_applyCustomResolution">
+          <property name="text">
+           <string>Set</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -292,7 +327,7 @@
   <tabstop>pushButton_inputForce_6</tabstop>
   <tabstop>pushButton_inputForce_1</tabstop>
   <tabstop>pushButton_inputForce_2</tabstop>
-  <tabstop>pushButton_setCustomResolution</tabstop>
+  <tabstop>pushButton_inputForce_3</tabstop>
  </tabstops>
  <resources/>
  <connections/>

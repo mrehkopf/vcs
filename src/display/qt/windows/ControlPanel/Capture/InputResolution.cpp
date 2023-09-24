@@ -4,7 +4,6 @@
  *
  */
 
-#include "display/qt/dialogs/resolution_query.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/utility.h"
 #include "common/vcs_event/vcs_event.h"
@@ -19,6 +18,14 @@ control_panel::capture::InputResolution::InputResolution(QWidget *parent) :
     ui->setupUi(this);
 
     this->set_name("Input resolution");
+
+    // Set the GUI controls to their proper initial values.
+    {
+        ui->spinBox_customWidth->setMaximum(MAX_CAPTURE_WIDTH);
+        ui->spinBox_customWidth->setMinimum(MIN_CAPTURE_WIDTH);
+        ui->spinBox_customHeight->setMaximum(MAX_CAPTURE_HEIGHT);
+        ui->spinBox_customHeight->setMinimum(MIN_CAPTURE_HEIGHT);
+    }
 
     // Connect GUI controls to consequences for operating them.
     {
@@ -35,9 +42,11 @@ control_panel::capture::InputResolution::InputResolution(QWidget *parent) :
             // Sanity check. Buttons that force the resolution have no label text but
             // include the "resolution" dynamic property. Auxiliary buttons don't define
             // the property but have a label text. Other buttons are considered malformed.
-            k_assert((!button->text().isEmpty() ||
-                      button->property("resolution").isValid()),
-                     "Detected a malformed input resolution button.");
+            k_assert(
+                !button->text().isEmpty() ||
+                button->property("resolution").isValid(),
+                "Detected a malformed input resolution button."
+            );
 
             // Ignore non-resolution-setting buttons.
             if (!button->property("resolution").isValid())
@@ -57,15 +66,10 @@ control_panel::capture::InputResolution::InputResolution(QWidget *parent) :
             });
         }
 
-        connect(ui->pushButton_setCustomResolution, &QPushButton::clicked, this, [this]
+        connect(ui->pushButton_applyCustomResolution, &QPushButton::clicked, this, [this]
         {
-            resolution_s customResolution = {1920, 1080};
-
-            if (ResolutionDialog("Force an input resolution", &customResolution, parentWidget()).exec() == QDialog::Accepted)
-            {
-                kc_set_device_property("width", customResolution.w);
-                kc_set_device_property("height", customResolution.h);
-            }
+            kc_set_device_property("width", ui->spinBox_customWidth->value());
+            kc_set_device_property("height", ui->spinBox_customHeight->value());
         });
     }
 
