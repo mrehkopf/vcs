@@ -50,6 +50,7 @@ SOURCES += \
     src/display/qt/widgets/ColorHistogram.cpp \
     src/display/qt/widgets/DialogFileMenu.cpp \
     src/display/qt/widgets/DialogFragment.cpp \
+    src/display/qt/widgets/HorizontalSlider.cpp \
     src/display/qt/widgets/InteractibleNodeGraph.cpp \
     src/display/qt/widgets/InteractibleNodeGraphNode.cpp \
     src/display/qt/widgets/InteractibleNodeGraphView.cpp \
@@ -152,6 +153,7 @@ HEADERS += \
     src/display/qt/widgets/ColorHistogram.h \
     src/display/qt/widgets/DialogFileMenu.h \
     src/display/qt/widgets/DialogFragment.h \
+    src/display/qt/widgets/HorizontalSlider.h \
     src/display/qt/widgets/InteractibleNodeGraph.h \
     src/display/qt/widgets/InteractibleNodeGraphNode.h \
     src/display/qt/widgets/InteractibleNodeGraphView.h \

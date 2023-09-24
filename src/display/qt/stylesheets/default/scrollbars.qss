@@ -95,8 +95,13 @@ QScrollBar::handle:horizontal
     min-width: 10px;
 }
 
-QScrollBar::add-line:horizontal
+/* We want this style to affect only QScrollBar and not its derived classes,
+   since the styling for derived classes depends on some of these properties
+   not being defined.*/
+.QScrollBar::add-line:horizontal
 {
+    height: 21px;
+    width: 22px;
     subcontrol-position: right;
     subcontrol-origin: margin;
     image: url(:/res/icons/newie/arrow_right.png);
@@ -108,8 +113,13 @@ QScrollBar::add-line:horizontal:disabled
     image: url(:/res/icons/newie/arrow_right_disabled.png);
 }
 
-QScrollBar::sub-line:horizontal
+/* We want this style to affect only QScrollBar and not its derived classes,
+   since the styling for derived classes depends on some of these properties
+   not being defined.*/
+.QScrollBar::sub-line:horizontal
 {
+    height: 21px;
+    width: 22px;
     subcontrol-position: left;
     subcontrol-origin: margin;
     image: url(:/res/icons/newie/arrow_left.png);

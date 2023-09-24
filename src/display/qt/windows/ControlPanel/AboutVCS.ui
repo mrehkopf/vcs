@@ -68,7 +68,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;VCS is an open-source Linux video capture application for Datapath capture cards. &lt;a href=&quot;https://github.com/leikareipa/vcs&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#ffc04d;&quot;&gt;Find out more on GitHub.&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;VCS is an open-source Linux video capture application for Datapath Vision capture cards.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

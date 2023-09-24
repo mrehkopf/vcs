@@ -26,6 +26,12 @@ DialogFragment[objectName="ControlPanel_Output"] QComboBox[objectName="channels"
     margin-bottom: 0.25em;
 }
 
+DialogFragment[objectName="ControlPanel_Output_Overlay"] QPlainTextEdit
+{
+    margin: 0;
+    padding: 0;
+}
+
 DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"]
 {
     margin: 0;
@@ -50,6 +56,12 @@ DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_
 }
 
 QFrame[objectName="QtAbstractGUI"]
+{
+    margin: 0;
+    padding: 0;
+}
+
+DialogFragment[objectName="ControlPanel_Capture_InputResolution"] QFrame
 {
     margin: 0;
     padding: 0;

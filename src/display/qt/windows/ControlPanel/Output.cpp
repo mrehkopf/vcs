@@ -29,8 +29,8 @@ control_panel::Output::Output(QWidget *parent) :
     layout->addWidget(this->sizeDialog);
     layout->addWidget(this->scalerDialog);
     layout->addWidget(this->rendererDialog);
-    layout->addWidget(this->overlayDialog);
     layout->addWidget(this->histogramDialog);
+    layout->addWidget(this->overlayDialog);
 
     // Push out empty space from the dialogs.
     layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Fixed, QSizePolicy::Expanding));

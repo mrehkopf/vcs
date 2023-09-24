@@ -12,6 +12,7 @@
 #include <QLabel>
 #include <QSpinBox>
 #include <QScrollBar>
+#include "display/qt/widgets/HorizontalSlider.h"
 #include "display/qt/widgets/ParameterGrid.h"
 #include "display/qt/utility.h"
 #include "common/assert.h"
@@ -172,7 +173,7 @@ void ParameterGrid::add_scroller(const QString name,
         resetButton->setEnabled(false);
         resetButton->setToolTip("Reset to default");
 
-        auto *const scrollBar = new QScrollBar();
+        auto *const scrollBar = new HorizontalSlider();
         scrollBar->setOrientation(Qt::Orientation::Horizontal);
         scrollBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         scrollBar->setMaximum(newParam->maximumValue);

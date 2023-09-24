@@ -51,7 +51,7 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
 {
     (void)widget;
 
-    const unsigned borderRadius = 3;
+    const unsigned borderRadius = 0;
     const unsigned titleBarHeight = 24;
     const QRect titleBarRect = QRect(4, 4, (this->width - 8), (titleBarHeight + 4));
     const QRect titleBarTextRect = QRect(12, 4, (this->width - 18), (titleBarHeight + 4));
@@ -124,8 +124,8 @@ const QColor BaseFilterGraphNode::current_background_color(void)
     if (currentColor == "blue") return "#157efd";
     else if (currentColor == "black") return "black";
     else if (currentColor == "cyan") return "#1d918f";
-    else if (currentColor == "green") return "#31b12c";
-    else if (currentColor == "magenta") return "#d248ca";
+    else if (currentColor == "green") return "#39a535";
+    else if (currentColor == "magenta") return "#b832b1";
     else if (currentColor == "red") return "#d52f3e";
     else if (currentColor == "yellow") return "#ffdc00";
 

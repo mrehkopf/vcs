@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>control_panel::Capture</class>
- <widget name="ControlPanel_Capture" class="QWidget">
+ <widget class="QWidget" name="ControlPanel_Capture">
   <property name="geometry">
    <rect>
     <x>0</x>
