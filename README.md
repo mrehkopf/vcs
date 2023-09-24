@@ -1,9 +1,8 @@
 # VCS
 
-A capture application for Datapath Vision series capture cards on Linux.
+A capture application for Datapath Vision capture cards on Linux.
 
-![VCS 3.0](./screenshot.png)\
-*VCS 3.0, showing the capture window (in the background) and some of the control options.*
+![VCS 3.0](./screenshot.png)
 
 ## Key features
 
