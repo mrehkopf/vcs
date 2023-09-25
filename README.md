@@ -2,7 +2,9 @@
 
 A capture application for Datapath Vision capture cards on Linux.
 
-![VCS 3.0](./screenshot.png)
+![VCS 3.0](./screenshot1.png)
+
+![VCS 3.0](./screenshot2.webp)
 
 ## Key features
 
