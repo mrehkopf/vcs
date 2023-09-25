@@ -29,6 +29,10 @@ linux {
         -lopencv_core \
         -lopencv_photo
 
+    contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
+        LIBS += -lopencv_imgcodecs
+    }
+
     contains(DEFINES, VCS_FOR_X11) {
         SOURCES += src/display/prevent_screensaver_x11.cpp
         LIBS += -lX11 -lXext
