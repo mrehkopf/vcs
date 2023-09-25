@@ -39,30 +39,6 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QComboBox" name="channels">
-        <item>
-         <property name="text">
-          <string>RGB</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Red</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Green</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Blue</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item>
        <widget class="ColorHistogram" name="histogram" native="true">
         <property name="minimumSize">
          <size>
