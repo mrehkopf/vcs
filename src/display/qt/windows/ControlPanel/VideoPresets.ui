@@ -45,8 +45,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>391</width>
-        <height>501</height>
+        <width>405</width>
+        <height>479</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -505,7 +505,7 @@
         </widget>
        </item>
        <item>
-        <widget class="ParameterGrid" name="parameterGrid_geometry">
+        <widget class="ParameterGrid" name="parameterGrid_parameters">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -513,21 +513,7 @@
           </sizepolicy>
          </property>
          <property name="title">
-          <string>Geometry</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="ParameterGrid" name="parameterGrid_brightness">
-         <property name="title">
-          <string>Brightness</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="ParameterGrid" name="parameterGrid_contrast">
-         <property name="title">
-          <string>Contrast</string>
+          <string>Parameters</string>
          </property>
         </widget>
        </item>

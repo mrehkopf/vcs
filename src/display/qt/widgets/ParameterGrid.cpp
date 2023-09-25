@@ -139,10 +139,12 @@ void ParameterGrid::add_combobox(const QString name, const std::list<QString> it
     return;
 }
 
-void ParameterGrid::add_scroller(const QString name,
-                                 const int valueInitial,
-                                 const int valueMin,
-                                 const int valueMax)
+void ParameterGrid::add_scroller(
+    const QString name,
+    const int valueInitial,
+    const int valueMin,
+    const int valueMax
+)
 {
     auto *const newParam = new ParameterGrid::parameter_meta_s;
     newParam->name = name;
@@ -156,7 +158,6 @@ void ParameterGrid::add_scroller(const QString name,
     {
         auto *const label = new QLabel(name);
         label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-        label->setMinimumWidth(100);
 
         auto *const spinBox = new QSpinBox();
         spinBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -185,11 +186,12 @@ void ParameterGrid::add_scroller(const QString name,
             auto *layout = qobject_cast<QGridLayout*>(this->layout());
             const auto rowIdx = layout->rowCount();
 
+            unsigned column = 0;
             layout->setSpacing(6);
-            layout->addWidget(label, rowIdx, 0);
-            layout->addWidget(spinBox, rowIdx, 1);
-            layout->addWidget(scrollBar, rowIdx, 2);
-            layout->addWidget(resetButton, rowIdx, 3);
+            layout->addWidget(label, rowIdx, column++);
+            layout->addWidget(spinBox, rowIdx, column++);
+            layout->addWidget(scrollBar, rowIdx, column++);
+            layout->addWidget(resetButton, rowIdx, column++);
         }
 
         // Create component reactivity.www

@@ -10,7 +10,7 @@ QFrame[frameShape="4"]:disabled
 {
     margin: 0;
     border: none;
-    border-top: 2px solid #3d3d3d;
+    border-top: 1px solid #303030;
     border-bottom: 1px solid #505050;
 }
 

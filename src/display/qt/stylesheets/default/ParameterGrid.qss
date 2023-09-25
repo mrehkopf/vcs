@@ -75,3 +75,10 @@ ParameterGrid QSpinBox
 {
     min-width: 3em;
 }
+
+/* Horizontal line.*/
+ParameterGrid QFrame[frameShape="4"],
+ParameterGrid QFrame[frameShape="4"]:disabled
+{
+    margin-left: 9px;
+}
