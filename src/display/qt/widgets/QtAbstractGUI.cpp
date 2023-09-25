@@ -9,6 +9,8 @@
 #include <QPlainTextEdit>
 #include <QHBoxLayout>
 #include <QFormLayout>
+#include <QPushButton>
+#include <QFileDialog>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QWidget>
@@ -74,6 +76,26 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
                     label->setAlignment(Qt::AlignCenter);
                     label->setStyleSheet("margin-bottom: .25em;");
+                }
+                else if (dynamic_cast<abstract_gui::button_get_open_filename*>(component))
+                {
+                    auto *const c = ((abstract_gui::button_get_open_filename*)component);
+                    auto *const button = qobject_cast<QPushButton*>(widget = new QPushButton(QString::fromStdString(c->label), this));
+
+                    connect(button, &QPushButton::clicked, [=, this]
+                    {
+                        QString filename = QFileDialog::getOpenFileName(
+                            this,
+                            "Select a file containing the filter graph to be loaded",
+                            "",
+                            QString::fromStdString(c->filenameFilter)
+                        );
+
+                        if (!filename.isNull())
+                        {
+                            c->on_success(filename.toStdString());
+                        }
+                    });
                 }
                 else if (dynamic_cast<abstract_gui::text_edit*>(component))
                 {

@@ -38,6 +38,14 @@ namespace abstract_gui
         std::string text;
     };
 
+    struct button_get_open_filename : abstract_gui_widget_s
+    {
+        std::function<void(const std::string&)> on_success;
+
+        std::string label;
+        std::string filenameFilter;
+    };
+
     struct text_edit : abstract_gui_widget_s
     {
         std::function<void(const std::string&)> set_text;
