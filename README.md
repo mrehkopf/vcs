@@ -1,6 +1,6 @@
 # VCS
 
-A capture application for Datapath Vision capture cards on Linux.
+A control application for Datapath Vision capture cards on Linux.
 
 ![VCS 3.0](./screenshot1.png)
 
@@ -54,7 +54,7 @@ The default configuration in [vcs.pro](vcs.pro) produces a debug build, which ha
 
 Defining `VCS_RELEASE_BUILD` globally will produce a release build, with fewer debugging checks in performance-critical sections of the program. Simply uncomment `DEFINES += VCS_RELEASE_BUILD` at the top of [vcs.pro](vcs.pro) and do a full rebuild.
 
-To confirm whether the program is running in release or debug mode, check the About dialog (right-click VCS's output window and select "About VCS&hellip;"). For debug builds, the program's version will be reported as "VCS x.x.x (non-release build)", whereas for release builds it'll be "VCS x.x.x".
+To confirm whether the program is running in release or debug mode, navigate to Control panel &rarr; About VCS.
 
 ### The capture backend
 
