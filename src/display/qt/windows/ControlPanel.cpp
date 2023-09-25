@@ -55,7 +55,7 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
         auto *const defaultButton = add_navi_button("Capture", this->captureDialog);
         add_navi_button("Output", this->outputDialog);
         add_navi_button("Filter graph", this->filterGraphDialog);
-        add_navi_button("Video presets", this->videoPresetsDialog);
+        add_navi_button("Analog presets", this->videoPresetsDialog);
         add_navi_button("About VCS", this->aboutDialog);
 
         // Push the buttons against the top edge of the container.
