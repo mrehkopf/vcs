@@ -42,6 +42,8 @@ control_panel::output::Size::Size(QWidget *parent) :
 
         connect(ui->checkBox_forceOutputScale, &QCheckBox::stateChanged, this, [is_checked, this](int state)
         {
+            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "ForceWindowScale", bool(state));
+
             if (is_checked(state))
             {
                 ks_set_scaling_multiplier(ui->spinBox_outputScale->value() / 100.0);
@@ -52,16 +54,15 @@ control_panel::output::Size::Size(QWidget *parent) :
             }
 
             ui->spinBox_outputScale->setEnabled(is_checked(state));
-            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "ForceWindowScale", bool(state));
-
             ks_set_scaling_multiplier_enabled(is_checked(state));
         });
 
         connect(ui->checkBox_forceOutputRes, &QCheckBox::stateChanged, this, [is_checked, this](int state)
         {
+            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "ForceWindowSize", bool(state));
+
             this->ui->spinBox_outputResX->setEnabled(is_checked(state));
             this->ui->spinBox_outputResY->setEnabled(is_checked(state));
-            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "ForceWindowSize", bool(state));
 
             ks_set_base_resolution_enabled(is_checked(state));
 
@@ -81,34 +82,34 @@ control_panel::output::Size::Size(QWidget *parent) :
 
         connect(ui->spinBox_outputResX, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this]
         {
-            if (!ui->checkBox_forceOutputRes->isChecked()) return;
+            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "WindowWidth", unsigned(ui->spinBox_outputResX->value()));
 
-            const resolution_s r = {
-                (uint)ui->spinBox_outputResX->value(),
-                (uint)ui->spinBox_outputResY->value()
-            };
-
-            ks_set_base_resolution(r);
-            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "WindowWidth", uint(r.w));
+            if (ui->checkBox_forceOutputRes->isChecked())
+            {
+                ks_set_base_resolution({
+                    .w = unsigned(ui->spinBox_outputResX->value()),
+                    .h = unsigned(ui->spinBox_outputResY->value())
+                });
+            }
         });
 
         connect(ui->spinBox_outputResY, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this]
         {
-            if (!ui->checkBox_forceOutputRes->isChecked()) return;
+            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "WindowHeight", unsigned(ui->spinBox_outputResY->value()));
 
-            const resolution_s r = {
-                (uint)ui->spinBox_outputResX->value(),
-                (uint)ui->spinBox_outputResY->value()
-            };
-
-            ks_set_base_resolution(r);
-            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "WindowHeight", uint(r.h));
+            if (ui->checkBox_forceOutputRes->isChecked())
+            {
+                ks_set_base_resolution({
+                    .w = unsigned(ui->spinBox_outputResX->value()),
+                    .h = unsigned(ui->spinBox_outputResY->value())
+                });
+            }
         });
 
         connect(ui->spinBox_outputScale, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this]
         {
-            ks_set_scaling_multiplier(ui->spinBox_outputScale->value() / 100.0);
             kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "WindowScale", ui->spinBox_outputScale->value());
+            ks_set_scaling_multiplier(ui->spinBox_outputScale->value() / 100.0);
         });
     }
 
