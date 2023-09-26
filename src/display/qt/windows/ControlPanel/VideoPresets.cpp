@@ -30,14 +30,14 @@ static bool CONTROLS_LIVE_UPDATE = true;
 #define PARAM_LABEL_VERTICAL_POSITION "Vertical position"
 #define PARAM_LABEL_BLACK_LEVEL "Black level"
 #define PARAM_LABEL_PHASE "Phase"
-#define PARAM_LABEL_BRIGHTNESS "Overall brightness"
-#define PARAM_LABEL_RED_BRIGHTNESS "Red brightness"
-#define PARAM_LABEL_GREEN_BRIGHTNESS "Green brightness"
-#define PARAM_LABEL_BLUE_BRIGHTNESS "Blue brightness"
-#define PARAM_LABEL_CONTRAST "Overall contrast"
-#define PARAM_LABEL_RED_CONTRAST "Red contrast"
-#define PARAM_LABEL_GREEN_CONTRAST "Green contrast"
-#define PARAM_LABEL_BLUE_CONTRAST "Blue contrast"
+#define PARAM_LABEL_BRIGHTNESS "Brightness"
+#define PARAM_LABEL_RED_BRIGHTNESS "Red"
+#define PARAM_LABEL_GREEN_BRIGHTNESS "Green"
+#define PARAM_LABEL_BLUE_BRIGHTNESS "Blue"
+#define PARAM_LABEL_CONTRAST "Contrast"
+#define PARAM_LABEL_RED_CONTRAST "Red"
+#define PARAM_LABEL_GREEN_CONTRAST "Green"
+#define PARAM_LABEL_BLUE_CONTRAST "Blue"
 
 control_panel::VideoPresets::VideoPresets(QWidget *parent) :
     DialogFragment(parent),
@@ -149,23 +149,23 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         ui->spinBox_resolutionY->setMinimum(int(minres.w));
         ui->spinBox_resolutionY->setMaximum(int(maxres.w));
 
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_HORIZONTAL_POSITION);
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_VERTICAL_POSITION);
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_HORIZONTAL_SIZE);
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_PHASE);
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_HORIZONTAL_SIZE, "horizontal-size");
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_HORIZONTAL_POSITION, "horizontal-position");
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_VERTICAL_POSITION, "vertical-position");
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_BLACK_LEVEL, "black-level");
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_PHASE, "phase");
         ui->parameterGrid_parameters->add_separator();
 
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_BRIGHTNESS);
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_RED_BRIGHTNESS);
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_GREEN_BRIGHTNESS);
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_BLUE_BRIGHTNESS);
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_BLACK_LEVEL);
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_BRIGHTNESS, "brightness");
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_RED_BRIGHTNESS, "red-brightness");
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_GREEN_BRIGHTNESS, "green-brightness");
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_BLUE_BRIGHTNESS, "blue-brightness");
         ui->parameterGrid_parameters->add_separator();
 
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_CONTRAST);
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_RED_CONTRAST);
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_GREEN_CONTRAST);
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_BLUE_CONTRAST);
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_CONTRAST, "contrast");
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_RED_CONTRAST, "red-contrast");
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_GREEN_CONTRAST, "green-contrast");
+        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_BLUE_CONTRAST, "blue-contrast");
 
         this->update_active_preset_indicator();
     }

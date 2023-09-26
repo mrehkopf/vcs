@@ -141,6 +141,7 @@ void ParameterGrid::add_combobox(const QString name, const std::list<QString> it
 
 void ParameterGrid::add_scroller(
     const QString name,
+    const QString iconName,
     const int valueInitial,
     const int valueMin,
     const int valueMax
@@ -156,6 +157,10 @@ void ParameterGrid::add_scroller(
 
     // Set up the UI.
     {
+        auto *const icon = new QWidget();
+        icon->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+        icon->setObjectName("icon-" + iconName);
+
         auto *const label = new QLabel(name);
         label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
@@ -184,17 +189,19 @@ void ParameterGrid::add_scroller(
         // Insert the components.
         {
             auto *layout = qobject_cast<QGridLayout*>(this->layout());
+            layout->setSpacing(6);
+
             const auto rowIdx = layout->rowCount();
 
             unsigned column = 0;
-            layout->setSpacing(6);
+            layout->addWidget(icon, rowIdx, column++);
             layout->addWidget(label, rowIdx, column++);
             layout->addWidget(spinBox, rowIdx, column++);
             layout->addWidget(scrollBar, rowIdx, column++);
             layout->addWidget(resetButton, rowIdx, column++);
         }
 
-        // Create component reactivity.www
+        // Create component reactivity.
         {
             connect(resetButton, &QPushButton::clicked, this, [=]
             {

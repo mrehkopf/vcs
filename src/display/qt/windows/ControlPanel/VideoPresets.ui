@@ -513,7 +513,7 @@
           </sizepolicy>
          </property>
          <property name="title">
-          <string>Parameters</string>
+          <string>Properties</string>
          </property>
         </widget>
        </item>
