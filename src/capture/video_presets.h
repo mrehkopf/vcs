@@ -101,20 +101,9 @@ struct video_preset_s
         }
     }
 
-    // Whether this preset should be activated by the given shortcut (e.g.
-    // "ctrl+f1").
+    // The shortcut string would be something like "Ctrl+F1".
     bool activates_with_shortcut(std::string shortcutString)
     {
-        for (auto &chr: shortcutString)
-        {
-            chr = char(std::tolower(chr));
-        }
-
-        for (auto &chr: this->activationShortcut)
-        {
-            chr = char(std::tolower(chr));
-        }
-
         return (this->activatesWithShortcut && (this->activationShortcut == shortcutString));
     }
 };
