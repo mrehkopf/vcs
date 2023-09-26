@@ -83,10 +83,16 @@ ParameterGrid QFrame[frameShape="4"]:disabled
     margin-left: 9px;
 }
 
+ParameterGrid QLabel
+{
+    margin-left: 0;
+    padding-left: 0;
+}
+
 ParameterGrid QWidget[objectName^="icon-"]
 {
     margin-left: 9px;
-    min-width: 0.8em;
+    min-width: 0.75em;
 }
 
 ParameterGrid QWidget[objectName="icon-contrast"]
