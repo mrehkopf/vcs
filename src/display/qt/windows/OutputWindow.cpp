@@ -218,11 +218,12 @@ OutputWindow::OutputWindow(QWidget *parent) :
         // F1 through F12.
         for (uint i = 1; i <= 12; i++)
         {
-            const std::string shortcutString = ("video-preset-dialog: preset-activator-" + std::to_string(i));
+            const std::string shortcutLabel = ("video-preset-dialog: preset-activator-" + std::to_string(i));
+            const std::string shortcutSequence = kd_get_key_sequence(shortcutLabel).toString().toStdString();
 
-            connect(makeAppwideShortcut(shortcutString), &QShortcut::activated, this, [=]
+            connect(makeAppwideShortcut(shortcutLabel), &QShortcut::activated, this, [=]
             {
-                kvideopreset_activate_keyboard_shortcut(shortcutString);
+                kvideopreset_activate_keyboard_shortcut(shortcutSequence);
             });
         }
 
