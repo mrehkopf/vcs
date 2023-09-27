@@ -32,6 +32,18 @@ DialogFragment[objectName="ControlPanel_Output_Overlay"] QPlainTextEdit
     padding: 0;
 }
 
+DialogFragment[objectName="ControlPanel_VideoPresets"] QWidget[objectName="groupBox_presetList"] QPushButton
+{
+    padding: 0 0.5em;
+}
+
+DialogFragment[objectName="ControlPanel_VideoPresets"] QWidget[objectName="groupBox_presetList"] QPushButton[objectName="pushButton_addNewPreset"],
+DialogFragment[objectName="ControlPanel_VideoPresets"] QWidget[objectName="groupBox_presetList"] QPushButton[objectName="pushButton_deletePreset"]
+{
+    min-width: 1.5em;
+    padding: 0;
+}
+
 DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"]
 {
     margin: 0;

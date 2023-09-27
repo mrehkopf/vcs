@@ -60,11 +60,6 @@ ControlPanel QFrame[objectName="buttonsContainer"] QPushButton[isSelected="true"
     color: #f5f5f5;
 }
 
-DialogFragment[objectName="ControlPanel_VideoPresets"] QPushButton
-{
-    min-width: 1.5em;
-}
-
 QComboBox
 {
     padding-left: 0.35em;

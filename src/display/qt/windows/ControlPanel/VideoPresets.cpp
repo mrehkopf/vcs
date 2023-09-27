@@ -46,89 +46,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
     this->set_name("Video presets");
 
-    // Create the status bar.
-    {
-        auto *const statusBar = new QStatusBar();
-        this->layout()->addWidget(statusBar);
-
-        auto *const filenameIndicator = new QLabel("");
-        {
-            connect(this, &DialogFragment::data_filename_changed, this, [=](const QString &newFilename)
-            {
-                filenameIndicator->setText(QFileInfo(newFilename).fileName());
-            });
-
-            connect(this, &DialogFragment::unsaved_changes_flag_changed, this, [filenameIndicator, this](const bool is)
-            {
-                QString baseName = (this->data_filename().isEmpty()? "[Unsaved]" : filenameIndicator->text());
-
-                if (is)
-                {
-                    baseName = ((baseName.front() == '*')? baseName : ("*" + baseName));
-                }
-                else
-                {
-                    baseName = ((baseName.front() == '*')? baseName.mid(1) : baseName);
-                }
-
-                filenameIndicator->setText(baseName);
-            });
-        }
-
-        statusBar->addPermanentWidget(filenameIndicator);
-        statusBar->addPermanentWidget(new QLabel, 1); // Spacer, to push subsequent widgets to the right.
-    }
-
-    // Create the menu bar.
-    {
-        this->menuBar = new QMenuBar(this);
-
-        // File...
-        {
-            auto *const file = new DialogFileMenu(this);
-
-            this->menuBar->addMenu(file);
-
-            connect(file, &DialogFileMenu::save, this, [this](const QString &filename)
-            {
-                this->save_video_presets_to_file(filename);
-            });
-
-            connect(file, &DialogFileMenu::open, this, [this]
-            {
-                QString filename = QFileDialog::getOpenFileName(
-                    this,
-                    "Load video presets from...",
-                    "",
-                    "Video presets (*.vcs-video);;All files(*.*)"
-                );
-
-                this->load_presets_from_file(filename);
-            });
-
-            connect(file, &DialogFileMenu::save_as, this, [this](const QString &originalFilename)
-            {
-                QString filename = QFileDialog::getSaveFileName(
-                    this,
-                    "Save video presets as...",
-                    originalFilename,
-                    "Video presets (*.vcs-video);;All files (*.*)"
-                );
-
-                this->save_video_presets_to_file(filename);
-            });
-
-            connect(file, &DialogFileMenu::close, this, [this]
-            {
-                this->ui->comboBox_presetList->remove_all_presets();
-                this->set_data_filename("");
-                kvideopreset_remove_all_presets();
-            });
-        }
-
-        this->layout()->setMenuBar(this->menuBar);
-    }
-
     // Set the GUI controls to their proper initial values.
     {
         // The file format we save presets into reserves the { and } characters;
@@ -172,6 +89,62 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
     // Connect the GUI controls to consequences for changing their values.
     {
+        connect(ui->pushButton_openPresetFile, &QPushButton::clicked, this, [this]
+        {
+            QString filename = QFileDialog::getOpenFileName(
+                this,
+                "Load video presets from file",
+                "",
+                "Video presets (*.vcs-video);;All files(*.*)"
+            );
+
+            this->load_presets_from_file(filename);
+        });
+
+        connect(ui->pushButton_newPresetFile, &QPushButton::clicked, this, [this]
+        {
+            if (
+                this->has_unsaved_changes() &&
+                (
+                    QMessageBox::No == QMessageBox::question(
+                        nullptr,
+                        "Confirm preset reset",
+                        "There are unsaved changes in one or more open presets.\n\n"
+                        "Are you sure you want to proceed and lose your unsaved data?",
+                        (QMessageBox::No | QMessageBox::Yes)
+                    )
+                )
+            ){
+                return;
+            }
+
+            this->ui->comboBox_presetList->remove_all_presets();
+            this->set_data_filename("");
+            kvideopreset_remove_all_presets();
+        });
+
+        connect(ui->pushButton_savePresetFile, &QPushButton::clicked, this, [this]
+        {
+            this->save_video_presets_to_file(this->data_filename());
+        });
+
+        connect(ui->pushButton_savePresetFileAs, &QPushButton::clicked, this, [this]
+        {
+            QString filename = QFileDialog::getSaveFileName(
+                this,
+                "Save video presets to file",
+                this->data_filename(),
+                "Video presets (*.vcs-video);;All files (*.*)"
+            );
+
+            this->save_video_presets_to_file(filename);
+        });
+
+        connect(this, &DialogFragment::unsaved_changes_flag_changed, this, [this](const bool areUnsaved)
+        {
+            this->ui->pushButton_savePresetFile->setEnabled(areUnsaved);
+        });
+
         connect(this, &VideoPresets::preset_activation_rules_changed, this, [this]
         {
             this->update_active_preset_indicator();
@@ -180,6 +153,8 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         connect(this, &DialogFragment::data_filename_changed, this, [this](const QString &newFilename)
         {
             kpers_set_value(INI_GROUP_VIDEO_PRESETS, "SourceFile", newFilename);
+            this->ui->lineEdit_presetFilename->setText(QFileInfo(newFilename).fileName());
+            this->ui->lineEdit_presetFilename->setToolTip(newFilename);
         });
 
         connect(ui->comboBox_presetList, &VideoPresetList::preset_selected, this, [this]
