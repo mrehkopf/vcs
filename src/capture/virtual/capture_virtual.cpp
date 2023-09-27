@@ -247,7 +247,7 @@ void kc_initialize_device(void)
             };
 
             auto *const patternType = new abstract_gui::combo_box;
-            patternType->items = {"Animated", "Static", "Image"};
+            patternType->items = {"Animated", "Static", "Image from file"};
             patternType->set_value = [patternType, selectImage](const int itemsIdx)
             {
                 PATTERN_TYPE = output_pattern_type(itemsIdx);

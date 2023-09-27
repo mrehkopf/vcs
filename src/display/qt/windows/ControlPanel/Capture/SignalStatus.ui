@@ -38,7 +38,7 @@
       </sizepolicy>
      </property>
      <property name="title">
-      <string>Signal status</string>
+      <string>Status</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <property name="spacing">

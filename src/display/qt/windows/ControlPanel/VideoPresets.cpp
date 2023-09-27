@@ -24,19 +24,19 @@
 // Set this variable to false to disable real-time updates.
 static bool CONTROLS_LIVE_UPDATE = true;
 
-#define PARAM_LABEL_HORIZONTAL_SIZE "Horizontal size"
+#define PARAM_LABEL_HORIZONTAL_SIZE     "Horizontal size"
 #define PARAM_LABEL_HORIZONTAL_POSITION "Horizontal position"
-#define PARAM_LABEL_VERTICAL_POSITION "Vertical position"
-#define PARAM_LABEL_BLACK_LEVEL "Black level"
-#define PARAM_LABEL_PHASE "Phase"
-#define PARAM_LABEL_BRIGHTNESS "Brightness"
-#define PARAM_LABEL_RED_BRIGHTNESS "Red"
-#define PARAM_LABEL_GREEN_BRIGHTNESS "Green"
-#define PARAM_LABEL_BLUE_BRIGHTNESS "Blue"
-#define PARAM_LABEL_CONTRAST "Contrast"
-#define PARAM_LABEL_RED_CONTRAST "Red"
-#define PARAM_LABEL_GREEN_CONTRAST "Green"
-#define PARAM_LABEL_BLUE_CONTRAST "Blue"
+#define PARAM_LABEL_VERTICAL_POSITION   "Vertical position"
+#define PARAM_LABEL_BLACK_LEVEL         "Black level"
+#define PARAM_LABEL_PHASE               "Phase"
+#define PARAM_LABEL_BRIGHTNESS          "Brightness"
+#define PARAM_LABEL_RED_BRIGHTNESS      "— Red"
+#define PARAM_LABEL_GREEN_BRIGHTNESS    "— Green"
+#define PARAM_LABEL_BLUE_BRIGHTNESS     "— Blue"
+#define PARAM_LABEL_CONTRAST            "Contrast"
+#define PARAM_LABEL_RED_CONTRAST        "— Red"
+#define PARAM_LABEL_GREEN_CONTRAST      "— Green"
+#define PARAM_LABEL_BLUE_CONTRAST       "— Blue"
 
 control_panel::VideoPresets::VideoPresets(QWidget *parent) :
     DialogFragment(parent),
@@ -76,6 +76,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         }
 
         statusBar->addPermanentWidget(filenameIndicator);
+        statusBar->addPermanentWidget(new QLabel, 1); // Spacer, to push subsequent widgets to the right.
     }
 
     // Create the menu bar.
@@ -138,7 +139,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         ui->comboBox_presetList->setEnabled(false);
         ui->pushButton_deletePreset->setEnabled(false);
         ui->groupBox_videoPresetName->setEnabled(false);
-        ui->parameterGrid_parameters->setEnabled(false);
+        ui->parameterGrid_properties->setEnabled(false);
 
         const auto minres = resolution_s::from_capture_device(": minimum");
         const auto maxres = resolution_s::from_capture_device(": maximum");
@@ -148,23 +149,23 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         ui->spinBox_resolutionY->setMinimum(int(minres.w));
         ui->spinBox_resolutionY->setMaximum(int(maxres.w));
 
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_HORIZONTAL_SIZE, "horizontal-size");
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_HORIZONTAL_POSITION, "horizontal-position");
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_VERTICAL_POSITION, "vertical-position");
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_BLACK_LEVEL, "black-level");
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_PHASE, "phase");
-        ui->parameterGrid_parameters->add_separator();
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_HORIZONTAL_SIZE, "horizontal-size");
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_HORIZONTAL_POSITION, "horizontal-position");
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_VERTICAL_POSITION, "vertical-position");
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_BLACK_LEVEL, "black-level");
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_PHASE, "phase");
+        ui->parameterGrid_properties->add_separator();
 
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_BRIGHTNESS, "brightness");
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_RED_BRIGHTNESS, "red-brightness");
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_GREEN_BRIGHTNESS, "green-brightness");
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_BLUE_BRIGHTNESS, "blue-brightness");
-        ui->parameterGrid_parameters->add_separator();
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_BRIGHTNESS, "brightness");
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_RED_BRIGHTNESS, "red-brightness");
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_GREEN_BRIGHTNESS, "green-brightness");
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_BLUE_BRIGHTNESS, "blue-brightness");
+        ui->parameterGrid_properties->add_separator();
 
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_CONTRAST, "contrast");
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_RED_CONTRAST, "red-contrast");
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_GREEN_CONTRAST, "green-contrast");
-        ui->parameterGrid_parameters->add_scroller(PARAM_LABEL_BLUE_CONTRAST, "blue-contrast");
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_CONTRAST, "contrast");
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_RED_CONTRAST, "red-contrast");
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_GREEN_CONTRAST, "green-contrast");
+        ui->parameterGrid_properties->add_scroller(PARAM_LABEL_BLUE_CONTRAST, "blue-contrast");
 
         this->update_active_preset_indicator();
     }
@@ -197,7 +198,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             ui->comboBox_presetList->setEnabled(false);
             ui->pushButton_deletePreset->setEnabled(false);
             ui->groupBox_videoPresetName->setEnabled(false);
-            ui->parameterGrid_parameters->setEnabled(false);
+            ui->parameterGrid_properties->setEnabled(false);
             ui->pushButton_deletePreset->setEnabled(false);
             ui->lineEdit_presetName->clear();
             this->update_active_preset_indicator();
@@ -209,7 +210,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             ui->comboBox_presetList->setEnabled(true);
             ui->pushButton_deletePreset->setEnabled(true);
             ui->groupBox_videoPresetName->setEnabled(true);
-            ui->parameterGrid_parameters->setEnabled(true);
+            ui->parameterGrid_properties->setEnabled(true);
             ui->pushButton_deletePreset->setEnabled(true);
         });
 
@@ -279,12 +280,12 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             }
         });
 
-        connect(ui->parameterGrid_parameters, &ParameterGrid::parameter_value_changed_by_user, this, [this]
+        connect(ui->parameterGrid_properties, &ParameterGrid::parameter_value_changed_by_user, this, [this]
         {
             emit this->data_changed();
         });
 
-        connect(ui->parameterGrid_parameters, &ParameterGrid::parameter_value_changed, this, [this]
+        connect(ui->parameterGrid_properties, &ParameterGrid::parameter_value_changed, this, [this]
         {
             this->broadcast_current_preset_parameters();
         });
@@ -538,19 +539,19 @@ void control_panel::VideoPresets::broadcast_current_preset_parameters(void)
         return;
     }
 
-    preset->videoParameters.brightness         = ui->parameterGrid_parameters->value(PARAM_LABEL_BRIGHTNESS);
-    preset->videoParameters.contrast           = ui->parameterGrid_parameters->value(PARAM_LABEL_CONTRAST);
-    preset->videoParameters.redBrightness      = ui->parameterGrid_parameters->value(PARAM_LABEL_RED_BRIGHTNESS);
-    preset->videoParameters.redContrast        = ui->parameterGrid_parameters->value(PARAM_LABEL_RED_CONTRAST);
-    preset->videoParameters.greenBrightness    = ui->parameterGrid_parameters->value(PARAM_LABEL_GREEN_BRIGHTNESS);
-    preset->videoParameters.greenContrast      = ui->parameterGrid_parameters->value(PARAM_LABEL_GREEN_CONTRAST);
-    preset->videoParameters.blueBrightness     = ui->parameterGrid_parameters->value(PARAM_LABEL_BLUE_BRIGHTNESS);
-    preset->videoParameters.blueContrast       = ui->parameterGrid_parameters->value(PARAM_LABEL_BLUE_CONTRAST);
-    preset->videoParameters.blackLevel         = ui->parameterGrid_parameters->value(PARAM_LABEL_BLACK_LEVEL);
-    preset->videoParameters.horizontalPosition = ui->parameterGrid_parameters->value(PARAM_LABEL_HORIZONTAL_POSITION);
-    preset->videoParameters.horizontalSize     = ui->parameterGrid_parameters->value(PARAM_LABEL_HORIZONTAL_SIZE);
-    preset->videoParameters.phase              = ui->parameterGrid_parameters->value(PARAM_LABEL_PHASE);
-    preset->videoParameters.verticalPosition   = ui->parameterGrid_parameters->value(PARAM_LABEL_VERTICAL_POSITION);
+    preset->videoParameters.brightness         = ui->parameterGrid_properties->value(PARAM_LABEL_BRIGHTNESS);
+    preset->videoParameters.contrast           = ui->parameterGrid_properties->value(PARAM_LABEL_CONTRAST);
+    preset->videoParameters.redBrightness      = ui->parameterGrid_properties->value(PARAM_LABEL_RED_BRIGHTNESS);
+    preset->videoParameters.redContrast        = ui->parameterGrid_properties->value(PARAM_LABEL_RED_CONTRAST);
+    preset->videoParameters.greenBrightness    = ui->parameterGrid_properties->value(PARAM_LABEL_GREEN_BRIGHTNESS);
+    preset->videoParameters.greenContrast      = ui->parameterGrid_properties->value(PARAM_LABEL_GREEN_CONTRAST);
+    preset->videoParameters.blueBrightness     = ui->parameterGrid_properties->value(PARAM_LABEL_BLUE_BRIGHTNESS);
+    preset->videoParameters.blueContrast       = ui->parameterGrid_properties->value(PARAM_LABEL_BLUE_CONTRAST);
+    preset->videoParameters.blackLevel         = ui->parameterGrid_properties->value(PARAM_LABEL_BLACK_LEVEL);
+    preset->videoParameters.horizontalPosition = ui->parameterGrid_properties->value(PARAM_LABEL_HORIZONTAL_POSITION);
+    preset->videoParameters.horizontalSize     = ui->parameterGrid_properties->value(PARAM_LABEL_HORIZONTAL_SIZE);
+    preset->videoParameters.phase              = ui->parameterGrid_properties->value(PARAM_LABEL_PHASE);
+    preset->videoParameters.verticalPosition   = ui->parameterGrid_properties->value(PARAM_LABEL_VERTICAL_POSITION);
 
     kc_ev_video_preset_params_changed.fire(preset);
 
@@ -574,47 +575,47 @@ void control_panel::VideoPresets::update_preset_control_ranges(void)
         const auto max = video_signal_parameters_s::from_capture_device(": maximum");
         const auto def = video_signal_parameters_s::from_capture_device(": default");
 
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_HORIZONTAL_SIZE, std::max(currentParams.horizontalSize, max.horizontalSize));
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_HORIZONTAL_POSITION, std::max(currentParams.horizontalPosition, max.horizontalPosition));
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_VERTICAL_POSITION, std::max(currentParams.verticalPosition, max.verticalPosition));
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_BLACK_LEVEL, std::max(currentParams.blackLevel, max.blackLevel));
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_PHASE, std::max(currentParams.phase, max.phase));
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_BRIGHTNESS, std::max(currentParams.brightness, max.brightness));
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_RED_BRIGHTNESS, std::max(currentParams.redBrightness, max.redBrightness));
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_GREEN_BRIGHTNESS, std::max(currentParams.greenBrightness, max.greenBrightness));
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_BLUE_BRIGHTNESS, std::max(currentParams.blueBrightness, max.blueBrightness));
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_CONTRAST, std::max(currentParams.contrast, max.contrast));
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_RED_CONTRAST, std::max(currentParams.redContrast, max.redContrast));
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_GREEN_CONTRAST, std::max(currentParams.greenContrast, max.greenContrast));
-        ui->parameterGrid_parameters->set_maximum_value(PARAM_LABEL_BLUE_CONTRAST, std::max(currentParams.blueContrast, max.blueContrast));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_HORIZONTAL_SIZE, std::max(currentParams.horizontalSize, max.horizontalSize));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_HORIZONTAL_POSITION, std::max(currentParams.horizontalPosition, max.horizontalPosition));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_VERTICAL_POSITION, std::max(currentParams.verticalPosition, max.verticalPosition));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_BLACK_LEVEL, std::max(currentParams.blackLevel, max.blackLevel));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_PHASE, std::max(currentParams.phase, max.phase));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_BRIGHTNESS, std::max(currentParams.brightness, max.brightness));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_RED_BRIGHTNESS, std::max(currentParams.redBrightness, max.redBrightness));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_GREEN_BRIGHTNESS, std::max(currentParams.greenBrightness, max.greenBrightness));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_BLUE_BRIGHTNESS, std::max(currentParams.blueBrightness, max.blueBrightness));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_CONTRAST, std::max(currentParams.contrast, max.contrast));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_RED_CONTRAST, std::max(currentParams.redContrast, max.redContrast));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_GREEN_CONTRAST, std::max(currentParams.greenContrast, max.greenContrast));
+        ui->parameterGrid_properties->set_maximum_value(PARAM_LABEL_BLUE_CONTRAST, std::max(currentParams.blueContrast, max.blueContrast));
 
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_HORIZONTAL_SIZE, std::min(currentParams.horizontalSize, min.horizontalSize));
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_HORIZONTAL_POSITION, std::min(currentParams.horizontalPosition, min.horizontalPosition));
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_VERTICAL_POSITION, std::min(currentParams.verticalPosition, min.verticalPosition));
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_BLACK_LEVEL, std::min(currentParams.blackLevel, min.blackLevel));
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_PHASE, std::min(currentParams.phase, min.phase));
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_BRIGHTNESS, std::min(currentParams.brightness, min.brightness));
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_RED_BRIGHTNESS, std::min(currentParams.redBrightness, min.redBrightness));
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_GREEN_BRIGHTNESS, std::min(currentParams.greenBrightness, min.greenBrightness));
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_BLUE_BRIGHTNESS, std::min(currentParams.blueBrightness, min.blueBrightness));
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_CONTRAST, std::min(currentParams.contrast, min.contrast));
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_RED_CONTRAST, std::min(currentParams.redContrast, min.redContrast));
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_GREEN_CONTRAST,std::min(currentParams.greenContrast,  min.greenContrast));
-        ui->parameterGrid_parameters->set_minimum_value(PARAM_LABEL_BLUE_CONTRAST, std::min(currentParams.blueContrast, min.blueContrast));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_HORIZONTAL_SIZE, std::min(currentParams.horizontalSize, min.horizontalSize));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_HORIZONTAL_POSITION, std::min(currentParams.horizontalPosition, min.horizontalPosition));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_VERTICAL_POSITION, std::min(currentParams.verticalPosition, min.verticalPosition));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_BLACK_LEVEL, std::min(currentParams.blackLevel, min.blackLevel));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_PHASE, std::min(currentParams.phase, min.phase));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_BRIGHTNESS, std::min(currentParams.brightness, min.brightness));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_RED_BRIGHTNESS, std::min(currentParams.redBrightness, min.redBrightness));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_GREEN_BRIGHTNESS, std::min(currentParams.greenBrightness, min.greenBrightness));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_BLUE_BRIGHTNESS, std::min(currentParams.blueBrightness, min.blueBrightness));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_CONTRAST, std::min(currentParams.contrast, min.contrast));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_RED_CONTRAST, std::min(currentParams.redContrast, min.redContrast));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_GREEN_CONTRAST,std::min(currentParams.greenContrast,  min.greenContrast));
+        ui->parameterGrid_properties->set_minimum_value(PARAM_LABEL_BLUE_CONTRAST, std::min(currentParams.blueContrast, min.blueContrast));
 
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_HORIZONTAL_SIZE, def.horizontalSize);
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_HORIZONTAL_POSITION, def.horizontalPosition);
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_VERTICAL_POSITION, def.verticalPosition);
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_BLACK_LEVEL, def.blackLevel);
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_PHASE, def.phase);
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_BRIGHTNESS, def.brightness);
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_RED_BRIGHTNESS, def.redBrightness);
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_GREEN_BRIGHTNESS, def.greenBrightness);
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_BLUE_BRIGHTNESS, def.blueBrightness);
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_CONTRAST, def.contrast);
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_RED_CONTRAST, def.redContrast);
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_GREEN_CONTRAST, def.greenContrast);
-        ui->parameterGrid_parameters->set_default_value(PARAM_LABEL_BLUE_CONTRAST, def.blueContrast);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_HORIZONTAL_SIZE, def.horizontalSize);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_HORIZONTAL_POSITION, def.horizontalPosition);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_VERTICAL_POSITION, def.verticalPosition);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_BLACK_LEVEL, def.blackLevel);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_PHASE, def.phase);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_BRIGHTNESS, def.brightness);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_RED_BRIGHTNESS, def.redBrightness);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_GREEN_BRIGHTNESS, def.greenBrightness);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_BLUE_BRIGHTNESS, def.blueBrightness);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_CONTRAST, def.contrast);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_RED_CONTRAST, def.redContrast);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_GREEN_CONTRAST, def.greenContrast);
+        ui->parameterGrid_properties->set_default_value(PARAM_LABEL_BLUE_CONTRAST, def.blueContrast);
     }
 
     return;
@@ -682,19 +683,19 @@ void control_panel::VideoPresets::update_preset_controls_with_current_preset_dat
         {
             const auto &currentParams = preset->videoParameters;
 
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_HORIZONTAL_SIZE, currentParams.horizontalSize);
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_HORIZONTAL_POSITION, currentParams.horizontalPosition);
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_VERTICAL_POSITION, currentParams.verticalPosition);
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_BLACK_LEVEL, currentParams.blackLevel);
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_PHASE, currentParams.phase);
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_BRIGHTNESS, currentParams.brightness);
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_RED_BRIGHTNESS, currentParams.redBrightness);
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_GREEN_BRIGHTNESS, currentParams.greenBrightness);
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_BLUE_BRIGHTNESS, currentParams.blueBrightness);
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_CONTRAST, currentParams.contrast);
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_RED_CONTRAST, currentParams.redContrast);
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_GREEN_CONTRAST, currentParams.greenContrast);
-            ui->parameterGrid_parameters->set_value(PARAM_LABEL_BLUE_CONTRAST, currentParams.blueContrast);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_HORIZONTAL_SIZE, currentParams.horizontalSize);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_HORIZONTAL_POSITION, currentParams.horizontalPosition);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_VERTICAL_POSITION, currentParams.verticalPosition);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_BLACK_LEVEL, currentParams.blackLevel);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_PHASE, currentParams.phase);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_BRIGHTNESS, currentParams.brightness);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_RED_BRIGHTNESS, currentParams.redBrightness);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_GREEN_BRIGHTNESS, currentParams.greenBrightness);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_BLUE_BRIGHTNESS, currentParams.blueBrightness);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_CONTRAST, currentParams.contrast);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_RED_CONTRAST, currentParams.redContrast);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_GREEN_CONTRAST, currentParams.greenContrast);
+            ui->parameterGrid_properties->set_value(PARAM_LABEL_BLUE_CONTRAST, currentParams.blueContrast);
         }
 
         CONTROLS_LIVE_UPDATE = true;

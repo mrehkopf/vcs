@@ -32,7 +32,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox_channelSelect">
      <property name="title">
-      <string>Input channel</string>
+      <string>Channel</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <property name="topMargin">

@@ -505,7 +505,7 @@
         </widget>
        </item>
        <item>
-        <widget class="ParameterGrid" name="parameterGrid_parameters">
+        <widget class="ParameterGrid" name="parameterGrid_properties">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>

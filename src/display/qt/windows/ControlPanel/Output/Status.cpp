@@ -20,7 +20,7 @@
 #include "capture/capture.h"
 #include "common/disk/disk.h"
 #include "Status.h"
-#include "ui_OutputStatus.h"
+#include "ui_Status.h"
 
 static QTimer INFO_UPDATE_TIMER;
 
