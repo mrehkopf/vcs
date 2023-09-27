@@ -13,10 +13,19 @@ control_panel::output::Renderer::Renderer(QWidget *parent) :
 
     connect(ui->comboBox_renderer, &QComboBox::currentTextChanged, this, [parent](const QString &rendererName)
     {
-        NBENE(("control_panel::output::Renderer: Unimplemented functionality."));
-        // kd_set_renderer(rendererName.toStdString());)
-
         kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "Renderer", rendererName);
+
+        for (QWidget *const w: qApp->topLevelWidgets())
+        {
+            const auto outputWindow = qobject_cast<OutputWindow*>(w);
+            if (outputWindow)
+            {
+                outputWindow->set_opengl_enabled(rendererName == "OpenGL");
+                return;
+            }
+        }
+
+        NBENE(("Failed to set the renderer: Could not find the output window."));
     });
 
     // Restore the previous persistent setting.
