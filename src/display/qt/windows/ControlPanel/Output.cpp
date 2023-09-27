@@ -1,4 +1,5 @@
 #include <QVBoxLayout>
+#include "display/qt/windows/ControlPanel/Output/Status.h"
 #include "display/qt/windows/ControlPanel/Output/Histogram.h"
 #include "display/qt/windows/ControlPanel/Output/Renderer.h"
 #include "display/qt/windows/ControlPanel/Output/Overlay.h"
@@ -25,11 +26,13 @@ control_panel::Output::Output(QWidget *parent) :
     this->overlayDialog = new control_panel::output::Overlay(parent);
     this->rendererDialog = new control_panel::output::Renderer(parent);
     this->histogramDialog = new control_panel::output::Histogram(parent);
+    this->outputStatusDialog = new control_panel::output::OutputStatus(parent);
 
     layout->addWidget(this->sizeDialog);
+    layout->addWidget(this->outputStatusDialog);
+    layout->addWidget(this->histogramDialog);
     layout->addWidget(this->scalerDialog);
     layout->addWidget(this->rendererDialog);
-    layout->addWidget(this->histogramDialog);
     layout->addWidget(this->overlayDialog);
 
     // Push out empty space from the dialogs.

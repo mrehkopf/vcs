@@ -78,6 +78,7 @@ SOURCES += \
     src/display/qt/windows/ControlPanel/Output/Renderer.cpp \
     src/display/qt/windows/ControlPanel/Output/Scaler.cpp \
     src/display/qt/windows/ControlPanel/Output/Size.cpp \
+    src/display/qt/windows/ControlPanel/Output/Status.cpp \
     src/display/qt/windows/OutputWindow.cpp \
     src/display/qt/windows/ControlPanel/AboutVCS.cpp \
     src/display/qt/windows/ControlPanel/Capture.cpp \
@@ -181,6 +182,7 @@ HEADERS += \
     src/display/qt/windows/ControlPanel/Output/Renderer.h \
     src/display/qt/windows/ControlPanel/Output/Scaler.h \
     src/display/qt/windows/ControlPanel/Output/Size.h \
+    src/display/qt/windows/ControlPanel/Output/Status.h \
     src/display/qt/windows/OutputWindow.h \
     src/display/qt/windows/ControlPanel/AboutVCS.h \
     src/display/qt/windows/ControlPanel/Capture.h \
@@ -273,6 +275,7 @@ FORMS += \
     src/display/qt/windows/ControlPanel/Output/Renderer.ui \
     src/display/qt/windows/ControlPanel/Output/Scaler.ui \
     src/display/qt/windows/ControlPanel/Output/Size.ui \
+    src/display/qt/windows/ControlPanel/Output/Status.ui \
     src/display/qt/windows/OutputWindow.ui \
     src/display/qt/windows/ControlPanel/AboutVCS.ui \
     src/display/qt/windows/ControlPanel/Capture.ui \

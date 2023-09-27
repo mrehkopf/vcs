@@ -10,6 +10,7 @@ namespace control_panel::output
     class Overlay;
     class Renderer;
     class Histogram;
+    class OutputStatus;
 }
 
 namespace control_panel
@@ -35,6 +36,7 @@ namespace control_panel
         control_panel::output::Overlay *overlayDialog = nullptr;
         control_panel::output::Renderer *rendererDialog = nullptr;
         control_panel::output::Histogram *histogramDialog = nullptr;
+        control_panel::output::OutputStatus *outputStatusDialog = nullptr;
     };
 }
 
