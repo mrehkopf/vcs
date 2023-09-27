@@ -23,7 +23,6 @@
 #include "SignalStatus.h"
 #include "ui_SignalStatus.h"
 
-// Used to keep track of how long we've had a particular video mode set.
 static QTimer INFO_UPDATE_TIMER;
 
 control_panel::capture::SignalStatus::SignalStatus(QWidget *parent) :
@@ -39,8 +38,7 @@ control_panel::capture::SignalStatus::SignalStatus(QWidget *parent) :
         // Initialize the table of information. Note that this also sets
         // the vertical order in which the table's parameters are shown.
         ui->tableWidget_propertyTable->modify_property("Resolution", "-");
-        ui->tableWidget_propertyTable->modify_property("Input rate", "-");
-        ui->tableWidget_propertyTable->modify_property("Output rate", "-");
+        ui->tableWidget_propertyTable->modify_property("Refresh rate", "-");
         ui->tableWidget_propertyTable->modify_property("Frames dropped", "-");
 
         INFO_UPDATE_TIMER.start(1000);
@@ -65,11 +63,6 @@ control_panel::capture::SignalStatus::SignalStatus(QWidget *parent) :
         ev_capture_signal_gained.listen([this]
         {
             this->set_controls_enabled(true);
-        });
-
-        ev_frames_per_second.listen([this](const unsigned fps)
-        {
-            ui->tableWidget_propertyTable->modify_property("Output rate", QString("%1 FPS").arg(fps));
         });
 
         ev_new_video_mode.listen([update_info](const video_mode_s&)
@@ -105,13 +98,13 @@ void control_panel::capture::SignalStatus::update_information_table(const bool i
         const auto resolution = resolution_s::from_capture_device();
         const auto refreshRate = refresh_rate_s::from_capture_device().value<double>();
 
-        ui->tableWidget_propertyTable->modify_property("Input rate", QString("%1 Hz").arg(QString::number(refreshRate, 'f', 3)));
+        ui->tableWidget_propertyTable->modify_property("Refresh rate", QString("%1 Hz").arg(QString::number(refreshRate, 'f', 3)));
         ui->tableWidget_propertyTable->modify_property("Resolution", QString("%1 \u00d7 %2").arg(resolution.w).arg(resolution.h));
     }
     else
     {
         ui->tableWidget_propertyTable->modify_property("Resolution", "-");
-        ui->tableWidget_propertyTable->modify_property("Input rate", "-");
+        ui->tableWidget_propertyTable->modify_property("Rate", "-");
     }
 
     return;
