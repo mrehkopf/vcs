@@ -109,7 +109,31 @@ control_panel::output::Size::Size(QWidget *parent) :
         connect(ui->spinBox_outputScale, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this]
         {
             kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "WindowScale", ui->spinBox_outputScale->value());
-            ks_set_scaling_multiplier(ui->spinBox_outputScale->value() / 100.0);
+            ks_set_scaling_multiplier(ui->spinBox_outputScale->value() / 100.0 );
+        });
+
+        connect(this->ui->pushButton_1_5x, &QPushButton::clicked, this, [this]
+        {
+            this->ui->checkBox_forceOutputScale->setChecked(true);
+            this->ui->spinBox_outputScale->setValue(150);
+        });
+
+        connect(this->ui->pushButton_2x, &QPushButton::clicked, this, [this]
+        {
+            this->ui->checkBox_forceOutputScale->setChecked(true);
+            this->ui->spinBox_outputScale->setValue(200);
+        });
+
+        connect(this->ui->pushButton_2_5x, &QPushButton::clicked, this, [this]
+        {
+            this->ui->checkBox_forceOutputScale->setChecked(true);
+            this->ui->spinBox_outputScale->setValue(250);
+        });
+
+        connect(this->ui->pushButton_3x, &QPushButton::clicked, this, [this]
+        {
+            this->ui->checkBox_forceOutputScale->setChecked(true);
+            this->ui->spinBox_outputScale->setValue(300);
         });
     }
 

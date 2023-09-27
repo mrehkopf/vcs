@@ -66,3 +66,8 @@ DialogFragment[objectName="ControlPanel_Capture_InputResolution"] QFrame
     margin: 0;
     padding: 0;
 }
+
+DialogFragment[objectName="ControlPanel_Output_Size"] QPushButton
+{
+    min-width: 2.5em;
+}
