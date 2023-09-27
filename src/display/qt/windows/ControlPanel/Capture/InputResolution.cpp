@@ -5,7 +5,6 @@
  */
 
 #include "display/qt/persistent_settings.h"
-#include "display/qt/utility.h"
 #include "common/vcs_event/vcs_event.h"
 #include "capture/capture.h"
 #include "InputResolution.h"

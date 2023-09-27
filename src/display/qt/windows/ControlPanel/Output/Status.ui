@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>control_panel::output::Status</class>
- <widget class="QWidget" name="ControlPanel_Capture_Status">
+ <widget class="QWidget" name="ControlPanel_Output_Status">
   <property name="geometry">
    <rect>
     <x>0</x>

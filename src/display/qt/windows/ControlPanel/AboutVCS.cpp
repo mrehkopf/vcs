@@ -6,7 +6,6 @@
 
 #include "display/qt/windows/ControlPanel/AboutVCS.h"
 #include "display/qt/persistent_settings.h"
-#include "display/qt/utility.h"
 #include "capture/capture.h"
 #include "common/globals.h"
 #include "ui_AboutVCS.h"

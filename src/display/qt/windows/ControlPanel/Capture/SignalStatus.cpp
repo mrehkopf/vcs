@@ -16,7 +16,6 @@
 #include <QTime>
 #include "display/qt/widgets/PropertyTable.h"
 #include "common/vcs_event/vcs_event.h"
-#include "display/qt/utility.h"
 #include "display/display.h"
 #include "capture/capture.h"
 #include "common/disk/disk.h"

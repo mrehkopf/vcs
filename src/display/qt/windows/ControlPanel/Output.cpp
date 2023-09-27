@@ -26,7 +26,7 @@ control_panel::Output::Output(QWidget *parent) :
     this->overlayDialog = new control_panel::output::Overlay(parent);
     this->rendererDialog = new control_panel::output::Renderer(parent);
     this->histogramDialog = new control_panel::output::Histogram(parent);
-    this->outputStatusDialog = new control_panel::output::OutputStatus(parent);
+    this->outputStatusDialog = new control_panel::output::Status(parent);
 
     layout->addWidget(this->sizeDialog);
     layout->addWidget(this->outputStatusDialog);

@@ -14,12 +14,13 @@ namespace control_panel::output
 {
     namespace Ui { class Status; }
 
-    class OutputStatus : public DialogFragment
+    class Status : public DialogFragment
     {
         Q_OBJECT
 
     public:
-        explicit OutputStatus(QWidget *parent = 0);
+        explicit Status(QWidget *parent = 0);
+        ~Status(void);
 
     private:
         Ui::Status *ui;

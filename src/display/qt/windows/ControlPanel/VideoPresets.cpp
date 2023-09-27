@@ -11,7 +11,6 @@
 #include "display/qt/widgets/DialogFileMenu.h"
 #include "display/qt/windows/ControlPanel/VideoPresets.h"
 #include "display/qt/persistent_settings.h"
-#include "display/qt/utility.h"
 #include "common/command_line/command_line.h"
 #include "common/vcs_event/vcs_event.h"
 #include "common/refresh_rate.h"

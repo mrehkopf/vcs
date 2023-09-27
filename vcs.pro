@@ -247,7 +247,6 @@ HEADERS += \
     src/filter/filter.h \
     src/common/command_line/command_line.h \
     src/display/qt/persistent_settings.h \
-    src/display/qt/utility.h \
     src/common/disk/csv.h \
     src/common/disk/disk.h \
     src/display/display.h \

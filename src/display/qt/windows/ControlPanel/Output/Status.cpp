@@ -16,7 +16,6 @@
 #include <QTime>
 #include "display/qt/widgets/PropertyTable.h"
 #include "common/vcs_event/vcs_event.h"
-#include "display/qt/utility.h"
 #include "display/display.h"
 #include "capture/capture.h"
 #include "common/disk/disk.h"
@@ -25,7 +24,7 @@
 
 static QTimer INFO_UPDATE_TIMER;
 
-control_panel::output::OutputStatus::OutputStatus(QWidget *parent) :
+control_panel::output::Status::Status(QWidget *parent) :
     DialogFragment(parent),
     ui(new Ui::Status)
 {
@@ -65,6 +64,14 @@ control_panel::output::OutputStatus::OutputStatus(QWidget *parent) :
             this->ui->tableWidget_propertyTable->modify_property("Frame rate", QString("%1 FPS").arg(fps));
         });
     }
+
+    return;
+}
+
+control_panel::output::Status::~Status(void)
+{
+    delete ui;
+    ui = nullptr;
 
     return;
 }

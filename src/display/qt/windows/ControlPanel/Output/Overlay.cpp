@@ -17,7 +17,6 @@
 #include <QDebug>
 #include <QMenu>
 #include "display/qt/persistent_settings.h"
-#include "display/qt/utility.h"
 #include "display/display.h"
 #include "Overlay.h"
 #include "ui_Overlay.h"
