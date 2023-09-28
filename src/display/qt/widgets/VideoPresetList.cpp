@@ -11,13 +11,6 @@
 
 VideoPresetList::VideoPresetList(QWidget *parent) : QComboBox(parent)
 {
-    this->presetSelectionHistory.push(0);
-
-    connect(this, &VideoPresetList::list_became_empty, this, [this]
-    {
-        this->presetSelectionHistory.clear();
-    });
-
     connect(this, QOverload<int>::of(&VideoPresetList::currentIndexChanged), this, [this](const int idx)
     {
         if (idx < 0)
@@ -26,7 +19,6 @@ VideoPresetList::VideoPresetList(QWidget *parent) : QComboBox(parent)
         }
 
         const unsigned presetId = this->currentData().toUInt();
-        this->presetSelectionHistory.push(presetId);
         emit this->preset_selected(presetId);
     });
 
@@ -46,7 +38,6 @@ void VideoPresetList::remove_all_presets(void)
     }
 
     this->clear();
-    this->presetSelectionHistory.clear();
 
     emit this->list_became_empty();
 
@@ -112,24 +103,9 @@ void VideoPresetList::remove_preset(const unsigned presetId)
     {
         emit this->list_became_empty();
     }
-    // Select the preset that was previously selected.
     else
     {
-        int prevSelectedIdx = -1;
-
-        while (!this->presetSelectionHistory.empty())
-        {
-            const int historic = this->presetSelectionHistory.back();
-            const int presetIdx = this->find_preset_idx_in_list(historic);
-
-            if (presetIdx >= 0)
-            {
-                prevSelectedIdx = presetIdx;
-                break;
-            }
-        }
-
-        this->setCurrentIndex(prevSelectedIdx);
+        this->setCurrentIndex(0);
     }
 
     return;

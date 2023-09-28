@@ -68,7 +68,7 @@ ParameterGrid QScrollBar::sub-line:horizontal
 
 ParameterGrid QPushButton
 {
-    min-width: 1.75em;
+    min-width: 1.35em;
 }
 
 ParameterGrid QSpinBox

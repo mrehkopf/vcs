@@ -169,12 +169,8 @@ void ParameterGrid::add_scroller(
         spinBox->setMinimum(newParam->minimumValue);
         spinBox->setValue(newParam->currentValue);
 
-        auto resetButtonIcon = QIcon(":/res/icons/newie/reset.png");
-        resetButtonIcon.addPixmap(QPixmap(":/res/icons/newie/reset_disabled.png"), QIcon::Disabled);
-
-        auto *const resetButton = new QPushButton();
+        auto *const resetButton = new QPushButton("×");
         resetButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        resetButton->setIcon(resetButtonIcon);
         resetButton->setEnabled(false);
         resetButton->setToolTip("Reset to default");
 

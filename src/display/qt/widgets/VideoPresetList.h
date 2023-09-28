@@ -62,46 +62,6 @@ private:
     // Creates and returns a string to be displayed as the list item label for
     // the given present should the preset be added.
     QString make_preset_item_label(const video_preset_s *const preset);
-
-    struct
-    {
-    public:
-        void push(const unsigned presetId)
-        {
-            this->_history.push_back(presetId);
-
-            if (this->_history.size() > maxLength)
-            {
-                this->_history.pop_front();
-            }
-        }
-
-        int back(void)
-        {
-            if (this->_history.empty())
-            {
-                return -1;
-            }
-
-            this->_history.pop_back();
-            return this->_history.back();
-        }
-
-        bool empty(void)
-        {
-            return this->_history.empty();
-        }
-
-        void clear(void)
-        {
-            this->_history.clear();
-        }
-
-        const unsigned maxLength = 10;
-
-    private:
-        std::deque<unsigned> _history;
-    } presetSelectionHistory;
 };
 
 #endif

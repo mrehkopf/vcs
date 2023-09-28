@@ -194,13 +194,6 @@
            </layout>
           </item>
           <item>
-           <widget class="Line" name="line">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0,0,0,0">
             <item>
              <widget class="QLineEdit" name="lineEdit_presetFilename">
@@ -213,9 +206,12 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_newPresetFile">
+             <widget class="QPushButton" name="pushButton_closePresetFile">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
-               <string>New file</string>
+               <string>Close</string>
               </property>
              </widget>
             </item>
@@ -228,6 +224,9 @@
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_savePresetFileAs">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Save as...</string>
               </property>
@@ -235,8 +234,11 @@
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_savePresetFile">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
-               <string>Save...</string>
+               <string>Save</string>
               </property>
              </widget>
             </item>
