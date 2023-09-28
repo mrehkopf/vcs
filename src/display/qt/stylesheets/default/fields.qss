@@ -77,6 +77,10 @@ QCheckBox
     color: #e0e0e0;
 }
 
+QCheckBox:disabled
+{
+    color: #909090;
+}
 
 QCheckBox::indicator,
 QGroupBox::indicator

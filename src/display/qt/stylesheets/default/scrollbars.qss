@@ -4,6 +4,12 @@ QScrollBar:horizontal
     background-color: rgba(0, 0, 0, 0.1);
 }
 
+QScrollBar:vertical:disabled,
+QScrollBar:horizontal:disabled
+{
+    background-color: transparent;
+}
+
 QScrollBar::handle:vertical,
 QScrollBar::handle:horizontal
 {
@@ -134,15 +140,15 @@ QScrollBar::sub-line:horizontal:disabled
 QScrollBar::add-page:disabled,
 QScrollBar::sub-page:disabled
 {
-    background-color: #4e4e4e;
+    background-image: url(:/res/icons/newie/line_pattern.png);
 }
 
 QScrollBar::handle:disabled:horizontal,
 QScrollBar::handle:disabled:vertical
 {
-    background-color: #454545;
+    background-color: transparent;
     background-image: url();
-    border-color: #353535;
+    border-color: transparent;
 }
 
 QScrollBar::sub-line:horizontal:disabled,
@@ -154,11 +160,6 @@ QScrollBar:disabled
     background-color: transparent;
     border-color: #151515;
     color: #909090;
-}
-
-QScrollBar:disabled
-{
-    border-color: #202020;
 }
 
 QScrollBar::add-line:horizontal,
