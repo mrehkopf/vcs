@@ -11,7 +11,6 @@
 
 // Group names for the settings INI file.
 #define INI_GROUP_APP "App"
-#define INI_GROUP_INPUT "Input"
 #define INI_GROUP_CAPTURE "Capture"
 #define INI_GROUP_FILTER_GRAPH "FilterGraph"
 #define INI_GROUP_OVERLAY "Overlay"

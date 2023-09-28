@@ -63,6 +63,7 @@ SOURCES += \
     src/display/qt/widgets/ParameterGrid.cpp \
     src/display/qt/widgets/PropertyTable.cpp \
     src/display/qt/widgets/QtAbstractGUI.cpp \
+    src/display/qt/widgets/ResolutionQuery.cpp \
     src/display/qt/widgets/VideoPresetList.cpp \
     src/display/qt/windows/ControlPanel.cpp \
     src/display/qt/windows/ControlPanel/Capture/InputChannel.cpp \
@@ -167,6 +168,7 @@ HEADERS += \
     src/display/qt/widgets/ParameterGrid.h \
     src/display/qt/widgets/PropertyTable.h \
     src/display/qt/widgets/QtAbstractGUI.h \
+    src/display/qt/widgets/ResolutionQuery.h \
     src/display/qt/widgets/VideoPresetList.h \
     src/display/qt/windows/ControlPanel.h \
     src/display/qt/windows/ControlPanel/Capture/InputChannel.h \
@@ -265,6 +267,7 @@ HEADERS += \
     src/common/timer/timer.h
 
 FORMS += \
+    src/display/qt/widgets/ResolutionQuery.ui \
     src/display/qt/windows/ControlPanel.ui \
     src/display/qt/windows/ControlPanel/Capture/InputChannel.ui \
     src/display/qt/windows/ControlPanel/Capture/InputResolution.ui \

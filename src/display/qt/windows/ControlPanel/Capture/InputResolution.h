@@ -1,3 +1,10 @@
+/*
+ * 2019-2023 Tarpeeksi Hyvae Soft
+ *
+ * Software: VCS
+ *
+ */
+
 #ifndef VCS_DISPLAY_QT_DIALOGS_COMPONENTS_CAPTURE_DIALOG_INPUT_RESOLUTION_H
 #define VCS_DISPLAY_QT_DIALOGS_COMPONENTS_CAPTURE_DIALOG_INPUT_RESOLUTION_H
 
@@ -21,9 +28,9 @@ namespace control_panel::capture
         void activate_resolution_button(const uint buttonIdx);
 
     private:
-        void update_button_text(QPushButton *const button);
-
         Ui::InputResolution *ui;
+
+        void update_button_label(QPushButton *const button);
     };
 }
 

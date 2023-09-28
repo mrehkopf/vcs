@@ -8,10 +8,17 @@ QGraphicsView
     color: black;
 }
 
+ResolutionQuery
+{
+    background-color: #404040;
+    border: 1px solid black;
+}
+
 QMessageBox,
 QInputDialog
 {
-    background-color: #454545;
+    border: 1px solid black;
+    background-color: #404040;
     padding: 40px;
     margin: 0;
 }
