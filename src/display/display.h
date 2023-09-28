@@ -83,9 +83,9 @@ struct resolution_s
     /*! Height in pixels.*/
     unsigned h;
 
-    static resolution_s from_capture_device(const std::string &nameSpace = "");
+    static resolution_s from_capture_device_properties(const std::string &nameSpace = "");
 
-    static void to_capture_device(const resolution_s &resolution);
+    static void to_capture_device_properties(const resolution_s &resolution);
 
     bool operator==(const resolution_s &other) const;
 

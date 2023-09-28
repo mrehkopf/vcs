@@ -10,7 +10,7 @@
 #include "common/globals.h"
 
 bool file_writer::video_params::version_a::write(const std::string &filename,
-                                                 const std::vector<video_signal_parameters_s> &videoParams)
+                                                 const std::vector<video_signal_properties_s> &videoParams)
 {
     file_streamer_c outFile(filename);
 

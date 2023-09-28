@@ -8,7 +8,7 @@
 #include "common/refresh_rate.h"
 #include "capture/capture.h"
 
-refresh_rate_s refresh_rate_s::from_capture_device()
+refresh_rate_s refresh_rate_s::from_capture_device_properties()
 {
     return refresh_rate_s(kc_device_property("refresh rate"));
 }

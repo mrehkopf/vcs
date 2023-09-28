@@ -24,8 +24,8 @@ static video_preset_s* strongest_activating_preset(void)
         return nullptr;
     }
 
-    const auto resolution = resolution_s::from_capture_device();
-    const auto refreshRate = refresh_rate_s::from_capture_device();
+    const auto resolution = resolution_s::from_capture_device_properties();
+    const auto refreshRate = refresh_rate_s::from_capture_device_properties();
 
     std::vector<std::pair<unsigned/*preset id*/,
                           int/*preset activation level*/>> activationLevels;
@@ -70,7 +70,7 @@ subsystem_releaser_t kvideopreset_initialize(void)
 
             if (preset == strongest_activating_preset())
             {
-                video_signal_parameters_s::to_capture_device(preset->videoParameters);
+                video_signal_properties_s::to_capture_device_properties(preset->videoParameters);
             }
         });
     }
@@ -131,11 +131,11 @@ void kvideopreset_apply_current_active_preset(void)
 
     if (activePreset)
     {
-        video_signal_parameters_s::to_capture_device(activePreset->videoParameters);
+        video_signal_properties_s::to_capture_device_properties(activePreset->videoParameters);
     }
     else
     {
-        video_signal_parameters_s::to_capture_device(video_signal_parameters_s::from_capture_device(": default"));
+        video_signal_properties_s::to_capture_device_properties(video_signal_properties_s::from_capture_device_properties(": default"));
     }
 
     return;
@@ -170,7 +170,7 @@ void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
     {
         if (preset->activates_with_shortcut(shortcutString))
         {
-            video_signal_parameters_s::to_capture_device(preset->videoParameters);
+            video_signal_properties_s::to_capture_device_properties(preset->videoParameters);
             return;
         }
     }
@@ -202,7 +202,7 @@ video_preset_s* kvideopreset_create_new_preset(const video_preset_s *const dupli
     {
         preset->activatesWithResolution = false;
         preset->activationResolution = {.w = 640, .h = 480};
-        preset->videoParameters = video_signal_parameters_s::from_capture_device(": default");
+        preset->videoParameters = video_signal_properties_s::from_capture_device_properties(": default");
     }
 
     preset->id = RUNNING_PRESET_ID++;
@@ -213,7 +213,7 @@ video_preset_s* kvideopreset_create_new_preset(const video_preset_s *const dupli
     return preset;
 }
 
-video_signal_parameters_s kvideopreset_current_video_parameters(void)
+video_signal_properties_s kvideopreset_current_video_parameters(void)
 {
     const auto activePreset = strongest_activating_preset();
 

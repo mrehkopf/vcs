@@ -89,8 +89,8 @@ QImage control_panel::output::Overlay::rendered(void)
 
     const QString overlaySource = ([this, &outRes]()->QString
     {
-        const auto inRes = resolution_s::from_capture_device();
-        const auto inHz = refresh_rate_s::from_capture_device();
+        const auto inRes = resolution_s::from_capture_device_properties();
+        const auto inHz = refresh_rate_s::from_capture_device_properties();
 
         QString source = this->ui->plainTextEdit->toPlainText();
 

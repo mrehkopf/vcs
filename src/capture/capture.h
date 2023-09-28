@@ -137,7 +137,7 @@ struct captured_frame_s
     uint8_t *pixels;
 };
 
-struct video_signal_parameters_s
+struct video_signal_properties_s
 {
     resolution_s r; // For legacy (VCS <= 1.6.5) support.
 
@@ -155,8 +155,8 @@ struct video_signal_parameters_s
     long phase;
     long blackLevel;
 
-    static video_signal_parameters_s from_capture_device(const std::string &nameSpace = "");
-    static void to_capture_device(const video_signal_parameters_s &params, const std::string &nameSpace = "");
+    static video_signal_properties_s from_capture_device_properties(const std::string &nameSpace = "");
+    static void to_capture_device_properties(const video_signal_properties_s &params, const std::string &nameSpace = "");
 };
 
 /*!

@@ -640,9 +640,9 @@ void OutputWindow::update_window_title(void)
     }
     else
     {
-        const auto inRes = resolution_s::from_capture_device();
+        const auto inRes = resolution_s::from_capture_device_properties();
         const resolution_s outRes = ks_output_resolution();
-        const auto refreshRate = refresh_rate_s::from_capture_device();
+        const auto refreshRate = refresh_rate_s::from_capture_device_properties();
 
         if (!this->windowTitleOverride.isEmpty())
         {

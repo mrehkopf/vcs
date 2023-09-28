@@ -61,7 +61,7 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filenam
     // Legacy parameter file format (VCS ~1.7-dev).
     if (fileType == "VCS video parameters")
     {
-        std::vector<video_signal_parameters_s> videoModeParams;
+        std::vector<video_signal_properties_s> videoModeParams;
 
         if (!file_reader::video_params::version_a::read(filename, &videoModeParams))
         {

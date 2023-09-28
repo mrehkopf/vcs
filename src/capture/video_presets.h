@@ -25,7 +25,7 @@ struct video_preset_s
         ceiled,
     };
 
-    video_signal_parameters_s videoParameters = {};
+    video_signal_properties_s videoParameters = {};
 
     // Internal identifier for this particular video preset. Not user-facing. Used
     // to tell presets apart.
@@ -137,6 +137,6 @@ video_preset_s* kvideopreset_create_new_preset(const video_preset_s *const dupli
 
 bool kvideopreset_remove_preset(const unsigned presetId);
 
-video_signal_parameters_s kvideopreset_current_video_parameters(void);
+video_signal_properties_s kvideopreset_current_video_parameters(void);
 
 #endif

@@ -69,7 +69,7 @@ resolution_s ks_output_resolution(void)
         return CUSTOM_SCALER_FILTER_RESOLUTION;
     }
 
-    const auto inRes = resolution_s::from_capture_device();
+    const auto inRes = resolution_s::from_capture_device_properties();
     resolution_s outRes = inRes;
 
     // Base resolution.
@@ -184,8 +184,8 @@ void ks_scale_frame(const captured_frame_s &frame)
 
     // Verify that we have a workable frame.
     {
-        const auto minres = resolution_s::from_capture_device(": minimum");
-        const auto maxres = resolution_s::from_capture_device(": maximum");
+        const auto minres = resolution_s::from_capture_device_properties(": minimum");
+        const auto maxres = resolution_s::from_capture_device_properties(": maximum");
 
         if (outputRes.w > MAX_OUTPUT_WIDTH ||
                  outputRes.h > MAX_OUTPUT_HEIGHT)

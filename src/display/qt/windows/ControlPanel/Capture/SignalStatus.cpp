@@ -94,8 +94,8 @@ void control_panel::capture::SignalStatus::update_information_table(const bool i
 {
     if (isReceivingSignal)
     {
-        const auto resolution = resolution_s::from_capture_device();
-        const auto refreshRate = refresh_rate_s::from_capture_device().value<double>();
+        const auto resolution = resolution_s::from_capture_device_properties();
+        const auto refreshRate = refresh_rate_s::from_capture_device_properties().value<double>();
 
         ui->tableWidget_propertyTable->modify_property("Refresh rate", QString("%1 Hz").arg(QString::number(refreshRate, 'f', 3)));
         ui->tableWidget_propertyTable->modify_property("Resolution", QString("%1 \u00d7 %2").arg(resolution.w).arg(resolution.h));

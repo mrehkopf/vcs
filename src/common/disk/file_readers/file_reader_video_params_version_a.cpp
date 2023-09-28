@@ -10,7 +10,7 @@
 #include "common/disk/csv.h"
 
 bool file_reader::video_params::version_a::read(const std::string &filename,
-                                                std::vector<video_signal_parameters_s> *const videoParams)
+                                                std::vector<video_signal_properties_s> *const videoParams)
 {
     // Bails out if the value (string) of the first cell on the current row doesn't match
     // the given one.
@@ -58,7 +58,7 @@ bool file_reader::video_params::version_a::read(const std::string &filename,
             FAIL_IF_FIRST_CELL_IS_NOT("parameterCount");
             const unsigned numParameters = rowData.at(row).at(1).toUInt();
 
-            video_signal_parameters_s params;
+            video_signal_properties_s params;
 
             for (unsigned p = 0; p < numParameters; p++)
             {

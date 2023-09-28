@@ -14,7 +14,7 @@ namespace file_reader::video_params
 {
     namespace version_a
     {
-        bool read(const std::string &filename, std::vector<video_signal_parameters_s> *const videoParams);
+        bool read(const std::string &filename, std::vector<video_signal_properties_s> *const videoParams);
     }
 }
 

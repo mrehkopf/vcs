@@ -28,7 +28,7 @@
 class BaseFilterGraphNode;
 
 struct filter_graph_option_s;
-struct video_signal_parameters_s;
+struct video_signal_properties_s;
 struct video_preset_s;
 
 /*!

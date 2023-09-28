@@ -27,8 +27,6 @@ static bool CAPTURE_EVENT_FLAGS[(int)capture_event_e::num_enumerators];
 
 static bool IS_VALID_SIGNAL = true;
 
-static double CURRENT_REFRESH_RATE = 0;
-
 static captured_frame_s FRAME_BUFFER;
 
 static const char MMAP_STATUS_BUF_FILENAME[] = "vcs_dosbox_mmap_status";
@@ -179,7 +177,7 @@ static int capture_thread(void)
             if ((frameWidth != FRAME_BUFFER.resolution.w) ||
                 (frameHeight != FRAME_BUFFER.resolution.h))
             {
-                resolution_s::to_capture_device({frameWidth, frameHeight});
+                resolution_s::to_capture_device_properties({.w = frameWidth, .h = frameHeight});
                 push_capture_event(capture_event_e::new_video_mode);
             }
 
@@ -246,7 +244,7 @@ void kc_initialize_device(void)
 
     ev_new_video_mode.listen([](const video_mode_s &mode)
     {
-        resolution_s::to_capture_device(mode.resolution);
+        resolution_s::to_capture_device_properties(mode.resolution);
         refresh_rate_s::to_capture_device(mode.refreshRate);
     });
 

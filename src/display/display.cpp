@@ -8,7 +8,7 @@
 #include "display/display.h"
 #include "capture/capture.h"
 
-resolution_s resolution_s::from_capture_device(const std::string &nameSpace)
+resolution_s resolution_s::from_capture_device_properties(const std::string &nameSpace)
 {
     return resolution_s{
         .w = unsigned(kc_device_property("width" + nameSpace)),
@@ -16,7 +16,7 @@ resolution_s resolution_s::from_capture_device(const std::string &nameSpace)
     };
 }
 
-void resolution_s::to_capture_device(const resolution_s &resolution)
+void resolution_s::to_capture_device_properties(const resolution_s &resolution)
 {
     kc_set_device_property("width", resolution.w);
     kc_set_device_property("height", resolution.h);

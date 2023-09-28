@@ -75,8 +75,8 @@ static bool force_capture_resolution(const resolution_s r)
 
     // Validate the resolution.
     {
-        const auto minRes = resolution_s::from_capture_device(": minimum");
-        const auto maxRes = resolution_s::from_capture_device(": maximum");
+        const auto minRes = resolution_s::from_capture_device_properties(": minimum");
+        const auto maxRes = resolution_s::from_capture_device_properties(": maximum");
 
         if (
             (r.w < minRes.w) ||
@@ -295,16 +295,36 @@ capture_event_e kc_process_next_capture_event(void)
     return capture_event_e::none;
 }
 
-static void update_device_video_parameters(void)
+uint kc_dropped_frames_count(void)
 {
-    k_assert(INPUT_CHANNEL, "Attempting to query input channel parameters on a null channel.");
+    k_assert(INPUT_CHANNEL,
+             "Attempting to query input channel parameters on a null channel.");
 
-    const ic_v4l_controls_c videoParams = INPUT_CHANNEL->captureStatus.videoParameters;
+    return (NUM_MISSED_FRAMES + INPUT_CHANNEL->captureStatus.numNewFrameEventsSkipped);
+}
 
-    // Defaults.
+void kc_initialize_device(void)
+{
+    DEBUG(("Initializing the Vision/V4L capture device."));
+
+    k_assert(!FRAME_BUFFER.pixels, "Attempting to doubly initialize the capture device.");
+    FRAME_BUFFER.pixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
+
+    kc_set_device_property("channel", INPUT_CHANNEL_IDX);
+    k_assert(INPUT_CHANNEL, "Failed to initialize the hardware input channel.");
+
+    resolution_s::to_capture_device_properties({.w = 640, .h = 480});
+
+    // Initialize value ranges for video parameters.
+    //
+    // Note: Querying these values from V4L at runtime seems to work a little
+    // unreliably, so for now let's just use hard-coded values. These values
+    // have been selected with the VisionRGB-E1S in mind.
     {
-        // The V4L API returns no parameter ranges while there's no signal - so let's
-        // approximate them.
+        ic_v4l_controls_c *const videoParams = &INPUT_CHANNEL->captureStatus.videoParameters;
+
+        videoParams->update();
+
         if (!kc_has_signal())
         {
             video_signal_parameters_s::to_capture_device(video_signal_parameters_s{
@@ -326,31 +346,23 @@ static void update_device_video_parameters(void)
         else
         {
             video_signal_parameters_s::to_capture_device({
-                .brightness         = videoParams.default_value(ic_v4l_controls_c::type_e::brightness),
-                .contrast           = videoParams.default_value(ic_v4l_controls_c::type_e::contrast),
-                .redBrightness      = videoParams.default_value(ic_v4l_controls_c::type_e::red_brightness),
-                .redContrast        = videoParams.default_value(ic_v4l_controls_c::type_e::red_contrast),
-                .greenBrightness    = videoParams.default_value(ic_v4l_controls_c::type_e::green_brightness),
-                .greenContrast      = videoParams.default_value(ic_v4l_controls_c::type_e::green_contrast),
-                .blueBrightness     = videoParams.default_value(ic_v4l_controls_c::type_e::blue_brightness),
-                .blueContrast       = videoParams.default_value(ic_v4l_controls_c::type_e::blue_contrast),
-                .horizontalSize     = unsigned(videoParams.default_value(ic_v4l_controls_c::type_e::horizontal_size)),
-                .horizontalPosition = videoParams.default_value(ic_v4l_controls_c::type_e::horizontal_position),
-                .verticalPosition   = videoParams.default_value(ic_v4l_controls_c::type_e::vertical_position),
-                .phase              = videoParams.default_value(ic_v4l_controls_c::type_e::phase),
-                .blackLevel         = videoParams.default_value(ic_v4l_controls_c::type_e::black_level)
+                .brightness         = videoParams->default_value(ic_v4l_controls_c::type_e::brightness),
+                .contrast           = videoParams->default_value(ic_v4l_controls_c::type_e::contrast),
+                .redBrightness      = videoParams->default_value(ic_v4l_controls_c::type_e::red_brightness),
+                .redContrast        = videoParams->default_value(ic_v4l_controls_c::type_e::red_contrast),
+                .greenBrightness    = videoParams->default_value(ic_v4l_controls_c::type_e::green_brightness),
+                .greenContrast      = videoParams->default_value(ic_v4l_controls_c::type_e::green_contrast),
+                .blueBrightness     = videoParams->default_value(ic_v4l_controls_c::type_e::blue_brightness),
+                .blueContrast       = videoParams->default_value(ic_v4l_controls_c::type_e::blue_contrast),
+                .horizontalSize     = unsigned(videoParams->default_value(ic_v4l_controls_c::type_e::horizontal_size)),
+                .horizontalPosition = videoParams->default_value(ic_v4l_controls_c::type_e::horizontal_position),
+                .verticalPosition   = videoParams->default_value(ic_v4l_controls_c::type_e::vertical_position),
+                .phase              = videoParams->default_value(ic_v4l_controls_c::type_e::phase),
+                .blackLevel         = videoParams->default_value(ic_v4l_controls_c::type_e::black_level)
             }, ": default");
         }
-    }
 
-    // Minimums.
-    //
-    // Note: Querying the minimums from V4L seems to work a little unreliably (and
-    // they vary from one video mode to another), so for now let's just always use
-    // hard-coded values. These values have been selected with the VisionRGB-E1S
-    // in mind; they may or may not be suitable for other models.
-    {
-        video_signal_parameters_s::to_capture_device({
+        video_signal_properties_s::to_capture_device_properties({
             .brightness         = 0,
             .contrast           = 0,
             .redBrightness      = 0,
@@ -365,17 +377,9 @@ static void update_device_video_parameters(void)
             .phase              = 0,
             .blackLevel         = 1
         }, ": minimum");
-    }
 
-    // Maximums.
-    //
-    // Note: Querying the minimums from V4L seems to work a little unreliably (and
-    // they vary from one video mode to another), so for now let's just always use
-    // hard-coded values. These values have been selected with the VisionRGB-E1S
-    // in mind; they may or may not be suitable for other models.
-    {
-        video_signal_parameters_s::to_capture_device({
-            .brightness         = 64,
+        video_signal_properties_s::to_capture_device_properties({
+            .brightness         = 63,
             .contrast           = 255,
             .redBrightness      = 255,
             .redContrast        = 511,
@@ -390,26 +394,6 @@ static void update_device_video_parameters(void)
             .blackLevel         = 255
         }, ": maximum");
     }
-}
-
-uint kc_dropped_frames_count(void)
-{
-    k_assert(INPUT_CHANNEL,
-             "Attempting to query input channel parameters on a null channel.");
-
-    return (NUM_MISSED_FRAMES + INPUT_CHANNEL->captureStatus.numNewFrameEventsSkipped);
-}
-
-void kc_initialize_device(void)
-{
-    DEBUG(("Initializing the Vision/V4L capture device."));
-
-    k_assert(!FRAME_BUFFER.pixels, "Attempting to doubly initialize the capture device.");
-    FRAME_BUFFER.pixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
-
-    kc_set_device_property("channel", INPUT_CHANNEL_IDX);
-    resolution_s::to_capture_device({.w = 640, .h = 480});
-    update_device_video_parameters();
 
     // Listen for relevant events.
     {
@@ -418,7 +402,6 @@ void kc_initialize_device(void)
             k_assert(INPUT_CHANNEL, "Attempting to set input channel parameters on a null channel.");
 
             INPUT_CHANNEL->captureStatus.videoParameters.update();
-            update_device_video_parameters();
 
             ev_new_proposed_video_mode.fire({
                 INPUT_CHANNEL->captureStatus.resolution,

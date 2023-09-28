@@ -34,9 +34,9 @@ bool kc_has_signal(void)
     return kc_device_property("has signal");
 }
 
-video_signal_parameters_s video_signal_parameters_s::from_capture_device(const std::string &nameSpace)
+video_signal_properties_s video_signal_properties_s::from_capture_device_properties(const std::string &nameSpace)
 {
-    return video_signal_parameters_s{
+    return video_signal_properties_s{
         .brightness         = long(kc_device_property("brightness" + nameSpace)),
         .contrast           = long(kc_device_property("contrast" + nameSpace)),
         .redBrightness      = long(kc_device_property("red brightness" + nameSpace)),
@@ -53,7 +53,7 @@ video_signal_parameters_s video_signal_parameters_s::from_capture_device(const s
     };
 }
 
-void video_signal_parameters_s::to_capture_device(const video_signal_parameters_s &params, const std::string &nameSpace)
+void video_signal_properties_s::to_capture_device_properties(const video_signal_properties_s &params, const std::string &nameSpace)
 {
     kc_set_device_property(("brightness" + nameSpace), params.brightness);
     kc_set_device_property(("contrast" + nameSpace), params.contrast);

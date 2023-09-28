@@ -14,7 +14,7 @@ namespace file_writer::video_params
 {
     namespace version_a
     {
-        bool write(const std::string &filename, const std::vector<video_signal_parameters_s> &videoParams);
+        bool write(const std::string &filename, const std::vector<video_signal_properties_s> &videoParams);
     }
 }
 

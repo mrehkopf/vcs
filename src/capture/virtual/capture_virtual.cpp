@@ -133,7 +133,7 @@ void kc_initialize_device(void)
     // Simulate the capturing of a new frame.
     kt_timer(std::round(1000 / TARGET_REFRESH_RATE), [](const unsigned)
     {
-        const auto inres = resolution_s::from_capture_device();
+        const auto inres = resolution_s::from_capture_device_properties();
 
         if ((inres.w > MAX_CAPTURE_WIDTH) || (inres.h > MAX_CAPTURE_HEIGHT))
         {
@@ -161,52 +161,52 @@ void kc_initialize_device(void)
         }
     });
 
-    video_signal_parameters_s::to_capture_device({
-        .brightness         = 1,
-        .contrast           = 1,
-        .redBrightness      = 1,
-        .redContrast        = 1,
-        .greenBrightness    = 1,
-        .greenContrast      = 1,
-        .blueBrightness     = 1,
-        .blueContrast       = 1,
-        .horizontalSize     = 1,
-        .horizontalPosition = 1,
-        .verticalPosition   = 1,
-        .phase              = 1,
-        .blackLevel         = 1
+    video_signal_properties_s::to_capture_device_properties({
+         .brightness         = 0,
+         .contrast           = 0,
+         .redBrightness      = 0,
+         .redContrast        = 0,
+         .greenBrightness    = 0,
+         .greenContrast      = 0,
+         .blueBrightness     = 0,
+         .blueContrast       = 0,
+         .horizontalSize     = 100,
+         .horizontalPosition = 1,
+         .verticalPosition   = 1,
+         .phase              = 0,
+         .blackLevel         = 1
     }, ": minimum");
 
-    video_signal_parameters_s::to_capture_device({
-        .brightness         = 200,
-        .contrast           = 200,
-        .redBrightness      = 200,
-        .redContrast        = 200,
-        .greenBrightness    = 200,
-        .greenContrast      = 200,
-        .blueBrightness     = 200,
-        .blueContrast       = 200,
-        .horizontalSize     = 200,
-        .horizontalPosition = 200,
-        .verticalPosition   = 200,
-        .phase              = 200,
-        .blackLevel         = 200
+    video_signal_properties_s::to_capture_device_properties({
+        .brightness         = 63,
+        .contrast           = 255,
+        .redBrightness      = 255,
+        .redContrast        = 511,
+        .greenBrightness    = 255,
+        .greenContrast      = 511,
+        .blueBrightness     = 255,
+        .blueContrast       = 511,
+        .horizontalSize     = 4095,
+        .horizontalPosition = 1200,
+        .verticalPosition   = 63,
+        .phase              = 31,
+        .blackLevel         = 255
     }, ": maximum");
 
-    video_signal_parameters_s::to_capture_device({
-        .brightness         = 100,
-        .contrast           = 100,
-        .redBrightness      = 100,
-        .redContrast        = 100,
-        .greenBrightness    = 100,
-        .greenContrast      = 100,
-        .blueBrightness     = 100,
-        .blueContrast       = 100,
-        .horizontalSize     = 100,
-        .horizontalPosition = 100,
-        .verticalPosition   = 100,
-        .phase              = 100,
-        .blackLevel         = 100
+    video_signal_properties_s::to_capture_device_properties({
+        .brightness         = 32,
+        .contrast           = 128,
+        .redBrightness      = 128,
+        .redContrast        = 256,
+        .greenBrightness    = 128,
+        .greenContrast      = 256,
+        .blueBrightness     = 128,
+        .blueContrast       = 256,
+        .horizontalSize     = 900,
+        .horizontalPosition = 112,
+        .verticalPosition   = 36,
+        .phase              = 0,
+        .blackLevel         = 8
     }, ": default");
 
     // Create custom GUI entries.
@@ -343,8 +343,8 @@ capture_event_e kc_process_next_capture_event(void)
     if (pop_capture_event(capture_event_e::new_video_mode))
     {
         ev_new_proposed_video_mode.fire(video_mode_s{
-            .resolution = resolution_s::from_capture_device(),
-            .refreshRate = refresh_rate_s::from_capture_device()
+            .resolution = resolution_s::from_capture_device_properties(),
+            .refreshRate = refresh_rate_s::from_capture_device_properties()
         });
         return capture_event_e::new_video_mode;
     }
