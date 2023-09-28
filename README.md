@@ -4,7 +4,9 @@ A control application for Datapath Vision capture cards on Linux.
 
 ![VCS 3.0](./screenshot1.png)
 
-![VCS 3.0](./screenshot2.webp)
+![VCS 3.0](./screenshot2.png)
+
+![VCS 3.0](./screenshot3.png)
 
 ## Key features
 
