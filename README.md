@@ -60,14 +60,14 @@ To confirm whether the program is running in release or debug mode, navigate to 
 
 ### The capture backend
 
-A capture backend in VCS is an implementation providing support for a particular capture device. For example, Datapath's VisionRGB capture cards are supported in VCS on Linux by the [Vision capture backend](./src/capture/vision_v4l/).
+A capture backend is an implementation in VCS providing support for a particular capture source, be it a hardware device (e.g. a Datapath Vision capture card) or something else.
 
-One (and only one) capture backend must be active in any build of VCS. To select which one it is, set its identifier in the `DEFINES` variable in [vcs.pro](vcs.pro).
+One &ndash; and only one &ndash; capture backend must be active in any build of VCS. To select which, include the corresponding identifier in the `DEFINES` variable in [vcs.pro](vcs.pro).
 
-The following capture backends are available:
+The following capture backends are available to choose from:
 
-| Identifier                  | Explanation |
-| --------------------------- | ----------- |
-| CAPTURE_BACKEND_VISION_V4L  | Supports the Datapath VisionRGB range of capture cards on Linux. Requires [Datapath's Linux Vision driver](https://www.datapathsoftware.com/vision-capture-card-downloads/vision-drivers/vision-drivers-1) to be installed on the system (and re-installed whenever the kernel is updated). |
-| CAPTURE_BACKEND_VIRTUAL     | Provides a device-independent capture source that generates a test image. Useful for debugging, and doesn't require a capture device or its drivers to be installed. |
-| CAPTURE_BACKEND_DOSBOX_MMAP | Allows capturing DOSBox's frame buffer on Linux. Intended for debugging. See [this blog post](https://www.tarpeeksihyvaesoft.com/blog/capturing-dosboxs-frame-buffer-via-shared-memory/) for details.|
+| Backend dentifier           | Purpose                                                                                                                       |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| CAPTURE_BACKEND_VISION_V4L  | Supports the Datapath Vision range of capture cards in Linux. Requires installation of the Datapath Vision driver.            |
+| CAPTURE_BACKEND_VIRTUAL     | Provides a virtual capture device that generates a test image.                                                                |
+| CAPTURE_BACKEND_DOSBOX_MMAP | Captures DOSBox's frame buffer. Requires [patching](./src/capture/dosbox_mmap/dosbox-0.74.3-linux-for-vcs-mmap.patch) DOSBox. |
