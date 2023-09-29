@@ -650,12 +650,22 @@ void OutputWindow::update_window_title(void)
         }
         else
         {
-            title = QString("%1 - %2 \u00d7 %3 shown in %4 \u00d7 %5")
-                .arg(programName)
-                .arg(inRes.w)
-                .arg(inRes.h)
-                .arg(outRes.w)
-                .arg(outRes.h);
+            if (resolution_s::from_capture_device_properties() == ks_output_resolution())
+            {
+                title = QString("%1 - %2 \u00d7 %3")
+                    .arg(programName)
+                    .arg(inRes.w)
+                    .arg(inRes.h);
+            }
+            else
+            {
+                title = QString("%1 - %2 \u00d7 %3 shown in %4 \u00d7 %5")
+                    .arg(programName)
+                    .arg(inRes.w)
+                    .arg(inRes.h)
+                    .arg(outRes.w)
+                    .arg(outRes.h);
+            }
         }
     }
 
