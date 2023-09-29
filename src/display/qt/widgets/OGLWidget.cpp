@@ -42,7 +42,7 @@ void OGLWidget::initializeGL()
     DEBUG(("OpenGL is reported to be version %s.", glGetString(GL_VERSION)));
 
     this->glDisable(GL_DEPTH_TEST);
-    this->glEnable(GL_TEXTURE_2D);
+    this->glClearColor(0, 0, 0, 255);
 
     this->glGenTextures(1, &FRAMEBUFFER_TEXTURE);
     this->glBindTexture(GL_TEXTURE_2D, FRAMEBUFFER_TEXTURE);
@@ -54,9 +54,10 @@ void OGLWidget::initializeGL()
     this->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     this->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+    this->glEnable(GL_TEXTURE_2D);
+
     // For alpha-blending the overlay image.
     this->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    this->glEnable(GL_BLEND);
 
     k_assert(!this->glGetError(), "OpenGL initialization failed.");
 
@@ -77,33 +78,37 @@ void OGLWidget::resizeGL(int w, int h)
 void OGLWidget::paintGL()
 {
     // Draw the output frame.
-    const image_s outputImage = ks_scaler_frame_buffer();
-    if (outputImage.pixels)
     {
-        this->glDisable(GL_BLEND);
+        const image_s frame = ks_scaler_frame_buffer();
 
-        this->glBindTexture(GL_TEXTURE_2D, FRAMEBUFFER_TEXTURE);
-        this->glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RGBA8,
-            outputImage.resolution.w,
-            outputImage.resolution.h,
-            0,
-            GL_BGRA,
-            GL_UNSIGNED_BYTE,
-            outputImage.pixels
-        );
+        if (frame.is_valid() && (frame.bitsPerPixel == 32))
+        {
+            this->glDisable(GL_BLEND);
+            this->glBindTexture(GL_TEXTURE_2D, FRAMEBUFFER_TEXTURE);
+            this->glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                GL_RGBA8,
+                frame.resolution.w,
+                frame.resolution.h,
+                0,
+                GL_BGRA,
+                GL_UNSIGNED_BYTE,
+                frame.pixels
+            );
 
-        glBegin(GL_TRIANGLES);
-            glTexCoord2i(0, 0); glVertex2i(0,             0);
-            glTexCoord2i(0, 1); glVertex2i(0,             this->height());
-            glTexCoord2i(1, 1); glVertex2i(this->width(), this->height());
+            glBegin(GL_TRIANGLES);
+                glColor3ub(255, 255, 255);
 
-            glTexCoord2i(1, 1); glVertex2i(this->width(), this->height());
-            glTexCoord2i(1, 0); glVertex2i(this->width(), 0);
-            glTexCoord2i(0, 0); glVertex2i(0,             0);
-        glEnd();
+                glTexCoord2i(0, 0); glVertex2i(0,             0);
+                glTexCoord2i(0, 1); glVertex2i(0,             this->height());
+                glTexCoord2i(1, 1); glVertex2i(this->width(), this->height());
+
+                glTexCoord2i(1, 1); glVertex2i(this->width(), this->height());
+                glTexCoord2i(1, 0); glVertex2i(this->width(), 0);
+                glTexCoord2i(0, 0); glVertex2i(0,             0);
+            glEnd();
+        }
     }
 
     // Draw the overlay, if any.
@@ -111,7 +116,6 @@ void OGLWidget::paintGL()
     if (!overlay.isNull())
     {
         this->glEnable(GL_BLEND);
-
         this->glBindTexture(GL_TEXTURE_2D, OVERLAY_TEXTURE);
         this->glTexImage2D(
             GL_TEXTURE_2D,
