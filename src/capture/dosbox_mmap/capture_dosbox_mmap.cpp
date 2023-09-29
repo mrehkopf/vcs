@@ -157,7 +157,7 @@ static int capture_thread(void)
     {
         if (get_status_buffer_value(status_buffer_value_e::is_new_frame_available))
         {
-            std::lock_guard<std::mutex> lock(kc_mutex());
+            SCOPE_LOCK_CAPTURE_MUTEX;
 
             IS_VALID_SIGNAL = true;
             

@@ -327,7 +327,7 @@ void kc_initialize_device(void)
 
         if (!kc_has_signal())
         {
-            video_signal_parameters_s::to_capture_device(video_signal_parameters_s{
+            video_signal_properties_s::to_capture_device_properties(video_signal_properties_s{
                 .brightness         = 32,
                 .contrast           = 128,
                 .redBrightness      = 128,
@@ -345,7 +345,7 @@ void kc_initialize_device(void)
         }
         else
         {
-            video_signal_parameters_s::to_capture_device({
+            video_signal_properties_s::to_capture_device_properties({
                 .brightness         = videoParams->default_value(ic_v4l_controls_c::type_e::brightness),
                 .contrast           = videoParams->default_value(ic_v4l_controls_c::type_e::contrast),
                 .redBrightness      = videoParams->default_value(ic_v4l_controls_c::type_e::red_brightness),

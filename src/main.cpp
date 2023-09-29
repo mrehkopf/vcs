@@ -132,9 +132,8 @@ static bool initialize_all(void)
     return !PROGRAM_EXIT_REQUESTED;
 }
 
-static capture_event_e process_next_capture_event(void)
+static capture_event_e next_capture_event(void)
 {
-    std::lock_guard<std::mutex> lock(kc_mutex());
     const capture_event_e e = kc_process_next_capture_event();
 
     switch (e)
@@ -259,17 +258,6 @@ int main(int argc, char *argv[])
     printf("NON-RELEASE BUILD\n");
 #endif
 
-    // We want to be sure that the capture hardware is released in a controlled
-    // manner, if possible, in the event of a runtime failure. (Not releasing the
-    // hardware on program termination may cause a degradation in its subsequent
-    // performance until the computer is rebooted.)
-    std::set_terminate([]
-    {
-        NBENE(("VCS has encountered a run-time error and will attempt to exit."));
-        PROGRAM_EXIT_REQUESTED = true;
-        prepare_for_exit();
-    });
-
     DEBUG(("Parsing the command line."));
     if (!kcom_parse_command_line(argc, argv))
     {
@@ -298,12 +286,27 @@ int main(int argc, char *argv[])
     load_user_data();
 
     DEBUG(("Entering the main loop."));
-    while (!PROGRAM_EXIT_REQUESTED)
+    try
     {
-        const capture_event_e e = process_next_capture_event();
-        kt_update_timers();
-        kd_spin_event_loop();
-        eco_sleep(e);
+        while (!PROGRAM_EXIT_REQUESTED)
+        {
+            capture_event_e e;
+            {
+                SCOPE_LOCK_CAPTURE_MUTEX;
+                e = next_capture_event();
+                kt_update_timers();
+                kd_spin_event_loop();
+            }
+
+            eco_sleep(e);
+        }
+    }
+    // Generally assumed to be from k_assert(), which will already have displayed
+    // a more detailed error report to the user.
+    catch (...)
+    {
+        NBENE(("VCS has encountered a run-time error and will attempt to exit normally."));
+        PROGRAM_EXIT_REQUESTED = true;
     }
 
     prepare_for_exit();

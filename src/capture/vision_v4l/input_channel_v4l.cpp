@@ -134,7 +134,7 @@ bool input_channel_v4l_c::capture_thread__has_signal(void)
 
         if (hasStatusChanged)
         {
-            std::lock_guard<std::mutex> lock(kc_mutex());
+            SCOPE_LOCK_CAPTURE_MUTEX;
             this->push_capture_event(hasNoSignal? capture_event_e::signal_lost : capture_event_e::signal_gained);
         }
     }
@@ -151,7 +151,7 @@ bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
     {
         if (!input_channel_v4l_c::is_format_of_valid_signal(&format))
         {
-            std::lock_guard<std::mutex> lock(kc_mutex());
+            SCOPE_LOCK_CAPTURE_MUTEX;
 
             this->captureStatus.invalidSignal = true;
             this->push_capture_event(capture_event_e::invalid_signal);
@@ -180,7 +180,7 @@ bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
     // Failed to query the video format.
     else
     {
-        std::lock_guard<std::mutex> lock(kc_mutex());
+        SCOPE_LOCK_CAPTURE_MUTEX;
 
         this->captureStatus.invalidSignal = true;
         this->push_capture_event(capture_event_e::invalid_signal);
@@ -226,7 +226,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
                 }
                 default:
                 {
-                    std::lock_guard<std::mutex> lock(kc_mutex());
+                    SCOPE_LOCK_CAPTURE_MUTEX;
 
                     this->push_capture_event(capture_event_e::unrecoverable_error);
 
@@ -243,7 +243,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
         }
         else
         {
-            std::lock_guard<std::mutex> lock(kc_mutex());
+            SCOPE_LOCK_CAPTURE_MUTEX;
 
             const input_channel_v4l_c::mmap_metadata &srcBuffer = this->mmapBackBuffers.at(buf.index);
 
@@ -259,7 +259,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
         // Tell the capture device that we've finished accessing the buffer.
         if (!this->device_ioctl(VIDIOC_QBUF, &buf))
         {
-            std::lock_guard<std::mutex> lock(kc_mutex());
+            SCOPE_LOCK_CAPTURE_MUTEX;
 
             this->push_capture_event(capture_event_e::unrecoverable_error);
 
@@ -269,7 +269,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
     // A capture error.
     else
     {
-        std::lock_guard<std::mutex> lock(kc_mutex());
+        SCOPE_LOCK_CAPTURE_MUTEX;
 
         this->push_capture_event(capture_event_e::unrecoverable_error);
         
@@ -354,7 +354,7 @@ int input_channel_v4l_c::capture_thread(void)
             }
             else
             {
-                std::lock_guard<std::mutex> lock(kc_mutex());
+                SCOPE_LOCK_CAPTURE_MUTEX;
 
                 this->push_capture_event(capture_event_e::new_video_mode);
 
@@ -641,22 +641,19 @@ int input_channel_v4l_c::stop_capturing(void)
         this->run = false;
         retVal = (this->captureThreadFuture.valid()? this->captureThreadFuture.get() : 0);
 
-        // Stop the capture stream. Note that we don't return on error, we just
-        // continue to force the capturing to stop.
         this->streamoff();
-
         this->dequeue_mmap_back_buffers();
     }
       
     this->reset_capture_event_flags();
     this->push_capture_event(capture_event_e::signal_lost);
 
-    // Note: we don't return on error, we just continue to force the capturing
-    // to stop.
     if (!this->close_device())
     {
-        DEBUG(("The capture device \"%s\" was not correctly closed.",
-               this->v4lDeviceFileName.c_str()));
+        DEBUG((
+            "The capture device \"%s\" was not correctly closed.",
+            this->v4lDeviceFileName.c_str()
+        ));
     }
 
     return retVal;
