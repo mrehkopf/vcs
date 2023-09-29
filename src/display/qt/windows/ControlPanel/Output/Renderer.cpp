@@ -17,7 +17,6 @@ control_panel::output::Renderer::Renderer(QWidget *parent) :
         OutputWindow::current_instance()->set_opengl_enabled(rendererName == "OpenGL");
     });
 
-    // Restore the previous persistent setting.
     ui->comboBox_renderer->setCurrentText(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "Renderer", ui->comboBox_renderer->itemText(0)).toString());
 }
 

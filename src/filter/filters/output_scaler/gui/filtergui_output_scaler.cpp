@@ -18,16 +18,13 @@ filtergui_output_scaler_c::filtergui_output_scaler_c(abstract_filter_c *const fi
         scaledWidth->minValue = MIN_OUTPUT_WIDTH;
         scaledWidth->maxValue = MAX_OUTPUT_WIDTH;
 
-        auto *const separator = new abstract_gui::label;
-        separator->text = "\u00d7";
-
         auto *const scaledHeight = new abstract_gui::spinner;
         scaledHeight->get_value = [=]{return filter->parameter(filter_output_scaler_c::PARAM_HEIGHT);};
         scaledHeight->set_value = [=](const int value){filter->set_parameter(filter_output_scaler_c::PARAM_HEIGHT, value);};
         scaledHeight->minValue = MIN_OUTPUT_HEIGHT;
         scaledHeight->maxValue = MAX_OUTPUT_HEIGHT;
 
-        this->fields.push_back({"Scale to", {scaledWidth, separator, scaledHeight}});
+        this->fields.push_back({"Scale to", {scaledWidth, scaledHeight}});
     }
 
     {
