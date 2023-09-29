@@ -8,8 +8,10 @@
 #define VCS_DISPLAY_QT_WINDOWS_OUTPUT_WINDOW_H
 
 #include <QMainWindow>
+#include <QApplication>
 #include "display/display.h"
 #include "common/globals.h"
+#include "common/assert.h"
 
 class ControlPanel;
 class MagnifyingGlass;
@@ -57,6 +59,20 @@ public:
     ControlPanel* control_panel(void) const { return this->controlPanelWindow; }
 
     void add_control_panel_widget(const std::string &tabName, const std::string &widgetTitle, const abstract_gui_s &widget);
+
+    static OutputWindow* current_instance(void)
+    {
+        for (QWidget *const w: qApp->topLevelWidgets())
+        {
+            if (qobject_cast<OutputWindow*>(w))
+            {
+                return qobject_cast<OutputWindow*>(w);
+            }
+        }
+
+        k_assert(0, "No instance of the output window is available.");
+        return nullptr;
+    }
 
 signals:
     void fullscreen_mode_enabled(void);
