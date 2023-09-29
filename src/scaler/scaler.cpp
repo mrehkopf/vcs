@@ -383,6 +383,12 @@ void ks_set_default_scaler(const std::string &name)
 {
     DEFAULT_SCALER = scaler_for_name_string(name);
 
+    // Redraw the most recent frame using the new scaler.
+    if (kc_has_signal())
+    {
+        ks_scale_frame(kc_frame_buffer());
+    }
+
     return;
 }
 
