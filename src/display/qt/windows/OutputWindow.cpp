@@ -650,11 +650,10 @@ void OutputWindow::update_window_title(void)
         }
         else
         {
-            title = QString("%1 - %2 \u00d7 %3 (%4 Hz) shown in %5 \u00d7 %6")
+            title = QString("%1 - %2 \u00d7 %3 shown in %4 \u00d7 %5")
                 .arg(programName)
                 .arg(inRes.w)
                 .arg(inRes.h)
-                .arg(QString::number(refreshRate.value<double>(), 'f', 3))
                 .arg(outRes.w)
                 .arg(outRes.h);
         }
