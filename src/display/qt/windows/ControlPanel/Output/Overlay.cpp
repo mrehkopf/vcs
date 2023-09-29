@@ -39,12 +39,14 @@ control_panel::output::Overlay::Overlay(QWidget *parent) :
         connect(ui->plainTextEdit, &QPlainTextEdit::textChanged, this, [this]
         {
             kpers_set_value(INI_GROUP_OVERLAY, "Content", this->ui->plainTextEdit->toPlainText());
+            ev_dirty_output_window.fire();
         });
 
         connect(this, &DialogFragment::enabled_state_set, this, [this](const bool isEnabled)
         {
             kpers_set_value(INI_GROUP_OVERLAY, "Enabled", isEnabled);
             this->ui->groupBox->setChecked(isEnabled);
+            ev_dirty_output_window.fire();
         });
     }
 
