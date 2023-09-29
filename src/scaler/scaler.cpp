@@ -188,28 +188,28 @@ void ks_scale_frame(const captured_frame_s &frame)
         const auto maxres = resolution_s::from_capture_device_properties(": maximum");
 
         if (outputRes.w > MAX_OUTPUT_WIDTH ||
-                 outputRes.h > MAX_OUTPUT_HEIGHT)
+            outputRes.h > MAX_OUTPUT_HEIGHT)
         {
-            NBENE(("Was asked to scale a frame with an output size (%u x %u) larger than the maximum allowed (%u x %u). Ignoring it.",
+            DEBUG(("Was asked to scale a frame with an output size (%u x %u) larger than the maximum allowed (%u x %u). Ignoring it.",
                     outputRes.w, outputRes.h, MAX_OUTPUT_WIDTH, MAX_OUTPUT_HEIGHT));
             return;
         }
         else if (!frame.pixels)
         {
-            NBENE(("Was asked to scale a null frame. Ignoring it."));
+            DEBUG(("Was asked to scale a null frame. Ignoring it."));
             return;
         }
         else if (frame.resolution.w < minres.w ||
                  frame.resolution.h < minres.h)
         {
-            NBENE(("Was asked to scale a frame with an input size (%u x %u) smaller than the minimum allowed (%u x %u). Ignoring it.",
+            DEBUG(("Was asked to scale a frame with an input size (%u x %u) smaller than the minimum allowed (%u x %u). Ignoring it.",
                    frame.resolution.w, frame.resolution.h, minres.w, minres.h));
             return;
         }
         else if (frame.resolution.w > maxres.w ||
                  frame.resolution.h > maxres.h)
         {
-            NBENE(("Was asked to scale a frame with an input size (%u x %u) larger than the maximum allowed (%u x %u). Ignoring it.",
+            DEBUG(("Was asked to scale a frame with an input size (%u x %u) larger than the maximum allowed (%u x %u). Ignoring it.",
                    frame.resolution.w, frame.resolution.h, maxres.w, maxres.h));
             return;
         }
@@ -219,7 +219,11 @@ void ks_scale_frame(const captured_frame_s &frame)
         }
     }
 
-    image_s imageToBeScaled = kat_anti_tear({frame.pixels, frame.resolution});
+    image_s imageToBeScaled = kat_anti_tear({
+        .pixels = frame.pixels,
+        .resolution = frame.resolution
+    });
+
     abstract_filter_c *customScaler = kf_apply_matching_filter_chain(&imageToBeScaled);
 
     // If the active filter chain provided a custom output scaler, it'll override our
@@ -275,7 +279,7 @@ void ks_scale_frame(const captured_frame_s &frame)
 void ks_set_base_resolution_enabled(const bool enabled)
 {
     IS_RESOLUTION_OVERRIDE_ENABLED = enabled;
-    kd_update_output_window_size();
+    ev_new_output_resolution.fire(ks_output_resolution());
 
     return;
 }
@@ -283,7 +287,7 @@ void ks_set_base_resolution_enabled(const bool enabled)
 void ks_set_base_resolution(const resolution_s &r)
 {
     RESOLUTION_OVERRIDE = r;
-    kd_update_output_window_size();
+    ev_new_output_resolution.fire(ks_output_resolution());
 
     return;
 }
@@ -291,7 +295,7 @@ void ks_set_base_resolution(const resolution_s &r)
 void ks_set_scaling_multiplier(const double s)
 {
     SCALING_MULTIPLIER = s;
-    kd_update_output_window_size();
+    ev_new_output_resolution.fire(ks_output_resolution());
 
     return;
 }
@@ -304,7 +308,7 @@ double ks_scaling_multiplier(void)
 void ks_set_scaling_multiplier_enabled(const bool enabled)
 {
     IS_SCALING_MULTIPLIER_ENABLED = enabled;
-    kd_update_output_window_size();
+    ev_new_output_resolution.fire(ks_output_resolution());
 
     return;
 }
