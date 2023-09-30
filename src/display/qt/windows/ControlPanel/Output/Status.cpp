@@ -61,7 +61,17 @@ control_panel::output::Status::Status(QWidget *parent) :
 
         ev_frames_per_second.listen([this](const unsigned fps)
         {
-            this->ui->tableWidget_propertyTable->modify_property("Frame rate", QString("%1 FPS").arg(fps));
+            if (kc_has_signal())
+            {
+                this->ui->tableWidget_propertyTable->modify_property("Frame rate", QString("%1 FPS").arg(fps));
+            }
+        });
+
+        ev_capture_signal_lost.listen([this]
+        {
+            ui->tableWidget_propertyTable->modify_property("Resolution", "-");
+            ui->tableWidget_propertyTable->modify_property("Frame rate", "-");
+            ui->tableWidget_propertyTable->modify_property("Frames dropped", "-");
         });
     }
 

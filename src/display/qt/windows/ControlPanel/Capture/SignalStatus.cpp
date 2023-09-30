@@ -103,7 +103,7 @@ void control_panel::capture::SignalStatus::update_information_table(const bool i
     else
     {
         ui->tableWidget_propertyTable->modify_property("Resolution", "-");
-        ui->tableWidget_propertyTable->modify_property("Rate", "-");
+        ui->tableWidget_propertyTable->modify_property("Refresh rate", "-");
     }
 
     return;
