@@ -25,4 +25,4 @@ vcs_event_c<void> ev_custom_output_scaler_disabled;
 vcs_event_c<void> ev_eco_mode_enabled;
 vcs_event_c<void> ev_eco_mode_disabled;
 vcs_event_c<const captured_frame_s&> ev_frame_processing_finished;
-vcs_event_c<const video_preset_s*> ev_video_preset_activated;
+vcs_event_c<const analog_video_preset_s*> ev_video_preset_activated;

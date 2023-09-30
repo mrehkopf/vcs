@@ -99,11 +99,6 @@ static bool initialize_all(void)
             ));
         });
 
-        ev_capture_signal_lost.listen([]
-        {
-            INFO(("No signal."));
-        });
-
         // The capture device has received a new video mode. We'll inspect the
         // mode to see if we think it's acceptable, then allow news of it to
         // propagate to the rest of VCS.
@@ -253,6 +248,7 @@ int main(int argc, char *argv[])
 #ifndef VCS_RELEASE_BUILD
     printf("NON-RELEASE BUILD\n");
 #endif
+    printf(":::::::::\n");
 
     DEBUG(("Parsing the command line."));
     if (!kcom_parse_command_line(argc, argv))

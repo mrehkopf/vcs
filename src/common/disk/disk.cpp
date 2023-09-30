@@ -26,7 +26,7 @@
 #include "filter/filter.h"
 #include "common/disk/disk.h"
 
-bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
+bool kdisk_save_video_presets(const std::vector<analog_video_preset_s*> &presets,
                               const std::string &filename)
 {
     if (!file_writer::video_presets::version_a::write(filename, presets))
@@ -45,7 +45,7 @@ bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
 }
 
 
-std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filename)
+std::vector<analog_video_preset_s*> kdisk_load_video_presets(const std::string &filename)
 {
     if (filename.empty())
     {
@@ -53,7 +53,7 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filenam
         return {};
     }
 
-    std::vector<video_preset_s*> presets;
+    std::vector<analog_video_preset_s*> presets;
 
     const std::string fileVersion = file_reader::file_version(filename);
     const std::string fileType = file_reader::file_type(filename);
@@ -72,11 +72,11 @@ std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filenam
         unsigned id = 0;
         for (const auto &params: videoModeParams)
         {
-            video_preset_s *const preset = new video_preset_s;
+            analog_video_preset_s *const preset = new analog_video_preset_s;
 
             preset->activatesWithResolution = true;
             preset->activationResolution = params.r;
-            preset->videoParameters = params;
+            preset->properties = params;
             preset->id = ++id;
 
             presets.push_back(preset);

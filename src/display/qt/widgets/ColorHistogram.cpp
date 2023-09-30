@@ -88,12 +88,7 @@ void ColorHistogram::redraw_graph(void)
         QPolygon p;
 
         // We assume a max bin height of 0 means the source image was null.
-        if (this->maxBinHeight <= 0)
-        {
-            // Fake a histogram where all pixels are black.
-            p << QPoint(0, maxHeight) << QPoint(0, 0) << QPoint(binWidth, maxHeight) << QPoint(maxWidth, maxHeight);
-        }
-        else
+        if (this->maxBinHeight > 0)
         {
             p << QPoint(0, maxHeight);
 

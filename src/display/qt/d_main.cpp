@@ -96,16 +96,6 @@ void kd_update_output_window_title(void)
     return;
 }
 
-void kd_update_output_window_size(void)
-{
-    if (WINDOW)
-    {
-        WINDOW->update_window_size();
-    }
-
-    return;
-}
-
 void kd_load_video_presets(const std::string &filename)
 {
     ASSERT_WINDOW_IS_NOT_NULL;

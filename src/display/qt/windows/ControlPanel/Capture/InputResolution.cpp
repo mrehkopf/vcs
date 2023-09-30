@@ -89,18 +89,12 @@ control_panel::capture::InputResolution::InputResolution(QWidget *parent) :
 
     ev_capture_signal_gained.listen([this]
     {
-        this->ui->frame_inputForceButtons->setEnabled(true);
-        this->ui->pushButton_applyCustomResolution->setEnabled(true);
-        this->ui->spinBox_customWidth->setEnabled(true);
-        this->ui->spinBox_customHeight->setEnabled(true);
+        this->ui->groupBox->setEnabled(true);
     });
 
     ev_capture_signal_lost.listen([this]
     {
-        this->ui->frame_inputForceButtons->setEnabled(false);
-        this->ui->pushButton_applyCustomResolution->setEnabled(false);
-        this->ui->spinBox_customWidth->setEnabled(false);
-        this->ui->spinBox_customHeight->setEnabled(false);
+        this->ui->groupBox->setEnabled(false);
     });
 
     return;

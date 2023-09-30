@@ -6,7 +6,7 @@
 #include "display/qt/widgets/DialogFragment.h"
 
 struct video_signal_properties_s;
-struct video_preset_s;
+struct analog_video_preset_s;
 
 namespace control_panel
 {
@@ -21,7 +21,7 @@ namespace control_panel
         ~VideoPresets();
 
         // Called to inform the dialog of a new source file for video presets.
-        void assign_presets(const std::vector<video_preset_s*> &presets);
+        void assign_presets(const std::vector<analog_video_preset_s*> &presets);
 
         // Attempts to load the presets stored in the given file. Returns true on
         // success; false otherwise.
@@ -34,7 +34,7 @@ namespace control_panel
         void preset_list_became_empty(void);
 
         // Emitted when the user makes changest
-        void preset_activation_rules_changed(const video_preset_s *const preset);
+        void preset_activation_rules_changed(const analog_video_preset_s *const preset);
 
         // Emitted when an item is added to an empty preset list.
         void preset_list_no_longer_empty(void);
@@ -51,13 +51,13 @@ namespace control_panel
 
         void update_preset_controls_with_current_preset_data(void);
 
-        QString make_preset_list_text(const video_preset_s *const preset);
+        QString make_preset_list_text(const analog_video_preset_s *const preset);
 
         void broadcast_current_preset_parameters(void);
 
         void resort_preset_list(void);
 
-        void update_active_preset_indicator(const video_preset_s *const currentPreset);
+        void update_active_preset_indicator(void);
 
         Ui::VideoPresets *ui;
     };

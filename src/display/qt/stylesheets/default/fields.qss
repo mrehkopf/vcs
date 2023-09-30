@@ -82,6 +82,13 @@ QCheckBox:disabled
     color: #909090;
 }
 
+QCheckBox::indicator:disabled
+{
+    background-color: transparent;
+    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-repeat: repeat-xy;
+}
+
 QCheckBox::indicator,
 QGroupBox::indicator
 {

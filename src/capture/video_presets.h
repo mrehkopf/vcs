@@ -15,7 +15,7 @@
 #include "common/vcs_event/vcs_event.h"
 #include "main.h"
 
-struct video_preset_s
+struct analog_video_preset_s
 {
     enum class refresh_rate_comparison_e
     {
@@ -25,7 +25,7 @@ struct video_preset_s
         ceiled,
     };
 
-    video_signal_properties_s videoParameters = {};
+    video_signal_properties_s properties = {};
 
     // Internal identifier for this particular video preset. Not user-facing. Used
     // to tell presets apart.
@@ -113,27 +113,27 @@ struct video_preset_s
 //
 // Warning: If you change the preset's activation conditions, you should call
 // kvideopreset_apply_current_active_preset() instead.
-extern vcs_event_c<const video_preset_s*> kc_ev_video_preset_params_changed;
+extern vcs_event_c<const analog_video_preset_s*> kc_ev_video_preset_params_changed;
 
-bool kvideopreset_is_preset_active(const video_preset_s *const preset);
+bool kvideopreset_is_preset_active(const analog_video_preset_s *const preset);
 
 subsystem_releaser_t kvideopreset_initialize(void);
 
 void kvideopreset_remove_all_presets(void);
 
-void kvideopreset_assign_presets(const std::vector<video_preset_s*> &presets);
+void kvideopreset_assign_presets(const std::vector<analog_video_preset_s*> &presets);
 
 void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString);
 
-const std::vector<video_preset_s*>& kvideopreset_all_presets(void);
+const std::vector<analog_video_preset_s*>& kvideopreset_all_presets(void);
 
 void kvideopreset_apply_current_active_preset(void);
 
-video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId);
+analog_video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId);
 
 // If 'duplicateDataSrc' is a non-null pointer to an existing video preset
 // object, its parameter values will be copied into the created preset.
-video_preset_s* kvideopreset_create_new_preset(const video_preset_s *const duplicateDataSrc = nullptr);
+analog_video_preset_s* kvideopreset_create_new_preset(const analog_video_preset_s *const duplicateDataSrc = nullptr);
 
 bool kvideopreset_remove_preset(const unsigned presetId);
 

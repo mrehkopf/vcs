@@ -157,7 +157,7 @@ void VideoPresetList::update_preset_item_label(const unsigned presetId)
     return;
 }
 
-video_preset_s *VideoPresetList::current_preset(void) const
+analog_video_preset_s *VideoPresetList::current_preset(void) const
 {
     if (this->count() <= 0)
     {
@@ -167,7 +167,7 @@ video_preset_s *VideoPresetList::current_preset(void) const
     return kvideopreset_get_preset_ptr(this->currentData().toUInt());
 }
 
-QString VideoPresetList::make_preset_item_label(const video_preset_s *const preset)
+QString VideoPresetList::make_preset_item_label(const analog_video_preset_s *const preset)
 {
     QStringList text;
 
@@ -184,7 +184,7 @@ QString VideoPresetList::make_preset_item_label(const video_preset_s *const pres
 
     if (preset->activatesWithRefreshRate)
     {
-        if (preset->refreshRateComparator == video_preset_s::refresh_rate_comparison_e::equals)
+        if (preset->refreshRateComparator == analog_video_preset_s::refresh_rate_comparison_e::equals)
         {
             text << QString("%1 Hz").arg(QString::number(preset->activationRefreshRate.value<double>(), 'f', 3));
         }

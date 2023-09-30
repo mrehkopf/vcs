@@ -14,7 +14,7 @@ namespace file_writer::video_presets
 {
     namespace version_a
     {
-        bool write(const std::string &filename, const std::vector<video_preset_s*> &presets);
+        bool write(const std::string &filename, const std::vector<analog_video_preset_s*> &presets);
     }
 }
 

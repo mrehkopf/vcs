@@ -218,34 +218,8 @@ void kd_load_filter_graph(const std::string &filename);
  * If your custom GUI implementation displays different state variables than
  * VCS's default GUI does, you may need to do custom polling of the relevant
  * state in order to be aware of changes to it.
- *
- * @see
- * kd_update_output_window_size()
  */
 void kd_update_output_window_title(void);
-
-/*!
- * Lets the GUI know that the size of output frames has changed. The GUI should
- * update the size of its output window accordingly.
- *
- * VCS expects the size of the output window to match the size of output
- * frames; although the GUI may choose not to honor this.
- *
- * The current size of output frames can be obtained via the scaler interface,
- * @ref src/scaler/scaler.h, by calling ks_output_resolution().
- *
- * The following sample Qt 5 code sizes the output window to match the size of
- * VCS's output frames (@a this is the output window's instance):
- *
- * @code
- * resolution_s r = ks_output_resolution();
- * this->setFixedSize(r.w, r.h);
- * @endcode
- *
- * @see
- * kd_update_output_window_title()
- */
-void kd_update_output_window_size(void);
 
 /*!
  * Asks the GUI to execute one spin of its event loop.

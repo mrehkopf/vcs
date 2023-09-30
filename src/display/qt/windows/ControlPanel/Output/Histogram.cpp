@@ -30,12 +30,19 @@ control_panel::output::Histogram::Histogram(QWidget *parent) :
         }
     });
 
+    ev_capture_signal_gained.listen([this]
+    {
+        this->ui->groupBox->setEnabled(true);
+    });
+
     ev_capture_signal_lost.listen([this]
     {
         if (this->isVisible())
         {
             this->ui->histogram->clear();
         }
+
+        this->ui->groupBox->setEnabled(false);
     });
 
     this->ui->histogram->refresh(ks_scaler_frame_buffer());

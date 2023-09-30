@@ -10,7 +10,7 @@
 #include "common/globals.h"
 
 bool file_writer::video_presets::version_a::write(const std::string &filename,
-                                                  const std::vector<video_preset_s*> &presets)
+                                                  const std::vector<analog_video_preset_s*> &presets)
 {
     file_streamer_c outFile(filename);
 
@@ -19,7 +19,7 @@ bool file_writer::video_presets::version_a::write(const std::string &filename,
 
     outFile << "presetCount," << presets.size() << "\n";
 
-    for (const video_preset_s *p: presets)
+    for (const analog_video_preset_s *p: presets)
     {
         // Write the metadata.
         {
@@ -34,10 +34,10 @@ bool file_writer::video_presets::version_a::write(const std::string &filename,
             outFile << "activatedByRefreshRate," << p->activatesWithRefreshRate << ",";
             switch (p->refreshRateComparator)
             {
-                case video_preset_s::refresh_rate_comparison_e::equals:  outFile << "{Equals}"; break;
-                case video_preset_s::refresh_rate_comparison_e::ceiled:  outFile << "{Ceiled}"; break;
-                case video_preset_s::refresh_rate_comparison_e::floored: outFile << "{Floored}"; break;
-                case video_preset_s::refresh_rate_comparison_e::rounded: outFile << "{Rounded}"; break;
+                case analog_video_preset_s::refresh_rate_comparison_e::equals:  outFile << "{Equals}"; break;
+                case analog_video_preset_s::refresh_rate_comparison_e::ceiled:  outFile << "{Ceiled}"; break;
+                case analog_video_preset_s::refresh_rate_comparison_e::floored: outFile << "{Floored}"; break;
+                case analog_video_preset_s::refresh_rate_comparison_e::rounded: outFile << "{Rounded}"; break;
                 default: k_assert(0, "Unhandled refresh rate comparator."); break;
             }
             outFile << "," << p->activationRefreshRate.value<double>() << "\n";
@@ -51,21 +51,21 @@ bool file_writer::video_presets::version_a::write(const std::string &filename,
             outFile << "videoParameterCount,13\n";
 
             // Video params.
-            outFile << "verticalPosition,"   << p->videoParameters.verticalPosition   << "\n"
-                    << "horizontalPosition," << p->videoParameters.horizontalPosition << "\n"
-                    << "horizontalScale,"    << p->videoParameters.horizontalSize    << "\n"
-                    << "phase,"              << p->videoParameters.phase              << "\n"
-                    << "blackLevel,"         << p->videoParameters.blackLevel         << "\n";
+            outFile << "verticalPosition,"   << p->properties.verticalPosition   << "\n"
+                    << "horizontalPosition," << p->properties.horizontalPosition << "\n"
+                    << "horizontalScale,"    << p->properties.horizontalSize    << "\n"
+                    << "phase,"              << p->properties.phase              << "\n"
+                    << "blackLevel,"         << p->properties.blackLevel         << "\n";
 
             // Color params.
-            outFile << "brightness,"      << p->videoParameters.brightness << "\n"
-                    << "contrast,"        << p->videoParameters.contrast   << "\n"
-                    << "redBrightness,"   << p->videoParameters.redBrightness     << "\n"
-                    << "redContrast,"     << p->videoParameters.redContrast       << "\n"
-                    << "greenBrightness," << p->videoParameters.greenBrightness   << "\n"
-                    << "greenContrast,"   << p->videoParameters.greenContrast     << "\n"
-                    << "blueBrightness,"  << p->videoParameters.blueBrightness    << "\n"
-                    << "blueContrast,"    << p->videoParameters.blueContrast      << "\n";
+            outFile << "brightness,"      << p->properties.brightness << "\n"
+                    << "contrast,"        << p->properties.contrast   << "\n"
+                    << "redBrightness,"   << p->properties.redBrightness     << "\n"
+                    << "redContrast,"     << p->properties.redContrast       << "\n"
+                    << "greenBrightness," << p->properties.greenBrightness   << "\n"
+                    << "greenContrast,"   << p->properties.greenContrast     << "\n"
+                    << "blueBrightness,"  << p->properties.blueBrightness    << "\n"
+                    << "blueContrast,"    << p->properties.blueContrast      << "\n";
         }
     }
 

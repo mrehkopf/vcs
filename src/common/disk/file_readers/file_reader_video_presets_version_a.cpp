@@ -10,7 +10,7 @@
 #include "common/disk/csv.h"
 
 bool file_reader::video_presets::version_a::read(const std::string &filename,
-                                                 std::vector<video_preset_s*> *const presets)
+                                                 std::vector<analog_video_preset_s*> *const presets)
 {
     // Bails out if the value (string) of the first cell on the current row doesn't match
     // the given one.
@@ -65,7 +65,7 @@ bool file_reader::video_presets::version_a::read(const std::string &filename,
 
         for (int i = 0; i < numPresets; i++)
         {
-            video_preset_s *const preset = new video_preset_s;
+            analog_video_preset_s *const preset = new analog_video_preset_s;
 
             preset->id = unsigned(i);
 
@@ -95,10 +95,10 @@ bool file_reader::video_presets::version_a::read(const std::string &filename,
                     preset->activationRefreshRate = rowData.at(row).at(3).toDouble();
 
                     const QString &comparator = rowData.at(row).at(2);
-                    if      (comparator == "Equals")  preset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
-                    else if (comparator == "Rounded") preset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::rounded;
-                    else if (comparator == "Floored") preset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::floored;
-                    else if (comparator == "Ceiled")  preset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::ceiled;
+                    if      (comparator == "Equals")  preset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::equals;
+                    else if (comparator == "Rounded") preset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::rounded;
+                    else if (comparator == "Floored") preset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::floored;
+                    else if (comparator == "Ceiled")  preset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::ceiled;
                     else
                     {
                         NBENE(("Unknown refresh rate comparator '%s'.", comparator.toStdString().c_str()));
@@ -137,55 +137,55 @@ bool file_reader::video_presets::version_a::read(const std::string &filename,
 
                 if (paramName == "verticalPosition")
                 {
-                    preset->videoParameters.verticalPosition = rowData.at(row).at(1).toInt();
+                    preset->properties.verticalPosition = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "horizontalPosition")
                 {
-                    preset->videoParameters.horizontalPosition = rowData.at(row).at(1).toInt();
+                    preset->properties.horizontalPosition = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "horizontalScale")
                 {
-                    preset->videoParameters.horizontalSize = rowData.at(row).at(1).toInt();
+                    preset->properties.horizontalSize = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "phase")
                 {
-                    preset->videoParameters.phase = rowData.at(row).at(1).toInt();
+                    preset->properties.phase = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "blackLevel")
                 {
-                    preset->videoParameters.blackLevel = rowData.at(row).at(1).toInt();
+                    preset->properties.blackLevel = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "brightness")
                 {
-                    preset->videoParameters.brightness = rowData.at(row).at(1).toInt();
+                    preset->properties.brightness = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "contrast")
                 {
-                    preset->videoParameters.contrast = rowData.at(row).at(1).toInt();
+                    preset->properties.contrast = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "redBrightness")
                 {
-                    preset->videoParameters.redBrightness = rowData.at(row).at(1).toInt();
+                    preset->properties.redBrightness = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "redContrast")
                 {
-                    preset->videoParameters.redContrast = rowData.at(row).at(1).toInt();
+                    preset->properties.redContrast = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "greenBrightness")
                 {
-                    preset->videoParameters.greenBrightness = rowData.at(row).at(1).toInt();
+                    preset->properties.greenBrightness = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "greenContrast")
                 {
-                    preset->videoParameters.greenContrast = rowData.at(row).at(1).toInt();
+                    preset->properties.greenContrast = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "blueBrightness")
                 {
-                    preset->videoParameters.blueBrightness = rowData.at(row).at(1).toInt();
+                    preset->properties.blueBrightness = rowData.at(row).at(1).toInt();
                 }
                 else if (paramName == "blueContrast")
                 {
-                    preset->videoParameters.blueContrast = rowData.at(row).at(1).toInt();
+                    preset->properties.blueContrast = rowData.at(row).at(1).toInt();
                 }
                 else
                 {

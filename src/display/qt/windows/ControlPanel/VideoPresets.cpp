@@ -84,7 +84,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         ui->parameterGrid_properties->add_scroller(PROP_LABEL_GREEN_CONTRAST);
         ui->parameterGrid_properties->add_scroller(PROP_LABEL_BLUE_CONTRAST);
 
-        this->update_active_preset_indicator(nullptr);
+        this->update_active_preset_indicator();
         this->update_property_control_ranges(video_signal_properties_s::from_capture_device_properties(": default"));
     }
 
@@ -175,7 +175,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             this->update_preset_controls_with_current_preset_data();
             this->lock_unsaved_changes_flag(false);
 
-            kvideopreset_apply_current_active_preset();
+            this->update_active_preset_indicator();
         });
 
         connect(ui->comboBox_presetList, &VideoPresetList::list_became_empty, this, [this]
@@ -188,7 +188,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             ui->parameterGrid_properties->setEnabled(false);
             ui->pushButton_deletePreset->setEnabled(false);
             ui->lineEdit_presetName->clear();
-            this->update_active_preset_indicator(nullptr);
+            this->update_active_preset_indicator();
         });
 
         connect(ui->comboBox_presetList, &VideoPresetList::list_became_populated, this, [this]
@@ -216,7 +216,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         connect(ui->pushButton_addNewPreset, &QPushButton::clicked, this, [this]
         {
             const bool duplicateCurrent = (QGuiApplication::keyboardModifiers() & Qt::AltModifier);
-            video_preset_s *const newPreset = kvideopreset_create_new_preset(duplicateCurrent? ui->comboBox_presetList->current_preset() : nullptr);
+            analog_video_preset_s *const newPreset = kvideopreset_create_new_preset(duplicateCurrent? ui->comboBox_presetList->current_preset() : nullptr);
 
             ui->comboBox_presetList->add_preset(newPreset->id);
             emit this->data_changed();
@@ -231,7 +231,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
                 selectedPreset->activationRefreshRate = value;
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
 
-                kvideopreset_apply_current_active_preset();
                 emit this->preset_activation_rules_changed(selectedPreset);
                 emit this->data_changed();
             }
@@ -246,7 +245,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
                 selectedPreset->activationResolution.w = std::min(MAX_CAPTURE_WIDTH, unsigned(value));
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
 
-                kvideopreset_apply_current_active_preset();
                 emit this->preset_activation_rules_changed(selectedPreset);
                 emit this->data_changed();
             }
@@ -261,7 +259,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
                 selectedPreset->activationResolution.h = std::min(MAX_CAPTURE_HEIGHT, unsigned(value));
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
 
-                kvideopreset_apply_current_active_preset();
                 emit this->preset_activation_rules_changed(selectedPreset);
                 emit this->data_changed();
             }
@@ -303,7 +300,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
                 emit this->data_changed();
             }
 
-            kvideopreset_apply_current_active_preset();
             emit this->preset_activation_rules_changed(selectedPreset);
         });
 
@@ -321,7 +317,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
                 emit this->data_changed();
             }
 
-            kvideopreset_apply_current_active_preset();
             emit this->preset_activation_rules_changed(selectedPreset);
         });
 
@@ -371,14 +366,13 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
             if (selectedPreset)
             {
-                if (text == "Exactly")        selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
-                else if (text == "Rounded") selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::rounded;
-                else if (text == "Floored") selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::floored;
-                else if (text == "Ceiled")  selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::ceiled;
+                if (text == "Exactly")        selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::equals;
+                else if (text == "Rounded") selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::rounded;
+                else if (text == "Floored") selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::floored;
+                else if (text == "Ceiled")  selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::ceiled;
 
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
 
-                kvideopreset_apply_current_active_preset();
                 emit this->preset_activation_rules_changed(selectedPreset);
                 emit this->data_changed();
             }
@@ -394,9 +388,9 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
     // Register app event listeners.
     {
-        ev_video_preset_activated.listen([this](const video_preset_s *preset)
+        ev_video_preset_activated.listen([this]
         {
-            this->update_active_preset_indicator(preset);
+            this->update_active_preset_indicator();
         });
     }
 
@@ -464,7 +458,7 @@ bool control_panel::VideoPresets::load_presets_from_file(const QString &filename
     return true;
 }
 
-void control_panel::VideoPresets::update_active_preset_indicator(const video_preset_s *const activePreset)
+void control_panel::VideoPresets::update_active_preset_indicator(void)
 {
     const auto *selectedPreset = ui->comboBox_presetList->current_preset();
 
@@ -473,7 +467,7 @@ void control_panel::VideoPresets::update_active_preset_indicator(const video_pre
         ui->label_isPresetCurrentlyActive->setProperty("presetStatus", "disabled");
         ui->label_isPresetCurrentlyActive->setToolTip("");
     }
-    else if (selectedPreset == activePreset)
+    else if (kvideopreset_is_preset_active(selectedPreset))
     {
         ui->label_isPresetCurrentlyActive->setProperty("presetStatus", "active");
         ui->label_isPresetCurrentlyActive->setToolTip("This preset is active");
@@ -489,7 +483,7 @@ void control_panel::VideoPresets::update_active_preset_indicator(const video_pre
     return;
 }
 
-void control_panel::VideoPresets::assign_presets(const std::vector<video_preset_s*> &presets)
+void control_panel::VideoPresets::assign_presets(const std::vector<analog_video_preset_s*> &presets)
 {
     ui->comboBox_presetList->clear();
 
@@ -516,19 +510,19 @@ void control_panel::VideoPresets::broadcast_current_preset_parameters(void)
         return;
     }
 
-    preset->videoParameters.brightness         = ui->parameterGrid_properties->value(PROP_LABEL_BRIGHTNESS);
-    preset->videoParameters.contrast           = ui->parameterGrid_properties->value(PROP_LABEL_CONTRAST);
-    preset->videoParameters.redBrightness      = ui->parameterGrid_properties->value(PROP_LABEL_RED_BRIGHTNESS);
-    preset->videoParameters.redContrast        = ui->parameterGrid_properties->value(PROP_LABEL_RED_CONTRAST);
-    preset->videoParameters.greenBrightness    = ui->parameterGrid_properties->value(PROP_LABEL_GREEN_BRIGHTNESS);
-    preset->videoParameters.greenContrast      = ui->parameterGrid_properties->value(PROP_LABEL_GREEN_CONTRAST);
-    preset->videoParameters.blueBrightness     = ui->parameterGrid_properties->value(PROP_LABEL_BLUE_BRIGHTNESS);
-    preset->videoParameters.blueContrast       = ui->parameterGrid_properties->value(PROP_LABEL_BLUE_CONTRAST);
-    preset->videoParameters.blackLevel         = ui->parameterGrid_properties->value(PROP_LABEL_BLACK_LEVEL);
-    preset->videoParameters.horizontalPosition = ui->parameterGrid_properties->value(PROP_LABEL_HORIZONTAL_POSITION);
-    preset->videoParameters.horizontalSize     = ui->parameterGrid_properties->value(PROP_LABEL_HORIZONTAL_SIZE);
-    preset->videoParameters.phase              = ui->parameterGrid_properties->value(PROP_LABEL_PHASE);
-    preset->videoParameters.verticalPosition   = ui->parameterGrid_properties->value(PROP_LABEL_VERTICAL_POSITION);
+    preset->properties.brightness         = ui->parameterGrid_properties->value(PROP_LABEL_BRIGHTNESS);
+    preset->properties.contrast           = ui->parameterGrid_properties->value(PROP_LABEL_CONTRAST);
+    preset->properties.redBrightness      = ui->parameterGrid_properties->value(PROP_LABEL_RED_BRIGHTNESS);
+    preset->properties.redContrast        = ui->parameterGrid_properties->value(PROP_LABEL_RED_CONTRAST);
+    preset->properties.greenBrightness    = ui->parameterGrid_properties->value(PROP_LABEL_GREEN_BRIGHTNESS);
+    preset->properties.greenContrast      = ui->parameterGrid_properties->value(PROP_LABEL_GREEN_CONTRAST);
+    preset->properties.blueBrightness     = ui->parameterGrid_properties->value(PROP_LABEL_BLUE_BRIGHTNESS);
+    preset->properties.blueContrast       = ui->parameterGrid_properties->value(PROP_LABEL_BLUE_CONTRAST);
+    preset->properties.blackLevel         = ui->parameterGrid_properties->value(PROP_LABEL_BLACK_LEVEL);
+    preset->properties.horizontalPosition = ui->parameterGrid_properties->value(PROP_LABEL_HORIZONTAL_POSITION);
+    preset->properties.horizontalSize     = ui->parameterGrid_properties->value(PROP_LABEL_HORIZONTAL_SIZE);
+    preset->properties.phase              = ui->parameterGrid_properties->value(PROP_LABEL_PHASE);
+    preset->properties.verticalPosition   = ui->parameterGrid_properties->value(PROP_LABEL_VERTICAL_POSITION);
 
     kc_ev_video_preset_params_changed.fire(preset);
 
@@ -631,10 +625,10 @@ void control_panel::VideoPresets::update_preset_controls_with_current_preset_dat
     /// TODO: Check to make sure the correct combo box indices are being set.
     switch (preset->refreshRateComparator)
     {
-        case video_preset_s::refresh_rate_comparison_e::ceiled:  ui->comboBox_refreshRateComparison->setCurrentIndex(3); break;
-        case video_preset_s::refresh_rate_comparison_e::floored: ui->comboBox_refreshRateComparison->setCurrentIndex(2); break;
-        case video_preset_s::refresh_rate_comparison_e::rounded: ui->comboBox_refreshRateComparison->setCurrentIndex(1); break;
-        case video_preset_s::refresh_rate_comparison_e::equals:  ui->comboBox_refreshRateComparison->setCurrentIndex(0); break;
+        case analog_video_preset_s::refresh_rate_comparison_e::ceiled:  ui->comboBox_refreshRateComparison->setCurrentIndex(3); break;
+        case analog_video_preset_s::refresh_rate_comparison_e::floored: ui->comboBox_refreshRateComparison->setCurrentIndex(2); break;
+        case analog_video_preset_s::refresh_rate_comparison_e::rounded: ui->comboBox_refreshRateComparison->setCurrentIndex(1); break;
+        case analog_video_preset_s::refresh_rate_comparison_e::equals:  ui->comboBox_refreshRateComparison->setCurrentIndex(0); break;
         default: k_assert(0, "Unknown comparator.");
     }
 
@@ -644,7 +638,7 @@ void control_panel::VideoPresets::update_preset_controls_with_current_preset_dat
     {
         CONTROLS_LIVE_UPDATE = false;
 
-        const auto &currentParams = preset->videoParameters;
+        const auto &currentParams = preset->properties;
         this->update_property_control_ranges(currentParams);
 
         ui->parameterGrid_properties->set_value(PROP_LABEL_HORIZONTAL_SIZE, currentParams.horizontalSize);

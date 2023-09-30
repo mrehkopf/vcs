@@ -29,7 +29,7 @@ class BaseFilterGraphNode;
 
 struct filter_graph_option_s;
 struct video_signal_properties_s;
-struct video_preset_s;
+struct analog_video_preset_s;
 
 /*!
  * Saves the given video presets into a file named @p filename.
@@ -39,7 +39,7 @@ struct video_preset_s;
  * @see
  * kdisk_load_video_presets()
  */
-bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
+bool kdisk_save_video_presets(const std::vector<analog_video_preset_s*> &presets,
                               const std::string &filename);
 
 /*!
@@ -61,7 +61,7 @@ bool kdisk_save_filter_graph(const std::vector<BaseFilterGraphNode*> &nodes,
  * @see
  * kdisk_save_video_presets()
  */
-std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filename);
+std::vector<analog_video_preset_s*> kdisk_load_video_presets(const std::string &filename);
 
 /*!
  * Loads the filter graph nodes stored in the file named @p filename.
