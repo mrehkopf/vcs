@@ -396,9 +396,9 @@ void OutputWindow::redraw(void)
 {
     if (OGL_SURFACE != nullptr)
     {
-        OGL_SURFACE->repaint();
+        OGL_SURFACE->update();
     }
-    else this->repaint();
+    else this->update();
 
     return;
 }
@@ -575,46 +575,47 @@ QImage OutputWindow::overlay_image(void)
 void OutputWindow::paintEvent(QPaintEvent *)
 {
     // If OpenGL is enabled, its own paintGL() should be getting called instead of paintEvent().
-    if (OGL_SURFACE != nullptr) return;
+    if (OGL_SURFACE)
+    {
+        return;
+    }
 
     // Convert the output buffer into a QImage frame.
-    const QImage frameImage = ([]
+    QImage frameImage;
     {
-       const image_s image = ks_scaler_frame_buffer();
-       k_assert((image.bitsPerPixel == 32), "Expected output image data to be 32-bit.");
+        const image_s image = ks_scaler_frame_buffer();
+        k_assert((image.bitsPerPixel == 32), "Expected output image data to be 32-bit.");
 
-       if (!image.pixels)
-       {
-           DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
-           return QImage();
-       }
-       else
-       {
-           return QImage(image.pixels, image.resolution.w, image.resolution.h, QImage::Format_RGB32);
-       }
-    })();
+        if (!image.pixels)
+        {
+            DEBUG(("Requested the scaler output as a QImage while the scaler's output buffer was uninitialized."));
+            frameImage = QImage();
+        }
+        else
+        {
+            frameImage = QImage(image.pixels, image.resolution.w, image.resolution.h, QImage::Format_RGB32);
+        }
+    }
 
     QPainter painter(this);
 
-    // Draw the frame.
     if (!frameImage.isNull())
     {
         painter.drawImage(0, 0, frameImage);
     }
 
-    // Draw the overlay.
     const QImage overlayImg = overlay_image();
     if (!overlayImg.isNull())
     {
         painter.drawImage(0, 0, overlayImg);
     }
 
-    // Show a magnifying glass effect which blows up part of the captured image.
-    if (kc_has_signal() &&
+    if (
+        kc_has_signal() &&
         this->isActiveWindow() &&
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
-        (QGuiApplication::mouseButtons() & Qt::MidButton))
-    {
+        (QGuiApplication::mouseButtons() & Qt::MidButton)
+    ){
         this->magnifyingGlass->magnify(frameImage, this->mapFromGlobal(QCursor::pos()));
     }
     else
@@ -642,7 +643,6 @@ void OutputWindow::update_window_title(void)
     {
         const auto inRes = resolution_s::from_capture_device_properties();
         const resolution_s outRes = ks_output_resolution();
-        const auto refreshRate = refresh_rate_s::from_capture_device_properties();
 
         if (!this->windowTitleOverride.isEmpty())
         {
@@ -686,11 +686,16 @@ void OutputWindow::update_gui_state(void)
 void OutputWindow::update_window_size(void)
 {
     const resolution_s r = ks_output_resolution();
+    const bool isNewSize = (r != resolution_s{.w = unsigned(this->width()), .h = unsigned(this->height())});
 
     this->setFixedSize(r.w, r.h);
     this->control_panel()->output()->overlay()->set_overlay_max_width(r.w);
 
-    update_window_title();
+    if (isNewSize && kc_has_signal())
+    {
+        ks_scale_frame(kc_frame_buffer());
+        update_window_title();
+    }
 
     return;
 }

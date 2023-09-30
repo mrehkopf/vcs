@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 2018 Tarpeeksi Hyvae Soft /
  * VCS filter
  *
@@ -92,7 +92,7 @@ abstract_filter_c* kf_apply_matching_filter_chain(image_s *const dstImage)
     std::pair<const std::vector<abstract_filter_c*>*, unsigned> openMatch = {nullptr, 0};
     const resolution_s outputRes = ks_output_resolution();
 
-    static const auto apply_chain = [dstImage, &outputRes](const std::vector<abstract_filter_c*> &chain, const unsigned idx)->abstract_filter_c*
+    const auto apply_chain = [dstImage](const std::vector<abstract_filter_c*> &chain, const unsigned idx)->abstract_filter_c*
     {
         // The gate filters are expected to be #first and #last, while the actual
         // applicable filters are the ones in-between.

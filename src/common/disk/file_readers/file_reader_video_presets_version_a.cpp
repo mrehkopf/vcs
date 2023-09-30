@@ -14,19 +14,20 @@ bool file_reader::video_presets::version_a::read(const std::string &filename,
 {
     // Bails out if the value (string) of the first cell on the current row doesn't match
     // the given one.
-    #define FAIL_IF_FIRST_CELL_IS_NOT(string) if ((int)row >= rowData.length())\
-                                              {\
-                                                  NBENE(("Error while loading the video presets file: expected '%s' on line "\
-                                                         "#%d but found the data out of range.", string, (row+1)));\
-                                                  goto fail;\
-                                              }\
-                                              else if (rowData.at(row).at(0) != string)\
-                                              {\
-                                                  NBENE(("Error while loading the video presets file: expected '%s' on line "\
-                                                         "#%d but found '%s' instead.",\
-                                                         string, (row+1), rowData.at(row).at(0).toStdString().c_str()));\
-                                                  goto fail;\
-                                              }
+    #define FAIL_IF_FIRST_CELL_IS_NOT(string) \
+        if ((int)row >= rowData.length())\
+        {\
+            NBENE(("Error while loading the video presets file: expected '%s' on line "\
+                   "#%d but found the data out of range.", string, (row+1)));\
+            goto fail;\
+        }\
+        else if (rowData.at(row).at(0) != string)\
+        {\
+            NBENE(("Error while loading the video presets file: expected '%s' on line "\
+                   "#%d but found '%s' instead.",\
+            string, (row+1), rowData.at(row).at(0).toStdString().c_str()));\
+            goto fail;\
+        }
 
     QList<QStringList> rowData = csv_parse_c(QString::fromStdString(filename)).contents();
 

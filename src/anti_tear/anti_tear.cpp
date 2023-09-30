@@ -26,8 +26,8 @@ static anti_tearer_c ANTI_TEARER;
 image_s kat_anti_tear(const image_s &image)
 {
     return {
-        (ANTI_TEARING_ENABLED? ANTI_TEARER.process(image.pixels, image.resolution) : image.pixels),
-        image.resolution
+        .pixels = (ANTI_TEARING_ENABLED? ANTI_TEARER.process(image.pixels, image.resolution) : image.pixels),
+        .resolution = image.resolution
     };
 }
 
