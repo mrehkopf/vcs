@@ -8,6 +8,7 @@
 #include <cmath>
 #include <QPixmap>
 #include <QPainter>
+#include <QtConcurrent/QtConcurrent>
 #include "display/qt/widgets/ColorHistogram.h"
 #include "common/assert.h"
 
@@ -16,47 +17,72 @@ ColorHistogram::ColorHistogram(QWidget *parent) : QWidget(parent)
     this->update_pixmap_size();
     this->clear();
 
-    return;
-}
-
-void ColorHistogram::refresh(const image_s &image, const ColorHistogram::channels channels)
-{
-    k_assert_optional((image.bytes_per_pixel() == 4), "Unsupported color depth.");
-
-    this->redBins.fill(0);
-    this->greenBins.fill(0);
-    this->blueBins.fill(0);
-
-    for (unsigned i = 0; i < image.byte_size(); i += image.bytes_per_pixel())
+    connect(&this->graphingThread, &QFutureWatcher<void>::finished, this, [this]
     {
-        this->blueBins[image.pixels[i+0]]++;
-        this->greenBins[image.pixels[i+1]]++;
-        this->redBins[image.pixels[i+2]]++;
-    }
-
-    this->channelsToShow = channels;
-    this->maxBinHeight = std::max({
-        *std::max_element(this->redBins.begin(), this->redBins.end()),
-        *std::max_element(this->greenBins.begin(), this->greenBins.end()),
-        *std::max_element(this->blueBins.begin(), this->blueBins.end()),
+        this->update();
     });
 
-    this->redraw_pixmap();
-    this->update();
+    return;
+}
+
+ColorHistogram::~ColorHistogram()
+{
+    this->graphingThread.waitForFinished();
 
     return;
 }
 
-void ColorHistogram::redraw_pixmap(void)
+void ColorHistogram::refresh(const image_s &image)
 {
-    this->histogram.fill(Qt::transparent);
-    QPainter painter(&this->histogram);
+    static uint8_t *const scratchBuffer = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
 
-    const double binWidth = (this->histogram.width() / double(numBins));
+    k_assert_optional((image.bytes_per_pixel() == 4), "Unsupported color depth.");
 
-    const auto draw_bins = [&painter, binWidth, this](const std::array<unsigned, numBins> &bins, const QColor color)->void
+    if (!this->graphingThread.isFinished())
     {
-        const int maxHeight = (this->histogram.height() - 1);
+        return;
+    }
+
+    std::memcpy(scratchBuffer, image.pixels, image.byte_size());
+    const unsigned imageDataLen = image.byte_size();
+    const unsigned imageBytesPerPixel = image.bytes_per_pixel();
+
+    graphingThread.setFuture(QtConcurrent::run([this, imageDataLen, imageBytesPerPixel]{
+        this->redBins.fill(0);
+        this->greenBins.fill(0);
+        this->blueBins.fill(0);
+
+        for (unsigned i = 0; i < imageDataLen; i += imageBytesPerPixel)
+        {
+            this->blueBins[scratchBuffer[i+0]]++;
+            this->greenBins[scratchBuffer[i+1]]++;
+            this->redBins[scratchBuffer[i+2]]++;
+        }
+
+        this->maxBinHeight = std::max({
+            *std::max_element(this->redBins.begin(), this->redBins.end()),
+            *std::max_element(this->greenBins.begin(), this->greenBins.end()),
+            *std::max_element(this->blueBins.begin(), this->blueBins.end()),
+        });
+
+        this->redraw_graph();
+    }));
+
+    return;
+}
+
+void ColorHistogram::redraw_graph(void)
+{
+    QPixmap &histogram = *this->backBuffer;
+
+    histogram.fill(Qt::transparent);
+    QPainter painter(&histogram);
+
+    const double binWidth = (histogram.width() / double(numBins));
+
+    const auto draw_bins = [&painter, binWidth, &histogram, this](const std::array<unsigned, numBins> &bins, const QColor color)->void
+    {
+        const int maxHeight = (histogram.height() - 1);
         const int maxWidth = ((numBins - 1) * binWidth);
 
         QPolygon p;
@@ -85,32 +111,27 @@ void ColorHistogram::redraw_pixmap(void)
         painter.drawPolygon(p);
     };
 
+    draw_bins(this->blueBins, "#157efd");
+    draw_bins(this->greenBins, "#53d76a");
+    draw_bins(this->redBins, "#fa3244");
 
-    if (this->channelsToShow & ColorHistogram::channels::blue)
-    {
-        draw_bins(this->blueBins, "#157efd");
-    }
-
-    if (this->channelsToShow & ColorHistogram::channels::green)
-    {
-        draw_bins(this->greenBins, "#53d76a");
-    }
-
-    if (this->channelsToShow & ColorHistogram::channels::red)
-    {
-        draw_bins(this->redBins, "#fa3244");
-    }
+    std::swap(this->frontBuffer, this->backBuffer);
 
     return;
 }
 
 void ColorHistogram::clear(void)
 {
+    graphingThread.waitForFinished();
+
     this->redBins.fill(0);
     this->greenBins.fill(0);
     this->blueBins.fill(0);
 
-    this->histogram.fill(Qt::transparent);
+    backBuffer->fill(Qt::transparent);
+    std::swap(this->frontBuffer, this->backBuffer);
+
+    this->update();
 
     return;
 }
@@ -118,19 +139,26 @@ void ColorHistogram::clear(void)
 void ColorHistogram::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    painter.drawPixmap(0, 0, this->histogram);
+    painter.drawPixmap(0, 0, *this->frontBuffer);
 
     return;
 }
 
 void ColorHistogram::update_pixmap_size(void)
 {
-    this->histogram = QPixmap(
+    graphingThread.waitForFinished();
+
+    *frontBuffer = QPixmap(
         std::max(1, this->width()),
         std::max(1, this->height())
     );
 
-    this->redraw_pixmap();
+    *backBuffer = QPixmap(
+        std::max(1, this->width()),
+        std::max(1, this->height())
+    );
+
+    this->redraw_graph();
 
     return;
 }
