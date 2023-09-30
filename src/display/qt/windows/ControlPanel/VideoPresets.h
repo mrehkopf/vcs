@@ -57,7 +57,7 @@ namespace control_panel
 
         void resort_preset_list(void);
 
-        void update_active_preset_indicator(void);
+        void update_active_preset_indicator(const video_preset_s *const currentPreset);
 
         Ui::VideoPresets *ui;
     };

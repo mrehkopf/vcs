@@ -41,6 +41,7 @@
 #include <list>
 
 struct captured_frame_s;
+struct video_preset_s;
 struct video_mode_s;
 struct resolution_s;
 struct image_s;
@@ -345,5 +346,6 @@ extern vcs_event_c<void> ev_custom_output_scaler_disabled;
 extern vcs_event_c<void> ev_eco_mode_enabled;
 extern vcs_event_c<void> ev_eco_mode_disabled;
 extern vcs_event_c<const captured_frame_s&> ev_frame_processing_finished;
+extern vcs_event_c<const video_preset_s*> ev_video_preset_activated;
 
 #endif

@@ -84,7 +84,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         ui->parameterGrid_properties->add_scroller(PROP_LABEL_GREEN_CONTRAST);
         ui->parameterGrid_properties->add_scroller(PROP_LABEL_BLUE_CONTRAST);
 
-        this->update_active_preset_indicator();
+        this->update_active_preset_indicator(nullptr);
         this->update_property_control_ranges(video_signal_properties_s::from_capture_device_properties(": default"));
     }
 
@@ -159,11 +159,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             );
         });
 
-        connect(this, &VideoPresets::preset_activation_rules_changed, this, [this]
-        {
-            this->update_active_preset_indicator();
-        });
-
         connect(this, &DialogFragment::data_filename_changed, this, [this](const QString &newFilename)
         {
             kpers_set_value(INI_GROUP_VIDEO_PRESETS, "SourceFile", newFilename);
@@ -178,7 +173,6 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         {
             this->lock_unsaved_changes_flag(true);
             this->update_preset_controls_with_current_preset_data();
-            this->update_active_preset_indicator();
             this->lock_unsaved_changes_flag(false);
 
             kvideopreset_apply_current_active_preset();
@@ -194,7 +188,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             ui->parameterGrid_properties->setEnabled(false);
             ui->pushButton_deletePreset->setEnabled(false);
             ui->lineEdit_presetName->clear();
-            this->update_active_preset_indicator();
+            this->update_active_preset_indicator(nullptr);
         });
 
         connect(ui->comboBox_presetList, &VideoPresetList::list_became_populated, this, [this]
@@ -400,14 +394,9 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
     // Register app event listeners.
     {
-        ev_new_video_mode.listen([this]
+        ev_video_preset_activated.listen([this](const video_preset_s *preset)
         {
-            this->update_active_preset_indicator();
-        });
-
-        ev_capture_signal_lost.listen([this]
-        {
-            this->update_active_preset_indicator();
+            this->update_active_preset_indicator(preset);
         });
     }
 
@@ -475,7 +464,7 @@ bool control_panel::VideoPresets::load_presets_from_file(const QString &filename
     return true;
 }
 
-void control_panel::VideoPresets::update_active_preset_indicator(void)
+void control_panel::VideoPresets::update_active_preset_indicator(const video_preset_s *const activePreset)
 {
     const auto *selectedPreset = ui->comboBox_presetList->current_preset();
 
@@ -484,7 +473,7 @@ void control_panel::VideoPresets::update_active_preset_indicator(void)
         ui->label_isPresetCurrentlyActive->setProperty("presetStatus", "disabled");
         ui->label_isPresetCurrentlyActive->setToolTip("");
     }
-    else if (selectedPreset && kvideopreset_is_preset_active(selectedPreset))
+    else if (selectedPreset == activePreset)
     {
         ui->label_isPresetCurrentlyActive->setProperty("presetStatus", "active");
         ui->label_isPresetCurrentlyActive->setToolTip("This preset is active");

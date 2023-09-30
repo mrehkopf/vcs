@@ -114,6 +114,15 @@ struct image_s
         return (this->resolution.w * this->resolution.h * (bitsPerPixel / 8));
     }
 
+    bool is_valid(void) const
+    {
+        return (
+            this->pixels &&
+            this->resolution.w &&
+            this->resolution.h
+        );
+    }
+
     void operator=(const image_s &other)
     {
         assert((this->resolution == other.resolution) && "Attempting to copy images with mismatching resolutions.");

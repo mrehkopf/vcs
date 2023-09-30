@@ -17,6 +17,8 @@ static std::vector<video_preset_s*> PRESETS;
 // Incremented for each new preset added, and used as the id for that preset.
 static unsigned RUNNING_PRESET_ID = 0;
 
+static const video_preset_s *MOST_RECENT_ACTIVE_PRESET = nullptr;
+
 static video_preset_s* strongest_activating_preset(void)
 {
     if (!kc_has_signal())
@@ -73,6 +75,11 @@ subsystem_releaser_t kvideopreset_initialize(void)
                 video_signal_properties_s::to_capture_device_properties(preset->videoParameters);
             }
         });
+
+        ev_video_preset_activated.listen([](const video_preset_s *preset)
+        {
+            MOST_RECENT_ACTIVE_PRESET = preset;
+        });
     }
 
     return []{};
@@ -82,14 +89,7 @@ bool kvideopreset_is_preset_active(const video_preset_s *const preset)
 {
     k_assert(preset, "Expected a non-null preset.");
 
-    const auto *activePreset = strongest_activating_preset();
-
-    if (!activePreset)
-    {
-        return false;
-    }
-
-    return (preset->id == activePreset->id);
+    return (preset == MOST_RECENT_ACTIVE_PRESET);
 }
 
 bool kvideopreset_remove_preset(const unsigned presetId)
@@ -104,6 +104,11 @@ bool kvideopreset_remove_preset(const unsigned presetId)
     delete (*targetPreset);
     PRESETS.erase(targetPreset);
 
+    if ((*targetPreset) == MOST_RECENT_ACTIVE_PRESET)
+    {
+        MOST_RECENT_ACTIVE_PRESET = nullptr;
+    }
+
     return true;
 }
 
@@ -116,6 +121,7 @@ void kvideopreset_remove_all_presets(void)
 
     PRESETS.clear();
     RUNNING_PRESET_ID = 0;
+    MOST_RECENT_ACTIVE_PRESET = nullptr;
 
     return;
 }
@@ -137,6 +143,8 @@ void kvideopreset_apply_current_active_preset(void)
     {
         video_signal_properties_s::to_capture_device_properties(video_signal_properties_s::from_capture_device_properties(": default"));
     }
+
+    ev_video_preset_activated.fire(activePreset);
 
     return;
 }
@@ -171,6 +179,7 @@ void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
         if (preset->activates_with_shortcut(shortcutString))
         {
             video_signal_properties_s::to_capture_device_properties(preset->videoParameters);
+            ev_video_preset_activated.fire(preset);
             return;
         }
     }
