@@ -3,12 +3,6 @@
 #DEFINES += VCS_RELEASE_BUILD
 
 linux {
-    # Select one, depending on whether you're aiming to have VCS run on X11 or Wayland.
-    # Some of VCS's functionality may be available on one but not the other.
-    DEFINES += \
-        VCS_FOR_X11
-        #VCS_FOR_WAYLAND
-
     # Select one, depending on which capture backend you want the build to support.
     DEFINES += \
         #CAPTURE_BACKEND_VIRTUAL
@@ -31,13 +25,6 @@ linux {
 
     contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
         LIBS += -lopencv_imgcodecs
-    }
-
-    contains(DEFINES, VCS_FOR_X11) {
-        SOURCES += src/display/prevent_screensaver_x11.cpp
-        LIBS += -lX11 -lXext
-    } else {
-        SOURCES += src/display/prevent_screensaver_null.cpp
     }
 }
 

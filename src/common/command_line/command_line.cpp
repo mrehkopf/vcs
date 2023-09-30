@@ -21,9 +21,6 @@ unsigned INPUT_CHANNEL_IDX = 0;
 // How many frames the capture card should drop between captures.
 unsigned FRAME_SKIP = 0;
 
-// Whether VCS should attempt to prevent the screensaver from activating.
-bool PREVENT_SCREENSAVER = true;
-
 // Name of (and path to) the capture parameter file on disk.
 static std::string VIDEO_PRESETS_FILE_NAME = "";
 
@@ -43,11 +40,6 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
     {
         switch (c)
         {
-            case 's':
-            {
-                PREVENT_SCREENSAVER = false;
-                break;
-            }
             case 'i':
             {
                 INPUT_CHANNEL_IDX = strtol(optarg, NULL, 10);
@@ -102,11 +94,6 @@ void kcom_override_video_presets_file_name(const std::string newFilename)
     VIDEO_PRESETS_FILE_NAME = newFilename;
 
     return;
-}
-
-bool kcom_prevent_screensaver(void)
-{
-    return PREVENT_SCREENSAVER;
 }
 
 const std::string& kcom_filter_graph_file_name(void)

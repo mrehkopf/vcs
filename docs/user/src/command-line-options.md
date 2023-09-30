@@ -24,11 +24,5 @@
                 Load a custom filter graph from the given file on start-up. Filter graph files typically have the .vcs-filter-graph suffix.
             </td>
         </tr>
-        <tr>
-            <td>-s</td>
-            <td>
-                Don't prevent the screensaver from activating while VCS is running.
-            </td>
-        </tr>
     </table>
 </dokki-table>
