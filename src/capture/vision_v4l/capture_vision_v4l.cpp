@@ -60,7 +60,7 @@ static std::unordered_map<std::string, double> DEVICE_PROPERTIES = {
     {"supports resolution switching: ui", true},
 };
 
-static bool force_capture_resolution(const resolution_s r)
+static bool set_capture_resolution(const resolution_s r)
 {
     k_assert(INPUT_CHANNEL, "Attempting to set the capture resolution on a null input channel.");
     k_assert(FORCE_CUSTOM_RESOLUTION, "Attempting to force the capture resolution without it having been requested.");
@@ -69,7 +69,7 @@ static bool force_capture_resolution(const resolution_s r)
 
     if (!kc_has_signal())
     {
-        NBENE(("Cannot set the capture resolution while there is no signal."));
+        DEBUG(("Was asked to set the capture resolution while there is no signal. Ignoring this."));
         return false;
     }
 
@@ -242,7 +242,7 @@ capture_event_e kc_process_next_capture_event(void)
     }
     else if (FORCE_CUSTOM_RESOLUTION)
     {
-        force_capture_resolution(resolution_s{
+        set_capture_resolution(resolution_s{
             .w = unsigned(kc_device_property("width")),
             .h = unsigned(kc_device_property("height"))
         });
@@ -250,10 +250,6 @@ capture_event_e kc_process_next_capture_event(void)
     }
     else if (INPUT_CHANNEL->pop_capture_event(capture_event_e::new_video_mode))
     {
-        kc_set_device_property("width", INPUT_CHANNEL->captureStatus.resolution.w);
-        kc_set_device_property("height", INPUT_CHANNEL->captureStatus.resolution.h);
-        kc_set_device_property("refresh rate", INPUT_CHANNEL->captureStatus.refreshRate.value<double>());
-
         // Re-create the input channel for the new video mode.
         kc_set_device_property("channel", kc_device_property("channel"));
 
@@ -413,6 +409,12 @@ void kc_initialize_device(void)
         {
             k_assert(INPUT_CHANNEL, "Attempting to set input channel parameters on a null channel.");
             INPUT_CHANNEL->captureStatus.numFramesProcessed++;
+        });
+
+        ev_new_video_mode.listen([](const video_mode_s &mode)
+        {
+            resolution_s::to_capture_device_properties(mode.resolution);
+            refresh_rate_s::to_capture_device_properties(mode.refreshRate);
         });
     }
 

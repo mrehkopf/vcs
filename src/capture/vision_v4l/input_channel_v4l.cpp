@@ -22,7 +22,7 @@
 // We'll persist the resolution and refresh rate, so that when a new video mode
 // is encountered, the code will first save the new mode values and then close
 // the old input channel, with the new input channel adopting the persisted values.
-static resolution_s LATEST_RESOLUTION = {.w = 640, .h = 480};
+static resolution_s LATEST_RESOLUTION = {.w = 0, .h = 0};
 static refresh_rate_s LATEST_REFRESH_RATE = 0;
 
 input_channel_v4l_c::input_channel_v4l_c(
@@ -134,7 +134,7 @@ bool input_channel_v4l_c::capture_thread__has_signal(void)
 
         if (hasStatusChanged)
         {
-            SCOPE_LOCK_CAPTURE_MUTEX;
+            LOCK_CAPTURE_MUTEX_IN_SCOPE;
             this->push_capture_event(hasNoSignal? capture_event_e::signal_lost : capture_event_e::signal_gained);
         }
     }
@@ -151,7 +151,7 @@ bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
     {
         if (!input_channel_v4l_c::is_format_of_valid_signal(&format))
         {
-            SCOPE_LOCK_CAPTURE_MUTEX;
+            LOCK_CAPTURE_MUTEX_IN_SCOPE;
 
             this->captureStatus.invalidSignal = true;
             this->push_capture_event(capture_event_e::invalid_signal);
@@ -180,7 +180,7 @@ bool input_channel_v4l_c::capture_thread__has_source_mode_changed(void)
     // Failed to query the video format.
     else
     {
-        SCOPE_LOCK_CAPTURE_MUTEX;
+        LOCK_CAPTURE_MUTEX_IN_SCOPE;
 
         this->captureStatus.invalidSignal = true;
         this->push_capture_event(capture_event_e::invalid_signal);
@@ -226,7 +226,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
                 }
                 default:
                 {
-                    SCOPE_LOCK_CAPTURE_MUTEX;
+                    LOCK_CAPTURE_MUTEX_IN_SCOPE;
 
                     this->push_capture_event(capture_event_e::unrecoverable_error);
 
@@ -243,7 +243,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
         }
         else
         {
-            SCOPE_LOCK_CAPTURE_MUTEX;
+            LOCK_CAPTURE_MUTEX_IN_SCOPE;
 
             const input_channel_v4l_c::mmap_metadata &srcBuffer = this->mmapBackBuffers.at(buf.index);
 
@@ -259,7 +259,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
         // Tell the capture device that we've finished accessing the buffer.
         if (!this->device_ioctl(VIDIOC_QBUF, &buf))
         {
-            SCOPE_LOCK_CAPTURE_MUTEX;
+            LOCK_CAPTURE_MUTEX_IN_SCOPE;
 
             this->push_capture_event(capture_event_e::unrecoverable_error);
 
@@ -269,7 +269,7 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
     // A capture error.
     else
     {
-        SCOPE_LOCK_CAPTURE_MUTEX;
+        LOCK_CAPTURE_MUTEX_IN_SCOPE;
 
         this->push_capture_event(capture_event_e::unrecoverable_error);
         
@@ -354,7 +354,7 @@ int input_channel_v4l_c::capture_thread(void)
             }
             else
             {
-                SCOPE_LOCK_CAPTURE_MUTEX;
+                LOCK_CAPTURE_MUTEX_IN_SCOPE;
 
                 this->push_capture_event(capture_event_e::new_video_mode);
 

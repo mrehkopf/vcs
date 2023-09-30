@@ -57,7 +57,7 @@
 #include "common/vcs_event/vcs_event.h"
 #include "main.h"
 
-#define SCOPE_LOCK_CAPTURE_MUTEX std::lock_guard<std::mutex> lock(kc_mutex())
+#define LOCK_CAPTURE_MUTEX_IN_SCOPE std::lock_guard<std::mutex> lock(kc_mutex())
 
 struct video_mode_s;
 

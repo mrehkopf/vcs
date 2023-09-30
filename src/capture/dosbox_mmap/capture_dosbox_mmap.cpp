@@ -157,7 +157,7 @@ static int capture_thread(void)
     {
         if (get_status_buffer_value(status_buffer_value_e::is_new_frame_available))
         {
-            SCOPE_LOCK_CAPTURE_MUTEX;
+            LOCK_CAPTURE_MUTEX_IN_SCOPE;
 
             IS_VALID_SIGNAL = true;
             
@@ -245,7 +245,7 @@ void kc_initialize_device(void)
     ev_new_video_mode.listen([](const video_mode_s &mode)
     {
         resolution_s::to_capture_device_properties(mode.resolution);
-        refresh_rate_s::to_capture_device(mode.refreshRate);
+        refresh_rate_s::to_capture_device_properties(mode.refreshRate);
     });
 
     // Initialize the shared memory interface.

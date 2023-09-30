@@ -288,7 +288,7 @@ int main(int argc, char *argv[])
         {
             capture_event_e e;
             {
-                SCOPE_LOCK_CAPTURE_MUTEX;
+                LOCK_CAPTURE_MUTEX_IN_SCOPE;
                 e = next_capture_event();
                 kt_update_timers();
                 kd_spin_event_loop();
