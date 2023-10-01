@@ -6,6 +6,7 @@
  */
 
 #include <QList> /// TODO: Break dependency on Qt.
+#include <QKeySequence> /// TODO: Break dependency on Qt.
 #include "common/disk/file_readers/file_reader_video_presets.h"
 #include "common/disk/csv.h"
 
@@ -108,7 +109,7 @@ bool file_reader::video_presets::version_a::read(const std::string &filename,
                 else if (metadataName == "activatedByShortcut")
                 {
                     preset->activatesWithShortcut = rowData.at(row).at(1).toInt();
-                    preset->activationShortcut = rowData.at(row).at(2).toStdString();
+                    preset->activationShortcut = QKeySequence(rowData.at(row).at(2)).toString().toStdString();
                 }
                 else if (metadataName == "name")
                 {
