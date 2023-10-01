@@ -65,7 +65,7 @@ One &ndash; and only one &ndash; capture backend must be active in any build of 
 
 The following capture backends are available to choose from:
 
-| Backend dentifier           | Purpose                                                                                                                       |
+| Backend identifier          | Purpose                                                                                                                       |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | CAPTURE_BACKEND_VISION_V4L  | Supports the Datapath Vision range of capture cards in Linux. Requires installation of the Datapath Vision driver.            |
 | CAPTURE_BACKEND_VIRTUAL     | Provides a virtual capture device that generates a test image.                                                                |
