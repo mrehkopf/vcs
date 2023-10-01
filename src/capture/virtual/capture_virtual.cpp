@@ -41,9 +41,6 @@ static struct {
 static struct
 {
     double brightness = 1;
-    double redBrightness = 1;
-    double greenBrightness = 1;
-    double blueBrightness = 1;
 } VIDEO_PARAMS;
 
 static std::unordered_map<std::string, double> DEVICE_PROPERTIES = {
@@ -86,7 +83,7 @@ static void refresh_test_pattern(void)
 
                 for (unsigned c = 0; c < 3; c++)
                 {
-                    FRAME_BUFFER.pixels[dstIdx+c] = BG_IMAGE.data[srcIdx+c];
+                    FRAME_BUFFER.pixels[dstIdx+c] = (BG_IMAGE.data[srcIdx+c] * VIDEO_PARAMS.brightness);
                 }
             }
         }
@@ -98,9 +95,9 @@ static void refresh_test_pattern(void)
             for (unsigned x = 0; x < FRAME_BUFFER.resolution.w; x++)
             {
                 const unsigned idx = ((x + y * FRAME_BUFFER.resolution.w) * 4);
-                FRAME_BUFFER.pixels[idx + 0] = 150;
-                FRAME_BUFFER.pixels[idx + 1] = ((numTicks + y) % 256);
-                FRAME_BUFFER.pixels[idx + 2] = ((numTicks + x) % 256);
+                FRAME_BUFFER.pixels[idx + 0] = (150 * VIDEO_PARAMS.brightness);
+                FRAME_BUFFER.pixels[idx + 1] = (((numTicks + y) % 256) * VIDEO_PARAMS.brightness);
+                FRAME_BUFFER.pixels[idx + 2] = (((numTicks + x) % 256) * VIDEO_PARAMS.brightness);
                 FRAME_BUFFER.pixels[idx + 3] = 255;
             }
         }
@@ -137,11 +134,10 @@ void kc_initialize_device(void)
 
         if ((inres.w > MAX_CAPTURE_WIDTH) || (inres.h > MAX_CAPTURE_HEIGHT))
         {
-            kc_set_device_property("has signal", false);
+            push_capture_event(capture_event_e::invalid_signal);
         }
         else
         {
-            kc_set_device_property("has signal", true);
             push_capture_event(capture_event_e::new_frame);
             NUM_FRAMES_PER_SECOND++;
             refresh_test_pattern();
@@ -305,19 +301,7 @@ bool kc_set_device_property(const std::string &key, double value)
     }
     else if (key == "brightness")
     {
-        VIDEO_PARAMS.brightness = (value / 100);
-    }
-    else if (key == "red brightness")
-    {
-        VIDEO_PARAMS.redBrightness = (value / 100);
-    }
-    else if (key == "green brightness")
-    {
-        VIDEO_PARAMS.greenBrightness = (value / 100);
-    }
-    else if (key == "blue brightness")
-    {
-        VIDEO_PARAMS.blueBrightness = (value / 100);
+        VIDEO_PARAMS.brightness = (value / (kc_device_property("brightness: maximum")));
     }
 
     DEVICE_PROPERTIES[key] = value;
