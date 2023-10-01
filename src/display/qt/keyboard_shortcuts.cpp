@@ -19,6 +19,7 @@ static const std::unordered_map<std::string, QKeySequence> KEY_SEQUENCES = {
     {"output-window: set-input-channel-1", QKeySequence("shift+1")},
     {"output-window: set-input-channel-2", QKeySequence("shift+2")},
     {"output-window: open-control-panel-dialog", QKeySequence("alt+q")},
+    {"output-window: screenshot", QKeySequence("alt+s")},
 
     {"video-preset-dialog: preset-activator-1", QKeySequence("f1")},
     {"video-preset-dialog: preset-activator-2", QKeySequence("f2")},

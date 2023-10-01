@@ -167,7 +167,18 @@ OutputWindow::OutputWindow(QWidget *parent) :
             });
         }
 
-        connect(this->contextMenu->addAction("Screenshot"), &QAction::triggered, this, [this]{this->save_screenshot();});
+        QAction *screenshot = new QAction("Screenshot", this);
+        {
+            screenshot->setShortcut(kd_get_key_sequence("output-window: screenshot"));
+            this->addAction(screenshot);
+
+            connect(screenshot, &QAction::triggered, this, [this]
+            {
+                this->save_screenshot();
+            });
+        }
+
+        this->contextMenu->addAction(screenshot);
         this->contextMenu->addSeparator();
         this->contextMenu->addAction(controlPanel);
         this->contextMenu->addSeparator();
