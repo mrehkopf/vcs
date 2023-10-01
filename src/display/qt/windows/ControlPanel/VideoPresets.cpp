@@ -201,6 +201,11 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             ui->pushButton_deletePreset->setEnabled(true);
         });
 
+        connect(ui->comboBox_presetList, &VideoPresetList::preset_label_changed, this, [this]
+        {
+            this->ui->comboBox_presetList->sort_alphabetically();
+        });
+
         connect(ui->pushButton_deletePreset, &QPushButton::clicked, this, [this]
         {
             auto *const selectedPreset = ui->comboBox_presetList->current_preset();
