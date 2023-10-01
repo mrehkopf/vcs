@@ -169,6 +169,11 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             this->ui->pushButton_closePresetFile->setDisabled(newFilename.isEmpty());
         });
 
+        connect(this, &VideoPresets::preset_activation_rules_changed, this, [this]
+        {
+            kvideopreset_apply_current_active_preset();
+        });
+
         connect(ui->comboBox_presetList, &VideoPresetList::preset_selected, this, [this]
         {
             this->lock_unsaved_changes_flag(true);
