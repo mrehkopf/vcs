@@ -173,7 +173,7 @@ QString VideoPresetList::make_preset_item_label(const analog_video_preset_s *con
 
     if (preset->activatesWithShortcut)
     {
-        text << QString::fromStdString(preset->activationShortcut);
+        text << QString("[%1]").arg(QString::fromStdString(preset->activationShortcut));
     }
 
     if (preset->activatesWithResolution)
@@ -199,7 +199,7 @@ QString VideoPresetList::make_preset_item_label(const analog_video_preset_s *con
         text << QString("\"%1\"").arg(QString::fromStdString(preset->name));
     }
 
-    QString combinedText = text.join(" - ");
+    QString combinedText = text.join(" \u00b7 ");
 
     if (combinedText.isEmpty())
     {

@@ -322,8 +322,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
         connect(ui->checkBox_activatorShortcut, &QCheckBox::toggled, this, [this](const bool checked)
         {
-            ui->comboBox_shortcutFirstKey->setEnabled(checked);
-            ui->comboBox_shortcutSecondKey->setEnabled(checked);
+            ui->comboBox_shortcutKey->setEnabled(checked);
 
             auto *selectedPreset = ui->comboBox_presetList->current_preset();
 
@@ -335,15 +334,13 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             }
         });
 
-        connect(ui->comboBox_shortcutSecondKey, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](const int idx)
+        connect(ui->comboBox_shortcutKey, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this]
         {
-            const QString text = ui->comboBox_shortcutSecondKey->itemText(idx);
             auto *selectedPreset = ui->comboBox_presetList->current_preset();
 
             if (selectedPreset)
             {
-                QString newShortcut = QString("Ctrl+%1").arg(text);
-                ui->comboBox_presetList->current_preset()->activationShortcut = newShortcut.toStdString();
+                ui->comboBox_presetList->current_preset()->activationShortcut =  ui->comboBox_shortcutKey->currentText().toStdString();
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
                 emit this->data_changed();
             }
@@ -609,19 +606,15 @@ void control_panel::VideoPresets::update_preset_controls_with_current_preset_dat
     ui->spinBox_resolutionY->setValue(int(preset->activationResolution.h));
 
     // Figure out which shortcut this preset is assigned. Expects shortcuts to
-    // be strings of the form "ctrl+f1", "ctrl+f2", etc.
+    // be strings of the form "f1", "f2", etc.
     {
-        const auto shortcutKeys = QString::fromStdString(preset->activationShortcut).toLower().split("+");
-
-        k_assert(((shortcutKeys.length() == 2) &&
-                  (shortcutKeys.at(0) == "ctrl")),
-                 "Invalid video preset activation shortcut.");
+        const QString shortcut = QString::fromStdString(preset->activationShortcut);
 
         // Expects the combo box to be populated with 12 items whose text is
         // "F1" to "F12".
-        k_assert((ui->comboBox_shortcutSecondKey->count() == 12), "Malformed GUI");
-        const int idx = shortcutKeys.at(1).split("f").at(1).toInt();
-        ui->comboBox_shortcutSecondKey->setCurrentIndex(idx - 1);
+        k_assert((ui->comboBox_shortcutKey->count() == 12), "Malformed GUI");
+        const int idx = shortcut.split("F").at(1).toInt();
+        ui->comboBox_shortcutKey->setCurrentIndex(idx - 1);
     }
 
     /// TODO: Check to make sure the correct combo box indices are being set.

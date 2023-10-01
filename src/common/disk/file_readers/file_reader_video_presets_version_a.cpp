@@ -7,6 +7,7 @@
 
 #include <QList> /// TODO: Break dependency on Qt.
 #include <QKeySequence> /// TODO: Break dependency on Qt.
+#include <regex>
 #include "common/disk/file_readers/file_reader_video_presets.h"
 #include "common/disk/csv.h"
 
@@ -110,6 +111,15 @@ bool file_reader::video_presets::version_a::read(const std::string &filename,
                 {
                     preset->activatesWithShortcut = rowData.at(row).at(1).toInt();
                     preset->activationShortcut = QKeySequence(rowData.at(row).at(2)).toString().toStdString();
+
+                    // Versions of VCS prior to 3.0.0 used "Ctrl+Fx" for preset activation,
+                    // whereas version 3.0.0 uses "Fx". As a kludge fix to keep existing
+                    // configurations valid, let's just silently convert.
+                    preset->activationShortcut = std::regex_replace(
+                        preset->activationShortcut,
+                        std::regex("^Ctrl\\+"),
+                        ""
+                    );
                 }
                 else if (metadataName == "name")
                 {

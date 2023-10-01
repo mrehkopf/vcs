@@ -44,7 +44,7 @@ struct analog_video_preset_s
 
     // Only handled by the GUI.
     bool activatesWithShortcut = false;
-    std::string activationShortcut = "Ctrl+F1";
+    std::string activationShortcut = "F1";
 
     // Returns the strength of activation, expressed as an integer, of this preset
     // to the given capture conditions (resolution, refresh rate, etc.). The activation
@@ -101,7 +101,7 @@ struct analog_video_preset_s
         }
     }
 
-    // The shortcut string would be something like "Ctrl+F1".
+    // The shortcut string would be something like "F1".
     bool activates_with_shortcut(std::string shortcutString)
     {
         return (this->activatesWithShortcut && (this->activationShortcut == shortcutString));
