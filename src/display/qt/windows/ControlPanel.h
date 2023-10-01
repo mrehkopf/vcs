@@ -31,6 +31,8 @@ public:
     control_panel::VideoPresets* video_presets(void) const  { return this->videoPresetsDialog; }
 
 private:
+    void resizeEvent(QResizeEvent *);
+
     Ui::ControlPanel *ui;
 
     control_panel::Output *outputDialog = nullptr;

@@ -1,6 +1,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QStyle>
+#include "display/qt/persistent_settings.h"
 #include "display/qt/windows/ControlPanel/Capture.h"
 #include "display/qt/windows/ControlPanel/Output.h"
 #include "display/qt/windows/ControlPanel/VideoPresets.h"
@@ -63,9 +64,21 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
 
         defaultButton->click();
     }
+
+    // Restore persistent settings.
+    {
+        this->resize(kpers_value_of(INI_GROUP_CONTROL_PANEL_WINDOW, "Size", QSize(792, 712)).toSize());
+    }
 }
 
 ControlPanel::~ControlPanel()
 {
     delete ui;
+}
+
+void ControlPanel::resizeEvent(QResizeEvent *)
+{
+    kpers_set_value(INI_GROUP_CONTROL_PANEL_WINDOW, "Size", this->size());
+
+    return;
 }

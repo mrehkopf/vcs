@@ -17,6 +17,7 @@
 #define INI_GROUP_OUTPUT "Output"
 #define INI_GROUP_VIDEO_PRESETS "VideoPresets"
 #define INI_GROUP_OUTPUT_WINDOW "OutputWindow"
+#define INI_GROUP_CONTROL_PANEL_WINDOW "ControlPanelWindow"
 
 QVariant kpers_value_of(const QString &group, const QString &name, const QVariant &defaultValue = QVariant());
 
