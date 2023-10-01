@@ -315,7 +315,17 @@ OutputWindow::OutputWindow(QWidget *parent) :
             this->redraw();
         });
 
-        ev_new_video_mode.listen([this](video_mode_s)
+        ev_new_video_mode.listen([this]
+        {
+            this->update_window_title();
+        });
+
+        ev_video_preset_activated.listen([this]
+        {
+            this->update_window_title();
+        });
+
+        ev_video_preset_name_changed.listen([this]
         {
             this->update_window_title();
         });
@@ -678,6 +688,17 @@ void OutputWindow::update_window_title(void)
                     .arg(outRes.w)
                     .arg(outRes.h);
             }
+        }
+    }
+
+    {
+        const analog_video_preset_s *currentAnalogPreset = kvideopreset_current_active_preset();
+
+        if (
+            currentAnalogPreset &&
+            !currentAnalogPreset->name.empty()
+        ){
+            title += QString(" - \"%1\"").arg(QString::fromStdString(currentAnalogPreset->name));
         }
     }
 

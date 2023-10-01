@@ -127,6 +127,8 @@ void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString);
 
 const std::vector<analog_video_preset_s*>& kvideopreset_all_presets(void);
 
+const analog_video_preset_s* kvideopreset_current_active_preset(void);
+
 void kvideopreset_apply_current_active_preset(void);
 
 analog_video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId);

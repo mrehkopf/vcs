@@ -235,3 +235,8 @@ video_signal_properties_s kvideopreset_current_video_parameters(void)
         return activePreset->properties;
     }
 }
+
+const analog_video_preset_s* kvideopreset_current_active_preset()
+{
+    return MOST_RECENT_ACTIVE_PRESET;
+}

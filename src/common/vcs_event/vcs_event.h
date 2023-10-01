@@ -347,5 +347,6 @@ extern vcs_event_c<void> ev_eco_mode_enabled;
 extern vcs_event_c<void> ev_eco_mode_disabled;
 extern vcs_event_c<const captured_frame_s&> ev_frame_processing_finished;
 extern vcs_event_c<const analog_video_preset_s*> ev_video_preset_activated;
+extern vcs_event_c<const analog_video_preset_s*> ev_video_preset_name_changed;
 
 #endif

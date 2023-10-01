@@ -291,6 +291,8 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             if (selectedPreset)
             {
                 selectedPreset->name = text.toStdString();
+                ev_video_preset_name_changed.fire(selectedPreset);
+
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
                 emit this->data_changed();
             }
