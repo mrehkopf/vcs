@@ -366,7 +366,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
             if (selectedPreset)
             {
-                if (text == "Exactly")        selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::equals;
+                if (text == "Exactly")      selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::equals;
                 else if (text == "Rounded") selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::rounded;
                 else if (text == "Floored") selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::floored;
                 else if (text == "Ceiled")  selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::ceiled;
@@ -380,10 +380,12 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
     }
 
     // Restore persistent settings.
-    if (kcom_video_presets_file_name().empty())
     {
-        const QString presetsSourceFile = kpers_value_of(INI_GROUP_VIDEO_PRESETS, "SourceFile", QString()).toString();
-        kcom_override_video_presets_file_name(presetsSourceFile.toStdString());
+        if (kcom_video_presets_file_name().empty())
+        {
+            const QString presetsSourceFile = kpers_value_of(INI_GROUP_VIDEO_PRESETS, "SourceFile", QString()).toString();
+            kcom_override_video_presets_file_name(presetsSourceFile.toStdString());
+        }
     }
 
     // Register app event listeners.

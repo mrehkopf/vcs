@@ -65,6 +65,7 @@ void ColorHistogram::refresh(const image_s &image)
             *std::max_element(this->blueBins.begin(), this->blueBins.end()),
         });
 
+        this->isEmpty = false;
         this->redraw_graph();
     }));
 
@@ -74,8 +75,14 @@ void ColorHistogram::refresh(const image_s &image)
 void ColorHistogram::redraw_graph(void)
 {
     QPixmap &histogram = *this->backBuffer;
-
     histogram.fill(Qt::transparent);
+
+    if (this->isEmpty)
+    {
+        std::swap(this->frontBuffer, this->backBuffer);
+        return;
+    }
+
     QPainter painter(&histogram);
 
     const double binWidth = (histogram.width() / double(numBins));
@@ -119,12 +126,11 @@ void ColorHistogram::clear(void)
 {
     graphingThread.waitForFinished();
 
+    this->isEmpty = true;
     this->redBins.fill(0);
     this->greenBins.fill(0);
     this->blueBins.fill(0);
-
-    backBuffer->fill(Qt::transparent);
-    std::swap(this->frontBuffer, this->backBuffer);
+    frontBuffer->fill(Qt::transparent);
 
     this->update();
 
@@ -133,8 +139,11 @@ void ColorHistogram::clear(void)
 
 void ColorHistogram::paintEvent(QPaintEvent *)
 {
-    QPainter painter(this);
-    painter.drawPixmap(0, 0, *this->frontBuffer);
+    if (!this->isEmpty)
+    {
+        QPainter painter(this);
+        painter.drawPixmap(0, 0, *this->frontBuffer);
+    }
 
     return;
 }

@@ -35,6 +35,8 @@ private:
     QPixmap *frontBuffer = &histogram[0];
     QPixmap *backBuffer = &histogram[1];
 
+    bool isEmpty = true;
+
     unsigned maxBinHeight = 1;
     static const unsigned numBins = 256;
     std::array<unsigned, numBins> redBins;

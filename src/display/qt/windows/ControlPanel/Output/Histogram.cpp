@@ -22,30 +22,74 @@ control_panel::output::Histogram::Histogram(QWidget *parent) :
 {
     this->ui->setupUi(this);
 
-    ev_new_output_image.listen([this](const image_s &image)
+    // Wire up the GUI controls to consequences for operating them.
     {
-        if (this->isVisible())
+        connect(this, &DialogFragment::enabled_state_set, this, [this](const bool isEnabled)
         {
-            this->ui->histogram->refresh(image);
+            kpers_set_value(INI_GROUP_OUTPUT, "HistogramEnabled", isEnabled);
+
+            if (!isEnabled)
+            {
+                this->ui->histogram->clear();
+            }
+            else
+            {
+                this->ui->histogram->refresh(ks_scaler_frame_buffer());
+            }
+        });
+
+        connect(this->ui->groupBox, &QGroupBox::toggled, this, [this](const bool isChecked)
+        {
+            this->set_enabled(isChecked);
+        });
+    }
+
+    // Listen for app events.
+    {
+        ev_new_output_image.listen([this](const image_s &image)
+        {
+            if (
+                this->isVisible() &&
+                this->ui->groupBox->isChecked()
+            ){
+                this->ui->histogram->refresh(image);
+            }
+        });
+
+        ev_capture_signal_gained.listen([this]
+        {
+            this->ui->groupBox->setEnabled(true);
+        });
+
+        ev_capture_signal_lost.listen([this]
+        {
+            if (
+                this->isVisible() &&
+                this->ui->groupBox->isChecked()
+            ){
+                this->ui->histogram->clear();
+            }
+
+            this->ui->groupBox->setEnabled(false);
+        });
+    }
+
+    // Restore persistent settings.
+    {
+        this->ui->groupBox->setChecked(kpers_value_of(INI_GROUP_OUTPUT, "HistogramEnabled", true).toBool());
+    }
+
+    // Initialize GUI controls to their starting values.
+    {
+        if (this->ui->groupBox->isChecked())
+        {
+            this->ui->histogram->refresh(ks_scaler_frame_buffer());
         }
-    });
-
-    ev_capture_signal_gained.listen([this]
-    {
-        this->ui->groupBox->setEnabled(true);
-    });
-
-    ev_capture_signal_lost.listen([this]
-    {
-        if (this->isVisible())
+        else
         {
             this->ui->histogram->clear();
         }
-
-        this->ui->groupBox->setEnabled(false);
-    });
-
-    this->ui->histogram->refresh(ks_scaler_frame_buffer());
+    }
 
     return;
 }

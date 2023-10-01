@@ -48,17 +48,12 @@ control_panel::output::Overlay::Overlay(QWidget *parent) :
             this->ui->groupBox->setChecked(isEnabled);
             ev_dirty_output_window.fire();
         });
+
+        connect(this->ui->groupBox, &QGroupBox::toggled, this, [this](const bool isEnabled)
+        {
+            this->set_enabled(isEnabled);
+        });
     }
-
-    connect(this, &DialogFragment::enabled_state_set, this, [this](const bool isEnabled)
-    {
-        this->ui->groupBox->setChecked(isEnabled);
-    });
-
-    connect(this->ui->groupBox, &QGroupBox::toggled, this, [this](const bool isEnabled)
-    {
-        this->set_enabled(isEnabled);
-    });
 
     // Restore persistent settings.
     {

@@ -14,6 +14,7 @@
 #define INI_GROUP_CAPTURE "Capture"
 #define INI_GROUP_FILTER_GRAPH "FilterGraph"
 #define INI_GROUP_OVERLAY "Overlay"
+#define INI_GROUP_OUTPUT "Output"
 #define INI_GROUP_VIDEO_PRESETS "VideoPresets"
 #define INI_GROUP_OUTPUT_WINDOW "OutputWindow"
 

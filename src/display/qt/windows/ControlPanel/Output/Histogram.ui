@@ -37,6 +37,9 @@
      <property name="title">
       <string>Histogram</string>
      </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="ColorHistogram" name="histogram" native="true">
