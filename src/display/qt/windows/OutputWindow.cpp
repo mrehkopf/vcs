@@ -87,16 +87,18 @@ OutputWindow::OutputWindow(QWidget *parent) :
         QAction *controlPanel = new QAction("Control panel...", this);
         {
             controlPanel->setShortcut(kd_get_key_sequence("output-window: open-control-panel-dialog"));
-            connect(controlPanel, &QAction::triggered, this, [this]{this->controlPanelWindow->show();});
             this->addAction(controlPanel);
+
+            connect(controlPanel, &QAction::triggered, this, [this]
+            {
+                this->controlPanelWindow->show();
+            });
         }
 
         QAction *showBorder = new QAction("Border", this);
         {
-
             showBorder->setCheckable(true);
             showBorder->setChecked(this->window_has_border());
-            showBorder->setShortcut(kd_get_key_sequence("output-window: toggle-window-border"));
 
             connect(this, &OutputWindow::border_hidden, this, [showBorder]
             {
@@ -129,7 +131,6 @@ OutputWindow::OutputWindow(QWidget *parent) :
 
             fullscreen->setCheckable(true);
             fullscreen->setChecked(this->isFullScreen());
-            fullscreen->setShortcut(kd_get_key_sequence("output-window: toggle-fullscreen-mode"));
 
             connect(this, &OutputWindow::fullscreen_mode_enabled, this, [=]
             {

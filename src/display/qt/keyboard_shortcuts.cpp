@@ -16,11 +16,9 @@
 
 static const std::unordered_map<std::string, QKeySequence> KEY_SEQUENCES = {
     {"output-window: exit-fullscreen-mode", QKeySequence("esc")},
-    {"output-window: toggle-fullscreen-mode", QKeySequence("f11")},
-    {"output-window: toggle-window-border", QKeySequence("f1")},
     {"output-window: set-input-channel-1", QKeySequence("shift+1")},
     {"output-window: set-input-channel-2", QKeySequence("shift+2")},
-    {"output-window: open-control-panel-dialog", QKeySequence("ctrl+q")},
+    {"output-window: open-control-panel-dialog", QKeySequence("alt+q")},
 
     {"video-preset-dialog: preset-activator-1", QKeySequence("f1")},
     {"video-preset-dialog: preset-activator-2", QKeySequence("f2")},
