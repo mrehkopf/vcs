@@ -102,6 +102,11 @@ QGroupBox::indicator
     border-left: 1px solid black;
 }
 
+QGroupBox::indicator
+{
+    margin-right: 0em;
+}
+
 QCheckBox::indicator:disabled,
 QGroupBox::indicator:disabled
 {
