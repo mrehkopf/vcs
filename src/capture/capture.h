@@ -1,6 +1,7 @@
 /*
- * 2018 Tarpeeksi Hyvae Soft /
- * VCS
+ * 2018-2023 Tarpeeksi Hyvae Soft
+ *
+ * Software: VCS
  *
  */
 
@@ -11,21 +12,12 @@
  *
  * The capture subsystem is responsible for mediating exchange between VCS and
  * the capture device; including initializing the device and providing VCS with
- * access to the frame buffer(s) associated with the device.
+ * access to the contents of the frame buffer associated with the device.
  * 
- * The capture subsystem is an exceptional subsystem in that it's allowed to run
- * outside of the main VCS thread. This freedom -- in what is otherwise a
- * single-threaded application -- is granted because some capture devices require
- * out-of-thread callbacks or the like.
- * 
- * The multithreaded capture subsystem will typically have an idle monitoring
+ * An implementation of the capture subsystem will typically have a monitoring
  * thread that waits for the capture device to send in data. When data comes in,
  * the thread will copy it to a local memory buffer to be operated on in the
  * main VCS thread when it's ready to do so.
- * 
- * Because of the out-of-thread nature of this subsystem, it's important that
- * accesses to its memory buffers are synchronized using the capture mutex (see
- * kc_mutex()).
  *
  * ## Usage
  *
@@ -162,13 +154,14 @@ struct video_signal_properties_s
 };
 
 /*!
- * Returns a reference to a mutex which a thread should acquire before invoking the
- * functions of the capture subsystem interface, and which the capture subsystem
- * should acquire before mutating data to which the interface provides access.
+ * Returns a reference to a mutex which a caller should acquire before interacting
+ * with the capture subsystem interface and which the capture subsystem should
+ * acquire before mutating data which the interface exposes.
+ * 
+ * By default, code running in VCS's main loop (see @ref src/main.cpp) will be in
+ * scope of a lock on this mutex and so doesn't need to explicitly lock it.
  *
  * @code
- * // Code running in the main VCS thread.
- * 
  * // We haven't acquired the capture mutex, so the pixel data in the subsystem's
  * // frame buffer is liable to be overwritten at any time by a capture thread.
  * const auto &frameBuffer = kc_frame_buffer();
@@ -189,11 +182,6 @@ struct video_signal_properties_s
  * // buffer is again liable to be overwritten at any time.
  * @endcode
  * 
- * In effect, it can be assumed that the caller of the interface is the main VCS
- * thread, which also runs the capture subsystem, so the subsystem generally only
- * needs to acquire the mutex when mutating shared data in a thread it has spawned
- * for itself.
- * 
  * @code
  * // Code running in a capture thread spawned by the capture subsystem.
  * 
@@ -205,8 +193,11 @@ struct video_signal_properties_s
  *     // Copy the frame's data from device memory into the subsystem's frame buffer.
  *     memcpy(frameBuffer.pixels, ...);
  * }
- * @endcode
  *
+ * // The mutex is now unlocked by going out of scope, so the data in the frame
+ * // buffer is liable to be accessed by VCS.
+ * @endcode
+ * 
  */
 std::mutex& kc_mutex(void);
 
@@ -293,21 +284,6 @@ bool kc_has_signal(void);
 
 /*!
  * Returns a reference to the most recent captured frame.
- * 
- * To ensure that the frame buffer's data isn't modified by another thread while
- * you're accessing it, lock the capture mutex before calling this function and
- * release it when you're done.
- *
- * @code
- * {
- *     // The capture mutex should be locked first, to ensure the frame buffer
- *     // isn't modified by another thread while we're accessing its data.
- *     std::lock_guard<std::mutex> lock(kc_mutex());
- *
- *     const auto &frameBuffer = kc_frame_buffer();
- *    // Access the frame buffer's data...
- * }
- * @endcode
  *
  * @see
  * kc_mutex(), ev_new_captured_frame
