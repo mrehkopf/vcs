@@ -450,6 +450,13 @@ BaseFilterGraphNode* control_panel::FilterGraph::add_filter_graph_node(
         : 220
     );
 
+    // Align the widget width to the scene's grid, so nodes in the graph can be
+    // aligned along both their left and right edges.
+    guiWidget->setFixedWidth(
+        guiWidget->width() +
+        (-guiWidget->width() & (this->graphicsScene->grid_size() - 1))
+    );
+
     const unsigned titleWidth = (10 + QFontMetrics(guiWidget->font()).width(QString("999: %1").arg(QString::fromStdString(filter->name()))));
     guiWidget->resize(std::max(titleWidth, unsigned(guiWidget->width())), guiWidget->height());
 

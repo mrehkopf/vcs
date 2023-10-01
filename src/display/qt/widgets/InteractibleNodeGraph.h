@@ -55,7 +55,10 @@ private:
     node_connection_event_s connectionEvent;
     std::vector<node_edge_connection_s> edgeConnections;
 
-    int gridSize = 15;
+    // Must be power of two, otherwise you need to change the widget width
+    // alignment code in FilterGraph::add_filter_graph_node().
+    int gridSize = 16;
+
     bool hasExclusiveMouseClickFocus = false;
 };
 
