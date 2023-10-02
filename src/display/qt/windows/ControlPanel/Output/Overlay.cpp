@@ -55,6 +55,19 @@ control_panel::output::Overlay::Overlay(QWidget *parent) :
         });
     }
 
+    // Listen for app events.
+    {
+        ev_capture_signal_gained.listen([this]
+        {
+            this->ui->groupBox->setEnabled(true);
+        });
+
+        ev_capture_signal_lost.listen([this]
+        {
+            this->ui->groupBox->setEnabled(false);
+        });
+    }
+
     // Restore persistent settings.
     {
         ui->plainTextEdit->setPlainText(kpers_value_of(INI_GROUP_OVERLAY, "Content", "").toString());

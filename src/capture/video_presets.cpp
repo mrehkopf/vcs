@@ -192,6 +192,7 @@ void kvideopreset_assign_presets(const std::vector<analog_video_preset_s*> &pres
     kvideopreset_remove_all_presets();
 
     PRESETS = presets;
+    kvideopreset_apply_current_active_preset();
 
     RUNNING_PRESET_ID = (1 + (*std::max_element(PRESETS.begin(), PRESETS.end(), [](const analog_video_preset_s *a, const analog_video_preset_s *b){return a->id < b->id;}))->id);
 

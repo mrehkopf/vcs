@@ -171,14 +171,19 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
         connect(this, &VideoPresets::preset_activation_rules_changed, this, [this]
         {
-            kvideopreset_apply_current_active_preset();
+            if (CONTROLS_LIVE_UPDATE)
+            {
+                kvideopreset_apply_current_active_preset();
+            }
         });
 
         connect(ui->comboBox_presetList, &VideoPresetList::preset_selected, this, [this]
         {
+            CONTROLS_LIVE_UPDATE = false;
             this->lock_unsaved_changes_flag(true);
             this->update_preset_controls_with_current_preset_data();
             this->lock_unsaved_changes_flag(false);
+            CONTROLS_LIVE_UPDATE = true;
 
             this->update_active_preset_indicator();
         });
@@ -217,9 +222,16 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
             if (selectedPreset && (QMessageBox::question(this, "Confirm preset deletion", "Are you sure you want to delete this preset?", (QMessageBox::No | QMessageBox::Yes)) == QMessageBox::Yes))
             {
+                const bool wasActivePreset = kvideopreset_is_preset_active(selectedPreset);
+
                 ui->comboBox_presetList->remove_preset(selectedPreset->id);
                 kvideopreset_remove_preset(selectedPreset->id);
                 emit this->data_changed();
+
+                if (wasActivePreset)
+                {
+                    kvideopreset_apply_current_active_preset();
+                }
             }
         });
 
@@ -643,8 +655,6 @@ void control_panel::VideoPresets::update_preset_controls_with_current_preset_dat
 
     // Assign the video parameter values.
     {
-        CONTROLS_LIVE_UPDATE = false;
-
         const auto &currentParams = preset->properties;
         this->update_property_control_ranges(currentParams);
 
@@ -661,8 +671,6 @@ void control_panel::VideoPresets::update_preset_controls_with_current_preset_dat
         ui->parameterGrid_properties->set_value(PROP_LABEL_RED_CONTRAST, currentParams.redContrast);
         ui->parameterGrid_properties->set_value(PROP_LABEL_GREEN_CONTRAST, currentParams.greenContrast);
         ui->parameterGrid_properties->set_value(PROP_LABEL_BLUE_CONTRAST, currentParams.blueContrast);
-
-        CONTROLS_LIVE_UPDATE = true;
     }
 
     return;

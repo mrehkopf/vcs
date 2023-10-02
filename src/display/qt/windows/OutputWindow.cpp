@@ -689,16 +689,17 @@ void OutputWindow::update_window_title(void)
                     .arg(outRes.h);
             }
         }
-    }
 
-    {
-        const analog_video_preset_s *currentAnalogPreset = kvideopreset_current_active_preset();
+        // Add the name of the current preset, if any.
+        {
+            const analog_video_preset_s *currentAnalogPreset = kvideopreset_current_active_preset();
 
-        if (
-            currentAnalogPreset &&
-            !currentAnalogPreset->name.empty()
-        ){
-            title += QString(" - \"%1\"").arg(QString::fromStdString(currentAnalogPreset->name));
+            if (
+                currentAnalogPreset &&
+                !currentAnalogPreset->name.empty()
+            ){
+                title += QString(" - \"%1\"").arg(QString::fromStdString(currentAnalogPreset->name));
+            }
         }
     }
 

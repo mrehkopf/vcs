@@ -85,7 +85,7 @@ QScrollBar::sub-line:vertical
 
 QScrollBar::sub-line:vertical:disabled
 {
-    image: url(:/res/icons/newie/newie/arrow_up_disabled.png);
+    image: url(:/res/icons/newie/arrow_up_disabled.png);
 }
 
 QScrollBar:horizontal
