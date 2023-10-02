@@ -8,6 +8,7 @@
 #include "display/qt/windows/ControlPanel/FilterGraph.h"
 #include "display/qt/windows/ControlPanel/AboutVCS.h"
 #include "display/qt/windows/OutputWindow.h"
+#include "display/qt/wheel_blocker.h"
 #include "ControlPanel.h"
 #include "ui_ControlPanel.h"
 
@@ -69,11 +70,18 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
     {
         this->resize(kpers_value_of(INI_GROUP_CONTROL_PANEL_WINDOW, "Size", QSize(792, 712)).toSize());
     }
+
+    this->wheelBlocker = new WheelBlocker(this);
+
+    return;
 }
 
 ControlPanel::~ControlPanel()
 {
-    delete ui;
+    delete this->ui;
+    delete this->wheelBlocker;
+    
+    return;
 }
 
 void ControlPanel::resizeEvent(QResizeEvent *)

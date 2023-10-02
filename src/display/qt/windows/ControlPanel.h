@@ -14,6 +14,7 @@ namespace control_panel
 }
 
 class OutputWindow;
+class WheelBlocker;
 
 namespace Ui { class ControlPanel; }
 
@@ -40,6 +41,8 @@ private:
     control_panel::AboutVCS *aboutDialog = nullptr;
     control_panel::FilterGraph *filterGraphDialog = nullptr;
     control_panel::VideoPresets *videoPresetsDialog = nullptr;
+
+    WheelBlocker *wheelBlocker;
 };
 
 #endif

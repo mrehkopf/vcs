@@ -243,5 +243,14 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
         }
     }
 
+    this->wheelBlocker = new WheelBlocker(this);
+
+    return;
+}
+
+QtAbstractGUI::~QtAbstractGUI()
+{
+    delete this->wheelBlocker;
+
     return;
 }

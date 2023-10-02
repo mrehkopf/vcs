@@ -38,6 +38,7 @@ RESOURCES += \
 SOURCES += \
     src/common/refresh_rate.cpp \
     src/common/vcs_event/vcs_event.cpp \
+    src/display/qt/wheel_blocker.cpp \
     src/display/qt/widgets/ColorHistogram.cpp \
     src/display/qt/widgets/DialogFileMenu.cpp \
     src/display/qt/widgets/DialogFragment.cpp \
@@ -143,6 +144,7 @@ HEADERS += \
     src/common/assert.h \
     src/common/globals.h \
     src/common/types.h \
+    src/display/qt/wheel_blocker.h \
     src/display/qt/widgets/ColorHistogram.h \
     src/display/qt/widgets/DialogFileMenu.h \
     src/display/qt/widgets/DialogFragment.h \
