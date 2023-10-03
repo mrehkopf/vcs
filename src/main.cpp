@@ -17,7 +17,6 @@
 #include <deque>
 #include "display/qt/windows/OutputWindow.h"
 #include "common/command_line/command_line.h"
-#include "anti_tear/anti_tear.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
@@ -113,7 +112,6 @@ static bool initialize_all(void)
         SUBSYSTEM_RELEASERS.push_back(kvideopreset_initialize());
         SUBSYSTEM_RELEASERS.push_back(ks_initialize_scaler());
         SUBSYSTEM_RELEASERS.push_back(kc_initialize_capture());
-        SUBSYSTEM_RELEASERS.push_back(kat_initialize_anti_tear());
         SUBSYSTEM_RELEASERS.push_back(kf_initialize_filters());
 
         // The display subsystem should be initialized last.

@@ -11,10 +11,71 @@
 #include <vector>
 #include "capture/capture.h"
 #include "common/types.h"
-#include "anti_tear/anti_tear.h"
 #include "anti_tear/anti_tear_frame.h"
 #include "anti_tear/anti_tear_one_per_frame.h"
 #include "anti_tear/anti_tear_multiple_per_frame.h"
+
+//! @cond
+// Default starting parameter values for the anti-tear engine.
+#define KAT_DEFAULT_THRESHOLD 3
+#define KAT_DEFAULT_WINDOW_LENGTH 8
+#define KAT_DEFAULT_NUM_MATCHES_REQUIRED 11
+#define KAT_DEFAULT_STEP_SIZE 1
+#define KAT_DEFAULT_VISUALIZE_TEARS false
+#define KAT_DEFAULT_VISUALIZE_SCAN_RANGE false
+#define KAT_DEFAULT_SCAN_DIRECTION anti_tear_scan_direction_e::down
+#define KAT_DEFAULT_SCAN_HINT anti_tear_scan_hint_e::look_for_one_tear
+//! @endcond
+
+/*!
+ * Enumerates the tear-scanning hints which can be given to the anti-tear
+ * subsystem (see kat_set_scan_hint()). These hints provide insight about the input
+ * data which may improve the anti-tearer's performance.
+ */
+enum class anti_tear_scan_hint_e
+{
+    /*!
+     * Tells the anti-tear subsystem that input images are expected to have at
+     * most one tear. In other words, a single un-torn image will span no more
+     * than two consecutive input images. This may allow the anti-tearer to apply
+     * performance optimizations, but will lead to incorrect anti-tearing results
+     * if any input image has more than one tear.
+     */
+    look_for_one_tear,
+
+    /*!
+     * Tells the anti-tear subsystem that input images may have several tears.
+     * In other words, a single un-torn image may span any number of
+     * consecutive input images. The anti-tearer may, however, choose to only
+     * scan a certain maximum number of consecutive input images before
+     * declaring the result to be a fully de-torn image.
+     */
+    look_for_multiple_tears,
+};
+
+/*!
+ * Enumerates the directions in which the anti-tear subsystem can scan images
+ * for tears.
+ *
+ * The scan direction determines which parts of an image following and preceding
+ * a tear are considered by the anti-tearer to be new or old relative to the
+ * previous image. For instance, if the scan begins from the top and encounters a
+ * tear in the middle, the upper half of the image would be considered new;
+ * whereas the lower half would be considered new if the scan had started from
+ * the bottom.
+ *
+ * For correct anti-tearing results, the scan direction should match the direction
+ * in which the capture source draws the image (which in turn may depend e.g. on
+ * the video mode).
+ */
+enum class anti_tear_scan_direction_e
+{
+    /*! Scans input images from bottom to top.*/
+    up,
+
+    /*! Scans input images from top to bottom.*/
+    down,
+};
 
 class anti_tearer_c
 {

@@ -8,7 +8,7 @@
 #ifndef VCS_FILTER_FILTERS_ANTI_TEAR_FILTER_ANTI_TEAR_H
 #define VCS_FILTER_FILTERS_ANTI_TEAR_FILTER_ANTI_TEAR_H
 
-#include "anti_tear/anti_tear.h"
+#include "anti_tear/anti_tearer.h"
 #include "filter/abstract_filter.h"
 #include "filter/filters/anti_tear/gui/filtergui_anti_tear.h"
 

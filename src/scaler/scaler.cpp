@@ -11,7 +11,6 @@
 #include <vector>
 #include <cmath>
 #include <opencv2/imgproc/imgproc.hpp>
-#include "anti_tear/anti_tear.h"
 #include "capture/capture.h"
 #include "display/display.h"
 #include "common/globals.h"
@@ -219,15 +218,11 @@ void ks_scale_frame(const captured_frame_s &frame)
         }
     }
 
-    image_s imageToBeScaled = kat_anti_tear({
-        .pixels = frame.pixels,
-        .resolution = frame.resolution
-    });
-
+    image_s imageToBeScaled(frame.pixels, frame.resolution);
     abstract_filter_c *customScaler = kf_apply_matching_filter_chain(&imageToBeScaled);
 
-    // If the active filter chain provided a custom output scaler, it'll override our
-    // default scaler.
+    // If there was a matching filter chain and it provides a custom output scaler,
+    // it'll override our default scaler.
     if (customScaler)
     {
         k_assert(

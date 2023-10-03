@@ -43,7 +43,6 @@
 #include "display/qt/widgets/QtAbstractGUI.h"
 #include "display/qt/persistent_settings.h"
 #include "display/qt/keyboard_shortcuts.h"
-#include "anti_tear/anti_tear.h"
 #include "common/vcs_event/vcs_event.h"
 #include "capture/video_presets.h"
 #include "capture/capture.h"

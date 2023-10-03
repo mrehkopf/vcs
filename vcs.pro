@@ -125,7 +125,6 @@ SOURCES += \
     src/filter/filter.cpp \
     src/common/command_line/command_line.cpp \
     src/capture/capture.cpp \
-    src/anti_tear/anti_tear.cpp \
     src/display/qt/persistent_settings.cpp \
     src/common/disk/disk.cpp \
     src/common/disk/file_writers/file_writer_filter_graph_version_b.cpp \
@@ -234,7 +233,6 @@ HEADERS += \
     src/display/display.h \
     src/common/log/log.h \
     src/common/abstract_gui.h \
-    src/anti_tear/anti_tear.h \
     src/filter/filter.h \
     src/common/command_line/command_line.h \
     src/display/qt/persistent_settings.h \
