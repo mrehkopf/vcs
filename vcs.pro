@@ -82,6 +82,8 @@ SOURCES += \
     src/display/qt/windows/ControlPanel/Output.cpp \
     src/display/qt/windows/ControlPanel/VideoPresets.cpp \
     src/display/qt/keyboard_shortcuts.cpp \
+    src/filter/filters/crt/filter_crt.cpp \
+    src/filter/filters/crt/gui/filtergui_crt.cpp \
     src/filter/filters/output_scaler/filter_output_scaler.cpp \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.cpp \
     src/filter/filters/render_text/filter_render_text.cpp \
@@ -198,6 +200,8 @@ HEADERS += \
     src/filter/filters/color_depth/gui/filtergui_color_depth.h \
     src/filter/filters/crop/filter_crop.h \
     src/filter/filters/crop/gui/filtergui_crop.h \
+    src/filter/filters/crt/filter_crt.h \
+    src/filter/filters/crt/gui/filtergui_crt.h \
     src/filter/filters/decimate/filter_decimate.h \
     src/filter/filters/decimate/gui/filtergui_decimate.h \
     src/filter/filters/delta_histogram/filter_delta_histogram.h \

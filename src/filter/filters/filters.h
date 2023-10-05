@@ -27,5 +27,6 @@
 #include "filter/filters/color_depth/filter_color_depth.h"
 #include "filter/filters/input_gate/filter_input_gate.h"
 #include "filter/filters/output_gate/filter_output_gate.h"
+#include "filter/filters/crt/filter_crt.h"
 
 #endif

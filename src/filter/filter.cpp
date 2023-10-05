@@ -63,6 +63,7 @@ subsystem_releaser_t kf_initialize_filters(void)
         new filter_output_gate_c(),
         new filter_render_text_c(),
         new filter_output_scaler_c(),
+        new filter_crt_c(),
     };
 
     for (unsigned i = 0; i < KNOWN_FILTER_TYPES.size(); i++)
