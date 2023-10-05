@@ -34,14 +34,11 @@ Open [vcs.pro](vcs.pro) in Qt Creator, or run `$ qmake && make -j` in the repo's
 
 The VCS codebase depends on the following libraries and frameworks:
 
-1. Qt
-2. OpenCV*
-3. The Datapath capture API, as distributed with their Linux capture drivers**
-4. Non-release builds*** are configured to use AddressSanitizer and UndefinedBehaviorSanitizer, which should come pre-installed with your compiler on common platforms. For these builds, you'll need to create a file called **asan-suppress.txt** in the directory of the VCS executable, and either leave it blank, or populate it according to [this guide](https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer#suppressions) to have AddressSanitizer ignore leaks in external code (e.g. third-party libraries).
+1. Qt 5
+2. OpenCV 4
+3. For [non-release builds](#release-build-vs-debug-build), AddressSanitizer and UndefinedBehaviorSanitizer, which should come pre-installed with your compiler*
 
-\* I use OpenCV 3.2.0, but later versions may also be compatible. See [this issue](https://github.com/leikareipa/vcs/issues/30) for details.\
-\** Only needed if compiling for Datapath hardware, which is the default option. See [The capture backend](#the-capture-backend) for details.\
-\*** See [Release build vs. debug build](#release-build-vs-debug-build).
+\* To suppress Sanitizer warnings in external libraries, create an `asan-suppress.txt` file in the build directory and populate it according to [this guide](https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer#suppressions).
 
 I use the following toolchains when developing VCS:
 
