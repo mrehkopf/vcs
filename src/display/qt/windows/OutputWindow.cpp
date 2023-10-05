@@ -91,6 +91,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
             connect(controlPanel, &QAction::triggered, this, [this]
             {
                 this->controlPanelWindow->show();
+                this->controlPanelWindow->activateWindow();
             });
         }
 
