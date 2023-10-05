@@ -21,7 +21,7 @@ Any model of Datapath capture card supported by the Datapath Vision driver for L
 
 ## Manuals
 
-- [User's manual](https://www.tarpeeksihyvaesoft.com/vcs/docs/user/) ([source](./docs/user/))
+- [User's manual](./docs/user/README.md)
 - [Developer's manual](https://www.tarpeeksihyvaesoft.com/vcs/docs/developer/) ([source](./docs/developer/))
 
 ## Building
