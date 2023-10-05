@@ -29,8 +29,8 @@
 #include "main.h"
 
 #define INCLUDE_VISION
-#include <visionrgb/include/rgb133control.h>
-#include <visionrgb/include/rgb133v4l2.h>
+#include <rgb133control.h>
+#include <rgb133v4l2.h>
 
 // The input channel (/dev/videoX device) we're currently capturing from.
 static input_channel_v4l_c *INPUT_CHANNEL = nullptr;

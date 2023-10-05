@@ -1,30 +1,37 @@
-# Whether this build of VCS is intended for release. Release builds may perform better
-# but have fewer run-time error checks and contain less debug information.
-#DEFINES += VCS_RELEASE_BUILD
+# Whether this build of VCS is intended for release. Release builds may disable
+# run-time error checks etc. for improved performance.
+DEFINES += VCS_RELEASE_BUILD
+
+# Which capture source this build supports. Select one. See the build guide in
+# README.md for more information.
+DEFINES += \
+    CAPTURE_BACKEND_VIRTUAL
+    #CAPTURE_BACKEND_DOSBOX_MMAP
+    #CAPTURE_BACKEND_VISION_V4L
+
+# Whether this build of VCS uses the OpenCV library. For now, non-OpenCV builds
+# are not supported, so this should always be defined.
+DEFINES += VCS_USES_OPENCV
 
 linux {
-    # Select one, depending on which capture backend you want the build to support.
-    DEFINES += \
-        #CAPTURE_BACKEND_VIRTUAL
-        #CAPTURE_BACKEND_DOSBOX_MMAP
-        CAPTURE_BACKEND_VISION_V4L
+    contains(DEFINES, CAPTURE_BACKEND_VISION_V4L) {
+        # Path to the header files of the Datapath Linux Vision driver.
+        INCLUDEPATH += $$(HOME)/sdk/visionrgb/include
+    }
 
-    INCLUDEPATH += \
-        # The base path for Datapath's Linux Vision driver header files. These are
-        # bundled with the driver downloadable from Datapath's website. The header
-        # files are expected to be in a "visionrgb/" subdirectory of this path, eg.
-        # ".../visionrgb/include/rgb133control.h".
-        $$(HOME)/sdk/
+    contains(DEFINES, VCS_USES_OPENCV) {
+        INCLUDEPATH += /usr/include/opencv4
 
-    LIBS += \
-        -L/usr/local/lib/ \
-        -lopencv_imgproc \
-        -lopencv_highgui \
-        -lopencv_core \
-        -lopencv_photo
+        LIBS += \
+            -L/usr/lib/x86_64-linux-gnu \
+            -lopencv_imgproc \
+            -lopencv_highgui \
+            -lopencv_core \
+            -lopencv_photo
 
-    contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
-        LIBS += -lopencv_imgcodecs
+        contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
+            LIBS += -lopencv_imgcodecs
+        }
     }
 }
 

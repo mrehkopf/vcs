@@ -28,7 +28,7 @@ Any model of Datapath capture card supported by the Datapath Vision driver for L
 
 ![](./cat1.jpg)
 
-Open [vcs.pro](vcs.pro) in Qt Creator, or run `$ qmake && make -j` in the repo's root. You'll need to meet the [dependencies](#dependencies), and may need to modify some of the `INCLUDEPATH` entries in [vcs.pro](vcs.pro) to match your system.
+Open [vcs.pro](vcs.pro) in Qt Creator, or run `$ qmake && make -j` in the repo's root. You'll need to meet the [dependencies](#dependencies), and may need to modify some of the `INCLUDEPATH` and `LIBS` entries in [vcs.pro](vcs.pro) to match your system.
 
 ### Dependencies
 
@@ -47,7 +47,7 @@ I use the following toolchains when developing VCS:
 
 | OS                 | Compiler           | Qt   | OpenCV | Capture card           |
 | ------------------ | ------------------ | ---- | ------ | ---------------------- |
-| Ubuntu 20.04 HWE   | GCC 9.4 (64-bit)   | 5.12 | 3.2.0  | Datapath VisionRGB-E1S |
+| Ubuntu 20.04 HWE   | GCC 9.4 (64-bit)   | 5.12 | 4.2.0  | Datapath VisionRGB-E1S |
 
 ### Release build vs. debug build
 
