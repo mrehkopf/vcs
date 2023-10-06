@@ -118,28 +118,14 @@ Right-click the window to bring up a context menu that provides access to variou
 
 ## Control panel
 
-The control panel lets you control the way VCS operates.
+The control panel lets you adjust various operational aspects of VCS.
 
 ![](./img/control-panel.webp)\
 *A screenshot of the control panel in VCS 3.0 showing analog capture settings*
 
-### Capture
+Experiment   with the various controls to find out what they do.
 
-*Todo*
-
-### Output
-
-*Todo*
-
-### Analog presets
-
-*Todo*
-
-### Filter graph
-
-*Todo*
-
-## Keyboard controls
+## Keyboard shortcuts
 
 <table>
     <tr>
