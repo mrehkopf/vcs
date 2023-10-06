@@ -4,9 +4,7 @@
  *
  */
 
-/*! @file
- *
- * @brief
+/*
  * The scaler subsystem interface.
  * 
  * The scaler subsystem provides facilities to VCS for scaling captured frames.
@@ -68,236 +66,89 @@ class abstract_filter_c;
 struct captured_frame_s;
 struct image_s;
 
-/*!
- * Callable inside a filter's apply() function to inform the user of an error
- * related to the filter's operation. The error string will be printed onto the
- * current output frame.
- */
+// Callable inside a filter's apply() function to inform the user of an error
+// related to the filter's operation. The error string will be printed onto the
+// current output frame.
 #define KS_PRINT_FILTER_ERROR(errorString) \
     font_5x3_c().render(("FILTER ERROR [" + (this->name()) + "]:\n" + errorString), image, 0, 0, 2, {0, 0, 255}, {0, 0, 0});
 
-/*!
- * Basic container for an image scaler.
- */
 struct image_scaler_s
 {
-     /*! The scaler's display name. Will be shown in the GUI etc.*/
+    // The scaler's display name. Will be shown in the GUI etc.
     std::string name;
 
-    /*! A function that executes the scaler on the given pixels.*/
+    // A function that executes the scaler on the given pixels.
     void (*apply)(const image_s &srcImage, image_s *const dstImage, const std::array<unsigned, 4> padding);
 };
 
-/*!
- * Returns the resolution to which the scaler will scale input frames, prior to
- * the application of resolution-influencing modifiers like a scaling multiplier.
- * 
- * In most cases, you'd be interested in ks_output_resolution(), instead.
- * 
- * @see
- * ks_output_resolution(), ks_scale_frame()
- */
+// Returns the resolution to which the scaler will scale input frames prior to
+// the application of resolution-influencing modifiers like a scaling multiplier.
+//
+// In most cases, you'd be interested in ks_output_resolution(), instead.
 resolution_s ks_base_resolution(void);
 
-/*!
- * Returns the resolution to which the scaler would currently scale an input frame.
- *
- * @see
- * ks_scale_frame(), ks_base_resolution
- */
+// Returns the resolution to which the scaler would currently scale an input frame.
 resolution_s ks_output_resolution(void);
 
-/*!
- * Returns true if a custom output scaling filter is currently active; false otherwise.
- */
 bool ks_is_custom_scaler_active(void);
 
-/*!
- * Initializes the scaler subsystem.
- *
- * By default, VCS will call this function automatically on program startup.
- *
- * Returns a function that releases the scaler subsystem.
- * 
- * @note
- * This function should be called before any other functions of the scaler interface.
- */
 subsystem_releaser_t ks_initialize_scaler(void);
 
-/*!
- * Applies scaling to the given frame's pixels and stores the result in the scaler
- * subsystem's frame buffer. The input data are not modified.
- * 
- * After this call, the scaled image is available via ks_frame_buffer().
- * 
- * @code
- * ks_scale_frame(frame);
- * const auto &scaledFrame = ks_frame_buffer();
- * @endcode
- * 
- * @code
- * // Feed captured frames into the scaler using a VCS event listener.
- * ev_new_captured_frame.listen([](const captured_frame_s &frame)
- * {
- *     ks_scale_frame(frame);
- * });
- * 
- * // Receive scaled frames from the scaler.
- * ev_new_output_image.listen([](const image_s &image)
- * {
- *     printf("A frame was scaled to %lu x %lu.\n", image.resolution.w, image.resolution.h);
- * });
- * @endcode
- * 
- * @see
- * ks_frame_buffer(), ev_new_output_image
- */
+// Applies scaling to the given frame's pixels and stores the result in the scaler
+// subsystem's frame buffer. The input data are not modified.
+//
+// After this call, the scaled image is available via ks_frame_buffer().
 void ks_scale_frame(const captured_frame_s &frame);
 
 void ks_set_scaling_multiplier(void);
 
-/*!
- * Enables or disables the scaler subsystem's scaling multiplier.
- * 
- * @see
- * ks_set_scaling_multiplier()
- */
 void ks_set_scaling_multiplier_enabled(const bool enabled);
 
-/*!
- * Sets the resolution to which input frames are to be scaled, before applying
- * size modifiers like scaling multiplier. By default, the scaler will apply the
- * modifiers to each input frame's own resolution.
- * 
- * @code
- * // Frames will be scaled to 2x of their original resolution.
- * ks_set_base_resolution_enabled(false);
- * ks_set_scaling_multiplier(2);
- * 
- * // Frames will be scaled to 2x of 640 x 480.
- * ks_set_base_resolution_enabled(true);
- * ks_set_base_resolution({640, 480});
- * ks_set_scaling_multiplier(2);
- * @endcode
- * 
- * @see
- * ks_set_base_resolution_enabled()
- */
+// Sets the resolution to which input frames are to be scaled, before applying
+// size modifiers like scaling multiplier. By default, the scaler will apply the
+// modifiers to each input frame's own resolution.
 void ks_set_base_resolution(const resolution_s &r);
 
-/*!
- * Enables or disables the scaler subsystem's overridable base resolution.
- * 
- * If disabled, the base resolution will be the resolution of the input frame.
- * 
- * @see
- * ks_set_base_resolution()
- */
+// Enables or disables the scaler subsystem's overridable base resolution.
+//
+// If disabled, the base resolution will be the resolution of the input frame.
 void ks_set_base_resolution_enabled(const bool enabled);
 
-/*!
- * Draws a "no signal" image into the scaler subsystem's frame buffer, erasing
- * any previous image there.
- * 
- * @note
- * A subsequent call to ks_scale_frame() will overwite the image.
- * 
- * @code
- * // Produce a "no signal" image when the capture device loses its signal.
- * ev_capture_signal_lost.listen(ks_indicate_no_signal);
- * 
- * // Note: The ev_capture_signal_lost event fires when the capture device loses its
- * // signal, but not in the case where the device already has no signal when
- * // VCS is launched.
- * @endcode
- * 
- * @see
- * ev_capture_signal_lost
- */
+// Draws a "no signal" image into the scaler subsystem's frame buffer, erasing
+// any previous image there.
+//
+// A subsequent call to ks_scale_frame() will overwite the image.
 void ks_indicate_no_signal(void);
 
-/*!
- * Draws an "invalid signal" image into the scaler subsystem's frame buffer,
- * erasing any previous image there.
- * 
- * @note
- * A subsequent call to ks_scale_frame() will overwite the image.
- * 
- * @code
- * // Produce an "invalid signal" image when the capture device loses its signal.
- * kc_ev_invalid_signal.listen(ks_indicate_invalid_signal);
- * @endcode
- * 
- * @see
- * kc_ev_invalid_signal
- */
+// Draws an "invalid signal" image into the scaler subsystem's frame buffer,
+// erasing any previous image there.
+//
+// A subsequent call to ks_scale_frame() will overwite the image.
 void ks_indicate_invalid_signal(void);
 
-/*!
- * Returns a reference to the scaler subsystem's frame buffer.
- * 
- * The frame buffer contains the most recent image produced by the subsystem.
- * This may be a scaled frame (produced by ks_scale_frame()) or some other type
- * of image (e.g. one produced by ks_indicate_no_signal()).
- * 
- * @see
- * ks_scale_frame(), ks_indicate_no_signal(), ks_indicate_invalid_signal()
- */
+// Returns a reference to the scaler subsystem's frame buffer.
+//
+// The frame buffer contains the most recent image produced by the subsystem.
+// This may be a scaled frame (produced by ks_scale_frame()) or some other type
+// of image (e.g. one produced by ks_indicate_no_signal()).
 image_s ks_scaler_frame_buffer(void);
 
-/*!
- * Returns a list of the names of the image scalers available in this build of VCS.
- * 
- * @code
- * const auto list = ks_scaler_names();
- * // list == {"Nearest", "Linear", "Area", ...}.
- * @endcode
- */
+// Returns a list of the names of the image scalers available in this build of
+// VCS.
 std::vector<std::string> ks_scaler_names(void);
 
-/*!
- * Sets the multiplier by which input frames are scaled. The multiplier applies
- * to both the width and height of the frame.
- * 
- * @code
- * // Input frames will be upscaled by 2x using the current upscaling filter.
- * ks_set_scaling_multiplier(2);
- * 
- * // Input frames will be downscaled by half using the current downscaling filter.
- * ks_set_scaling_multiplier(0.5);
- * @endcode
- * 
- * @see
- * ks_scale_frame()
- */
+// Sets the multiplier by which input frames are scaled. The multiplier applies
+// to both the width and height of the frame.
 void ks_set_scaling_multiplier(const double s);
 
-/*!
- * Sets the scaler to be used when the resolution of captured frames doesn't match
- * the resolution of the output window, such that the frames are scaled to the size
- * of the window. The desired filter is identified by @p name.
- * 
- * @code
- * // Produce an image downscaled by 0.75x using a linearly sampling scaler.
- * ks_set_default_scaler("Linear");
- * ks_set_scaling_multiplier(0.75);
- * ks_scale_frame(frame);
- * const auto &scaledImage = ks_frame_buffer();
- * @endcode
- * 
- * @note
- * @p name must be one of the strings returned by ks_scaler_names().
- * 
- * @see
- * ks_scaler_names(), ks_set_scaling_multiplier()
- */
+// Sets the scaler to be used when the resolution of captured frames doesn't match
+// the resolution of the output window, such that the frames are scaled to the size
+// of the window.
+//
+// See ks_scaler_names() for a list of available scaler names.
 void ks_set_default_scaler(const std::string &name);
 
-/*!
- * Returns a pointer to the currently-active default scaler.
- *
- * @see
- * ks_set_default_scaler()
- */
+// Returns a pointer to the currently-active default scaler.
 const image_scaler_s* ks_default_scaler(void);
+
 #endif

@@ -5,9 +5,7 @@
  *
  */
 
-/*! @file
- *
- * @brief
+/*
  * The filter subsystem interface.
  * 
  * The filter subsystem provides facilities for manipulating captured frames'
@@ -116,13 +114,7 @@
  *      @endcode
  * 
  *   7. VCS will automatically release the subsystem on program termination.
- * 
- * @warning
- * Once established, you should never change a filter's UUID. It acts as a filter
- * type identifier when VCS's filter graphs are saved to -- and loaded from -- disk.
- * 
- * @see
- * [Guide: Implementing a frame filter](@ref md_docs_developer_guides_implementing-a-frame-filter)
+ *
  */
 
 #ifndef VCS_FILTER_FILTER_H
@@ -140,220 +132,103 @@ struct image_s;
 
 typedef std::vector<std::pair<unsigned /*param idx*/, double /*param value*/>> filter_params_t;
 
-/*!
- * @brief
- * Enumerates the functional categories into which filters can be divided.
- *
- * These categories exist e.g. for the benefit of the VCS GUI, allowing a more
- * structured listing of filters in menus.
- */
+// Enumerates the functional categories into which filters can be divided.
+//
+// These categories exist e.g. for the benefit of the VCS GUI, allowing a more
+// structured listing of filters in menus.
 enum class filter_category_e
 {
-    /*!
-     * Filters that reduce the image's fidelity. For example: blur, decimate.
-     */
+    // Filters that reduce the image's fidelity. For example: blur, decimate.
     reduce,
 
-    /*!
-     * Filters that enhance the image's fidelity. For example: sharpen, denoise.
-     */
+    // Filters that enhance the image's fidelity. For example: sharpen, denoise.
     enhance,
 
-    /*!
-     * Filters that modify the image's geometry. For example: rotate, crop.
-     */
+    // Filters that modify the image's geometry. For example: rotate, crop.
     distort,
 
-    /*!
-     * Filters that provide information about the image. For example: frame rate
-     * estimate, noise histogram.
-     */
+    // Filters that provide information about the image. For example: frame rate
+    // estimate, noise histogram.
     meta,
 
-    /*!
-     * Filters that resize the final image. Note that these filters can operate
-     * only as the last link in the filter chain, rather than as intermediate
-     * scalers.
-     */
+    // Filters that resize the final image. Note that these filters can operate
+    // only as the last link in the filter chain, rather than as intermediate
+    //scalers.
     output_scaler,
 
-    /*!
-     * Special case, not for use by filters. Used as a control in filter chains.
-     */
+    // Special case, not for use by filters. Used as a control in filter chains.
     input_condition,
 
-    /*!
-     * Special case, not for use by filters. Used as a control in filter chains.
-     */
+    // Special case, not for use by filters. Used as a control in filter chains.
     output_condition,
 };
 
-/*!
- * Initializes the filter subsystem, allocating its memory buffers etc.
- *
- * By default, VCS will call this function automatically on program startup.
- *
- * Returns a function that releases the filter subsystem.
- * 
- * @warning
- * This function must be called prior to any others in the filter subsystem.
- */
+// Initializes the filter subsystem, allocating its memory buffers etc.
 subsystem_releaser_t kf_initialize_filters(void);
 
-/*!
- * Adds @p newChain to the filter subsystem's list of known filter chains.
- * This makes the chain available for use by kf_apply_matching_filter_chain().
- * 
- * The chain's filter instances must be created using kf_create_filter_instance().
- * 
- * A filter chain must begin with a filter of type filter_category_e::input_condition
- * and end with a filter of type filter_category_e::output_condition.
- * 
- * @code
- * // Create some filters for a chain.
- * auto *inputGate = kf_create_filter_instance<filter_input_gate_c>();
- * auto *blur = kf_create_filter_instance<filter_blur_c>();
- * auto *flip = kf_create_filter_instance<filter_flip_c>();
- * auto *outputGate = kf_create_filter_instance<filter_output_gate_c>();
- * 
- * // Create the filter chain. 
- * std::vector<abstract_filter_c*> chain = {inputGate, blur, flip, outputGate};
- * 
- * // Make the chain available to the filter subsystem.
- * kf_register_filter_chain(chain);
- * @endcode
- *
- * @see
- * kf_unregister_all_filter_chains(), kf_apply_matching_filter_chain(), kf_create_filter_instance()
- */
+// Adds the given filter chain to the filter subsystem's list of known chains.
+// This makes the chain available for use by kf_apply_matching_filter_chain().
+//
+// The chain's filter instances must be created using kf_create_filter_instance().
+//
+// A filter chain must begin with a filter of type filter_category_e::input_condition
+// and end with a filter of type filter_category_e::output_condition|output_scaler.
 void kf_register_filter_chain(std::vector<abstract_filter_c*> newChain);
 
-/*!
- * Clears the filter subsystem's list of registered filter chains.
- * 
- * @warning
- * The chains' filter instances won't be deallocated and their memory will continue
- * to be managed by the filter subsystem. You need to call kf_delete_filter_instance()
- * if you want to deallocate them.
- *
- * @see
- * kf_register_filter_chain()
- */
+// Clears the filter subsystem's list of registered filter chains.
+//
+// The chains' filter instances won't be deallocated. You need to call
+// kf_delete_filter_instance() if you want to deallocate them.
 void kf_unregister_all_filter_chains(void);
 
-/*!
- * Applies to the @p pixels of an image of resolution @p r the first filter chain
- * registered with kf_register_filter_chain() whose input condition matches @p r
- * and whose output condition matches the scaler subsystem's current output
- * resolution. If there's no chain that matches these conditions, no chain will
- * be applied.
- * 
- * If the filter subsystem is disabled, or if there are no registered filter
- * chains, calling this function has no effect.
- *
- * Returns a pointer to the filter chain's output scaler, if the chain has one;
- * otherwise, returns @a nullptr.
- * 
- * @note
- * @p pixels is expected to be in BGRA/8888 format, each pixel being 4 bytes in
- * B,G,R,A order.
- *
- * @see
- * kf_register_filter_chain(), ks_output_resolution(), kf_set_filtering_enabled()
- */
+// Applies to the pixels of an image the first filter chain registered with
+// kf_register_filter_chain() whose input condition matches the image's resolution
+// and whose output condition matches the scaler subsystem's current output
+// resolution. If there's no chain that matches these conditions, no chain will
+// be applied.
+//
+// If the filter subsystem is disabled, or if there are no registered filter
+// chains, calling this function has no effect.
+//
+// Returns a pointer to the filter chain's output scaler, if the chain has one;
+// otherwise, returns nullptr.
 abstract_filter_c* kf_apply_matching_filter_chain(image_s *const dstImage);
 
-/*!
- * Returns a list of the filter types that're available via this subsystem
- * interface.
- * 
- * @code
- * // Print the names of the available filter types.
- * for (const auto *filterType: kf_available_filter_types())
- * {
- *     std::cout << filterType->name() << std::endl;
- * }
- * @endcode
- * 
- * @see
- * kf_is_known_filter_uuid()
- */
 const std::vector<const abstract_filter_c*>& kf_available_filter_types(void);
 
-/*!
- * Creates a new instance of a filter, whose type is identified with a UUID by
- * @p filterTypeUuid and whose initial parameters values are given by @p initialParams.
- *
- * Returns a pointer to the created instance, or @a nullptr on error. The caller
- * can use the pointers obtained from this function to create filter chains.
- * 
- * @note
- * The returned pointer's memory is managed by the filter subsystem; the caller
- * shouldn't deallocate it. Its release can be requested via
- * kf_delete_filter_instance().
- *  
- * @code
- * // Create an instance of a particular filter, using a UUID to identify the
- * // filter's type (in this case, filter_blur_c().uuid()).
- * auto *blur = kf_create_filter_instance("a5426f2e-b060-48a9-adf8-1646a2d3bd41");
- * 
- * // Create an instance of a particular filter, using a template to identify
- * // the filter's type.
- * auto *blur2 = kf_create_filter_instance<filter_blur_c>();
- * @endcode
- *
- * @see
- * kf_register_filter_chain(), kf_delete_filter_instance()
- */
-abstract_filter_c* kf_create_filter_instance(const std::string &filterTypeUuid,
-                                             const filter_params_t &initialParamValues = {});
+// Creates a new instance of a filter, whose type is identified with a UUID and
+// whose initial parameters values are given.
+//
+// Returns a pointer to the created instance, or nullptr on error. The caller
+// can use the pointers obtained from this function to create filter chains.
+//
+// The returned pointer's memory is managed by the filter subsystem; the caller
+// shouldn't deallocate it. Its release can be requested via
+// kf_delete_filter_instance().
+abstract_filter_c* kf_create_filter_instance(const std::string &filterTypeUuid, const filter_params_t &initialParamValues = {});
 
-//!@cond
 template <class T>
 abstract_filter_c* kf_create_filter_instance(const filter_params_t &initialParamValues = {})
 {
     return kf_create_filter_instance(T().uuid(), initialParamValues);
 }
-//!@endcond
 
-/*!
- * Deallocates a filter instance created by kf_create_filter_instance().
- *
- * @warning
- * The caller must first unregister any filter chains that're using this filter.
- *
- * @see
- * kf_unregister_all_filter_chains()
- */
+// Deallocates a filter instance created by kf_create_filter_instance().
+//
+// The caller must first unregister any filter chains that're using this filter.
 void kf_delete_filter_instance(const abstract_filter_c *const filter);
 
-/*!
- * Returns true if the given filter type UUID identifies a filter type available
- * via this subsystem interface; false otherwise.
- * 
- * @see
- * kf_available_filter_types(), kf_create_filter_instance()
- */
+// Returns true if the given filter type UUID identifies a filter type available
+// via this subsystem interface; false otherwise.
 bool kf_is_known_filter_uuid(const std::string &filterTypeUuid);
 
-/*!
- * Enable or disable the filter subsystem.
- *
- * This state has an effect on kf_apply_matching_filter_chain() such that the function
- * will do nothing if the filter subsystem is disabled. Other functionality of
- * the interface is not affected.
- *
- * @see
- * kf_is_filtering_enabled()
- */
+// Enable or disable the filter subsystem.
+//
+// This state has an effect on kf_apply_matching_filter_chain() such that the function
+// will do nothing if the filter subsystem is disabled. Other functionality of
+// the interface is not affected.
 void kf_set_filtering_enabled(const bool enabled);
 
-/*!
- * Returns true if the filter subsystem is currently enabled; false otherwise.
- *
- * @see
- * kf_set_filtering_enabled()
- */
 bool kf_is_filtering_enabled(void);
 
 #endif

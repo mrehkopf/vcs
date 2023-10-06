@@ -1,8 +1,7 @@
 /*
- * 2019 Tarpeeksi Hyvae Soft /
- * VCS disk access
+ * 2019 Tarpeeksi Hyvae Soft
  *
- * Provides functions for loading and saving data to and from files on disk.
+ * Software: VCS
  *
  */
 

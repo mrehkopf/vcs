@@ -1,12 +1,11 @@
 /*
- * 2018 Tarpeeksi Hyvae Soft /
- * VCS
+ * 2018-2023 Tarpeeksi Hyvae Soft
+ *
+ * Software: VCS
  *
  */
 
-/*! @file
- *
- * @brief
+/*
  * The display subsystem interface.
  *
  * The VCS GUI is responsible for providing the user with real-time means to
@@ -18,12 +17,6 @@
  * VCS, making it possible to replace the GUI with fairly minimal modification
  * to the rest of VCS.
  *
- * VCS's default GUI uses Qt, and its implementation of the display interface
- * can be found in @ref src/display/qt/d_main.cpp.
- *
- * @warning
- * As of VCS 2.0.0, this interface is undergoing refactoring. Many of its
- * functions are expected to become renamed or removed.
  */
 
 #ifndef VCS_DISPLAY_DISPLAY_H
@@ -38,49 +31,38 @@
 #include "filter/filter.h"
 #include "main.h"
 
-/*!
- * @brief
- * A GUI-agnostic representation of a filter graph node.
- *
- * Used to mediate data between the disk subsystem's file loader and the display
- * subsystem's (GUI framework-dependent) filter graph implementation, so that the
- * file loader can remain independent from the GUI framework.
- */
+// A GUI-agnostic representation of a filter graph node.
+//
+// Used to mediate data between the disk subsystem's file loader and the display
+// subsystem's (GUI framework-dependent) filter graph implementation, so that the
+// file loader can remain independent from the GUI framework.
 struct abstract_filter_graph_node_s
 {
-    /*! Uniquely identifies this node from other nodes.*/
+    // Uniquely identifies an instance of this node from other instances.
     int id = 0;
 
-    /*! Whether this node is active (true) or a passthrough that applies no processing (false).*/
+    // Whether this node is active (true) or a passthrough that applies no processing (false).
     bool isEnabled = true;
 
-    /*! The UUID of the filter type that this node represents (see abstract_filter_c).*/
+    // The UUID of the filter type that this node represents (see abstract_filter_c).
     std::string typeUuid = "";
 
-    /*! The color of the node's background in the filter graph.*/
+    // The color of the node's background in the filter graph.
     std::string backgroundColor = "black";
 
-    /*! The initial parameters of the filter associated with this node.*/
+    // The initial parameters of the filter associated with this node.
     filter_params_t initialParameters;
 
-    /*! The node's initial XY coordinates in the filter graph.*/
+    // The node's initial XY coordinates in the filter graph.
     std::pair<double, double> initialPosition = {0, 0};
 
-    /*! The nodes (identified by their @ref id) to which this node is connected.*/
+    // The nodes (identified by their @ref id) to which this node is connected.
     std::vector<int> connectedTo;
 };
 
-/*!
- * @brief
- * Describes the resolution of a pixel surface -- e.g. a program window or an image
- * buffer.
- */
 struct resolution_s
 {
-    /*! Width in pixels.*/
     unsigned w;
-
-    /*! Height in pixels.*/
     unsigned h;
 
     static resolution_s from_capture_device_properties(const std::string &nameSpace = "");
@@ -92,10 +74,6 @@ struct resolution_s
     bool operator!=(const resolution_s &other) const;
 };
 
-/*!
- * @brief
- * Generic container for the data and metadata of a 2D image.
- */
 struct image_s
 {
     uint8_t *const pixels;
@@ -130,10 +108,6 @@ struct image_s
     }
 };
 
-/*!
- * @brief
- * Maps a value to a named filter graph property.
- */
 struct filter_graph_option_s
 {
     std::string propertyName;
@@ -150,150 +124,59 @@ struct filter_graph_option_s
 
 void kd_add_control_panel_widget(const std::string &tabName, const std::string &widgetTitle, abstract_gui_s *widget);
 
-/*!
- * Asks the GUI to create and open the output window. The output window is a
- * surface on which VCS's output frames are to be displayed by the GUI.
- *
- * If the GUI makes use of child windows and/or dialogs, this may be a good
- * time to create them, as well.
- *
- * By default, VCS will call this function automatically on program startup.
- *
- * Returns a function that closes and releases the output window.
- *
- * @see
- * kd_spin_event_loop()
- */
+// Asks the GUI to create and open the output window. The output window is a
+// surface on which VCS's output frames are to be displayed by the GUI.
+//
+// If the GUI makes use of child windows and/or dialogs, this may be a good
+// time to create them, as well.
 subsystem_releaser_t kd_acquire_output_window(void);
 
 // Visit each node in the graph and while doing so, group together such chains of
 // filters that run from an input gate through one or more filters into an output
 // gate. The chains will then be submitted to the filter handler for use in applying
 // the filters to captured frames.
-/*!
- * Asks the GUI to inform the filter interface, @ref src/filter/filter.h, of
- * all filter chains currently configured in the GUI.
- *
- * This assumes that the GUI provides a dialog of some sort in which the user
- * can create and modify filter chains. When this function is called, the GUI
- * is expected to enumerate those filter chains into a format consumed by the
- * filter interface and then to submit them to the filter interface.
- *
- * In pseudocode, the GUI would do something like the following:
- *
- * @code
- * kf_unregister_all_filter_chains();
- *
- * for (chain: guiFilterChains)
- * {
- *     const standardFilterChain = ...convert chain into standard format...
- *     kf_register_filter_chain(standardFilterChain);
- * }
- * @endcode
- */
 void kd_recalculate_filter_graph_chains(void);
 
-/*!
- * Asks the GUI to load video presets from the given file.
- *
- * The GUI is expected to inform VCS's video presets subsystem of the new
- * presets.
- */
+// Asks the GUI to load video presets from the given file.
+//
+// The GUI is expected to inform VCS's video presets subsystem of the new
+// presets.
 void kd_load_video_presets(const std::string &filename);
 
-/*!
- * Asks the GUI to load a filter graph from the given file.
- *
- * The GUI is expected to inform VCS's filter subsystem of the new graph.
- */
+// Asks the GUI to load a filter graph from the given file.
+//
+// The GUI is expected to inform VCS's filter subsystem of the new graph.
 void kd_load_filter_graph(const std::string &filename);
 
-/*!
- * Asks the GUI to refresh the output window's title bar text.
- *
- * VCS assumes that the output window's title bar displays certain information
- * about VCS's state - e.g. the current capture resolution. VCS will thus call
- * this function to let the GUI know that the relevant state has changed.
- *
- * If your custom GUI implementation displays different state variables than
- * VCS's default GUI does, you may need to do custom polling of the relevant
- * state in order to be aware of changes to it.
- */
 void kd_update_output_window_title(void);
 
-/*!
- * Asks the GUI to execute one spin of its event loop.
- *
- * Spinning the event loop would involve e.g. repainting the output window,
- * processing any user input, etc.
- *
- * The following sample Qt 5 code executes one spin of the event loop:
- *
- * @code
- * QCoreApplication::sendPostedEvents();
- * QCoreApplication::processEvents();
- * @endcode
- *
- * VCS will generally call this function at the capture's refresh rate, e.g. 70
- * times per second when capturing VGA mode 13h.
- *
- * @note
- * If the GUI wants to match the capture's refresh rate, it should repaint its
- * output only when VCS calls this function.
- */
+// Asks the GUI to execute one spin of its event loop.
+//
+// Spinning the event loop would involve e.g. repainting the output window,
+// processing any user input, etc.
+//
+// If the GUI wants to match the capture's refresh rate, it should repaint its
+// output only when VCS calls this function.
 void kd_spin_event_loop(void);
 
-/*!
- * Asks the GUI to display an info message to the user.
- *
- * The message should be deliverable with a headless GUI, i.e. requiring
- * minimal prior GUI initialization.
- *
- * The following sample Qt 5 code creates a conforming message box:
- *
- * @code
- * QMessageBox mb;
- *
- * mb.setWindowTitle(strlen(title)? title : "VCS has this to say");
- * mb.setText(msg);
- * mb.setStandardButtons(QMessageBox::Ok);
- * mb.setIcon(QMessageBox::Information);
- * mb.setDefaultButton(QMessageBox::Ok);
- *
- * mb.exec();
- * @endcode
- *
- * @see
- * kd_show_headless_error_message(), kd_show_headless_assert_error_message()
- */
+// Asks the GUI to display an informational message to the user.
+//
+// The message should be deliverable with a headless GUI, i.e. requiring
+// minimal prior GUI initialization.
 void kd_show_headless_info_message(const char *const title, const char *const msg);
 
-/*!
- * Asks the GUI to display an error message to the user.
- *
- * The message should be deliverable with a headless GUI, i.e. requiring
- * minimal prior GUI initialization.
- *
- * @see
- * kd_show_headless_info_message(), kd_show_headless_assert_error_message()
- */
+// Asks the GUI to display an error message to the user.
+//
+// The message should be deliverable with a headless GUI, i.e. requiring
+// minimal prior GUI initialization.
 void kd_show_headless_error_message(const char *const title, const char *const msg);
 
-/*!
- * Asks the GUI to display an assertion error message to the user.
- *
- * The message should be deliverable with a headless GUI, i.e. requiring
- * minimal prior GUI initialization.
- *
- * @see
- * kd_show_headless_info_message(), kd_show_headless_error_message()
- */
+// Asks the GUI to display an assertion error message to the user.
+//
+// The message should be deliverable with a headless GUI, i.e. requiring
+// minimal prior GUI initialization.
 void kd_show_headless_assert_error_message(const char *const msg, const char * const filename, const uint lineNum);
 
-/*!
- * Returns true if the output window is in fullscreen mode; false
- * otherwise.
- */
 bool kd_is_fullscreen(void);
 
 #endif
