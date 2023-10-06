@@ -55,7 +55,7 @@ control_panel::capture::InputResolution::InputResolution(QWidget *parent) :
             {
                 // If the Alt key is pressed while clicking the button, let the user specify
                 // a new resolution for the button.
-                if (QGuiApplication::keyboardModifiers() & Qt::AltModifier)
+                if (qApp->keyboardModifiers() & Qt::AltModifier)
                 {
                     resolution_s customResolution = {640, 480};
 

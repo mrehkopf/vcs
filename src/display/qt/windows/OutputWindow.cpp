@@ -636,7 +636,7 @@ void OutputWindow::paintEvent(QPaintEvent *)
         kc_has_signal() &&
         this->isActiveWindow() &&
         this->rect().contains(this->mapFromGlobal(QCursor::pos())) &&
-        (QGuiApplication::mouseButtons() & Qt::MidButton)
+        (qApp->mouseButtons() & Qt::MidButton)
     ){
         this->magnifyingGlass->magnify(frameImage, this->mapFromGlobal(QCursor::pos()));
     }

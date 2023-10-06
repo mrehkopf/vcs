@@ -237,8 +237,15 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
         connect(ui->pushButton_addNewPreset, &QPushButton::clicked, this, [this]
         {
-            const bool duplicateCurrent = (QGuiApplication::keyboardModifiers() & Qt::AltModifier);
+            const bool duplicateCurrent = (qApp->keyboardModifiers() & Qt::AltModifier);
             analog_video_preset_s *const newPreset = kvideopreset_create_new_preset(duplicateCurrent? ui->comboBox_presetList->current_preset() : nullptr);
+
+            if (!duplicateCurrent)
+            {
+                newPreset->activationResolution.w = kc_device_property("width");
+                newPreset->activationResolution.h = kc_device_property("height");
+                newPreset->activationRefreshRate = kc_device_property("refresh rate");
+            }
 
             ui->comboBox_presetList->add_preset(newPreset->id);
             emit this->data_changed();

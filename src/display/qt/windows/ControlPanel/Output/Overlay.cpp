@@ -25,7 +25,7 @@ control_panel::output::Overlay::Overlay(QWidget *parent) :
     DialogFragment(parent),
     ui(new Ui::Overlay)
 {
-    overlayDocument.setDefaultFont(QGuiApplication::font());
+    overlayDocument.setDefaultFont(qApp->font());
     overlayDocument.setDocumentMargin(0);
 
     ui->setupUi(this);
