@@ -2,7 +2,26 @@
 
 ## Table of contents
 
-*Todo*
+1. [Introduction](#introduction)
+    1. [Key features](#key-features)
+    2. [Supported capture hardware](#supported-capture-hardware)
+    3. [System requirements](#system-requirements)
+2. [FAQ](#faq)
+    1. [How do I adjust the picture?](#q-how-do-i-adjust-the-picture)
+    2. [How do I fix analog noise?](#q-how-do-i-fix-analog-noise)
+    3. [How do I set the correct capture resolution?](#q-how-do-i-set-the-correct-capture-resolution)
+    4. [How do I change the aspect ratio?](#q-how-do-i-change-the-aspect-ratio)
+    5. [How do I enable variable refresh rate output?](#q-how-do-i-enable-variable-refresh-rate-output)
+    6. [How do I fix screen tearing?](#q-how-do-i-fix-screen-tearing)
+    7. [How much capture latency is there?](#q-how-much-capture-latency-is-there)
+3. [Output window](#output-window)
+    1. [Magnifying glass](#magnifying-glass)
+    2. [Borderless mode](#borderless-mode)
+    3. [Resizing](#resizing)
+    4. [Context menu](#context-menu)
+4. [Control panel](#control-panel)
+5. [Keyboard shortcuts](#keyboard-shortcuts)
+6. [Command-line options](#command-line-options)
 
 ## Introduction
 
