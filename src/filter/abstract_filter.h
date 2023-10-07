@@ -63,18 +63,11 @@ public:
 
     virtual filter_category_e category(void) const = 0;
 
-    /*!
-     * Applies the filter's image processing to an image's pixels.
-     *
-     * This function is allowed only to alter the image's pixel values, not e.g. its
-     * size.
-     */
+    // Applies the filter's effect on the input image.
     virtual void apply(image_s *const image) = 0;
 
-    /*!
-     * The filter's GUI widget, which provides the end-user with controls for
-     * adjusting the filter's parameters.
-     */
+    // The filter's GUI widget, which appears in VCS's filter graph and provides
+    // the user with controls for adjusting the filter's parameters.
     abstract_gui_s *gui = nullptr;
 
 protected:

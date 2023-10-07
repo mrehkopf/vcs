@@ -11,7 +11,13 @@
 #include "common/log/log.h"
 
 const char PROGRAM_NAME[] = "VCS";
-const char PROGRAM_VERSION_STRING[] = "3.0.1";
+
+const struct semantic_version_s
+{
+    unsigned major = 3;
+    unsigned minor = 0;
+    unsigned patch = 1;
+} VCS_VERSION;
 
 // The minimum and maximum resolution we can output frames in.
 const uint MIN_OUTPUT_WIDTH = 160;

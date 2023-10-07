@@ -242,7 +242,7 @@ static void eco_sleep(const capture_event_e event)
 
 int main(int argc, char *argv[])
 {
-    printf("VCS %s\n", PROGRAM_VERSION_STRING);
+    printf("VCS %u.%u.%u\n", VCS_VERSION.major, VCS_VERSION.minor, VCS_VERSION.patch);
 #ifndef VCS_RELEASE_BUILD
     printf("NON-RELEASE BUILD\n");
 #endif

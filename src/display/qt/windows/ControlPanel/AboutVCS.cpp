@@ -21,7 +21,7 @@ control_panel::AboutVCS::AboutVCS(QWidget *parent) :
     // Initialize the table of information. Note that this also sets
     // the vertical order in which the table's parameters are shown.
     {
-        ui->tableWidget->modify_property("Version", PROGRAM_VERSION_STRING);
+        ui->tableWidget->modify_property("Version", QString("%1.%2.%3").arg(VCS_VERSION.major).arg(VCS_VERSION.minor).arg(VCS_VERSION.patch));
         ui->tableWidget->modify_property("Release build",
             #ifdef VCS_RELEASE_BUILD
                 "Yes"
