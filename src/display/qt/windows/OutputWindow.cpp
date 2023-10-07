@@ -90,6 +90,11 @@ OutputWindow::OutputWindow(QWidget *parent) :
 
             connect(controlPanel, &QAction::triggered, this, [this]
             {
+                if (!this->controlPanelWindow->isVisible())
+                {
+                    this->controlPanelWindow->move(this->pos());
+                }
+
                 this->controlPanelWindow->show();
                 this->controlPanelWindow->activateWindow();
             });
