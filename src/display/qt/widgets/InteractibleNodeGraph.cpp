@@ -103,6 +103,7 @@ void InteractibleNodeGraph::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 if (edge)
                 {
                     complete_connection_event(edge);
+                    this->hasExclusiveMouseClickFocus = false;
                     return;
                 }
 
