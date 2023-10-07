@@ -248,32 +248,42 @@ int main(int argc, char *argv[])
 #endif
     printf(":::::::::\n");
 
-    DEBUG(("Parsing the command line."));
-    if (!kcom_parse_command_line(argc, argv))
-    {
-        NBENE(("Malformed command line argument(s). Exiting."));
-        goto fail;
-    }
-
     INFO(("Initializing VCS."));
-    if (!initialize_all())
+    try
     {
-        kd_show_headless_error_message(
-            "",
-           "VCS has to exit because it encountered one or more unrecoverable errors "
-           "while initializing itself. More information will have been printed into "
-           "the console. If a console window was not already open, run VCS again "
-           "from the command line."
-        );
+        if (!kcom_parse_command_line(argc, argv))
+        {
+            NBENE(("Malformed command line argument(s). Exiting."));
+            goto fail;
+        }
+
+        if (!initialize_all())
+        {
+            kd_show_headless_error_message(
+                "",
+               "VCS has to exit because it encountered one or more unrecoverable errors "
+               "while initializing itself. More information will have been printed into "
+               "the console. If a console window was not already open, run VCS again "
+               "from the command line."
+            );
+            goto fail;
+        }
+
+        if (!kc_has_signal())
+        {
+            ev_capture_signal_lost.fire();
+        }
+
+        load_user_data();
+    }
+    // Generally assumed to be from k_assert(), which will already have displayed
+    // a more detailed error report to the user.
+    catch (...)
+    {
+        NBENE(("VCS has encountered a run-time error and will attempt to exit normally."));
+        PROGRAM_EXIT_REQUESTED = true;
         goto fail;
     }
-
-    if (!kc_has_signal())
-    {
-        ev_capture_signal_lost.fire();
-    }
-
-    load_user_data();
 
     DEBUG(("Entering the main loop."));
     try
@@ -297,6 +307,7 @@ int main(int argc, char *argv[])
     {
         NBENE(("VCS has encountered a run-time error and will attempt to exit normally."));
         PROGRAM_EXIT_REQUESTED = true;
+        goto fail;
     }
 
     prepare_for_exit();
