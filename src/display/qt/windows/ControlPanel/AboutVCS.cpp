@@ -23,10 +23,10 @@ control_panel::AboutVCS::AboutVCS(QWidget *parent) :
     {
         ui->tableWidget->modify_property("Version", QString("%1.%2.%3").arg(VCS_VERSION.major).arg(VCS_VERSION.minor).arg(VCS_VERSION.patch));
         ui->tableWidget->modify_property("Release build",
-            #ifdef VCS_RELEASE_BUILD
-                "Yes"
-            #else
+            #ifdef VCS_DEBUG_BUILD
                 "No"
+            #else
+                "Yes"
             #endif
         );
         ui->tableWidget->modify_property("Build date", __DATE__);

@@ -27,33 +27,41 @@ Any model of Datapath capture card supported by the Datapath Vision driver for L
 
 ![](./cat1.jpg)
 
-Open [vcs.pro](vcs.pro) in Qt Creator, or run `$ qmake && make -j` in the repo's root. You'll need to meet the [dependencies](#dependencies), and may need to modify some of the `INCLUDEPATH` and `LIBS` entries in [vcs.pro](vcs.pro) to match your system.
+Open [vcs.pro](vcs.pro) in Qt Creator, or run `$ qmake && make -j` in the repo's root. You'll need to meet the [dependencies](#dependencies) and may need to adjust the [build configuration](#build-configuration).
 
 ### Dependencies
 
 The VCS codebase depends on the following libraries and frameworks:
 
-1. Qt 5
-2. OpenCV 4
-3. For [non-release builds](#release-build-vs-debug-build), AddressSanitizer and UndefinedBehaviorSanitizer, which should come pre-installed with your compiler*
+- Qt
+- OpenCV
 
-\* To suppress Sanitizer warnings in external libraries, create an `asan-suppress.txt` file in the build directory and populate it according to [this guide](https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer#suppressions).
+I recommend sticking with Qt 5 unless you enjoy fixing a variety of small breakages.
 
-I use the following toolchains when developing VCS:
+Both OpenCV 4 and OpenCV 3 should be compatible, but no guarantees.
 
-| OS                 | Compiler           | Qt   | OpenCV | Capture card           |
-| ------------------ | ------------------ | ---- | ------ | ---------------------- |
-| Ubuntu 20.04 HWE   | GCC 9.4 (64-bit)   | 5.12 | 4.2.0  | Datapath VisionRGB-E1S |
+### Build configuration
 
-### Release build vs. debug build
+#### Include paths
 
-The default configuration in [vcs.pro](vcs.pro) produces a debug build, which has &ndash; among other things &ndash; more copious run-time bounds-checking of memory accesses. The run-time debugging features are expected to reduce performance to some extent, but can help reveal programming errors.
+The following variables in [vcs.pro](vcs.pro) control where the build system looks for external dependencies:
 
-Defining `VCS_RELEASE_BUILD` globally will produce a release build, with fewer debugging checks in performance-critical sections of the program. Simply uncomment `DEFINES += VCS_RELEASE_BUILD` at the top of [vcs.pro](vcs.pro) and do a full rebuild.
+- `DATAPATH_VISION_HEADER_PATH`
+- `OPENCV_HEADER_PATH`
+- `OPENCV_LIB_PATH`
+- `OPENCV_DEBUG_LIB_PATH` (optional, for debug builds)
 
-To confirm whether the program is running in release or debug mode, navigate to Control panel &rarr; About VCS.
+You'll likely need to modify at least some of them to point to the correct locations on your system.
 
-### The capture backend
+#### Release build vs. debug build
+
+VCS can be built in two modes: release or debug. A release build is intended for normal usage, while a debug build includes additional run-time error checks that generally reduce performance but help reveal programming errors.
+
+To enable debug mode, define `VCS_DEBUG_BUILD` in [vcs.pro](vcs.pro). Otherwise, the build will be in release mode. You can confirm whether the program is running in release or debug mode by navigating to Control panel &rarr; About VCS.
+
+In debug mode, you can optionally enable AddressSanitizer and UndefinedBehaviorSanitizer by defining `VCS_DEBUG_BUILD_USES_SANITIZERS` in [vcs.pro](vcs.pro). To suppress Sanitizer warnings in external libraries, create an `asan-suppress.txt` file in the build directory and populate it according to [this guide](https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer#suppressions).
+
+#### The capture backend
 
 A capture backend is an implementation in VCS providing support for a particular capture source, be it a hardware device (e.g. a Datapath Vision capture card) or something else.
 

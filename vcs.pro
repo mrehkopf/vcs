@@ -1,46 +1,43 @@
-# Whether this build of VCS is intended for release. Release builds may disable
-# run-time error checks etc. for improved performance.
-DEFINES += VCS_RELEASE_BUILD
+# Path to the Datapath Linux Vision driver header files. Needed only if
+# CAPTURE_BACKEND_VISION_V4L is defined.
+DATAPATH_VISION_HEADER_PATH = $$(HOME)/sdk/visionrgb/include/
+
+# Paths to OpenCV's header and library files. The debug libraries are used only
+# if VCS_DEBUG_BUILD is defined.
+OPENCV_HEADER_PATH = /usr/include/opencv4/
+OPENCV_LIB_PATH = /usr/lib/x86_64-linux-gnu/
+OPENCV_DEBUG_LIB_PATH = /usr/lib/debug/opencv4/
+
+# Whether to produce a non-release-mode debugging build of VCS, which includes
+# additional run-time error checks etc. Optionally, you can enable sanitizers
+# in debug builds.
+#
+# Note: if a debug build uses _GLIBCXX_DEBUG or sanitizers, you may (or might
+# not) come across incompatibilities with OpenCV.
+DEFINES += \
+    #VCS_DEBUG_BUILD \
+    #VCS_DEBUG_BUILD_USES_SANITIZERS
 
 # Which capture source this build supports. Select one. See the build guide in
 # README.md for more information.
 DEFINES += \
-    CAPTURE_BACKEND_VIRTUAL
+    #CAPTURE_BACKEND_VIRTUAL
     #CAPTURE_BACKEND_DOSBOX_MMAP
-    #CAPTURE_BACKEND_VISION_V4L
+    CAPTURE_BACKEND_VISION_V4L
 
 # Whether this build of VCS uses the OpenCV library. For now, non-OpenCV builds
 # are not supported, so this should always be defined.
 DEFINES += VCS_USES_OPENCV
 
-linux {
-    contains(DEFINES, CAPTURE_BACKEND_VISION_V4L) {
-        # Path to the header files of the Datapath Linux Vision driver.
-        INCLUDEPATH += $$(HOME)/sdk/visionrgb/include
-    }
 
-    contains(DEFINES, VCS_USES_OPENCV) {
-        INCLUDEPATH += /usr/include/opencv4
 
-        LIBS += \
-            -L/usr/lib/x86_64-linux-gnu \
-            -lopencv_imgproc \
-            -lopencv_highgui \
-            -lopencv_core \
-            -lopencv_photo
 
-        contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
-            LIBS += -lopencv_imgcodecs
-        }
-    }
-}
+
+QMAKE_CXXFLAGS += -pedantic -std=c++2a -Wno-missing-field-initializers
 
 INCLUDEPATH += \
     $$PWD/src/ \
     $$PWD/src/display/qt/widgets/
-
-RESOURCES += \
-    src/display/qt/res.qrc
 
 SOURCES += \
     src/common/refresh_rate.cpp \
@@ -283,6 +280,48 @@ FORMS += \
     src/display/qt/windows/ControlPanel/Output.ui \
     src/display/qt/windows/ControlPanel/VideoPresets.ui
 
+RESOURCES += \
+    src/display/qt/res.qrc
+
+QT += core gui widgets
+TARGET = vcs
+TEMPLATE = app
+CONFIG += console release object_parallel_to_source
+OBJECTS_DIR = generated_files
+RCC_DIR = generated_files
+MOC_DIR = generated_files
+UI_DIR = generated_files
+
+contains(DEFINES, CAPTURE_BACKEND_VISION_V4L) {
+    INCLUDEPATH += $${DATAPATH_VISION_HEADER_PATH}
+}
+
+contains(DEFINES, VCS_USES_OPENCV) {
+    INCLUDEPATH += $${OPENCV_HEADER_PATH}
+
+    contains(DEFINES, VCS_DEBUG_BUILD) {
+        # VCS's debug mode uses _GLIBCXX_DEBUG, which may be incompatible with
+        # OpenCV (https://github.com/opencv/opencv/pull/9161) and in any case
+        # triggers OpenCV's debug build guard. You can either ignore the build
+        # guard, or take out _GLIBCXX_DEBUG (and _GLIBCXX_DEBUG_PEDANTIC).
+        DEFINES += CV_IGNORE_DEBUG_BUILD_GUARD
+
+        LIBS += -L$${OPENCV_DEBUG_LIB_PATH}
+    } else {
+        LIBS += -L$${OPENCV_LIB_PATH}
+    }
+
+    LIBS += \
+        -lopencv_imgproc \
+        -lopencv_highgui \
+        -lopencv_core \
+        -lopencv_photo \
+
+    contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
+        LIBS += -lopencv_imgcodecs
+    }
+}
+
 contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
     SOURCES += src/capture/virtual/capture_virtual.cpp
 }
@@ -303,18 +342,11 @@ contains(DEFINES, CAPTURE_BACKEND_VISION_V4L) {
         src/capture/vision_v4l/ic_v4l_video_parameters.h
 }
 
-QT += core gui widgets
-TARGET = vcs
-TEMPLATE = app
-CONFIG += console release object_parallel_to_source
-QMAKE_CXXFLAGS += -pedantic -std=c++2a -Wno-missing-field-initializers
-OBJECTS_DIR = generated_files
-RCC_DIR = generated_files
-MOC_DIR = generated_files
-UI_DIR = generated_files
-
-!contains(DEFINES, VCS_RELEASE_BUILD) {
+contains(DEFINES, VCS_DEBUG_BUILD) {
     CONFIG = $$replace(CONFIG, "release", "debug")
-    CONFIG += sanitizer sanitize_address sanitize_undefined
     DEFINES += _GLIBCXX_DEBUG _GLIBCXX_DEBUG_PEDANTIC
+
+    contains(DEFINES, VCS_DEBUG_BUILD_USES_SANITIZERS) {
+        CONFIG += sanitizer sanitize_address sanitize_undefined
+    }
 }
