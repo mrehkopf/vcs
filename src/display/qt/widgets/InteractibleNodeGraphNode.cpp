@@ -37,9 +37,9 @@ void InteractibleNodeGraphNode::disconnect_all_edges(void)
 {
     for (auto &edge: this->edges)
     {
-        for (auto &connection: edge.connectedTo)
+        while (!edge.connectedTo.empty())
         {
-            edge.disconnect_from(connection);
+            edge.disconnect_from(edge.connectedTo.back());
         }
     }
 
