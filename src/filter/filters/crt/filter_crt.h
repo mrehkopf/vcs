@@ -16,7 +16,7 @@ class filter_crt_c : public abstract_filter_c
 public:
     enum { PARAM_CRT_TYPE };
 
-    filter_crt_c(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) :
+    filter_crt_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({
             {PARAM_CRT_TYPE, 0}
         }, initialParamValues)

@@ -11,7 +11,7 @@
 
 void filter_unsharp_mask_c::apply(image_s *const image)
 {
-    this->assert_input_validity(image);
+    ASSERT_FILTER_ARGUMENTS(image);
 
     static uint8_t *const tmpBuf = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
 

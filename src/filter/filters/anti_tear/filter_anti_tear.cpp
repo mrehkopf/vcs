@@ -10,7 +10,7 @@
 
 void filter_anti_tear_c::apply(image_s *const image)
 {
-    this->assert_input_validity(image);
+    ASSERT_FILTER_ARGUMENTS(image);
 
     static anti_tearer_c antiTearer;
     static bool isInitialized= false;

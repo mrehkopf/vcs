@@ -13,7 +13,7 @@
 // fills its surroundings with black.
 void filter_crop_c::apply(image_s *const image)
 {
-    this->assert_input_validity(image);
+    ASSERT_FILTER_ARGUMENTS(image);
 
     const unsigned x = this->parameter(PARAM_X);
     const unsigned y = this->parameter(PARAM_Y);

@@ -62,7 +62,7 @@ static void apply_barrel_distortion(
 
 void filter_crt_c::apply(image_s *const image)
 {
-    this->assert_input_validity(image);
+    ASSERT_FILTER_ARGUMENTS(image);
 
     static uint8_t *baseBuffer = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME * INTERNAL_SCALE];
     static uint8_t *baseGlowBuffer = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME * INTERNAL_SCALE];

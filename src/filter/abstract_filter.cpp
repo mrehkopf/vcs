@@ -71,19 +71,6 @@ void abstract_filter_c::set_parameter_string(const unsigned offset, const std::s
     return;
 }
 
-void abstract_filter_c::assert_input_validity(image_s *const image)
-{
-    k_assert(
-        ((image->bitsPerPixel == 32) &&
-         (image->resolution.w <= MAX_CAPTURE_WIDTH) &&
-         (image->resolution.h <= MAX_CAPTURE_HEIGHT)),
-        "Unsupported frame format."
-    );
-
-    k_assert(image->pixels, "Null pixel data,");
-
-    return;
-}
 void abstract_filter_c::set_parameters(const filter_params_t &parameters)
 {
     this->parameterValues.resize(std::max(parameters.size(), this->parameterValues.size()));

@@ -16,7 +16,7 @@
 // bars get to an edge of the graph.
 void filter_delta_histogram_c::apply(image_s *const image)
 {
-    this->assert_input_validity(image);
+    ASSERT_FILTER_ARGUMENTS(image);
 
     static const unsigned numBins = 511; // Representing the range [-255,255].
     static const unsigned graphHeight = 256;

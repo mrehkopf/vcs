@@ -9,7 +9,7 @@
 
 void filter_decimate_c::apply(image_s *const image)
 {
-    this->assert_input_validity(image);
+    ASSERT_FILTER_ARGUMENTS(image);
 
     const int factor = this->parameter(PARAM_FACTOR);
     const unsigned type = this->parameter(PARAM_TYPE);

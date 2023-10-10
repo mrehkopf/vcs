@@ -19,7 +19,7 @@ static const unsigned FONT_SIZE = 2;
 // artefacts).
 void filter_frame_rate_c::apply(image_s *const image)
 {
-    this->assert_input_validity(image);
+    ASSERT_FILTER_ARGUMENTS(image);
 
     static uint8_t *const prevPixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
     static auto timeOfLastUpdate = std::chrono::system_clock::now();

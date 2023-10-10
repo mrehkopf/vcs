@@ -22,13 +22,24 @@ struct image_s;
         return new filter_child_class(initialParamValues);\
     }\
 
-/*!
- * @brief
- * A frame filter.
- *
- * Applies a pre-set effect (e.g blurring, sharpening, or the like) onto the
- * pixels of a captured frame (or of any raster image).
- */
+
+#define ASSERT_FILTER_ARGUMENTS(/* image_s* */ image) \
+    k_assert( \
+        ((image->bitsPerPixel == 32) && \
+         (image->resolution.w <= MAX_CAPTURE_WIDTH) && \
+         (image->resolution.h <= MAX_CAPTURE_HEIGHT)), \
+        "Unsupported image format for applying an image filter." \
+    ); \
+    if ( \
+        (!image->pixels) || \
+        (image->resolution.w <= 0) || \
+        (image->resolution.h <= 0) \
+    ){ \
+        return; \
+    }
+
+// An image filter. Applies a pre-set effect (e.g blurring, sharpening, or the like)
+// onto the pixels of a given image.
 class abstract_filter_c
 {
 public:
@@ -69,13 +80,6 @@ public:
     // The filter's GUI widget, which appears in VCS's filter graph and provides
     // the user with controls for adjusting the filter's parameters.
     abstract_gui_s *gui = nullptr;
-
-protected:
-    /*!
-     * Triggers an assertion failure if @p pixels or @p r are out of bounds for
-     * a filter's apply() function.
-     */
-    void assert_input_validity(image_s *const image);
 
 private:
     std::vector<double> parameterValues;

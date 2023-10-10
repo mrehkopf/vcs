@@ -11,7 +11,7 @@
 // Quite slow.
 void filter_denoise_nonlocal_means_c::apply(image_s *const image)
 {
-    this->assert_input_validity(image);
+    ASSERT_FILTER_ARGUMENTS(image);
 
     const double h = this->parameter(PARAM_H);
     const double hColor = this->parameter(PARAM_H_COLOR);
