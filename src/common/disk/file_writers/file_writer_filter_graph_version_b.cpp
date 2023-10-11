@@ -9,6 +9,7 @@
 #include "common/disk/file_writers/file_writer_filter_graph.h"
 #include "common/disk/file_streamer.h"
 #include "common/globals.h"
+#include "common/assert.h"
 #include "filter/filter.h"
 #include "filter/abstract_filter.h"
 

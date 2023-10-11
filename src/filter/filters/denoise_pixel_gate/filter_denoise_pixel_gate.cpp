@@ -12,8 +12,6 @@
 // least a threshold value before being updated on screen.
 void filter_denoise_pixel_gate_c::apply(image_s *const image)
 {
-    ASSERT_FILTER_ARGUMENTS(image);
-
     const unsigned threshold = this->parameter(PARAM_THRESHOLD);
     static uint8_t *const prevPixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
 

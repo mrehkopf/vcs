@@ -18,7 +18,7 @@ struct anti_tear_frame_s
     uint8_t *pixels;
     const unsigned bitsPerPixel = 32;
 
-    anti_tear_frame_s(const resolution_s resolution = {.w = 0, .h = 0}, u8 *const pixels = nullptr)
+    anti_tear_frame_s(const resolution_s resolution = {.w = 0, .h = 0}, uint8_t *const pixels = nullptr)
     {
         this->resolution = resolution;
         this->pixels = pixels;
@@ -37,7 +37,7 @@ struct anti_tear_frame_s
     {
         k_assert(this->is_valid(), "Invalid frame.");
 
-        u8 scratch[MAX_OUTPUT_WIDTH * (MAX_OUTPUT_BPP / 8)];
+        uint8_t scratch[MAX_OUTPUT_WIDTH * (MAX_OUTPUT_BPP / 8)];
 
         for (unsigned y = 0; y < (this->resolution.h / 2); y++)
         {

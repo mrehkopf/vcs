@@ -9,15 +9,15 @@
  */
 
 #include <thread>
-#include <deque>
 #include <stdarg.h>
-#include "capture/capture.h"
-#include "display/display.h"
 #include "common/globals.h"
 #include "common/log/log.h"
 
 // We'll only accept logging from the logger's own thread.
 static const std::thread::id NATIVE_LOG_THREAD = std::this_thread::get_id();
+
+
+#define NUM_ELEMENTS(array) int((sizeof(array) / sizeof((array)[0])))
 
 static void log(const std::string &type, const char *const msg, va_list args)
 {
@@ -48,7 +48,7 @@ static void log(const std::string &type, const char *const msg, va_list args)
     }());
 
     static char buf[2048];
-    vsnprintf(buf, NUM_ELEMENTS(buf), msg, args);
+    vsnprintf(buf, int((sizeof(buf) / sizeof(buf[0]))), msg, args);
 
     printf("%s[%-6s] %s%s\n",
         terminalColorCode.c_str(),

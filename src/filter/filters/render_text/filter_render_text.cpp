@@ -20,8 +20,6 @@ static const std::unordered_map<int, font_c*> FONTS = {
 
 void filter_render_text_c::apply(image_s *const image)
 {
-    ASSERT_FILTER_ARGUMENTS(image);
-
     const std::string text = this->string_parameter(filter_render_text_c::PARAM_STRING);
     const uint8_t fgColorRed = this->parameter(filter_render_text_c::PARAM_FG_COLOR_RED);
     const uint8_t fgColorGreen = this->parameter(filter_render_text_c::PARAM_FG_COLOR_GREEN);

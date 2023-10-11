@@ -11,8 +11,6 @@
 // Quite slow.
 void filter_denoise_nonlocal_means_c::apply(image_s *const image)
 {
-    ASSERT_FILTER_ARGUMENTS(image);
-
     const double h = this->parameter(PARAM_H);
     const double hColor = this->parameter(PARAM_H_COLOR);
     const double templateWindowSize = this->parameter(PARAM_TEMPLATE_WINDOW_SIZE);

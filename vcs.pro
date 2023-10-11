@@ -80,7 +80,6 @@ SOURCES += \
     src/display/qt/windows/ControlPanel/VideoPresets.cpp \
     src/display/qt/keyboard_shortcuts.cpp \
     src/filter/filters/crt/filter_crt.cpp \
-    src/filter/filters/crt/gui/filtergui_crt.cpp \
     src/filter/filters/output_scaler/filter_output_scaler.cpp \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.cpp \
     src/filter/filters/render_text/filter_render_text.cpp \
@@ -94,16 +93,6 @@ SOURCES += \
     src/anti_tear/anti_tear_one_per_frame.cpp \
     src/anti_tear/anti_tearer.cpp \
     src/filter/abstract_filter.cpp \
-    src/filter/filters/anti_tear/filter_anti_tear.cpp \
-    src/filter/filters/anti_tear/gui/filtergui_anti_tear.cpp \
-    src/filter/filters/blur/filter_blur.cpp \
-    src/filter/filters/blur/gui/filtergui_blur.cpp \
-    src/filter/filters/color_depth/filter_color_depth.cpp \
-    src/filter/filters/color_depth/gui/filtergui_color_depth.cpp \
-    src/filter/filters/crop/filter_crop.cpp \
-    src/filter/filters/crop/gui/filtergui_crop.cpp \
-    src/filter/filters/decimate/filter_decimate.cpp \
-    src/filter/filters/decimate/gui/filtergui_decimate.cpp \
     src/filter/filters/delta_histogram/filter_delta_histogram.cpp \
     src/filter/filters/delta_histogram/gui/filtergui_delta_histogram.cpp \
     src/filter/filters/denoise_nonlocal_means/filter_denoise_nonlocal_means.cpp \
@@ -148,7 +137,6 @@ SOURCES += \
 HEADERS += \
     src/common/assert.h \
     src/common/globals.h \
-    src/common/types.h \
     src/display/qt/wheel_blocker.h \
     src/display/qt/widgets/ColorHistogram.h \
     src/display/qt/widgets/DialogFileMenu.h \
@@ -190,17 +178,11 @@ HEADERS += \
     src/anti_tear/anti_tear_one_per_frame.h \
     src/anti_tear/anti_tearer.h \
     src/filter/filters/anti_tear/filter_anti_tear.h \
-    src/filter/filters/anti_tear/gui/filtergui_anti_tear.h \
     src/filter/filters/blur/filter_blur.h \
-    src/filter/filters/blur/gui/filtergui_blur.h \
     src/filter/filters/color_depth/filter_color_depth.h \
-    src/filter/filters/color_depth/gui/filtergui_color_depth.h \
     src/filter/filters/crop/filter_crop.h \
-    src/filter/filters/crop/gui/filtergui_crop.h \
     src/filter/filters/crt/filter_crt.h \
-    src/filter/filters/crt/gui/filtergui_crt.h \
     src/filter/filters/decimate/filter_decimate.h \
-    src/filter/filters/decimate/gui/filtergui_decimate.h \
     src/filter/filters/delta_histogram/filter_delta_histogram.h \
     src/filter/filters/delta_histogram/gui/filtergui_delta_histogram.h \
     src/filter/filters/denoise_nonlocal_means/filter_denoise_nonlocal_means.h \

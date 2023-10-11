@@ -8,12 +8,15 @@
 #define VCS_COMMON_LOG_LOG_H
 
 #include <string>
-#include "common/types.h"
+
+#define DEBUG(args) (klog_log_debug args)
+#define NBENE(args) (klog_log_error args)
+#define INFO(args)  (klog_log_info args)
 
 struct log_entry_s
 {
     // The index of this entry in the master list of log entries.
-    uint id;
+    unsigned id;
 
     // Whether this is a debug, error, or info entry.
     std::string type;

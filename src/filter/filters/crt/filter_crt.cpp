@@ -6,11 +6,11 @@
  */
 
 #include <cmath>
-#include <map>
-#include "filter/filters/crt/filter_crt.h"
-
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
+#include "filter/filters/crt/filter_crt.h"
+#include "common/globals.h"
+#include "display/display.h"
 
 static const int INTERNAL_SCALE = 2;
 
@@ -62,8 +62,6 @@ static void apply_barrel_distortion(
 
 void filter_crt_c::apply(image_s *const image)
 {
-    ASSERT_FILTER_ARGUMENTS(image);
-
     static uint8_t *baseBuffer = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME * INTERNAL_SCALE];
     static uint8_t *baseGlowBuffer = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME * INTERNAL_SCALE];
     static uint8_t *barrelBuffer = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME * INTERNAL_SCALE];
@@ -82,9 +80,9 @@ void filter_crt_c::apply(image_s *const image)
     // Phosphor decay.
     for (unsigned i = 0; i < image->byte_size(); i += 4)
     {
-        phosphorBuffer[i+0] = LERP(phosphorBuffer[i+0], image->pixels[i+0], 0.96);
-        phosphorBuffer[i+1] = LERP(phosphorBuffer[i+1], image->pixels[i+1], 0.94);
-        phosphorBuffer[i+2] = LERP(phosphorBuffer[i+2], image->pixels[i+2], 0.91);
+        phosphorBuffer[i+0] = std::lerp(phosphorBuffer[i+0], image->pixels[i+0], 0.96);
+        phosphorBuffer[i+1] = std::lerp(phosphorBuffer[i+1], image->pixels[i+1], 0.94);
+        phosphorBuffer[i+2] = std::lerp(phosphorBuffer[i+2], image->pixels[i+2], 0.91);
     }
 
     // Barrel distortion.

@@ -10,8 +10,6 @@
 
 void filter_sharpen_c::apply(image_s *const image)
 {
-    ASSERT_FILTER_ARGUMENTS(image);
-
     float kernel[] = {
         0, -1,  0,
        -1,  5, -1,

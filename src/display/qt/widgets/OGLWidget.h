@@ -11,7 +11,6 @@
 #include <QOpenGLWidget>
 #include <QWidget>
 #include <functional>
-#include "common/types.h"
 
 class Overlay;
 

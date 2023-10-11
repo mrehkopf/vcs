@@ -10,8 +10,6 @@
 
 void filter_median_c::apply(image_s *const image)
 {
-    ASSERT_FILTER_ARGUMENTS(image);
-
     const double kernelSize = this->parameter(PARAM_KERNEL_SIZE);
     cv::Mat output = cv::Mat(image->resolution.h, image->resolution.w, CV_8UC4, image->pixels);
     cv::medianBlur(output, output, kernelSize);

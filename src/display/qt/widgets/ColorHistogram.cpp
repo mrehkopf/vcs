@@ -10,6 +10,7 @@
 #include <QPainter>
 #include <QtConcurrent/QtConcurrent>
 #include "display/qt/widgets/ColorHistogram.h"
+#include "common/globals.h"
 #include "common/assert.h"
 
 ColorHistogram::ColorHistogram(QWidget *parent) : QWidget(parent)

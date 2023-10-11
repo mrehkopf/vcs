@@ -22,6 +22,7 @@
 #include "filter/abstract_filter.h"
 #include "common/command_line/command_line.h"
 #include "common/disk/disk.h"
+#include "common/assert.h"
 #include "ui_FilterGraph.h"
 
 control_panel::FilterGraph::FilterGraph(QWidget *parent) :

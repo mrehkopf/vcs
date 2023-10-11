@@ -40,7 +40,6 @@
 #include "common/globals.h"
 #include "scaler/scaler.h"
 #include "common/refresh_rate.h"
-#include "common/types.h"
 #include "common/vcs_event/vcs_event.h"
 #include "main.h"
 

@@ -5,15 +5,17 @@
  *
  */
 
-#ifndef VCS_FILTER_FILTERS_BLUR_FILTER_BLUR_H
-#define VCS_FILTER_FILTERS_BLUR_FILTER_BLUR_H
+#ifndef VCS_FILTER_FILTERS_FILTER_BLUR_H
+#define VCS_FILTER_FILTERS_FILTER_BLUR_H
 
+#include <opencv2/imgproc/imgproc.hpp>
 #include "filter/abstract_filter.h"
-#include "filter/filters/blur/gui/filtergui_blur.h"
 
 class filter_blur_c : public abstract_filter_c
 {
 public:
+    CLONABLE_FILTER_TYPE(filter_blur_c)
+
     enum { PARAM_TYPE,
            PARAM_KERNEL_SIZE };
 
@@ -21,16 +23,45 @@ public:
            BLUR_GAUSSIAN = 1 };
     
     filter_blur_c(const filter_params_t &initialParamValues = {}) :
-        abstract_filter_c({{PARAM_KERNEL_SIZE, 1},
-                           {PARAM_TYPE, BLUR_GAUSSIAN}},
-                          initialParamValues)
+        abstract_filter_c({
+            {PARAM_KERNEL_SIZE, 1},
+            {PARAM_TYPE, BLUR_GAUSSIAN}
+        }, initialParamValues)
     {
-        this->gui = new filtergui_blur_c(this);
+        this->gui = new abstract_gui_s([this](abstract_gui_s *const gui)
+        {
+            auto *const blurType = new abstract_gui::combo_box;
+            blurType->get_value = [this]{return this->parameter(PARAM_TYPE);};
+            blurType->set_value = [this](int value){this->set_parameter(PARAM_TYPE, std::max(0, value));};
+            blurType->items = {"Box", "Gaussian"};
+            gui->fields.push_back({"Type", {blurType}});
+
+            auto *const blurRadius = new abstract_gui::double_spinner;
+            blurRadius->get_value = [this]{return this->parameter(PARAM_KERNEL_SIZE);};
+            blurRadius->set_value = [this](double value){this->set_parameter(PARAM_KERNEL_SIZE, value);};
+            blurRadius->minValue = 0.1;
+            blurRadius->maxValue = 99;
+            blurRadius->numDecimals = 2;
+            gui->fields.push_back({"Radius", {blurRadius}});
+        });
     }
 
-    CLONABLE_FILTER_TYPE(filter_blur_c)
+    void apply(image_s *const image) override
+    {
+        const double kernelSize = this->parameter(PARAM_KERNEL_SIZE);
+        cv::Mat output = cv::Mat(image->resolution.h, image->resolution.w, CV_8UC4, image->pixels);
 
-    void apply(image_s *const image) override;
+        if (this->parameter(PARAM_TYPE) == BLUR_GAUSSIAN)
+        {
+            cv::GaussianBlur(output, output, cv::Size(0, 0), kernelSize);
+        }
+        else
+        {
+            const uint8_t kernelW = ((int(kernelSize) * 2) + 1);
+            cv::blur(output, output, cv::Size(kernelW, kernelW));
+        }
+    }
+
     std::string name(void) const override { return "Blur"; }
     std::string uuid(void) const override { return "a5426f2e-b060-48a9-adf8-1646a2d3bd41"; }
     filter_category_e category(void) const override { return filter_category_e::reduce; }

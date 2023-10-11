@@ -10,9 +10,11 @@
 #include <numeric>
 #include <vector>
 #include <string>
+#include <cmath>
 #include "filter/filters/render_text/filter_render_text.h"
 #include "display/display.h"
 #include "common/globals.h"
+#include "common/assert.h"
 
 struct font_glyph_s
 {
@@ -78,9 +80,9 @@ struct font_glyph_s
                         // Alpha blend.
                         if (color.size() == 4)
                         {
-                            dstImage->pixels[idx + 0] = LERP(dstImage->pixels[idx + 0], color[0], (color[3] / 255.0));
-                            dstImage->pixels[idx + 1] = LERP(dstImage->pixels[idx + 1], color[1], (color[3] / 255.0));
-                            dstImage->pixels[idx + 2] = LERP(dstImage->pixels[idx + 2], color[2], (color[3] / 255.0));
+                            dstImage->pixels[idx + 0] = std::lerp(dstImage->pixels[idx + 0], color[0], (color[3] / 255.0));
+                            dstImage->pixels[idx + 1] = std::lerp(dstImage->pixels[idx + 1], color[1], (color[3] / 255.0));
+                            dstImage->pixels[idx + 2] = std::lerp(dstImage->pixels[idx + 2], color[2], (color[3] / 255.0));
                         }
                         else
                         {
@@ -224,9 +226,9 @@ public:
                     // Alpha blend.
                     if (bgColor.size() == 4)
                     {
-                        dstImage->pixels[idx + 0] = LERP(dstImage->pixels[idx + 0], bgColor[0], (bgColor[3] / 255.0));
-                        dstImage->pixels[idx + 1] = LERP(dstImage->pixels[idx + 1], bgColor[1], (bgColor[3] / 255.0));
-                        dstImage->pixels[idx + 2] = LERP(dstImage->pixels[idx + 2], bgColor[2], (bgColor[3] / 255.0));
+                        dstImage->pixels[idx + 0] = std::lerp(dstImage->pixels[idx + 0], bgColor[0], (bgColor[3] / 255.0));
+                        dstImage->pixels[idx + 1] = std::lerp(dstImage->pixels[idx + 1], bgColor[1], (bgColor[3] / 255.0));
+                        dstImage->pixels[idx + 2] = std::lerp(dstImage->pixels[idx + 2], bgColor[2], (bgColor[3] / 255.0));
                     }
                     else
                     {

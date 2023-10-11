@@ -12,6 +12,7 @@
 #include "filter/filter.h"
 #include "filter/abstract_filter.h"
 #include "common/globals.h"
+#include "common/assert.h"
 #include "display/qt/windows/ControlPanel/FilterGraph/BaseFilterGraphNode.h"
 #include "display/qt/widgets/InteractibleNodeGraph.h"
 

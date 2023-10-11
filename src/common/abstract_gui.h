@@ -5,14 +5,12 @@
  *
  */
 
-#ifndef VCS_FILTER_FILTERS_FILTERGUI_H
-#define VCS_FILTER_FILTERS_FILTERGUI_H
+#ifndef VCS_COMMON_ABSTRACT_GUI_H
+#define VCS_COMMON_ABSTRACT_GUI_H
 
 #include <functional>
-#include <cstring>
 #include <string>
 #include <vector>
-#include "common/types.h"
 
 struct abstract_gui_widget_s
 {
@@ -115,6 +113,13 @@ struct abstract_gui_field_s
 // user-facing GUI by whatever GUI framework VCS happens to be using.
 struct abstract_gui_s
 {
+    abstract_gui_s(void) {}
+
+    abstract_gui_s(std::function<void(abstract_gui_s *const)> initialize)
+    {
+        initialize(this);
+    }
+
     ~abstract_gui_s(void)
     {
         for (auto &row: this->fields)

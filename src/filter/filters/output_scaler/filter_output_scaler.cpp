@@ -12,8 +12,6 @@
 
 void filter_output_scaler_c::apply(image_s *const image)
 {
-    ASSERT_FILTER_ARGUMENTS(image);
-
     const unsigned width = this->parameter(filter_output_scaler_c::PARAM_WIDTH);
     const unsigned height = this->parameter(filter_output_scaler_c::PARAM_HEIGHT);
     const unsigned padTop = this->parameter(filter_output_scaler_c::PARAM_PADDING_TOP);

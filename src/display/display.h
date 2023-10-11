@@ -26,39 +26,11 @@
 #include <vector>
 #include <cassert>
 #include <cstring>
-#include "common/types.h"
 #include "common/vcs_event/vcs_event.h"
-#include "filter/filter.h"
+#include "filter/abstract_filter.h"
 #include "main.h"
 
-// A GUI-agnostic representation of a filter graph node.
-//
-// Used to mediate data between the disk subsystem's file loader and the display
-// subsystem's (GUI framework-dependent) filter graph implementation, so that the
-// file loader can remain independent from the GUI framework.
-struct abstract_filter_graph_node_s
-{
-    // Uniquely identifies an instance of this node from other instances.
-    int id = 0;
-
-    // Whether this node is active (true) or a passthrough that applies no processing (false).
-    bool isEnabled = true;
-
-    // The UUID of the filter type that this node represents (see abstract_filter_c).
-    std::string typeUuid = "";
-
-    // The color of the node's background in the filter graph.
-    std::string backgroundColor = "black";
-
-    // The initial parameters of the filter associated with this node.
-    filter_params_t initialParameters;
-
-    // The node's initial XY coordinates in the filter graph.
-    std::pair<double, double> initialPosition = {0, 0};
-
-    // The nodes (identified by their @ref id) to which this node is connected.
-    std::vector<int> connectedTo;
-};
+struct abstract_gui_s;
 
 struct resolution_s
 {

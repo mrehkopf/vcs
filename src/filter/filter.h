@@ -123,45 +123,12 @@
 #include <unordered_map>
 #include <functional>
 #include <cstring>
-#include "common/abstract_gui.h"
 #include "main.h"
+#include "filter/abstract_filter.h"
 
 class abstract_filter_c;
 struct resolution_s;
 struct image_s;
-
-typedef std::vector<std::pair<unsigned /*param idx*/, double /*param value*/>> filter_params_t;
-
-// Enumerates the functional categories into which filters can be divided.
-//
-// These categories exist e.g. for the benefit of the VCS GUI, allowing a more
-// structured listing of filters in menus.
-enum class filter_category_e
-{
-    // Filters that reduce the image's fidelity. For example: blur, decimate.
-    reduce,
-
-    // Filters that enhance the image's fidelity. For example: sharpen, denoise.
-    enhance,
-
-    // Filters that modify the image's geometry. For example: rotate, crop.
-    distort,
-
-    // Filters that provide information about the image. For example: frame rate
-    // estimate, noise histogram.
-    meta,
-
-    // Filters that resize the final image. Note that these filters can operate
-    // only as the last link in the filter chain, rather than as intermediate
-    //scalers.
-    output_scaler,
-
-    // Special case, not for use by filters. Used as a control in filter chains.
-    input_condition,
-
-    // Special case, not for use by filters. Used as a control in filter chains.
-    output_condition,
-};
 
 // Initializes the filter subsystem, allocating its memory buffers etc.
 subsystem_releaser_t kf_initialize_filters(void);

@@ -8,7 +8,6 @@
 #ifndef VCS_COMMON_ASSERT_H
 #define VCS_COMMON_ASSERT_H
 
-#include "globals.h"
 #include "display/display.h"
 #include "common/log/log.h"
 
@@ -17,6 +16,8 @@
 #endif
 #include <stdexcept>
 #include <cassert>
+
+extern bool PROGRAM_EXIT_REQUESTED;
 
 #define k_assert(condition, error_string) \
     if (!(condition))\
@@ -29,7 +30,7 @@
         }\
         else\
         {\
-            NBENE(("VCS has crashed while attempting to exit."));\
+            fprintf(stderr, "VCS has crashed while attempting to exit.");\
             std::abort();\
         }\
     }

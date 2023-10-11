@@ -41,7 +41,7 @@ void anti_tearer_c::initialize(const resolution_s &maxResolution)
     return;
 }
 
-u8* anti_tearer_c::process(u8 *const pixels, const resolution_s &resolution)
+uint8_t* anti_tearer_c::process(uint8_t *const pixels, const resolution_s &resolution)
 {
     k_assert((pixels != nullptr),
              "The anti-tear engine expected a pixel buffer, but received null.");
@@ -71,7 +71,7 @@ u8* anti_tearer_c::process(u8 *const pixels, const resolution_s &resolution)
     return this->present_front_buffer(frame.resolution);
 }
 
-u8* anti_tearer_c::present_front_buffer(const resolution_s &resolution)
+uint8_t* anti_tearer_c::present_front_buffer(const resolution_s &resolution)
 {
     this->presentBuffer.resolution = resolution;
 
@@ -160,7 +160,7 @@ void anti_tearer_c::visualize_scan_range(const anti_tear_frame_s &frame)
 }
 
 void anti_tearer_c::copy_frame_pixel_rows(const anti_tear_frame_s *const srcFrame,
-                                          u8 *const dstBuffer,
+                                          uint8_t *const dstBuffer,
                                           const unsigned fromRow,
                                           const unsigned toRow)
 {
@@ -204,8 +204,8 @@ int anti_tearer_c::find_first_new_row_idx(const anti_tear_frame_s *const frame,
 
 bool anti_tearer_c::has_pixel_row_changed(
     const unsigned rowIdx,
-    const u8 *const newPixels,
-    const u8 *const prevPixels,
+    const uint8_t *const newPixels,
+    const uint8_t *const prevPixels,
     const resolution_s &resolution
 )
 {

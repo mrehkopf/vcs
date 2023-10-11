@@ -19,6 +19,7 @@
 #include "display/qt/widgets/QtAbstractGUI.h"
 #include "filter/filter.h"
 #include "filter/abstract_filter.h"
+#include "common/assert.h"
 
 QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
 {

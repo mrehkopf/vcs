@@ -10,7 +10,6 @@
 
 #include <vector>
 #include "capture/capture.h"
-#include "common/types.h"
 #include "anti_tear/anti_tear_frame.h"
 #include "anti_tear/anti_tear_one_per_frame.h"
 #include "anti_tear/anti_tear_multiple_per_frame.h"
@@ -78,8 +77,7 @@ public:
     void release(void);
 
     // Applies anti-tearing to a copy of the given pixels. Returns a pointer to the copy.
-    u8* process(u8 *const pixels,
-                const resolution_s &resolution);
+    uint8_t* process(uint8_t *const pixels, const resolution_s &resolution);
 
     // Anti-tearing parameters.
     unsigned scanStartOffset = 0;
@@ -96,18 +94,18 @@ public:
 protected:
     // Copies the front buffer's pixels into the present buffer and returns a pointer
     // to the present buffer.
-    u8* present_front_buffer(const resolution_s &resolution);
+    uint8_t* present_front_buffer(const resolution_s &resolution);
 
     void copy_frame_pixel_rows(const anti_tear_frame_s *const srcFrame,
-                               u8 *const dstBuffer,
+                               uint8_t *const dstBuffer,
                                const unsigned fromRow,
                                const unsigned toRow);
 
     // Scans the given frame's rowIdx'th row to find whether the row's pixels have
     // chaned since the last full frame.
     bool has_pixel_row_changed(const unsigned rowIdx,
-                               const u8 *const newPixels,
-                               const u8 *const prevPixels,
+                               const uint8_t *const newPixels,
+                               const uint8_t *const prevPixels,
                                const resolution_s &resolution);
 
     // Scans the given frame for a tear within the given row range. If a tear is found,
@@ -130,8 +128,8 @@ protected:
     // accumulates torn frame fragments, and the front buffer stores the latest
     // fully reconstructed frame.
     uint8_t *buffers[2];
-    u8 *backBuffer = nullptr;
-    u8 *frontBuffer = nullptr;
+    uint8_t *backBuffer = nullptr;
+    uint8_t *frontBuffer = nullptr;
 
     // Holds the pixels the anti-tearer considers ready for display; e.g.
     // the latest de-torn frame. Note that this image might hold additional

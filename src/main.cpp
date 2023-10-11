@@ -226,7 +226,7 @@ static void eco_sleep(const capture_event_e event)
 
         // If we drop frames, we shorten the sleep duration, and otherwise we creep toward
         // the maximum possible sleep time given the current rate of capture events.
-        timeToSleepMs = LERP((timeToSleepMs / (numNewDroppedFrames? 1.5 : 1)), msSinceLastEvent, 0.01);
+        timeToSleepMs = std::lerp((timeToSleepMs / (numNewDroppedFrames? 1.5 : 1)), msSinceLastEvent, 0.01);
 
         // We have time to sleep only if we're not dropping frames.
         if (!numNewDroppedFrames)

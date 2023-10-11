@@ -1,5 +1,5 @@
 /*
- * 2018, 2020 Tarpeeksi Hyvae Soft
+ * 2018-2023 Tarpeeksi Hyvae Soft
  *
  * Software: VCS
  *
@@ -10,33 +10,49 @@
 
 #include <vector>
 #include <string>
-#include "filter/filter.h"
+#include "common/abstract_gui.h"
 #include "common/assert.h"
-
-struct image_s;
+#include "display/display.h"
 
 #define CLONABLE_FILTER_TYPE(filter_child_class) \
-    abstract_filter_c* create_clone(const std::vector<std::pair<unsigned, double>> &initialParamValues = {}) const override\
+    abstract_filter_c* create_clone(const filter_params_t &initialParamValues = {}) const override\
     {\
-        k_assert((typeid(filter_child_class) == typeid(*this)), "Type mismatch in duplicator.");\
+        k_assert((typeid(filter_child_class) == typeid(*this)), "Type mismatch in filter cloning.");\
         return new filter_child_class(initialParamValues);\
     }\
 
+typedef std::vector<std::pair<unsigned /*param idx*/, double /*param value*/>> filter_params_t;
 
-#define ASSERT_FILTER_ARGUMENTS(/* image_s* */ image) \
-    k_assert( \
-        ((image->bitsPerPixel == 32) && \
-         (image->resolution.w <= MAX_CAPTURE_WIDTH) && \
-         (image->resolution.h <= MAX_CAPTURE_HEIGHT)), \
-        "Unsupported image format for applying an image filter." \
-    ); \
-    if ( \
-        (!image->pixels) || \
-        (image->resolution.w <= 0) || \
-        (image->resolution.h <= 0) \
-    ){ \
-        return; \
-    }
+// Enumerates the functional categories into which filters can be divided.
+//
+// These categories exist e.g. for the benefit of the VCS GUI, allowing a more
+// structured listing of filters in menus.
+enum class filter_category_e
+{
+    // Filters that reduce the image's fidelity. For example: blur, decimate.
+    reduce,
+
+    // Filters that enhance the image's fidelity. For example: sharpen, denoise.
+    enhance,
+
+    // Filters that modify the image's geometry. For example: rotate, crop.
+    distort,
+
+    // Filters that provide information about the image. For example: frame rate
+    // estimate, noise histogram.
+    meta,
+
+    // Filters that resize the final image. Note that these filters can operate
+    // only as the last link in the filter chain, rather than as intermediate
+    //scalers.
+    output_scaler,
+
+    // Special case, not for use by filters. Used as a control in filter chains.
+    input_condition,
+
+    // Special case, not for use by filters. Used as a control in filter chains.
+    output_condition,
+};
 
 // An image filter. Applies a pre-set effect (e.g blurring, sharpening, or the like)
 // onto the pixels of a given image.
@@ -44,8 +60,8 @@ class abstract_filter_c
 {
 public:
     abstract_filter_c(
-        const std::vector<std::pair<unsigned /*parameter idx*/, double /*initial value*/>> &parameters = {},
-        const std::vector<std::pair<unsigned /*parameter idx*/, double /*initial value*/>> &overrideParamValues = {}
+        const filter_params_t &parameters = {},
+        const filter_params_t &overrideParamValues = {}
     );
 
     virtual ~abstract_filter_c(void);
@@ -66,7 +82,7 @@ public:
 
     void set_parameter_string(const unsigned offset, const std::string &string, const std::size_t maxLength = ~0);
 
-    virtual abstract_filter_c* create_clone(const std::vector<std::pair<unsigned, double>> &overrideParams) const = 0;
+    virtual abstract_filter_c* create_clone(const filter_params_t &overrideParams) const = 0;
 
     virtual std::string name(void) const = 0;
 

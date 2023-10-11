@@ -16,8 +16,6 @@
 // bars get to an edge of the graph.
 void filter_delta_histogram_c::apply(image_s *const image)
 {
-    ASSERT_FILTER_ARGUMENTS(image);
-
     static const unsigned numBins = 511; // Representing the range [-255,255].
     static const unsigned graphHeight = 256;
     static const unsigned graphByteSize = (numBins * graphHeight * 4);
@@ -105,9 +103,9 @@ void filter_delta_histogram_c::apply(image_s *const image)
                 // Background.
                 else
                 {
-                    image->pixels[idx+0] = LERP(0, image->pixels[idx+0], 0.25);
-                    image->pixels[idx+1] = LERP(0, image->pixels[idx+1], 0.25);
-                    image->pixels[idx+2] = LERP(0, image->pixels[idx+2], 0.25);
+                    image->pixels[idx+0] = std::lerp(0, image->pixels[idx+0], 0.25);
+                    image->pixels[idx+1] = std::lerp(0, image->pixels[idx+1], 0.25);
+                    image->pixels[idx+2] = std::lerp(0, image->pixels[idx+2], 0.25);
                 }
             }
         }

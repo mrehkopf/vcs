@@ -10,8 +10,6 @@
 
 void filter_kernel_3x3_c::apply(image_s *const image)
 {
-    ASSERT_FILTER_ARGUMENTS(image);
-
     const float v11 = this->parameter(PARAM_11);
     const float v12 = this->parameter(PARAM_12);
     const float v13 = this->parameter(PARAM_13);

@@ -56,7 +56,7 @@ void InteractibleNodeGraph::mousePressEvent(QGraphicsSceneMouseEvent *event)
             if (node)
             {
                 // Make the clicked node the top-most in the graph.
-                real maxZ = 0;
+                double maxZ = 0;
                 const auto sceneItems = this->items();
                 for (auto item: sceneItems)
                 {
