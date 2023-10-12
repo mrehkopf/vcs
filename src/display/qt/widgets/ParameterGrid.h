@@ -29,8 +29,10 @@ public:
     void add_separator(void);
 
     // A drop-down combobox; for selecting from pre-set options.
-    void add_combobox(const QString name,
-                      const std::list<QString> items);
+    void add_combobox(
+        const QString name,
+        const std::list<QString> items
+    );
 
     // A scroll bar with a synced spin box; for selecting a value on an interval.
     void add_scroller(
@@ -41,12 +43,10 @@ public:
     );
 
     int value(const QString &parameterName) const;
-    int default_value(const QString &parameterName) const;
     int maximum_value(const QString &parameterName) const;
     int minimum_value(const QString &parameterName) const;
 
     void set_value(const QString &parameterName, const int newValue);
-    void set_default_value(const QString &parameterName, const int newDefault);
     void set_maximum_value(const QString &parameterName, const int newMax);
     void set_minimum_value(const QString &parameterName, const int newMin);
 
@@ -61,7 +61,6 @@ signals:
     // Emitted when a parameter's value is changed by a call to this->set_value().
     void parameter_value_changed_programmatically(const QString &parameterName, const int newValue);
 
-    void parameter_default_value_changed_programmatically(const QString &parameterName, const int newDefault);
     void parameter_minimum_value_changed_programmatically(const QString &parameterName, const int newMin);
     void parameter_maximum_value_changed_programmatically(const QString &parameterName, const int newMax);
 
@@ -78,7 +77,6 @@ private:
     {
         parameter_type_e type = parameter_type_e::unknown;
         QString name = "";
-        int defaultValue = 0;
         int currentValue = 0;
         int minimumValue = 0;
         int maximumValue = 0;

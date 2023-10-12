@@ -563,7 +563,6 @@ void control_panel::VideoPresets::update_property_control_ranges(
 {
     const auto min = video_signal_properties_s::from_capture_device_properties(": minimum");
     const auto max = video_signal_properties_s::from_capture_device_properties(": maximum");
-    const auto def = video_signal_properties_s::from_capture_device_properties(": default");
 
     ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_HORIZONTAL_SIZE, std::max(targetProps.horizontalSize, max.horizontalSize));
     ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_HORIZONTAL_POSITION, std::max(targetProps.horizontalPosition, max.horizontalPosition));
@@ -592,20 +591,6 @@ void control_panel::VideoPresets::update_property_control_ranges(
     ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_RED_CONTRAST, std::min(targetProps.redContrast, min.redContrast));
     ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_GREEN_CONTRAST,std::min(targetProps.greenContrast,  min.greenContrast));
     ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_BLUE_CONTRAST, std::min(targetProps.blueContrast, min.blueContrast));
-
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_HORIZONTAL_SIZE, def.horizontalSize);
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_HORIZONTAL_POSITION, def.horizontalPosition);
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_VERTICAL_POSITION, def.verticalPosition);
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_BLACK_LEVEL, def.blackLevel);
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_PHASE, def.phase);
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_BRIGHTNESS, def.brightness);
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_RED_BRIGHTNESS, def.redBrightness);
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_GREEN_BRIGHTNESS, def.greenBrightness);
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_BLUE_BRIGHTNESS, def.blueBrightness);
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_CONTRAST, def.contrast);
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_RED_CONTRAST, def.redContrast);
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_GREEN_CONTRAST, def.greenContrast);
-    ui->parameterGrid_properties->set_default_value(PROP_LABEL_BLUE_CONTRAST, def.blueContrast);
 
     return;
 }

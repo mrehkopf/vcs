@@ -55,7 +55,6 @@ void ParameterGrid::add_combobox(const QString name, const std::list<QString> it
     newParam->name = name;
     newParam->type = ParameterGrid::parameter_type_e::combobox;
     newParam->currentValue = 0;
-    newParam->defaultValue = 0;
     newParam->minimumValue = 0;
     newParam->maximumValue = 0;
 
@@ -72,15 +71,6 @@ void ParameterGrid::add_combobox(const QString name, const std::list<QString> it
             comboBox->addItem(item);
         }
 
-        auto resetButtonIcon = QIcon(":/res/icons/newie/reset.png");
-        resetButtonIcon.addPixmap(QPixmap(":/res/icons/newie/reset_disabled.png"), QIcon::Disabled);
-
-        auto *const resetButton = new QPushButton();
-        resetButton->setIcon(resetButtonIcon);
-        resetButton->setFixedWidth(24);
-        resetButton->setEnabled(false);
-        resetButton->setToolTip("Reset to default");
-
         // Insert the components.
         {
             auto *layout = qobject_cast<QGridLayout*>(this->layout());
@@ -88,27 +78,19 @@ void ParameterGrid::add_combobox(const QString name, const std::list<QString> it
 
             layout->addWidget(label, rowIdx, 0);
             layout->addWidget(comboBox, rowIdx, 1, 1, 2);
-            layout->addWidget(resetButton, rowIdx, 3);
         }
 
         // Create component reactivity.
         {
-            connect(resetButton, &QPushButton::clicked, this, [=]
-            {
-                comboBox->setCurrentIndex(newParam->defaultValue);
-                resetButton->setEnabled(false);
-            });
-
-            connect(comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [newParam, resetButton, this](const int newIndex)
+            connect(comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [newParam, this](const int newIndex)
             {
                 newParam->currentValue = newIndex;
-                resetButton->setEnabled((newIndex != newParam->defaultValue));
 
                 emit this->parameter_value_changed(newParam->name, newIndex);
                 emit this->parameter_value_changed_by_user(newParam->name, newIndex);
             });
 
-            connect(this, &ParameterGrid::parameter_value_changed_programmatically, this, [newParam, comboBox, resetButton, this](const QString &parameterName, const int newValue)
+            connect(this, &ParameterGrid::parameter_value_changed_programmatically, this, [newParam, comboBox, this](const QString &parameterName, const int newValue)
             {
                 if (parameterName == newParam->name)
                 {
@@ -116,19 +98,9 @@ void ParameterGrid::add_combobox(const QString name, const std::list<QString> it
 
                     newParam->currentValue = newValue;
                     comboBox->setCurrentIndex(newValue);
-                    resetButton->setEnabled((newValue != newParam->defaultValue));
                 }
 
                 emit this->parameter_value_changed(parameterName, newValue);
-            });
-
-            connect(this, &ParameterGrid::parameter_default_value_changed_programmatically, this, [=](const QString &parameterName, const int newDefault)
-            {
-                if (parameterName == newParam->name)
-                {
-                    newParam->defaultValue = newDefault;
-                    resetButton->setEnabled((newParam->currentValue != newDefault));
-                }
             });
         }
     }
@@ -163,11 +135,6 @@ void ParameterGrid::add_scroller(
         spinBox->setMinimum(newParam->minimumValue);
         spinBox->setValue(newParam->currentValue);
 
-        auto *const resetButton = new QPushButton("×");
-        resetButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        resetButton->setEnabled(false);
-        resetButton->setToolTip("Reset to default");
-
         auto *const scrollBar = new HorizontalSlider();
         scrollBar->setOrientation(Qt::Orientation::Horizontal);
         scrollBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -183,20 +150,13 @@ void ParameterGrid::add_scroller(
             const auto rowIdx = layout->rowCount();
 
             unsigned column = 0;
-            layout->addWidget(icon, rowIdx, column++);
             layout->addWidget(label, rowIdx, column++);
             layout->addWidget(spinBox, rowIdx, column++);
             layout->addWidget(scrollBar, rowIdx, column++);
-            layout->addWidget(resetButton, rowIdx, column++);
         }
 
         // Create component reactivity.
         {
-            connect(resetButton, &QPushButton::clicked, this, [=]
-            {
-                spinBox->setValue(newParam->defaultValue);
-            });
-
             connect(scrollBar, QOverload<int>::of(&QScrollBar::valueChanged), this, [=](const int newValue)
             {
                 spinBox->setValue(newValue);
@@ -206,7 +166,6 @@ void ParameterGrid::add_scroller(
             {
                 newParam->currentValue = newValue;
                 scrollBar->setValue(newValue);
-                resetButton->setEnabled((newValue != newParam->defaultValue));
 
                 emit this->parameter_value_changed(newParam->name, newValue);
                 emit this->parameter_value_changed_by_user(newParam->name, newValue);
@@ -222,19 +181,9 @@ void ParameterGrid::add_scroller(
                     newParam->currentValue = newValue;
                     spinBox->setValue(newValue);
                     scrollBar->setValue(newValue);
-                    resetButton->setEnabled((newValue != newParam->defaultValue));
                 }
 
                 emit this->parameter_value_changed(newParam->name, newValue);
-            });
-
-            connect(this, &ParameterGrid::parameter_default_value_changed_programmatically, this, [=](const QString &parameterName, const int newDefault)
-            {
-                if (parameterName == newParam->name)
-                {
-                    newParam->defaultValue = newDefault;
-                    resetButton->setEnabled((newParam->currentValue != newDefault));
-                }
             });
 
             connect(this, &ParameterGrid::parameter_minimum_value_changed_programmatically, this, [=](const QString &parameterName, const int newMin)
@@ -291,11 +240,6 @@ int ParameterGrid::value(const QString &parameterName) const
     return this->parameter(parameterName)->currentValue;
 }
 
-int ParameterGrid::default_value(const QString &parameterName) const
-{
-    return this->parameter(parameterName)->defaultValue;
-}
-
 int ParameterGrid::maximum_value(const QString &parameterName) const
 {
     return this->parameter(parameterName)->maximumValue;
@@ -309,13 +253,6 @@ int ParameterGrid::minimum_value(const QString &parameterName) const
 void ParameterGrid::set_value(const QString &parameterName, const int newValue)
 {
     emit this->parameter_value_changed_programmatically(parameterName, newValue);
-
-    return;
-}
-
-void ParameterGrid::set_default_value(const QString &parameterName, const int newDefault)
-{
-    emit this->parameter_default_value_changed_programmatically(parameterName, newDefault);
 
     return;
 }
