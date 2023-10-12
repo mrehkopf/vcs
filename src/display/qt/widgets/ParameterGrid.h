@@ -35,7 +35,6 @@ public:
     // A scroll bar with a synced spin box; for selecting a value on an interval.
     void add_scroller(
         const QString name,
-        const QString iconName = "",
         const int valueInitial = 1,
         const int valueMin = 0,
         const int valueMax = 999

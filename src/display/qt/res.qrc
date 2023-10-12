@@ -49,19 +49,6 @@
         <file>stylesheets/default/scrollbars.qss</file>
         <file>stylesheets/default/ParameterGrid.qss</file>
         <file>stylesheets/default/PropertyTable.qss</file>
-        <file>icons/newie/contrast.svg</file>
-        <file>icons/newie/blue-contrast.svg</file>
-        <file>icons/newie/green-contrast.svg</file>
-        <file>icons/newie/red-contrast.svg</file>
-        <file>icons/newie/brightness.svg</file>
-        <file>icons/newie/blue-brightness.svg</file>
-        <file>icons/newie/green-brightness.svg</file>
-        <file>icons/newie/red-brightness.svg</file>
-        <file>icons/newie/black-level.svg</file>
-        <file>icons/newie/phase.svg</file>
-        <file>icons/newie/horizontal-size.svg</file>
-        <file>icons/newie/horizontal-position.svg</file>
-        <file>icons/newie/vertical-position.svg</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

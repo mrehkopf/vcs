@@ -66,20 +66,18 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         ui->spinBox_resolutionY->setMinimum(int(minres.w));
         ui->spinBox_resolutionY->setMaximum(int(maxres.w));
 
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_HORIZONTAL_SIZE, "horizontal-size");
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_HORIZONTAL_POSITION, "horizontal-position");
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_VERTICAL_POSITION, "vertical-position");
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_BLACK_LEVEL, "black-level");
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_PHASE, "phase");
-        ui->parameterGrid_properties->add_separator();
+        ui->parameterGrid_properties->add_scroller(PROP_LABEL_HORIZONTAL_SIZE);
+        ui->parameterGrid_properties->add_scroller(PROP_LABEL_HORIZONTAL_POSITION);
+        ui->parameterGrid_properties->add_scroller(PROP_LABEL_VERTICAL_POSITION);
+        ui->parameterGrid_properties->add_scroller(PROP_LABEL_BLACK_LEVEL);
+        ui->parameterGrid_properties->add_scroller(PROP_LABEL_PHASE);
 
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_BRIGHTNESS, "brightness");
+        ui->parameterGrid_properties->add_scroller(PROP_LABEL_BRIGHTNESS);
         ui->parameterGrid_properties->add_scroller(PROP_LABEL_RED_BRIGHTNESS);
         ui->parameterGrid_properties->add_scroller(PROP_LABEL_GREEN_BRIGHTNESS);
         ui->parameterGrid_properties->add_scroller(PROP_LABEL_BLUE_BRIGHTNESS);
-        ui->parameterGrid_properties->add_separator();
 
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_CONTRAST, "contrast");
+        ui->parameterGrid_properties->add_scroller(PROP_LABEL_CONTRAST);
         ui->parameterGrid_properties->add_scroller(PROP_LABEL_RED_CONTRAST);
         ui->parameterGrid_properties->add_scroller(PROP_LABEL_GREEN_CONTRAST);
         ui->parameterGrid_properties->add_scroller(PROP_LABEL_BLUE_CONTRAST);

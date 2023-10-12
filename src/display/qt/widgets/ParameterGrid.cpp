@@ -140,7 +140,6 @@ void ParameterGrid::add_combobox(const QString name, const std::list<QString> it
 
 void ParameterGrid::add_scroller(
     const QString name,
-    const QString iconName,
     const int valueInitial,
     const int valueMin,
     const int valueMax
@@ -150,16 +149,11 @@ void ParameterGrid::add_scroller(
     newParam->name = name;
     newParam->type = ParameterGrid::parameter_type_e::scroller;
     newParam->currentValue = valueInitial;
-    newParam->defaultValue = valueInitial;
     newParam->minimumValue = valueMin;
     newParam->maximumValue = valueMax;
 
     // Set up the UI.
     {
-        auto *const icon = new QWidget();
-        icon->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-        icon->setObjectName("icon-" + iconName);
-
         auto *const label = new QLabel(name);
         label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
