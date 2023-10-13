@@ -7,13 +7,15 @@
     2. [Supported capture hardware](#supported-capture-hardware)
     3. [System requirements](#system-requirements)
 2. [FAQ](#faq)
-    1. [How do I adjust the picture?](#q-how-do-i-adjust-the-picture)
-    2. [How do I fix analog noise?](#q-how-do-i-fix-analog-noise)
-    3. [How do I set the correct capture resolution?](#q-how-do-i-set-the-correct-capture-resolution)
-    4. [How do I change the aspect ratio?](#q-how-do-i-change-the-aspect-ratio)
-    5. [How do I enable variable refresh rate output?](#q-how-do-i-enable-variable-refresh-rate-output)
-    6. [How do I fix screen tearing?](#q-how-do-i-fix-screen-tearing)
-    7. [How much capture latency is there?](#q-how-much-capture-latency-is-there)
+    1. [Where can I download VCS?](#q-where-can-i-download-vcs)
+    2. [What to do if there's no signal?](#q-what-to-do-if-theres-no-signal)
+    3. [How do I adjust the picture?](#q-how-do-i-adjust-the-picture)
+    4. [How do I fix analog noise?](#q-how-do-i-fix-analog-noise)
+    5. [How do I set the correct capture resolution?](#q-how-do-i-set-the-correct-capture-resolution)
+    6. [How do I change the aspect ratio?](#q-how-do-i-change-the-aspect-ratio)
+    7. [How do I enable variable refresh rate output?](#q-how-do-i-enable-variable-refresh-rate-output)
+    8. [How do I fix screen tearing?](#q-how-do-i-fix-screen-tearing)
+    9. [How much capture latency is there?](#q-how-much-capture-latency-is-there)
 3. [Output window](#output-window)
     1. [Magnifying glass](#magnifying-glass)
     2. [Borderless mode](#borderless-mode)
@@ -65,9 +67,18 @@ Any model of Datapath capture card supported by the Datapath Vision driver for L
 
 ## FAQ
 
-### Q: Where do I download VCS?
+### Q: Where can I download VCS?
 
 A: VCS is available from GitHub: https://github.com/leikareipa/vcs/. Pre-built binaries may not be available.
+
+### Q: What to do if there's no signal?
+
+A: If the capture card ought to be receiving a signal but VCS shows a blank window and/or says "No signal," it may be caused by one of the following:
+
+1. The Datapath Vision Linux driver hasn't been installed for your kernel. You need to reinstall the driver whenever the kernel is updated.
+2. The signal is out of range, i.e. it's of an unsupported resolution or refresh rate. VCS itself has a maximum input resolution of 4096 &times; 4096; and for example the Datapath VisionRGB-E1S capture card has a maximum digital input resolution of 1920 &times; 1200.
+3. Your capture source may have gone into hibernation and isn't actually sending a signal.
+4. Something else, a mystery in the shadows. Try reinstalling the Datapath Vision Linux driver.
 
 ### Q: How do I adjust the picture?
 
