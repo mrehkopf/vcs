@@ -49,7 +49,7 @@ static unsigned NUM_MISSED_FRAMES = 0;
 // be reset to false once the resolution has been forced.
 static bool FORCE_CUSTOM_RESOLUTION = false;
 
-static std::vector<const char*> SUPPORTED_ANALOG_PROPERTIES = {
+static std::vector<const char*> SUPPORTED_VIDEO_PROPERTIES = {
     "Horizontal size",
     "Horizontal position",
     "Vertical position",
@@ -72,10 +72,10 @@ static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
     {"width: maximum", MAX_CAPTURE_WIDTH},
     {"height: maximum", MAX_CAPTURE_HEIGHT},
 
-    {"supported analog properties", intptr_t(&SUPPORTED_ANALOG_PROPERTIES)},
-    {"supports analog presets: ui", true},
-    {"supports channel switching: ui", true},
-    {"supports resolution switching: ui", true},
+    {"supported video preset properties", intptr_t(&SUPPORTED_VIDEO_PROPERTIES)},
+    {"supports video presets", true},
+    {"supports channel switching", true},
+    {"supports resolution switching", true},
 };
 
 static bool set_capture_resolution(const resolution_s r)

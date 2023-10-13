@@ -22,7 +22,7 @@ control_panel::Capture::Capture(QWidget *parent) :
 
     // Compose the dialog's layout.
     {
-        if (kc_device_property("supports channel switching: ui"))
+        if (kc_device_property("supports channel switching"))
         {
             layout->addWidget(this->inputChannel);
         }
@@ -33,7 +33,7 @@ control_panel::Capture::Capture(QWidget *parent) :
 
         layout->addWidget(this->signalStatus);
 
-        if (kc_device_property("supports resolution switching: ui"))
+        if (kc_device_property("supports resolution switching"))
         {
             layout->addWidget(this->inputResolution);
         }

@@ -232,7 +232,7 @@ properties_map_t analog_properties_s::from_capture_device_properties(const std::
 {
     properties_map_t properties;
 
-    for (const std::string propName: kc_supported_analog_properties())
+    for (const std::string propName: kc_supported_video_preset_properties())
     {
         properties[propName] = kc_device_property(propName + nameSpace);
     }

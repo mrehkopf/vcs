@@ -144,7 +144,7 @@ unsigned kc_dropped_frames_count(void);
 // receiving a signal; false otherwise.
 bool kc_has_signal(void);
 
-const std::vector<const char*>& kc_supported_analog_properties(void);
+const std::vector<const char*>& kc_supported_video_preset_properties(void);
 
 // Returns a reference to the most recent captured frame.
 const captured_frame_s& kc_frame_buffer(void);

@@ -66,7 +66,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         ui->spinBox_resolutionY->setMinimum(int(minres.w));
         ui->spinBox_resolutionY->setMaximum(int(maxres.w));
 
-        for (const char* propName: kc_supported_analog_properties())
+        for (const char* propName: kc_supported_video_preset_properties())
         {
             ui->parameterGrid_properties->add_scroller(propName);
         }
@@ -526,7 +526,7 @@ void control_panel::VideoPresets::broadcast_current_preset_parameters(void)
         return;
     }
 
-    for (const std::string propName: kc_supported_analog_properties())
+    for (const std::string propName: kc_supported_video_preset_properties())
     {
         preset->properties.at(propName) = ui->parameterGrid_properties->value(QString::fromStdString(propName));
     }
@@ -540,7 +540,7 @@ void control_panel::VideoPresets::update_property_control_ranges(
     const properties_map_t &properties
 )
 {
-    for (const std::string &propName: kc_supported_analog_properties())
+    for (const std::string &propName: kc_supported_video_preset_properties())
     {
         const auto minVal = kc_device_property(propName + ": minimum");
         const auto maxVal = kc_device_property(propName + ": maximum");
@@ -603,7 +603,7 @@ void control_panel::VideoPresets::update_preset_controls_with_current_preset_dat
     {
         this->update_property_control_ranges(preset->properties);
 
-        for (const auto propName: kc_supported_analog_properties())
+        for (const auto propName: kc_supported_video_preset_properties())
         {
             ui->parameterGrid_properties->set_value(QString::fromStdString(propName), preset->properties.at(propName));
         }

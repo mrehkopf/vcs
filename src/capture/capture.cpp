@@ -34,9 +34,9 @@ bool kc_has_signal(void)
     return kc_device_property("has signal");
 }
 
-const std::vector<const char*>& kc_supported_analog_properties(void)
+const std::vector<const char*>& kc_supported_video_preset_properties(void)
 {
     static const std::vector<const char*> emptyList;
-    const auto *supportedProps = ((std::vector<const char*>*)kc_device_property("supported analog properties"));
+    const auto *supportedProps = ((std::vector<const char*>*)kc_device_property("supported video preset properties"));
     return (supportedProps? *supportedProps : emptyList);
 }

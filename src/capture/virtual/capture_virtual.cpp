@@ -44,7 +44,7 @@ static struct
     double brightness = 1;
 } VIDEO_PARAMS;
 
-static std::vector<const char*> SUPPORTED_ANALOG_PROPERTIES = {
+static std::vector<const char*> SUPPORTED_VIDEO_PROPERTIES = {
     "Brightness",
 };
 
@@ -56,10 +56,10 @@ static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
 
     {"has signal", true},
 
-    {"supported analog properties", intptr_t(&SUPPORTED_ANALOG_PROPERTIES)},
-    {"supports analog presets: ui", true},
-    {"supports channel switching: ui", true},
-    {"supports resolution switching: ui", true},
+    {"supported video preset properties", intptr_t(&SUPPORTED_VIDEO_PROPERTIES)},
+    {"supports video presets", true},
+    {"supports channel switching", true},
+    {"supports resolution switching", true},
 };
 
 static void refresh_test_pattern(void)

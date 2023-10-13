@@ -57,9 +57,9 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
 
         auto *const defaultButton = add_navi_button("Capture", this->captureDialog);
         add_navi_button("Output", this->outputDialog);
-        if (kc_device_property("supports analog presets: ui"))
+        if (kc_device_property("supports video presets"))
         {
-            add_navi_button("Analog presets", this->videoPresetsDialog);
+            add_navi_button("Video presets", this->videoPresetsDialog);
         }
         add_navi_button("Filter graph", this->filterGraphDialog);
         add_navi_button("About VCS", this->aboutDialog);
