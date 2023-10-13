@@ -72,6 +72,9 @@ static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
     {"width: maximum", MAX_CAPTURE_WIDTH},
     {"height: maximum", MAX_CAPTURE_HEIGHT},
 
+    {"width", 640},
+    {"height", 480},
+
     {"supported video preset properties", intptr_t(&SUPPORTED_VIDEO_PROPERTIES)},
     {"supports video presets", true},
     {"supports channel switching", true},
@@ -324,10 +327,9 @@ void kc_initialize_device(void)
     k_assert(!FRAME_BUFFER.pixels, "Attempting to doubly initialize the capture device.");
     FRAME_BUFFER.pixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
 
+    // Start capturing.
     kc_set_device_property("channel", INPUT_CHANNEL_IDX);
     k_assert(INPUT_CHANNEL, "Failed to initialize the hardware input channel.");
-
-    resolution_s::to_capture_device_properties({.w = 640, .h = 480});
 
     // Initialize value ranges for video parameters.
     //
@@ -414,10 +416,6 @@ void kc_initialize_device(void)
             refresh_rate_s::to_capture_device_properties(mode.refreshRate);
         });
     }
-
-    // Start capturing.
-    kc_set_device_property("channel", INPUT_CHANNEL_IDX);
-    k_assert(INPUT_CHANNEL, "Failed to initialize the input channel.");
 
     return;
 }
