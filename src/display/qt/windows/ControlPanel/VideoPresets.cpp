@@ -1,4 +1,4 @@
-#include <QMessageBox>
+﻿#include <QMessageBox>
 #include <QFileDialog>
 #include <QStatusBar>
 #include <QMenuBar>
@@ -66,24 +66,13 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         ui->spinBox_resolutionY->setMinimum(int(minres.w));
         ui->spinBox_resolutionY->setMaximum(int(maxres.w));
 
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_HORIZONTAL_SIZE);
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_HORIZONTAL_POSITION);
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_VERTICAL_POSITION);
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_BLACK_LEVEL);
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_PHASE);
-
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_BRIGHTNESS);
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_RED_BRIGHTNESS);
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_GREEN_BRIGHTNESS);
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_BLUE_BRIGHTNESS);
-
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_CONTRAST);
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_RED_CONTRAST);
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_GREEN_CONTRAST);
-        ui->parameterGrid_properties->add_scroller(PROP_LABEL_BLUE_CONTRAST);
+        for (const char* propName: kc_supported_analog_properties())
+        {
+            ui->parameterGrid_properties->add_scroller(propName);
+        }
 
         this->update_active_preset_indicator();
-        this->update_property_control_ranges(video_signal_properties_s::from_capture_device_properties(": default"));
+        this->update_property_control_ranges(analog_properties_s::from_capture_device_properties(": default"));
     }
 
     // Connect the GUI controls to consequences for changing their values.
@@ -240,9 +229,8 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
             if (!duplicateCurrent)
             {
-                newPreset->activationResolution.w = kc_device_property("width");
-                newPreset->activationResolution.h = kc_device_property("height");
-                newPreset->activationRefreshRate = kc_device_property("refresh rate");
+                newPreset->activationResolution = resolution_s::from_capture_device_properties();
+                newPreset->activationRefreshRate = refresh_rate_s::from_capture_device_properties();
             }
 
             ui->comboBox_presetList->add_preset(newPreset->id);
@@ -538,19 +526,10 @@ void control_panel::VideoPresets::broadcast_current_preset_parameters(void)
         return;
     }
 
-    preset->properties.brightness         = ui->parameterGrid_properties->value(PROP_LABEL_BRIGHTNESS);
-    preset->properties.contrast           = ui->parameterGrid_properties->value(PROP_LABEL_CONTRAST);
-    preset->properties.redBrightness      = ui->parameterGrid_properties->value(PROP_LABEL_RED_BRIGHTNESS);
-    preset->properties.redContrast        = ui->parameterGrid_properties->value(PROP_LABEL_RED_CONTRAST);
-    preset->properties.greenBrightness    = ui->parameterGrid_properties->value(PROP_LABEL_GREEN_BRIGHTNESS);
-    preset->properties.greenContrast      = ui->parameterGrid_properties->value(PROP_LABEL_GREEN_CONTRAST);
-    preset->properties.blueBrightness     = ui->parameterGrid_properties->value(PROP_LABEL_BLUE_BRIGHTNESS);
-    preset->properties.blueContrast       = ui->parameterGrid_properties->value(PROP_LABEL_BLUE_CONTRAST);
-    preset->properties.blackLevel         = ui->parameterGrid_properties->value(PROP_LABEL_BLACK_LEVEL);
-    preset->properties.horizontalPosition = ui->parameterGrid_properties->value(PROP_LABEL_HORIZONTAL_POSITION);
-    preset->properties.horizontalSize     = ui->parameterGrid_properties->value(PROP_LABEL_HORIZONTAL_SIZE);
-    preset->properties.phase              = ui->parameterGrid_properties->value(PROP_LABEL_PHASE);
-    preset->properties.verticalPosition   = ui->parameterGrid_properties->value(PROP_LABEL_VERTICAL_POSITION);
+    for (const std::string propName: kc_supported_analog_properties())
+    {
+        preset->properties.at(propName) = ui->parameterGrid_properties->value(QString::fromStdString(propName));
+    }
 
     kc_ev_video_preset_params_changed.fire(preset);
 
@@ -558,39 +537,16 @@ void control_panel::VideoPresets::broadcast_current_preset_parameters(void)
 }
 
 void control_panel::VideoPresets::update_property_control_ranges(
-    const video_signal_properties_s &targetProps
+    const properties_map_t &properties
 )
 {
-    const auto min = video_signal_properties_s::from_capture_device_properties(": minimum");
-    const auto max = video_signal_properties_s::from_capture_device_properties(": maximum");
-
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_HORIZONTAL_SIZE, std::max(targetProps.horizontalSize, max.horizontalSize));
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_HORIZONTAL_POSITION, std::max(targetProps.horizontalPosition, max.horizontalPosition));
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_VERTICAL_POSITION, std::max(targetProps.verticalPosition, max.verticalPosition));
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_BLACK_LEVEL, std::max(targetProps.blackLevel, max.blackLevel));
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_PHASE, std::max(targetProps.phase, max.phase));
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_BRIGHTNESS, std::max(targetProps.brightness, max.brightness));
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_RED_BRIGHTNESS, std::max(targetProps.redBrightness, max.redBrightness));
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_GREEN_BRIGHTNESS, std::max(targetProps.greenBrightness, max.greenBrightness));
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_BLUE_BRIGHTNESS, std::max(targetProps.blueBrightness, max.blueBrightness));
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_CONTRAST, std::max(targetProps.contrast, max.contrast));
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_RED_CONTRAST, std::max(targetProps.redContrast, max.redContrast));
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_GREEN_CONTRAST, std::max(targetProps.greenContrast, max.greenContrast));
-    ui->parameterGrid_properties->set_maximum_value(PROP_LABEL_BLUE_CONTRAST, std::max(targetProps.blueContrast, max.blueContrast));
-
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_HORIZONTAL_SIZE, std::min(targetProps.horizontalSize, min.horizontalSize));
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_HORIZONTAL_POSITION, std::min(targetProps.horizontalPosition, min.horizontalPosition));
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_VERTICAL_POSITION, std::min(targetProps.verticalPosition, min.verticalPosition));
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_BLACK_LEVEL, std::min(targetProps.blackLevel, min.blackLevel));
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_PHASE, std::min(targetProps.phase, min.phase));
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_BRIGHTNESS, std::min(targetProps.brightness, min.brightness));
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_RED_BRIGHTNESS, std::min(targetProps.redBrightness, min.redBrightness));
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_GREEN_BRIGHTNESS, std::min(targetProps.greenBrightness, min.greenBrightness));
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_BLUE_BRIGHTNESS, std::min(targetProps.blueBrightness, min.blueBrightness));
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_CONTRAST, std::min(targetProps.contrast, min.contrast));
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_RED_CONTRAST, std::min(targetProps.redContrast, min.redContrast));
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_GREEN_CONTRAST,std::min(targetProps.greenContrast,  min.greenContrast));
-    ui->parameterGrid_properties->set_minimum_value(PROP_LABEL_BLUE_CONTRAST, std::min(targetProps.blueContrast, min.blueContrast));
+    for (const std::string &propName: kc_supported_analog_properties())
+    {
+        const auto minVal = kc_device_property(propName + ": minimum");
+        const auto maxVal = kc_device_property(propName + ": maximum");
+        ui->parameterGrid_properties->set_minimum_value(QString::fromStdString(propName), std::min(properties.at(propName), minVal));
+        ui->parameterGrid_properties->set_maximum_value(QString::fromStdString(propName), std::max(properties.at(propName), maxVal));
+    }
 
     return;
 }
@@ -616,8 +572,8 @@ void control_panel::VideoPresets::update_preset_controls_with_current_preset_dat
     ui->spinBox_resolutionX->setMaximum(std::max(ui->spinBox_resolutionX->maximum(), int(preset->activationResolution.w)));
     ui->spinBox_resolutionY->setMinimum(std::min(ui->spinBox_resolutionY->minimum(), int(preset->activationResolution.h)));
     ui->spinBox_resolutionY->setMaximum(std::max(ui->spinBox_resolutionY->maximum(), int(preset->activationResolution.h)));
-    ui->spinBox_resolutionX->setValue(int(preset->activationResolution.w));
-    ui->spinBox_resolutionY->setValue(int(preset->activationResolution.h));
+    ui->spinBox_resolutionX->setValue(preset->activationResolution.w);
+    ui->spinBox_resolutionY->setValue(preset->activationResolution.h);
 
     // Figure out which shortcut this preset is assigned. Expects shortcuts to
     // be strings of the form "f1", "f2", etc.
@@ -645,22 +601,12 @@ void control_panel::VideoPresets::update_preset_controls_with_current_preset_dat
 
     // Assign the video parameter values.
     {
-        const auto &currentParams = preset->properties;
-        this->update_property_control_ranges(currentParams);
+        this->update_property_control_ranges(preset->properties);
 
-        ui->parameterGrid_properties->set_value(PROP_LABEL_HORIZONTAL_SIZE, currentParams.horizontalSize);
-        ui->parameterGrid_properties->set_value(PROP_LABEL_HORIZONTAL_POSITION, currentParams.horizontalPosition);
-        ui->parameterGrid_properties->set_value(PROP_LABEL_VERTICAL_POSITION, currentParams.verticalPosition);
-        ui->parameterGrid_properties->set_value(PROP_LABEL_BLACK_LEVEL, currentParams.blackLevel);
-        ui->parameterGrid_properties->set_value(PROP_LABEL_PHASE, currentParams.phase);
-        ui->parameterGrid_properties->set_value(PROP_LABEL_BRIGHTNESS, currentParams.brightness);
-        ui->parameterGrid_properties->set_value(PROP_LABEL_RED_BRIGHTNESS, currentParams.redBrightness);
-        ui->parameterGrid_properties->set_value(PROP_LABEL_GREEN_BRIGHTNESS, currentParams.greenBrightness);
-        ui->parameterGrid_properties->set_value(PROP_LABEL_BLUE_BRIGHTNESS, currentParams.blueBrightness);
-        ui->parameterGrid_properties->set_value(PROP_LABEL_CONTRAST, currentParams.contrast);
-        ui->parameterGrid_properties->set_value(PROP_LABEL_RED_CONTRAST, currentParams.redContrast);
-        ui->parameterGrid_properties->set_value(PROP_LABEL_GREEN_CONTRAST, currentParams.greenContrast);
-        ui->parameterGrid_properties->set_value(PROP_LABEL_BLUE_CONTRAST, currentParams.blueContrast);
+        for (const auto propName: kc_supported_analog_properties())
+        {
+            ui->parameterGrid_properties->set_value(QString::fromStdString(propName), preset->properties.at(propName));
+        }
     }
 
     return;

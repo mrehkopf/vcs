@@ -49,13 +49,31 @@ static unsigned NUM_MISSED_FRAMES = 0;
 // be reset to false once the resolution has been forced.
 static bool FORCE_CUSTOM_RESOLUTION = false;
 
-static std::unordered_map<std::string, double> DEVICE_PROPERTIES = {
+static std::vector<const char*> SUPPORTED_ANALOG_PROPERTIES = {
+    "Horizontal size",
+    "Horizontal position",
+    "Vertical position",
+    "Black level",
+    "Phase",
+    "Brightness",
+    "Red brightness",
+    "Green brightness",
+    "Blue brightness",
+    "Contrast",
+    "Red contrast",
+    "Green contrast",
+    "Blue contrast",
+};
+
+static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
     {"width: minimum", MIN_CAPTURE_WIDTH},
     {"height: minimum", MIN_CAPTURE_HEIGHT},
 
     {"width: maximum", MAX_CAPTURE_WIDTH},
     {"height: maximum", MAX_CAPTURE_HEIGHT},
 
+    {"supported analog properties", intptr_t(&SUPPORTED_ANALOG_PROPERTIES)},
+    {"supports analog presets: ui", true},
     {"supports channel switching: ui", true},
     {"supports resolution switching: ui", true},
 };
@@ -135,12 +153,12 @@ static void set_input_channel(const unsigned channelIdx)
     return;
 }
 
-double kc_device_property(const std::string &key)
+intptr_t kc_device_property(const std::string &key)
 {
     return (DEVICE_PROPERTIES.contains(key)? DEVICE_PROPERTIES.at(key) : 0);
 }
 
-bool kc_set_device_property(const std::string &key, double value)
+bool kc_set_device_property(const std::string &key, intptr_t value)
 {
     if (key == "width")
     {
@@ -197,19 +215,19 @@ bool kc_set_device_property(const std::string &key, double value)
         };
 
         static const auto videoParams = std::vector<std::pair<std::string, ic_v4l_controls_c::type_e>>{
-            {"brightness",          ic_v4l_controls_c::type_e::brightness},
-            {"contrast",            ic_v4l_controls_c::type_e::contrast},
-            {"red brightness",      ic_v4l_controls_c::type_e::red_brightness},
-            {"green brightness",    ic_v4l_controls_c::type_e::green_brightness},
-            {"blue brightness",     ic_v4l_controls_c::type_e::blue_brightness},
-            {"red contrast",        ic_v4l_controls_c::type_e::red_contrast},
-            {"green contrast",      ic_v4l_controls_c::type_e::green_contrast},
-            {"blue contrast",       ic_v4l_controls_c::type_e::blue_contrast},
-            {"horizontal size",     ic_v4l_controls_c::type_e::horizontal_size},
-            {"horizontal position", ic_v4l_controls_c::type_e::horizontal_position},
-            {"vertical position",   ic_v4l_controls_c::type_e::vertical_position},
-            {"phase",               ic_v4l_controls_c::type_e::phase},
-            {"black level",         ic_v4l_controls_c::type_e::black_level},
+            {"Brightness",          ic_v4l_controls_c::type_e::brightness},
+            {"Contrast",            ic_v4l_controls_c::type_e::contrast},
+            {"Red brightness",      ic_v4l_controls_c::type_e::red_brightness},
+            {"Green brightness",    ic_v4l_controls_c::type_e::green_brightness},
+            {"Blue brightness",     ic_v4l_controls_c::type_e::blue_brightness},
+            {"Red contrast",        ic_v4l_controls_c::type_e::red_contrast},
+            {"Green contrast",      ic_v4l_controls_c::type_e::green_contrast},
+            {"Blue contrast",       ic_v4l_controls_c::type_e::blue_contrast},
+            {"Horizontal size",     ic_v4l_controls_c::type_e::horizontal_size},
+            {"Horizontal position", ic_v4l_controls_c::type_e::horizontal_position},
+            {"Vertical position",   ic_v4l_controls_c::type_e::vertical_position},
+            {"Phase",               ic_v4l_controls_c::type_e::phase},
+            {"Black level",         ic_v4l_controls_c::type_e::black_level},
         };
 
         for (const auto &videoParam: videoParams)
@@ -321,73 +339,52 @@ void kc_initialize_device(void)
 
         videoParams->update();
 
-        if (!kc_has_signal())
-        {
-            video_signal_properties_s::to_capture_device_properties(video_signal_properties_s{
-                .brightness         = 32,
-                .contrast           = 128,
-                .redBrightness      = 128,
-                .redContrast        = 256,
-                .greenBrightness    = 128,
-                .greenContrast      = 256,
-                .blueBrightness     = 128,
-                .blueContrast       = 256,
-                .horizontalSize     = 900,
-                .horizontalPosition = 112,
-                .verticalPosition   = 36,
-                .phase              = 0,
-                .blackLevel         = 8
-            }, ": default");
-        }
-        else
-        {
-            video_signal_properties_s::to_capture_device_properties({
-                .brightness         = videoParams->default_value(ic_v4l_controls_c::type_e::brightness),
-                .contrast           = videoParams->default_value(ic_v4l_controls_c::type_e::contrast),
-                .redBrightness      = videoParams->default_value(ic_v4l_controls_c::type_e::red_brightness),
-                .redContrast        = videoParams->default_value(ic_v4l_controls_c::type_e::red_contrast),
-                .greenBrightness    = videoParams->default_value(ic_v4l_controls_c::type_e::green_brightness),
-                .greenContrast      = videoParams->default_value(ic_v4l_controls_c::type_e::green_contrast),
-                .blueBrightness     = videoParams->default_value(ic_v4l_controls_c::type_e::blue_brightness),
-                .blueContrast       = videoParams->default_value(ic_v4l_controls_c::type_e::blue_contrast),
-                .horizontalSize     = unsigned(videoParams->default_value(ic_v4l_controls_c::type_e::horizontal_size)),
-                .horizontalPosition = videoParams->default_value(ic_v4l_controls_c::type_e::horizontal_position),
-                .verticalPosition   = videoParams->default_value(ic_v4l_controls_c::type_e::vertical_position),
-                .phase              = videoParams->default_value(ic_v4l_controls_c::type_e::phase),
-                .blackLevel         = videoParams->default_value(ic_v4l_controls_c::type_e::black_level)
-            }, ": default");
-        }
+        analog_properties_s::to_capture_device_properties({
+            {"Brightness", 32},
+            {"Contrast", 128},
+            {"Red brightness", 128},
+            {"Green brightness", 128},
+            {"Blue brightness", 128},
+            {"Red contrast", 256},
+            {"Green contrast", 256},
+            {"Blue contrast", 256},
+            {"Horizontal size", 900},
+            {"Horizontal position", 112},
+            {"Vertical position", 36},
+            {"Phase", 0},
+            {"Black level", 8},
+        }, ": default");
 
-        video_signal_properties_s::to_capture_device_properties({
-            .brightness         = 0,
-            .contrast           = 0,
-            .redBrightness      = 0,
-            .redContrast        = 0,
-            .greenBrightness    = 0,
-            .greenContrast      = 0,
-            .blueBrightness     = 0,
-            .blueContrast       = 0,
-            .horizontalSize     = 100,
-            .horizontalPosition = 1,
-            .verticalPosition   = 1,
-            .phase              = 0,
-            .blackLevel         = 1
+        analog_properties_s::to_capture_device_properties({
+            {"Brightness", 0},
+            {"Contrast", 0},
+            {"Red brightness", 0},
+            {"Green brightness", 0},
+            {"Blue brightness", 0},
+            {"Red contrast", 0},
+            {"Green contrast", 0},
+            {"Blue contrast", 0},
+            {"Horizontal size", 100},
+            {"Horizontal position", 1},
+            {"Vertical position", 1},
+            {"Phase", 0},
+            {"Black level", 1},
         }, ": minimum");
 
-        video_signal_properties_s::to_capture_device_properties({
-            .brightness         = 63,
-            .contrast           = 255,
-            .redBrightness      = 255,
-            .redContrast        = 511,
-            .greenBrightness    = 255,
-            .greenContrast      = 511,
-            .blueBrightness     = 255,
-            .blueContrast       = 511,
-            .horizontalSize     = 4095,
-            .horizontalPosition = 1200,
-            .verticalPosition   = 63,
-            .phase              = 31,
-            .blackLevel         = 255
+        analog_properties_s::to_capture_device_properties({
+            {"Brightness", 63},
+            {"Contrast", 255},
+            {"Red brightness", 255},
+            {"Green brightness", 255},
+            {"Blue brightness", 255},
+            {"Red contrast", 511},
+            {"Green contrast", 511},
+            {"Blue contrast", 511},
+            {"Horizontal size", 4095},
+            {"Horizontal position", 1200},
+            {"Vertical position", 63},
+            {"Phase", 31},
+            {"Black level", 255},
         }, ": maximum");
     }
 

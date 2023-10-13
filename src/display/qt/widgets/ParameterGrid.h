@@ -70,7 +70,6 @@ private:
         unknown,
         scroller,
         combobox,
-
     };
 
     struct parameter_meta_s

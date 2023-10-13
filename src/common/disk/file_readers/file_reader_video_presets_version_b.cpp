@@ -1,5 +1,5 @@
 /*
- * 2020 Tarpeeksi Hyvae Soft
+ * 2020-2023 Tarpeeksi Hyvae Soft
  *
  * Software: VCS
  *
@@ -11,7 +11,7 @@
 #include "common/disk/file_readers/file_reader_video_presets.h"
 #include "common/disk/csv.h"
 
-bool file_reader::video_presets::version_a::read(
+bool file_reader::video_presets::version_b::read(
     const std::string &filename,
     std::vector<analog_video_preset_s*> *const presets
 )
@@ -51,12 +51,7 @@ bool file_reader::video_presets::version_a::read(
         row++;
         FAIL_IF_FIRST_CELL_IS_NOT("fileVersion");
         const QString fileVersion = rowData.at(row).at(1);
-        k_assert((fileVersion == "a"), "Mismatched file version for reading.");
-        if (fileVersion != "a")
-        {
-            NBENE(("Mismatched file version."));
-            goto fail;
-        }
+        k_assert((fileVersion == "b"), "Attempting to use an incorrect version of the video presets file reader.");
 
         row++;
         FAIL_IF_FIRST_CELL_IS_NOT("presetCount");
@@ -135,7 +130,7 @@ bool file_reader::video_presets::version_a::read(
             }
 
             row++;
-            FAIL_IF_FIRST_CELL_IS_NOT("videoParameterCount");
+            FAIL_IF_FIRST_CELL_IS_NOT("propertyCount");
             const int numParams = rowData.at(row).at(1).toInt();
             if (numParams < 0)
             {
@@ -145,66 +140,8 @@ bool file_reader::video_presets::version_a::read(
 
             for (int p = 0; p < numParams; p++)
             {
-                row++;
-                const auto paramName = rowData.at(row).at(0);
-
-                if (paramName == "verticalPosition")
-                {
-                    preset->properties["Vertical position"] = rowData.at(row).at(1).toInt();
-                }
-                else if (paramName == "horizontalPosition")
-                {
-                    preset->properties["Horizontal position"] = rowData.at(row).at(1).toInt();
-                }
-                else if (paramName == "horizontalScale")
-                {
-                    preset->properties["Horizontal size"] = rowData.at(row).at(1).toInt();
-                }
-                else if (paramName == "phase")
-                {
-                    preset->properties["Phase"] = rowData.at(row).at(1).toInt();
-                }
-                else if (paramName == "blackLevel")
-                {
-                    preset->properties["Black level"] = rowData.at(row).at(1).toInt();
-                }
-                else if (paramName == "brightness")
-                {
-                    preset->properties["Brightness"] = rowData.at(row).at(1).toInt();
-                }
-                else if (paramName == "contrast")
-                {
-                    preset->properties["Contrast"] = rowData.at(row).at(1).toInt();
-                }
-                else if (paramName == "redBrightness")
-                {
-                    preset->properties["Red brightness"] = rowData.at(row).at(1).toInt();
-                }
-                else if (paramName == "redContrast")
-                {
-                    preset->properties["Red contrast"] = rowData.at(row).at(1).toInt();
-                }
-                else if (paramName == "greenBrightness")
-                {
-                    preset->properties["Green brightness"] = rowData.at(row).at(1).toInt();
-                }
-                else if (paramName == "greenContrast")
-                {
-                    preset->properties["Green contrast"] = rowData.at(row).at(1).toInt();
-                }
-                else if (paramName == "blueBrightness")
-                {
-                    preset->properties["Blue brightness"] = rowData.at(row).at(1).toInt();
-                }
-                else if (paramName == "blueContrast")
-                {
-                    preset->properties["Blue contrast"] = rowData.at(row).at(1).toInt();
-                }
-                else
-                {
-                    NBENE(("Unknown parameter '%s' in the video preset file. Ignoring it.",
-                           paramName.toStdString().c_str()));
-                }
+                const std::string paramName = rowData.at(++row).at(0).toStdString();
+                preset->properties[paramName] = rowData.at(row).at(1).toInt();
             }
 
             presets->push_back(preset);

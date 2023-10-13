@@ -280,7 +280,7 @@ int main(int argc, char *argv[])
     // a more detailed error report to the user.
     catch (...)
     {
-        NBENE(("VCS has encountered a run-time error and will attempt to exit normally."));
+        NBENE(("VCS has encountered an error while initializing and will attempt to exit normally."));
         PROGRAM_EXIT_REQUESTED = true;
         goto fail;
     }

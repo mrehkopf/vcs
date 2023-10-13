@@ -10,12 +10,12 @@
 
 refresh_rate_s refresh_rate_s::from_capture_device_properties()
 {
-    return refresh_rate_s(kc_device_property("refresh rate"));
+    return refresh_rate_s(kc_device_property("refresh rate") / double(refresh_rate_s::numDecimalsPrecision));
 }
 
 void refresh_rate_s::to_capture_device_properties(const refresh_rate_s &rate)
 {
-    kc_set_device_property("refresh rate", rate.value<double>());
+    kc_set_device_property("refresh rate", unsigned(refresh_rate_s::numDecimalsPrecision * rate.value<double>()));
 }
 
 unsigned refresh_rate_s::internal_value() const

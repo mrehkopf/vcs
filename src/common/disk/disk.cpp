@@ -15,8 +15,6 @@
 #include "common/disk/file_reader.h"
 #include "common/disk/file_writers/file_writer_video_presets.h"
 #include "common/disk/file_readers/file_reader_video_presets.h"
-#include "common/disk/file_readers/file_reader_video_params.h"
-#include "common/disk/file_writers/file_writer_video_params.h"
 #include "common/disk/file_readers/file_reader_filter_graph.h"
 #include "common/disk/file_writers/file_writer_filter_graph.h"
 #include "common/vcs_event/vcs_event.h"
@@ -28,7 +26,7 @@
 bool kdisk_save_video_presets(const std::vector<analog_video_preset_s*> &presets,
                               const std::string &filename)
 {
-    if (!file_writer::video_presets::version_a::write(filename, presets))
+    if (!file_writer::video_presets::version_b::write(filename, presets))
     {
         goto fail;
     }
@@ -53,49 +51,26 @@ std::vector<analog_video_preset_s*> kdisk_load_video_presets(const std::string &
     }
 
     std::vector<analog_video_preset_s*> presets;
-
     const std::string fileVersion = file_reader::file_version(filename);
-    const std::string fileType = file_reader::file_type(filename);
 
-    // Legacy parameter file format (VCS ~1.7-dev).
-    if (fileType == "VCS video parameters")
+    if (fileVersion == "a")
     {
-        std::vector<video_signal_properties_s> videoModeParams;
-
-        if (!file_reader::video_params::version_a::read(filename, &videoModeParams))
+        if (!file_reader::video_presets::version_a::read(filename, &presets))
         {
             goto fail;
-        }
-
-        // Convert the legacy format into the current format.
-        unsigned id = 0;
-        for (const auto &params: videoModeParams)
-        {
-            analog_video_preset_s *const preset = new analog_video_preset_s;
-
-            preset->activatesWithResolution = true;
-            preset->activationResolution = params.r;
-            preset->properties = params;
-            preset->id = ++id;
-
-            presets.push_back(preset);
         }
     }
-    // Current file format (VCS >= 2.0.0).
-    else
+    else if (fileVersion == "b")
     {
-        if (fileVersion == "a")
+        if (!file_reader::video_presets::version_b::read(filename, &presets))
         {
-            if (!file_reader::video_presets::version_a::read(filename, &presets))
-            {
-                goto fail;
-            }
-        }
-        else
-        {
-            NBENE(("Unsupported video preset file format."));
             goto fail;
         }
+    }
+    else
+    {
+        NBENE(("Unsupported video preset file format."));
+        goto fail;
     }
 
     INFO(("Loaded %u video preset(s).", presets.size()));

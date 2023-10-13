@@ -39,7 +39,7 @@ static uint8_t *MMAP_SCREEN_BUF = nullptr;
 static std::atomic<bool> RUN_CAPTURE_THREAD = {false};
 static std::future<int> CAPTURE_THREAD_FUTURE;
 
-static std::unordered_map<std::string, double> DEVICE_PROPERTIES = {
+static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
     {"width", 640},
     {"height", 480},
 
@@ -196,12 +196,12 @@ static int capture_thread(void)
     return 1;
 }
 
-double kc_device_property(const std::string &key)
+intptr_t kc_device_property(const std::string &key)
 {
     return (DEVICE_PROPERTIES.contains(key)? DEVICE_PROPERTIES.at(key) : 0);
 }
 
-bool kc_set_device_property(const std::string &key, double value)
+bool kc_set_device_property(const std::string &key, intptr_t value)
 {
     if (key == "width")
     {

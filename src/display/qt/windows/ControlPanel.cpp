@@ -9,6 +9,7 @@
 #include "display/qt/windows/ControlPanel/AboutVCS.h"
 #include "display/qt/windows/OutputWindow.h"
 #include "display/qt/wheel_blocker.h"
+#include "capture/capture.h"
 #include "ControlPanel.h"
 #include "ui_ControlPanel.h"
 
@@ -56,7 +57,10 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
 
         auto *const defaultButton = add_navi_button("Capture", this->captureDialog);
         add_navi_button("Output", this->outputDialog);
-        add_navi_button("Analog presets", this->videoPresetsDialog);
+        if (kc_device_property("supports analog presets: ui"))
+        {
+            add_navi_button("Analog presets", this->videoPresetsDialog);
+        }
         add_navi_button("Filter graph", this->filterGraphDialog);
         add_navi_button("About VCS", this->aboutDialog);
 

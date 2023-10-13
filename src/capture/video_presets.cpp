@@ -72,7 +72,7 @@ subsystem_releaser_t kvideopreset_initialize(void)
 
             if (preset == MOST_RECENT_ACTIVE_PRESET)
             {
-                video_signal_properties_s::to_capture_device_properties(preset->properties);
+                analog_properties_s::to_capture_device_properties(preset->properties);
             }
         });
 
@@ -137,11 +137,11 @@ void kvideopreset_apply_current_active_preset(void)
 
     if (activePreset)
     {
-        video_signal_properties_s::to_capture_device_properties(activePreset->properties);
+        analog_properties_s::to_capture_device_properties(activePreset->properties);
     }
     else
     {
-        video_signal_properties_s::to_capture_device_properties(video_signal_properties_s::from_capture_device_properties(": default"));
+        analog_properties_s::to_capture_device_properties(analog_properties_s::from_capture_device_properties(": default"));
     }
 
     ev_video_preset_activated.fire(activePreset);
@@ -178,7 +178,7 @@ void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
     {
         if (preset->activates_with_shortcut(shortcutString))
         {
-            video_signal_properties_s::to_capture_device_properties(preset->properties);
+            analog_properties_s::to_capture_device_properties(preset->properties);
             ev_video_preset_activated.fire(preset);
             return;
         }
@@ -212,7 +212,7 @@ analog_video_preset_s* kvideopreset_create_new_preset(const analog_video_preset_
     {
         preset->activatesWithResolution = false;
         preset->activationResolution = {.w = 640, .h = 480};
-        preset->properties = video_signal_properties_s::from_capture_device_properties(": default");
+        preset->properties = analog_properties_s::from_capture_device_properties(": default");
     }
 
     preset->id = RUNNING_PRESET_ID++;
@@ -223,21 +223,32 @@ analog_video_preset_s* kvideopreset_create_new_preset(const analog_video_preset_
     return preset;
 }
 
-video_signal_properties_s kvideopreset_current_video_parameters(void)
-{
-    const auto activePreset = strongest_activating_preset();
-
-    if (!activePreset)
-    {
-        return {};
-    }
-    else
-    {
-        return activePreset->properties;
-    }
-}
-
 const analog_video_preset_s* kvideopreset_current_active_preset()
 {
     return MOST_RECENT_ACTIVE_PRESET;
+}
+
+properties_map_t analog_properties_s::from_capture_device_properties(const std::string &nameSpace)
+{
+    properties_map_t properties;
+
+    for (const std::string propName: kc_supported_analog_properties())
+    {
+        properties[propName] = kc_device_property(propName + nameSpace);
+    }
+
+    return properties;
+}
+
+void analog_properties_s::to_capture_device_properties(
+    const properties_map_t &properties,
+    const std::string &nameSpace
+)
+{
+    for (const auto &[propName, value]: properties)
+    {
+        kc_set_device_property((propName + nameSpace), value);
+    }
+
+    return;
 }

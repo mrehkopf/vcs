@@ -15,6 +15,14 @@
 #include "common/vcs_event/vcs_event.h"
 #include "main.h"
 
+typedef std::unordered_map<std::string, intptr_t> properties_map_t;
+
+struct analog_properties_s
+{
+    static properties_map_t from_capture_device_properties(const std::string &nameSpace = "");
+    static void to_capture_device_properties(const properties_map_t &properties, const std::string &nameSpace = "");
+};
+
 struct analog_video_preset_s
 {
     enum class refresh_rate_comparison_e
@@ -25,7 +33,7 @@ struct analog_video_preset_s
         ceiled,
     };
 
-    video_signal_properties_s properties = {};
+    properties_map_t properties;
 
     // Internal identifier for this particular video preset. Not user-facing. Used
     // to tell presets apart.
@@ -138,7 +146,5 @@ analog_video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId);
 analog_video_preset_s* kvideopreset_create_new_preset(const analog_video_preset_s *const duplicateDataSrc = nullptr);
 
 bool kvideopreset_remove_preset(const unsigned presetId);
-
-video_signal_properties_s kvideopreset_current_video_parameters(void);
 
 #endif

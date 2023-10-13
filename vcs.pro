@@ -40,6 +40,8 @@ INCLUDEPATH += \
     $$PWD/src/display/qt/widgets/
 
 SOURCES += \
+    src/common/disk/file_readers/file_reader_video_presets_version_b.cpp \
+    src/common/disk/file_writers/file_writer_video_presets_version_b.cpp \
     src/common/refresh_rate.cpp \
     src/common/vcs_event/vcs_event.cpp \
     src/display/qt/wheel_blocker.cpp \
@@ -127,10 +129,7 @@ SOURCES += \
     src/common/disk/file_readers/file_reader_filter_graph_version_b.cpp \
     src/common/disk/file_readers/file_reader_filter_graph_version_a.cpp \
     src/common/disk/file_writer.cpp \
-    src/common/disk/file_writers/file_writer_video_params_version_a.cpp \
-    src/common/disk/file_readers/file_reader_video_params_version_a.cpp \
     src/capture/video_presets.cpp \
-    src/common/disk/file_writers/file_writer_video_presets_version_a.cpp \
     src/common/disk/file_readers/file_reader_video_presets_version_a.cpp \
     src/common/timer/timer.cpp
 
@@ -233,8 +232,6 @@ HEADERS += \
     src/common/disk/file_readers/file_reader_filter_graph.h \
     src/common/disk/file_reader.h \
     src/common/disk/file_streamer.h \
-    src/common/disk/file_readers/file_reader_video_params.h \
-    src/common/disk/file_writers/file_writer_video_params.h \
     src/common/disk/file_writer.h \
     src/common/refresh_rate.h \
     src/capture/video_presets.h \

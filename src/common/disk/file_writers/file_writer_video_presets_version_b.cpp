@@ -9,13 +9,15 @@
 #include "common/disk/file_streamer.h"
 #include "common/globals.h"
 
-bool file_writer::video_presets::version_a::write(const std::string &filename,
-                                                  const std::vector<analog_video_preset_s*> &presets)
+bool file_writer::video_presets::version_b::write(
+    const std::string &filename,
+    const std::vector<analog_video_preset_s*> &presets
+)
 {
     file_streamer_c outFile(filename);
 
     outFile << "fileType,{VCS video presets}\n"
-            << "fileVersion,a\n";
+            << "fileVersion,b\n";
 
     outFile << "presetCount," << presets.size() << "\n";
 
@@ -46,26 +48,14 @@ bool file_writer::video_presets::version_a::write(const std::string &filename,
                                               << QString::fromStdString(p->activationShortcut) << "\n";
         }
 
-        // Write the video parameters.
+        // Write the video properties.
         {
-            outFile << "videoParameterCount,13\n";
+            outFile << "propertyCount," << p->properties.size() << "\n";
 
-            // Video params.
-            outFile << "verticalPosition,"   << p->properties.verticalPosition   << "\n"
-                    << "horizontalPosition," << p->properties.horizontalPosition << "\n"
-                    << "horizontalScale,"    << p->properties.horizontalSize    << "\n"
-                    << "phase,"              << p->properties.phase              << "\n"
-                    << "blackLevel,"         << p->properties.blackLevel         << "\n";
-
-            // Color params.
-            outFile << "brightness,"      << p->properties.brightness << "\n"
-                    << "contrast,"        << p->properties.contrast   << "\n"
-                    << "redBrightness,"   << p->properties.redBrightness     << "\n"
-                    << "redContrast,"     << p->properties.redContrast       << "\n"
-                    << "greenBrightness," << p->properties.greenBrightness   << "\n"
-                    << "greenContrast,"   << p->properties.greenContrast     << "\n"
-                    << "blueBrightness,"  << p->properties.blueBrightness    << "\n"
-                    << "blueContrast,"    << p->properties.blueContrast      << "\n";
+            for (const auto &[propName, value]: p->properties)
+            {
+                outFile << "{" << QString::fromStdString(propName) << "}," << value << "\n";
+            }
         }
     }
 

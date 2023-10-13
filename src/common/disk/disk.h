@@ -25,7 +25,7 @@
 
 class BaseFilterGraphNode;
 struct filter_graph_option_s;
-struct video_signal_properties_s;
+struct analog_properties_s;
 struct analog_video_preset_s;
 
 // A GUI-agnostic representation of a filter graph node.

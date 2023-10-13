@@ -108,28 +108,6 @@ struct captured_frame_s
     uint8_t *pixels;
 };
 
-struct video_signal_properties_s
-{
-    resolution_s r; // For legacy (VCS <= 1.6.5) support.
-
-    long brightness;
-    long contrast;
-    long redBrightness;
-    long redContrast;
-    long greenBrightness;
-    long greenContrast;
-    long blueBrightness;
-    long blueContrast;
-    unsigned long horizontalSize;
-    long horizontalPosition;
-    long verticalPosition;
-    long phase;
-    long blackLevel;
-
-    static video_signal_properties_s from_capture_device_properties(const std::string &nameSpace = "");
-    static void to_capture_device_properties(const video_signal_properties_s &params, const std::string &nameSpace = "");
-};
-
 // Returns a reference to a mutex which a caller should acquire before interacting
 // with the capture subsystem interface and which the capture subsystem should
 // acquire before mutating data which the interface exposes.
@@ -166,6 +144,8 @@ unsigned kc_dropped_frames_count(void);
 // receiving a signal; false otherwise.
 bool kc_has_signal(void);
 
+const std::vector<const char*>& kc_supported_analog_properties(void);
+
 // Returns a reference to the most recent captured frame.
 const captured_frame_s& kc_frame_buffer(void);
 
@@ -173,8 +153,8 @@ const captured_frame_s& kc_frame_buffer(void);
 // event.
 capture_event_e kc_process_next_capture_event(void);
 
-double kc_device_property(const std::string &key);
+intptr_t kc_device_property(const std::string &key);
 
-bool kc_set_device_property(const std::string &key, double value);
+bool kc_set_device_property(const std::string &key, intptr_t value);
 
 #endif

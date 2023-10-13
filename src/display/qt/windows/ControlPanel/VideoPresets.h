@@ -4,8 +4,9 @@
 #include <deque>
 #include "filter/filter.h"
 #include "display/qt/widgets/DialogFragment.h"
+#include "capture/video_presets.h"
 
-struct video_signal_properties_s;
+struct analog_properties_s;
 struct analog_video_preset_s;
 
 namespace control_panel
@@ -47,7 +48,7 @@ namespace control_panel
         void new_presets_source_file(const QString &filename);
 
     private:
-        void update_property_control_ranges(const video_signal_properties_s &targetParams);
+        void update_property_control_ranges(const properties_map_t &properties);
 
         void update_preset_controls_with_current_preset_data(void);
 

@@ -13,6 +13,7 @@
 #include "display/qt/persistent_settings.h"
 #include "common/abstract_gui.h"
 #include "common/timer/timer.h"
+#include "capture/video_presets.h"
 #include "capture/capture.h"
 
 // We'll try to redraw the on-screen test pattern this often.
@@ -43,15 +44,20 @@ static struct
     double brightness = 1;
 } VIDEO_PARAMS;
 
-static std::unordered_map<std::string, double> DEVICE_PROPERTIES = {
-    {"width: minimum", MIN_CAPTURE_WIDTH},
-    {"height: minimum", MIN_CAPTURE_HEIGHT},
+static std::vector<const char*> SUPPORTED_ANALOG_PROPERTIES = {
+    "Brightness",
+};
 
+static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
+    {"width: minimum", MIN_CAPTURE_WIDTH},
     {"width: maximum", MAX_CAPTURE_WIDTH},
+    {"height: minimum", MIN_CAPTURE_HEIGHT},
     {"height: maximum", MAX_CAPTURE_HEIGHT},
 
     {"has signal", true},
 
+    {"supported analog properties", intptr_t(&SUPPORTED_ANALOG_PROPERTIES)},
+    {"supports analog presets: ui", true},
     {"supports channel switching: ui", true},
     {"supports resolution switching: ui", true},
 };
@@ -146,7 +152,7 @@ void kc_initialize_device(void)
 
     kt_timer(1000, [](const unsigned elapsedMs)
     {
-        const double newRefreshRate = (NUM_FRAMES_PER_SECOND * (1000.0 / elapsedMs));
+        const unsigned newRefreshRate = (refresh_rate_s::numDecimalsPrecision * (NUM_FRAMES_PER_SECOND * (1000.0 / elapsedMs)));
 
         NUM_FRAMES_PER_SECOND = 0;
 
@@ -157,53 +163,24 @@ void kc_initialize_device(void)
         }
     });
 
-    video_signal_properties_s::to_capture_device_properties({
-         .brightness         = 0,
-         .contrast           = 0,
-         .redBrightness      = 0,
-         .redContrast        = 0,
-         .greenBrightness    = 0,
-         .greenContrast      = 0,
-         .blueBrightness     = 0,
-         .blueContrast       = 0,
-         .horizontalSize     = 100,
-         .horizontalPosition = 1,
-         .verticalPosition   = 1,
-         .phase              = 0,
-         .blackLevel         = 1
-    }, ": minimum");
+    // Define analog control ranges.
+    {
+        analog_properties_s::to_capture_device_properties({
+            {"Brightness", 0},
+        }, ": minimum");
 
-    video_signal_properties_s::to_capture_device_properties({
-        .brightness         = 63,
-        .contrast           = 255,
-        .redBrightness      = 255,
-        .redContrast        = 511,
-        .greenBrightness    = 255,
-        .greenContrast      = 511,
-        .blueBrightness     = 255,
-        .blueContrast       = 511,
-        .horizontalSize     = 4095,
-        .horizontalPosition = 1200,
-        .verticalPosition   = 63,
-        .phase              = 31,
-        .blackLevel         = 255
-    }, ": maximum");
+        analog_properties_s::to_capture_device_properties({
+            {"Brightness", 63},
+        }, ": maximum");
 
-    video_signal_properties_s::to_capture_device_properties({
-        .brightness         = 32,
-        .contrast           = 128,
-        .redBrightness      = 128,
-        .redContrast        = 256,
-        .greenBrightness    = 128,
-        .greenContrast      = 256,
-        .blueBrightness     = 128,
-        .blueContrast       = 256,
-        .horizontalSize     = 900,
-        .horizontalPosition = 112,
-        .verticalPosition   = 36,
-        .phase              = 0,
-        .blackLevel         = 8
-    }, ": default");
+        analog_properties_s::to_capture_device_properties({
+            {"Brightness", 63},
+        }, ": default");
+
+        analog_properties_s::to_capture_device_properties(
+            analog_properties_s::from_capture_device_properties(": default")
+        );
+    }
 
     // Create custom GUI entries.
     {
@@ -264,12 +241,12 @@ void kc_initialize_device(void)
     return;
 }
 
-double kc_device_property(const std::string &key)
+intptr_t kc_device_property(const std::string &key)
 {
     return (DEVICE_PROPERTIES.contains(key)? DEVICE_PROPERTIES.at(key) : 0);
 }
 
-bool kc_set_device_property(const std::string &key, double value)
+bool kc_set_device_property(const std::string &key, intptr_t value)
 {
     if (key == "width")
     {
@@ -299,9 +276,9 @@ bool kc_set_device_property(const std::string &key, double value)
     {
         ev_new_input_channel.fire(value);
     }
-    else if (key == "brightness")
+    else if (key == "Brightness")
     {
-        VIDEO_PARAMS.brightness = (value / (kc_device_property("brightness: maximum")));
+        VIDEO_PARAMS.brightness = (value / double(kc_device_property("Brightness: maximum")));
     }
 
     DEVICE_PROPERTIES[key] = value;
