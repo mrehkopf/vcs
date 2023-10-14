@@ -14,6 +14,7 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include <queue>
 #include <deque>
 #include "display/qt/windows/OutputWindow.h"
 #include "common/command_line/command_line.h"
@@ -43,6 +44,13 @@
     }
 #endif
 
+// Callback funtions to be run in the main VCS loop after the loop's lock of the
+// capture mutex has been released.
+static std::queue<std::function<void(void)>> POST_MUTEX_CALLBACKS;
+
+// Each subsystem of VCS may provide a release function that cleans up the
+// subsystem, akin to a class destructor. This queue holds the release
+// function for each initialized subsystem that provided one.
 static std::deque<subsystem_releaser_t> SUBSYSTEM_RELEASERS;
 
 // Set to true when we want to break out of the program's main loop and terminate.
@@ -83,11 +91,6 @@ static bool initialize_all(void)
             ECO_REFERENCE_TIME = std::chrono::system_clock::now();
         });
 
-        ev_unrecoverable_capture_error.listen([]
-        {
-            PROGRAM_EXIT_REQUESTED = true;
-        });
-
         ev_new_video_mode.listen([](const video_mode_s &videoMode)
         {
             INFO((
@@ -121,7 +124,7 @@ static bool initialize_all(void)
     return !PROGRAM_EXIT_REQUESTED;
 }
 
-static capture_event_e next_capture_event(void)
+static capture_event_e handle_next_capture_event(void)
 {
     const capture_event_e e = kc_process_next_capture_event();
 
@@ -130,6 +133,11 @@ static capture_event_e next_capture_event(void)
         case capture_event_e::new_frame:
         {
             ev_frame_processing_finished.fire(kc_frame_buffer());
+            break;
+        }
+        case capture_event_e::unrecoverable_error:
+        {
+            PROGRAM_EXIT_REQUESTED = true;
             break;
         }
         case capture_event_e::invalid_signal:
@@ -161,6 +169,13 @@ static void load_user_data(void)
 {
     kd_load_video_presets(kcom_video_presets_file_name());
     kd_load_filter_graph(kcom_filter_graph_file_name());
+
+    return;
+}
+
+void k_when_capture_mutex_unlocked(std::function<void(void)> callback)
+{
+    POST_MUTEX_CALLBACKS.push(callback);
 
     return;
 }
@@ -293,9 +308,15 @@ int main(int argc, char *argv[])
             capture_event_e e;
             {
                 LOCK_CAPTURE_MUTEX_IN_SCOPE;
-                e = next_capture_event();
+                e = handle_next_capture_event();
                 kt_update_timers();
                 kd_spin_event_loop();
+            }
+
+            while (!POST_MUTEX_CALLBACKS.empty())
+            {
+                POST_MUTEX_CALLBACKS.front()();
+                POST_MUTEX_CALLBACKS.pop();
             }
 
             eco_sleep(e);

@@ -195,7 +195,7 @@ void kc_initialize_device(void)
                 BG_IMAGE = cv::imread(filename);
 
                 if (
-                    (BG_IMAGE.data != nullptr)  &&
+                    (BG_IMAGE.data != nullptr) &&
                     (BG_IMAGE.elemSize() == 3) &&
                     (BG_IMAGE.cols <= int(MAX_CAPTURE_WIDTH)) &&
                     (BG_IMAGE.rows <= int(MAX_CAPTURE_HEIGHT)) &&

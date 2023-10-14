@@ -201,7 +201,14 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
     }
     else if (key == "channel")
     {
-        set_input_channel(value);
+        // We assume that we're running from VCS's main loop, which is guarded by
+        // the capture mutex. To change the input channel involves waiting for the
+        // capture thread to close, which itself may be waiting for the mutex to
+        // be released, so we want to hold off until the mutex is free.
+        k_when_capture_mutex_unlocked([value]
+        {
+            set_input_channel(value);
+        });
     }
     // Video parameters.
     else
@@ -252,13 +259,11 @@ capture_event_e kc_process_next_capture_event(void)
 {
     if (!INPUT_CHANNEL)
     {
-        ev_unrecoverable_capture_error.fire();
         return capture_event_e::unrecoverable_error;
     }
     else if (INPUT_CHANNEL->pop_capture_event(capture_event_e::unrecoverable_error))
     {
         INPUT_CHANNEL->captureStatus.invalidDevice = true;
-        ev_unrecoverable_capture_error.fire();
         return capture_event_e::unrecoverable_error;
     }
     else if (FORCE_CUSTOM_RESOLUTION)
@@ -328,7 +333,7 @@ void kc_initialize_device(void)
     FRAME_BUFFER.pixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
 
     // Start capturing.
-    kc_set_device_property("channel", INPUT_CHANNEL_IDX);
+    set_input_channel(INPUT_CHANNEL_IDX);
     k_assert(INPUT_CHANNEL, "Failed to initialize the hardware input channel.");
 
     // Initialize value ranges for video parameters.

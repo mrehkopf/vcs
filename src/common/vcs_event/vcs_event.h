@@ -145,10 +145,6 @@ extern vcs_event_c<void> ev_capture_signal_gained;
 // out of range).
 extern vcs_event_c<void> ev_invalid_capture_signal;
 
-// Fired when an error occurs in the capture subsystem from which the
-// subsystem can't recover.
-extern vcs_event_c<void> ev_unrecoverable_capture_error;
-
 // An event that can be fired by subsystems to indicate that the output window
 // should redraw its contents.
 extern vcs_event_c<void> ev_dirty_output_window;

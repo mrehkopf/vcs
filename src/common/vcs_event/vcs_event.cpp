@@ -15,7 +15,6 @@ vcs_event_c<void> ev_invalid_capture_device;
 vcs_event_c<void> ev_capture_signal_lost;
 vcs_event_c<void> ev_capture_signal_gained;
 vcs_event_c<void> ev_invalid_capture_signal;
-vcs_event_c<void> ev_unrecoverable_capture_error;
 vcs_event_c<void> ev_dirty_output_window;
 vcs_event_c<const resolution_s&> ev_new_output_resolution;
 vcs_event_c<const image_s&> ev_new_output_image;
