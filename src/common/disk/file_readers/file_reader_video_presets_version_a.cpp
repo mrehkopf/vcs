@@ -143,6 +143,13 @@ bool file_reader::video_presets::version_a::read(
                 goto fail;
             }
 
+            // Fill in default values for properties supported by the capture device,
+            // since the preset file may or may not include those properties.
+            for (const std::string &propName: kc_supported_video_preset_properties())
+            {
+                preset->properties[propName] = kc_device_property(propName + ": default");
+            }
+
             for (int p = 0; p < numParams; p++)
             {
                 row++;
