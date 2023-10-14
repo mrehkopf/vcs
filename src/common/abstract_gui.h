@@ -90,7 +90,7 @@ namespace abstract_gui
     struct combo_box : abstract_gui_widget_s
     {
         std::function<void(const int)> set_value;
-        std::function<int(void)> get_value;
+        std::function<int(void)> get_value = []{return 0;};
 
         std::vector<std::string> items;
     };

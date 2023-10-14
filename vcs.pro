@@ -24,6 +24,7 @@ DEFINES += \
     #CAPTURE_BACKEND_VIRTUAL
     #CAPTURE_BACKEND_DOSBOX_MMAP
     CAPTURE_BACKEND_VISION_V4L
+    #CAPTURE_BACKEND_GENERIC_V4L
 
 # Whether this build of VCS uses the OpenCV library. For now, non-OpenCV builds
 # are not supported, so this should always be defined.
@@ -299,6 +300,14 @@ contains(DEFINES, VCS_USES_OPENCV) {
     contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
         LIBS += -lopencv_imgcodecs
     }
+
+    contains(DEFINES, CAPTURE_BACKEND_GENERIC_V4L) {
+        LIBS += -lopencv_videoio
+    }
+}
+
+contains(DEFINES, CAPTURE_BACKEND_GENERIC_V4L) {
+    SOURCES += src/capture/generic_v4l/capture_generic_v4l.cpp
 }
 
 contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
