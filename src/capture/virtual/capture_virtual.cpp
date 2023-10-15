@@ -221,14 +221,14 @@ void kc_initialize_device(void)
 
             auto *const patternType = new abstract_gui::combo_box;
             patternType->items = {"Animated", "Static", "Image from file"};
-            patternType->set_value = [patternType, selectImage](const int itemsIdx)
+            patternType->initialIndex = unsigned(PATTERN_TYPE);
+            patternType->on_change = [patternType, selectImage](const int itemsIdx)
             {
                 PATTERN_TYPE = output_pattern_type(itemsIdx);
                 kpers_set_value(INI_GROUP_CAPTURE, "VirtualPattern", itemsIdx);
 
                 selectImage->set_enabled(PATTERN_TYPE == output_pattern_type::image);
             };
-            patternType->get_value = []{return int(PATTERN_TYPE);};
 
             GUI.patternGeneration.layout = abstract_gui_s::layout_e::vertical_box;
             GUI.patternGeneration.fields.push_back({"", {patternType}});

@@ -27,18 +27,15 @@ public:
             {PARAM_TYPE, SAMPLE_AVERAGE}
         }, initialParamValues)
     {
-        this->gui = new abstract_gui_s([this](abstract_gui_s *const gui)
+        this->gui = new abstract_gui_s([filter = this](abstract_gui_s *const gui)
         {
-            auto *const factor = new abstract_gui::spinner;
-            factor->get_value = [this]{return this->parameter(PARAM_FACTOR);};
-            factor->set_value = [this](int value){this->set_parameter(PARAM_FACTOR, std::pow(2, value));};
+            auto *factor = filtergui::spinner(filter, PARAM_FACTOR);
+            factor->on_change = [filter](int value){filter->set_parameter(PARAM_FACTOR, std::pow(2, value));};
             factor->minValue = 1;
             factor->maxValue = 4;
             gui->fields.push_back({"Factor", {factor}});
 
-            auto *const sampler = new abstract_gui::combo_box;
-            sampler->get_value = [this]{return this->parameter(PARAM_TYPE);};
-            sampler->set_value = [this](int value){this->set_parameter(PARAM_TYPE, value);};
+            auto *sampler = filtergui::combo_box(filter, PARAM_FACTOR);
             sampler->items = {"Nearest", "Average"};
             gui->fields.push_back({"Sampler", {sampler}});
         });

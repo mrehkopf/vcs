@@ -28,17 +28,13 @@ public:
             {PARAM_TYPE, BLUR_GAUSSIAN}
         }, initialParamValues)
     {
-        this->gui = new abstract_gui_s([this](abstract_gui_s *const gui)
+        this->gui = new abstract_gui_s([filter = this](abstract_gui_s *const gui)
         {
-            auto *const blurType = new abstract_gui::combo_box;
-            blurType->get_value = [this]{return this->parameter(PARAM_TYPE);};
-            blurType->set_value = [this](int value){this->set_parameter(PARAM_TYPE, std::max(0, value));};
+            auto *blurType = filtergui::combo_box(filter, PARAM_TYPE);
             blurType->items = {"Box", "Gaussian"};
             gui->fields.push_back({"Type", {blurType}});
 
-            auto *const blurRadius = new abstract_gui::double_spinner;
-            blurRadius->get_value = [this]{return this->parameter(PARAM_KERNEL_SIZE);};
-            blurRadius->set_value = [this](double value){this->set_parameter(PARAM_KERNEL_SIZE, value);};
+            auto *blurRadius = filtergui::double_spinner(filter, PARAM_KERNEL_SIZE);
             blurRadius->minValue = 0.1;
             blurRadius->maxValue = 99;
             blurRadius->numDecimals = 2;

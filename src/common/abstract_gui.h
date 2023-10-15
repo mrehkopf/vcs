@@ -30,42 +30,34 @@ namespace abstract_gui
 
     struct label : abstract_gui_widget_s
     {
-        std::function<void(const std::string&)> set_text;
-        std::function<std::string(void)> get_text;
-
         std::string text;
     };
 
     struct button_get_open_filename : abstract_gui_widget_s
     {
         std::function<void(const std::string&)> on_success;
-
         std::string label;
         std::string filenameFilter;
     };
 
     struct text_edit : abstract_gui_widget_s
     {
-        std::function<void(const std::string&)> set_text;
-        std::function<std::string(void)> get_text;
-
+        std::function<void(const std::string&)> on_change;
         std::string text;
         std::size_t maxLength = 255;
     };
 
     struct checkbox : abstract_gui_widget_s
     {
-        std::function<void(const bool)> set_value;
-        std::function<bool(void)> get_value;
-
+        std::function<void(const bool)> on_change;
+        bool initialState = false;
         std::string label;
     };
 
     struct spinner : abstract_gui_widget_s
     {
-        std::function<void(const int)> set_value;
-        std::function<int(void)> get_value;
-
+        std::function<void(const int)> on_change;
+        int initialValue = 0;
         int maxValue = 0;
         int minValue = 0;
         std::string prefix = "";
@@ -75,9 +67,8 @@ namespace abstract_gui
 
     struct double_spinner : abstract_gui_widget_s
     {
-        std::function<void(const double)> set_value;
-        std::function<double(void)> get_value;
-
+        std::function<void(const double)> on_change;
+        double initialValue = 0;
         double maxValue = 0;
         double minValue = 0;
         int numDecimals = 1;
@@ -89,9 +80,8 @@ namespace abstract_gui
 
     struct combo_box : abstract_gui_widget_s
     {
-        std::function<void(const int)> set_value;
-        std::function<int(void)> get_value = []{return 0;};
-
+        std::function<void(const int)> on_change;
+        unsigned initialIndex;
         std::vector<std::string> items;
     };
 }

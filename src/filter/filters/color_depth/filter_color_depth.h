@@ -26,23 +26,17 @@ public:
             {PARAM_BIT_COUNT_BLUE, 8}
         }, initialParamValues)
     {
-        this->gui = new abstract_gui_s([this](abstract_gui_s *const gui)
+        this->gui = new abstract_gui_s([filter = this](abstract_gui_s *const gui)
         {
-            auto *const red = new abstract_gui::spinner;
-            red->get_value = [this]{return this->parameter(PARAM_BIT_COUNT_RED);};
-            red->set_value = [this](int value){this->set_parameter(PARAM_BIT_COUNT_RED, value);};
+            auto *red = filtergui::spinner(filter, PARAM_BIT_COUNT_RED);
             red->minValue = 1;
             red->maxValue = 8;
 
-            auto *const green = new abstract_gui::spinner;
-            green->get_value = [this]{return this->parameter(PARAM_BIT_COUNT_GREEN);};
-            green->set_value = [this](int value){this->set_parameter(PARAM_BIT_COUNT_GREEN, value);};
+            auto *green = filtergui::spinner(filter, PARAM_BIT_COUNT_GREEN);
             green->minValue = 1;
             green->maxValue = 8;
 
-            auto *const blue = new abstract_gui::spinner;
-            blue->get_value = [this]{return this->parameter(PARAM_BIT_COUNT_BLUE);};
-            blue->set_value = [this](int value){this->set_parameter(PARAM_BIT_COUNT_BLUE, value);};
+            auto *blue = filtergui::spinner(filter, PARAM_BIT_COUNT_BLUE);
             blue->minValue = 1;
             blue->maxValue = 8;
 

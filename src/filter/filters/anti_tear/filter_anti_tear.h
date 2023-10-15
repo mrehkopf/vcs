@@ -48,67 +48,47 @@ public:
             {PARAM_VISUALIZE_RANGE, 0}
         }, initialParamValues)
     {
-        this->gui = new abstract_gui_s([this](abstract_gui_s *const gui)
+        this->gui = new abstract_gui_s([filter = this](abstract_gui_s *const gui)
         {
-            auto *const scanDir = new abstract_gui::combo_box;
-            scanDir->get_value = [this]{return this->parameter(PARAM_SCAN_DIRECTION);};
-            scanDir->set_value = [this](const int value){this->set_parameter(PARAM_SCAN_DIRECTION, value);};
+            auto *scanDir = filtergui::combo_box(filter, PARAM_SCAN_DIRECTION);
             scanDir->items = {"Down", "Up"};
             gui->fields.push_back({"Scan direction", {scanDir}});
 
-            auto *const scanHint = new abstract_gui::combo_box;
-            scanHint->get_value = [this]{return this->parameter(PARAM_SCAN_HINT);};
-            scanHint->set_value = [this](const int value){this->set_parameter(PARAM_SCAN_HINT, value);};
+            auto *scanHint = filtergui::combo_box(filter, PARAM_SCAN_HINT);
             scanHint->items = {"Up to one tear", "Multiple tears"};
             gui->fields.push_back({"Scan hint", {scanHint}});
 
-            auto *const scanStart = new abstract_gui::spinner;
-            scanStart->get_value = [this]{return this->parameter(PARAM_SCAN_START);};
-            scanStart->set_value = [this](const int value){this->set_parameter(PARAM_SCAN_START, value);};
+            auto *scanStart = filtergui::spinner(filter, PARAM_SCAN_START);
             scanStart->minValue = 0;
             scanStart->maxValue = MAX_CAPTURE_HEIGHT;
-            auto *const scanEnd = new abstract_gui::spinner;
-            scanEnd->get_value = [this]{return this->parameter(PARAM_SCAN_END);};
-            scanEnd->set_value = [this](const int value){this->set_parameter(PARAM_SCAN_END, value);};
+            auto *scanEnd = filtergui::spinner(filter, PARAM_SCAN_END);
             scanEnd->minValue = 0;
             scanEnd->maxValue = MAX_CAPTURE_HEIGHT;
             gui->fields.push_back({"Scan range", {scanStart, scanEnd}});
 
-            auto *const threshold = new abstract_gui::spinner;
-            threshold->get_value = [this]{return this->parameter(PARAM_THRESHOLD);};
-            threshold->set_value = [this](const int value){this->set_parameter(PARAM_THRESHOLD, value);};
+            auto *threshold = filtergui::spinner(filter, PARAM_THRESHOLD);
             threshold->minValue = 0;
             threshold->maxValue = 255;
             gui->fields.push_back({"Threshold", {threshold}});
 
-            auto *const windowSize = new abstract_gui::spinner;
-            windowSize->get_value = [this]{return this->parameter(PARAM_WINDOW_LENGTH);};
-            windowSize->set_value = [this](const int value){this->set_parameter(PARAM_WINDOW_LENGTH, value);};
+            auto *windowSize = filtergui::spinner(filter, PARAM_WINDOW_LENGTH);
             windowSize->minValue = 1;
             windowSize->maxValue = 99;
             gui->fields.push_back({"Window size", {windowSize}});
 
-            auto *const stepSize = new abstract_gui::spinner;
-            stepSize->get_value = [this]{return this->parameter(PARAM_STEP_SIZE);};
-            stepSize->set_value = [this](const int value){this->set_parameter(PARAM_STEP_SIZE, value);};
+            auto *stepSize = filtergui::spinner(filter, PARAM_STEP_SIZE);
             stepSize->minValue = 1;
             stepSize->maxValue = 99;
             gui->fields.push_back({"Step size", {stepSize}});
 
-            auto *const matches = new abstract_gui::spinner;
-            matches->get_value = [this]{return this->parameter(PARAM_MATCHES_REQD);};
-            matches->set_value = [this](const int value){this->set_parameter(PARAM_MATCHES_REQD, value);};
+            auto *matches = filtergui::spinner(filter, PARAM_MATCHES_REQD);
             matches->minValue = 1;
             matches->maxValue = 255;
             gui->fields.push_back({"Matches req'd", {matches}});
 
-            auto *const tears = new abstract_gui::checkbox;
-            tears->get_value = [this]{return this->parameter(PARAM_VISUALIZE_TEARS);};
-            tears->set_value = [this](const bool value){this->set_parameter(PARAM_VISUALIZE_TEARS, value);};
+            auto *tears = filtergui::checkbox(filter, PARAM_VISUALIZE_TEARS);
             tears->label = "Tears";
-            auto *const range = new abstract_gui::checkbox;
-            range->get_value = [this]{return this->parameter(PARAM_VISUALIZE_RANGE);};
-            range->set_value = [this](const bool value){this->set_parameter(PARAM_VISUALIZE_RANGE, value);};
+            auto *range = filtergui::checkbox(filter, PARAM_VISUALIZE_RANGE);
             range->label = "Range";
             gui->fields.push_back({"Visualize", {tears, range}});
         });

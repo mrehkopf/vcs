@@ -22,11 +22,9 @@ public:
             {PARAM_CRT_TYPE, 0}
         }, initialParamValues)
     {
-        this->gui = new abstract_gui_s([this](abstract_gui_s *const gui)
+        this->gui = new abstract_gui_s([filter = this](abstract_gui_s *const gui)
         {
-            auto *const blurType = new abstract_gui::combo_box;
-            blurType->get_value = [this]{return this->parameter(PARAM_CRT_TYPE);};
-            blurType->set_value = [this](int value){this->set_parameter(PARAM_CRT_TYPE, std::max(0, value));};
+            auto *blurType = filtergui::combo_box(filter, PARAM_CRT_TYPE);
             blurType->items = {"Crap"};
             gui->fields.push_back({"Screen quality", {blurType}});
         });

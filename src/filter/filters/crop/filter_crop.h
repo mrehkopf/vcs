@@ -36,35 +36,25 @@ public:
             {PARAM_SCALER, SCALE_NONE}
         }, initialParamValues)
     {
-        this->gui = new abstract_gui_s([this](abstract_gui_s *const gui)
+        this->gui = new abstract_gui_s([filter = this](abstract_gui_s *const gui)
         {
-            auto *xPos = new abstract_gui::spinner;
-            xPos->get_value = [this]{return this->parameter(PARAM_X);};
-            xPos->set_value = [this](const int value){this->set_parameter(PARAM_X, value);};
+            auto *xPos = filtergui::spinner(filter, PARAM_X);
             xPos->maxValue = MAX_CAPTURE_WIDTH;
             xPos->minValue = 0;
-            auto *yPos = new abstract_gui::spinner;
-            yPos->get_value = [this]{return this->parameter(PARAM_Y);};
-            yPos->set_value = [this](const int value){this->set_parameter(PARAM_Y, value);};
+            auto *yPos = filtergui::spinner(filter, PARAM_Y);
             yPos->maxValue = MAX_CAPTURE_HEIGHT;
             yPos->minValue = 0;
             gui->fields.push_back({"XY", {xPos, yPos}});
 
-            auto *width = new abstract_gui::spinner;
-            width->get_value = [this]{return this->parameter(PARAM_WIDTH);};
-            width->set_value = [this](const int value){this->set_parameter(PARAM_WIDTH, value);};
+            auto *width = filtergui::spinner(filter, PARAM_WIDTH);
             width->maxValue = MAX_CAPTURE_WIDTH;
             width->minValue = 1;
-            auto *height = new abstract_gui::spinner;
-            height->get_value = [this]{return this->parameter(PARAM_HEIGHT);};
-            height->set_value = [this](const int value){this->set_parameter(PARAM_HEIGHT, value);};
+            auto *height = filtergui::spinner(filter, PARAM_HEIGHT);
             height->maxValue = MAX_CAPTURE_HEIGHT;
             height->minValue = 1;
             gui->fields.push_back({"Size", {width, height}});
 
-            auto *scaler = new abstract_gui::combo_box;
-            scaler->get_value = [this]{return this->parameter(PARAM_SCALER);};
-            scaler->set_value = [this](const int value){this->set_parameter(PARAM_SCALER, value);};
+            auto *scaler = filtergui::combo_box(filter, PARAM_SCALER);
             scaler->items = {"Linear", "Nearest", "None"};
             gui->fields.push_back({"Scaler", {scaler}});
         });

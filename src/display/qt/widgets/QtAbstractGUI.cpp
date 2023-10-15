@@ -106,7 +106,6 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     textEdit->setMinimumWidth(150);
                     textEdit->setMaximumHeight(70);
                     textEdit->setTabChangesFocus(true);
-                    textEdit->insertPlainText(QString::fromStdString(c->get_text()));
 
                     connect(textEdit, &QPlainTextEdit::textChanged, [=, this]
                     {
@@ -116,7 +115,7 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         this->style()->polish(textEdit);
 
                         text.resize(std::min(std::size_t(text.length()), c->maxLength));
-                        c->set_text(text.toStdString());
+                        c->on_change(text.toStdString());
 
                         emit this->mutated(textEdit);
                     });
@@ -126,13 +125,13 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     auto *const c = ((abstract_gui::checkbox*)component);
                     auto *const checkbox = qobject_cast<QCheckBox*>(widget = new QCheckBox(this));
 
-                    checkbox->setChecked(c->get_value());
+                    checkbox->setChecked(c->initialState);
                     checkbox->setText(QString::fromStdString(c->label));
                     checkbox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
                     connect(checkbox, &QCheckBox::toggled, [=, this](const bool isChecked)
                     {
-                        c->set_value(isChecked);
+                        c->on_change(isChecked);
                         emit this->mutated(checkbox);
                     });
                 }
@@ -146,11 +145,11 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         combobox->addItem(QString::fromStdString(item));
                     }
 
-                    combobox->setCurrentIndex(c->get_value());
+                    combobox->setCurrentIndex(c->initialIndex);
 
                     connect(combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=, this](const int currentIdx)
                     {
-                        c->set_value(currentIdx);
+                        c->on_change(currentIdx);
                         emit this->mutated(combobox);
                     });
                 }
@@ -160,7 +159,7 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     auto *const spinbox = qobject_cast<QSpinBox*>(widget = new QSpinBox(this));
 
                     spinbox->setRange(c->minValue, c->maxValue);
-                    spinbox->setValue(c->get_value());
+                    spinbox->setValue(c->initialValue);
                     spinbox->setPrefix(QString::fromStdString(c->prefix));
                     spinbox->setSuffix(QString::fromStdString(c->suffix));
                     spinbox->setButtonSymbols(
@@ -179,7 +178,7 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
 
                     connect(spinbox, QOverload<int>::of(&QSpinBox::valueChanged), [=, this](const double newValue)
                     {
-                        c->set_value(newValue);
+                        c->on_change(newValue);
                         emit this->mutated(spinbox);
                     });
                 }
@@ -190,7 +189,7 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
 
                     doublespinbox->setRange(c->minValue, c->maxValue);
                     doublespinbox->setDecimals(c->numDecimals);
-                    doublespinbox->setValue(c->get_value());
+                    doublespinbox->setValue(c->initialValue);
                     doublespinbox->setSingleStep(c->stepSize);
                     doublespinbox->setPrefix(QString::fromStdString(c->prefix));
                     doublespinbox->setSuffix(QString::fromStdString(c->suffix));
@@ -210,7 +209,7 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
 
                     connect(doublespinbox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [=, this](const double newValue)
                     {
-                        c->set_value(newValue);
+                        c->on_change(newValue);
                         emit this->mutated(doublespinbox);
                     });
                 }

@@ -57,16 +57,14 @@ public:
             std::array<abstract_gui::spinner*, 3> widgets;
             for (unsigned paramIdx: {PARAM_RED, PARAM_GREEN, PARAM_BLUE})
             {
-                auto *const widget = widgets.at(paramIdx) = new abstract_gui::spinner;
-                widget->get_value = [filter, paramIdx]{return filter->parameter(paramIdx);};
-                widget->set_value = [filter, paramIdx](double value){filter->set_parameter(paramIdx, value);};
+                auto *widget = widgets.at(paramIdx) = filtergui::spinner(filter, paramIdx);
                 widget->minValue = 0;
                 widget->maxValue = 255;
             }
 
-            gui->fields.push_back({"Red", {widgets[PARAM_RED]}});
-            gui->fields.push_back({"Green", {widgets[PARAM_GREEN]}});
-            gui->fields.push_back({"Blue", {widgets[PARAM_BLUE]}});
+            gui->fields.push_back({"Red", {widgets.at(PARAM_RED)}});
+            gui->fields.push_back({"Green", {widgets.at(PARAM_GREEN)}});
+            gui->fields.push_back({"Blue", {widgets.at(PARAM_BLUE)}});
         });
     }
 
