@@ -205,7 +205,7 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
         // the capture mutex. To change the input channel involves waiting for the
         // capture thread to close, which itself may be waiting for the mutex to
         // be released, so we want to hold off until the mutex is free.
-        k_when_capture_mutex_unlocked([value]
+        k_defer_until_capture_mutex_unlocked([value]
         {
             set_input_channel(value);
         });

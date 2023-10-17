@@ -26,6 +26,6 @@ bool k_is_eco_mode_enabled(void);
 // gets executed in the tail of the main loop after the mutex has been released.
 // The callback function is executed once and then removed; if multiple
 // callbacks are registered, they're executed in the order of registration.
-void k_when_capture_mutex_unlocked(std::function<void(void)> callback);
+void k_defer_until_capture_mutex_unlocked(std::function<void(void)> callback);
 
 #endif

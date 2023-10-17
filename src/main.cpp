@@ -174,7 +174,7 @@ static void load_user_data(void)
     return;
 }
 
-void k_when_capture_mutex_unlocked(std::function<void(void)> callback)
+void k_defer_until_capture_mutex_unlocked(std::function<void(void)> callback)
 {
     POST_MUTEX_CALLBACKS.push(callback);
 

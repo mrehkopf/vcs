@@ -197,12 +197,14 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
     }
     else if (key == "channel")
     {
-        k_when_capture_mutex_unlocked([]
+        k_defer_until_capture_mutex_unlocked([]
         {
+            // Note: By the time this code runs, the new channel value will have
+            // been entered into the device properties, from which it'll be read
+            // by acquire_capture_device().
             release_capture_device();
             acquire_capture_device();
             start_capture();
-
             ev_new_input_channel.fire(kc_device_property("channel"));
         });
     }
@@ -235,7 +237,7 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
     {
         RESET_RESOLUTION = false;
 
-        k_when_capture_mutex_unlocked([]
+        k_defer_until_capture_mutex_unlocked([]
         {
             // With a Datapath Vision capture card, changing the capture resolution
             // while capturing causes the capture to freeze, unless we first restart
