@@ -46,22 +46,21 @@ bool kcom_parse_command_line(const int argc, char *const argv[])
                 
                 // Validate.
                 {
-                    const unsigned minChannelIdx = 1;    // Values must be 1-indexed.
-                    const unsigned maxChannelIdx = 8192; // Sanity check.
+                    const unsigned minChannelIdx = 0;
+                    const unsigned maxChannelIdx = 8192;
 
                     if ((INPUT_CHANNEL_IDX < minChannelIdx) ||
                         (INPUT_CHANNEL_IDX > maxChannelIdx))
                     {
-                        NBENE(("Input channel index (-i) is out of bounds. Expected range: %u-%u.",
-                               minChannelIdx, maxChannelIdx));
+                        NBENE((
+                            "Input channel index (-i) is out of bounds. Expected range: %u-%u.",
+                            minChannelIdx, maxChannelIdx)
+                        );
 
                         kd_show_headless_error_message("", parseFailMsg);
 
                         return false;
                     }
-
-                    // VCS expects the channel index to be 0-indexed, so let's convert.
-                    INPUT_CHANNEL_IDX--;
                 }
 
                 break;

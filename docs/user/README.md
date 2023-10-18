@@ -210,7 +210,7 @@ The above isn't an exhaustive list.
     <tr>
         <td>-i <i>&lt;integer&gt;</i></td>
         <td>
-            Start capture on the given input channel (1&#8230;<i>n</i>). On Linux, a value of 1 corresponds to <em>/dev/video0</em>, 2 to <em>/dev/video1</em>, 3 to <em>/dev/video2</em>, and so on. By default, channel 1 will be used.
+            Start capture on the given input channel. On Linux, this would be <em>/dev/videoX</em>.
         </td>
     </tr>
     <tr>
