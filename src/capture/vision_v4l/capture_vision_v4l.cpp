@@ -49,6 +49,17 @@ static unsigned NUM_MISSED_FRAMES = 0;
 // be reset to false once the resolution has been forced.
 static bool FORCE_CUSTOM_RESOLUTION = false;
 
+// Whether to apply a workaround for an apparent Datapath driver/firmware bug where
+// device capture properties - brightness, horizontal position, etc. - become frozen
+// and unresponsive to change while the horizontal size parameter has a value of 800.
+//
+// The basic idea of the workaround is to toggle the horizontal size to 799 and back
+// to 800, causing all the frozen parameters to update.
+//
+// This flag is automatically set whenever a horizontal size of 800 is requested,
+// and reset when the workaround has been applied. You don't need to set it manually.
+static bool WORKAROUND_HORIZONTAL_SIZE_800 = false;
+
 static std::vector<const char*> SUPPORTED_VIDEO_PROPERTIES = {
     "Horizontal size",
     "Horizontal position",
@@ -245,6 +256,16 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
             if (key == videoParam.first)
             {
                 set_video_param(value, videoParam.second);
+
+                // Note: Several video parameters may be modified by successive calls to
+                // kc_set_device_property(), so we need to queue the workaround to run
+                // on the next call to kc_process_next_capture_event(), when all property
+                // values have been updated.
+                if (key == "Horizontal size")
+                {
+                    WORKAROUND_HORIZONTAL_SIZE_800 = ((value == 800)? true : false);
+                }
+
                 break;
             }
         }
@@ -265,6 +286,17 @@ capture_event_e kc_process_next_capture_event(void)
     {
         INPUT_CHANNEL->captureStatus.invalidDevice = true;
         return capture_event_e::unrecoverable_error;
+    }
+    else if (WORKAROUND_HORIZONTAL_SIZE_800)
+    {
+        if (kc_has_signal())
+        {
+            DEBUG(("Activating workaround for HorizontalSize == 800."));
+            INPUT_CHANNEL->captureStatus.videoParameters.set_value(799, ic_v4l_controls_c::type_e::horizontal_size);
+            INPUT_CHANNEL->captureStatus.videoParameters.set_value(800, ic_v4l_controls_c::type_e::horizontal_size);
+        }
+        WORKAROUND_HORIZONTAL_SIZE_800 = false;
+        return capture_event_e::none;
     }
     else if (FORCE_CUSTOM_RESOLUTION)
     {
