@@ -224,17 +224,6 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
     // Video parameters.
     else
     {
-        static const auto set_video_param = [](const int value, const ic_v4l_controls_c::type_e parameterType)->bool
-        {
-            if (!kc_has_signal())
-            {
-                DEBUG(("Was asked to set capture video params while there was no signal. Ignoring the request."));
-                return false;
-            }
-
-            return INPUT_CHANNEL->captureStatus.videoParameters.set_value(value, parameterType);
-        };
-
         static const auto videoParams = std::vector<std::pair<std::string, ic_v4l_controls_c::type_e>>{
             {"Brightness",          ic_v4l_controls_c::type_e::brightness},
             {"Contrast",            ic_v4l_controls_c::type_e::contrast},
@@ -255,7 +244,7 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
         {
             if (key == videoParam.first)
             {
-                set_video_param(value, videoParam.second);
+                INPUT_CHANNEL->captureStatus.videoParameters.set_value(value, videoParam.second);
 
                 // Note: Several video parameters may be modified by successive calls to
                 // kc_set_device_property(), so we need to queue the workaround to run
@@ -289,12 +278,9 @@ capture_event_e kc_process_next_capture_event(void)
     }
     else if (WORKAROUND_HORIZONTAL_SIZE_800)
     {
-        if (kc_has_signal())
-        {
-            DEBUG(("Activating workaround for HorizontalSize == 800."));
-            INPUT_CHANNEL->captureStatus.videoParameters.set_value(799, ic_v4l_controls_c::type_e::horizontal_size);
-            INPUT_CHANNEL->captureStatus.videoParameters.set_value(800, ic_v4l_controls_c::type_e::horizontal_size);
-        }
+        DEBUG(("Activating workaround for HorizontalSize == 800."));
+        INPUT_CHANNEL->captureStatus.videoParameters.set_value(799, ic_v4l_controls_c::type_e::horizontal_size);
+        INPUT_CHANNEL->captureStatus.videoParameters.set_value(800, ic_v4l_controls_c::type_e::horizontal_size);
         WORKAROUND_HORIZONTAL_SIZE_800 = false;
         return capture_event_e::none;
     }
