@@ -138,17 +138,19 @@ static capture_event_e handle_next_capture_event(void)
         }
         case capture_event_e::unrecoverable_error:
         {
-            PROGRAM_EXIT_REQUESTED = true;
+            k_assert(0, "The capture device has reported an unrecoverable error.");
             break;
         }
         case capture_event_e::invalid_signal:
         {
             NBENE(("The input signal is out of range."));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             break;
         }
         case capture_event_e::invalid_device:
         {
             NBENE(("Invalid capture device."));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             break;
         }
         case capture_event_e::sleep:
