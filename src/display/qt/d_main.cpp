@@ -163,9 +163,8 @@ void kd_show_headless_assert_error_message(const char *const msg, const char *co
         mb.setWindowTitle("Assertion failure");
         mb.setText(
             "<html>"
-            "VCS has come across an unexpected condition in its code. As a precaution, "
-            "the program will shut itself down.<br><br>"
-            "<b>Error:</b> " + QString(msg) + "<br>"
+            "VCS has come across an unexpected condition in its code and as a precaution will now exit.<br><br>"
+            "\"" + QString(msg) + "\"<br>"
             "<b>In file:</b> " + QString(filename) + "<br>"
             "<b>On line:</b> " + QString::number(lineNum) +
             "</html>"
