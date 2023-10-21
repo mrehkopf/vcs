@@ -41,7 +41,7 @@ bool ic_v4l_controls_c::set_value(const int newValue, const ic_v4l_controls_c::t
     {
         if (kc_has_signal())
         {
-            DEBUG(("V4L control: Unsupported value %d for \"%s\".", newValue, this->name(control).c_str()));
+            DEBUG(("V4L control: Unsupported value %d for %s.", newValue, this->name(control).c_str()));
         }
 
         return false;

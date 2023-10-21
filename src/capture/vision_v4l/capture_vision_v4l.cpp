@@ -278,7 +278,7 @@ capture_event_e kc_process_next_capture_event(void)
     }
     else if (WORKAROUND_HORIZONTAL_SIZE_800)
     {
-        DEBUG(("Activating workaround for HorizontalSize == 800."));
+        DEBUG(("Activating workaround for horizontal_size == 800."));
         INPUT_CHANNEL->captureStatus.videoParameters.set_value(799, ic_v4l_controls_c::type_e::horizontal_size);
         INPUT_CHANNEL->captureStatus.videoParameters.set_value(800, ic_v4l_controls_c::type_e::horizontal_size);
         WORKAROUND_HORIZONTAL_SIZE_800 = false;
