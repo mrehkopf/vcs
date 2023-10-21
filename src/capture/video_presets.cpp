@@ -87,9 +87,10 @@ subsystem_releaser_t kvideopreset_initialize(void)
 
 bool kvideopreset_is_preset_active(const analog_video_preset_s *const preset)
 {
-    k_assert(preset, "Expected a non-null preset.");
-
-    return (preset == MOST_RECENT_ACTIVE_PRESET);
+    return (
+        MOST_RECENT_ACTIVE_PRESET &&
+        (preset == MOST_RECENT_ACTIVE_PRESET)
+    );
 }
 
 bool kvideopreset_remove_preset(const unsigned presetId)
