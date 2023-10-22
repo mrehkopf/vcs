@@ -78,7 +78,7 @@ A: If the capture card ought to be receiving a signal but VCS shows a blank wind
 1. The Datapath Vision Linux driver hasn't been installed for your kernel. You need to reinstall the driver whenever the kernel is updated.
 2. The signal is out of range, i.e. it's of an unsupported resolution or refresh rate. VCS itself has a maximum input resolution of 4096 &times; 4096; and for example the Datapath VisionRGB-E1S capture card has a maximum digital input resolution of 1920 &times; 1200.
 3. Your capture source may have gone into hibernation and isn't actually sending a signal.
-4. Something else, a mystery in the shadows. Try reinstalling the Datapath Vision Linux driver.
+4. Something else, a mystery in the shadows. Try restarting the Datapath Vision Linux driver module (*$ sudo modprobe -r rgb133 && sudo modprobe rgb133*), or reinstalling the driver entirely.
 
 ### Q: How do I adjust the picture?
 
