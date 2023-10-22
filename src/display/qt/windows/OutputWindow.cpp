@@ -668,8 +668,9 @@ void OutputWindow::update_window_title(void)
     }
     else
     {
-        const auto inRes = resolution_s::from_capture_device_properties();
+        const resolution_s inRes = resolution_s::from_capture_device_properties();
         const resolution_s outRes = ks_output_resolution();
+        const refresh_rate_s refresh = refresh_rate_s::from_capture_device_properties();
 
         if (!this->windowTitleOverride.isEmpty())
         {
@@ -679,17 +680,19 @@ void OutputWindow::update_window_title(void)
         {
             if (resolution_s::from_capture_device_properties() == ks_output_resolution())
             {
-                title = QString("%1 - %2 \u00d7 %3")
-                    .arg(programName)
-                    .arg(inRes.w)
-                    .arg(inRes.h);
-            }
-            else
-            {
-                title = QString("%1 - %2 \u00d7 %3 shown in %4 \u00d7 %5")
+                title = QString("%1 - %2 \u00d7 %3 (%4 Hz)")
                     .arg(programName)
                     .arg(inRes.w)
                     .arg(inRes.h)
+                    .arg(refresh.value<double>());
+            }
+            else
+            {
+                title = QString("%1 - %2 \u00d7 %3 (%4 Hz) shown in %5 \u00d7 %6")
+                    .arg(programName)
+                    .arg(inRes.w)
+                    .arg(inRes.h)
+                    .arg(refresh.value<double>())
                     .arg(outRes.w)
                     .arg(outRes.h);
             }
