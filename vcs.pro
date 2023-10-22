@@ -1,8 +1,13 @@
-###############################################################################
 #
-# User-customizable build parameters.
+# VCS
+# 2017-2023 Tarpeeksi Hyvae Soft
 #
-###############################################################################
+
+#..............................................................................
+#
+# Customizable build parameters.
+#
+#..............................................................................
 
 # Path to the Datapath Linux Vision driver header files. Needed only if
 # CAPTURE_BACKEND_VISION_V4L is defined.
@@ -36,13 +41,16 @@ DEFINES += \
 # are not supported, so this should always be defined.
 DEFINES += VCS_USES_OPENCV
 
-###############################################################################
+#..............................................................................
 #
-# Stuff you don't need to care about too much.
+# Stuff you mostly don't need to care about.
 #
-###############################################################################
+#..............................................................................
 
-QMAKE_CXXFLAGS += -pedantic -std=c++2a -Wno-missing-field-initializers
+QMAKE_CXXFLAGS += \
+    -pedantic \
+    -std=c++2a \
+    -Wno-missing-field-initializers
 
 INCLUDEPATH += \
     $$PWD/src/ \
@@ -268,12 +276,10 @@ FORMS += \
     src/display/qt/windows/ControlPanel/Output.ui \
     src/display/qt/windows/ControlPanel/VideoPresets.ui
 
-RESOURCES += \
-    src/display/qt/res.qrc
-
 QT += core gui widgets
 TARGET = vcs
 TEMPLATE = app
+RESOURCES += src/display/qt/res.qrc
 CONFIG += console release object_parallel_to_source
 OBJECTS_DIR = generated_files
 RCC_DIR = generated_files
