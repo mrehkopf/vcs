@@ -1,5 +1,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QSplitter>
+#include <QLabel>
 #include <QStyle>
 #include "display/qt/persistent_settings.h"
 #include "display/qt/windows/ControlPanel/Capture.h"
@@ -28,46 +30,145 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
     this->videoPresetsDialog = new control_panel::VideoPresets(this);
     this->aboutDialog = new control_panel::AboutVCS(this);
 
-    // Populate the side navi.
-    {
-        QVBoxLayout *const layout = dynamic_cast<QVBoxLayout*>(ui->buttonsContainer->layout());
+    QVBoxLayout *const mainNaviLayout = dynamic_cast<QVBoxLayout*>(ui->buttonsContainer->layout());
+    QVBoxLayout *const splitNaviLayout = dynamic_cast<QVBoxLayout*>(ui->buttonsContainer_2->layout());
 
-        const auto add_navi_button = [this, layout](const QString &label, DialogFragment *const dialog)->QPushButton*
+    // Moves the given dialog entry from one split pane (layout) to another.
+    const auto split = [this, mainNaviLayout, splitNaviLayout](
+        DialogFragment *const dialog,
+        QVBoxLayout *const to
+    ){
+        QPushButton *srcNaviButton = this->ui->buttonsContainer->findChild<QPushButton*>(dialog->name());
+        QPushButton *dstNaviButton = this->ui->buttonsContainer_2->findChild<QPushButton*>(dialog->name());
+        k_assert((srcNaviButton && dstNaviButton), "Malformed GUI: Unable to find matching dialog button.");
+        if (to == mainNaviLayout)
         {
-            auto *const naviButton = new QPushButton(label);
-            naviButton->setFlat(true);
+            std::swap(srcNaviButton, dstNaviButton);
+        }
+
+        bool doesSrcStillHaveContent = true;
+        if (srcNaviButton->property("isSelected").toBool())
+        {
+            doesSrcStillHaveContent = false;
+            auto *srcButtonsContainer = ((to == mainNaviLayout)? ui->buttonsContainer_2 : ui->buttonsContainer);
+            for (auto *button: srcButtonsContainer->findChildren<QPushButton*>())
+            {
+                if (
+                    !button->property("isSelected").toBool() &&
+                    button->isEnabled()
+                ){
+                    doesSrcStillHaveContent = true;
+                    button->click();
+                    break;
+                }
+            }
+        }
+
+        auto *srcSection = ((to == ui->buttonsContainer->layout())? ui->splitSection : ui->mainSection);
+        auto *dstSection = ((to == ui->buttonsContainer->layout())? ui->mainSection : ui->splitSection);
+        if (!doesSrcStillHaveContent)
+        {
+            auto *srcButtonsContainer = ((to == mainNaviLayout)? ui->buttonsContainer_2 : ui->buttonsContainer);
+            auto *dstButtonsContainer = ((to == mainNaviLayout)? ui->buttonsContainer : ui->buttonsContainer_2);
+            auto *srcContentContainer = ((to == mainNaviLayout)? ui->scrollArea_2 : ui->scrollArea);
+            auto *dstContentContainer = ((to == mainNaviLayout)? ui->scrollArea : ui->scrollArea_2);
+
+            if (to == splitNaviLayout)
+            {
+                std::swap(srcButtonsContainer, dstButtonsContainer);
+                std::swap(srcContentContainer, dstContentContainer);
+                std::swap(srcSection, dstSection);
+            }
+
+            for (auto *button: srcButtonsContainer->findChildren<QPushButton*>())
+            {
+                button->setVisible(false);
+                button->setEnabled(false);
+            }
+            for (auto *button: dstButtonsContainer->findChildren<QPushButton*>())
+            {
+                button->setVisible(true);
+                button->setEnabled(true);
+            }
+
+            srcContentContainer->takeWidget();
+            srcSection->setVisible(false);
+        }
+        else
+        {
+            dstSection->setVisible(true);
+            srcNaviButton->setVisible(false);
+            srcNaviButton->setEnabled(false);
+            dstNaviButton->setVisible(true);
+            dstNaviButton->setEnabled(true);
+
+            if (to == splitNaviLayout)
+            {
+                dstNaviButton->click();
+            }
+        }
+    };
+
+    const auto add_navi_button = [this, split, mainNaviLayout, splitNaviLayout](DialogFragment *const dialog)
+    {
+        for (auto *layout: {mainNaviLayout, splitNaviLayout})
+        {
+            auto *const naviButton = new QPushButton(dialog->name());
+            naviButton->setObjectName(dialog->name());
             naviButton->setFocusPolicy(Qt::NoFocus);
+            naviButton->setEnabled(true);
+            naviButton->setFlat(true);
             layout->addWidget(naviButton);
 
-            connect(naviButton, &QPushButton::pressed, this, [this, naviButton, dialog]
+            connect(naviButton, &QPushButton::pressed, this, [this, layout, splitNaviLayout, mainNaviLayout, split, naviButton, dialog]
             {
-                ui->contentsScroller->takeWidget();
-                ui->contentsScroller->setWidget(dialog);
+                auto *const contentArea = ((layout == splitNaviLayout)? ui->scrollArea_2 : ui->scrollArea);
+                auto *const buttonArea = ((layout == splitNaviLayout)? ui->buttonsContainer_2 : ui->buttonsContainer);
+
+                if (
+                    naviButton->underMouse() &&
+                    (qApp->keyboardModifiers() & Qt::AltModifier)
+                ){
+                    split(dialog, ((layout == mainNaviLayout)? splitNaviLayout : mainNaviLayout));
+                    return;
+                }
+
+                contentArea->takeWidget();
+                contentArea->setWidget(dialog);
                 dialog->show();
 
-                foreach (auto *const childButton, this->ui->buttonsContainer->children())
+                for (auto *const childButton: buttonArea->findChildren<QPushButton*>())
                 {
                     childButton->setProperty("isSelected", ((childButton == naviButton)? "true" : "false"));
                     this->style()->polish(dynamic_cast<QWidget*>(childButton));
-                };
+                }
             });
 
-            return naviButton;
-        };
+            // The split view is hidden by default.
+            if (layout == splitNaviLayout)
+            {
+                naviButton->setVisible(false);
+                naviButton->setEnabled(false);
+            }
+        }
+    };
 
-        auto *const defaultButton = add_navi_button("Capture", this->captureDialog);
-        add_navi_button("Output", this->outputDialog);
+    // Populate the side navi.
+    {
+        add_navi_button(this->captureDialog);
+        add_navi_button(this->outputDialog);
         if (kc_device_property("supports video presets"))
         {
-            add_navi_button("Video presets", this->videoPresetsDialog);
+            add_navi_button(this->videoPresetsDialog);
         }
-        add_navi_button("Filter graph", this->filterGraphDialog);
-        add_navi_button("About VCS", this->aboutDialog);
+        add_navi_button(this->filterGraphDialog);
+        add_navi_button(this->aboutDialog);
 
         // Push the buttons against the top edge of the container.
-        layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Fixed, QSizePolicy::Expanding));
+        mainNaviLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Fixed, QSizePolicy::Expanding));
+        splitNaviLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Fixed, QSizePolicy::Expanding));
 
-        defaultButton->click();
+        dynamic_cast<QPushButton*>(ui->buttonsContainer->findChildren<QPushButton*>().at(0))->click();
     }
 
     // Restore persistent settings.
@@ -75,7 +176,23 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
         this->resize(kpers_value_of(INI_GROUP_CONTROL_PANEL_WINDOW, "Size", QSize(792, 712)).toSize());
     }
 
+    // Note: The wheel blocker has to be created prior to setting up the view
+    // splitter, otherwise the wheel blocking doesn't apply to all widgets.
     this->wheelBlocker = new WheelBlocker(this);
+
+    // Wire up splitter functionality.
+    {
+        QSplitter *const splitter = new QSplitter(this);
+        splitter->addWidget(ui->mainSection);
+        splitter->addWidget(ui->splitSection);
+        splitter->setOrientation(Qt::Vertical);
+        splitter->setStretchFactor(1, 1);
+        splitter->setHandleWidth(1);
+        this->layout()->addWidget(splitter);
+
+        // The split is empty and hidden by default.
+        this->ui->splitSection->setVisible(false);
+    }
 
     return;
 }

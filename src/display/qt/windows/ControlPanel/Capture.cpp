@@ -11,6 +11,7 @@ control_panel::Capture::Capture(QWidget *parent) :
     ui(new Ui::Capture)
 {
     ui->setupUi(this);
+    this->set_name("Capture");
 
     auto *const layout = new QVBoxLayout(this);
     layout->setSpacing(16);

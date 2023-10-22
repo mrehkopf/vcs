@@ -31,7 +31,7 @@ QComboBox:disabled
     border: none;
 }
 
-ControlPanel QFrame[objectName="buttonsContainer"] QPushButton
+ControlPanel QFrame[objectName^="buttonsContainer"] QPushButton
 {
     border: none;
     min-height: 45px;
@@ -48,12 +48,12 @@ QInputDialog QPushButton
     padding: 4px 14px;
 }
 
-ControlPanel QFrame[objectName="buttonsContainer"] QPushButton:hover
+ControlPanel QFrame[objectName^="buttonsContainer"] QPushButton:hover
 {
     color: #d5d5d5;
 }
 
-ControlPanel QFrame[objectName="buttonsContainer"] QPushButton[isSelected="true"]
+ControlPanel QFrame[objectName^="buttonsContainer"] QPushButton[isSelected="true"]
 {
     background: #303030;
     color: #f5f5f5;

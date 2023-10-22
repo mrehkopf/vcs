@@ -14,8 +14,7 @@ control_panel::Output::Output(QWidget *parent) :
     ui(new Ui::Output)
 {
     ui->setupUi(this);
-
-    this->set_name("Window settings");
+    this->set_name("Output");
 
     auto *const layout = new QVBoxLayout(this);
     layout->setSpacing(16);

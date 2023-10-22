@@ -31,12 +31,19 @@ QLabel:disabled,
 QAbstractButton:disabled
 QTreeWidget QHeaderView::section
 
-ControlPanel QFrame[objectName="contentContainer"]
+ControlPanel QFrame[objectName^="contentContainer"]
 {
     background-color: #303030;
 }
 
-ControlPanel QFrame[objectName="buttonsContainer"]
+ControlPanel QFrame[objectName^="buttonsContainer"]
 {
     background-color: #202020;
+    min-width: 8.5em;
 }
+
+QSplitter::handle
+{
+    background-color: orange;
+}
+s
