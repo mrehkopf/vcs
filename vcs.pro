@@ -1,3 +1,9 @@
+###############################################################################
+#
+# User-customizable build parameters.
+#
+###############################################################################
+
 # Path to the Datapath Linux Vision driver header files. Needed only if
 # CAPTURE_BACKEND_VISION_V4L is defined.
 DATAPATH_VISION_HEADER_PATH = $$(HOME)/sdk/visionrgb/include/
@@ -30,9 +36,11 @@ DEFINES += \
 # are not supported, so this should always be defined.
 DEFINES += VCS_USES_OPENCV
 
-
-
-
+###############################################################################
+#
+# Stuff you don't need to care about too much.
+#
+###############################################################################
 
 QMAKE_CXXFLAGS += -pedantic -std=c++2a -Wno-missing-field-initializers
 
