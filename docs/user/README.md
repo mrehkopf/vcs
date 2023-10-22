@@ -22,7 +22,7 @@
     3. [Resizing](#resizing)
     4. [Context menu](#context-menu)
 4. [Control panel](#control-panel)
-5. [Keyboard shortcuts](#keyboard-shortcuts)
+5. [Keyboard and mouse controls](#keyboard-and-mouse-controls)
 6. [Command-line options](#command-line-options)
 
 ## Introduction
@@ -155,16 +155,14 @@ The control panel lets you adjust various operational aspects of VCS.
 
 Experiment   with the various controls to find out what they do.
 
-## Keyboard shortcuts
+## Keyboard and mouse controls
+
+### App-wide
 
 <table>
     <tr>
         <th>Key(s)</th>
         <th>Description</th>
-    </tr>
-    <tr>
-        <td><key-combo>Esc</key-combo></td>
-        <td>Exit fullscreen mode.</td>
     </tr>
     <tr>
         <td><key-combo>F1</key-combo> to <key-combo>F12</key-combo></td>
@@ -195,6 +193,58 @@ Experiment   with the various controls to find out what they do.
     <tr>
         <td><key-combo>Shift+1</key-combo><br><key-combo>Shift+2</key-combo></td>
         <td>Switch between /dev/video0 and /dev/video1.</td>
+    </tr>
+</table>
+
+### Output window
+
+<table>
+    <tr>
+        <th>Key(s)</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><key-combo>Esc</key-combo></td>
+        <td>Exit full-screen mode.</td>
+    </tr>
+</table>
+
+### Control panel
+
+<table>
+    <tr>
+        <th>Key(s)</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><key-combo>Alt+click</key-combo></td>
+        <td>When done over the left-hand tab buttons, splits the control panel into two views.</td>
+    </tr>
+</table>
+
+#### Capture
+
+<table>
+    <tr>
+        <th>Key(s)</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><key-combo>Alt+click</key-combo></td>
+        <td>When done over the "Force resolution" buttons, allows you to customize the button's resolution.</td>
+    </tr>
+</table>
+
+#### Video presets
+
+<table>
+    <tr>
+        <th>Key(s)</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td><key-combo>Alt+click</key-combo></td>
+        <td>When done over the "+" button, creates a new preset whose settings are copied from the currently-selected preset. (Clicking the button without holding Alt creates a new preset with default settings.)</td>
     </tr>
 </table>
 
