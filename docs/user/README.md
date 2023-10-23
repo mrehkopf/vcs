@@ -217,7 +217,7 @@ Experiment   with the various controls to find out what they do.
         <th>Description</th>
     </tr>
     <tr>
-        <td><key-combo>Alt+click</key-combo></td>
+        <td><key-combo>Right click</key-combo></td>
         <td>When done over the left-hand tab buttons, splits the control panel into two views.</td>
     </tr>
 </table>
@@ -230,7 +230,7 @@ Experiment   with the various controls to find out what they do.
         <th>Description</th>
     </tr>
     <tr>
-        <td><key-combo>Alt+click</key-combo></td>
+        <td><key-combo>Alt+Left click</key-combo></td>
         <td>When done over the "Force resolution" buttons, allows you to customize the button's resolution.</td>
     </tr>
 </table>
@@ -243,7 +243,7 @@ Experiment   with the various controls to find out what they do.
         <th>Description</th>
     </tr>
     <tr>
-        <td><key-combo>Alt+click</key-combo></td>
+        <td><key-combo>Alt+Left click</key-combo></td>
         <td>When done over the "+" button, creates a new preset whose settings are copied from the currently-selected preset. (Clicking the button without holding Alt creates a new preset with default settings.)</td>
     </tr>
 </table>

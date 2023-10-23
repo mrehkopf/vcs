@@ -1,4 +1,10 @@
-#include <QPushButton>
+/*
+ * 2023 Tarpeeksi Hyvae Soft
+ *
+ * Software: VCS
+ *
+ */
+
 #include <QVBoxLayout>
 #include <QSplitter>
 #include <QLabel>
@@ -38,8 +44,8 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
         DialogFragment *const dialog,
         QVBoxLayout *const to
     ){
-        QPushButton *srcNaviButton = this->ui->buttonsContainer->findChild<QPushButton*>(dialog->name());
-        QPushButton *dstNaviButton = this->ui->buttonsContainer_2->findChild<QPushButton*>(dialog->name());
+        auto *srcNaviButton = this->ui->buttonsContainer->findChild<RightClickableButton*>(dialog->name());
+        auto *dstNaviButton = this->ui->buttonsContainer_2->findChild<RightClickableButton*>(dialog->name());
         k_assert((srcNaviButton && dstNaviButton), "Malformed GUI: Unable to find matching dialog button.");
         if (to == mainNaviLayout)
         {
@@ -51,7 +57,7 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
         {
             doesSrcStillHaveContent = false;
             auto *srcButtonsContainer = ((to == mainNaviLayout)? ui->buttonsContainer_2 : ui->buttonsContainer);
-            for (auto *button: srcButtonsContainer->findChildren<QPushButton*>())
+            for (auto *button: srcButtonsContainer->findChildren<RightClickableButton*>())
             {
                 if (
                     !button->property("isSelected").toBool() &&
@@ -80,12 +86,12 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
                 std::swap(srcSection, dstSection);
             }
 
-            for (auto *button: srcButtonsContainer->findChildren<QPushButton*>())
+            for (auto *button: srcButtonsContainer->findChildren<RightClickableButton*>())
             {
                 button->setVisible(false);
                 button->setEnabled(false);
             }
-            for (auto *button: dstButtonsContainer->findChildren<QPushButton*>())
+            for (auto *button: dstButtonsContainer->findChildren<RightClickableButton*>())
             {
                 button->setVisible(true);
                 button->setEnabled(true);
@@ -113,31 +119,28 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
     {
         for (auto *layout: {mainNaviLayout, splitNaviLayout})
         {
-            auto *const naviButton = new QPushButton(dialog->name());
+            auto *const naviButton = new RightClickableButton(dialog->name());
             naviButton->setObjectName(dialog->name());
             naviButton->setFocusPolicy(Qt::NoFocus);
             naviButton->setEnabled(true);
             naviButton->setFlat(true);
             layout->addWidget(naviButton);
 
-            connect(naviButton, &QPushButton::pressed, this, [this, layout, splitNaviLayout, mainNaviLayout, split, naviButton, dialog]
+            connect(naviButton, &RightClickableButton::rightPressed, this, [this, dialog, layout, splitNaviLayout, mainNaviLayout, split]
+            {
+                split(dialog, ((layout == mainNaviLayout)? splitNaviLayout : mainNaviLayout));
+            });
+
+            connect(naviButton, &QPushButton::pressed, this, [this, layout, splitNaviLayout, naviButton, dialog]
             {
                 auto *const contentArea = ((layout == splitNaviLayout)? ui->scrollArea_2 : ui->scrollArea);
                 auto *const buttonArea = ((layout == splitNaviLayout)? ui->buttonsContainer_2 : ui->buttonsContainer);
-
-                if (
-                    naviButton->underMouse() &&
-                    (qApp->keyboardModifiers() & Qt::AltModifier)
-                ){
-                    split(dialog, ((layout == mainNaviLayout)? splitNaviLayout : mainNaviLayout));
-                    return;
-                }
 
                 contentArea->takeWidget();
                 contentArea->setWidget(dialog);
                 dialog->show();
 
-                for (auto *const childButton: buttonArea->findChildren<QPushButton*>())
+                for (auto *const childButton: buttonArea->findChildren<RightClickableButton*>())
                 {
                     childButton->setProperty("isSelected", ((childButton == naviButton)? "true" : "false"));
                     this->style()->polish(dynamic_cast<QWidget*>(childButton));
@@ -168,7 +171,7 @@ ControlPanel::ControlPanel(OutputWindow *parent) :
         mainNaviLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Fixed, QSizePolicy::Expanding));
         splitNaviLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Fixed, QSizePolicy::Expanding));
 
-        dynamic_cast<QPushButton*>(ui->buttonsContainer->findChildren<QPushButton*>().at(0))->click();
+        ui->buttonsContainer->findChildren<RightClickableButton*>().at(0)->click();
     }
 
     // Restore persistent settings.
