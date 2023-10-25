@@ -2,12 +2,12 @@
 #include "display/display.h"
 #include "display/qt/windows/OutputWindow.h"
 #include "display/qt/persistent_settings.h"
-#include "Renderer.h"
-#include "ui_Renderer.h"
+#include "Window.h"
+#include "ui_Window.h"
 
-control_panel::output::Renderer::Renderer(QWidget *parent) :
+control_panel::output::Window::Window(QWidget *parent) :
     DialogFragment(parent),
-    ui(new Ui::Renderer)
+    ui(new Ui::Window)
 {
     ui->setupUi(this);
 
@@ -17,10 +17,17 @@ control_panel::output::Renderer::Renderer(QWidget *parent) :
         OutputWindow::current_instance()->set_opengl_enabled(rendererName == "OpenGL");
     });
 
+    connect(ui->lineEdit_title, &QLineEdit::textChanged, this, [parent](const QString &title)
+    {
+        kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "Title", title);
+        OutputWindow::current_instance()->override_window_title(title);
+    });
+
     ui->comboBox_renderer->setCurrentText(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "Renderer", ui->comboBox_renderer->itemText(0)).toString());
+    ui->lineEdit_title->setText(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "Title", ui->lineEdit_title->text()).toString());
 }
 
-control_panel::output::Renderer::~Renderer()
+control_panel::output::Window::~Window()
 {
     delete ui;
 }

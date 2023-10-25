@@ -401,9 +401,9 @@ bool OutputWindow::set_global_font_size(const unsigned fontSize)
     return false;
 }
 
-void OutputWindow::override_window_title(const std::string &newTitle)
+void OutputWindow::override_window_title(const QString &newTitle)
 {
-    this->windowTitleOverride = QString::fromStdString(newTitle);
+    this->windowTitleOverride = newTitle;
     this->update_window_title();
 
     return;
@@ -686,7 +686,11 @@ void OutputWindow::update_window_title(void)
 
         if (!this->windowTitleOverride.isEmpty())
         {
-            title = this->windowTitleOverride;
+            title = (
+                QString("%1%2")
+                .arg(missedFramesMarker)
+                .arg(this->windowTitleOverride)
+            );
         }
         else
         {
@@ -703,17 +707,17 @@ void OutputWindow::update_window_title(void)
                         : ""
                 )
             );
-        }
 
-        // Add the name of the current preset, if any.
-        {
-            const analog_video_preset_s *currentAnalogPreset = kvideopreset_current_active_preset();
+            // Add the name of the current preset, if any.
+            {
+                const analog_video_preset_s *currentAnalogPreset = kvideopreset_current_active_preset();
 
-            if (
-                currentAnalogPreset &&
-                !currentAnalogPreset->name.empty()
-            ){
-                title += QString(" - \"%1\"").arg(QString::fromStdString(currentAnalogPreset->name));
+                if (
+                    currentAnalogPreset &&
+                    !currentAnalogPreset->name.empty()
+                ){
+                    title += QString(" - \"%1\"").arg(QString::fromStdString(currentAnalogPreset->name));
+                }
             }
         }
     }

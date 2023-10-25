@@ -54,7 +54,7 @@ public:
 
     bool set_global_font_size(const unsigned fontSize);
 
-    void override_window_title(const std::string &newTitle);
+    void override_window_title(const QString &newTitle);
 
     ControlPanel* control_panel(void) const { return this->controlPanelWindow; }
 

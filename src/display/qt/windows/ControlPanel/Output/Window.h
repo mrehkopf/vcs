@@ -5,18 +5,18 @@
 
 namespace control_panel::output
 {
-    namespace Ui { class Renderer; }
+    namespace Ui { class Window; }
 
-    class Renderer : public DialogFragment
+    class Window : public DialogFragment
     {
         Q_OBJECT
 
     public:
-        explicit Renderer(QWidget *parent = nullptr);
-        ~Renderer();
+        explicit Window(QWidget *parent = nullptr);
+        ~Window();
 
     private:
-        Ui::Renderer *ui;
+        Ui::Window *ui;
     };
 }
 
