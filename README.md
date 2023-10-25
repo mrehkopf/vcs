@@ -10,8 +10,8 @@ A control application for Datapath Vision capture cards on Linux.
 
 ## Key features
 
-- Unlimited video presets for analog capture
-- Several scaling modes and image filters
+- Unlimited video presets
+- Various filters and scalers
 - Variable refresh rate output
 - Free and open source
 
@@ -19,9 +19,10 @@ A control application for Datapath Vision capture cards on Linux.
 
 Any model of Datapath capture card supported by the Datapath Vision driver for Linux should be compatible, although the card's full set of capabilities may not be exposed.
 
-## Manuals
+## Documentation
 
-- [User's manual](./docs/user/README.md)
+- [User's manual](./docs/user/README.md) (follows the master branch)
+- [Guides for developers](./docs/developer/)
 
 ## Building
 
