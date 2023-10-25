@@ -14,8 +14,8 @@ const char PROGRAM_NAME[] = "VCS";
 const struct semantic_version_s
 {
     unsigned major = 3;
-    unsigned minor = 0;
-    unsigned patch = 2;
+    unsigned minor = 1;
+    unsigned patch = 0;
 } VCS_VERSION;
 
 // The minimum and maximum resolution we can output frames in.
