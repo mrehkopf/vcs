@@ -123,6 +123,8 @@ private:
 
     unsigned appwideFontSize = 15;
 
+    unsigned frameDropCount = false;
+
     const Qt::WindowFlags defaultWindowFlags = (Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 };
 

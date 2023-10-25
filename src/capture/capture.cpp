@@ -1,9 +1,7 @@
 /*
- * 2018 Tarpeeksi Hyvae Soft
+ * 2018-2023 Tarpeeksi Hyvae Soft
  * 
  * Software: VCS
- *
- * Handles interactions with the capture hardware.
  *
  */
 
@@ -11,6 +9,8 @@
 #include "common/timer/timer.h"
 
 static std::mutex CAPTURE_MUTEX;
+
+static unsigned LAST_KNOWN_MISSED_FRAMES_COUNT = 0;
 
 std::mutex& kc_mutex(void)
 {
@@ -22,6 +22,15 @@ subsystem_releaser_t kc_initialize_capture(void)
     DEBUG(("Initializing the capture subsystem."));
 
     kc_initialize_device();
+
+    kt_timer(1000, [](const unsigned)
+    {
+        const unsigned numMissedCurrent = kc_dropped_frames_count();
+        const unsigned numMissedFrames = (numMissedCurrent- LAST_KNOWN_MISSED_FRAMES_COUNT);
+
+        LAST_KNOWN_MISSED_FRAMES_COUNT = numMissedCurrent;
+        ev_missed_frames_count.fire(numMissedFrames);
+    });
 
     return []{
         DEBUG(("Releasing the capture subsystem."));

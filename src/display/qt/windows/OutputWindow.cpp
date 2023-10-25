@@ -334,6 +334,15 @@ OutputWindow::OutputWindow(QWidget *parent) :
         {
             this->update_window_title();
         });
+
+        ev_missed_frames_count.listen([this](const unsigned numMissed)
+        {
+            if (this->frameDropCount != numMissed)
+            {
+                this->frameDropCount = numMissed;
+                this->update_window_title();
+            }
+        });
     }
 
     return;
@@ -668,6 +677,9 @@ void OutputWindow::update_window_title(void)
     }
     else
     {
+        // A symbol shown in the title if VCS is currently dropping frames.
+        const QString missedFramesMarker = ((this->frameDropCount)? QString("%1 \u2591 - ").arg(this->frameDropCount) : "");
+
         const resolution_s inRes = resolution_s::from_capture_device_properties();
         const resolution_s outRes = ks_output_resolution();
         const refresh_rate_s refresh = refresh_rate_s::from_capture_device_properties();
@@ -678,24 +690,19 @@ void OutputWindow::update_window_title(void)
         }
         else
         {
-            if (resolution_s::from_capture_device_properties() == ks_output_resolution())
-            {
-                title = QString("%1 - %2 \u00d7 %3 (%4 Hz)")
-                    .arg(programName)
-                    .arg(inRes.w)
-                    .arg(inRes.h)
-                    .arg(refresh.value<double>());
-            }
-            else
-            {
-                title = QString("%1 - %2 \u00d7 %3 (%4 Hz) shown in %5 \u00d7 %6")
-                    .arg(programName)
-                    .arg(inRes.w)
-                    .arg(inRes.h)
-                    .arg(refresh.value<double>())
-                    .arg(outRes.w)
-                    .arg(outRes.h);
-            }
+            title = (
+                QString("%1%2 - %3 \u00d7 %4 (%5 Hz)%6")
+                .arg(missedFramesMarker)
+                .arg(programName)
+                .arg(inRes.w)
+                .arg(inRes.h)
+                .arg(refresh.value<double>())
+                .arg(
+                    (resolution_s::from_capture_device_properties() != ks_output_resolution())
+                        ? QString(" shown in %1 \u00d7 %2").arg(outRes.w).arg(outRes.h)
+                        : ""
+                )
+            );
         }
 
         // Add the name of the current preset, if any.
