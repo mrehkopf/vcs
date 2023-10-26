@@ -1,10 +1,11 @@
 /*
- * 2021 Tarpeeksi Hyvae Soft
+ * 2021, 2023 Tarpeeksi Hyvae Soft
  *
  * Software: VCS
  *
  */
 
+#include <opencv2/core.hpp>
 #include "filter/filters/denoise_pixel_gate/filter_denoise_pixel_gate.h"
 #include "common/globals.h"
 
@@ -14,25 +15,30 @@ void filter_denoise_pixel_gate_c::apply(image_s *const image)
 {
     const unsigned threshold = this->parameter(PARAM_THRESHOLD);
     static uint8_t *const prevPixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
+    static uint8_t *const absoluteDiff = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]();
 
-    for (unsigned i = 0; i < (image->resolution.h * image->resolution.w); i++)
+    cv::absdiff(
+        cv::Mat(image->resolution.h, image->resolution.w, CV_8UC4, image->pixels),
+        cv::Mat(image->resolution.h, image->resolution.w, CV_8UC4, prevPixels),
+        cv::Mat(image->resolution.h, image->resolution.w, CV_8UC4, absoluteDiff)
+    );
+
+    for (unsigned i = 0; i < image->byte_size(); i += 4)
     {
-        const unsigned idx = (i * (image->bitsPerPixel / 8));
-
         if (
-            (std::abs(image->pixels[idx + 0] - prevPixels[idx + 0]) > threshold) ||
-            (std::abs(image->pixels[idx + 1] - prevPixels[idx + 1]) > threshold) ||
-            (std::abs(image->pixels[idx + 2] - prevPixels[idx + 2]) > threshold)
+            (absoluteDiff[i + 0] > threshold) ||
+            (absoluteDiff[i + 1] > threshold) ||
+            (absoluteDiff[i + 2] > threshold)
         ){
-            prevPixels[idx + 0] = image->pixels[idx + 0];
-            prevPixels[idx + 1] = image->pixels[idx + 1];
-            prevPixels[idx + 2] = image->pixels[idx + 2];
+            prevPixels[i + 0] = image->pixels[i + 0];
+            prevPixels[i + 1] = image->pixels[i + 1];
+            prevPixels[i + 2] = image->pixels[i + 2];
         }
         else
         {
-            image->pixels[idx + 0] = prevPixels[idx + 0];
-            image->pixels[idx + 1] = prevPixels[idx + 1];
-            image->pixels[idx + 2] = prevPixels[idx + 2];
+            image->pixels[i + 0] = prevPixels[i + 0];
+            image->pixels[i + 1] = prevPixels[i + 1];
+            image->pixels[i + 2] = prevPixels[i + 2];
         }
     }
 
