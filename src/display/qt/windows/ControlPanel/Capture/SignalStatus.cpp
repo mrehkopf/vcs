@@ -36,9 +36,9 @@ control_panel::capture::SignalStatus::SignalStatus(QWidget *parent) :
     {
         // Initialize the table of information. Note that this also sets
         // the vertical order in which the table's parameters are shown.
-        ui->tableWidget_propertyTable->modify_property("Resolution", "-");
-        ui->tableWidget_propertyTable->modify_property("Refresh rate", "-");
-        ui->tableWidget_propertyTable->modify_property("Frames dropped", "-");
+        ui->tableWidget_propertyTable->add_property("Resolution");
+        ui->tableWidget_propertyTable->add_property("Refresh rate");
+        ui->tableWidget_propertyTable->add_property("Frames dropped");
 
         INFO_UPDATE_TIMER.start(1000);
         connect(&INFO_UPDATE_TIMER, &QTimer::timeout, [this]

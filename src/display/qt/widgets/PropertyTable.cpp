@@ -34,29 +34,53 @@ PropertyTable::PropertyTable(QWidget *parent) : QTableWidget(parent)
     return;
 }
 
-void PropertyTable::modify_property(QString propertyName, QString value)
+unsigned PropertyTable::add_property(const QString &name, const QString &tooltip)
 {
-    // Row index in the table of the item with the given property name.
-    int rowIdx = 0;
+    const unsigned rowIdx = this->rowCount();
 
-    // See if a property with the give name altready exists in the table.
-    for (rowIdx = 0; rowIdx <  this->rowCount(); rowIdx++)
+    this->insertRow(rowIdx);
+    this->setItem(rowIdx, 0, new QTableWidgetItem(name));
+    this->setItem(rowIdx, 1, new QTableWidgetItem("-"));
+
+    this->item(rowIdx, 0)->setToolTip(tooltip);
+    this->item(rowIdx, 1)->setToolTip(tooltip);
+
+    return rowIdx;
+}
+
+void PropertyTable::reset_property_values(void)
+{
+    for (int i = 0; i < this->rowCount(); i++)
     {
-        if (this->item(rowIdx, 0)->text() == propertyName)
+        this->item(i, 1)->setText("-");
+    }
+
+    return;
+}
+
+int PropertyTable::find_row_idx(const QString &name)
+{
+    for (int i = 0; i < this->rowCount(); i++)
+    {
+        if (this->item(i, 0)->text() == name)
         {
-            goto modify_property;
+            return i;
         }
     }
 
-    // If a property with the given name doesn't already exist, we'll add it.
+    return -1;
+}
+
+void PropertyTable::modify_property(const QString &propertyName, const QString &value)
+{
+    int rowIdx = this->find_row_idx(propertyName);
+
+    if (rowIdx == -1)
     {
-        rowIdx = this->rowCount();
-        this->insertRow(this->rowCount());
-        this->setItem(rowIdx, 0, new QTableWidgetItem(propertyName));
+        rowIdx = this->add_property(propertyName);
     }
 
-    modify_property:
-    this->setItem(rowIdx, 1, new QTableWidgetItem(value));
+    this->item(rowIdx, 1)->setText(value);
 
     return;
 }

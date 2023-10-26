@@ -36,10 +36,13 @@ control_panel::output::Status::Status(QWidget *parent) :
     {
         // Initialize the table of information. Note that this also sets
         // the vertical order in which the table's parameters are shown.
-        ui->tableWidget_propertyTable->modify_property("Resolution", "-");
-        ui->tableWidget_propertyTable->modify_property("Frame rate", "-");
-        ui->tableWidget_propertyTable->modify_property("Processing latency", "-");
-        ui->tableWidget_propertyTable->modify_property("Frames dropped", "-");
+        ui->tableWidget_propertyTable->add_property("Resolution");
+        ui->tableWidget_propertyTable->add_property("Frame rate");
+        ui->tableWidget_propertyTable->add_property(
+            "Processing latency",
+            "Time spent by VCS to process and display a captured frame."
+        );
+        ui->tableWidget_propertyTable->add_property("Frames dropped");
 
         INFO_UPDATE_TIMER.start(1000);
         connect(&INFO_UPDATE_TIMER, &QTimer::timeout, [this]
@@ -76,10 +79,7 @@ control_panel::output::Status::Status(QWidget *parent) :
 
         ev_capture_signal_lost.listen([this]
         {
-            ui->tableWidget_propertyTable->modify_property("Resolution", "-");
-            ui->tableWidget_propertyTable->modify_property("Frame rate", "-");
-            ui->tableWidget_propertyTable->modify_property("Processing latency", "-");
-            ui->tableWidget_propertyTable->modify_property("Frames dropped", "-");
+            ui->tableWidget_propertyTable->reset_property_values();
         });
     }
 
