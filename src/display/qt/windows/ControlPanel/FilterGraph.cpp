@@ -198,10 +198,10 @@ control_panel::FilterGraph::FilterGraph(QWidget *parent) :
 
                 // Add filters.
                 {
-                    filtersMenu->addMenu(enhanceMenu);
-                    filtersMenu->addMenu(reduceMenu);
                     filtersMenu->addMenu(distortMenu);
+                    filtersMenu->addMenu(enhanceMenu);
                     filtersMenu->addMenu(metaMenu);
+                    filtersMenu->addMenu(reduceMenu);
 
                     for (const auto filter: knownFilterTypes)
                     {
