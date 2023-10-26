@@ -351,4 +351,7 @@ contains(DEFINES, VCS_DEBUG_BUILD) {
     contains(DEFINES, VCS_DEBUG_BUILD_USES_SANITIZERS) {
         CONFIG += sanitizer sanitize_address sanitize_undefined
     }
+} else {
+    CONFIG += optimize_full
+    QMAKE_CXXFLAGS += -march=native
 }
