@@ -154,7 +154,7 @@ control_panel::FilterGraph::FilterGraph(QWidget *parent) :
                 QMenu *enhanceMenu = new QMenu("Enhance", this);
                 QMenu *reduceMenu = new QMenu("Reduce", this);
                 QMenu *distortMenu = new QMenu("Distort", this);
-                QMenu *metaMenu = new QMenu("Information", this);
+                QMenu *metaMenu = new QMenu("Meta", this);
 
                 auto knownFilterTypes = kf_available_filter_types();
 

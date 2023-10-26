@@ -24,7 +24,7 @@ public:
 
     void apply(image_s *const image) override;
     std::string uuid(void) const override { return "fc85a109-c57a-4317-994f-786652231773"; }
-    std::string name(void) const override { return "Histogram: pixel delta"; }
+    std::string name(void) const override { return "Delta histogram"; }
     filter_category_e category(void) const override { return filter_category_e::meta; }
 
 private:
