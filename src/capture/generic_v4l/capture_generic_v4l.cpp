@@ -12,6 +12,7 @@
  */
 
 #include <future>
+#include <chrono>
 #include <opencv2/videoio/videoio.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "common/timer/timer.h"
@@ -75,6 +76,7 @@ static void capture_loop(void)
 
             LOCK_CAPTURE_MUTEX_IN_SCOPE;
             push_event(capture_event_e::new_frame);
+            LOCAL_FRAME_BUFFER.timestamp = std::chrono::steady_clock::now();
             std::memcpy(
                 LOCAL_FRAME_BUFFER.pixels,
                 DEVICE_FRAME_BUFFER.data,

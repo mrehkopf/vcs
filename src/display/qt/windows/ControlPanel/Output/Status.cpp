@@ -38,6 +38,7 @@ control_panel::output::Status::Status(QWidget *parent) :
         // the vertical order in which the table's parameters are shown.
         ui->tableWidget_propertyTable->modify_property("Resolution", "-");
         ui->tableWidget_propertyTable->modify_property("Frame rate", "-");
+        ui->tableWidget_propertyTable->modify_property("Processing latency", "-");
         ui->tableWidget_propertyTable->modify_property("Frames dropped", "-");
 
         INFO_UPDATE_TIMER.start(1000);
@@ -49,6 +50,12 @@ control_panel::output::Status::Status(QWidget *parent) :
 
     // Listen for app events.
     {
+        ev_capture_processing_latency.listen([this](const unsigned latency)
+        {
+            const QString lat = QString::number(latency / 1000.0, 'f', 1);
+            ui->tableWidget_propertyTable->modify_property("Processing latency", (lat + " ms"));
+        });
+
         ev_new_output_image.listen([this](const image_s &image)
         {
             ui->tableWidget_propertyTable->modify_property(
@@ -71,6 +78,7 @@ control_panel::output::Status::Status(QWidget *parent) :
         {
             ui->tableWidget_propertyTable->modify_property("Resolution", "-");
             ui->tableWidget_propertyTable->modify_property("Frame rate", "-");
+            ui->tableWidget_propertyTable->modify_property("Processing latency", "-");
             ui->tableWidget_propertyTable->modify_property("Frames dropped", "-");
         });
     }

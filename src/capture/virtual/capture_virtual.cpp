@@ -71,6 +71,8 @@ static void refresh_test_pattern(void)
         numTicks++;
     }
 
+    FRAME_BUFFER.timestamp = std::chrono::steady_clock::now();
+
     if (
         (PATTERN_TYPE == output_pattern_type::image) &&
         (BG_IMAGE.data != nullptr)

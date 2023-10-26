@@ -33,6 +33,7 @@
 #define VCS_CAPTURE_CAPTURE_H
 
 #include <unordered_map>
+#include <chrono>
 #include <vector>
 #include <mutex>
 #include <any>
@@ -104,6 +105,7 @@ enum class signal_format_e
 
 struct captured_frame_s
 {
+    std::chrono::time_point<std::chrono::steady_clock> timestamp = std::chrono::steady_clock::now();
     resolution_s resolution;
     uint8_t *pixels;
 };

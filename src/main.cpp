@@ -309,9 +309,12 @@ int main(int argc, char *argv[])
         while (!PROGRAM_EXIT_REQUESTED)
         {
             capture_event_e e;
+            std::chrono::time_point<std::chrono::steady_clock> frameTimestamp;
+
             {
                 LOCK_CAPTURE_MUTEX_IN_SCOPE;
                 e = handle_next_capture_event();
+                frameTimestamp = kc_frame_buffer().timestamp;
                 kt_update_timers();
                 kd_spin_event_loop();
             }
@@ -320,6 +323,15 @@ int main(int argc, char *argv[])
             {
                 POST_MUTEX_CALLBACKS.front()();
                 POST_MUTEX_CALLBACKS.pop();
+            }
+
+            if (e == capture_event_e::new_frame)
+            {
+                ev_capture_processing_latency.fire(
+                    std::chrono::duration_cast<std::chrono::microseconds>(
+                        std::chrono::steady_clock::now() - frameTimestamp
+                    ).count()
+                );
             }
 
             eco_sleep(e);

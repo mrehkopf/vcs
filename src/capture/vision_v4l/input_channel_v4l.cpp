@@ -5,6 +5,7 @@
  *
  */
 
+#include <chrono>
 #include <poll.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -247,9 +248,8 @@ bool input_channel_v4l_c::capture_thread__get_next_frame(void)
 
             const input_channel_v4l_c::mmap_metadata &srcBuffer = this->mmapBackBuffers.at(buf.index);
 
+            this->dstFrameBuffer->timestamp = std::chrono::steady_clock::now();
             this->dstFrameBuffer->resolution = LATEST_RESOLUTION;
-
-            // Copy the frame's data into our local buffer so we can work on it.
             memcpy(this->dstFrameBuffer->pixels, srcBuffer.ptr, srcBuffer.length);
 
             this->captureStatus.numFramesCaptured++;

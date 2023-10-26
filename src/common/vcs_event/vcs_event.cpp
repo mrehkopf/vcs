@@ -27,3 +27,4 @@ vcs_event_c<const captured_frame_s&> ev_frame_processing_finished;
 vcs_event_c<const analog_video_preset_s*> ev_video_preset_activated;
 vcs_event_c<const analog_video_preset_s*> ev_video_preset_name_changed;
 vcs_event_c<unsigned> ev_missed_frames_count;
+vcs_event_c<unsigned> ev_capture_processing_latency;

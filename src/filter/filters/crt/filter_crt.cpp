@@ -88,7 +88,7 @@ void filter_crt_c::apply(image_s *const image)
     // Barrel distortion.
     {
         // Upscale the source image for more accurate results.
-        cv::resize(phosphor, base, {scaledResolution.w, scaledResolution.h}, 0, 0, cv::INTER_LINEAR);
+        cv::resize(phosphor, base, cv::Size(scaledResolution.w, scaledResolution.h), 0, 0, cv::INTER_LINEAR);
 
         memcpy(barrelBuffer, baseBuffer, (scaledResolution.w * scaledResolution.h * 4));
         memcpy(baseGlowBuffer, baseBuffer, (scaledResolution.w * scaledResolution.h * 4));

@@ -14,6 +14,7 @@
 
 #include <atomic>
 #include <future>
+#include <chrono>
 #include <cstring>
 #include "common/globals.h"
 #include "capture/capture.h"
@@ -180,6 +181,8 @@ static int capture_thread(void)
                 resolution_s::to_capture_device_properties({.w = frameWidth, .h = frameHeight});
                 push_capture_event(capture_event_e::new_video_mode);
             }
+
+            FRAME_BUFFER.timestamp = std::chrono::steady_clock::now();
 
             memcpy(
                 FRAME_BUFFER.pixels,
