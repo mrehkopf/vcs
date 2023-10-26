@@ -47,6 +47,9 @@ DEFINES += VCS_USES_OPENCV
 #
 #..............................................................................
 
+QMAKE_CC = gcc
+QMAKE_CXX = g++
+
 QMAKE_CXXFLAGS += \
     -pedantic \
     -std=c++2a \
