@@ -40,7 +40,7 @@ control_panel::output::Status::Status(QWidget *parent) :
         ui->tableWidget_propertyTable->add_property("Frame rate");
         ui->tableWidget_propertyTable->add_property(
             "Processing latency",
-            "Time spent by VCS to process and display a captured frame."
+            "Time spent by VCS to process and display a captured frame"
         );
         ui->tableWidget_propertyTable->add_property("Frames dropped");
 

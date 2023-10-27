@@ -17,19 +17,19 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
 --- ./dosbox-0.74-3-vcs/src/gui/sdlmain.cpp	2022-09-27 02:50:47.670811818 +0300
 ***************
 *** 221,226 ****
---- 221,294 ----
+--- 221,299 ----
   
   static SDL_Block sdl;
   
 + // Memory interface with VCS.
-+ static unsigned char *THS_MMAP_STATUS_BUF;
-+ static unsigned char *THS_MMAP_SCREEN_BUF;
-+ static bool THS_IS_SHARED_MEM_INIT = false;
 + #include <sys/mman.h>
 + #include <sys/stat.h>
 + #include <fcntl.h>
 + #include <cassert>
-+ static unsigned char* ths_acquire_shared_memory_buffer(const char *filename)
++ static uint16_t *THS_MMAP_STATUS_BUF = NULL;
++ static uint16_t *THS_MMAP_SCREEN_BUF = NULL;
++ static bool THS_IS_SHARED_MEM_INIT = false;
++ static uint16_t* ths_acquire_shared_memory_buffer(const char *filename)
 + {
 + 	const int fileDesc = shm_open(filename, O_RDWR, 0666);
 + 	assert((fileDesc >= 0) && "VCS: Failed to open the shared memory file");
@@ -42,7 +42,7 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
 + 		return NULL;
 + 	}
 + 
-+ 	unsigned char *const bufPtr = (unsigned char*)mmap(NULL, fileStat.st_size, 0666, MAP_SHARED, fileDesc, 0);
++ 	uint16_t *const bufPtr = (uint16_t*)mmap(NULL, fileStat.st_size, 0666, MAP_SHARED, fileDesc, 0);
 + 	assert(bufPtr && "VCS: Failed to map the shared memory file");
 + 
 + 	printf("VCS: Acquired shared memory buffer %s (%u bytes) to %p\n", filename, fileStat.st_size, (void*)bufPtr);
@@ -51,25 +51,30 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
 + }
 + static void ths_init_shared_memory_interface(void)
 + {
-+ 	THS_MMAP_STATUS_BUF = ths_acquire_shared_memory_buffer("vcs_dosbox_mmap_status");
-+ 	THS_MMAP_SCREEN_BUF = ths_acquire_shared_memory_buffer("vcs_dosbox_mmap_screen");
++ 	THS_MMAP_STATUS_BUF = ths_acquire_shared_memory_buffer("vcs_mmap_status");
++ 	THS_MMAP_SCREEN_BUF = ths_acquire_shared_memory_buffer("vcs_mmap_screen");
 + 	THS_IS_SHARED_MEM_INIT = 1;
 + 	
 + 	return;
 + }
 + static void ths_copy_frame_buffer(SDL_Block *sdl)
 + {
++	static unsigned droppedFrames = 0;
++
 + 	if (!THS_IS_SHARED_MEM_INIT)
 + 	{
 + 		ths_init_shared_memory_interface();
 + 	}
 + 
-+ 	// VCS will set this value to 0 once it's done accessing the pixel buffer
-+ 	// and DOSBox is free to modify the buffer again.
-+ 	if (THS_MMAP_STATUS_BUF[0] != 0)
++ 	// If VCS hasn't yet finished processing the previous frame.
++ 	if (THS_MMAP_STATUS_BUF[4] != 0)
 + 	{
++		droppedFrames++;
 + 		return;
 + 	}
++	
++	THS_MMAP_STATUS_BUF[5] = droppedFrames;
++	droppedFrames = 0;
 + 
 + 	// Copy the screen's pixel data over to VCS.
 + 	if (sdl->opengl.framebuf)
@@ -77,16 +82,16 @@ diff -crB ./dosbox-0.74-3/src/gui/sdlmain.cpp ./dosbox-0.74-3-vcs/src/gui/sdlmai
 + 		const unsigned frameWidth = sdl->draw.width;
 + 		const unsigned frameHeight = sdl->draw.height;
 + 		
-+ 		*((uint16_t*)(&THS_MMAP_SCREEN_BUF[0])) = frameWidth;
-+ 		*((uint16_t*)(&THS_MMAP_SCREEN_BUF[2])) = frameHeight;
++ 		THS_MMAP_STATUS_BUF[0] = frameWidth;
++ 		THS_MMAP_STATUS_BUF[1] = frameHeight;
 + 
-+ 		memcpy(&THS_MMAP_SCREEN_BUF[4], sdl->opengl.framebuf, (frameHeight * sdl->opengl.pitch));
++ 		memcpy(THS_MMAP_SCREEN_BUF, sdl->opengl.framebuf, (frameHeight * sdl->opengl.pitch));
 + 	}
 + 
 + 	// Signal to VCS that DOSBox has given it a new frame.
-+ 	THS_MMAP_STATUS_BUF[0] = 1;
++ 	THS_MMAP_STATUS_BUF[4] = 1;
 + 
-+     return;
++ 	return;
 + }
 + 
   #define SETMODE_SAVES 1  //Don't set Video Mode if nothing changes.

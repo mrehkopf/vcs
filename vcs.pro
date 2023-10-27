@@ -33,7 +33,7 @@ DEFINES += \
 # README.md for more information.
 DEFINES += \
     #CAPTURE_BACKEND_VIRTUAL
-    #CAPTURE_BACKEND_DOSBOX_MMAP
+    #CAPTURE_BACKEND_MMAP
     CAPTURE_BACKEND_VISION_V4L
     #CAPTURE_BACKEND_GENERIC_V4L
 
@@ -331,8 +331,8 @@ contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
     SOURCES += src/capture/virtual/capture_virtual.cpp
 }
 
-contains(DEFINES, CAPTURE_BACKEND_DOSBOX_MMAP) {
-    SOURCES += src/capture/dosbox_mmap/capture_dosbox_mmap.cpp
+contains(DEFINES, CAPTURE_BACKEND_MMAP) {
+    SOURCES += src/capture/mmap/capture_mmap.cpp
     LIBS += -lrt
 }
 

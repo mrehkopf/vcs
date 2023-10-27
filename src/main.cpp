@@ -5,10 +5,10 @@
  *
  */
 
-#if (!defined(CAPTURE_BACKEND_VIRTUAL) &&\
-     !defined(CAPTURE_BACKEND_VISION_V4L) &&\
-     !defined(CAPTURE_BACKEND_GENERIC_V4L)) &&\
-     !defined(CAPTURE_BACKEND_DOSBOX_MMAP)
+#if !defined(CAPTURE_BACKEND_VIRTUAL) &&\
+    !defined(CAPTURE_BACKEND_VISION_V4L) &&\
+    !defined(CAPTURE_BACKEND_GENERIC_V4L) &&\
+    !defined(CAPTURE_BACKEND_MMAP)
     #error "Unrecognized value for the capture backend toggle"
 #endif
 

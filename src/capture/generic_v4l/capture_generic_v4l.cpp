@@ -22,7 +22,7 @@ static unsigned NUM_FRAMES_PER_SECOND = 0;
 static captured_frame_s LOCAL_FRAME_BUFFER = {.pixels = new uint8_t[MAX_NUM_BYTES_IN_CAPTURED_FRAME]()};
 static std::vector<unsigned> CAPTURE_FLAGS(static_cast<unsigned>(capture_event_e::num_enumerators));
 
-std::future<void> CAPTURE_THREAD;
+static std::future<void> CAPTURE_THREAD;
 static cv::VideoCapture CAPTURE_DEVICE;
 static cv::Mat DEVICE_FRAME_BUFFER;
 
@@ -262,41 +262,44 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
 
 capture_event_e kc_process_next_capture_event(void)
 {
-    capture_event_e processedEvent = capture_event_e::none;
-
     if (pop_event(capture_event_e::unrecoverable_error))
     {
-        processedEvent = capture_event_e::unrecoverable_error;
+        return capture_event_e::unrecoverable_error;
     }
-    else if (pop_event(capture_event_e::signal_gained))
+
+    if (pop_event(capture_event_e::signal_gained))
     {
         ev_capture_signal_gained.fire();
-        processedEvent = capture_event_e::signal_gained;
+        return capture_event_e::signal_gained;
     }
-    else if (pop_event(capture_event_e::signal_lost))
+
+    if (pop_event(capture_event_e::signal_lost))
     {
         ev_capture_signal_lost.fire();
-        processedEvent = capture_event_e::signal_lost;
+        return capture_event_e::signal_lost;
     }
-    else if (!CAPTURE_DEVICE.isOpened())
+
+    if (!CAPTURE_DEVICE.isOpened())
     {
-        processedEvent = capture_event_e::sleep;
+        return capture_event_e::sleep;
     }
-    else if (pop_event(capture_event_e::new_video_mode))
+
+    if (pop_event(capture_event_e::new_video_mode))
     {
         ev_new_proposed_video_mode.fire(video_mode_s{
             .resolution = resolution_s::from_capture_device_properties(),
             .refreshRate = refresh_rate_s::from_capture_device_properties()
         });
-        processedEvent = capture_event_e::new_video_mode;
-    }
-    else if (pop_event(capture_event_e::new_frame))
-    {
-        ev_new_captured_frame.fire(LOCAL_FRAME_BUFFER);
-        processedEvent = capture_event_e::new_frame;
+        return capture_event_e::new_video_mode;
     }
 
-    return processedEvent;
+    if (pop_event(capture_event_e::new_frame))
+    {
+        ev_new_captured_frame.fire(LOCAL_FRAME_BUFFER);
+        return capture_event_e::new_frame;
+    }
+
+    return capture_event_e::none;
 }
 
 const captured_frame_s& kc_frame_buffer(void)

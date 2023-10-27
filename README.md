@@ -70,9 +70,9 @@ One &ndash; and only one &ndash; capture backend must be active in any build of 
 
 The following capture backends are available to choose from:
 
-| Backend identifier          | Purpose                                                                                                                       |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| CAPTURE_BACKEND_VISION_V4L  | Supports the Datapath Vision range of capture cards in Linux. Requires installation of the Datapath Vision driver.            |
-| CAPTURE_BACKEND_VIRTUAL     | Provides a virtual capture device that generates a test image.                                                                |
-| CAPTURE_BACKEND_DOSBOX_MMAP | Captures DOSBox's frame buffer. Requires [patching](./src/capture/dosbox_mmap/dosbox-0.74.3-linux-for-vcs-mmap.patch) DOSBox. |
-| CAPTURE_BACKEND_GENERIC_V4L | A sample implementation of a generic, non-Datapath-specific capture backend using Video4Linux. For educational purposes.      |
+| Backend identifier          | Purpose                                                                                                                     |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| CAPTURE_BACKEND_VISION_V4L  | Supports the Datapath Vision range of capture cards in Linux. Requires installation of the Datapath Vision driver.          |
+| CAPTURE_BACKEND_VIRTUAL     | Provides a virtual capture device that generates a test image.                                                              |
+| CAPTURE_BACKEND_MMAP        | Captures another application's frame buffer via shared memory. Requires patching the application to support this interface. |
+| CAPTURE_BACKEND_GENERIC_V4L | A sample implementation of a generic, non-Datapath-specific capture backend using Video4Linux. For educational purposes.    |
