@@ -211,6 +211,7 @@ HEADERS += \
     src/filter/filters/filters.h \
     src/filter/filters/flip/filter_flip.h \
     src/filter/filters/flip/gui/filtergui_flip.h \
+    src/filter/filters/line_copy/filter_line_copy.h \
     src/filter/filters/output_scaler/filter_output_scaler.h \
     src/filter/filters/output_scaler/gui/filtergui_output_scaler.h \
     src/filter/filters/render_text/font.h \
