@@ -11,15 +11,18 @@
 #include <QStyle>
 #include "filter/filter.h"
 #include "filter/abstract_filter.h"
+#include "filter/filters/unknown/filter_unknown.h"
 #include "common/globals.h"
 #include "common/assert.h"
 #include "display/qt/windows/ControlPanel/FilterGraph/BaseFilterGraphNode.h"
 #include "display/qt/widgets/InteractibleNodeGraph.h"
 
-BaseFilterGraphNode::BaseFilterGraphNode(const filter_node_type_e type,
-                                 const QString title,
-                                 const unsigned width,
-                                 const unsigned height) :
+BaseFilterGraphNode::BaseFilterGraphNode(
+    const filter_node_type_e type,
+    const QString title,
+    const unsigned width,
+    const unsigned height
+) :
     InteractibleNodeGraphNode(title, width, height),
     filterType(type)
 {
@@ -85,8 +88,17 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
     // Draw the node's title.
     {
+        const QColor color = (
+            ((this->backgroundColor == "Yellow") && this->is_enabled())
+            ? "black"
+            : (this->associatedFilter->uuid() == filter_unknown_c().uuid())
+                ? "red"
+                : this->is_enabled()
+                    ? "white"
+                    : "lightgray"
+        );
         const QString elidedTitle = QFontMetrics(painter->font()).elidedText(this->title, Qt::ElideRight, titleBarTextRect.width());
-        painter->setPen(((this->backgroundColor == "Yellow") && this->is_enabled())? "black" : this->is_enabled()? "white" : "lightgray");
+        painter->setPen(color);
         painter->drawText(titleBarTextRect, (Qt::AlignLeft | Qt::AlignVCenter), elidedTitle);
     }
 

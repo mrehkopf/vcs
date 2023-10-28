@@ -235,6 +235,7 @@ HEADERS += \
     src/filter/filters/sharpen/gui/filtergui_sharpen.h \
     src/filter/filters/render_text/filter_render_text.h \
     src/filter/filters/render_text/gui/filtergui_render_text.h \
+    src/filter/filters/unknown/filter_unknown.h \
     src/filter/filters/unsharp_mask/filter_unsharp_mask.h \
     src/filter/filters/unsharp_mask/gui/filtergui_unsharp_mask.h \
     src/main.h \

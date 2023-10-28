@@ -52,6 +52,10 @@ enum class filter_category_e
 
     // Special case, not for use by filters. Used as a control in filter chains.
     output_condition,
+
+    // Special case. Filters that are intended for internal use and are not
+    // to appear in the GUI.
+    internal,
 };
 
 // An image filter. Applies a pre-set effect (e.g blurring, sharpening, or the like)

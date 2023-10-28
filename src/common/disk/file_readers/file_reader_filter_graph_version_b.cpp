@@ -9,25 +9,29 @@
 #include "common/disk/file_readers/file_reader_filter_graph.h"
 #include "common/disk/csv.h"
 #include "filter/filter.h"
+#include "filter/filters/unknown/filter_unknown.h"
 
-bool file_reader::filter_graph::version_b::read(const std::string &filename,
-                                                std::vector<abstract_filter_graph_node_s> *const graphNodes)
+bool file_reader::filter_graph::version_b::read(
+    const std::string &filename,
+    std::vector<abstract_filter_graph_node_s> *const graphNodes
+)
 {
     // Bails out if the value (string) of the first cell on the current row doesn't match
     // the given one.
-    #define FAIL_IF_FIRST_CELL_IS_NOT(string) if ((int)row >= rowData.length())\
-                                              {\
-                                                  NBENE(("Error while loading the filter graph file: expected '%s' on line "\
-                                                         "#%d but found the data out of range.", string, (row+1)));\
-                                                  goto fail;\
-                                              }\
-                                              else if (rowData.at(row).at(0) != string)\
-                                              {\
-                                                  NBENE(("Error while loading filter graph file: expected '%s' on line "\
-                                                         "#%d but found '%s' instead.",\
-                                                          string, (row+1), rowData.at(row).at(0).toStdString().c_str()));\
-                                                  goto fail;\
-                                              }
+    #define FAIL_IF_FIRST_CELL_IS_NOT(string) \
+        if ((int)row >= rowData.length())\
+        {\
+            NBENE(("Error while loading the filter graph file: expected '%s' on line "\
+                   "#%d but found the data out of range.", string, (row+1)));\
+            goto fail;\
+        }\
+        else if (rowData.at(row).at(0) != string)\
+        {\
+            NBENE(("Error while loading filter graph file: expected '%s' on line "\
+                   "#%d but found '%s' instead.",\
+                   string, (row+1), rowData.at(row).at(0).toStdString().c_str()));\
+            goto fail;\
+        }
 
     QList<QStringList> rowData = csv_parse_c(QString::fromStdString(filename)).contents();
 
@@ -64,8 +68,8 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
 
             if (!kf_is_known_filter_uuid(node.typeUuid))
             {
-                NBENE(("Unrecognized filter UUID \"%s\"", node.typeUuid.c_str()));
-                goto fail;
+                NBENE(("Unrecognized filter type %s. Overriding it with a placeholder. Original data will be lost if saved.", node.typeUuid.c_str()));
+                node.typeUuid = filter_unknown_c().uuid();
             }
 
             row++;
@@ -107,7 +111,10 @@ bool file_reader::filter_graph::version_b::read(const std::string &filename,
                     }
                     else if (paramName == "isEnabled")
                     {
-                        graphNodes->at(i).isEnabled = rowData.at(row).at(1).toInt();
+                        graphNodes->at(i).isEnabled = (
+                            (graphNodes->at(i).typeUuid != filter_unknown_c().uuid()) &&
+                            rowData.at(row).at(1).toInt()
+                        );
                     }
                     else if (paramName == "connections")
                     {

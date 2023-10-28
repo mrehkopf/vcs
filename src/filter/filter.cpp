@@ -1,4 +1,4 @@
-﻿/*
+/*
  * 2018 Tarpeeksi Hyvae Soft /
  * VCS filter
  *
@@ -64,6 +64,7 @@ subsystem_releaser_t kf_initialize_filters(void)
         new filter_render_text_c(),
         new filter_output_scaler_c(),
         new filter_line_copy_c(),
+        new filter_unknown_c(),
         new filter_crt_c(),
     };
 

@@ -20,6 +20,7 @@
 #include "display/qt/persistent_settings.h"
 #include "common/abstract_gui.h"
 #include "filter/abstract_filter.h"
+#include "filter/filters/unknown/filter_unknown.h"
 #include "common/command_line/command_line.h"
 #include "common/disk/disk.h"
 #include "common/assert.h"
@@ -220,7 +221,7 @@ control_panel::FilterGraph::FilterGraph(QWidget *parent) :
                             case filter_category_e::enhance: enhanceMenu->addAction(action); break;
                             case filter_category_e::reduce: reduceMenu->addAction(action); break;
                             case filter_category_e::meta: metaMenu->addAction(action); break;
-                            default: k_assert(0, "Unknown filter category."); break;
+                            default: break;
                         }
 
                         connect(action, &QAction::triggered, this, [filter, this]
@@ -412,6 +413,8 @@ void control_panel::FilterGraph::save_graph_into_file(QString filename)
         filename += ".vcs-filter-graph";
     }
 
+    bool hasUnknownFilters = false;
+
     std::vector<BaseFilterGraphNode*> filterNodes;
     {
         for (auto node: this->graphicsScene->items())
@@ -421,8 +424,26 @@ void control_panel::FilterGraph::save_graph_into_file(QString filename)
             if (filterNode)
             {
                 filterNodes.push_back(filterNode);
+
+                hasUnknownFilters = (
+                    hasUnknownFilters ||
+                    (filterNode->associatedFilter->uuid() == filter_unknown_c().uuid())
+                );
             }
         }
+    }
+
+    if (
+        hasUnknownFilters && (
+        QMessageBox::No == QMessageBox::question(
+            this,
+            "Confirm destructive save",
+            "There are unknown filter nodes in the graph. Their original parameter "
+            "data will be lost if saved.\n\nAre you sure you want to proceed?",
+            (QMessageBox::No | QMessageBox::Yes)
+        ))
+    ){
+        return;
     }
 
     if (kdisk_save_filter_graph(filterNodes, filename.toStdString()))
