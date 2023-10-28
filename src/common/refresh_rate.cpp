@@ -10,12 +10,12 @@
 
 refresh_rate_s refresh_rate_s::from_capture_device_properties()
 {
-    return refresh_rate_s(kc_device_property("refresh rate") / double(refresh_rate_s::numDecimalsPrecision));
+    return refresh_rate_s(kc_device_property("refresh rate") / std::pow(10, refresh_rate_s::numDecimalsPrecision));
 }
 
 void refresh_rate_s::to_capture_device_properties(const refresh_rate_s &rate)
 {
-    kc_set_device_property("refresh rate", unsigned(refresh_rate_s::numDecimalsPrecision * rate.value<double>()));
+    kc_set_device_property("refresh rate", unsigned(rate.value<double>() * std::pow(10, numDecimalsPrecision)));
 }
 
 unsigned refresh_rate_s::internal_value() const
@@ -50,5 +50,5 @@ bool refresh_rate_s::operator==(const refresh_rate_s &other) const
 
 void refresh_rate_s::operator=(const double hz)
 {
-    this->internalValue = unsigned(round(hz * pow(10, numDecimalsPrecision)));
+    this->internalValue = unsigned(std::round(hz * std::pow(10, numDecimalsPrecision)));
 }
