@@ -93,6 +93,7 @@ abstract_filter_c* kf_apply_matching_filter_chain(image_s *const dstImage)
     std::pair<const std::vector<abstract_filter_c*>*, unsigned> partialMatch = {nullptr, 0};
     std::pair<const std::vector<abstract_filter_c*>*, unsigned> openMatch = {nullptr, 0};
     const resolution_s outputRes = ks_output_resolution();
+    const double inputHz = refresh_rate_s::from_capture_device_properties().value<double>();
 
     const auto apply_chain = [dstImage](const std::vector<abstract_filter_c*> &chain, const unsigned idx)->abstract_filter_c*
     {
@@ -128,6 +129,10 @@ abstract_filter_c* kf_apply_matching_filter_chain(image_s *const dstImage)
             filterChain.front()->parameter(filter_input_gate_c::PARAM_IS_HEIGHT_ENABLED)
                 ? filterChain.front()->parameter(filter_input_gate_c::PARAM_HEIGHT) : 0
         );
+        const unsigned inputGateHz = (
+            filterChain.front()->parameter(filter_input_gate_c::PARAM_IS_HZ_ENABLED)
+                ? filterChain.front()->parameter(filter_input_gate_c::PARAM_HZ) : 0
+        );
 
         if (filterChain.back()->category() == filter_category_e::output_scaler)
         {
@@ -159,27 +164,32 @@ abstract_filter_c* kf_apply_matching_filter_chain(image_s *const dstImage)
                     ? filterChain.back()->parameter(filter_output_gate_c::PARAM_HEIGHT) : 0
             );
 
-            // A gate size of 0 in either dimension means pass all values. Otherwise, the
-            // value must match the corresponding size of the frame or output.
+            // A gate field of 0 means pass all values.
             if (
                 !inputGateWidth &&
                 !inputGateHeight &&
+                !inputGateHz &&
                 !outputGateWidth &&
                 !outputGateHeight
             ){
                 openMatch = {&filterChain, i};
             }
+            // A partial match, where some fields are 0 (pass all) and some require
+            // a specific value.
             else if (
-                (!inputGateWidth || inputGateWidth == dstImage->resolution.w) &&
-                (!inputGateHeight || inputGateHeight == dstImage->resolution.h) &&
-                (!outputGateWidth || outputGateWidth == outputRes.w) &&
-                (!outputGateHeight || outputGateHeight == outputRes.h)
+                (!inputGateWidth   || (inputGateWidth == dstImage->resolution.w)) &&
+                (!inputGateHeight  || (inputGateHeight == dstImage->resolution.h)) &&
+                (!inputGateHz      || (inputGateHz == inputHz)) &&
+                (!outputGateWidth  || (outputGateWidth == outputRes.w)) &&
+                (!outputGateHeight || (outputGateHeight == outputRes.h))
             ){
                 partialMatch = {&filterChain, i};
             }
+            // A full match, all fields require a specific value.
             else if (
                 (dstImage->resolution.w == inputGateWidth) &&
                 (dstImage->resolution.h == inputGateHeight) &&
+                (inputHz == inputGateHz) &&
                 (outputRes.w == outputGateWidth) &&
                 (outputRes.h == outputGateHeight)
             ){

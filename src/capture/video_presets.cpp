@@ -29,9 +29,7 @@ static analog_video_preset_s* strongest_activating_preset(void)
     const auto resolution = resolution_s::from_capture_device_properties();
     const auto refreshRate = refresh_rate_s::from_capture_device_properties();
 
-    std::vector<std::pair<unsigned/*preset id*/,
-                          int/*preset activation level*/>> activationLevels;
-
+    std::vector<std::pair<unsigned/*preset id*/, int/*preset activation level*/>> activationLevels;
     int strongestPresetId = -1;
     int highestActivationLevel = 0;
 

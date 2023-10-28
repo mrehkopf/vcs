@@ -18,15 +18,19 @@ public:
         PARAM_WIDTH,
         PARAM_HEIGHT,
         PARAM_IS_WIDTH_ENABLED,
-        PARAM_IS_HEIGHT_ENABLED
+        PARAM_IS_HEIGHT_ENABLED,
+        PARAM_HZ,
+        PARAM_IS_HZ_ENABLED,
     };
 
     filter_input_gate_c(const filter_params_t &initialParamValues = {}) :
         abstract_filter_c({
             {PARAM_WIDTH, 640},
             {PARAM_HEIGHT, 480},
+            {PARAM_HZ, 60},
             {PARAM_IS_WIDTH_ENABLED, true},
-            {PARAM_IS_HEIGHT_ENABLED, true}
+            {PARAM_IS_HEIGHT_ENABLED, true},
+            {PARAM_IS_HZ_ENABLED, false}
         }, initialParamValues)
     {
         this->gui = new filtergui_input_gate_c(this);

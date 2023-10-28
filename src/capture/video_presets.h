@@ -60,8 +60,7 @@ struct analog_video_preset_s
     // preset - e.g. if it's specified to require a certain resolution and a certain
     // refresh rate, its activation level will be 2 in case both of those conditions
     // are satified, and 0 otherwise (i.e. if none or just one condition is satisfied).
-    int activation_level(const resolution_s resolution,
-                         const refresh_rate_s refreshRate)
+    int activation_level(const resolution_s resolution, const refresh_rate_s refreshRate)
     {
         int activationLevel = 0;
         int requiredActivationLevel = 0;
