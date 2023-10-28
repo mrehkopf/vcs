@@ -1,0 +1,107 @@
+diff -crB PCemV17Linux/configure PCemV17Linux_vcs/configure
+*** PCemV17Linux/configure	2020-12-01 22:38:33.000000000 +0200
+--- PCemV17Linux_vcs/configure	2023-10-29 00:46:50.251879000 +0300
+***************
+*** 14,19 ****
+--- 14,21 ----
+  ## M4sh Initialization. ##
+  ## -------------------- ##
+  
++ LIBS="-lrt $LIBS"
++ 
+  # Be more Bourne compatible
+  DUALCASE=1; export DUALCASE # for MKS sh
+  if test -n "${ZSH_VERSION+set}" && (emulate sh) >/dev/null 2>&1; then :
+diff -crB PCemV17Linux/src/wx-sdl2-video.c PCemV17Linux_vcs/src/wx-sdl2-video.c
+*** PCemV17Linux/src/wx-sdl2-video.c	2020-12-01 22:40:51.000000000 +0200
+--- PCemV17Linux_vcs/src/wx-sdl2-video.c	2023-10-29 01:31:05.494667000 +0300
+***************
+*** 276,281 ****
+--- 276,349 ----
+          screen_copy = NULL;
+  }
+  
++ // Memory interface with VCS.
++ #include <sys/mman.h>
++ #include <sys/stat.h>
++ #include <fcntl.h>
++ #include <assert.h>
++ #include <stdbool.h>
++ static uint16_t *THS_MMAP_STATUS_BUF = NULL;
++ static uint8_t *THS_MMAP_SCREEN_BUF = NULL;
++ static bool THS_IS_SHARED_MEM_INIT = false;
++ static void* ths_acquire_shared_memory_buffer(const char *filename)
++ {
++ 	const int fileDesc = shm_open(filename, O_RDWR, 0666);
++ 	assert((fileDesc >= 0) && "VCS: Failed to open the shared memory file");
++ 
++ 	struct stat fileStat;
++ 	if (fstat(fileDesc, &fileStat) != 0)
++ 	{
++ 		perror("VCS: fstat() error");
++ 		assert(!"VCS: Failed to stat a shared memory file.");
++ 		return NULL;
++ 	}
++ 
++ 	void *const bufPtr = mmap(NULL, fileStat.st_size, 0666, MAP_SHARED, fileDesc, 0);
++ 	assert(bufPtr && "VCS: Failed to map the shared memory file");
++ 
++ 	printf("VCS: Acquired shared memory buffer %s (%u bytes) to %p\n", filename, fileStat.st_size, bufPtr);
++ 
++ 	return bufPtr;
++ }
++ static void ths_init_shared_memory_interface(void)
++ {
++ 	THS_MMAP_STATUS_BUF = ths_acquire_shared_memory_buffer("vcs_mmap_status");
++ 	THS_MMAP_SCREEN_BUF = ths_acquire_shared_memory_buffer("vcs_mmap_screen");
++ 	THS_IS_SHARED_MEM_INIT = 1;
++ 	
++ 	return;
++ }
++ static void ths_copy_frame_buffer(const BITMAP *const screen, const SDL_Rect *const screen_rect)
++ {
++ 	static unsigned droppedFrames = 0;
++ 
++ 	if (!THS_IS_SHARED_MEM_INIT)
++ 	{
++ 		ths_init_shared_memory_interface();
++ 	}
++ 
++ 	if (THS_MMAP_STATUS_BUF[4] != 0)
++ 	{
++ 		droppedFrames++;
++ 		return;
++ 	}
++ 	
++ 	THS_MMAP_STATUS_BUF[0] = screen_rect->w;
++ 	THS_MMAP_STATUS_BUF[1] = screen_rect->h;
++ 	THS_MMAP_STATUS_BUF[5] = droppedFrames;
++ 	droppedFrames = 0;
++ 	
++ 	/// TODO: Make sure the resolution fits into the screen buffer.
++   for (unsigned y = 0; y < screen_rect->h; y++)
++   {
++       memcpy((THS_MMAP_SCREEN_BUF + (y * screen_rect->w * 4)), (screen->dat + (y * screen->w * 4)), (screen_rect->w * 4));
++   }
++ 
++ 	THS_MMAP_STATUS_BUF[4] = 1;
++ 
++ 	return;
++ }
++ 
+  int sdl_renderer_update(SDL_Window* window)
+  {
+          int render = 0;
+***************
+*** 289,295 ****
+--- 357,366 ----
+                          memcpy(screen_copy->dat + (updated_rect.y * screen_copy->w * 4), screen->dat + (updated_rect.y * screen->w * 4), updated_rect.h * screen->w * 4);
+                  }
+                  else
++                 {
++                         ths_copy_frame_buffer(screen, &blit_rect);
+                          renderer->update(window, updated_rect, screen);
++                 }
+                  texture_rect.w = blit_rect.w;
+                  texture_rect.h = blit_rect.h;
+                  render = 1;
