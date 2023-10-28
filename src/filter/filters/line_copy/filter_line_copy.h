@@ -42,12 +42,10 @@ public:
             auto *from = filtergui::spinner(filter, PARAM_FROM);
             from->minValue = 0;
             from->maxValue = std::max(MAX_CAPTURE_WIDTH, MAX_CAPTURE_HEIGHT);
-            gui->fields.push_back({"From", {from}});
-
             auto *to = filtergui::spinner(filter, PARAM_TO);
             to->minValue = 0;
             to->maxValue = std::max(MAX_CAPTURE_WIDTH, MAX_CAPTURE_HEIGHT);
-            gui->fields.push_back({"To", {to}});
+            gui->fields.push_back({"From/To", {from, to}});
 
             auto *width = filtergui::spinner(filter, PARAM_WIDTH);
             width->minValue = 0;
