@@ -245,9 +245,9 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
 
 bool kc_release_device(void)
 {
-    delete [] FRAME_BUFFER.pixels;
     RUN_CAPTURE_LOOP = false;
     CAPTURE_THREAD.wait();
+    delete [] FRAME_BUFFER.pixels;
     return true;
 }
 
