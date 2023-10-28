@@ -11,7 +11,6 @@
 #include <QStyle>
 #include "filter/filter.h"
 #include "filter/abstract_filter.h"
-#include "filter/filters/unknown/filter_unknown.h"
 #include "common/globals.h"
 #include "common/assert.h"
 #include "display/qt/windows/ControlPanel/FilterGraph/BaseFilterGraphNode.h"
@@ -91,7 +90,7 @@ void BaseFilterGraphNode::paint(QPainter *painter, const QStyleOptionGraphicsIte
         const QColor color = (
             ((this->backgroundColor == "Yellow") && this->is_enabled())
             ? "black"
-            : (this->associatedFilter->uuid() == filter_unknown_c().uuid())
+            : (this->associatedFilter->uuid() == KF_PLACEHOLDER_FILTER->uuid())
                 ? "red"
                 : this->is_enabled()
                     ? "white"

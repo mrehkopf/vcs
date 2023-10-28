@@ -19,6 +19,8 @@
 #include "filter/abstract_filter.h"
 #include "filter/filters/filters.h"
 
+filter_unknown_c *KF_PLACEHOLDER_FILTER = new filter_unknown_c();
+
 // Whether filters (if any are activated) should be applied to incoming frames.
 static bool FILTERING_ENABLED = false;
 

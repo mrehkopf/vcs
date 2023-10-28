@@ -125,10 +125,13 @@
 #include <cstring>
 #include "main.h"
 #include "filter/abstract_filter.h"
+#include "filter/filters/unknown/filter_unknown.h"
 
 class abstract_filter_c;
 struct resolution_s;
 struct image_s;
+
+extern filter_unknown_c *KF_PLACEHOLDER_FILTER;
 
 // Initializes the filter subsystem, allocating its memory buffers etc.
 subsystem_releaser_t kf_initialize_filters(void);

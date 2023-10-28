@@ -20,7 +20,6 @@
 #include "display/qt/persistent_settings.h"
 #include "common/abstract_gui.h"
 #include "filter/abstract_filter.h"
-#include "filter/filters/unknown/filter_unknown.h"
 #include "common/command_line/command_line.h"
 #include "common/disk/disk.h"
 #include "common/assert.h"
@@ -427,7 +426,7 @@ void control_panel::FilterGraph::save_graph_into_file(QString filename)
 
                 hasUnknownFilters = (
                     hasUnknownFilters ||
-                    (filterNode->associatedFilter->uuid() == filter_unknown_c().uuid())
+                    (filterNode->associatedFilter->uuid() == KF_PLACEHOLDER_FILTER->uuid())
                 );
             }
         }

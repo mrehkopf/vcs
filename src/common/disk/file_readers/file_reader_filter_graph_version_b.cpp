@@ -9,7 +9,6 @@
 #include "common/disk/file_readers/file_reader_filter_graph.h"
 #include "common/disk/csv.h"
 #include "filter/filter.h"
-#include "filter/filters/unknown/filter_unknown.h"
 
 bool file_reader::filter_graph::version_b::read(
     const std::string &filename,
@@ -69,7 +68,7 @@ bool file_reader::filter_graph::version_b::read(
             if (!kf_is_known_filter_uuid(node.typeUuid))
             {
                 NBENE(("Unrecognized filter type %s. Overriding it with a placeholder. Original data will be lost if saved.", node.typeUuid.c_str()));
-                node.typeUuid = filter_unknown_c().uuid();
+                node.typeUuid = KF_PLACEHOLDER_FILTER->uuid();
             }
 
             row++;
@@ -112,7 +111,7 @@ bool file_reader::filter_graph::version_b::read(
                     else if (paramName == "isEnabled")
                     {
                         graphNodes->at(i).isEnabled = (
-                            (graphNodes->at(i).typeUuid != filter_unknown_c().uuid()) &&
+                            (graphNodes->at(i).typeUuid != KF_PLACEHOLDER_FILTER->uuid()) &&
                             rowData.at(row).at(1).toInt()
                         );
                     }
