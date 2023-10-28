@@ -14,10 +14,10 @@
 class filter_denoise_pixel_gate_c : public abstract_filter_c
 {
 public:
-    enum { PARAM_THRESHOLD };
+    enum { PARAM_STRENGTH };
                          
     filter_denoise_pixel_gate_c(const filter_params_t &initialParamValues = {}) :
-        abstract_filter_c({{PARAM_THRESHOLD, 5}}, initialParamValues)
+        abstract_filter_c({{PARAM_STRENGTH, 5}}, initialParamValues)
     {
         this->gui = new filtergui_denoise_pixel_gate_c(this);
     }
@@ -25,7 +25,7 @@ public:
     CLONABLE_FILTER_TYPE(filter_denoise_pixel_gate_c)
 
     std::string uuid(void) const override { return "94adffac-be42-43ac-9839-9cc53a6d615c"; }
-    std::string name(void) const override { return "Denoise (pixel gate)"; }
+    std::string name(void) const override { return "Temporal denoise"; }
     filter_category_e category(void) const override { return filter_category_e::enhance; }
     void apply(image_s *const image) override;
 
