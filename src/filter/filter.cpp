@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 2018 Tarpeeksi Hyvae Soft /
  * VCS filter
  *
@@ -45,7 +45,6 @@ subsystem_releaser_t kf_initialize_filters(void)
 
     KNOWN_FILTER_TYPES = {
         new filter_blur_c(),
-        new filter_delta_histogram_c(),
         new filter_frame_rate_c(),
         new filter_unsharp_mask_c(),
         new filter_decimate_c(),

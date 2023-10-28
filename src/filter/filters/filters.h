@@ -11,7 +11,6 @@
 #include "filter/filters/blur/filter_blur.h"
 #include "filter/filters/crop/filter_crop.h"
 #include "filter/filters/decimate/filter_decimate.h"
-#include "filter/filters/delta_histogram/filter_delta_histogram.h"
 #include "filter/filters/denoise_nonlocal_means/filter_denoise_nonlocal_means.h"
 #include "filter/filters/denoise_pixel_gate/filter_denoise_pixel_gate.h"
 #include "filter/filters/flip/filter_flip.h"
