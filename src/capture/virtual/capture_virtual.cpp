@@ -154,15 +154,15 @@ void kc_initialize_device(void)
 
     kt_timer(1000, [](const unsigned elapsedMs)
     {
-        const unsigned newRefreshRate = (refresh_rate_s::numDecimalsPrecision * (NUM_FRAMES_PER_SECOND * (1000.0 / elapsedMs)));
+        const auto currentRefreshRate = refresh_rate_s(NUM_FRAMES_PER_SECOND * (1000.0 / elapsedMs));
 
-        NUM_FRAMES_PER_SECOND = 0;
-
-        if (kc_device_property("refresh rate") != newRefreshRate)
+        if (currentRefreshRate != refresh_rate_s::from_capture_device_properties())
         {
-            kc_set_device_property("refresh rate", newRefreshRate);
+            refresh_rate_s::to_capture_device_properties(currentRefreshRate);
             push_capture_event(capture_event_e::new_video_mode);
         }
+
+        NUM_FRAMES_PER_SECOND = 0;
     });
 
     // Define analog control ranges.
