@@ -49,7 +49,6 @@ subsystem_releaser_t kf_initialize_filters(void)
         new filter_unsharp_mask_c(),
         new filter_decimate_c(),
         new filter_denoise_pixel_gate_c(),
-        new filter_denoise_nonlocal_means_c(),
         new filter_sharpen_c(),
         new filter_median_c(),
         new filter_crop_c(),

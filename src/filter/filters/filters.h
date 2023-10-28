@@ -11,7 +11,6 @@
 #include "filter/filters/blur/filter_blur.h"
 #include "filter/filters/crop/filter_crop.h"
 #include "filter/filters/decimate/filter_decimate.h"
-#include "filter/filters/denoise_nonlocal_means/filter_denoise_nonlocal_means.h"
 #include "filter/filters/denoise_pixel_gate/filter_denoise_pixel_gate.h"
 #include "filter/filters/flip/filter_flip.h"
 #include "filter/filters/source_fps_estimate/filter_source_fps_estimate.h"

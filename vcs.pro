@@ -115,8 +115,6 @@ SOURCES += \
     src/anti_tear/anti_tear_one_per_frame.cpp \
     src/anti_tear/anti_tearer.cpp \
     src/filter/abstract_filter.cpp \
-    src/filter/filters/denoise_nonlocal_means/filter_denoise_nonlocal_means.cpp \
-    src/filter/filters/denoise_nonlocal_means/gui/filtergui_denoise_nonlocal_means.cpp \
     src/filter/filters/denoise_pixel_gate/filter_denoise_pixel_gate.cpp \
     src/filter/filters/denoise_pixel_gate/gui/filtergui_denoise_pixel_gate.cpp \
     src/filter/filters/flip/filter_flip.cpp \
@@ -200,8 +198,6 @@ HEADERS += \
     src/filter/filters/crop/filter_crop.h \
     src/filter/filters/crt/filter_crt.h \
     src/filter/filters/decimate/filter_decimate.h \
-    src/filter/filters/denoise_nonlocal_means/filter_denoise_nonlocal_means.h \
-    src/filter/filters/denoise_nonlocal_means/gui/filtergui_denoise_nonlocal_means.h \
     src/filter/filters/denoise_pixel_gate/filter_denoise_pixel_gate.h \
     src/filter/filters/denoise_pixel_gate/gui/filtergui_denoise_pixel_gate.h \
     src/filter/filters/filters.h \
