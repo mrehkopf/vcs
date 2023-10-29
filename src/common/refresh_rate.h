@@ -11,6 +11,8 @@
 #include <cmath>
 #include <type_traits>
 
+typedef int fixedpoint_hz_t;
+
 // Represents a floating-point refresh rate value with 3 decimals of precision
 // (e.g. 60.123999 would be truncated and represented as 60.123).
 struct refresh_rate_s
@@ -49,13 +51,12 @@ struct refresh_rate_s
         }
         else if (std::is_same<T, double>::value)
         {
-            return (this->internalValue / pow(10, double(numDecimalsPrecision)));
+            return (this->fixedpoint / std::pow(10, double(numDecimalsPrecision)));
         }
     }
 
     static refresh_rate_s from_capture_device_properties(void);
     static void to_capture_device_properties(const refresh_rate_s &rate);
-    unsigned internal_value(void) const;
     void operator=(const double hz);
     void operator=(const unsigned hz);
     bool operator==(const refresh_rate_s &other) const;
@@ -63,9 +64,8 @@ struct refresh_rate_s
     bool operator!=(const refresh_rate_s &other) const;
     bool operator!=(const double hz) const;
 
-private:
-    // The refresh rate multiplied by 10^num_decimals.
-    unsigned internalValue = 0;
+    // The refresh rate's internal integer representation.
+    fixedpoint_hz_t fixedpoint = 0;
 };
 
 #endif
