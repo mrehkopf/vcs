@@ -17,13 +17,13 @@
 
 typedef std::unordered_map<std::string, intptr_t> properties_map_t;
 
-struct analog_properties_s
+struct video_properties_s
 {
     static properties_map_t from_capture_device_properties(const std::string &nameSpace = "");
     static void to_capture_device_properties(const properties_map_t &properties, const std::string &nameSpace = "");
 };
 
-struct analog_video_preset_s
+struct video_preset_s
 {
     enum class refresh_rate_comparison_e
     {
@@ -120,29 +120,29 @@ struct analog_video_preset_s
 //
 // Warning: If you change the preset's activation conditions, you should call
 // kvideopreset_apply_current_active_preset() instead.
-extern vcs_event_c<const analog_video_preset_s*> kc_ev_video_preset_params_changed;
+extern vcs_event_c<const video_preset_s*> kc_ev_video_preset_params_changed;
 
-bool kvideopreset_is_preset_active(const analog_video_preset_s *const preset);
+bool kvideopreset_is_preset_active(const video_preset_s *const preset);
 
 subsystem_releaser_t kvideopreset_initialize(void);
 
 void kvideopreset_remove_all_presets(void);
 
-void kvideopreset_assign_presets(const std::vector<analog_video_preset_s*> &presets);
+void kvideopreset_assign_presets(const std::vector<video_preset_s*> &presets);
 
 void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString);
 
-const std::vector<analog_video_preset_s*>& kvideopreset_all_presets(void);
+const std::vector<video_preset_s*>& kvideopreset_all_presets(void);
 
-const analog_video_preset_s* kvideopreset_current_active_preset(void);
+const video_preset_s* kvideopreset_current_active_preset(void);
 
 void kvideopreset_apply_current_active_preset(void);
 
-analog_video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId);
+video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId);
 
 // If 'duplicateDataSrc' is a non-null pointer to an existing video preset
 // object, its parameter values will be copied into the created preset.
-analog_video_preset_s* kvideopreset_create_new_preset(const analog_video_preset_s *const duplicateDataSrc = nullptr);
+video_preset_s* kvideopreset_create_new_preset(const video_preset_s *const duplicateDataSrc = nullptr);
 
 bool kvideopreset_remove_preset(const unsigned presetId);
 

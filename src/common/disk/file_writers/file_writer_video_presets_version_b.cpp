@@ -11,7 +11,7 @@
 
 bool file_writer::video_presets::version_b::write(
     const std::string &filename,
-    const std::vector<analog_video_preset_s*> &presets
+    const std::vector<video_preset_s*> &presets
 )
 {
     file_streamer_c outFile(filename);
@@ -21,7 +21,7 @@ bool file_writer::video_presets::version_b::write(
 
     outFile << "presetCount," << presets.size() << "\n";
 
-    for (const analog_video_preset_s *p: presets)
+    for (const video_preset_s *p: presets)
     {
         // Write the metadata.
         {
@@ -36,10 +36,10 @@ bool file_writer::video_presets::version_b::write(
             outFile << "activatedByRefreshRate," << p->activatesWithRefreshRate << ",";
             switch (p->refreshRateComparator)
             {
-                case analog_video_preset_s::refresh_rate_comparison_e::equals:  outFile << "{Equals}"; break;
-                case analog_video_preset_s::refresh_rate_comparison_e::ceiled:  outFile << "{Ceiled}"; break;
-                case analog_video_preset_s::refresh_rate_comparison_e::floored: outFile << "{Floored}"; break;
-                case analog_video_preset_s::refresh_rate_comparison_e::rounded: outFile << "{Rounded}"; break;
+                case video_preset_s::refresh_rate_comparison_e::equals:  outFile << "{Equals}"; break;
+                case video_preset_s::refresh_rate_comparison_e::ceiled:  outFile << "{Ceiled}"; break;
+                case video_preset_s::refresh_rate_comparison_e::floored: outFile << "{Floored}"; break;
+                case video_preset_s::refresh_rate_comparison_e::rounded: outFile << "{Rounded}"; break;
                 default: k_assert(0, "Unhandled refresh rate comparator."); break;
             }
             outFile << "," << p->activationRefreshRate.value<double>() << "\n";

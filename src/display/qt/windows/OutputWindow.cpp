@@ -710,7 +710,7 @@ void OutputWindow::update_window_title(void)
 
             // Add the name of the current preset, if any.
             {
-                const analog_video_preset_s *currentAnalogPreset = kvideopreset_current_active_preset();
+                const video_preset_s *currentAnalogPreset = kvideopreset_current_active_preset();
 
                 if (
                     currentAnalogPreset &&

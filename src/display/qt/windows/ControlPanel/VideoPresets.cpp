@@ -72,7 +72,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         }
 
         this->update_active_preset_indicator();
-        this->update_property_control_ranges(analog_properties_s::from_capture_device_properties(": default"));
+        this->update_property_control_ranges(video_properties_s::from_capture_device_properties(": default"));
     }
 
     // Connect the GUI controls to consequences for changing their values.
@@ -225,7 +225,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         connect(ui->pushButton_addNewPreset, &QPushButton::clicked, this, [this]
         {
             const bool duplicateCurrent = (qApp->keyboardModifiers() & Qt::AltModifier);
-            analog_video_preset_s *const newPreset = kvideopreset_create_new_preset(duplicateCurrent? ui->comboBox_presetList->current_preset() : nullptr);
+            video_preset_s *const newPreset = kvideopreset_create_new_preset(duplicateCurrent? ui->comboBox_presetList->current_preset() : nullptr);
 
             if (!duplicateCurrent)
             {
@@ -380,10 +380,10 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
             if (selectedPreset)
             {
-                if (text == "Exactly")      selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::equals;
-                else if (text == "Rounded") selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::rounded;
-                else if (text == "Floored") selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::floored;
-                else if (text == "Ceiled")  selectedPreset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::ceiled;
+                if (text == "Exactly")      selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
+                else if (text == "Rounded") selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::rounded;
+                else if (text == "Floored") selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::floored;
+                else if (text == "Ceiled")  selectedPreset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::ceiled;
 
                 ui->comboBox_presetList->update_preset_item_label(selectedPreset->id);
 
@@ -499,7 +499,7 @@ void control_panel::VideoPresets::update_active_preset_indicator(void)
     return;
 }
 
-void control_panel::VideoPresets::assign_presets(const std::vector<analog_video_preset_s*> &presets)
+void control_panel::VideoPresets::assign_presets(const std::vector<video_preset_s*> &presets)
 {
     ui->comboBox_presetList->clear();
 
@@ -590,10 +590,10 @@ void control_panel::VideoPresets::update_preset_controls_with_current_preset_dat
     /// TODO: Check to make sure the correct combo box indices are being set.
     switch (preset->refreshRateComparator)
     {
-        case analog_video_preset_s::refresh_rate_comparison_e::ceiled:  ui->comboBox_refreshRateComparison->setCurrentIndex(3); break;
-        case analog_video_preset_s::refresh_rate_comparison_e::floored: ui->comboBox_refreshRateComparison->setCurrentIndex(2); break;
-        case analog_video_preset_s::refresh_rate_comparison_e::rounded: ui->comboBox_refreshRateComparison->setCurrentIndex(1); break;
-        case analog_video_preset_s::refresh_rate_comparison_e::equals:  ui->comboBox_refreshRateComparison->setCurrentIndex(0); break;
+        case video_preset_s::refresh_rate_comparison_e::ceiled:  ui->comboBox_refreshRateComparison->setCurrentIndex(3); break;
+        case video_preset_s::refresh_rate_comparison_e::floored: ui->comboBox_refreshRateComparison->setCurrentIndex(2); break;
+        case video_preset_s::refresh_rate_comparison_e::rounded: ui->comboBox_refreshRateComparison->setCurrentIndex(1); break;
+        case video_preset_s::refresh_rate_comparison_e::equals:  ui->comboBox_refreshRateComparison->setCurrentIndex(0); break;
         default: k_assert(0, "Unknown comparator.");
     }
 

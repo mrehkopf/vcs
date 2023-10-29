@@ -110,7 +110,7 @@ namespace filtergui
 {
     const auto text_edit = [](abstract_filter_c *const filter, const unsigned paramId)
     {
-        auto *const widget = new abstract_gui::text_edit;
+        auto *const widget = new abstract_gui_widget::text_edit;
         widget->on_change = [filter, paramId](const std::string &text){filter->set_parameter_string(paramId, text);};
         widget->text = filter->string_parameter(paramId);
         return widget;
@@ -118,7 +118,7 @@ namespace filtergui
 
     const auto spinner = [](abstract_filter_c *const filter, const unsigned paramId)
     {
-        auto *widget = new abstract_gui::spinner;
+        auto *widget = new abstract_gui_widget::spinner;
         widget->on_change = [filter, paramId](const int value){filter->set_parameter(paramId, value);};
         widget->initialValue = filter->parameter(paramId);
         return widget;
@@ -126,7 +126,7 @@ namespace filtergui
 
     const auto combo_box = [](abstract_filter_c *const filter, const unsigned paramId)
     {
-        auto *widget = new abstract_gui::combo_box;
+        auto *widget = new abstract_gui_widget::combo_box;
         widget->on_change = [filter, paramId](const int index){filter->set_parameter(paramId, index);};
         widget->initialIndex = filter->parameter(paramId);
         return widget;
@@ -134,7 +134,7 @@ namespace filtergui
 
     const auto double_spinner = [](abstract_filter_c *const filter, const unsigned paramId)
     {
-        auto *widget = new abstract_gui::double_spinner;
+        auto *widget = new abstract_gui_widget::double_spinner;
         widget->on_change = [filter, paramId](const double value){filter->set_parameter(paramId, value);};
         widget->initialValue = filter->parameter(paramId);
         return widget;
@@ -142,7 +142,7 @@ namespace filtergui
 
     const auto checkbox = [](abstract_filter_c *const filter, const unsigned paramId)
     {
-        auto *widget = new abstract_gui::checkbox;
+        auto *widget = new abstract_gui_widget::checkbox;
         widget->on_change = [filter, paramId](const bool isChecked){filter->set_parameter(paramId, isChecked);};
         widget->initialState = filter->parameter(paramId);
         return widget;

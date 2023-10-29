@@ -10,16 +10,16 @@
 #include "capture/video_presets.h"
 #include "capture/capture.h"
 
-vcs_event_c<const analog_video_preset_s*> kc_ev_video_preset_params_changed;
+vcs_event_c<const video_preset_s*> kc_ev_video_preset_params_changed;
 
-static std::vector<analog_video_preset_s*> PRESETS;
+static std::vector<video_preset_s*> PRESETS;
 
 // Incremented for each new preset added, and used as the id for that preset.
 static unsigned RUNNING_PRESET_ID = 0;
 
-static const analog_video_preset_s *MOST_RECENT_ACTIVE_PRESET = nullptr;
+static const video_preset_s *MOST_RECENT_ACTIVE_PRESET = nullptr;
 
-static analog_video_preset_s* strongest_activating_preset(void)
+static video_preset_s* strongest_activating_preset(void)
 {
     if (!kc_has_signal())
     {
@@ -64,17 +64,17 @@ subsystem_releaser_t kvideopreset_initialize(void)
     {
         ev_new_video_mode.listen(kvideopreset_apply_current_active_preset);
 
-        kc_ev_video_preset_params_changed.listen([](const analog_video_preset_s *preset)
+        kc_ev_video_preset_params_changed.listen([](const video_preset_s *preset)
         {
             k_assert(preset, "Expected a non-null preset.");
 
             if (preset == MOST_RECENT_ACTIVE_PRESET)
             {
-                analog_properties_s::to_capture_device_properties(preset->properties);
+                video_properties_s::to_capture_device_properties(preset->properties);
             }
         });
 
-        ev_video_preset_activated.listen([](const analog_video_preset_s *preset)
+        ev_video_preset_activated.listen([](const video_preset_s *preset)
         {
             MOST_RECENT_ACTIVE_PRESET = preset;
         });
@@ -83,7 +83,7 @@ subsystem_releaser_t kvideopreset_initialize(void)
     return []{};
 }
 
-bool kvideopreset_is_preset_active(const analog_video_preset_s *const preset)
+bool kvideopreset_is_preset_active(const video_preset_s *const preset)
 {
     return (
         MOST_RECENT_ACTIVE_PRESET &&
@@ -93,7 +93,7 @@ bool kvideopreset_is_preset_active(const analog_video_preset_s *const preset)
 
 bool kvideopreset_remove_preset(const unsigned presetId)
 {
-    const auto targetPreset = std::find_if(PRESETS.begin(), PRESETS.end(), [=](analog_video_preset_s *p){return p->id == presetId;});
+    const auto targetPreset = std::find_if(PRESETS.begin(), PRESETS.end(), [=](video_preset_s *p){return p->id == presetId;});
 
     if (targetPreset == PRESETS.end())
     {
@@ -132,15 +132,15 @@ void kvideopreset_apply_current_active_preset(void)
         return;
     }
 
-    const analog_video_preset_s *activePreset = strongest_activating_preset();
+    const video_preset_s *activePreset = strongest_activating_preset();
 
     if (activePreset)
     {
-        analog_properties_s::to_capture_device_properties(activePreset->properties);
+        video_properties_s::to_capture_device_properties(activePreset->properties);
     }
     else
     {
-        analog_properties_s::to_capture_device_properties(analog_properties_s::from_capture_device_properties(": default"));
+        video_properties_s::to_capture_device_properties(video_properties_s::from_capture_device_properties(": default"));
     }
 
     ev_video_preset_activated.fire(activePreset);
@@ -148,12 +148,12 @@ void kvideopreset_apply_current_active_preset(void)
     return;
 }
 
-const std::vector<analog_video_preset_s*>& kvideopreset_all_presets(void)
+const std::vector<video_preset_s*>& kvideopreset_all_presets(void)
 {
     return PRESETS;
 }
 
-analog_video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId)
+video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId)
 {
     for (auto *preset: PRESETS)
     {
@@ -177,7 +177,7 @@ void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
     {
         if (preset->activates_with_shortcut(shortcutString))
         {
-            analog_properties_s::to_capture_device_properties(preset->properties);
+            video_properties_s::to_capture_device_properties(preset->properties);
             ev_video_preset_activated.fire(preset);
             return;
         }
@@ -186,21 +186,21 @@ void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
     return;
 }
 
-void kvideopreset_assign_presets(const std::vector<analog_video_preset_s*> &presets)
+void kvideopreset_assign_presets(const std::vector<video_preset_s*> &presets)
 {
     kvideopreset_remove_all_presets();
 
     PRESETS = presets;
     kvideopreset_apply_current_active_preset();
 
-    RUNNING_PRESET_ID = (1 + (*std::max_element(PRESETS.begin(), PRESETS.end(), [](const analog_video_preset_s *a, const analog_video_preset_s *b){return a->id < b->id;}))->id);
+    RUNNING_PRESET_ID = (1 + (*std::max_element(PRESETS.begin(), PRESETS.end(), [](const video_preset_s *a, const video_preset_s *b){return a->id < b->id;}))->id);
 
     return;
 }
 
-analog_video_preset_s* kvideopreset_create_new_preset(const analog_video_preset_s *const duplicateDataSrc)
+video_preset_s* kvideopreset_create_new_preset(const video_preset_s *const duplicateDataSrc)
 {
-    analog_video_preset_s *const preset = new analog_video_preset_s;
+    video_preset_s *const preset = new video_preset_s;
     const std::string baseName = (duplicateDataSrc? "Duplicate preset" : "Preset");
 
     if (duplicateDataSrc)
@@ -211,7 +211,7 @@ analog_video_preset_s* kvideopreset_create_new_preset(const analog_video_preset_
     {
         preset->activatesWithResolution = false;
         preset->activationResolution = {.w = 640, .h = 480};
-        preset->properties = analog_properties_s::from_capture_device_properties(": default");
+        preset->properties = video_properties_s::from_capture_device_properties(": default");
     }
 
     preset->id = RUNNING_PRESET_ID++;
@@ -222,12 +222,12 @@ analog_video_preset_s* kvideopreset_create_new_preset(const analog_video_preset_
     return preset;
 }
 
-const analog_video_preset_s* kvideopreset_current_active_preset()
+const video_preset_s* kvideopreset_current_active_preset()
 {
     return MOST_RECENT_ACTIVE_PRESET;
 }
 
-properties_map_t analog_properties_s::from_capture_device_properties(const std::string &nameSpace)
+properties_map_t video_properties_s::from_capture_device_properties(const std::string &nameSpace)
 {
     properties_map_t properties;
 
@@ -239,7 +239,7 @@ properties_map_t analog_properties_s::from_capture_device_properties(const std::
     return properties;
 }
 
-void analog_properties_s::to_capture_device_properties(
+void video_properties_s::to_capture_device_properties(
     const properties_map_t &properties,
     const std::string &nameSpace
 )

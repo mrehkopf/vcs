@@ -11,7 +11,7 @@
 #include <deque>
 #include <QComboBox>
 
-struct analog_video_preset_s;
+struct video_preset_s;
 
 class VideoPresetList : public QComboBox
 {
@@ -38,7 +38,7 @@ public:
 
     // Returns a pointer to the currently-selected preset; or nullptr if
     // no preset is selected.
-    analog_video_preset_s* current_preset(void) const;
+    video_preset_s* current_preset(void) const;
 
 signals:
     void preset_added(const unsigned presetId);
@@ -61,7 +61,7 @@ private:
 
     // Creates and returns a string to be displayed as the list item label for
     // the given present should the preset be added.
-    QString make_preset_item_label(const analog_video_preset_s *const preset);
+    QString make_preset_item_label(const video_preset_s *const preset);
 };
 
 #endif

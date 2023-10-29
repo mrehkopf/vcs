@@ -15,12 +15,12 @@ namespace file_reader::video_presets
 {
     namespace version_a
     {
-        bool read(const std::string &filename, std::vector<analog_video_preset_s*> *const presets);
+        bool read(const std::string &filename, std::vector<video_preset_s*> *const presets);
     }
 
     namespace version_b
     {
-        bool read(const std::string &filename, std::vector<analog_video_preset_s*> *const presets);
+        bool read(const std::string &filename, std::vector<video_preset_s*> *const presets);
     }
 }
 

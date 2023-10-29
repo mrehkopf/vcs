@@ -19,7 +19,7 @@ struct abstract_gui_widget_s
     bool isInitiallyEnabled = true;
 };
 
-namespace abstract_gui
+namespace abstract_gui_widget
 {
     enum class horizontal_align
     {

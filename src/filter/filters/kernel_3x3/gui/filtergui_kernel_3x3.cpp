@@ -12,14 +12,14 @@ filtergui_kernel_3x3_c::filtergui_kernel_3x3_c(abstract_filter_c *const filter)
 {
     for (unsigned row = 0; row < 3; row++)
     {
-        abstract_gui::double_spinner *cols[3];
+        abstract_gui_widget::double_spinner *cols[3];
 
         for (unsigned col = 0; col < 3; col++)
         {
             const unsigned paramId = ((row * 3) + col);
 
             auto *const spinbox = cols[col] = filtergui::double_spinner(filter, paramId);
-            spinbox->alignment = abstract_gui::horizontal_align::center;
+            spinbox->alignment = abstract_gui_widget::horizontal_align::center;
             spinbox->maxValue = 99;
             spinbox->minValue = -99;
             spinbox->numDecimals = 3;

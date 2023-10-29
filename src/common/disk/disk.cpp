@@ -23,7 +23,7 @@
 #include "filter/filter.h"
 #include "common/disk/disk.h"
 
-bool kdisk_save_video_presets(const std::vector<analog_video_preset_s*> &presets,
+bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets,
                               const std::string &filename)
 {
     if (!file_writer::video_presets::version_b::write(filename, presets))
@@ -42,7 +42,7 @@ bool kdisk_save_video_presets(const std::vector<analog_video_preset_s*> &presets
 }
 
 
-std::vector<analog_video_preset_s*> kdisk_load_video_presets(const std::string &filename)
+std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filename)
 {
     if (filename.empty())
     {
@@ -50,7 +50,7 @@ std::vector<analog_video_preset_s*> kdisk_load_video_presets(const std::string &
         return {};
     }
 
-    std::vector<analog_video_preset_s*> presets;
+    std::vector<video_preset_s*> presets;
     const std::string fileVersion = file_reader::file_version(filename);
 
     if (fileVersion == "a")

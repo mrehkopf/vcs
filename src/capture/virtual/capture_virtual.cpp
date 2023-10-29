@@ -167,20 +167,20 @@ void kc_initialize_device(void)
 
     // Define analog control ranges.
     {
-        analog_properties_s::to_capture_device_properties({
+        video_properties_s::to_capture_device_properties({
             {"Brightness", 0},
         }, ": minimum");
 
-        analog_properties_s::to_capture_device_properties({
+        video_properties_s::to_capture_device_properties({
             {"Brightness", 63},
         }, ": maximum");
 
-        analog_properties_s::to_capture_device_properties({
+        video_properties_s::to_capture_device_properties({
             {"Brightness", 63},
         }, ": default");
 
-        analog_properties_s::to_capture_device_properties(
-            analog_properties_s::from_capture_device_properties(": default")
+        video_properties_s::to_capture_device_properties(
+            video_properties_s::from_capture_device_properties(": default")
         );
     }
 
@@ -188,7 +188,7 @@ void kc_initialize_device(void)
     {
         // "Pattern generation".
         {
-            auto *const selectImage = new abstract_gui::button_get_open_filename;
+            auto *const selectImage = new abstract_gui_widget::button_get_open_filename;
             selectImage->label = "Select image...";
             selectImage->filenameFilter = "Images (*.png *.jpg *.bmp);;All files(*.*)";
             selectImage->isInitiallyEnabled = (PATTERN_TYPE == output_pattern_type::image);
@@ -221,7 +221,7 @@ void kc_initialize_device(void)
                 }
             };
 
-            auto *const patternType = new abstract_gui::combo_box;
+            auto *const patternType = new abstract_gui_widget::combo_box;
             patternType->items = {"Animated", "Static", "Image from file"};
             patternType->initialIndex = unsigned(PATTERN_TYPE);
             patternType->on_change = [patternType, selectImage](const int itemsIdx)

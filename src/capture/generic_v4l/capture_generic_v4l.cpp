@@ -148,12 +148,12 @@ void kc_initialize_device(void)
 
     // Create some custom GUI entries in VCS's control panel.
     {
-        auto *fps = new abstract_gui::combo_box;
+        auto *fps = new abstract_gui_widget::combo_box;
         fps->items = {"60", "50", "30", "25", "10"};
         fps->on_change = [fps](int idx){kc_set_device_property("fps", std::stoi(fps->items[idx]));};
         fps->initialIndex = 0;
 
-        auto *autoFocus = new abstract_gui::combo_box;
+        auto *autoFocus = new abstract_gui_widget::combo_box;
         autoFocus->items = {"Off", "On"};
         autoFocus->on_change = [](int idx){kc_set_device_property("autofocus", idx);};
         autoFocus->initialIndex = 0;

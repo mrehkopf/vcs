@@ -13,7 +13,7 @@
 
 bool file_reader::video_presets::version_a::read(
     const std::string &filename,
-    std::vector<analog_video_preset_s*> *const presets
+    std::vector<video_preset_s*> *const presets
 )
 {
     // Bails out if the value (string) of the first cell on the current row doesn't match
@@ -69,7 +69,7 @@ bool file_reader::video_presets::version_a::read(
 
         for (int i = 0; i < numPresets; i++)
         {
-            analog_video_preset_s *const preset = new analog_video_preset_s;
+            video_preset_s *const preset = new video_preset_s;
 
             preset->id = unsigned(i);
 
@@ -99,10 +99,10 @@ bool file_reader::video_presets::version_a::read(
                     preset->activationRefreshRate = rowData.at(row).at(3).toDouble();
 
                     const QString &comparator = rowData.at(row).at(2);
-                    if      (comparator == "Equals")  preset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::equals;
-                    else if (comparator == "Rounded") preset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::rounded;
-                    else if (comparator == "Floored") preset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::floored;
-                    else if (comparator == "Ceiled")  preset->refreshRateComparator = analog_video_preset_s::refresh_rate_comparison_e::ceiled;
+                    if      (comparator == "Equals")  preset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::equals;
+                    else if (comparator == "Rounded") preset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::rounded;
+                    else if (comparator == "Floored") preset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::floored;
+                    else if (comparator == "Ceiled")  preset->refreshRateComparator = video_preset_s::refresh_rate_comparison_e::ceiled;
                     else
                     {
                         NBENE(("Unknown refresh rate comparator '%s'.", comparator.toStdString().c_str()));

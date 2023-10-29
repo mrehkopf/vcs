@@ -69,18 +69,18 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
             {
                 QWidget *widget = nullptr;
 
-                if (dynamic_cast<abstract_gui::label*>(component))
+                if (dynamic_cast<abstract_gui_widget::label*>(component))
                 {
-                    auto *const c = ((abstract_gui::label*)component);
+                    auto *const c = ((abstract_gui_widget::label*)component);
                     auto *const label = qobject_cast<QLabel*>(widget = new QLabel(QString::fromStdString(c->text), this));
 
                     label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
                     label->setAlignment(Qt::AlignCenter);
                     label->setStyleSheet("margin-bottom: .25em;");
                 }
-                else if (dynamic_cast<abstract_gui::button_get_open_filename*>(component))
+                else if (dynamic_cast<abstract_gui_widget::button_get_open_filename*>(component))
                 {
-                    auto *const c = ((abstract_gui::button_get_open_filename*)component);
+                    auto *const c = ((abstract_gui_widget::button_get_open_filename*)component);
                     auto *const button = qobject_cast<QPushButton*>(widget = new QPushButton(QString::fromStdString(c->label), this));
 
                     connect(button, &QPushButton::clicked, [=, this]
@@ -98,9 +98,9 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         }
                     });
                 }
-                else if (dynamic_cast<abstract_gui::text_edit*>(component))
+                else if (dynamic_cast<abstract_gui_widget::text_edit*>(component))
                 {
-                    auto *const c = ((abstract_gui::text_edit*)component);
+                    auto *const c = ((abstract_gui_widget::text_edit*)component);
                     auto *const textEdit = qobject_cast<QPlainTextEdit*>(widget = new QPlainTextEdit(QString::fromStdString(c->text), this));
 
                     textEdit->setMinimumWidth(150);
@@ -120,9 +120,9 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         emit this->mutated(textEdit);
                     });
                 }
-                else if (dynamic_cast<abstract_gui::checkbox*>(component))
+                else if (dynamic_cast<abstract_gui_widget::checkbox*>(component))
                 {
-                    auto *const c = ((abstract_gui::checkbox*)component);
+                    auto *const c = ((abstract_gui_widget::checkbox*)component);
                     auto *const checkbox = qobject_cast<QCheckBox*>(widget = new QCheckBox(this));
 
                     checkbox->setChecked(c->initialState);
@@ -135,9 +135,9 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         emit this->mutated(checkbox);
                     });
                 }
-                else if (dynamic_cast<abstract_gui::combo_box*>(component))
+                else if (dynamic_cast<abstract_gui_widget::combo_box*>(component))
                 {
-                    auto *const c = ((abstract_gui::combo_box*)component);
+                    auto *const c = ((abstract_gui_widget::combo_box*)component);
                     auto *const combobox = qobject_cast<QComboBox*>(widget = new QComboBox(this));
 
                     for (const auto &item: c->items)
@@ -153,9 +153,9 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         emit this->mutated(combobox);
                     });
                 }
-                else if (dynamic_cast<abstract_gui::spinner*>(component))
+                else if (dynamic_cast<abstract_gui_widget::spinner*>(component))
                 {
-                    auto *const c = ((abstract_gui::spinner*)component);
+                    auto *const c = ((abstract_gui_widget::spinner*)component);
                     auto *const spinbox = qobject_cast<QSpinBox*>(widget = new QSpinBox(this));
 
                     spinbox->setRange(c->minValue, c->maxValue);
@@ -163,16 +163,16 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     spinbox->setPrefix(QString::fromStdString(c->prefix));
                     spinbox->setSuffix(QString::fromStdString(c->suffix));
                     spinbox->setButtonSymbols(
-                        (c->alignment == abstract_gui::horizontal_align::left)
+                        (c->alignment == abstract_gui_widget::horizontal_align::left)
                         ? QAbstractSpinBox::UpDownArrows
                         : QAbstractSpinBox::NoButtons
                     );
 
                     switch (c->alignment)
                     {
-                        case abstract_gui::horizontal_align::left: spinbox->setAlignment(Qt::AlignLeft); break;
-                        case abstract_gui::horizontal_align::right: spinbox->setAlignment(Qt::AlignRight); break;
-                        case abstract_gui::horizontal_align::center: spinbox->setAlignment(Qt::AlignHCenter); break;
+                        case abstract_gui_widget::horizontal_align::left: spinbox->setAlignment(Qt::AlignLeft); break;
+                        case abstract_gui_widget::horizontal_align::right: spinbox->setAlignment(Qt::AlignRight); break;
+                        case abstract_gui_widget::horizontal_align::center: spinbox->setAlignment(Qt::AlignHCenter); break;
                         default: k_assert(0, "Unrecognized filter GUI alignment enumerator."); break;
                     }
 
@@ -182,9 +182,9 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         emit this->mutated(spinbox);
                     });
                 }
-                else if (dynamic_cast<abstract_gui::double_spinner*>(component))
+                else if (dynamic_cast<abstract_gui_widget::double_spinner*>(component))
                 {
-                    auto *const c = ((abstract_gui::double_spinner*)component);
+                    auto *const c = ((abstract_gui_widget::double_spinner*)component);
                     auto *const doublespinbox = qobject_cast<QDoubleSpinBox*>(widget = new QDoubleSpinBox(this));
 
                     doublespinbox->setRange(c->minValue, c->maxValue);
@@ -194,16 +194,16 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     doublespinbox->setPrefix(QString::fromStdString(c->prefix));
                     doublespinbox->setSuffix(QString::fromStdString(c->suffix));
                     doublespinbox->setButtonSymbols(
-                        (c->alignment == abstract_gui::horizontal_align::left)
+                        (c->alignment == abstract_gui_widget::horizontal_align::left)
                         ? QAbstractSpinBox::UpDownArrows
                         : QAbstractSpinBox::NoButtons
                     );
 
                     switch (c->alignment)
                     {
-                        case abstract_gui::horizontal_align::left: doublespinbox->setAlignment(Qt::AlignLeft); break;
-                        case abstract_gui::horizontal_align::right: doublespinbox->setAlignment(Qt::AlignRight); break;
-                        case abstract_gui::horizontal_align::center: doublespinbox->setAlignment(Qt::AlignHCenter); break;
+                        case abstract_gui_widget::horizontal_align::left: doublespinbox->setAlignment(Qt::AlignLeft); break;
+                        case abstract_gui_widget::horizontal_align::right: doublespinbox->setAlignment(Qt::AlignRight); break;
+                        case abstract_gui_widget::horizontal_align::center: doublespinbox->setAlignment(Qt::AlignHCenter); break;
                         default: k_assert(0, "Unrecognized filter GUI alignment enumerator."); break;
                     }
 

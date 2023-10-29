@@ -364,7 +364,7 @@ void kc_initialize_device(void)
 
         videoParams->update();
 
-        analog_properties_s::to_capture_device_properties({
+        video_properties_s::to_capture_device_properties({
             {"Brightness", 32},
             {"Contrast", 128},
             {"Red brightness", 128},
@@ -380,7 +380,7 @@ void kc_initialize_device(void)
             {"Black level", 8},
         }, ": default");
 
-        analog_properties_s::to_capture_device_properties({
+        video_properties_s::to_capture_device_properties({
             {"Brightness", 0},
             {"Contrast", 0},
             {"Red brightness", 0},
@@ -396,7 +396,7 @@ void kc_initialize_device(void)
             {"Black level", 1},
         }, ": minimum");
 
-        analog_properties_s::to_capture_device_properties({
+        video_properties_s::to_capture_device_properties({
             {"Brightness", 63},
             {"Contrast", 255},
             {"Red brightness", 255},

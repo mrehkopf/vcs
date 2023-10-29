@@ -25,8 +25,8 @@
 
 class BaseFilterGraphNode;
 struct filter_graph_option_s;
-struct analog_properties_s;
-struct analog_video_preset_s;
+struct video_properties_s;
+struct video_preset_s;
 
 // A GUI-agnostic representation of a filter graph node.
 //
@@ -57,11 +57,11 @@ struct abstract_filter_graph_node_s
     std::vector<int> connectedTo;
 };
 
-bool kdisk_save_video_presets(const std::vector<analog_video_preset_s*> &presets, const std::string &filename);
+bool kdisk_save_video_presets(const std::vector<video_preset_s*> &presets, const std::string &filename);
 
 bool kdisk_save_filter_graph(const std::vector<BaseFilterGraphNode*> &nodes, const std::string &filename);
 
-std::vector<analog_video_preset_s*> kdisk_load_video_presets(const std::string &filename);
+std::vector<video_preset_s*> kdisk_load_video_presets(const std::string &filename);
 
 std::vector<abstract_filter_graph_node_s> kdisk_load_filter_graph(const std::string &filename);
 
