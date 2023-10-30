@@ -695,12 +695,16 @@ void OutputWindow::update_window_title(void)
         else
         {
             title = (
-                QString("%1%2 - %3 \u00d7 %4 (%5 Hz)%6")
+                QString("%1%2 - %3 \u00d7 %4%5%6")
                 .arg(missedFramesMarker)
                 .arg(programName)
                 .arg(inRes.w)
                 .arg(inRes.h)
-                .arg(refresh.value<double>())
+                .arg(
+                    refresh.fixedpoint
+                        ? QString(" (%1 Hz)").arg(refresh.value<double>())
+                        : ""
+                )
                 .arg(
                     (resolution_s::from_capture_device_properties() != ks_output_resolution())
                         ? QString(" shown in %1 \u00d7 %2").arg(outRes.w).arg(outRes.h)
