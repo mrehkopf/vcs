@@ -318,7 +318,7 @@ capture_event_e kc_process_next_capture_event(void)
         return capture_event_e::new_frame;
     }
 
-    return capture_event_e::none;
+    return capture_event_e::sleep;
 }
 
 bool kc_release_device(void)

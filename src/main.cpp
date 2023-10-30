@@ -153,11 +153,6 @@ static capture_event_e handle_next_capture_event(void)
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             break;
         }
-        case capture_event_e::sleep:
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(4)); /// TODO. Is 4 the best wait-time?
-            break;
-        }
         default:
         {
             break;
@@ -222,15 +217,11 @@ static void eco_sleep(const capture_event_e event)
         return;
     }
 
-    const unsigned maxTimeToSleepMs = 10;
+    const double maxTimeToSleepMs = 20;
 
     if (!kc_has_signal())
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(maxTimeToSleepMs));
-        return;
-    }
-    else if (event == capture_event_e::none)
-    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(unsigned(maxTimeToSleepMs)));
         return;
     }
     else
@@ -245,15 +236,19 @@ static void eco_sleep(const capture_event_e event)
         // If we drop frames, we shorten the sleep duration, and otherwise we creep toward
         // the maximum possible sleep time given the current rate of capture events.
         timeToSleepMs = std::lerp((timeToSleepMs / (numNewDroppedFrames? 1.5 : 1)), msSinceLastEvent, 0.01);
+        timeToSleepMs = std::min(maxTimeToSleepMs, timeToSleepMs);
 
         // We have time to sleep only if we're not dropping frames.
         if (!numNewDroppedFrames)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(std::min(maxTimeToSleepMs, unsigned(timeToSleepMs))));
+            std::this_thread::sleep_for(std::chrono::milliseconds(unsigned(timeToSleepMs)));
         }
     }
 
-    ECO_REFERENCE_TIME = std::chrono::system_clock::now();
+    if (event != capture_event_e::sleep)
+    {
+        ECO_REFERENCE_TIME = std::chrono::system_clock::now();
+    }
 
     return;
 }

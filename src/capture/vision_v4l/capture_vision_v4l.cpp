@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 2020-2023 Tarpeeksi Hyvae Soft
  *
  * Software: VCS
@@ -382,7 +382,7 @@ capture_event_e kc_process_next_capture_event(void)
         return capture_event_e::sleep;
     }
 
-    return capture_event_e::none;
+    return capture_event_e::sleep;
 }
 
 uint kc_dropped_frames_count(void)
