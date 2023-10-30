@@ -92,6 +92,50 @@ static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
     {"supports resolution switching", true},
 };
 
+static refresh_rate_s send_capture_rate_to_device(refresh_rate_s rate)
+{
+    refresh_rate_s rateOnDevice = refresh_rate_s::from_capture_device_properties();
+
+    if (
+        !INPUT_CHANNEL ||
+        !kc_has_signal() ||
+        (!rate.fixedpoint && !rateOnDevice.fixedpoint)
+    ){
+        return rateOnDevice;
+    }
+
+    if (!rate.fixedpoint)
+    {
+        rate = rateOnDevice;
+    }
+    else if (!rateOnDevice.fixedpoint)
+    {
+        rateOnDevice = rate;
+    }
+
+    v4l2_streamparm sp = {0};
+    sp.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    sp.parm.capture.timeperframe.numerator = std::pow(10, refresh_rate_s::numDecimalsPrecision);
+    sp.parm.capture.timeperframe.denominator = ((rate.fixedpoint < rateOnDevice.fixedpoint)? rate : rateOnDevice).fixedpoint;
+    if (!INPUT_CHANNEL->device_ioctl(VIDIOC_S_PARM, &sp))
+    {
+        NBENE(("Failed to set the capture rate: device error."));
+        return false;
+    }
+
+    v4l2_streamparm spUpdated = {0};
+    spUpdated.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    if (
+        INPUT_CHANNEL->device_ioctl(VIDIOC_G_PARM, &spUpdated) &&
+        sp.parm.capture.timeperframe.numerator &&
+        sp.parm.capture.timeperframe.denominator
+    ){
+        rateOnDevice = (1 / (sp.parm.capture.timeperframe.numerator / double(sp.parm.capture.timeperframe.denominator)));
+    }
+
+    return rateOnDevice;
+}
+
 static bool set_capture_resolution(const resolution_s r)
 {
     k_assert(INPUT_CHANNEL, "Attempting to set the capture resolution on a null input channel.");
@@ -209,6 +253,12 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
         {
             FRAME_BUFFER.resolution.h = value;
         }
+    }
+    else if (key == "capture rate")
+    {
+        refresh_rate_s rateOnDevice = send_capture_rate_to_device(refresh_rate_s::from_fixedpoint(value));
+        value = DEVICE_PROPERTIES[key] = rateOnDevice.fixedpoint;
+        ev_new_capture_rate.fire(rateOnDevice);
     }
     else if (key == "channel")
     {

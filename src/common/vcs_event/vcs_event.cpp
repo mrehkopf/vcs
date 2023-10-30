@@ -28,3 +28,4 @@ vcs_event_c<const video_preset_s*> ev_video_preset_activated;
 vcs_event_c<const video_preset_s*> ev_video_preset_name_changed;
 vcs_event_c<unsigned> ev_missed_frames_count;
 vcs_event_c<unsigned> ev_capture_processing_latency;
+vcs_event_c<const refresh_rate_s&> ev_new_capture_rate;

@@ -55,6 +55,7 @@ struct refresh_rate_s
         }
     }
 
+    static refresh_rate_s from_fixedpoint(const fixedpoint_hz_t fixedpoint);
     static refresh_rate_s from_capture_device_properties(void);
     static void to_capture_device_properties(const refresh_rate_s &rate);
     void operator=(const double hz);

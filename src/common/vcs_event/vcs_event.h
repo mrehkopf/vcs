@@ -36,6 +36,7 @@
 #include <list>
 
 struct captured_frame_s;
+struct refresh_rate_s;
 struct video_preset_s;
 struct video_mode_s;
 struct resolution_s;
@@ -175,5 +176,6 @@ extern vcs_event_c<const video_preset_s*> ev_video_preset_activated;
 extern vcs_event_c<const video_preset_s*> ev_video_preset_name_changed;
 extern vcs_event_c<unsigned> ev_missed_frames_count;
 extern vcs_event_c<unsigned> ev_capture_processing_latency;
+extern vcs_event_c<const refresh_rate_s&> ev_new_capture_rate;
 
 #endif

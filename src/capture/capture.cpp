@@ -49,3 +49,13 @@ const std::vector<const char*>& kc_supported_video_preset_properties(void)
     const auto *supportedProps = ((std::vector<const char*>*)kc_device_property("supported video preset properties"));
     return (supportedProps? *supportedProps : emptyList);
 }
+
+refresh_rate_s capture_rate_s::from_capture_device_properties(void)
+{
+    return refresh_rate_s::from_fixedpoint(kc_device_property("capture rate"));
+}
+
+void capture_rate_s::to_capture_device_properties(const refresh_rate_s &rate)
+{
+    kc_set_device_property("capture rate", rate.fixedpoint);
+}

@@ -80,6 +80,7 @@ SOURCES += \
     src/display/qt/widgets/ResolutionQuery.cpp \
     src/display/qt/widgets/VideoPresetList.cpp \
     src/display/qt/windows/ControlPanel.cpp \
+    src/display/qt/windows/ControlPanel/Capture/CaptureRate.cpp \
     src/display/qt/windows/ControlPanel/Capture/InputChannel.cpp \
     src/display/qt/windows/ControlPanel/Capture/InputResolution.cpp \
     src/display/qt/windows/ControlPanel/Capture/SignalStatus.cpp \
@@ -168,6 +169,7 @@ HEADERS += \
     src/display/qt/widgets/ResolutionQuery.h \
     src/display/qt/widgets/VideoPresetList.h \
     src/display/qt/windows/ControlPanel.h \
+    src/display/qt/windows/ControlPanel/Capture/CaptureRate.h \
     src/display/qt/windows/ControlPanel/Capture/InputChannel.h \
     src/display/qt/windows/ControlPanel/Capture/InputResolution.h \
     src/display/qt/windows/ControlPanel/Capture/SignalStatus.h \
@@ -257,6 +259,7 @@ HEADERS += \
 FORMS += \
     src/display/qt/widgets/ResolutionQuery.ui \
     src/display/qt/windows/ControlPanel.ui \
+    src/display/qt/windows/ControlPanel/Capture/CaptureRate.ui \
     src/display/qt/windows/ControlPanel/Capture/InputChannel.ui \
     src/display/qt/windows/ControlPanel/Capture/InputResolution.ui \
     src/display/qt/windows/ControlPanel/Capture/SignalStatus.ui \

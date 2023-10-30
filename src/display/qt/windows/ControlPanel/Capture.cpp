@@ -2,6 +2,7 @@
 #include "display/qt/windows/ControlPanel/Capture/InputResolution.h"
 #include "display/qt/windows/ControlPanel/Capture/InputChannel.h"
 #include "display/qt/windows/ControlPanel/Capture/SignalStatus.h"
+#include "display/qt/windows/ControlPanel/Capture/CaptureRate.h"
 #include "capture/capture.h"
 #include "Capture.h"
 #include "ui_Capture.h"
@@ -20,6 +21,7 @@ control_panel::Capture::Capture(QWidget *parent) :
     this->inputChannel = new control_panel::capture::InputChannel(parent);
     this->signalStatus = new control_panel::capture::SignalStatus(parent);
     this->inputResolution = new control_panel::capture::InputResolution(parent);
+    this->captureRate = new control_panel::capture::CaptureRate(parent);
 
     // Compose the dialog's layout.
     {
@@ -33,6 +35,8 @@ control_panel::Capture::Capture(QWidget *parent) :
         }
 
         layout->addWidget(this->signalStatus);
+
+        layout->addWidget(this->captureRate);
 
         if (kc_device_property("supports resolution switching"))
         {

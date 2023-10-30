@@ -8,11 +8,16 @@
 #include "common/refresh_rate.h"
 #include "capture/capture.h"
 
-refresh_rate_s refresh_rate_s::from_capture_device_properties()
+refresh_rate_s refresh_rate_s::from_fixedpoint(const fixedpoint_hz_t fixedpoint)
 {
     refresh_rate_s r;
-    r.fixedpoint = kc_device_property("refresh rate");
+    r.fixedpoint = fixedpoint;
     return r;
+}
+
+refresh_rate_s refresh_rate_s::from_capture_device_properties()
+{
+    return refresh_rate_s::from_fixedpoint(kc_device_property("refresh rate"));
 }
 
 void refresh_rate_s::to_capture_device_properties(const refresh_rate_s &rate)

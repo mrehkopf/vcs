@@ -103,6 +103,12 @@ enum class signal_format_e
     digital,
 };
 
+struct capture_rate_s
+{
+    static refresh_rate_s from_capture_device_properties(void);
+    static void to_capture_device_properties(const refresh_rate_s &rate);
+};
+
 struct captured_frame_s
 {
     std::chrono::time_point<std::chrono::steady_clock> timestamp = std::chrono::steady_clock::now();

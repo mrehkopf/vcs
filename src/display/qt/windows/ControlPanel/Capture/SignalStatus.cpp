@@ -38,6 +38,7 @@ control_panel::capture::SignalStatus::SignalStatus(QWidget *parent) :
         // the vertical order in which the table's parameters are shown.
         ui->tableWidget_propertyTable->add_property("Resolution");
         ui->tableWidget_propertyTable->add_property("Refresh rate");
+        ui->tableWidget_propertyTable->add_property("Capture rate");
         ui->tableWidget_propertyTable->add_property("Frames dropped");
 
         INFO_UPDATE_TIMER.start(1000);
@@ -69,6 +70,11 @@ control_panel::capture::SignalStatus::SignalStatus(QWidget *parent) :
             update_info();
         });
 
+        ev_new_capture_rate.listen([update_info](const refresh_rate_s &newRate)
+        {
+            update_info();
+        });
+
         ev_new_input_channel.listen(update_info);
     }
 
@@ -96,14 +102,17 @@ void control_panel::capture::SignalStatus::update_information_table(const bool i
     {
         const auto resolution = resolution_s::from_capture_device_properties();
         const auto refreshRate = refresh_rate_s::from_capture_device_properties().value<double>();
+        const auto captureRate = capture_rate_s::from_capture_device_properties().value<double>();
 
-        ui->tableWidget_propertyTable->modify_property("Refresh rate", QString("%1 Hz").arg(QString::number(refreshRate, 'f', 3)));
+        ui->tableWidget_propertyTable->modify_property("Refresh rate", QString("%1 Hz").arg(QString::number(refreshRate, 'f', refresh_rate_s::numDecimalsPrecision)));
+        ui->tableWidget_propertyTable->modify_property("Capture rate", QString("%1 Hz").arg(QString::number(captureRate, 'f', refresh_rate_s::numDecimalsPrecision)));
         ui->tableWidget_propertyTable->modify_property("Resolution", QString("%1 \u00d7 %2").arg(resolution.w).arg(resolution.h));
     }
     else
     {
         ui->tableWidget_propertyTable->modify_property("Resolution", "-");
         ui->tableWidget_propertyTable->modify_property("Refresh rate", "-");
+        ui->tableWidget_propertyTable->modify_property("Capture rate", "-");
     }
 
     return;
