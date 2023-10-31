@@ -29,15 +29,21 @@ QTextEdit:read-only
 
 QSpinBox:disabled,
 QDoubleSpinBox:disabled,
-QLineEdit:disabled,
-QPlainTextEdit:disabled,
-QTextEdit:disabled
+QLineEdit:disabled
 {
     border: none;
     background-color: transparent;
     color: #909090;
     background-image: url(:/res/icons/newie/line_pattern.png);
     background-repeat: repeat-xy;
+}
+
+QPlainTextEdit:disabled,
+QTextEdit:disabled
+{
+    border: none;
+    background-color: transparent;
+    color: #909090;
 }
 
 QSpinBox::up-button,
@@ -81,7 +87,8 @@ QCheckBox:disabled
     color: #909090;
 }
 
-QCheckBox::indicator:disabled
+QCheckBox::indicator:disabled,
+QGroupBox::indicator:disabled
 {
     background-color: transparent;
     background-image: url(:/res/icons/newie/line_pattern.png);
