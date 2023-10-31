@@ -165,6 +165,11 @@ void kc_initialize_device(void)
         NUM_FRAMES_PER_SECOND = 0;
     });
 
+    ev_new_video_mode.listen([](const video_mode_s &mode)
+    {
+        capture_rate_s::to_capture_device_properties(mode.refreshRate);
+    });
+
     // Define analog control ranges.
     {
         video_properties_s::to_capture_device_properties({

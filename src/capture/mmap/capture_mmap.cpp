@@ -201,6 +201,7 @@ void kc_initialize_device(void)
     {
         resolution_s::to_capture_device_properties(mode.resolution);
         refresh_rate_s::to_capture_device_properties(mode.refreshRate);
+        capture_rate_s::to_capture_device_properties(mode.refreshRate);
     });
 
     return;

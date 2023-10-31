@@ -146,6 +146,11 @@ void kc_initialize_device(void)
         NUM_FRAMES_PER_SECOND++;
     });
 
+    ev_new_video_mode.listen([](const video_mode_s &mode)
+    {
+        capture_rate_s::to_capture_device_properties(mode.refreshRate);
+    });
+
     // Create some custom GUI entries in VCS's control panel.
     {
         auto *fps = new abstract_gui_widget::combo_box;

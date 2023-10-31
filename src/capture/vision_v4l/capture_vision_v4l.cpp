@@ -90,6 +90,7 @@ static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
     {"supports video presets", true},
     {"supports channel switching", true},
     {"supports resolution switching", true},
+    {"supports capture rate switching", true},
 };
 
 static refresh_rate_s send_capture_rate_to_device(refresh_rate_s rate)
