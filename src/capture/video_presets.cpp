@@ -14,6 +14,10 @@ vcs_event_c<const video_preset_s*> kc_ev_video_preset_params_changed;
 
 static std::vector<video_preset_s*> PRESETS;
 
+// While true, no preset will activate. If a preset is already active, it'll
+// remain so.
+static bool LOCKED = false;
+
 // Incremented for each new preset added, and used as the id for that preset.
 static unsigned RUNNING_PRESET_ID = 0;
 
@@ -83,6 +87,25 @@ subsystem_releaser_t kvideopreset_initialize(void)
     return []{};
 }
 
+void kvideopreset_lock(const bool isLocked)
+{
+    LOCKED = isLocked;
+    return;
+}
+
+void kvideopreset_activate_preset(const video_preset_s *const preset)
+{
+    if (LOCKED || !kc_has_signal())
+    {
+        return;
+    }
+
+    video_properties_s::to_capture_device_properties(preset->properties);
+    ev_video_preset_activated.fire(preset);
+
+    return;
+}
+
 bool kvideopreset_is_preset_active(const video_preset_s *const preset)
 {
     return (
@@ -127,7 +150,7 @@ void kvideopreset_remove_all_presets(void)
 
 void kvideopreset_apply_current_active_preset(void)
 {
-    if (!kc_has_signal())
+    if (LOCKED || !kc_has_signal())
     {
         return;
     }
@@ -168,7 +191,7 @@ video_preset_s* kvideopreset_get_preset_ptr(const unsigned presetId)
 
 void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
 {
-    if (!kc_has_signal())
+    if (LOCKED || !kc_has_signal())
     {
         return;
     }
@@ -177,8 +200,7 @@ void kvideopreset_activate_keyboard_shortcut(const std::string &shortcutString)
     {
         if (preset->activates_with_shortcut(shortcutString))
         {
-            video_properties_s::to_capture_device_properties(preset->properties);
-            ev_video_preset_activated.fire(preset);
+            kvideopreset_activate_preset(preset);
             return;
         }
     }

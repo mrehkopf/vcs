@@ -172,6 +172,13 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             this->lock_unsaved_changes_flag(false);
             CONTROLS_LIVE_UPDATE = true;
 
+            if (ui->checkBox_lockSelectedPreset->isChecked())
+            {
+                kvideopreset_lock(false);
+                kvideopreset_activate_preset(ui->comboBox_presetList->current_preset());
+                kvideopreset_lock(true);
+            }
+
             this->update_active_preset_indicator();
         });
 
@@ -219,6 +226,20 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
                 {
                     kvideopreset_apply_current_active_preset();
                 }
+            }
+        });
+
+        connect(ui->checkBox_lockSelectedPreset, &QCheckBox::toggled, this, [this](const bool isChecked)
+        {
+            if (isChecked)
+            {
+                kvideopreset_activate_preset(ui->comboBox_presetList->current_preset());
+                kvideopreset_lock(true);
+            }
+            else
+            {
+                kvideopreset_lock(false);
+                kvideopreset_apply_current_active_preset();
             }
         });
 
