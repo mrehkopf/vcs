@@ -88,7 +88,6 @@ QGroupBox QScrollBar::sub-line:disabled
     background-repeat: repeat-xy;
 }
 
-QGroupBox > QFrame,
 QGroupBox > QLabel
 {
     margin-top: 0;
@@ -96,4 +95,58 @@ QGroupBox > QLabel
     margin-right: 3px;
     padding-left: 3px;
     padding-right: 3px;
+}
+
+QTreeWidget
+{
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-repeat: repeat-xy;
+    border: 1px solid black;
+}
+
+QTreeWidget QAbstractItemView
+{
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+}
+
+QTreeWidget QHeaderView
+{
+    border: none;
+    border-bottom: 1px solid black;
+}
+
+QTreeWidget QHeaderView::section
+{
+    padding: 0.25em;
+    padding-left: 0.45em;
+    margin: 0;
+    border: none;
+    border-right: 1px solid black;
+    background: #525252;
+    color: #e0e0e0;
+}
+
+QTreeWidget QHeaderView::section:last
+{
+    border-right: none;
+}
+
+QTreeWidget::item
+{
+    background-color: #404040;
+}
+
+QTreeWidget::item:hover
+{
+    background-color: #4a4a4a;
+}
+
+QTreeWidget::item:selected
+{
+    background-color: #a0a0a0;
 }

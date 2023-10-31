@@ -60,6 +60,7 @@ INCLUDEPATH += \
     $$PWD/src/display/qt/widgets/
 
 SOURCES += \
+    src/capture/alias.cpp \
     src/common/disk/file_readers/file_reader_video_presets_version_b.cpp \
     src/common/disk/file_writers/file_writer_video_presets_version_b.cpp \
     src/common/refresh_rate.cpp \
@@ -80,6 +81,7 @@ SOURCES += \
     src/display/qt/widgets/ResolutionQuery.cpp \
     src/display/qt/widgets/VideoPresetList.cpp \
     src/display/qt/windows/ControlPanel.cpp \
+    src/display/qt/windows/ControlPanel/Capture/AliasResolutions.cpp \
     src/display/qt/windows/ControlPanel/Capture/CaptureRate.cpp \
     src/display/qt/windows/ControlPanel/Capture/InputChannel.cpp \
     src/display/qt/windows/ControlPanel/Capture/InputResolution.cpp \
@@ -151,6 +153,7 @@ SOURCES += \
     src/common/timer/timer.cpp
 
 HEADERS += \
+    src/capture/alias.h \
     src/common/assert.h \
     src/common/globals.h \
     src/display/qt/wheel_blocker.h \
@@ -169,6 +172,7 @@ HEADERS += \
     src/display/qt/widgets/ResolutionQuery.h \
     src/display/qt/widgets/VideoPresetList.h \
     src/display/qt/windows/ControlPanel.h \
+    src/display/qt/windows/ControlPanel/Capture/AliasResolutions.h \
     src/display/qt/windows/ControlPanel/Capture/CaptureRate.h \
     src/display/qt/windows/ControlPanel/Capture/InputChannel.h \
     src/display/qt/windows/ControlPanel/Capture/InputResolution.h \
@@ -259,6 +263,7 @@ HEADERS += \
 FORMS += \
     src/display/qt/widgets/ResolutionQuery.ui \
     src/display/qt/windows/ControlPanel.ui \
+    src/display/qt/windows/ControlPanel/Capture/AliasResolutions.ui \
     src/display/qt/windows/ControlPanel/Capture/CaptureRate.ui \
     src/display/qt/windows/ControlPanel/Capture/InputChannel.ui \
     src/display/qt/windows/ControlPanel/Capture/InputResolution.ui \

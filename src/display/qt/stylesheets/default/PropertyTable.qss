@@ -5,3 +5,12 @@ PropertyTable
     margin-right: 6px;
     padding: 0;
 }
+
+PropertyTable > QFrame
+{
+    margin-top: 0;
+    margin-left: 2px;
+    margin-right: 3px;
+    padding-left: 3px;
+    padding-right: 3px;
+}

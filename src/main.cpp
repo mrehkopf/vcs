@@ -17,7 +17,6 @@
 #include <mutex>
 #include <queue>
 #include <deque>
-#include "display/qt/windows/OutputWindow.h"
 #include "common/command_line/command_line.h"
 #include "capture/capture.h"
 #include "display/display.h"
@@ -25,6 +24,7 @@
 #include "scaler/scaler.h"
 #include "filter/filter.h"
 #include "capture/video_presets.h"
+#include "capture/alias.h"
 #include "common/disk/disk.h"
 #include "common/timer/timer.h"
 #include "main.h"
@@ -107,7 +107,24 @@ static bool initialize_all(void)
         // propagate to the rest of VCS.
         ev_new_proposed_video_mode.listen([](const video_mode_s &videoMode)
         {
-            ev_new_video_mode.fire(videoMode);
+            if (ka_has_alias(videoMode.resolution))
+            {
+                const resolution_s aliasedResolution = ka_aliased(videoMode.resolution);
+
+                DEBUG((
+                    "Aliasing %u x %u to %u x %u",
+                     videoMode.resolution.w,
+                     videoMode.resolution.h,
+                     aliasedResolution.w,
+                     aliasedResolution.h
+                ));
+
+                resolution_s::to_capture_device_properties(aliasedResolution);
+            }
+            else
+            {
+                ev_new_video_mode.fire(videoMode);
+            }
         });
     }
 

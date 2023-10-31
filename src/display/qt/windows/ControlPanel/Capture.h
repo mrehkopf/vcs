@@ -9,6 +9,7 @@ namespace control_panel::capture
     class SignalStatus;
     class InputResolution;
     class CaptureRate;
+    class AliasResolutions;
 }
 
 namespace control_panel
@@ -34,6 +35,7 @@ namespace control_panel
         control_panel::capture::SignalStatus *signalStatus = nullptr;
         control_panel::capture::InputResolution *inputResolution = nullptr;
         control_panel::capture::CaptureRate *captureRate = nullptr;
+        control_panel::capture::AliasResolutions *aliasResolutions = nullptr;
     };
 
     #endif

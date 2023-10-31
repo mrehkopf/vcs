@@ -1,6 +1,7 @@
 QPushButton,
 QComboBox
 {
+    min-width: 1.5em;
     min-height: 1.5em;
     padding: 0;
     border-radius: 0;

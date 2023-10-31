@@ -1,4 +1,5 @@
 #include <QVBoxLayout>
+#include "display/qt/windows/ControlPanel/Capture/AliasResolutions.h"
 #include "display/qt/windows/ControlPanel/Capture/InputResolution.h"
 #include "display/qt/windows/ControlPanel/Capture/InputChannel.h"
 #include "display/qt/windows/ControlPanel/Capture/SignalStatus.h"
@@ -21,6 +22,7 @@ control_panel::Capture::Capture(QWidget *parent) :
     this->inputChannel = new control_panel::capture::InputChannel(parent);
     this->signalStatus = new control_panel::capture::SignalStatus(parent);
     this->inputResolution = new control_panel::capture::InputResolution(parent);
+    this->aliasResolutions = new control_panel::capture::AliasResolutions(parent);
 
     // Compose the dialog's layout.
     {
@@ -49,6 +51,8 @@ control_panel::Capture::Capture(QWidget *parent) :
         {
             this->inputResolution->setEnabled(false);
         }
+
+        layout->addWidget(this->aliasResolutions);
     }
 
     // Push out empty space from the dialogs.
