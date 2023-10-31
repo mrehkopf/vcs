@@ -48,7 +48,7 @@ public:
             gui->fields.push_back({"From/To", {from, to}});
 
             auto *width = filtergui::spinner(filter, PARAM_WIDTH);
-            width->minValue = 0;
+            width->minValue = 1;
             width->maxValue = std::max(MAX_CAPTURE_WIDTH, MAX_CAPTURE_HEIGHT);
             gui->fields.push_back({"Width", {width}});
 
