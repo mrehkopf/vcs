@@ -14,7 +14,7 @@ const char PROGRAM_NAME[] = "VCS";
 const struct semantic_version_s
 {
     unsigned major = 3;
-    unsigned minor = 2;
+    unsigned minor = 3;
     unsigned patch = 0;
 } VCS_VERSION;
 
