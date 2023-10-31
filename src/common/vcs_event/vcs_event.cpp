@@ -18,7 +18,7 @@ vcs_event_c<void> ev_invalid_capture_signal;
 vcs_event_c<void> ev_dirty_output_window;
 vcs_event_c<const resolution_s&> ev_new_output_resolution;
 vcs_event_c<const image_s&> ev_new_output_image;
-vcs_event_c<unsigned> ev_frames_per_second;
+vcs_event_c<const refresh_rate_s&> ev_frames_per_second;
 vcs_event_c<void> ev_custom_output_scaler_enabled;
 vcs_event_c<void> ev_custom_output_scaler_disabled;
 vcs_event_c<void> ev_eco_mode_enabled;

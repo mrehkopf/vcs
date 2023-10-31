@@ -69,11 +69,11 @@ control_panel::output::Status::Status(QWidget *parent) :
             );
         });
 
-        ev_frames_per_second.listen([this](const unsigned fps)
+        ev_frames_per_second.listen([this](const refresh_rate_s &fps)
         {
             if (kc_has_signal())
             {
-                this->ui->tableWidget_propertyTable->modify_property("Frame rate", QString("%1 FPS").arg(fps));
+                this->ui->tableWidget_propertyTable->modify_property("Frame rate", QString("%1 FPS").arg(fps.value<double>()));
             }
         });
 

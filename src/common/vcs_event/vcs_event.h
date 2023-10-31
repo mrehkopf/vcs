@@ -159,7 +159,7 @@ extern vcs_event_c<const image_s&> ev_new_output_image;
 
 // Fired roughly once per second, giving the number of input frames the scaler
 // subsystem scaled during that time.
-extern vcs_event_c<unsigned> ev_frames_per_second;
+extern vcs_event_c<const refresh_rate_s&> ev_frames_per_second;
 
 // Fired when an output scaling filter becomes active, i.e. when captured
 // frames begin being scaled using such a filter.

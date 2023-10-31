@@ -164,10 +164,9 @@ subsystem_releaser_t ks_initialize_scaler(void)
         NUM_FRAMES_SCALED_PER_SECOND++;
     });
 
-    kt_timer(1000, [](const unsigned)
+    kt_timer(1000, [](const unsigned timeElapsedMs)
     {
-        ev_frames_per_second.fire(NUM_FRAMES_SCALED_PER_SECOND);
-
+        ev_frames_per_second.fire(NUM_FRAMES_SCALED_PER_SECOND * (1000.0 / timeElapsedMs));
         NUM_FRAMES_SCALED_PER_SECOND = 0;
     });
 
