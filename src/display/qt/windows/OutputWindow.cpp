@@ -335,6 +335,11 @@ OutputWindow::OutputWindow(QWidget *parent) :
             this->update_window_title();
         });
 
+        ev_new_capture_rate.listen([this]
+        {
+            this->update_window_title();
+        });
+
         ev_missed_frames_count.listen([this](const unsigned numMissed)
         {
             if (this->frameDropCount != numMissed)
@@ -682,7 +687,8 @@ void OutputWindow::update_window_title(void)
 
         const resolution_s inRes = resolution_s::from_capture_device_properties();
         const resolution_s outRes = ks_output_resolution();
-        const refresh_rate_s refresh = refresh_rate_s::from_capture_device_properties();
+        const refresh_rate_s refreshRate = refresh_rate_s::from_capture_device_properties();
+        const refresh_rate_s captureRate = capture_rate_s::from_capture_device_properties();
 
         if (!this->windowTitleOverride.isEmpty())
         {
@@ -701,8 +707,14 @@ void OutputWindow::update_window_title(void)
                 .arg(inRes.w)
                 .arg(inRes.h)
                 .arg(
-                    refresh.fixedpoint
-                        ? QString(" (%1 Hz)").arg(refresh.value<double>())
+                    refreshRate.fixedpoint
+                        ? QString(" (%1 Hz%2)")
+                          .arg(refreshRate.value<double>())
+                          .arg(
+                              (captureRate != refreshRate)
+                                ? QString(" @ %1 Hz").arg(captureRate.value<double>())
+                                : ""
+                           )
                         : ""
                 )
                 .arg(
