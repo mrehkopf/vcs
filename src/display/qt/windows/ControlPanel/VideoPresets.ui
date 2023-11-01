@@ -127,6 +127,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="toolTip">
+               <string>Always use the currently-selected preset</string>
+              </property>
               <property name="text">
                <string>Lock</string>
               </property>
