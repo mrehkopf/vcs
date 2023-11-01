@@ -152,6 +152,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             this->ui->lineEdit_presetFilename->setText(QFileInfo(newFilename).fileName());
             this->ui->lineEdit_presetFilename->setToolTip(newFilename);
 
+            this->ui->checkBox_lockSelectedPreset->setDisabled(newFilename.isEmpty());
             this->ui->pushButton_savePresetFileAs->setDisabled(newFilename.isEmpty());
             this->ui->pushButton_closePresetFile->setDisabled(newFilename.isEmpty());
         });
@@ -162,6 +163,11 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             {
                 kvideopreset_apply_current_active_preset();
             }
+        });
+
+        connect(ui->comboBox_presetList, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](const int index)
+        {
+            kpers_set_value(INI_GROUP_VIDEO_PRESETS, "SelectedPresetIndex", std::max(index, 0));
         });
 
         connect(ui->comboBox_presetList, &VideoPresetList::preset_selected, this, [this]
@@ -231,6 +237,8 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
         connect(ui->checkBox_lockSelectedPreset, &QCheckBox::toggled, this, [this](const bool isChecked)
         {
+            kpers_set_value(INI_GROUP_VIDEO_PRESETS, "LockSelectedPreset", isChecked);
+
             if (isChecked)
             {
                 kvideopreset_activate_preset(ui->comboBox_presetList->current_preset());
@@ -414,6 +422,14 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         });
     }
 
+    // Register app event listeners.
+    {
+        ev_video_preset_activated.listen([this]
+        {
+            this->update_active_preset_indicator();
+        });
+    }
+
     // Restore persistent settings.
     {
         if (kcom_video_presets_file_name().empty())
@@ -421,14 +437,8 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             const QString presetsSourceFile = kpers_value_of(INI_GROUP_VIDEO_PRESETS, "SourceFile", QString()).toString();
             kcom_override_video_presets_file_name(presetsSourceFile.toStdString());
         }
-    }
 
-    // Register app event listeners.
-    {
-        ev_video_preset_activated.listen([this]
-        {
-            this->update_active_preset_indicator();
-        });
+        this->ui->checkBox_lockSelectedPreset->setChecked(kpers_value_of(INI_GROUP_VIDEO_PRESETS, "LockSelectedPreset", false).toBool());
     }
 
     // Force initialization of any GUI elements that respond to dynamic changes
@@ -522,6 +532,8 @@ void control_panel::VideoPresets::update_active_preset_indicator(void)
 
 void control_panel::VideoPresets::assign_presets(const std::vector<video_preset_s*> &presets)
 {
+    const unsigned idx = kpers_value_of(INI_GROUP_VIDEO_PRESETS, "SelectedPresetIndex", 0).toUInt();
+
     ui->comboBox_presetList->clear();
 
     for (auto *const preset: presets)
@@ -532,8 +544,8 @@ void control_panel::VideoPresets::assign_presets(const std::vector<video_preset_
     /// TODO: It would be better to sort the items by (numeric) resolution.
     ui->comboBox_presetList->sort_alphabetically();
 
-    ui->comboBox_presetList->setCurrentIndex(0);
-    emit ui->comboBox_presetList->preset_selected(0); // Manually force the signal, in case there's only one preset in the list.
+    ui->comboBox_presetList->setCurrentIndex(-1);
+    ui->comboBox_presetList->setCurrentIndex(std::min(int(idx), (ui->comboBox_presetList->count() - 1)));
 
     return;
 }

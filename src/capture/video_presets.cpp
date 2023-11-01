@@ -95,7 +95,7 @@ void kvideopreset_lock(const bool isLocked)
 
 void kvideopreset_activate_preset(const video_preset_s *const preset)
 {
-    if (LOCKED || !kc_has_signal())
+    if (LOCKED || !kc_has_signal() || !preset)
     {
         return;
     }
