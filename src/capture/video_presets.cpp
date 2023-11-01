@@ -95,8 +95,10 @@ void kvideopreset_lock(const bool isLocked)
 
 void kvideopreset_activate_preset(const video_preset_s *const preset)
 {
-    if (LOCKED || !kc_has_signal() || !preset)
-    {
+    if (
+        !preset ||
+        (LOCKED && (preset != MOST_RECENT_ACTIVE_PRESET))
+    ){
         return;
     }
 
@@ -150,12 +152,12 @@ void kvideopreset_remove_all_presets(void)
 
 void kvideopreset_apply_current_active_preset(void)
 {
-    if (LOCKED || !kc_has_signal())
+    if (!kc_has_signal())
     {
         return;
     }
 
-    const video_preset_s *activePreset = strongest_activating_preset();
+    const video_preset_s *activePreset = (LOCKED? MOST_RECENT_ACTIVE_PRESET : strongest_activating_preset());
 
     if (activePreset)
     {
@@ -266,6 +268,16 @@ void video_properties_s::to_capture_device_properties(
     const std::string &nameSpace
 )
 {
+#if defined(CAPTURE_BACKEND_VISION_V4L) || defined(CAPTURE_BACKEND_GENERIC_V4L)
+    // If the namespace is empty, the values would modify the current capture
+    // parameters. But if there's no signal, the parameters won't be available
+    // for modification via V4L and we'd be wasting time trying to change them.
+    if (!kc_has_signal() && nameSpace.empty())
+    {
+        return;
+    }
+#endif
+
     for (const auto &[propName, value]: properties)
     {
         kc_set_device_property((propName + nameSpace), value);

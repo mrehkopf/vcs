@@ -129,6 +129,21 @@ int VideoPresetList::find_preset_idx_in_list(const int presetId)
     return -1;
 }
 
+int VideoPresetList::find_preset_idx_in_list(const QString &targetLabel)
+{
+    for (int i = 0; i < this->count(); i++)
+    {
+        const auto *preset = kvideopreset_get_preset_ptr(this->itemData(i).toUInt());
+        const auto label = this->make_preset_item_label(preset);
+        if (label == targetLabel)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 void VideoPresetList::update_preset_item_label(const unsigned presetId)
 {
     const auto *const preset = kvideopreset_get_preset_ptr(presetId);

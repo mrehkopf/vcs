@@ -22,8 +22,7 @@ public:
 
     ~VideoPresetList(void);
 
-    void add_preset(const unsigned presetId,
-                    const bool blockSignal = false);
+    void add_preset(const unsigned presetId, const bool blockSignal = false);
 
     // Removes the given present from the list, and sets the list's index
     // to the one given. If the given preset doesn't exist in the list, no
@@ -40,6 +39,15 @@ public:
     // no preset is selected.
     video_preset_s* current_preset(void) const;
 
+    // Creates and returns a string to be displayed as the list item label for
+    // the given present should the preset be added.
+    QString make_preset_item_label(const video_preset_s *const preset);
+
+    // Returns the list index of the given preset; or -1 if the list doesn't
+    // contain the preset.
+    int find_preset_idx_in_list(const int presetId);
+    int find_preset_idx_in_list(const QString &targetLabel);
+
 signals:
     void preset_added(const unsigned presetId);
 
@@ -51,17 +59,9 @@ signals:
 
     void preset_selected(const unsigned presetId);
 
-    void preset_label_changed(const unsigned presetId,
-                              const QString &newLabel);
+    void preset_label_changed(const unsigned presetId, const QString &newLabel);
 
 private:
-    // Returns the list index of the given preset; or -1 if the list doesn't
-    // contain the preset.
-    int find_preset_idx_in_list(const int presetId);
-
-    // Creates and returns a string to be displayed as the list item label for
-    // the given present should the preset be added.
-    QString make_preset_item_label(const video_preset_s *const preset);
 };
 
 #endif

@@ -167,7 +167,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
         connect(ui->comboBox_presetList, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](const int index)
         {
-            kpers_set_value(INI_GROUP_VIDEO_PRESETS, "SelectedPresetIndex", std::max(index, 0));
+            kpers_set_value(INI_GROUP_VIDEO_PRESETS, "SelectedPreset", ui->comboBox_presetList->make_preset_item_label(ui->comboBox_presetList->current_preset()));
         });
 
         connect(ui->comboBox_presetList, &VideoPresetList::preset_selected, this, [this]
@@ -532,7 +532,7 @@ void control_panel::VideoPresets::update_active_preset_indicator(void)
 
 void control_panel::VideoPresets::assign_presets(const std::vector<video_preset_s*> &presets)
 {
-    const unsigned idx = kpers_value_of(INI_GROUP_VIDEO_PRESETS, "SelectedPresetIndex", 0).toUInt();
+    const QString selectedLabel = kpers_value_of(INI_GROUP_VIDEO_PRESETS, "SelectedPreset", "").toString();
 
     ui->comboBox_presetList->clear();
 
@@ -544,8 +544,9 @@ void control_panel::VideoPresets::assign_presets(const std::vector<video_preset_
     /// TODO: It would be better to sort the items by (numeric) resolution.
     ui->comboBox_presetList->sort_alphabetically();
 
-    ui->comboBox_presetList->setCurrentIndex(-1);
-    ui->comboBox_presetList->setCurrentIndex(std::min(int(idx), (ui->comboBox_presetList->count() - 1)));
+    const int idx = ui->comboBox_presetList->find_preset_idx_in_list(selectedLabel);
+    ui->comboBox_presetList->setCurrentIndex(std::max(idx, 0));
+    emit ui->comboBox_presetList->preset_selected(ui->comboBox_presetList->current_preset()->id);
 
     return;
 }
