@@ -1,4 +1,4 @@
-﻿#include <QMessageBox>
+#include <QMessageBox>
 #include <QFileDialog>
 #include <QStatusBar>
 #include <QMenuBar>
@@ -194,6 +194,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
         connect(ui->comboBox_presetList, &VideoPresetList::list_became_empty, this, [this]
         {
+            ui->checkBox_lockSelectedPreset->setEnabled(false);
             ui->pushButton_savePresetFileAs->setEnabled(false);
             ui->groupBox_activation->setEnabled(false);
             ui->comboBox_presetList->setEnabled(false);
@@ -207,6 +208,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
         connect(ui->comboBox_presetList, &VideoPresetList::list_became_populated, this, [this]
         {
+            ui->checkBox_lockSelectedPreset->setEnabled(true);
             ui->groupBox_activation->setEnabled(true);
             ui->comboBox_presetList->setEnabled(true);
             ui->pushButton_deletePreset->setEnabled(true);
