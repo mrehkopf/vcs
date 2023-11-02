@@ -167,7 +167,11 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
 
         connect(ui->comboBox_presetList, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](const int index)
         {
-            kpers_set_value(INI_GROUP_VIDEO_PRESETS, "SelectedPreset", ui->comboBox_presetList->make_preset_item_label(ui->comboBox_presetList->current_preset()));
+            kpers_set_value(INI_GROUP_VIDEO_PRESETS, "SelectedPreset", (
+                (index < 0) // -1 means no selection, e.g. empty list.
+                    ? ""
+                    : ui->comboBox_presetList->make_preset_item_label(ui->comboBox_presetList->current_preset())
+            ));
         });
 
         connect(ui->comboBox_presetList, &VideoPresetList::preset_selected, this, [this]

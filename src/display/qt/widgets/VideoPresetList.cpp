@@ -184,6 +184,8 @@ video_preset_s *VideoPresetList::current_preset(void) const
 
 QString VideoPresetList::make_preset_item_label(const video_preset_s *const preset)
 {
+    k_assert(preset, "Expected a non-null preset.");
+
     QStringList text;
 
     if (preset->activatesWithShortcut)
