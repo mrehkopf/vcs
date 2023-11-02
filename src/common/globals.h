@@ -15,7 +15,7 @@ const struct semantic_version_s
 {
     unsigned major = 3;
     unsigned minor = 3;
-    unsigned patch = 1;
+    unsigned patch = 2;
 } VCS_VERSION;
 
 // The minimum and maximum resolution we can output frames in.
