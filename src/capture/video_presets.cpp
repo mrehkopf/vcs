@@ -147,6 +147,9 @@ void kvideopreset_remove_all_presets(void)
     RUNNING_PRESET_ID = 0;
     MOST_RECENT_ACTIVE_PRESET = nullptr;
 
+    // Trigger default preset settings.
+    kvideopreset_apply_current_active_preset();
+
     return;
 }
 
