@@ -272,8 +272,8 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
             set_input_channel(value);
         });
     }
-    // Video parameters.
-    else
+
+    // Video property values (without a namespace).
     {
         static const auto videoParams = std::vector<std::pair<std::string, ic_v4l_controls_c::type_e>>{
             {"Brightness",          ic_v4l_controls_c::type_e::brightness},
@@ -291,19 +291,26 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
             {"Black level",         ic_v4l_controls_c::type_e::black_level},
         };
 
-        for (const auto &videoParam: videoParams)
+        for (const auto [paramKey, paramType]: videoParams)
         {
-            if (key == videoParam.first)
+            if (key == paramKey)
             {
-                INPUT_CHANNEL->captureStatus.videoParameters.set_value(value, videoParam.second);
-
-                // Note: Several video parameters may be modified by successive calls to
-                // kc_set_device_property(), so we need to queue the workaround to run
-                // on the next call to kc_process_next_capture_event(), when all property
-                // values have been updated.
-                if (key == "Horizontal size")
+                if (INPUT_CHANNEL->captureStatus.videoParameters.set_value(value, paramType))
                 {
-                    WORKAROUND_HORIZONTAL_SIZE_800 = ((value == 800)? true : false);
+                    // Note: Several video parameters may be modified by successive calls to
+                    // kc_set_device_property(), so we need to queue the workaround to run
+                    // on the next call to kc_process_next_capture_event(), when all property
+                    // values have been updated.
+                    if (key == "Horizontal size")
+                    {
+                        WORKAROUND_HORIZONTAL_SIZE_800 = ((value == 800)? true : false);
+                    }
+                }
+                else
+                {
+                    // Prevent the value from being saved into the device properties map,
+                    // since it wasn't successfully applied device-side.
+                    return false;
                 }
 
                 break;

@@ -27,6 +27,13 @@ ic_v4l_controls_c::ic_v4l_controls_c(const int v4lDeviceFileHandle) :
 
 bool ic_v4l_controls_c::set_value(const int newValue, const ic_v4l_controls_c::type_e control)
 {
+    // If there's no signal, we assume V4L doesn't make any properties available
+    // for modification, se we don't bother trying.
+    if (!kc_has_signal())
+    {
+        return false;
+    }
+
     if (this->v4l_id(control) < 0)
     {
         DEBUG(("Asked to modify a V4L control that isn't available. Ignoring this."));
