@@ -1,4 +1,4 @@
-#include <QMessageBox>
+﻿#include <QMessageBox>
 #include <QFileDialog>
 #include <QStatusBar>
 #include <QMenuBar>
@@ -434,6 +434,16 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         {
             this->update_active_preset_indicator();
         });
+
+        ev_capture_signal_gained.listen([this]
+        {
+            this->update_active_preset_indicator();
+        });
+
+        ev_capture_signal_lost.listen([this]
+        {
+            this->update_active_preset_indicator();
+        });
     }
 
     // Restore persistent settings.
@@ -520,8 +530,10 @@ void control_panel::VideoPresets::update_active_preset_indicator(void)
         ui->label_isPresetCurrentlyActive->setProperty("presetStatus", "disabled");
         ui->label_isPresetCurrentlyActive->setToolTip("");
     }
-    else if (kvideopreset_is_preset_active(selectedPreset))
-    {
+    else if (
+        kc_has_signal() &&
+        kvideopreset_is_preset_active(selectedPreset)
+    ){
         ui->label_isPresetCurrentlyActive->setProperty("presetStatus", "active");
         ui->label_isPresetCurrentlyActive->setToolTip("This preset is active");
     }
