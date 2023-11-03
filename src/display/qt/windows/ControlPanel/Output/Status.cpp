@@ -5,6 +5,7 @@
  *
  */
 
+#include <array>
 #include <QElapsedTimer>
 #include <QFileDialog>
 #include <QPushButton>
@@ -23,6 +24,10 @@
 #include "ui_Status.h"
 
 static QTimer INFO_UPDATE_TIMER;
+
+// For keeping a running average of the capture latency.
+static unsigned LATENCY_HISTORY_HEAD = 0;
+static std::array<unsigned, 140> LATENCY_HISTORY;
 
 control_panel::output::Status::Status(QWidget *parent) :
     DialogFragment(parent),
@@ -55,8 +60,10 @@ control_panel::output::Status::Status(QWidget *parent) :
     {
         ev_capture_processing_latency.listen([this](const unsigned latency)
         {
-            const QString lat = QString::number(latency / 1000.0, 'f', 1);
-            ui->tableWidget_propertyTable->modify_property("Processing latency", (lat + " ms"));
+            LATENCY_HISTORY[(LATENCY_HISTORY_HEAD++) % LATENCY_HISTORY.size()] = latency;
+            const double avg = ((std::accumulate(LATENCY_HISTORY.begin(), LATENCY_HISTORY.end(), 0) / LATENCY_HISTORY.size()) / 1000.0);
+            const double peak = (*std::max_element(LATENCY_HISTORY.begin(), LATENCY_HISTORY.end()) / 1000.0);
+            ui->tableWidget_propertyTable->modify_property("Processing latency", (QString::number(avg, 'f', 1) + " ms, " + QString::number(peak, 'f', 1) + " ms peak"));
         });
 
         ev_new_output_image.listen([this](const image_s &image)
