@@ -42,8 +42,9 @@ struct resolution_s
     static void to_capture_device_properties(const resolution_s &resolution);
 
     bool operator==(const resolution_s &other) const;
-
     bool operator!=(const resolution_s &other) const;
+    bool operator>(const resolution_s &other) const;
+    bool operator<(const resolution_s &other) const;
 };
 
 struct image_s

@@ -30,6 +30,22 @@ bool resolution_s::operator==(const resolution_s &other) const
     );
 }
 
+bool resolution_s::operator>(const resolution_s &other) const
+{
+    return (
+        (this->w > other.w) &&
+        (this->h > other.h)
+    );
+}
+
+bool resolution_s::operator<(const resolution_s &other) const
+{
+    return (
+        (this->w < other.w) &&
+        (this->h < other.h)
+    );
+}
+
 bool resolution_s::operator!=(const resolution_s &other) const
 {
     return !(*this == other);

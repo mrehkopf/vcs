@@ -114,7 +114,12 @@ void filter_output_scaler_c::linear(const image_s &srcImage, image_s *const dstI
 void filter_output_scaler_c::area(const image_s &srcImage, image_s *const dstImage, const std::array<unsigned, 4> padding)
 {
     assert_scaler_input_validity(srcImage, dstImage);
-    scale_using_opencv(srcImage, dstImage, padding, cv::INTER_AREA);
+    const bool isIntegerUpscaling = (
+        (dstImage->resolution > srcImage.resolution) &&
+        !(dstImage->resolution.w % srcImage.resolution.w) &&
+        !(dstImage->resolution.h % srcImage.resolution.h)
+    );
+    scale_using_opencv(srcImage, dstImage, padding, (isIntegerUpscaling? cv::INTER_NEAREST : cv::INTER_AREA));
 
     return;
 }
