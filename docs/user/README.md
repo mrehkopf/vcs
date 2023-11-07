@@ -84,9 +84,11 @@ A: If the capture card ought to be receiving a signal but VCS shows a blank wind
 
 A: There are three complementary ways to control how captured frames are displayed.
 
-1. To adjust phase, color balance, etc. in analog capture, access the analog capture settings via Control panel &rarr; Analog presets.
+1. To adjust analog video properties, access Control panel &rarr; Video presets.
 2. To scale the output image, see Control panel &rarr; Output.
 3. To force a different input resolution, see Control panel &rarr; Capture.
+
+With analog capture, you may at times find it seemingly impossible to get the picture centered perfectly, especially on the vertical axis. This is a capture hardware limitation that can't be fixed from VCS. But you may be able to adjust the signal on the capture source &ndash; for example, if capturing a Windows PC, you can use the PowerStrip software to fine-tune the output timings for each video mode you intend to capture.
 
 ### Q: How do I fix analog noise?
 
