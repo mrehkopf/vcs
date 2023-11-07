@@ -115,13 +115,6 @@ struct video_preset_s
     }
 };
 
-// Should be fired whenever changes have been made to the given video preset's
-// parameters.
-//
-// Warning: If you change the preset's activation conditions, you should call
-// kvideopreset_apply_current_active_preset() instead.
-extern vcs_event_c<const video_preset_s*> kc_ev_video_preset_params_changed;
-
 bool kvideopreset_is_preset_active(const video_preset_s *const preset);
 
 subsystem_releaser_t kvideopreset_initialize(void);

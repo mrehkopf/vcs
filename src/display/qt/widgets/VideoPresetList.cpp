@@ -51,8 +51,19 @@ void VideoPresetList::sort_alphabetically(void)
     return;
 }
 
-void VideoPresetList::add_preset(const unsigned presetId,
-                                 const bool blockSignal)
+QList<video_preset_s*> VideoPresetList::presets(void)
+{
+    QList<video_preset_s*> presets;
+
+    for (int i = 0; i < this->count(); i++)
+    {
+        presets.push_back(kvideopreset_get_preset_ptr(this->itemData(i).toInt()));
+    }
+
+    return presets;
+}
+
+void VideoPresetList::add_preset(const unsigned presetId, const bool blockSignal)
 {
     const auto *const preset = kvideopreset_get_preset_ptr(presetId);
 

@@ -48,6 +48,8 @@ public:
     int find_preset_idx_in_list(const int presetId);
     int find_preset_idx_in_list(const QString &targetLabel);
 
+    QList<video_preset_s*> presets(void);
+
 signals:
     void preset_added(const unsigned presetId);
 

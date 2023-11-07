@@ -24,20 +24,6 @@
 // Set this variable to false to disable real-time updates.
 static bool CONTROLS_LIVE_UPDATE = true;
 
-#define PROP_LABEL_HORIZONTAL_SIZE     "Horizontal size"
-#define PROP_LABEL_HORIZONTAL_POSITION "Horizontal position"
-#define PROP_LABEL_VERTICAL_POSITION   "Vertical position"
-#define PROP_LABEL_BLACK_LEVEL         "Black level"
-#define PROP_LABEL_PHASE               "Phase"
-#define PROP_LABEL_BRIGHTNESS          "Brightness"
-#define PROP_LABEL_RED_BRIGHTNESS      "Red brightness"
-#define PROP_LABEL_GREEN_BRIGHTNESS    "Green brightness"
-#define PROP_LABEL_BLUE_BRIGHTNESS     "Blue brightness"
-#define PROP_LABEL_CONTRAST            "Contrast"
-#define PROP_LABEL_RED_CONTRAST        "Red contrast"
-#define PROP_LABEL_GREEN_CONTRAST      "Green contrast"
-#define PROP_LABEL_BLUE_CONTRAST       "Blue contrast"
-
 control_panel::VideoPresets::VideoPresets(QWidget *parent) :
     DialogFragment(parent),
     ui(new Ui::VideoPresets)
@@ -443,6 +429,36 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
         ev_capture_signal_lost.listen([this]
         {
             this->update_active_preset_indicator();
+        });
+
+        ev_list_of_supported_video_preset_properties_changed.listen([this]
+        {
+            // If the new properties list contains properties we didn't know about,
+            // update default values for them in the presets.
+            for (video_preset_s *preset: this->ui->comboBox_presetList->presets())
+            {
+                for (const std::string &propName: kc_supported_video_preset_properties())
+                {
+                    if (!preset->properties.contains(propName))
+                    {
+                        preset->properties[propName] = kc_device_property(propName + ": default");
+                    }
+                }
+            }
+
+            // Recreate the property control widgets.
+            ui->parameterGrid_properties->clear();
+            for (const char* propName: kc_supported_video_preset_properties())
+            {
+                ui->parameterGrid_properties->add_scroller(
+                    propName,
+                    ui->comboBox_presetList->current_preset()->properties[propName],
+                    kc_device_property(std::string(propName) + ": minimum"),
+                    kc_device_property(std::string(propName) + ": maximum")
+                );
+            }
+
+            kvideopreset_apply_current_active_preset();
         });
     }
 

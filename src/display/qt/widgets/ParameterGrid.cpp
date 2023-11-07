@@ -16,11 +16,16 @@
 #include "display/qt/widgets/ParameterGrid.h"
 #include "common/assert.h"
 
+QList<QWidget*> CREATED_WIDGETS;
+
+#define ADD_TO_LAYOUT(layout, widget, ...) \
+    layout->addWidget(widget, __VA_ARGS__);\
+    CREATED_WIDGETS.push_back(widget);
+
 ParameterGrid::ParameterGrid(QWidget *parent) : QGroupBox(parent)
 {
     auto *const layout = new QGridLayout();
     layout->setContentsMargins(0, 9, 9, 9);
-
     this->setLayout(layout);
 
     return;
@@ -76,20 +81,19 @@ void ParameterGrid::add_combobox(const QString name, const std::list<QString> it
             auto *layout = qobject_cast<QGridLayout*>(this->layout());
             const auto rowIdx = layout->rowCount();
 
-            layout->addWidget(label, rowIdx, 0);
-            layout->addWidget(comboBox, rowIdx, 1, 1, 2);
+            ADD_TO_LAYOUT(layout, label, rowIdx, 0);
+            ADD_TO_LAYOUT(layout, comboBox, rowIdx, 1, 1, 2);
         }
 
         // Create component reactivity.
-        {
+        newParam->guiConnections = {
             connect(comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [newParam, this](const int newIndex)
             {
                 newParam->currentValue = newIndex;
 
                 emit this->parameter_value_changed(newParam->name, newIndex);
                 emit this->parameter_value_changed_by_user(newParam->name, newIndex);
-            });
-
+            }),
             connect(this, &ParameterGrid::parameter_value_changed_programmatically, this, [newParam, comboBox, this](const QString &parameterName, const int newValue)
             {
                 if (parameterName == newParam->name)
@@ -101,11 +105,41 @@ void ParameterGrid::add_combobox(const QString name, const std::list<QString> it
                 }
 
                 emit this->parameter_value_changed(parameterName, newValue);
-            });
-        }
+            }),
+        };
     }
 
     this->parameters.push_back(newParam);
+
+    return;
+}
+
+void ParameterGrid::clear(void)
+{
+    while (auto *item = this->layout()->takeAt(0))
+    {
+        this->layout()->removeItem(item);
+        delete item;
+    }
+
+    for (auto *widget: CREATED_WIDGETS)
+    {
+        widget->blockSignals(true);
+        widget->disconnect();
+        delete widget;
+    }
+    CREATED_WIDGETS.clear();
+
+    for (const auto *parameter: this->parameters)
+    {
+        for (const auto connection: parameter->guiConnections)
+        {
+            QObject::disconnect(connection);
+        }
+
+        delete parameter;
+    }
+    this->parameters.clear();
 
     return;
 }
@@ -150,18 +184,17 @@ void ParameterGrid::add_scroller(
             const auto rowIdx = layout->rowCount();
 
             unsigned column = 0;
-            layout->addWidget(label, rowIdx, column++);
-            layout->addWidget(spinBox, rowIdx, column++);
-            layout->addWidget(scrollBar, rowIdx, column++);
+            ADD_TO_LAYOUT(layout, label, rowIdx, column++);
+            ADD_TO_LAYOUT(layout, spinBox, rowIdx, column++);
+            ADD_TO_LAYOUT(layout, scrollBar, rowIdx, column++);
         }
 
         // Create component reactivity.
-        {
+        newParam->guiConnections = {
             connect(scrollBar, QOverload<int>::of(&QScrollBar::valueChanged), this, [=](const int newValue)
             {
                 spinBox->setValue(newValue);
-            });
-
+            }),
             connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [=, this](const int newValue)
             {
                 newParam->currentValue = newValue;
@@ -169,8 +202,7 @@ void ParameterGrid::add_scroller(
 
                 emit this->parameter_value_changed(newParam->name, newValue);
                 emit this->parameter_value_changed_by_user(newParam->name, newValue);
-            });
-
+            }),
             connect(this, &ParameterGrid::parameter_value_changed_programmatically, this, [=, this](const QString &parameterName, const int newValue)
             {
                 if (parameterName == newParam->name)
@@ -184,8 +216,7 @@ void ParameterGrid::add_scroller(
                 }
 
                 emit this->parameter_value_changed(newParam->name, newValue);
-            });
-
+            }),
             connect(this, &ParameterGrid::parameter_minimum_value_changed_programmatically, this, [=](const QString &parameterName, const int newMin)
             {
                 if (parameterName == newParam->name)
@@ -197,8 +228,7 @@ void ParameterGrid::add_scroller(
                     spinBox->setMinimum(newMin);
                     scrollBar->setMinimum(newMin);
                 }
-            });
-
+            }),
             connect(this, &ParameterGrid::parameter_maximum_value_changed_programmatically, this, [=](const QString &parameterName, const int newMax)
             {
                 if (parameterName == newParam->name)
@@ -210,8 +240,8 @@ void ParameterGrid::add_scroller(
                     spinBox->setMaximum(newMax);
                     scrollBar->setMaximum(newMax);
                 }
-            });
-        }
+            })
+        };
     }
 
     this->parameters.push_back(newParam);

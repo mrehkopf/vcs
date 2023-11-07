@@ -169,6 +169,13 @@ extern vcs_event_c<void> ev_custom_output_scaler_enabled;
 // scale captured frames.
 extern vcs_event_c<void> ev_custom_output_scaler_disabled;
 
+// Should be fired whenever changes have been made to the given video preset's
+// parameters.
+//
+// Warning: If you change the preset's activation conditions, you should call
+// kvideopreset_apply_current_active_preset() instead.
+extern vcs_event_c<const video_preset_s*> kc_ev_video_preset_params_changed;
+
 extern vcs_event_c<void> ev_eco_mode_enabled;
 extern vcs_event_c<void> ev_eco_mode_disabled;
 extern vcs_event_c<const captured_frame_s&> ev_frame_processing_finished;
@@ -177,5 +184,6 @@ extern vcs_event_c<const video_preset_s*> ev_video_preset_name_changed;
 extern vcs_event_c<unsigned> ev_missed_frames_count;
 extern vcs_event_c<unsigned> ev_capture_processing_latency;
 extern vcs_event_c<const refresh_rate_s&> ev_new_capture_rate;
+extern vcs_event_c<std::vector<const char*>> ev_list_of_supported_video_preset_properties_changed;
 
 #endif

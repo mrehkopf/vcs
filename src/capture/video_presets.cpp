@@ -10,8 +10,6 @@
 #include "capture/video_presets.h"
 #include "capture/capture.h"
 
-vcs_event_c<const video_preset_s*> kc_ev_video_preset_params_changed;
-
 static std::vector<video_preset_s*> PRESETS;
 
 // While true, no preset will activate. If a preset is already active, it'll

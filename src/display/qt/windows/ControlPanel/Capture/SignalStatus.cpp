@@ -70,7 +70,7 @@ control_panel::capture::SignalStatus::SignalStatus(QWidget *parent) :
             update_info();
         });
 
-        ev_new_capture_rate.listen([update_info](const refresh_rate_s &newRate)
+        ev_new_capture_rate.listen([update_info](const refresh_rate_s&)
         {
             update_info();
         });

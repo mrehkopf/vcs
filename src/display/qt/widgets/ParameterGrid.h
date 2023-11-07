@@ -50,6 +50,8 @@ public:
     void set_maximum_value(const QString &parameterName, const int newMax);
     void set_minimum_value(const QString &parameterName, const int newMin);
 
+    void clear(void);
+
 signals:
     // Emitted when a parameter's value is changed either by the user via the
     // GUI or by a call to this->set_value().
@@ -75,6 +77,7 @@ private:
     struct parameter_meta_s
     {
         parameter_type_e type = parameter_type_e::unknown;
+        QList<QMetaObject::Connection> guiConnections;
         QString name = "";
         int currentValue = 0;
         int minimumValue = 0;

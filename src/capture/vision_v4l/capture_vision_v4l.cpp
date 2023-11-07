@@ -60,7 +60,7 @@ static bool FORCE_CUSTOM_RESOLUTION = false;
 // and reset when the workaround has been applied. You don't need to set it manually.
 static bool WORKAROUND_HORIZONTAL_SIZE_800 = false;
 
-static std::vector<const char*> SUPPORTED_VIDEO_PROPERTIES = {
+static const std::vector<const char*> SUPPORTED_VIDEO_PROPERTIES_ANALOG = {
     "Horizontal size",
     "Horizontal position",
     "Vertical position",
@@ -75,6 +75,10 @@ static std::vector<const char*> SUPPORTED_VIDEO_PROPERTIES = {
     "Green contrast",
     "Blue contrast",
 };
+static const  std::vector<const char*> SUPPORTED_VIDEO_PROPERTIES_DIGITAL = {
+    "Brightness",
+    "Contrast",
+};
 
 static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
     {"width: minimum", MIN_CAPTURE_WIDTH},
@@ -86,7 +90,7 @@ static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
     {"width", 640},
     {"height", 480},
 
-    {"supported video preset properties", intptr_t(&SUPPORTED_VIDEO_PROPERTIES)},
+    {"supported video preset properties", intptr_t(&SUPPORTED_VIDEO_PROPERTIES_ANALOG)},
     {"supports video presets", true},
     {"supports channel switching", true},
     {"supports resolution switching", true},
@@ -495,6 +499,29 @@ void kc_initialize_device(void)
         {
             resolution_s::to_capture_device_properties(mode.resolution);
             refresh_rate_s::to_capture_device_properties(mode.refreshRate);
+
+            // I'm assuming the following values for the "signal_type" V4L control:
+            // 0: No Signal
+            // 1: DVI
+            // 2: DVI Dual Link
+            // 3: SDI
+            // 4: Video
+            // 5: 3-Wire Sync On Green
+            // 6: 4-Wire Composite Sync
+            // 7: 5-Wire Separate Syncs
+            // 8: YPRPB
+            // 9: CVBS
+            // 10: YC
+            // 11: Unknown
+            const bool isDigital = (
+                kc_has_signal() &&
+                INPUT_CHANNEL &&
+                (INPUT_CHANNEL->captureStatus.videoParameters.value(ic_v4l_controls_c::type_e::signal_type) <= 3)
+            );
+
+            const auto *supportedProps = (isDigital? &SUPPORTED_VIDEO_PROPERTIES_DIGITAL : &SUPPORTED_VIDEO_PROPERTIES_ANALOG);
+            kc_set_device_property("supported video preset properties", intptr_t(supportedProps));
+            ev_list_of_supported_video_preset_properties_changed.fire(*supportedProps);
         });
     }
 
