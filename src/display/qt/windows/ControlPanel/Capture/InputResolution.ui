@@ -69,18 +69,11 @@
         <item>
          <widget class="QPushButton" name="pushButton_applyCustomResolution">
           <property name="text">
-           <string>Set</string>
+           <string>Apply</string>
           </property>
          </widget>
         </item>
        </layout>
-      </item>
-      <item>
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
       </item>
       <item>
        <widget class="QFrame" name="frame_inputForceButtons">

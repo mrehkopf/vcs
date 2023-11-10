@@ -126,14 +126,8 @@ QTreeWidget QHeaderView::section
     padding-left: 0.45em;
     margin: 0;
     border: none;
-    border-right: 1px solid black;
-    background: #525252;
+    background: #404040;
     color: #e0e0e0;
-}
-
-QTreeWidget QHeaderView::section:last
-{
-    border-right: none;
 }
 
 QTreeWidget::item
