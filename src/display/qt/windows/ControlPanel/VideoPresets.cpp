@@ -450,9 +450,15 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
             ui->parameterGrid_properties->clear();
             for (const char* propName: kc_supported_video_preset_properties())
             {
+                const int currentValue = (
+                    (ui->comboBox_presetList->current_preset() && ui->comboBox_presetList->current_preset()->properties.contains(propName))
+                        ? ui->comboBox_presetList->current_preset()->properties[propName]
+                        : kc_device_property(std::string(propName) + ": default")
+                );
+
                 ui->parameterGrid_properties->add_scroller(
                     propName,
-                    ui->comboBox_presetList->current_preset()->properties[propName],
+                    currentValue,
                     kc_device_property(std::string(propName) + ": minimum"),
                     kc_device_property(std::string(propName) + ": maximum")
                 );
