@@ -27,7 +27,7 @@ ParameterGrid QScrollBar::add-line:horizontal:disabled,
 ParameterGrid QScrollBar::sub-line:horizontal:disabled
 {
     background-color: transparent;
-    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-image: url(:/res/icons/line_pattern.png);
     background-repeat: repeat-xy;
     color: #909090;
     border: none;
@@ -42,12 +42,12 @@ ParameterGrid QScrollBar:horizontal
 ParameterGrid QScrollBar::handle:horizontal
 {
     min-width: 1.7em;
-    image: url(:/res/icons/newie/handle_grip.png);
+    image: url(:/res/icons/handle_grip.png);
 }
 
 ParameterGrid QScrollBar::handle:horizontal:disabled
 {
-    image: url(:/res/icons/newie/handle_grip_disabled.png);
+    image: url(:/res/icons/handle_grip_disabled.png);
 }
 
 ParameterGrid QScrollBar::add-line:horizontal
@@ -55,7 +55,7 @@ ParameterGrid QScrollBar::add-line:horizontal
     width: 1.35em;
     subcontrol-position: right;
     subcontrol-origin: margin;
-    image: url(:/res/icons/newie/arrow_right.png);
+    image: url(:/res/icons/arrow_right.png);
 }
 
 ParameterGrid QScrollBar::sub-line:horizontal
@@ -63,7 +63,7 @@ ParameterGrid QScrollBar::sub-line:horizontal
     width: 1.35em;
     subcontrol-position: left;
     subcontrol-origin: margin;
-    image: url(:/res/icons/newie/arrow_left.png);
+    image: url(:/res/icons/arrow_left.png);
 }
 
 ParameterGrid QPushButton

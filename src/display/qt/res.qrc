@@ -1,44 +1,32 @@
 <RCC>
     <qresource prefix="/res">
         <file>fonts/Ubuntu-R.ttf</file>
-        <file>icons/arrow_down_disabled.png</file>
-        <file>icons/arrow_down.png</file>
         <file>stylesheets/font.qss</file>
-        <file>icons/arrow_up_disabled.png</file>
-        <file>icons/arrow_up.png</file>
         <file>icons/appicon.ico</file>
-        <file>fonts/UbuntuMono-R.ttf</file>
-        <file>icons/grid_pattern.png</file>
-        <file>icons/arrow_left.png</file>
-        <file>icons/arrow_left_disabled.png</file>
-        <file>icons/arrow_right_disabled.png</file>
-        <file>icons/arrow_right.png</file>
         <file>icons/reset.png</file>
         <file>icons/reset_disabled.png</file>
-        <file>icons/newie/reset.png</file>
-        <file>icons/newie/reset_disabled.png</file>
-        <file>icons/newie/arrow_left.png</file>
-        <file>icons/newie/arrow_right.png</file>
-        <file>icons/newie/arrow_left_disabled.png</file>
-        <file>icons/newie/arrow_right_disabled.png</file>
-        <file>icons/newie/arrow_up_disabled.png</file>
-        <file>icons/newie/arrow_down_disabled.png</file>
-        <file>icons/newie/arrow_up.png</file>
-        <file>icons/newie/arrow_down.png</file>
-        <file>icons/newie/delete.png</file>
-        <file>icons/newie/delete_disabled.png</file>
-        <file>icons/newie/plus.png</file>
-        <file>icons/newie/plus_disabled.png</file>
-        <file>icons/newie/minus_disabled.png</file>
-        <file>icons/newie/minus.png</file>
-        <file>icons/newie/handle_grip.png</file>
-        <file>icons/newie/eyedropper.png</file>
-        <file>icons/newie/preset_disabled.svg</file>
-        <file>icons/newie/preset_inactive.svg</file>
-        <file>icons/newie/preset_active.svg</file>
-        <file>icons/newie/grid_pattern.png</file>
-        <file>icons/newie/line_pattern.png</file>
-        <file>icons/newie/handle_grip_disabled.png</file>
+        <file>icons/arrow_left.png</file>
+        <file>icons/arrow_right.png</file>
+        <file>icons/arrow_left_disabled.png</file>
+        <file>icons/arrow_right_disabled.png</file>
+        <file>icons/arrow_up_disabled.png</file>
+        <file>icons/arrow_down_disabled.png</file>
+        <file>icons/arrow_up.png</file>
+        <file>icons/arrow_down.png</file>
+        <file>icons/delete.png</file>
+        <file>icons/delete_disabled.png</file>
+        <file>icons/plus.png</file>
+        <file>icons/plus_disabled.png</file>
+        <file>icons/minus_disabled.png</file>
+        <file>icons/minus.png</file>
+        <file>icons/handle_grip.png</file>
+        <file>icons/eyedropper.png</file>
+        <file>icons/preset_disabled.svg</file>
+        <file>icons/preset_inactive.svg</file>
+        <file>icons/preset_active.svg</file>
+        <file>icons/grid_pattern.png</file>
+        <file>icons/line_pattern.png</file>
+        <file>icons/handle_grip_disabled.png</file>
         <file>stylesheets/default/misc.qss</file>
         <file>stylesheets/default/fields.qss</file>
         <file>stylesheets/default/dialogs.qss</file>
@@ -47,8 +35,8 @@
         <file>stylesheets/default/scrollbars.qss</file>
         <file>stylesheets/default/ParameterGrid.qss</file>
         <file>stylesheets/default/PropertyTable.qss</file>
-        <file>icons/newie/checkbox_check.png</file>
-        <file>icons/newie/checkbox_check_disabled.png</file>
+        <file>icons/checkbox_check.png</file>
+        <file>icons/checkbox_check_disabled.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

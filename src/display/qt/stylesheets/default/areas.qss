@@ -84,7 +84,7 @@ QGroupBox QScrollBar::add-line:disabled,
 QGroupBox QScrollBar::sub-line:disabled
 {
     border: none;
-    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-image: url(:/res/icons/line_pattern.png);
     background-repeat: repeat-xy;
 }
 
@@ -102,7 +102,7 @@ QTreeWidget
     margin: 0;
     padding: 0;
     background-color: transparent;
-    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-image: url(:/res/icons/line_pattern.png);
     background-repeat: repeat-xy;
     border: none;
 }

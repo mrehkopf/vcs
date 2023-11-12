@@ -23,7 +23,7 @@ QPlainTextEdit:read-only,
 QTextEdit:read-only
 {
     background-color: transparent;
-    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-image: url(:/res/icons/line_pattern.png);
     background-repeat: repeat-xy;
 }
 
@@ -34,7 +34,7 @@ QLineEdit:disabled
     border: none;
     background-color: transparent;
     color: #909090;
-    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-image: url(:/res/icons/line_pattern.png);
     background-repeat: repeat-xy;
 }
 
@@ -59,7 +59,7 @@ QSpinBox::up-arrow:disabled,
 QDoubleSpinBox::up-arrow,
 QDoubleSpinBox::up-arrow:disabled
 {
-    image: url(:/res/icons/newie/arrow_up_disabled.png);
+    image: url(:/res/icons/arrow_up_disabled.png);
     border: none;
 }
 
@@ -68,7 +68,7 @@ QSpinBox::down-arrow:disabled,
 QDoubleSpinBox::down-arrow,
 QDoubleSpinBox::down-arrow:disabled
 {
-    image: url(:/res/icons/newie/arrow_down_disabled.png);
+    image: url(:/res/icons/arrow_down_disabled.png);
     border: none;
 }
 
@@ -91,7 +91,7 @@ QCheckBox::indicator:disabled,
 QGroupBox::indicator:disabled
 {
     background-color: transparent;
-    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-image: url(:/res/icons/line_pattern.png);
     background-repeat: repeat-xy;
 }
 
@@ -125,11 +125,11 @@ QGroupBox::indicator:disabled
 QCheckBox::indicator::checked,
 QGroupBox::indicator::checked
 {
-    image: url(:/res/icons/newie/checkbox_check.png);
+    image: url(:/res/icons/checkbox_check.png);
 }
 
 QCheckBox::indicator::checked:disabled,
 QGroupBox::indicator::checked:disabled
 {
-    image: url(:/res/icons/newie/checkbox_check_disabled.png);
+    image: url(:/res/icons/checkbox_check_disabled.png);
 }

@@ -61,17 +61,17 @@ DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_
 
 DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="disabled"]
 {
-    image: url(:/res/icons/newie/preset_disabled.svg);
+    image: url(:/res/icons/preset_disabled.svg);
 }
 
 DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="active"]
 {
-    image: url(:/res/icons/newie/preset_active.svg);
+    image: url(:/res/icons/preset_active.svg);
 }
 
 DialogFragment[objectName="ControlPanel_VideoPresets"] QLabel[objectName="label_isPresetCurrentlyActive"][presetStatus="inactive"]
 {
-    image: url(:/res/icons/newie/preset_inactive.svg);
+    image: url(:/res/icons/preset_inactive.svg);
 }
 
 QFrame[objectName="QtAbstractGUI"]

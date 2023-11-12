@@ -26,7 +26,7 @@ QPushButton:disabled,
 QComboBox:disabled
 {
     background-color: transparent;
-    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-image: url(:/res/icons/line_pattern.png);
     background-repeat: repeat-xy;
     color: #909090;
     border: none;
@@ -68,12 +68,12 @@ QComboBox
 QComboBox::down-arrow,
 QAbstractButton::menu-indicator
 {
-    image: url(:/res/icons/newie/arrow_down.png);
+    image: url(:/res/icons/arrow_down.png);
 }
 
 QComboBox::down-arrow:disabled
 {
-    image: url(:/res/icons/newie/arrow_down_disabled.png);
+    image: url(:/res/icons/arrow_down_disabled.png);
 }
 
 QComboBox QAbstractItemView

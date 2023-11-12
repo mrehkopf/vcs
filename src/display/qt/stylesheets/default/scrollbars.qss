@@ -64,13 +64,13 @@ QScrollBar::add-line:vertical
     width: 21px;
     subcontrol-position: bottom;
     subcontrol-origin: margin;
-    image: url(:/res/icons/newie/arrow_down.png);
+    image: url(:/res/icons/arrow_down.png);
     margin-left: 1px;
 }
 
 QScrollBar::add-line:vertical:disabled
 {
-    image: url(:/res/icons/newie/arrow_down_disabled.png);
+    image: url(:/res/icons/arrow_down_disabled.png);
 }
 
 QScrollBar::sub-line:vertical
@@ -79,13 +79,13 @@ QScrollBar::sub-line:vertical
     width: 21px;
     subcontrol-position: top;
     subcontrol-origin: margin;
-    image: url(:/res/icons/newie/arrow_up.png);
+    image: url(:/res/icons/arrow_up.png);
     margin-left: 1px;
 }
 
 QScrollBar::sub-line:vertical:disabled
 {
-    image: url(:/res/icons/newie/arrow_up_disabled.png);
+    image: url(:/res/icons/arrow_up_disabled.png);
 }
 
 QScrollBar:horizontal
@@ -110,13 +110,13 @@ QScrollBar::handle:horizontal
     width: 22px;
     subcontrol-position: right;
     subcontrol-origin: margin;
-    image: url(:/res/icons/newie/arrow_right.png);
+    image: url(:/res/icons/arrow_right.png);
     margin-top: 1px;
 }
 
 QScrollBar::add-line:horizontal:disabled
 {
-    image: url(:/res/icons/newie/arrow_right_disabled.png);
+    image: url(:/res/icons/arrow_right_disabled.png);
 }
 
 /* We want this style to affect only QScrollBar and not its derived classes,
@@ -128,19 +128,19 @@ QScrollBar::add-line:horizontal:disabled
     width: 22px;
     subcontrol-position: left;
     subcontrol-origin: margin;
-    image: url(:/res/icons/newie/arrow_left.png);
+    image: url(:/res/icons/arrow_left.png);
     margin-top: 1px;
 }
 
 QScrollBar::sub-line:horizontal:disabled
 {
-    image: url(:/res/icons/newie/arrow_left_disabled.png);
+    image: url(:/res/icons/arrow_left_disabled.png);
 }
 
 QScrollBar::add-page:disabled,
 QScrollBar::sub-page:disabled
 {
-    background-image: url(:/res/icons/newie/line_pattern.png);
+    background-image: url(:/res/icons/line_pattern.png);
 }
 
 QScrollBar::handle:disabled:horizontal,

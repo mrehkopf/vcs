@@ -149,8 +149,8 @@
           </property>
           <property name="icon">
            <iconset resource="../../../res.qrc">
-            <normaloff>:/res/icons/newie/plus.png</normaloff>
-            <disabledoff>:/res/icons/newie/plus_disabled.png</disabledoff>:/res/icons/newie/plus.png</iconset>
+            <normaloff>:/res/icons/plus.png</normaloff>
+            <disabledoff>:/res/icons/plus_disabled.png</disabledoff>:/res/icons/plus.png</iconset>
           </property>
          </widget>
         </item>
@@ -182,8 +182,8 @@
           </property>
           <property name="icon">
            <iconset resource="../../../res.qrc">
-            <normaloff>:/res/icons/newie/minus.png</normaloff>
-            <disabledoff>:/res/icons/newie/minus_disabled.png</disabledoff>:/res/icons/newie/minus.png</iconset>
+            <normaloff>:/res/icons/minus.png</normaloff>
+            <disabledoff>:/res/icons/minus_disabled.png</disabledoff>:/res/icons/minus.png</iconset>
           </property>
          </widget>
         </item>
