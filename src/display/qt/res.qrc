@@ -8,8 +8,6 @@
         <file>icons/arrow_up.png</file>
         <file>icons/appicon.ico</file>
         <file>fonts/UbuntuMono-R.ttf</file>
-        <file>icons/checkbox_check_disabled.png</file>
-        <file>icons/checkbox_check.png</file>
         <file>icons/grid_pattern.png</file>
         <file>icons/arrow_left.png</file>
         <file>icons/arrow_left_disabled.png</file>
@@ -49,6 +47,8 @@
         <file>stylesheets/default/scrollbars.qss</file>
         <file>stylesheets/default/ParameterGrid.qss</file>
         <file>stylesheets/default/PropertyTable.qss</file>
+        <file>icons/newie/checkbox_check.png</file>
+        <file>icons/newie/checkbox_check_disabled.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>
