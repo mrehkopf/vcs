@@ -11,12 +11,6 @@
 
 static QSettings SETTINGS_FILE("vcs.ini", QSettings::IniFormat);
 
-void kpers_initialize(void)
-{
-    /// Nothing at the moment.
-    return;
-}
-
 // Concatenates the given name and group into a key usable with QSettings's value()
 // and setValue().
 static QString as_key(const QString &group, const QString &name)

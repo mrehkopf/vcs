@@ -183,7 +183,7 @@ void VideoPresetList::update_preset_item_label(const unsigned presetId)
     return;
 }
 
-video_preset_s *VideoPresetList::current_preset(void) const
+video_preset_s* VideoPresetList::current_preset(void) const
 {
     if (this->count() <= 0)
     {

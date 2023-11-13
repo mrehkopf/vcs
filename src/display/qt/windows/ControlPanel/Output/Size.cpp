@@ -42,7 +42,7 @@ control_panel::output::Size::Size(QWidget *parent) :
 
         connect(ui->checkBox_forceOutputScale, &QCheckBox::stateChanged, this, [is_checked, this](int state)
         {
-            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "ForceWindowScale", bool(state));
+            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "ApplyCustomScale", bool(state));
 
             if (is_checked(state))
             {
@@ -59,7 +59,7 @@ control_panel::output::Size::Size(QWidget *parent) :
 
         connect(ui->checkBox_forceOutputRes, &QCheckBox::stateChanged, this, [is_checked, this](int state)
         {
-            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "ForceWindowSize", bool(state));
+            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "ApplyCustomSize", bool(state));
 
             this->ui->spinBox_outputResX->setEnabled(is_checked(state));
             this->ui->spinBox_outputResY->setEnabled(is_checked(state));
@@ -73,16 +73,15 @@ control_panel::output::Size::Size(QWidget *parent) :
                     .h = unsigned(this->ui->spinBox_outputResY->value())
                 });
             }
-            else
-            {
-                this->ui->spinBox_outputResX->setValue(ks_base_resolution().w);
-                this->ui->spinBox_outputResY->setValue(ks_base_resolution().h);
-            }
         });
 
         connect(ui->spinBox_outputResX, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this]
         {
-            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "WindowWidth", unsigned(ui->spinBox_outputResX->value()));
+            kpers_set_value(
+                INI_GROUP_OUTPUT_WINDOW,
+                "CustomSize",
+                QSize(ui->spinBox_outputResX->value(), ui->spinBox_outputResY->value())
+            );
 
             if (ui->checkBox_forceOutputRes->isChecked())
             {
@@ -95,7 +94,11 @@ control_panel::output::Size::Size(QWidget *parent) :
 
         connect(ui->spinBox_outputResY, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this]
         {
-            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "WindowHeight", unsigned(ui->spinBox_outputResY->value()));
+            kpers_set_value(
+                INI_GROUP_OUTPUT_WINDOW,
+                "CustomSize",
+                QSize(ui->spinBox_outputResX->value(), ui->spinBox_outputResY->value())
+            );
 
             if (ui->checkBox_forceOutputRes->isChecked())
             {
@@ -108,7 +111,7 @@ control_panel::output::Size::Size(QWidget *parent) :
 
         connect(ui->spinBox_outputScale, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this]
         {
-            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "WindowScale", ui->spinBox_outputScale->value());
+            kpers_set_value(INI_GROUP_OUTPUT_WINDOW, "CustomScale", ui->spinBox_outputScale->value());
             ks_set_scaling_multiplier(ui->spinBox_outputScale->value() / 100.0 );
         });
 
@@ -139,24 +142,16 @@ control_panel::output::Size::Size(QWidget *parent) :
 
     // Restore persistent settings.
     {
-        ui->checkBox_forceOutputRes->setChecked(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "ForceWindowSize", false).toBool());
-        ui->spinBox_outputResX->setValue(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "WindowWidth", 640).toUInt());
-        ui->spinBox_outputResY->setValue(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "WindowHeight", 480).toUInt());
-        ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "ForceWindowScale", false).toBool());
-        ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "WindowScale", 100).toInt());
+        const QSize windowSize = kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "CustomSize", QSize(640, 480)).toSize();
+        ui->checkBox_forceOutputRes->setChecked(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "ApplyCustomSize", false).toBool());
+        ui->spinBox_outputResX->setValue(windowSize.width());
+        ui->spinBox_outputResY->setValue(windowSize.height());
+        ui->checkBox_forceOutputScale->setChecked(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "ApplyCustomScale", false).toBool());
+        ui->spinBox_outputScale->setValue(kpers_value_of(INI_GROUP_OUTPUT_WINDOW, "CustomScale", 100).toInt());
     }
 
     // Listen for app events.
     {
-        ev_new_video_mode.listen([this](const video_mode_s &videoMode)
-        {
-            if (!ui->checkBox_forceOutputRes->isChecked())
-            {
-                ui->spinBox_outputResX->setValue(videoMode.resolution.w);
-                ui->spinBox_outputResY->setValue(videoMode.resolution.h);
-            }
-        });
-
         ev_custom_output_scaler_enabled.listen([this]
         {
             // The output scaling filter handles output sizing, so we want to bar the
@@ -204,18 +199,6 @@ void control_panel::output::Size::adjust_output_scaling(const int dir)
 void control_panel::output::Size::disable_output_size_controls(const bool areDisabled)
 {
     ui->groupBox->setDisabled(areDisabled);
-
-    return;
-}
-
-void control_panel::output::Size::notify_of_new_capture_signal(void)
-{
-    if (!ui->checkBox_forceOutputRes->isChecked())
-    {
-        const resolution_s r = ks_output_resolution();
-        ui->spinBox_outputResX->setValue(r.w);
-        ui->spinBox_outputResY->setValue(r.h);
-    }
 
     return;
 }
