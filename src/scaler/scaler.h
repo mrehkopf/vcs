@@ -114,17 +114,11 @@ void ks_set_base_resolution(const resolution_s &r);
 // If disabled, the base resolution will be the resolution of the input frame.
 void ks_set_base_resolution_enabled(const bool enabled);
 
-// Draws a "no signal" image into the scaler subsystem's frame buffer, erasing
+// Draws the given status message into the scaler subsystem's frame buffer, erasing
 // any previous image there.
 //
 // A subsequent call to ks_scale_frame() will overwite the image.
-void ks_indicate_no_signal(void);
-
-// Draws an "invalid signal" image into the scaler subsystem's frame buffer,
-// erasing any previous image there.
-//
-// A subsequent call to ks_scale_frame() will overwite the image.
-void ks_indicate_invalid_signal(void);
+void ks_indicate_status(const std::string &message);
 
 // Returns a reference to the scaler subsystem's frame buffer.
 //

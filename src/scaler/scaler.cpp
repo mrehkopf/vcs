@@ -17,11 +17,15 @@
 #include "filter/filter.h"
 #include "filter/abstract_filter.h"
 #include "filter/filters/output_scaler/filter_output_scaler.h"
+#include "filter/filters/render_text/font_10x6_serif.h"
+#include "filter/filters/render_text/font_10x6_sans_serif.h"
 #include "scaler/scaler.h"
 #include "common/timer/timer.h"
 
 // For keeping track of the number of frames scaled per second.
 static unsigned NUM_FRAMES_SCALED_PER_SECOND = 0;
+
+static std::string STATUS_MESSAGE = "";
 
 // The image scalers available to VCS.
 static const std::vector<image_scaler_s> KNOWN_SCALERS = {
@@ -144,18 +148,35 @@ subsystem_releaser_t ks_initialize_scaler(void)
 
     ev_new_captured_frame.listen([](const captured_frame_s &frame)
     {
-        ks_scale_frame(frame);
+        if (kc_has_signal())
+        {
+            ks_scale_frame(frame);
+        }
+        else
+        {
+            DEBUG(("Was asked to scale a frame while there was no signal. Ignoring this."));
+            return;
+        }
     });
 
     ev_invalid_capture_signal.listen([]
     {
-        ks_indicate_invalid_signal();
+        ks_indicate_status("INVALID SIGNAL");
         ev_dirty_output_window.fire();
+    });
+
+    ev_new_output_resolution.listen([]
+    {
+        if (!kc_has_signal())
+        {
+            ks_indicate_status(STATUS_MESSAGE);
+            ev_dirty_output_window.fire();
+        }
     });
 
     ev_capture_signal_lost.listen([]
     {
-        ks_indicate_no_signal();
+        ks_indicate_status("NO SIGNAL");
         ev_dirty_output_window.fire();
     });
 
@@ -213,6 +234,7 @@ void ks_scale_frame(const captured_frame_s &frame)
         }
         else if (!FRAME_BUFFER_PIXELS)
         {
+            DEBUG(("Was asked to scale a frame before the scaler's frame buffer had been initialized. Ignoring it."));
             return;
         }
     }
@@ -316,16 +338,30 @@ static void clear_frame_buffer(void)
     return;
 }
 
-void ks_indicate_no_signal(void)
+void ks_indicate_status(const std::string &message)
 {
+    STATUS_MESSAGE = message;
+
+    const unsigned fontScale = 7;
+    static font_c *const font = new font_5x3_c;
+
     clear_frame_buffer();
 
-    return;
-}
-
-void ks_indicate_invalid_signal(void)
-{
-    clear_frame_buffer();
+    FRAME_BUFFER_RESOLUTION = ks_output_resolution();
+    image_s image = {
+        .pixels = FRAME_BUFFER_PIXELS,
+        .resolution = FRAME_BUFFER_RESOLUTION
+    };
+    font->render(
+        message,
+        &image,
+        (image.resolution.w / 2),
+        (image.resolution.h / 2) - ((font->height_of(message) * fontScale) / 2),
+        fontScale,
+        {0, 0, 0},
+        {160, 160, 160},
+        filter_render_text_c::ALIGN_CENTER
+    );
 
     return;
 }
