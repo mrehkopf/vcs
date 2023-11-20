@@ -589,8 +589,11 @@ void kc_initialize_device(void)
                 );
 
                 const auto *supportedProps = (isDigital? &SUPPORTED_VIDEO_PROPERTIES_DIGITAL : &SUPPORTED_VIDEO_PROPERTIES_ANALOG);
-                kc_set_device_property("supported video preset properties", intptr_t(supportedProps));
-                ev_list_of_supported_video_preset_properties_changed.fire(*supportedProps);
+                if (kc_device_property("supported video preset properties") != intptr_t(supportedProps))
+                {
+                    kc_set_device_property("supported video preset properties", intptr_t(supportedProps));
+                    ev_list_of_supported_video_preset_properties_changed.fire(*supportedProps);
+                }
             }
         });
     }
