@@ -71,18 +71,25 @@ control_panel::capture::AliasResolutions::AliasResolutions(QWidget *parent) :
         });
     }
 
-    // Restore persistent settings.
+    // Restore persistent aliases.
     {
-        const QStringList aliases = kpers_value_of(INI_GROUP_CAPTURE, "AliasResolutions", "").toStringList();
-        for (auto &string: aliases)
+        // Aliases will be in the form {"1x1@640x480", "2x1@640x480", ...}.
+        QStringList aliases = kpers_value_of(INI_GROUP_CAPTURE, "AliasResolutions", QStringList{}).toStringList();
+
+        // If the AliasResolutions setting is defined but empty, we'll get a QStringList
+        // made up of a single empty string. But in that case what we really want is an
+        // empty QStringList.
+        aliases.removeAll("");
+
+        for (const auto &string: aliases)
         {
             const QStringList alias = string.split("@");
             const QStringList from = alias.at(0).split("x");
             const QStringList to = alias.at(1).split("x");
-
-            resolution_alias_s a;
-            a.from = {.w = from.at(0).toUInt(), .h = from.at(1).toUInt()};
-            a.to = {.w = to.at(0).toUInt(), .h = to.at(1).toUInt()};
+            resolution_alias_s a = {
+                .from = {.w = from.at(0).toUInt(), .h = from.at(1).toUInt()},
+                .to = {.w = to.at(0).toUInt(), .h = to.at(1).toUInt()}
+            };
             add_alias_to_list(a);
         }
 
