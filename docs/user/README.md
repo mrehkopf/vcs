@@ -29,8 +29,7 @@
 
 VCS is an [open-source](https://github.com/leikareipa/vcs) control application for Datapath Vision capture cards on Linux.
 
-![](./img/vcs-3.0.webp)\
-*A screenshot of VCS 3.0 showing the capture window (right) and some of the control options (left)*
+![](./img/vcs-3.0.webp)
 
 ### Key features
 
@@ -69,11 +68,11 @@ Any model of Datapath capture card supported by the Datapath Vision driver for L
 
 ### Q: Where can I download VCS?
 
-A: VCS is available from GitHub: https://github.com/leikareipa/vcs/. Pre-built binaries may not be available.
+**A**: VCS is available from GitHub: https://github.com/leikareipa/vcs/. Pre-built binaries may not be available.
 
 ### Q: What to do if there's no signal?
 
-A: If the capture card ought to be receiving a signal but VCS shows a blank window and/or says "No signal," it may be caused by one of the following:
+**A**: If the capture card ought to be receiving a signal but VCS shows a blank window and/or says "No signal," it may be caused by one of the following:
 
 1. The Datapath Vision Linux driver hasn't been installed for your kernel. You need to reinstall the driver whenever the kernel is updated.
 2. The signal is out of range, i.e. it's of an unsupported resolution or refresh rate. VCS itself has a maximum input resolution of 4096 &times; 4096; and for example the Datapath VisionRGB-E1S capture card has a maximum digital input resolution of 1920 &times; 1200.
@@ -82,7 +81,7 @@ A: If the capture card ought to be receiving a signal but VCS shows a blank wind
 
 ### Q: How do I adjust the picture?
 
-A: There are three complementary ways to control how captured frames are displayed.
+**A**: There are three complementary ways to control how captured frames are displayed.
 
 1. To adjust analog video properties, access Control panel &rarr; Video presets.
 2. To scale the output image, see Control panel &rarr; Output.
@@ -92,7 +91,7 @@ With analog capture, you may at times find it seemingly impossible to get the pi
 
 ### Q: How do I fix analog noise?
 
-A: In an analog signal, some amount of visual noise is always present, so VCS comes with a few ways to mitigate it.
+**A**: In an analog signal, some amount of visual noise is always present, so VCS comes with a few ways to mitigate it.
 
 1. See that your analog settings are correct, by accessing Control panel &rarr; Analog presets. You'll want to ensure that the *Horizontal size* and *Phase* parameters in particular are set to suitable values.
 2. Use a denoising filter via Control panel &rarr; Filter graph.
@@ -100,35 +99,34 @@ A: In an analog signal, some amount of visual noise is always present, so VCS co
 
 ### Q: How do I set the correct capture resolution?
 
-A: Sometimes the capture hardware fails to automatically determine the correct input resolution for the captured signal. You can help it by manually overriding the resolution via Control panel &rarr; Capture.
+**A**: Sometimes the capture hardware fails to automatically determine the correct input resolution for the captured signal. You can help it by manually overriding the resolution via Control panel &rarr; Capture.
 
 ### Q: How do I change the aspect ratio?
 
-A: There are two ways to control the output aspect ratio.
+**A**: There are two ways to control the output aspect ratio.
 
 1. Set a fixed output resolution via Control panel &rarr; Output.
 2. Use an output scaling filter via Control panel &rarr; Filter graph. This method allows optional letterboxing.
 
 ### Q: How do I enable variable refresh rate output?
 
-A: VCS always outputs at the rate of capture, provided that your hardware can keep up.
+**A**: VCS always outputs at the rate of capture, provided that your hardware can keep up.
 
 If your monitor has variable refresh rate support, the rate you see will match the refresh rate of your capture source. For some implementations, you may need to adjust the settings in VCS to enable OpenGL rendering and/or fullscreen mode.
 
 ### Q: How do I fix screen tearing?
 
-A: While VCS itself doesn't cause screen tearing, it may be present in captured frames. To reduce or even eliminate this kind of tearing, use the Anti-tearing filter via Control panel &rarr; Filter graph.
+**A**: While VCS itself doesn't cause screen tearing, it may be present in captured frames. To reduce or even eliminate this kind of tearing, use the Anti-tearing filter via Control panel &rarr; Filter graph.
 
 ### Q: How much capture latency is there?
 
-A: Compared to routing your video output directly into a monitor, there should be about a dozen milliseconds of extra latency, provided that you meet [VCS's recommended system requirements](#system-requirements).
+**A**: Compared to routing your video output directly into a monitor, there should be about a dozen milliseconds of extra latency, provided that you meet [VCS's recommended system requirements](#system-requirements).
 
 ## Output window
 
 The output window displays captured frames after any scaling and image filtering has been applied to them.
 
-![](./img/output-window.webp)\
-*A screenshot of the output window in VCS 3.0 displaying a captured, upscaled frame*
+![](./img/output-window.webp)
 
 ### Magnifying glass 
 
@@ -152,10 +150,7 @@ Right-click the window to bring up a context menu that provides access to variou
 
 The control panel lets you adjust various operational aspects of VCS.
 
-![](./img/control-panel.webp)\
-*A screenshot of the control panel in VCS 3.0 showing analog capture settings*
-
-Experiment   with the various controls to find out what they do.
+![](./img/control-panel.webp)
 
 ## Keyboard and mouse controls
 
