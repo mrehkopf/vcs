@@ -87,10 +87,9 @@ public:
         );
     }
 
-    // Metadata about the filter. Changing the UUID will break compatibility with
-    // earlier filter configurations the user may have saved.
-    std::string uuid(void) const override { return "6f6b513d-359e-43c7-8de5-de29b1559d10"; }
+    // Metadata about the filter. The UUID must be unique across filters.
     std::string name(void) const override { return "Filler"; }
+    std::string uuid(void) const override { return "6f6b513d-359e-43c7-8de5-de29b1559d10"; }
     filter_category_e category(void) const override { return filter_category_e::reduce; }
 };
 ```
