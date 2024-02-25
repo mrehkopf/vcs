@@ -35,7 +35,7 @@ public:
             factor->maxValue = 4;
             gui->fields.push_back({"Factor", {factor}});
 
-            auto *sampler = filtergui::combo_box(filter, PARAM_FACTOR);
+            auto *sampler = filtergui::combo_box(filter, PARAM_TYPE);
             sampler->items = {"Nearest", "Average"};
             gui->fields.push_back({"Sampler", {sampler}});
         });
