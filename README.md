@@ -2,11 +2,7 @@
 
 A control application for Datapath Vision capture cards on Linux.
 
-![VCS 3.0](./screenshot1.png)
-
-![VCS 3.0](./screenshot2.png)
-
-![VCS 3.0](./screenshot3.png)
+![VCS 3.0](./screenshot.png)
 
 ## Key features
 
@@ -25,8 +21,6 @@ Any model of Datapath capture card supported by the Datapath Vision driver for L
 - [Guides for developers](./docs/developer/)
 
 ## Building
-
-![](./cat1.jpg)
 
 Open [vcs.pro](vcs.pro) in Qt Creator, or run `$ qmake && make -j` in the repo's root. You'll need to meet the [dependencies](#dependencies) and may need to adjust the [build configuration](#build-configuration).
 
