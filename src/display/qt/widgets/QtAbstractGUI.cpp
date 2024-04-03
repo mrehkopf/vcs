@@ -78,6 +78,13 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     label->setAlignment(Qt::AlignCenter);
                     label->setStyleSheet("margin-bottom: .25em;");
                 }
+                else if (dynamic_cast<abstract_gui_widget::button*>(component))
+                {
+                    auto *const c = ((abstract_gui_widget::button*)component);
+                    auto *const button = qobject_cast<QPushButton*>(widget = new QPushButton(QString::fromStdString(c->label), this));
+
+                    connect(button, &QPushButton::clicked, [=, this]{c->on_press();});
+                }
                 else if (dynamic_cast<abstract_gui_widget::button_get_open_filename*>(component))
                 {
                     auto *const c = ((abstract_gui_widget::button_get_open_filename*)component);

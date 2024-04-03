@@ -33,6 +33,12 @@ namespace abstract_gui_widget
         std::string text;
     };
 
+    struct button : abstract_gui_widget_s
+    {
+        std::function<void(void)> on_press;
+        std::string label;
+    };
+
     struct button_get_open_filename : abstract_gui_widget_s
     {
         std::function<void(const std::string&)> on_success;
