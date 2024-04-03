@@ -75,20 +75,27 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     auto *const label = qobject_cast<QLabel*>(widget = new QLabel(QString::fromStdString(c->text), this));
 
                     label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-                    label->setAlignment(Qt::AlignCenter);
-                    label->setStyleSheet("margin-bottom: .25em;");
+                    label->setAlignment(Qt::AlignLeft);
                 }
                 else if (dynamic_cast<abstract_gui_widget::button*>(component))
                 {
                     auto *const c = ((abstract_gui_widget::button*)component);
                     auto *const button = qobject_cast<QPushButton*>(widget = new QPushButton(QString::fromStdString(c->label), this));
 
-                    connect(button, &QPushButton::clicked, [=, this]{c->on_press();});
+                    if (c->on_press)
+                    {
+                        connect(button, &QPushButton::clicked, [=, this]{c->on_press();});
+                    }
                 }
                 else if (dynamic_cast<abstract_gui_widget::button_get_open_filename*>(component))
                 {
                     auto *const c = ((abstract_gui_widget::button_get_open_filename*)component);
                     auto *const button = qobject_cast<QPushButton*>(widget = new QPushButton(QString::fromStdString(c->label), this));
+
+                    if (!c->on_success)
+                    {
+                        return;
+                    }
 
                     connect(button, &QPushButton::clicked, [=, this]
                     {
@@ -225,9 +232,13 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     k_assert(0, "Unrecognized filter GUI component.");
                 }
 
-                k_assert(widget, "Expected the filter GUI widget to have been initialized.");
+                k_assert(widget, "Expected the filter GUI widget to have been initialized by now.");
+
                 widget->setEnabled(component->isInitiallyEnabled);
                 component->set_enabled = [widget](const bool isEnabled){widget->setEnabled(isEnabled);};
+
+                widget->setVisible(component->isInitiallyVisible);
+                component->set_visible = [widget](const bool isVisible){widget->setVisible(isVisible);};
 
                 containerLayout->addWidget(widget);
             }

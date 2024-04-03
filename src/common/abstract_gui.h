@@ -15,8 +15,12 @@
 struct abstract_gui_widget_s
 {
     virtual ~abstract_gui_widget_s(void){}
+
     std::function<void(const bool)> set_enabled;
     bool isInitiallyEnabled = true;
+
+    std::function<void(const bool)> set_visible;
+    bool isInitiallyVisible = true;
 };
 
 namespace abstract_gui_widget
