@@ -6,6 +6,7 @@
  */
 
 #if !defined(CAPTURE_BACKEND_VIRTUAL) &&\
+    !defined(CAPTURE_BACKEND_GPHOTO2) &&\
     !defined(CAPTURE_BACKEND_VISION_V4L) &&\
     !defined(CAPTURE_BACKEND_GENERIC_V4L) &&\
     !defined(CAPTURE_BACKEND_MMAP)

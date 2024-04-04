@@ -64,9 +64,10 @@ One &ndash; and only one &ndash; capture backend must be active in any build of 
 
 The following capture backends are available to choose from:
 
-| Backend identifier          | Purpose                                                                                                                     |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| CAPTURE_BACKEND_VISION_V4L  | Supports the Datapath Vision range of capture cards in Linux. Requires installation of the Datapath Vision driver.          |
-| CAPTURE_BACKEND_VIRTUAL     | Provides a virtual capture device that generates a test image.                                                              |
-| CAPTURE_BACKEND_MMAP        | Captures another application's frame buffer via shared memory. Requires patching the application to support this interface. |
-| CAPTURE_BACKEND_GENERIC_V4L | A sample implementation of a generic, non-Datapath-specific capture backend using Video4Linux. For educational purposes.    |
+| Backend identifier          | Purpose                                                                                                                                                     |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CAPTURE_BACKEND_VISION_V4L  | Supports the Datapath Vision range of capture cards in Linux. Requires installation of the Datapath Vision driver.                                          |
+| CAPTURE_BACKEND_VIRTUAL     | Provides a virtual capture device that generates a test image.                                                                                              |
+| CAPTURE_BACKEND_GENERIC_V4L | A sample implementation of a generic, non-Datapath-specific capture backend using Video4Linux. For educational purposes.                                    |
+| CAPTURE_BACKEND_GPHOTO2     | Exposes some of the functionality of gPhoto2 to allow interaction with digital cameras. Requires libgphoto2. A lazy implementation, for hobby projects etc. |
+| CAPTURE_BACKEND_MMAP        | Captures data from another application via shared memory. Requires patching the application to support this interface.                                      |

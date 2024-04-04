@@ -32,9 +32,10 @@ DEFINES += \
 # Which capture source this build supports. Select one. See the build guide in
 # README.md for more information.
 DEFINES += \
-    #CAPTURE_BACKEND_VIRTUAL
-    #CAPTURE_BACKEND_MMAP
     CAPTURE_BACKEND_VISION_V4L
+    #CAPTURE_BACKEND_VIRTUAL
+    #CAPTURE_BACKEND_GPHOTO2
+    #CAPTURE_BACKEND_MMAP
     #CAPTURE_BACKEND_GENERIC_V4L
 
 # Whether this build of VCS uses the OpenCV library. For now, non-OpenCV builds
@@ -316,6 +317,10 @@ contains(DEFINES, VCS_USES_OPENCV) {
         -lopencv_core \
         -lopencv_photo \
 
+    contains(DEFINES, CAPTURE_BACKEND_GPHOTO2) {
+        LIBS += -lopencv_imgcodecs
+    }
+
     contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
         LIBS += -lopencv_imgcodecs
     }
@@ -327,6 +332,11 @@ contains(DEFINES, VCS_USES_OPENCV) {
 
 contains(DEFINES, CAPTURE_BACKEND_GENERIC_V4L) {
     SOURCES += src/capture/generic_v4l/capture_generic_v4l.cpp
+}
+
+contains(DEFINES, CAPTURE_BACKEND_GPHOTO2) {
+    SOURCES += src/capture/gphoto/capture_gphoto.cpp
+    LIBS += -lgphoto2
 }
 
 contains(DEFINES, CAPTURE_BACKEND_VIRTUAL) {
