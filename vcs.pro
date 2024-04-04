@@ -335,7 +335,7 @@ contains(DEFINES, CAPTURE_BACKEND_GENERIC_V4L) {
 }
 
 contains(DEFINES, CAPTURE_BACKEND_GPHOTO2) {
-    SOURCES += src/capture/gphoto/capture_gphoto.cpp
+    SOURCES += src/capture/gphoto2/capture_gphoto2.cpp
     LIBS += -lgphoto2
 }
 
