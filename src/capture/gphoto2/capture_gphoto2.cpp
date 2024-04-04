@@ -49,15 +49,27 @@ static std::string get_config_value(const std::string &name)
 {
     CameraWidget *rootWidget = nullptr;
     CameraWidget *childWidget = nullptr;
-    const char *value = nullptr;
+    CameraWidgetType type;
+    void *value = nullptr;
 
     /// TODO: Don't assume all values are strings.
     if (
         (GP_OK <= gp_camera_get_config(CAMERA, &rootWidget, GP_CONTEXT)) &&
         (GP_OK <= gp_widget_get_child_by_name(rootWidget, name.c_str(), &childWidget)) &&
-        (GP_OK <= gp_widget_get_value(childWidget, &value))
+        (GP_OK <= gp_widget_get_value(childWidget, &value)) &&
+        (GP_OK <= gp_widget_get_type(childWidget, &type))
     ){
-        return (value? value : "unknown");
+        if (!value)
+        {
+            return "unknown";
+        }
+
+        switch (type)
+        {
+            case GP_WIDGET_TOGGLE: return std::to_string(intptr_t(value));
+            case GP_WIDGET_DATE: return std::to_string(intptr_t(value));
+            default: return (char*)value;
+        }
     }
     else
     {
@@ -204,6 +216,26 @@ static void stop_live_preview(void)
     gp_camera_exit(CAMERA, GP_CONTEXT);
 }
 
+static void with_live_preview_suspended(std::function<void(void)> fn)
+{
+    k_defer_until_capture_mutex_unlocked([fn]
+    {
+        const bool wasLivePreviewEnabled = kc_device_property("live preview enabled");
+
+        if (wasLivePreviewEnabled)
+        {
+            stop_live_preview();
+        }
+
+        fn();
+
+        if (wasLivePreviewEnabled)
+        {
+            start_live_preview();
+        }
+    });
+}
+
 void kc_initialize_device(void)
 {
     DEBUG(("Initializing the GPhoto capture device."));
@@ -266,7 +298,7 @@ void kc_initialize_device(void)
         {
             auto *livePreviewEnabled = new abstract_gui_widget::combo_box;
             livePreviewEnabled->items = {"Off", "On"};
-            livePreviewEnabled->on_change = [](int idx){kc_set_device_property("live view enabled", idx);};
+            livePreviewEnabled->on_change = [](int idx){kc_set_device_property("live preview enabled", idx);};
             livePreviewEnabled->initialIndex = 0;
             livePreviewEnabled->isInitiallyEnabled = CAMERA;
 
@@ -281,23 +313,11 @@ void kc_initialize_device(void)
                     return;
                 }
 
-                k_defer_until_capture_mutex_unlocked([]
+                with_live_preview_suspended([]
                 {
-                    const bool wasLivePreviewEnabled = kc_device_property("live view enabled");
-
-                    if (wasLivePreviewEnabled)
-                    {
-                        stop_live_preview();
-                    }
-
                     CameraFilePath path = {0};
                     gp_camera_capture(CAMERA, GP_CAPTURE_IMAGE, &path, GP_CONTEXT);
                     DEBUG(("Captured an image to %s/%s", path.folder, path.name));
-
-                    if (wasLivePreviewEnabled)
-                    {
-                        start_live_preview();
-                    }
                 });
             };
 
@@ -325,7 +345,7 @@ void kc_initialize_device(void)
             };
 
             auto *getShutterSpeed = new abstract_gui_widget::button;
-            getShutterSpeed->label = "Get current";
+            getShutterSpeed->label = "Get";
             getShutterSpeed->isInitiallyEnabled = CAMERA;
             getShutterSpeed->on_press = [shutterSpeed]()
             {
@@ -349,10 +369,7 @@ void kc_initialize_device(void)
                     return;
                 }
 
-                if (!set_config_value("shutterspeed", shutterSpeedValue))
-                {
-                    NBENE(("Failed to configure the shutter speed."));
-                }
+                set_config_value("shutterspeed", shutterSpeedValue);
 
                 DEBUG(("The shutter speed is now %s", get_config_value("shutterspeed").c_str()));
                 shutterSpeed->set_text(get_config_value("shutterspeed"));
@@ -368,7 +385,7 @@ void kc_initialize_device(void)
             };
 
             auto *getIso= new abstract_gui_widget::button;
-            getIso->label = "Get current";
+            getIso->label = "Get";
             getIso->isInitiallyEnabled = CAMERA;
             getIso->on_press = [iso]()
             {
@@ -392,19 +409,67 @@ void kc_initialize_device(void)
                     return;
                 }
 
-                if (!set_config_value("iso", isoValue))
-                {
-                    NBENE(("Failed to configure the ISO."));
-                }
+                set_config_value("iso", isoValue);
 
                 DEBUG(("The ISO is now %s", get_config_value("iso").c_str()));
                 iso->set_text(get_config_value("iso"));
             };
 
+            static std::string _customPropertyName = "whitebalance";
+            auto *customPropertyName = new abstract_gui_widget::line_edit;
+            customPropertyName->text = _customPropertyName;
+            customPropertyName->isInitiallyEnabled = CAMERA;
+            customPropertyName->on_change = [](const std::string &text)
+            {
+                _customPropertyName = text;
+            };
+
+            static std::string _customPropertyValue = "Auto";
+            auto *customPropertyValue = new abstract_gui_widget::line_edit;
+            customPropertyValue->text = _customPropertyValue;
+            customPropertyValue->isInitiallyEnabled = CAMERA;
+            customPropertyValue->on_change = [](const std::string &text)
+            {
+                _customPropertyValue = text;
+            };
+
+            auto *setCustomProperty = new abstract_gui_widget::button;
+            setCustomProperty->label = "Set";
+            setCustomProperty->isInitiallyEnabled = CAMERA;
+            setCustomProperty->on_press = [customPropertyValue]()
+            {
+                if (!CAMERA)
+                {
+                    DEBUG(("Attempting to set a configuration value while there is no camera. Ignoring this."));
+                    return;
+                }
+
+                set_config_value(_customPropertyName, _customPropertyValue);
+
+                DEBUG(("The value for %s is now %s", _customPropertyName.c_str(), get_config_value(_customPropertyName).c_str()));
+                customPropertyValue->set_text(get_config_value(_customPropertyName));
+            };
+
+            auto *getCustomProperty = new abstract_gui_widget::button;
+            getCustomProperty->label = "Get";
+            getCustomProperty->isInitiallyEnabled = CAMERA;
+            getCustomProperty->on_press = [=]()
+            {
+                if (!CAMERA)
+                {
+                    DEBUG(("Attempting to get a configuration value while there is no camera. Ignoring this."));
+                    return;
+                }
+
+                customPropertyValue->set_text(get_config_value(_customPropertyName));
+            };
+
             static abstract_gui_s gui;
-            gui.fields.push_back({"Shutter", {shutterSpeed, setShutterSpeed, getShutterSpeed}});
-            gui.fields.push_back({"ISO", {iso, setIso, getIso}});
-            kd_add_control_panel_widget("Capture", "Options", &gui);
+            gui.fields.push_back({"Shutter", {shutterSpeed, getShutterSpeed, setShutterSpeed}});
+            gui.fields.push_back({"ISO", {iso, getIso, setIso}});
+            gui.fields.push_back({"", {new abstract_gui_widget::horizontal_rule}});
+            gui.fields.push_back({"Custom", {customPropertyName, customPropertyValue, getCustomProperty, setCustomProperty}});
+            kd_add_control_panel_widget("Capture", "Configuration", &gui);
 
             kt_timer(1000, [=](const unsigned)
             {
@@ -415,6 +480,11 @@ void kc_initialize_device(void)
                 shutterSpeed->set_enabled(CAMERA);
                 setShutterSpeed->set_enabled(CAMERA);
                 getShutterSpeed->set_enabled(CAMERA);
+
+                customPropertyValue->set_enabled(CAMERA);
+                customPropertyName->set_enabled(CAMERA);
+                getCustomProperty->set_enabled(CAMERA);
+                setCustomProperty->set_enabled(CAMERA);
             });
         }
     }
@@ -437,7 +507,7 @@ bool kc_set_device_property(const std::string &key, intptr_t value)
     {
         LOCAL_FRAME_BUFFER.resolution.h = value;
     }
-    else if (key == "live view enabled")
+    else if (key == "live preview enabled")
     {
         k_defer_until_capture_mutex_unlocked([value]
         {
