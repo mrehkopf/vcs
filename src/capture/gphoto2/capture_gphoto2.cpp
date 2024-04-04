@@ -93,6 +93,9 @@ static void release_camera(void)
         gp_camera_unref(CAMERA);
         CAMERA = nullptr;
     }
+
+    kc_set_device_property("supports live preview", false);
+    kc_set_device_property("supports taking photo", false);
 }
 
 static void initialize_camera(void)
@@ -109,6 +112,9 @@ static void initialize_camera(void)
         release_camera();
         return;
     }
+
+    kc_set_device_property("supports live preview", does_camera_support_feature(GP_OPERATION_CAPTURE_PREVIEW));
+    kc_set_device_property("supports taking photo", does_camera_support_feature(GP_OPERATION_CAPTURE_IMAGE));
 }
 
 static void capture_loop(void)
@@ -217,18 +223,6 @@ void kc_initialize_device(void)
     ev_new_captured_frame.listen([]
     {
         NUM_FRAMES_PER_SECOND++;
-    });
-
-    ev_capture_signal_gained.listen([]
-    {
-        kc_set_device_property("supports live preview", does_camera_support_feature(GP_OPERATION_CAPTURE_PREVIEW));
-        kc_set_device_property("supports taking photo", does_camera_support_feature(GP_OPERATION_CAPTURE_IMAGE));
-    });
-
-    ev_capture_signal_lost.listen([]
-    {
-        kc_set_device_property("supports live preview", false);
-        kc_set_device_property("supports taking photo", false);
     });
 
     // Create some custom GUI entries in VCS's control panel.
