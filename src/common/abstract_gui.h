@@ -34,6 +34,7 @@ namespace abstract_gui_widget
 
     struct label : abstract_gui_widget_s
     {
+        std::function<void(std::string)> set_text;
         std::string text;
     };
 

@@ -77,6 +77,8 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
 
                     label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
                     label->setAlignment(Qt::AlignLeft);
+
+                    c->set_text = [label](const std::string &text){label->setText(QString::fromStdString(text));};
                 }
                 else if (dynamic_cast<abstract_gui_widget::button*>(component))
                 {
