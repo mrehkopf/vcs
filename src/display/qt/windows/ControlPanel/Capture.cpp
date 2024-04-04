@@ -46,13 +46,13 @@ control_panel::Capture::Capture(QWidget *parent) :
         if (kc_device_property("supports resolution switching"))
         {
             layout->addWidget(this->inputResolution);
+            layout->addWidget(this->aliasResolutions);
         }
         else
         {
             this->inputResolution->setEnabled(false);
+            this->aliasResolutions->setEnabled(false);
         }
-
-        layout->addWidget(this->aliasResolutions);
     }
 
     // Push out empty space from the dialogs.
