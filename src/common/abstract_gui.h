@@ -57,6 +57,14 @@ namespace abstract_gui_widget
         std::size_t maxLength = 255;
     };
 
+    struct line_edit : abstract_gui_widget_s
+    {
+        std::function<void(std::string)> set_text;
+        std::function<void(const std::string&)> on_change;
+        std::string text;
+        std::size_t maxLength = 255;
+    };
+
     struct checkbox : abstract_gui_widget_s
     {
         std::function<void(const bool)> on_change;

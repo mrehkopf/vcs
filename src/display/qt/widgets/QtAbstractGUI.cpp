@@ -13,6 +13,7 @@
 #include <QFileDialog>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QLineEdit>
 #include <QWidget>
 #include <QFrame>
 #include <QLabel>
@@ -110,6 +111,18 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         {
                             c->on_success(filename.toStdString());
                         }
+                    });
+                }
+                else if (dynamic_cast<abstract_gui_widget::line_edit*>(component))
+                {
+                    auto *const c = ((abstract_gui_widget::line_edit*)component);
+                    auto *const lineEdit = qobject_cast<QLineEdit*>(widget = new QLineEdit(QString::fromStdString(c->text), this));
+
+                    c->set_text = [lineEdit](const std::string &text){lineEdit->setText(QString::fromStdString(text));};
+
+                    connect(lineEdit, &QLineEdit::textChanged, [=, this]
+                    {
+                        c->on_change(lineEdit->text().toStdString());
                     });
                 }
                 else if (dynamic_cast<abstract_gui_widget::text_edit*>(component))
