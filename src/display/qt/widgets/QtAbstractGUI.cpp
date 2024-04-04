@@ -75,7 +75,8 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     auto *const c = ((abstract_gui_widget::label*)component);
                     auto *const label = qobject_cast<QLabel*>(widget = new QLabel(QString::fromStdString(c->text), this));
 
-                    label->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+                    label->setStyleSheet("margin: 0; padding: 0; min-height: 1.25em;");
+                    label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
                     label->setAlignment(Qt::AlignLeft);
 
                     c->set_text = [label](const std::string &text){label->setText(QString::fromStdString(text));};
@@ -84,6 +85,8 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                 {
                     auto *const c = ((abstract_gui_widget::button*)component);
                     auto *const button = qobject_cast<QPushButton*>(widget = new QPushButton(QString::fromStdString(c->label), this));
+
+                    button->setStyleSheet("padding: 0 0.75em;");
 
                     if (c->on_press)
                     {
