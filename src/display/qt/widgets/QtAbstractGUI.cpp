@@ -93,6 +93,11 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         connect(button, &QPushButton::clicked, [=, this]{c->on_press();});
                     }
                 }
+                else if (dynamic_cast<abstract_gui_widget::horizontal_rule*>(component))
+                {
+                    auto *const rule = qobject_cast<QFrame*>(widget = new QFrame(this));
+                    rule->setFrameShape(QFrame::HLine);
+                }
                 else if (dynamic_cast<abstract_gui_widget::button_get_open_filename*>(component))
                 {
                     auto *const c = ((abstract_gui_widget::button_get_open_filename*)component);

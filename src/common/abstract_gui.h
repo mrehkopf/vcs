@@ -32,6 +32,10 @@ namespace abstract_gui_widget
         center
     };
 
+    struct horizontal_rule : abstract_gui_widget_s
+    {
+    };
+
     struct label : abstract_gui_widget_s
     {
         std::function<void(std::string)> set_text;
