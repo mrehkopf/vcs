@@ -248,7 +248,13 @@ void kc_initialize_device(void)
 
     kt_timer(1000, [](const unsigned elapsedMs)
     {
-        refresh_rate_s::to_capture_device_properties((NUM_FRAMES_PER_SECOND * (1000.0 / elapsedMs)));
+        const refresh_rate_s currentRate = (NUM_FRAMES_PER_SECOND * (1000.0 / elapsedMs));
+        if (currentRate != refresh_rate_s::from_capture_device_properties())
+        {
+            refresh_rate_s::to_capture_device_properties(currentRate);
+            capture_rate_s::to_capture_device_properties(currentRate);
+            push_event(capture_event_e::new_video_mode);
+        }
         NUM_FRAMES_PER_SECOND = 0;
     });
 
