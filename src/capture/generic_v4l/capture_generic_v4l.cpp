@@ -37,6 +37,7 @@ static std::vector<const char*> SUPPORTED_VIDEO_PROPERTIES = {
 };
 
 static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
+    {"api name", intptr_t("Video4Linux")},
     {"channel", 0},
     {"autofocus", 0},
     {"fps", 60},

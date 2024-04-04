@@ -1,4 +1,4 @@
-﻿/*
+/*
  * 2020-2023 Tarpeeksi Hyvae Soft
  *
  * Software: VCS
@@ -49,6 +49,8 @@ static std::vector<const char*> SUPPORTED_VIDEO_PROPERTIES = {
 };
 
 static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
+    {"api name", intptr_t("Virtual")},
+
     {"width: minimum", MIN_CAPTURE_WIDTH},
     {"width: maximum", MAX_CAPTURE_WIDTH},
     {"height: minimum", MIN_CAPTURE_HEIGHT},

@@ -36,6 +36,7 @@ control_panel::capture::SignalStatus::SignalStatus(QWidget *parent) :
     {
         // Initialize the table of information. Note that this also sets
         // the vertical order in which the table's parameters are shown.
+        ui->tableWidget_propertyTable->add_property("API");
         ui->tableWidget_propertyTable->add_property("Resolution");
         ui->tableWidget_propertyTable->add_property("Refresh rate");
         ui->tableWidget_propertyTable->add_property("Capture rate");
@@ -78,6 +79,8 @@ control_panel::capture::SignalStatus::SignalStatus(QWidget *parent) :
         ev_new_input_channel.listen(update_info);
     }
 
+    this->update_information_table(false);
+
     return;
 }
 
@@ -98,6 +101,9 @@ void control_panel::capture::SignalStatus::set_controls_enabled(const bool state
 
 void control_panel::capture::SignalStatus::update_information_table(const bool isReceivingSignal)
 {
+    const char *apiName = (const char*)kc_device_property("api name");
+    ui->tableWidget_propertyTable->modify_property("API", (apiName? apiName : "-"));
+
     if (isReceivingSignal)
     {
         const auto resolution = resolution_s::from_capture_device_properties();

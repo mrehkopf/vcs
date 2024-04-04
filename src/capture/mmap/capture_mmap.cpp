@@ -110,6 +110,7 @@ static captured_frame_s FRAME_BUFFER = {
 };
 
 static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
+    {"api name", intptr_t("MMAP")},
     {"width: minimum", MIN_CAPTURE_WIDTH},
     {"height: minimum", MIN_CAPTURE_HEIGHT},
     {"width: maximum", MAX_CAPTURE_WIDTH},

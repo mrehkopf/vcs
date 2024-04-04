@@ -101,6 +101,8 @@ static const  std::vector<const char*> SUPPORTED_VIDEO_PROPERTIES_DIGITAL = {
 };
 
 static std::unordered_map<std::string, intptr_t> DEVICE_PROPERTIES = {
+    {"api name", intptr_t("Datapath Vision")},
+
     {"width: minimum", MIN_CAPTURE_WIDTH},
     {"height: minimum", MIN_CAPTURE_HEIGHT},
 
