@@ -198,8 +198,8 @@ void kc_initialize_device(void)
             auto *const selectImage = new abstract_gui_widget::button_get_open_filename;
             selectImage->label = "Select image...";
             selectImage->filenameFilter = "Images (*.png *.jpg *.bmp);;All files(*.*)";
-            selectImage->isInitiallyEnabled = (PATTERN_TYPE == output_pattern_type::image);
-            selectImage->isInitiallyVisible = (PATTERN_TYPE == output_pattern_type::image);
+            selectImage->isEnabled = (PATTERN_TYPE == output_pattern_type::image);
+            selectImage->isVisible = (PATTERN_TYPE == output_pattern_type::image);
             selectImage->on_success = [](const std::string &filename)
             {
                 BG_IMAGE = cv::imread(filename);
@@ -231,7 +231,7 @@ void kc_initialize_device(void)
 
             auto *const patternType = new abstract_gui_widget::combo_box;
             patternType->items = {"Animated", "Still", "Image from file"};
-            patternType->initialIndex = unsigned(PATTERN_TYPE);
+            patternType->index = unsigned(PATTERN_TYPE);
             patternType->on_change = [patternType, selectImage](const int itemsIdx)
             {
                 PATTERN_TYPE = output_pattern_type(itemsIdx);

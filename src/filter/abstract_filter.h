@@ -120,7 +120,7 @@ namespace filtergui
     {
         auto *widget = new abstract_gui_widget::spinner;
         widget->on_change = [filter, paramId](const int value){filter->set_parameter(paramId, value);};
-        widget->initialValue = filter->parameter(paramId);
+        widget->value = filter->parameter(paramId);
         return widget;
     };
 
@@ -128,7 +128,7 @@ namespace filtergui
     {
         auto *widget = new abstract_gui_widget::combo_box;
         widget->on_change = [filter, paramId](const int index){filter->set_parameter(paramId, index);};
-        widget->initialIndex = filter->parameter(paramId);
+        widget->index = filter->parameter(paramId);
         return widget;
     };
 
@@ -136,7 +136,7 @@ namespace filtergui
     {
         auto *widget = new abstract_gui_widget::double_spinner;
         widget->on_change = [filter, paramId](const double value){filter->set_parameter(paramId, value);};
-        widget->initialValue = filter->parameter(paramId);
+        widget->value = filter->parameter(paramId);
         return widget;
     };
 
@@ -144,7 +144,7 @@ namespace filtergui
     {
         auto *widget = new abstract_gui_widget::checkbox;
         widget->on_change = [filter, paramId](const bool isChecked){filter->set_parameter(paramId, isChecked);};
-        widget->initialState = filter->parameter(paramId);
+        widget->state = filter->parameter(paramId);
         return widget;
     };
 }

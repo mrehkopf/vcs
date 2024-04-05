@@ -12,7 +12,7 @@ filtergui_median_c::filtergui_median_c(abstract_filter_c *const filter)
 {
     auto *const radius = new abstract_gui_widget::spinner;
     radius->on_change = [=](const int value){filter->set_parameter(filter_median_c::PARAM_KERNEL_SIZE, ((value * 2) + 1));};
-    radius->initialValue = (filter->parameter(filter_median_c::PARAM_KERNEL_SIZE) / 2);
+    radius->value = (filter->parameter(filter_median_c::PARAM_KERNEL_SIZE) / 2);
     radius->minValue = 0;
     radius->maxValue = 99;
     this->fields.push_back({"Radius", {radius}});

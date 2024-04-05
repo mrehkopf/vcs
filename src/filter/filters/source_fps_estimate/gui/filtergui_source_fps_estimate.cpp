@@ -17,7 +17,7 @@ filtergui_source_fps_estimate_c::filtergui_source_fps_estimate_c(abstract_filter
     this->fields.push_back({"Threshold", {threshold}});
 
     auto *singleRowNumber = filtergui::spinner(filter, filter_frame_rate_c::PARAM_SINGLE_ROW_NUMBER);
-    singleRowNumber->isInitiallyEnabled = filter->parameter(filter_frame_rate_c::PARAM_IS_SINGLE_ROW_ENABLED);
+    singleRowNumber->isEnabled = filter->parameter(filter_frame_rate_c::PARAM_IS_SINGLE_ROW_ENABLED);
     singleRowNumber->minValue = 0;
     singleRowNumber->maxValue = MAX_CAPTURE_HEIGHT;
     auto *toggleRow = filtergui::checkbox(filter, filter_frame_rate_c::PARAM_IS_SINGLE_ROW_ENABLED);

@@ -305,12 +305,12 @@ void kc_initialize_device(void)
             auto *livePreviewEnabled = new abstract_gui_widget::combo_box;
             livePreviewEnabled->items = {"Off", "On"};
             livePreviewEnabled->on_change = [](int idx){kc_set_device_property("live preview enabled", idx);};
-            livePreviewEnabled->initialIndex = 0;
-            livePreviewEnabled->isInitiallyEnabled = CAMERA;
+            livePreviewEnabled->index = 0;
+            livePreviewEnabled->isEnabled = CAMERA;
 
             auto *takePhoto = new abstract_gui_widget::button;
             takePhoto->label = "Take";
-            takePhoto->isInitiallyEnabled = CAMERA;
+            takePhoto->isEnabled = CAMERA;
             takePhoto->on_press = []()
             {
                 if (!CAMERA)
@@ -344,7 +344,7 @@ void kc_initialize_device(void)
             static std::string shutterSpeedValue = "1/x";
             auto *shutterSpeed = new abstract_gui_widget::line_edit;
             shutterSpeed->text = shutterSpeedValue;
-            shutterSpeed->isInitiallyEnabled = CAMERA;
+            shutterSpeed->isEnabled = CAMERA;
             shutterSpeed->on_change = [](const std::string &text)
             {
                 shutterSpeedValue = text;
@@ -352,7 +352,7 @@ void kc_initialize_device(void)
 
             auto *getShutterSpeed = new abstract_gui_widget::button;
             getShutterSpeed->label = "Get";
-            getShutterSpeed->isInitiallyEnabled = CAMERA;
+            getShutterSpeed->isEnabled = CAMERA;
             getShutterSpeed->on_press = [shutterSpeed]()
             {
                 if (!CAMERA)
@@ -366,7 +366,7 @@ void kc_initialize_device(void)
 
             auto *setShutterSpeed = new abstract_gui_widget::button;
             setShutterSpeed->label = "Set";
-            setShutterSpeed->isInitiallyEnabled = CAMERA;
+            setShutterSpeed->isEnabled = CAMERA;
             setShutterSpeed->on_press = [shutterSpeed]()
             {
                 if (!CAMERA)
@@ -384,7 +384,7 @@ void kc_initialize_device(void)
             static std::string isoValue = "1";
             auto *iso = new abstract_gui_widget::line_edit;
             iso->text = isoValue;
-            iso->isInitiallyEnabled = CAMERA;
+            iso->isEnabled = CAMERA;
             iso->on_change = [](const std::string &text)
             {
                 isoValue = text;
@@ -392,7 +392,7 @@ void kc_initialize_device(void)
 
             auto *getIso= new abstract_gui_widget::button;
             getIso->label = "Get";
-            getIso->isInitiallyEnabled = CAMERA;
+            getIso->isEnabled = CAMERA;
             getIso->on_press = [iso]()
             {
                 if (!CAMERA)
@@ -406,7 +406,7 @@ void kc_initialize_device(void)
 
             auto *setIso = new abstract_gui_widget::button;
             setIso->label = "Set";
-            setIso->isInitiallyEnabled = CAMERA;
+            setIso->isEnabled = CAMERA;
             setIso->on_press = [iso]()
             {
                 if (!CAMERA)
@@ -424,7 +424,7 @@ void kc_initialize_device(void)
             static std::string _customPropertyName = "whitebalance";
             auto *customPropertyName = new abstract_gui_widget::line_edit;
             customPropertyName->text = _customPropertyName;
-            customPropertyName->isInitiallyEnabled = CAMERA;
+            customPropertyName->isEnabled = CAMERA;
             customPropertyName->on_change = [](const std::string &text)
             {
                 _customPropertyName = text;
@@ -433,7 +433,7 @@ void kc_initialize_device(void)
             static std::string _customPropertyValue = "Auto";
             auto *customPropertyValue = new abstract_gui_widget::line_edit;
             customPropertyValue->text = _customPropertyValue;
-            customPropertyValue->isInitiallyEnabled = CAMERA;
+            customPropertyValue->isEnabled = CAMERA;
             customPropertyValue->on_change = [](const std::string &text)
             {
                 _customPropertyValue = text;
@@ -441,7 +441,7 @@ void kc_initialize_device(void)
 
             auto *setCustomProperty = new abstract_gui_widget::button;
             setCustomProperty->label = "Set";
-            setCustomProperty->isInitiallyEnabled = CAMERA;
+            setCustomProperty->isEnabled = CAMERA;
             setCustomProperty->on_press = [customPropertyValue]()
             {
                 if (!CAMERA)
@@ -458,7 +458,7 @@ void kc_initialize_device(void)
 
             auto *getCustomProperty = new abstract_gui_widget::button;
             getCustomProperty->label = "Get";
-            getCustomProperty->isInitiallyEnabled = CAMERA;
+            getCustomProperty->isEnabled = CAMERA;
             getCustomProperty->on_press = [=]()
             {
                 if (!CAMERA)

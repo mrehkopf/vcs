@@ -157,12 +157,12 @@ void kc_initialize_device(void)
         auto *fps = new abstract_gui_widget::combo_box;
         fps->items = {"60", "50", "30", "25", "10"};
         fps->on_change = [fps](int idx){kc_set_device_property("fps", std::stoi(fps->items[idx]));};
-        fps->initialIndex = 0;
+        fps->index = 0;
 
         auto *autoFocus = new abstract_gui_widget::combo_box;
         autoFocus->items = {"Off", "On"};
         autoFocus->on_change = [](int idx){kc_set_device_property("autofocus", idx);};
-        autoFocus->initialIndex = 0;
+        autoFocus->index = 0;
 
         static abstract_gui_s gui;
         gui.fields.push_back({"Autofocus", {autoFocus}});

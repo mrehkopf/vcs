@@ -17,10 +17,10 @@ struct abstract_gui_widget_s
     virtual ~abstract_gui_widget_s(void){}
 
     std::function<void(const bool)> set_enabled;
-    bool isInitiallyEnabled = true;
+    bool isEnabled = true;
 
     std::function<void(const bool)> set_visible;
-    bool isInitiallyVisible = true;
+    bool isVisible = true;
 };
 
 namespace abstract_gui_widget
@@ -57,6 +57,7 @@ namespace abstract_gui_widget
 
     struct text_edit : abstract_gui_widget_s
     {
+        std::function<void(std::string)> set_text;
         std::function<void(const std::string&)> on_change;
         std::string text;
         std::size_t maxLength = 255;
@@ -73,14 +74,14 @@ namespace abstract_gui_widget
     struct checkbox : abstract_gui_widget_s
     {
         std::function<void(const bool)> on_change;
-        bool initialState = false;
+        bool state = false;
         std::string label;
     };
 
     struct spinner : abstract_gui_widget_s
     {
         std::function<void(const int)> on_change;
-        int initialValue = 0;
+        int value = 0;
         int maxValue = 0;
         int minValue = 0;
         std::string prefix = "";
@@ -91,7 +92,7 @@ namespace abstract_gui_widget
     struct double_spinner : abstract_gui_widget_s
     {
         std::function<void(const double)> on_change;
-        double initialValue = 0;
+        double value = 0;
         double maxValue = 0;
         double minValue = 0;
         int numDecimals = 1;
@@ -104,7 +105,7 @@ namespace abstract_gui_widget
     struct combo_box : abstract_gui_widget_s
     {
         std::function<void(const int)> on_change;
-        unsigned initialIndex;
+        unsigned index;
         std::vector<std::string> items;
     };
 }

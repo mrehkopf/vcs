@@ -66,24 +66,28 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
             containerLayout->setContentsMargins(0, 0, 0, 0);
             rowContainer->setFrameShape(QFrame::Shape::NoFrame);
 
-            for (auto *component: field.components)
+            for (auto *abstractComponent: field.components)
             {
                 QWidget *widget = nullptr;
 
-                if (dynamic_cast<abstract_gui_widget::label*>(component))
+                if (dynamic_cast<abstract_gui_widget::label*>(abstractComponent))
                 {
-                    auto *const c = ((abstract_gui_widget::label*)component);
+                    auto *const c = ((abstract_gui_widget::label*)abstractComponent);
                     auto *const label = qobject_cast<QLabel*>(widget = new QLabel(QString::fromStdString(c->text), this));
 
                     label->setStyleSheet("margin: 0; padding: 0; min-height: 1.25em;");
                     label->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
                     label->setAlignment(Qt::AlignLeft);
 
-                    c->set_text = [label](const std::string &text){label->setText(QString::fromStdString(text));};
+                    c->set_text = [=](const std::string &text)
+                    {
+                        label->setText(QString::fromStdString(text));
+                        c->text = text;
+                    };
                 }
-                else if (dynamic_cast<abstract_gui_widget::button*>(component))
+                else if (dynamic_cast<abstract_gui_widget::button*>(abstractComponent))
                 {
-                    auto *const c = ((abstract_gui_widget::button*)component);
+                    auto *const c = ((abstract_gui_widget::button*)abstractComponent);
                     auto *const button = qobject_cast<QPushButton*>(widget = new QPushButton(QString::fromStdString(c->label), this));
 
                     button->setStyleSheet("padding: 0 0.75em;");
@@ -93,14 +97,14 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         connect(button, &QPushButton::clicked, [=, this]{c->on_press();});
                     }
                 }
-                else if (dynamic_cast<abstract_gui_widget::horizontal_rule*>(component))
+                else if (dynamic_cast<abstract_gui_widget::horizontal_rule*>(abstractComponent))
                 {
                     auto *const rule = qobject_cast<QFrame*>(widget = new QFrame(this));
                     rule->setFrameShape(QFrame::HLine);
                 }
-                else if (dynamic_cast<abstract_gui_widget::button_get_open_filename*>(component))
+                else if (dynamic_cast<abstract_gui_widget::button_get_open_filename*>(abstractComponent))
                 {
-                    auto *const c = ((abstract_gui_widget::button_get_open_filename*)component);
+                    auto *const c = ((abstract_gui_widget::button_get_open_filename*)abstractComponent);
                     auto *const button = qobject_cast<QPushButton*>(widget = new QPushButton(QString::fromStdString(c->label), this));
 
                     if (!c->on_success)
@@ -123,26 +127,46 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         }
                     });
                 }
-                else if (dynamic_cast<abstract_gui_widget::line_edit*>(component))
+                else if (dynamic_cast<abstract_gui_widget::line_edit*>(abstractComponent))
                 {
-                    auto *const c = ((abstract_gui_widget::line_edit*)component);
+                    auto *const c = ((abstract_gui_widget::line_edit*)abstractComponent);
                     auto *const lineEdit = qobject_cast<QLineEdit*>(widget = new QLineEdit(QString::fromStdString(c->text), this));
 
-                    c->set_text = [lineEdit](const std::string &text){lineEdit->setText(QString::fromStdString(text));};
+                    c->set_text = [=](const std::string &text)
+                    {
+                        lineEdit->setText(QString::fromStdString(text));
+
+                        c->text = text;
+                        if (c->on_change)
+                        {
+                            c->on_change(text);
+                        }
+                    };
 
                     connect(lineEdit, &QLineEdit::textChanged, [=, this]
                     {
                         c->on_change(lineEdit->text().toStdString());
                     });
                 }
-                else if (dynamic_cast<abstract_gui_widget::text_edit*>(component))
+                else if (dynamic_cast<abstract_gui_widget::text_edit*>(abstractComponent))
                 {
-                    auto *const c = ((abstract_gui_widget::text_edit*)component);
+                    auto *const c = ((abstract_gui_widget::text_edit*)abstractComponent);
                     auto *const textEdit = qobject_cast<QPlainTextEdit*>(widget = new QPlainTextEdit(QString::fromStdString(c->text), this));
 
                     textEdit->setMinimumWidth(150);
                     textEdit->setMaximumHeight(70);
                     textEdit->setTabChangesFocus(true);
+
+                    c->set_text = [=](const std::string &text)
+                    {
+                        textEdit->setPlainText(QString::fromStdString(text));
+
+                        c->text = text;
+                        if (c->on_change)
+                        {
+                            c->on_change(text);
+                        }
+                    };
 
                     connect(textEdit, &QPlainTextEdit::textChanged, [=, this]
                     {
@@ -157,24 +181,25 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         emit this->mutated(textEdit);
                     });
                 }
-                else if (dynamic_cast<abstract_gui_widget::checkbox*>(component))
+                else if (dynamic_cast<abstract_gui_widget::checkbox*>(abstractComponent))
                 {
-                    auto *const c = ((abstract_gui_widget::checkbox*)component);
+                    auto *const c = ((abstract_gui_widget::checkbox*)abstractComponent);
                     auto *const checkbox = qobject_cast<QCheckBox*>(widget = new QCheckBox(this));
 
-                    checkbox->setChecked(c->initialState);
+                    checkbox->setChecked(c->state);
                     checkbox->setText(QString::fromStdString(c->label));
                     checkbox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
                     connect(checkbox, &QCheckBox::toggled, [=, this](const bool isChecked)
                     {
                         c->on_change(isChecked);
+                        c->state = isChecked;
                         emit this->mutated(checkbox);
                     });
                 }
-                else if (dynamic_cast<abstract_gui_widget::combo_box*>(component))
+                else if (dynamic_cast<abstract_gui_widget::combo_box*>(abstractComponent))
                 {
-                    auto *const c = ((abstract_gui_widget::combo_box*)component);
+                    auto *const c = ((abstract_gui_widget::combo_box*)abstractComponent);
                     auto *const combobox = qobject_cast<QComboBox*>(widget = new QComboBox(this));
 
                     for (const auto &item: c->items)
@@ -182,21 +207,22 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         combobox->addItem(QString::fromStdString(item));
                     }
 
-                    combobox->setCurrentIndex(c->initialIndex);
+                    combobox->setCurrentIndex(c->index);
 
-                    connect(combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=, this](const int currentIdx)
+                    connect(combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=, this](const int newIdx)
                     {
-                        c->on_change(currentIdx);
+                        c->on_change(newIdx);
+                        c->index = newIdx;
                         emit this->mutated(combobox);
                     });
                 }
-                else if (dynamic_cast<abstract_gui_widget::spinner*>(component))
+                else if (dynamic_cast<abstract_gui_widget::spinner*>(abstractComponent))
                 {
-                    auto *const c = ((abstract_gui_widget::spinner*)component);
+                    auto *const c = ((abstract_gui_widget::spinner*)abstractComponent);
                     auto *const spinbox = qobject_cast<QSpinBox*>(widget = new QSpinBox(this));
 
                     spinbox->setRange(c->minValue, c->maxValue);
-                    spinbox->setValue(c->initialValue);
+                    spinbox->setValue(c->value);
                     spinbox->setPrefix(QString::fromStdString(c->prefix));
                     spinbox->setSuffix(QString::fromStdString(c->suffix));
                     spinbox->setButtonSymbols(
@@ -216,17 +242,18 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     connect(spinbox, QOverload<int>::of(&QSpinBox::valueChanged), [=, this](const double newValue)
                     {
                         c->on_change(newValue);
+                        c->value = newValue;
                         emit this->mutated(spinbox);
                     });
                 }
-                else if (dynamic_cast<abstract_gui_widget::double_spinner*>(component))
+                else if (dynamic_cast<abstract_gui_widget::double_spinner*>(abstractComponent))
                 {
-                    auto *const c = ((abstract_gui_widget::double_spinner*)component);
+                    auto *const c = ((abstract_gui_widget::double_spinner*)abstractComponent);
                     auto *const doublespinbox = qobject_cast<QDoubleSpinBox*>(widget = new QDoubleSpinBox(this));
 
                     doublespinbox->setRange(c->minValue, c->maxValue);
                     doublespinbox->setDecimals(c->numDecimals);
-                    doublespinbox->setValue(c->initialValue);
+                    doublespinbox->setValue(c->value);
                     doublespinbox->setSingleStep(c->stepSize);
                     doublespinbox->setPrefix(QString::fromStdString(c->prefix));
                     doublespinbox->setSuffix(QString::fromStdString(c->suffix));
@@ -247,6 +274,7 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     connect(doublespinbox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [=, this](const double newValue)
                     {
                         c->on_change(newValue);
+                        c->value = newValue;
                         emit this->mutated(doublespinbox);
                     });
                 }
@@ -257,11 +285,19 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
 
                 k_assert(widget, "Expected the filter GUI widget to have been initialized by now.");
 
-                widget->setEnabled(component->isInitiallyEnabled);
-                component->set_enabled = [widget](const bool isEnabled){widget->setEnabled(isEnabled);};
+                widget->setEnabled(abstractComponent->isEnabled);
+                abstractComponent->set_enabled = [=](const bool isEnabled)
+                {
+                    widget->setEnabled(isEnabled);
+                    abstractComponent->isEnabled = isEnabled;
+                };
 
-                widget->setVisible(component->isInitiallyVisible);
-                component->set_visible = [widget](const bool isVisible){widget->setVisible(isVisible);};
+                widget->setVisible(abstractComponent->isVisible);
+                abstractComponent->set_visible = [=](const bool isVisible)
+                {
+                    widget->setVisible(isVisible);
+                    abstractComponent->isVisible = isVisible;
+                };
 
                 containerLayout->addWidget(widget);
             }

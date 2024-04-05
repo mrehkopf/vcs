@@ -526,7 +526,7 @@ void kc_initialize_device(void)
             {
                 domainSelector->items.push_back(d.first);
             }
-            domainSelector->initialIndex = CURRENT_COLOR_DOMAIN_IDX;
+            domainSelector->index = CURRENT_COLOR_DOMAIN_IDX;
             domainSelector->on_change = [domainSelector](int idx)
             {
                 // The index value could be -1, which would mean no selection. In that
