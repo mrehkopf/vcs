@@ -26,6 +26,7 @@
 #include "filter/filters/input_gate/filter_input_gate.h"
 #include "filter/filters/output_gate/filter_output_gate.h"
 #include "filter/filters/line_copy/filter_line_copy.h"
+#include "filter/filters/focus_peaking/filter_focus_peaking.h"
 #include "filter/filters/unknown/filter_unknown.h"
 #include "filter/filters/crt/filter_crt.h"
 
