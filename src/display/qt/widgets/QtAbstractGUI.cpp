@@ -91,11 +91,7 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                     auto *const button = qobject_cast<QPushButton*>(widget = new QPushButton(QString::fromStdString(c->label), this));
 
                     button->setStyleSheet("padding: 0 0.75em;");
-
-                    if (c->on_press)
-                    {
-                        connect(button, &QPushButton::clicked, [=, this]{c->on_press();});
-                    }
+                    connect(button, &QPushButton::clicked, [=, this]{c->on_press();});
                 }
                 else if (dynamic_cast<abstract_gui_widget::horizontal_rule*>(abstractComponent))
                 {
@@ -137,10 +133,7 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         lineEdit->setText(QString::fromStdString(text));
 
                         c->text = text;
-                        if (c->on_change)
-                        {
-                            c->on_change(text);
-                        }
+                        c->on_change(text);
                     };
 
                     connect(lineEdit, &QLineEdit::textChanged, [=, this]
@@ -162,10 +155,7 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         textEdit->setPlainText(QString::fromStdString(text));
 
                         c->text = text;
-                        if (c->on_change)
-                        {
-                            c->on_change(text);
-                        }
+                        c->on_change(text);
                     };
 
                     connect(textEdit, &QPlainTextEdit::textChanged, [=, this]

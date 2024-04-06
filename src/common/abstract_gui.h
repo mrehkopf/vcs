@@ -16,10 +16,10 @@ struct abstract_gui_widget_s
 {
     virtual ~abstract_gui_widget_s(void){}
 
-    std::function<void(const bool)> set_enabled;
+    std::function<void(const bool)> set_enabled = [](const bool){};
     bool isEnabled = true;
 
-    std::function<void(const bool)> set_visible;
+    std::function<void(const bool)> set_visible = [](const bool){};
     bool isVisible = true;
 };
 
@@ -38,49 +38,49 @@ namespace abstract_gui_widget
 
     struct label : abstract_gui_widget_s
     {
-        std::function<void(std::string)> set_text;
+        std::function<void(const std::string&)> set_text = [](const std::string&){};
         std::string text;
     };
 
     struct button : abstract_gui_widget_s
     {
-        std::function<void(void)> on_press;
+        std::function<void(void)> on_press = [](void){};
         std::string label;
     };
 
     struct button_get_open_filename : abstract_gui_widget_s
     {
-        std::function<void(const std::string&)> on_success;
+        std::function<void(const std::string&)> on_success = [](const std::string&){};
         std::string label;
         std::string filenameFilter;
     };
 
     struct text_edit : abstract_gui_widget_s
     {
-        std::function<void(std::string)> set_text;
-        std::function<void(const std::string&)> on_change;
+        std::function<void(const std::string&)> set_text = [](const std::string&){};
+        std::function<void(const std::string&)> on_change = [](const std::string&){};
         std::string text;
         std::size_t maxLength = 255;
     };
 
     struct line_edit : abstract_gui_widget_s
     {
-        std::function<void(std::string)> set_text;
-        std::function<void(const std::string&)> on_change;
+        std::function<void(const std::string&)> set_text = [](const std::string&){};
+        std::function<void(const std::string&)> on_change = [](const std::string&){};
         std::string text;
         std::size_t maxLength = 255;
     };
 
     struct checkbox : abstract_gui_widget_s
     {
-        std::function<void(const bool)> on_change;
+        std::function<void(const bool)> on_change = [](const bool){};
         bool state = false;
         std::string label;
     };
 
     struct spinner : abstract_gui_widget_s
     {
-        std::function<void(const int)> on_change;
+        std::function<void(const int)> on_change = [](const int){};
         int value = 0;
         int maxValue = 0;
         int minValue = 0;
@@ -91,7 +91,7 @@ namespace abstract_gui_widget
 
     struct double_spinner : abstract_gui_widget_s
     {
-        std::function<void(const double)> on_change;
+        std::function<void(const double)> on_change = [](const double){};
         double value = 0;
         double maxValue = 0;
         double minValue = 0;
@@ -104,9 +104,9 @@ namespace abstract_gui_widget
 
     struct combo_box : abstract_gui_widget_s
     {
-        std::function<void(const std::vector<std::string>&)> set_items;
-        std::function<void(const int)> set_index;
-        std::function<void(const int)> on_change;
+        std::function<void(const std::vector<std::string>&)> set_items = [](const std::vector<std::string>&){};
+        std::function<void(const int)> set_index = [](const int){};
+        std::function<void(const int)> on_change = [](const int){};
         unsigned index;
         std::vector<std::string> items;
     };
