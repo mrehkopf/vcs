@@ -61,7 +61,7 @@ static std::string get_config_value(const std::string &name)
     ){
         if (!value)
         {
-            return "unknown";
+            return "(unknown)";
         }
 
         switch (type)
@@ -73,7 +73,7 @@ static std::string get_config_value(const std::string &name)
     }
     else
     {
-        return "error";
+        return "(error)";
     }
 }
 
@@ -236,6 +236,51 @@ static void with_live_preview_suspended(std::function<void(void)> fn)
     });
 }
 
+static std::vector<std::string> get_supported_config_properties(void)
+{
+    std::vector<std::string> names;
+
+    CameraWidget *config = nullptr;
+    CameraWidget *child = nullptr;
+
+    std::function<void(CameraWidget *parent)> traverse_config_tree = [&names, &traverse_config_tree](CameraWidget *parent)->void
+    {
+        const char *name = nullptr;
+        CameraWidgetType type;
+
+        if (
+            (GP_OK <= gp_widget_get_name(parent, &name)) &&
+            (GP_OK <= gp_widget_get_type(parent, &type))
+        ){
+            if (name && (type >= 2))
+            {
+                names.push_back(name);
+            }
+            else
+            {
+                const int numChildren = gp_widget_count_children(parent);
+
+                for (int i = 0; i < numChildren; i++) {
+                    CameraWidget *child;
+                    gp_widget_get_child(parent, i, &child);
+                    traverse_config_tree(child);
+                }
+            }
+        }
+    };
+
+    if (
+        (GP_OK <= gp_camera_get_config(CAMERA, &config, GP_CONTEXT)) &&
+        (GP_OK <= gp_widget_get_child_by_name(config, "settings", &child))
+    ){
+        traverse_config_tree(config);
+    }
+
+    std::sort(names.begin(), names.end());
+
+    return names;
+}
+
 void kc_initialize_device(void)
 {
     DEBUG(("Initializing the GPhoto capture device."));
@@ -339,110 +384,30 @@ void kc_initialize_device(void)
             });
         }
 
-        // Options.
+        // Configuration.
         {
-            static std::string shutterSpeedValue = "1/x";
-            auto *shutterSpeed = new abstract_gui_widget::line_edit;
-            shutterSpeed->text = shutterSpeedValue;
-            shutterSpeed->isEnabled = CAMERA;
-            shutterSpeed->on_change = [](const std::string &text)
+            auto *configPropertyName = new abstract_gui_widget::combo_box;
+            configPropertyName->items = get_supported_config_properties();
+            configPropertyName->isEnabled = !configPropertyName->items.empty();
+
+            auto *reloadConfigPropertyNames = new abstract_gui_widget::button;
+            reloadConfigPropertyNames->label = "⟳";
+            reloadConfigPropertyNames->isEnabled = CAMERA;
+            reloadConfigPropertyNames->on_press = [=]()
             {
-                shutterSpeedValue = text;
+                configPropertyName->set_items(get_supported_config_properties());
+                configPropertyName->set_index(0);
+                configPropertyName->set_enabled(!configPropertyName->items.empty());
             };
 
-            auto *getShutterSpeed = new abstract_gui_widget::button;
-            getShutterSpeed->label = "Get";
-            getShutterSpeed->isEnabled = CAMERA;
-            getShutterSpeed->on_press = [shutterSpeed]()
-            {
-                if (!CAMERA)
-                {
-                    DEBUG(("Attempting to get the shutter speed while there is no camera. Ignoring this."));
-                    return;
-                }
+            auto *configPropertyValue = new abstract_gui_widget::line_edit;
+            configPropertyValue->text = "";
+            configPropertyValue->isEnabled = CAMERA;
 
-                shutterSpeed->set_text(get_config_value("shutterspeed"));
-            };
-
-            auto *setShutterSpeed = new abstract_gui_widget::button;
-            setShutterSpeed->label = "Set";
-            setShutterSpeed->isEnabled = CAMERA;
-            setShutterSpeed->on_press = [shutterSpeed]()
-            {
-                if (!CAMERA)
-                {
-                    DEBUG(("Attempting to set the shutter speed while there is no camera. Ignoring this."));
-                    return;
-                }
-
-                set_config_value("shutterspeed", shutterSpeedValue);
-
-                DEBUG(("The shutter speed is now %s", get_config_value("shutterspeed").c_str()));
-                shutterSpeed->set_text(get_config_value("shutterspeed"));
-            };
-
-            static std::string isoValue = "1";
-            auto *iso = new abstract_gui_widget::line_edit;
-            iso->text = isoValue;
-            iso->isEnabled = CAMERA;
-            iso->on_change = [](const std::string &text)
-            {
-                isoValue = text;
-            };
-
-            auto *getIso= new abstract_gui_widget::button;
-            getIso->label = "Get";
-            getIso->isEnabled = CAMERA;
-            getIso->on_press = [iso]()
-            {
-                if (!CAMERA)
-                {
-                    DEBUG(("Attempting to get the ISO value while there is no camera. Ignoring this."));
-                    return;
-                }
-
-                iso->set_text(get_config_value("iso"));
-            };
-
-            auto *setIso = new abstract_gui_widget::button;
-            setIso->label = "Set";
-            setIso->isEnabled = CAMERA;
-            setIso->on_press = [iso]()
-            {
-                if (!CAMERA)
-                {
-                    DEBUG(("Attempting to set the ISO value while there is no camera. Ignoring this."));
-                    return;
-                }
-
-                set_config_value("iso", isoValue);
-
-                DEBUG(("The ISO is now %s", get_config_value("iso").c_str()));
-                iso->set_text(get_config_value("iso"));
-            };
-
-            static std::string _customPropertyName = "whitebalance";
-            auto *customPropertyName = new abstract_gui_widget::line_edit;
-            customPropertyName->text = _customPropertyName;
-            customPropertyName->isEnabled = CAMERA;
-            customPropertyName->on_change = [](const std::string &text)
-            {
-                _customPropertyName = text;
-            };
-
-            static std::string _customPropertyValue = "Auto";
-            auto *customPropertyValue = new abstract_gui_widget::line_edit;
-            customPropertyValue->text = _customPropertyValue;
-            customPropertyValue->isEnabled = CAMERA;
-            customPropertyValue->on_change = [](const std::string &text)
-            {
-                _customPropertyValue = text;
-            };
-
-            auto *setCustomProperty = new abstract_gui_widget::button;
-            setCustomProperty->label = "Set";
-            setCustomProperty->isEnabled = CAMERA;
-            setCustomProperty->on_press = [customPropertyValue]()
+            auto *setConfigPropertyValue = new abstract_gui_widget::button;
+            setConfigPropertyValue->label = "Set";
+            setConfigPropertyValue->isEnabled = CAMERA;
+            setConfigPropertyValue->on_press = [=]()
             {
                 if (!CAMERA)
                 {
@@ -450,16 +415,18 @@ void kc_initialize_device(void)
                     return;
                 }
 
-                set_config_value(_customPropertyName, _customPropertyValue);
+                const std::string propName = configPropertyName->items.at(configPropertyName->index);
 
-                DEBUG(("The value for %s is now %s", _customPropertyName.c_str(), get_config_value(_customPropertyName).c_str()));
-                customPropertyValue->set_text(get_config_value(_customPropertyName));
+                set_config_value(propName, configPropertyValue->text);
+
+                DEBUG(("The value for %s is now %s", propName.c_str(), get_config_value(propName).c_str()));
+                configPropertyValue->set_text(get_config_value(propName));
             };
 
-            auto *getCustomProperty = new abstract_gui_widget::button;
-            getCustomProperty->label = "Get";
-            getCustomProperty->isEnabled = CAMERA;
-            getCustomProperty->on_press = [=]()
+            auto *getConfigPropertyValue = new abstract_gui_widget::button;
+            getConfigPropertyValue->label = "Get";
+            getConfigPropertyValue->isEnabled = CAMERA;
+            getConfigPropertyValue->on_press = [=]()
             {
                 if (!CAMERA)
                 {
@@ -467,30 +434,22 @@ void kc_initialize_device(void)
                     return;
                 }
 
-                customPropertyValue->set_text(get_config_value(_customPropertyName));
+                const std::string propName = configPropertyName->items.at(configPropertyName->index);
+                configPropertyValue->set_text(get_config_value(propName));
             };
 
             static abstract_gui_s gui;
-            gui.fields.push_back({"Shutter", {shutterSpeed, getShutterSpeed, setShutterSpeed}});
-            gui.fields.push_back({"ISO", {iso, getIso, setIso}});
-            gui.fields.push_back({"", {new abstract_gui_widget::horizontal_rule}});
-            gui.fields.push_back({"Custom", {customPropertyName, customPropertyValue, getCustomProperty, setCustomProperty}});
+            gui.layout = abstract_gui_s::layout_e::vertical_box;
+            gui.fields.push_back({"", {reloadConfigPropertyNames, configPropertyName, configPropertyValue, getConfigPropertyValue, setConfigPropertyValue}});
             kd_add_control_panel_widget("Capture", "Configuration", &gui);
 
             kt_timer(1000, [=](const unsigned)
             {
-                iso->set_enabled(CAMERA);
-                setIso->set_enabled(CAMERA);
-                getIso->set_enabled(CAMERA);
-
-                shutterSpeed->set_enabled(CAMERA);
-                setShutterSpeed->set_enabled(CAMERA);
-                getShutterSpeed->set_enabled(CAMERA);
-
-                customPropertyValue->set_enabled(CAMERA);
-                customPropertyName->set_enabled(CAMERA);
-                getCustomProperty->set_enabled(CAMERA);
-                setCustomProperty->set_enabled(CAMERA);
+                configPropertyValue->set_enabled(CAMERA);
+                configPropertyName->set_enabled(CAMERA);
+                getConfigPropertyValue->set_enabled(CAMERA);
+                setConfigPropertyValue->set_enabled(CAMERA);
+                reloadConfigPropertyNames->set_enabled(CAMERA);
             });
         }
     }
