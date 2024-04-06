@@ -104,6 +104,8 @@ namespace abstract_gui_widget
 
     struct combo_box : abstract_gui_widget_s
     {
+        std::function<void(const std::vector<std::string>&)> set_items;
+        std::function<void(const int)> set_index;
         std::function<void(const int)> on_change;
         unsigned index;
         std::vector<std::string> items;

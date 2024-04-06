@@ -209,6 +209,21 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
 
                     combobox->setCurrentIndex(c->index);
 
+                    c->set_index = [=](const int newIdx)
+                    {
+                        c->on_change(newIdx);
+                        combobox->setCurrentIndex(newIdx);
+                    };
+
+                    c->set_items = [=](const std::vector<std::string> &items)
+                    {
+                        combobox->clear();
+                        for (const auto &item: items)
+                        {
+                            combobox->addItem(QString::fromStdString(item));
+                        }
+                    };
+
                     connect(combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=, this](const int newIdx)
                     {
                         c->on_change(newIdx);
