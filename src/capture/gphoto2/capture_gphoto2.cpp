@@ -243,7 +243,7 @@ static std::vector<std::string> get_supported_config_properties(void)
     CameraWidget *config = nullptr;
     CameraWidget *child = nullptr;
 
-    std::function<void(CameraWidget *parent)> traverse_config_tree = [&names, &traverse_config_tree](CameraWidget *parent)->void
+    std::function<void(CameraWidget*, const std::string&)> traverse_config_tree = [&names, &traverse_config_tree](CameraWidget *parent, const std::string &path)->void
     {
         const char *name = nullptr;
         CameraWidgetType type;
@@ -252,18 +252,21 @@ static std::vector<std::string> get_supported_config_properties(void)
             (GP_OK <= gp_widget_get_name(parent, &name)) &&
             (GP_OK <= gp_widget_get_type(parent, &type))
         ){
+            const std::string nameAsString = name;
+            const std::string fullPath = (path + '/' + nameAsString);
+
             if (name && (type >= 2))
             {
-                names.push_back(name);
+                names.push_back(fullPath);
             }
-            else
+            else if (nameAsString != "other")
             {
                 const int numChildren = gp_widget_count_children(parent);
 
                 for (int i = 0; i < numChildren; i++) {
                     CameraWidget *child;
                     gp_widget_get_child(parent, i, &child);
-                    traverse_config_tree(child);
+                    traverse_config_tree(child, fullPath);
                 }
             }
         }
@@ -273,7 +276,7 @@ static std::vector<std::string> get_supported_config_properties(void)
         (GP_OK <= gp_camera_get_config(CAMERA, &config, GP_CONTEXT)) &&
         (GP_OK <= gp_widget_get_child_by_name(config, "settings", &child))
     ){
-        traverse_config_tree(config);
+        traverse_config_tree(config, "");
     }
 
     std::sort(names.begin(), names.end());
@@ -390,13 +393,18 @@ void kc_initialize_device(void)
             configPropertyName->items = get_supported_config_properties();
             configPropertyName->isEnabled = !configPropertyName->items.empty();
 
+            const auto property_name = [=]()->std::string
+            {
+                const std::string fullName = configPropertyName->items.at(configPropertyName->index);
+                return fullName.substr((fullName.find_last_of("/") + 1), fullName.length());
+            };
+
             auto *reloadConfigPropertyNames = new abstract_gui_widget::button;
             reloadConfigPropertyNames->label = "⟳";
             reloadConfigPropertyNames->isEnabled = CAMERA;
             reloadConfigPropertyNames->on_press = [=]()
             {
                 configPropertyName->set_items(get_supported_config_properties());
-                configPropertyName->set_index(0);
                 configPropertyName->set_enabled(!configPropertyName->items.empty());
             };
 
@@ -415,8 +423,7 @@ void kc_initialize_device(void)
                     return;
                 }
 
-                const std::string propName = configPropertyName->items.at(configPropertyName->index);
-
+                const std::string propName = property_name();
                 set_config_value(propName, configPropertyValue->text);
 
                 DEBUG(("The value for %s is now %s", propName.c_str(), get_config_value(propName).c_str()));
@@ -434,8 +441,7 @@ void kc_initialize_device(void)
                     return;
                 }
 
-                const std::string propName = configPropertyName->items.at(configPropertyName->index);
-                configPropertyValue->set_text(get_config_value(propName));
+                configPropertyValue->set_text(get_config_value(property_name()));
             };
 
             static abstract_gui_s gui;
@@ -445,11 +451,12 @@ void kc_initialize_device(void)
 
             kt_timer(1000, [=](const unsigned)
             {
-                configPropertyValue->set_enabled(CAMERA);
-                configPropertyName->set_enabled(CAMERA);
-                getConfigPropertyValue->set_enabled(CAMERA);
-                setConfigPropertyValue->set_enabled(CAMERA);
+                const bool areConfigPropertyValuesLoaded = !configPropertyName->items.empty();
                 reloadConfigPropertyNames->set_enabled(CAMERA);
+                configPropertyValue->set_enabled(CAMERA && areConfigPropertyValuesLoaded);
+                configPropertyName->set_enabled(CAMERA && areConfigPropertyValuesLoaded);
+                getConfigPropertyValue->set_enabled(CAMERA && areConfigPropertyValuesLoaded);
+                setConfigPropertyValue->set_enabled(CAMERA && areConfigPropertyValuesLoaded);
             });
         }
     }
