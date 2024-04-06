@@ -197,6 +197,7 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         combobox->addItem(QString::fromStdString(item));
                     }
 
+                    combobox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
                     combobox->setCurrentIndex(c->index);
 
                     c->set_index = [=](const int newIdx)
@@ -212,6 +213,9 @@ QtAbstractGUI::QtAbstractGUI(const abstract_gui_s &gui) : QFrame()
                         {
                             combobox->addItem(QString::fromStdString(item));
                         }
+
+                        c->items = items;
+                        c->set_index(0);
                     };
 
                     connect(combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=, this](const int newIdx)
