@@ -1,6 +1,8 @@
 # VCS
 
-A control application for Datapath Vision capture cards on Linux.
+A control application for Datapath Vision capture cards under Linux.
+
+Also has experimental support for generic Video4Linux devices, digital cameras via gPhoto2, and a shared memory interface for inter-process capture.
 
 ![VCS 3.0](./screenshot.png)
 
@@ -10,10 +12,13 @@ A control application for Datapath Vision capture cards on Linux.
 - Various filters and scalers
 - Variable refresh rate output
 - Free and open source
+- Modular, extendable design
 
 ## Supported capture hardware
 
 Any model of Datapath capture card supported by the Datapath Vision driver for Linux should be compatible, although the card's full set of capabilities may not be exposed.
+
+Other capture devices can be supported via custom [capture backends](#the-capture-backend).
 
 ## Documentation
 
@@ -62,12 +67,12 @@ A capture backend is an implementation in VCS providing support for a particular
 
 One &ndash; and only one &ndash; capture backend must be active in any build of VCS. To select which, include the corresponding identifier in the `DEFINES` variable in [vcs.pro](vcs.pro).
 
-The following capture backends are available to choose from:
+The following capture backends are currently available to choose from:
 
 | Backend identifier          | Purpose                                                                                                                                                     |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CAPTURE_BACKEND_VISION_V4L  | Supports the Datapath Vision range of capture cards in Linux. Requires installation of the Datapath Vision driver.                                          |
-| CAPTURE_BACKEND_VIRTUAL     | Provides a virtual capture device that generates a test image.                                                                                              |
-| CAPTURE_BACKEND_GENERIC_V4L | A sample implementation of a generic, non-Datapath-specific capture backend using Video4Linux. For educational purposes.                                    |
-| CAPTURE_BACKEND_GPHOTO2     | Exposes some of the functionality of gPhoto2 to allow interaction with digital cameras. Requires libgphoto2. A lazy implementation, for hobby projects etc. |
-| CAPTURE_BACKEND_MMAP        | Captures data from another application via shared memory. Requires patching the application to support this interface.                                      |
+| [CAPTURE_BACKEND_VISION_V4L](./src/capture/vision_v4l/)  | Supports the Datapath Vision range of capture cards in Linux. Requires installation of the Datapath Vision driver.                                          |
+| [CAPTURE_BACKEND_VIRTUAL](./src/capture/virtual/)     | Provides a virtual capture device that generates a test image.                                                                                              |
+| [CAPTURE_BACKEND_GENERIC_V4L](./src/capture/generic_v4l/) | A sample implementation of a generic, non-Datapath-specific capture backend using Video4Linux. For educational purposes.                                    |
+| [CAPTURE_BACKEND_GPHOTO2](./src/capture/gphoto2/)     | Exposes some of the functionality of gPhoto2 to allow interaction with digital cameras. Requires libgphoto2. A lazy implementation, for hobby projects etc. |
+| [CAPTURE_BACKEND_MMAP](./src/capture/mmap/)        | Captures data from another application via shared memory. Requires patching the application to support this interface.                                      |
