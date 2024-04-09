@@ -7,6 +7,7 @@
 
 #include <QFileInfo>
 #include <QKeyEvent>
+#include <QStyle>
 #include "display/qt/widgets/DialogFragment.h"
 #include "common/globals.h"
 
@@ -42,6 +43,13 @@ const QString& DialogFragment::name(void) const
     return this->_name;
 }
 
+void DialogFragment::set_minimize_when_disabled(const bool is)
+{
+    this->_minimizeWhenDisabled = is;
+
+    return;
+}
+
 bool DialogFragment::has_unsaved_changes(void) const
 {
     return this->_areUnsavedChanges;
@@ -56,6 +64,12 @@ void DialogFragment::set_enabled(const bool isEnabled)
 {
     this->_isEnabled = isEnabled;
     emit this->enabled_state_set(isEnabled);
+
+    if (this->_minimizeWhenDisabled)
+    {
+        this->setProperty("shrink", (isEnabled? "false" : "true"));
+        this->style()->polish(this);
+    }
 
     return;
 }

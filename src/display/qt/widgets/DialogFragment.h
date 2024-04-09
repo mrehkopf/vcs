@@ -33,6 +33,8 @@ public:
 
     const QString& name(void) const;
 
+    void set_minimize_when_disabled(const bool is);
+
     void set_data_filename(const QString &filename);
 
     void set_unsaved_changes_flag(const bool areUnsavedChanges);
@@ -71,6 +73,8 @@ private:
 
     // Indicates whether modifications to the dialog's data have been saved.
     bool _areUnsavedChanges = false;
+
+    bool _minimizeWhenDisabled = false;
 
     // If true, the data_changed() signal won't modify the unsaved changes flag.
     bool _isUnsavedChangesFlagLocked = false;

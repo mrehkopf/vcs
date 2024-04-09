@@ -22,6 +22,8 @@ control_panel::output::Histogram::Histogram(QWidget *parent) :
 {
     this->ui->setupUi(this);
 
+    this->set_minimize_when_disabled(true);
+
     // Wire up the GUI controls to consequences for operating them.
     {
         connect(this, &DialogFragment::enabled_state_set, this, [this](const bool isEnabled)

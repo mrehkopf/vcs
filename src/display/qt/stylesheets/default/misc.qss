@@ -21,6 +21,11 @@ DialogFragment QGroupBox
     border-bottom: 1px solid black;
 }
 
+DialogFragment[shrink="true"]
+{
+    max-height: 1.85em;
+}
+
 QLabel
 {
     color: #e0e0e0;

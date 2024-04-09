@@ -896,7 +896,9 @@ void OutputWindow::add_control_panel_widget(const std::string &tabName, const st
             // We do count()-1 with the assumption that the last widget in the
             // layout is a vertical spacer pushing the other widgets to the top
             // of the layout.
-            target->insertWidget((target->count() - 1), container);
+            int insertAtIdx = (target->count() - 1);
+
+            target->insertWidget(insertAtIdx, container);
         }
     }
 

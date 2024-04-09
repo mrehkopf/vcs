@@ -31,6 +31,7 @@ control_panel::output::Overlay::Overlay(QWidget *parent) :
     ui->setupUi(this);
 
     this->set_name("Overlay editor");
+    this->set_minimize_when_disabled(true);
 
     ui->plainTextEdit->setTabStopWidth(22);
 

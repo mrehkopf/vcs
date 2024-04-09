@@ -33,6 +33,11 @@ DialogFragment[objectName="ControlPanel_Output"] QComboBox[objectName="channels"
     margin-bottom: 0.25em;
 }
 
+DialogFragment[objectName="ControlPanel_Output_Overlay"][shrink="false"]
+{
+    min-height: 250px;
+}
+
 DialogFragment[objectName="ControlPanel_Output_Overlay"] QPlainTextEdit
 {
     margin: 0;
