@@ -13,6 +13,8 @@
 // A list of all the aliases we know of.
 static std::vector<resolution_alias_s> ALIASES;
 
+static bool GLOBAL_ENABLED = true;
+
 void ka_initialize_aliases(void)
 {
     return;
@@ -38,6 +40,11 @@ static int alias_index_of_source_resolution(const resolution_s &r)
 
 bool ka_has_alias(const resolution_s &r)
 {
+    if (!GLOBAL_ENABLED)
+    {
+        return false;
+    }
+
     // Note: If there's no alias for the given resolution, this function
     // returns the same resolution.
     const resolution_s alias = ka_aliased(r);
@@ -47,6 +54,11 @@ bool ka_has_alias(const resolution_s &r)
 
 resolution_s ka_aliased(const resolution_s &r)
 {
+    if (!GLOBAL_ENABLED)
+    {
+        return r;
+    }
+
     const int aliasIdx = alias_index_of_source_resolution(r);
 
     if (aliasIdx >= 0)
@@ -60,6 +72,13 @@ resolution_s ka_aliased(const resolution_s &r)
 const std::vector<resolution_alias_s>& ka_aliases(void)
 {
     return ALIASES;
+}
+
+void ka_set_aliases_enabled(const bool is)
+{
+    GLOBAL_ENABLED = is;
+
+    return;
 }
 
 void ka_set_aliases(const std::vector<resolution_alias_s> &aliases)

@@ -34,7 +34,9 @@ control_panel::capture::AliasResolutions::AliasResolutions(QWidget *parent) :
     ui(new Ui::AliasResolutions)
 {
     this->ui->setupUi(this);
+
     this->set_name("Alias resolutions");
+    this->set_minimize_when_disabled(true);
 
     // Initialize GUI controls to their starting values.
     {
@@ -69,12 +71,31 @@ control_panel::capture::AliasResolutions::AliasResolutions(QWidget *parent) :
         {
             this->ui->pushButton_deleteSelectedAliases->setEnabled(this->ui->treeWidget_knownAliases->selectedItems().count() > 0);
         });
+
+        connect(this, &DialogFragment::enabled_state_set, this, [this](const bool isEnabled)
+        {
+            kpers_set_value(INI_GROUP_CAPTURE, "AliasResolutionsEnabled", isEnabled);
+            this->ui->groupBox->setChecked(isEnabled);
+            ka_set_aliases_enabled(isEnabled);
+        });
+
+        connect(this->ui->groupBox, &QGroupBox::toggled, this, [this](const bool isEnabled)
+        {
+            this->set_enabled(isEnabled);
+
+            if (isEnabled)
+            {
+                this->broadcast_aliases();
+            }
+        });
     }
 
     // Restore persistent aliases.
     {
         // Aliases will be in the form {"1x1@640x480", "2x1@640x480", ...}.
         QStringList aliases = kpers_value_of(INI_GROUP_CAPTURE, "AliasResolutions", QStringList{}).toStringList();
+
+        this->set_enabled(kpers_value_of(INI_GROUP_CAPTURE, "AliasResolutionsEnabled", false).toBool());
 
         // If the AliasResolutions setting is defined but empty, we'll get a QStringList
         // made up of a single empty string. But in that case what we really want is an

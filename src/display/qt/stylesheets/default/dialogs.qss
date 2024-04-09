@@ -38,6 +38,11 @@ DialogFragment[objectName="ControlPanel_Output_Overlay"][shrink="false"]
     min-height: 250px;
 }
 
+DialogFragment[objectName="ControlPanel_Capture_AliasResolutions"][shrink="false"]
+{
+    min-height: 260px;
+}
+
 DialogFragment[objectName="ControlPanel_Output_Overlay"] QPlainTextEdit
 {
     margin: 0;
