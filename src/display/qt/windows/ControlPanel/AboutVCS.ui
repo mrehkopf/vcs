@@ -68,7 +68,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>VCS is an open-source control application for Datapath Vision capture cards.</string>
+         <string>VCS is an open-source control application for various capture devices.</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
