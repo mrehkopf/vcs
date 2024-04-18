@@ -18,7 +18,7 @@ control_panel::Output::Output(QWidget *parent) :
 
     auto *const layout = new QVBoxLayout(this);
     layout->setSpacing(16);
-    layout->setMargin(16);
+    layout->setContentsMargins(QMargins(16,16,16,16));
 
     this->sizeDialog = new control_panel::output::Size(parent);
     this->scalerDialog = new control_panel::output::Scaler(parent);

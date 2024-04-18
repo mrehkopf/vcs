@@ -17,7 +17,7 @@ control_panel::Capture::Capture(QWidget *parent) :
 
     auto *const layout = new QVBoxLayout(this);
     layout->setSpacing(16);
-    layout->setMargin(16);
+    layout->setContentsMargins(QMargins(16,16,16,16));
 
     this->inputChannel = new control_panel::capture::InputChannel(parent);
     this->signalStatus = new control_panel::capture::SignalStatus(parent);

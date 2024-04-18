@@ -1,4 +1,4 @@
-#include <QMessageBox>
+﻿#include <QMessageBox>
 #include <QFileDialog>
 #include <QStatusBar>
 #include <QMenuBar>

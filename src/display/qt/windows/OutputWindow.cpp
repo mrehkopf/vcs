@@ -68,7 +68,7 @@ OutputWindow::OutputWindow(QWidget *parent) :
     // Set up a layout for the central widget, so we can add the OpenGL
     // render surface to it when/if OpenGL is enabled.
     QVBoxLayout *const mainLayout = new QVBoxLayout(ui->centralwidget);
-    mainLayout->setMargin(0);
+    mainLayout->setContentsMargins(QMargins(0,0,0,0));
     mainLayout->setSpacing(0);
 
     this->magnifyingGlass = new MagnifyingGlass(this);
@@ -876,7 +876,7 @@ void OutputWindow::add_control_panel_widget(const std::string &tabName, const st
 
     container->layout()->addWidget(new QtAbstractGUI(widget));
     container->layout()->setSpacing(0);
-    container->layout()->setMargin(0);
+    container->layout()->setContentsMargins(QMargins(0,0,0,0));
 
     // Insert the widget into the control panel.
     {
