@@ -26,6 +26,7 @@
 #include <vector>
 #include <cassert>
 #include <cstring>
+#include <cstdint>
 #include "common/vcs_event/vcs_event.h"
 #include "filter/abstract_filter.h"
 #include "main.h"

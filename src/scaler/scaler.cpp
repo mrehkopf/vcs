@@ -348,10 +348,7 @@ void ks_indicate_status(const std::string &message)
     clear_frame_buffer();
 
     FRAME_BUFFER_RESOLUTION = ks_output_resolution();
-    image_s image = {
-        .pixels = FRAME_BUFFER_PIXELS,
-        .resolution = FRAME_BUFFER_RESOLUTION
-    };
+    image_s image(FRAME_BUFFER_PIXELS, FRAME_BUFFER_RESOLUTION);
     font->render(
         message,
         &image,
