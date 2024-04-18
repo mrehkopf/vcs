@@ -1,4 +1,4 @@
-﻿#include <QMessageBox>
+#include <QMessageBox>
 #include <QFileDialog>
 #include <QStatusBar>
 #include <QMenuBar>
@@ -36,7 +36,7 @@ control_panel::VideoPresets::VideoPresets(QWidget *parent) :
     {
         // The file format we save presets into reserves the { and } characters;
         // these characters shouldn't occur in preset names.
-        ui->lineEdit_presetName->setValidator(new QRegExpValidator(QRegExp("[^{}]*"), this));
+        ui->lineEdit_presetName->setValidator(new QRegularExpressionValidator(QRegularExpression("[^{}]*"), this));
 
         ui->groupBox_activation->setEnabled(false);
         ui->comboBox_presetList->setEnabled(false);

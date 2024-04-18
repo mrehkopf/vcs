@@ -22,7 +22,7 @@
 #include <QDateTime>
 #include <QShortcut>
 #include <QPainter>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QScreen>
 #include <QImage>
 #include <QLabel>
@@ -810,7 +810,7 @@ void OutputWindow::save_screenshot(void)
             if (QFile::exists(filename))
             {
                 // Append the current time's milliseconds, for some protection against filename collisions.
-                filename.replace(QRegExp(".png$"), QString(".%1.png").arg(QTime::currentTime().toString("z")));
+                filename.replace(QRegularExpression(".png$"), QString(".%1.png").arg(QTime::currentTime().toString("z")));
             }
 
             return filename;
