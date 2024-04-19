@@ -283,7 +283,7 @@ FORMS += \
     src/display/qt/windows/ControlPanel/Output.ui \
     src/display/qt/windows/ControlPanel/VideoPresets.ui
 
-QT += core gui widgets
+QT += core gui widgets openglwidgets
 TARGET = vcs
 TEMPLATE = app
 RESOURCES += src/display/qt/res.qrc
