@@ -65,5 +65,5 @@ const QKeySequence& kd_get_key_sequence(const std::string &label)
 QShortcut* kd_make_key_shortcut(const std::string &label, QWidget *const parent)
 {
     ASSERT_LABEL_VALIDITY(label);
-    return new QShortcut(kd_get_key_sequence(label), (QObject*) parent);
+    return new QShortcut(KEY_SEQUENCES.at(label), (QObject*) parent);
 }
